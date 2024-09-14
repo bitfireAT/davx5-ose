@@ -145,7 +145,7 @@ class AccountRepository @Inject constructor(
             // delete address book accounts
             serviceRepository.getByAccountAndType(accountName, Service.TYPE_CARDDAV)?.let { service ->
                 collectionRepository.getByService(service.id).forEach { collection ->
-                    LocalAddressBook.find(context, null, collection)?.deleteCollection()
+                    LocalAddressBook.deleteByCollection(context, collection)
                 }
             }
 

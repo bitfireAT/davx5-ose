@@ -48,7 +48,7 @@ import javax.inject.Inject
 open class LocalAddressBook @Inject constructor(
     private val context: Context,
     account: Account,
-    provider: ContentProviderClient?
+    provider: ContentProviderClient
 ): AndroidAddressBook<LocalContact, LocalGroup>(account, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
 
     companion object {
@@ -61,7 +61,7 @@ open class LocalAddressBook @Inject constructor(
         const val USER_DATA_READ_ONLY = "read_only"
 
         /**
-         * Creates a local address book.
+         * Creates a new local address book.
          *
          * @param context        app context to resolve string resources
          * @param provider       contacts provider client
@@ -89,16 +89,29 @@ open class LocalAddressBook @Inject constructor(
         }
 
         /**
-         * Finds a [LocalAddressBook] based on its corresponding collection
+         * Finds a [LocalAddressBook] based on its corresponding collection.
          * @param info The corresponding collection
          * @return The [LocalAddressBook] for the given collection or *null* if not found
          */
-        fun find(context: Context, provider: ContentProviderClient?, info: Collection) =
+        fun find(context: Context, provider: ContentProviderClient, info: Collection) =
             AccountManager.get(context)
                 .getAccountsByType(context.getString(R.string.account_type_address_book))
                 .filter { account -> account.name == accountName(info) }
                 .map { account -> LocalAddressBook(context, account, provider) }
                 .firstOrNull()
+
+        /**
+         * Deletes a [LocalAddressBook] based on its corresponding database collection.
+         * @param collection The corresponding collection
+         */
+        fun deleteByCollection(context: Context, collection: Collection) =
+            AccountManager.get(context).run {
+                getAccountsByType(context.getString(R.string.account_type_address_book)).firstOrNull { account ->
+                    account.name == accountName(collection)
+                }?.let { account ->
+                    removeAccountExplicitly(account)
+                }
+            }
 
         /**
          * Creates a name for the address book account from its corresponding db collection info.
