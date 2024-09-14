@@ -16,7 +16,6 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -171,28 +170,6 @@ class AccountRepository @Inject constructor(
         Account(accountName, accountType)
 
     fun getAll(): Array<Account> = accountManager.getAccountsByType(accountType)
-
-    /**
-     * Finds and returns the main account of the given address book's account
-     *
-     * @param account the address book account to find the main account for
-     *
-     * @return the associated main account, `null` if none can be found (e.g. when main account has been deleted)
-     *
-     * @throws IllegalArgumentException when [account] is not an address book account
-     */
-    fun mainAccount(account: Account): Account? =
-        if (account.type == context.getString(R.string.account_type_address_book)) {
-            val manager = AccountManager.get(context)
-            manager.getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
-                collectionRepository.get(collectionId)?.let { collection ->
-                    serviceRepository.get(collection.serviceId)?.let { service ->
-                        Account(service.accountName, accountType)
-                    }
-                }
-            }
-        } else
-            throw IllegalArgumentException("$account is not an address book account")
 
     fun getAllFlow() = callbackFlow<Set<Account>> {
         val listener = OnAccountsUpdateListener { accounts ->
