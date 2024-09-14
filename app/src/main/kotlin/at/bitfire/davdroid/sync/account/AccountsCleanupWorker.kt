@@ -15,7 +15,8 @@ import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.time.Duration
@@ -74,23 +75,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
         val mainAccountNames = accounts
             .filter { account -> account.type == mainAccountType }
             .map { it.name }
-
-        val addressBookAccountType = applicationContext.getString(R.string.account_type_address_book)
-        val addressBooks = accounts
-            .filter { account -> account.type == addressBookAccountType }
-            .map { addressBookAccount -> LocalAddressBook(applicationContext, addressBookAccount, null) }
-        for (addressBook in addressBooks) {
-            try {
-                val addressBookAccount = Account(addressBook.account.name, addressBookAccountType)
-                val mainAccount = accountRepository.mainAccount(addressBookAccount)
-                if (mainAccount == null || !mainAccountNames.contains(mainAccount.name))
-                    // the main account for this address book doesn't exist anymore
-                    addressBook.deleteCollection()
-            } catch(e: Exception) {
-                logger.log(Level.SEVERE, "Couldn't delete address book account", e)
-            }
-        }
-
+        
         // delete orphaned services in DB
         val serviceDao = db.serviceDao()
         if (mainAccountNames.isEmpty())
