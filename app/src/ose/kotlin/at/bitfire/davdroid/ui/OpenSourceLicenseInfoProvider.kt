@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui
 
 import android.app.Application
 import android.text.Spanned
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,12 +18,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
-import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import com.google.common.io.CharStreams
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class OpenSourceLicenseInfoProvider @Inject constructor(): AboutActivity.AppLicenseInfoProvider {
 
@@ -60,7 +60,7 @@ class OpenSourceLicenseInfoProvider @Inject constructor(): AboutActivity.AppLice
 
 @Composable
 fun OpenSourceLicenseInfo(license: AnnotatedString) {
-    ClickableTextWithLink(license)
+    Text(text = license)
 }
 
 @Composable

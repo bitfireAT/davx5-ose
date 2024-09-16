@@ -39,7 +39,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,7 +50,6 @@ import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.setup.GoogleLogin.GOOGLE_POLICY_URL
-import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -135,7 +133,6 @@ object GoogleLogin : LoginType {
     }
 }
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 fun GoogleLoginScreen(
     email: String,
@@ -257,16 +254,16 @@ fun GoogleLoginScreen(
                 privacyPolicyUrl.toString()
             ), 0
         ).toAnnotatedString()
-        ClickableTextWithLink(
-            privacyPolicyNote,
+        Text(
+            text = privacyPolicyNote,
             style = MaterialTheme.typography.bodyMedium
         )
 
         val limitedUseNote = HtmlCompat.fromHtml(
             stringResource(R.string.login_google_client_limited_use, context.getString(R.string.app_name), GOOGLE_POLICY_URL), 0
         ).toAnnotatedString()
-        ClickableTextWithLink(
-            limitedUseNote,
+        Text(
+            text = limitedUseNote,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(top = 12.dp)
         )
