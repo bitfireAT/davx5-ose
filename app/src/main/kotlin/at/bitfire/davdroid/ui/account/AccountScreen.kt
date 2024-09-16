@@ -297,70 +297,71 @@ fun AccountScreen(
                 SnackbarHost(snackbarHostState)
             }
         ) { padding ->
-            PullToRefreshBox(
-                isRefreshing = isRefreshing,
-                onRefresh = { isRefreshing = true; onSync() },
+            Column(
                 modifier = Modifier.padding(padding)
             ) {
-                Column {
-                    if (nrPages > 0) {
-                        TabRow(selectedTabIndex = pagerState.currentPage) {
-                            if (idxCalDav != null) {
-                                Tab(
-                                    selected = pagerState.currentPage == idxCalDav,
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.scrollToPage(idxCalDav)
-                                        }
+                if (nrPages > 0) {
+                    TabRow(selectedTabIndex = pagerState.currentPage) {
+                        if (idxCalDav != null) {
+                            Tab(
+                                selected = pagerState.currentPage == idxCalDav,
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.scrollToPage(idxCalDav)
                                     }
-                                ) {
-                                    Text(
-                                        stringResource(R.string.account_caldav),
-                                        modifier = Modifier.padding(8.dp)
-                                    )
                                 }
-                            }
-
-                            if (idxCardDav != null) {
-                                Tab(
-                                    selected = pagerState.currentPage == idxCardDav,
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.scrollToPage(idxCardDav)
-                                        }
-                                    }
-                                ) {
-                                    Text(
-                                        stringResource(R.string.account_carddav),
-                                        modifier = Modifier.padding(8.dp)
-                                    )
-                                }
-                            }
-
-                            if (idxWebcal != null) {
-                                Tab(
-                                    selected = pagerState.currentPage == idxWebcal,
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.scrollToPage(idxWebcal)
-                                        }
-                                    }
-                                ) {
-                                    Text(
-                                        stringResource(R.string.account_webcal),
-                                        modifier = Modifier.padding(8.dp)
-                                    )
-                                }
+                            ) {
+                                Text(
+                                    stringResource(R.string.account_caldav),
+                                    modifier = Modifier.padding(8.dp)
+                                )
                             }
                         }
 
-                        HorizontalPager(
-                            pagerState,
-                            verticalAlignment = Alignment.Top,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                        ) { index ->
+                        if (idxCardDav != null) {
+                            Tab(
+                                selected = pagerState.currentPage == idxCardDav,
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.scrollToPage(idxCardDav)
+                                    }
+                                }
+                            ) {
+                                Text(
+                                    stringResource(R.string.account_carddav),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
+                        }
+
+                        if (idxWebcal != null) {
+                            Tab(
+                                selected = pagerState.currentPage == idxWebcal,
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.scrollToPage(idxWebcal)
+                                    }
+                                }
+                            ) {
+                                Text(
+                                    stringResource(R.string.account_webcal),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    HorizontalPager(
+                        pagerState,
+                        verticalAlignment = Alignment.Top,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) { index ->
+                        PullToRefreshBox(
+                            isRefreshing = isRefreshing,
+                            onRefresh = { isRefreshing = true; onSync() }
+                        ) {
                             when (index) {
                                 idxCardDav ->
                                     AccountScreen_ServiceTab(
