@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -98,8 +97,6 @@ object UiUtils {
             }
     }
 
-
-    @OptIn(ExperimentalTextApi::class)
     @Composable
     fun Spanned.toAnnotatedString() = buildAnnotatedString {
         val spanned = this@toAnnotatedString
