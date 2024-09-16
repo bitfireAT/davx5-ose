@@ -14,7 +14,10 @@ import androidx.compose.ui.text.TextStyle
 @Composable
 @Deprecated(
     message = "Use Text with annotatedString instead",
-    ReplaceWith("Text(text = text, style = style, modifier = modifier)")
+    ReplaceWith(
+        expression = "Text(text = text, style = style, modifier = modifier)",
+        "androidx.compose.material3.Text"
+    )
 )
 fun ClickableTextWithLink(
     text: AnnotatedString,
