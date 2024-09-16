@@ -93,7 +93,7 @@ fun AccountDetailsPageContent(
     creatingAccount: Boolean
 ) {
     Assistant(
-        nextLabel = stringResource(R.string.login_add_account),
+        nextLabel = stringResource(R.string.login_finish),
         onNext = onCreateAccount,
         nextEnabled = !creatingAccount && accountName.isNotBlank() && !accountNameAlreadyExists
     ) {

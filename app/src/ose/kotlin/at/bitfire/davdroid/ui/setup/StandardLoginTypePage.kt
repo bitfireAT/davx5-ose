@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -17,14 +19,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.Assistant
+import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 
 @Composable
 fun StandardLoginTypePage(
     selectedLoginType: LoginType,
     onSelectLoginType: (LoginType) -> Unit,
+
+    @Suppress("UNUSED_PARAMETER")   // for build variants
     setInitialLoginInfo: (LoginInfo) -> Unit,
+    
     onContinue: () -> Unit = {}
 ) {
     Assistant(
@@ -56,6 +66,20 @@ fun StandardLoginTypePage(
                     selected = type == selectedLoginType,
                     onSelect = { onSelectLoginType(type) }
                 )
+
+            HorizontalDivider(Modifier.padding(vertical = 12.dp))
+
+            val privacyPolicy = Constants.HOMEPAGE_URL.buildUpon()
+                .appendPath(Constants.HOMEPAGE_PATH_PRIVACY)
+                .withStatParams("StandardLoginTypePage")
+                .build().toString()
+            val privacy = HtmlCompat.fromHtml(
+                stringResource(R.string.login_privacy_hint, stringResource(R.string.app_name), privacyPolicy),
+                HtmlCompat.FROM_HTML_MODE_COMPACT)
+            ClickableTextWithLink(
+                privacy.toAnnotatedString(),
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }
@@ -89,9 +113,11 @@ fun LoginTypeSelector(
 
 @Composable
 @Preview
-fun LoginScreen_Preview() {
-    /*LoginScreen(
-        loginTypesProvider = StandardLoginTypesProvider(),
-        initialLoginType = LoginTypeUrl
-    )*/
+fun StandardLoginTypePage_Preview() {
+    StandardLoginTypePage(
+        selectedLoginType = StandardLoginTypesProvider.genericLoginTypes.first(),
+        onSelectLoginType = {},
+        setInitialLoginInfo = {},
+        onContinue = {}
+    )
 }

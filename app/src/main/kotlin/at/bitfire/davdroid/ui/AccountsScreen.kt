@@ -343,12 +343,19 @@ fun AccountList(
 ) {
     Column(modifier) {
         if (accounts.isEmpty())
-            Box(
-                contentAlignment = Alignment.Center,
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(8.dp)
             ) {
+                Text(
+                    text = stringResource(R.string.account_list_welcome),
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, bottom = 32.dp)
+                )
                 Text(
                     text = stringResource(R.string.account_list_empty),
                     style = MaterialTheme.typography.headlineSmall,
