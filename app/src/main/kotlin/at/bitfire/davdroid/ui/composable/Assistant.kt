@@ -25,10 +25,17 @@ import androidx.compose.ui.unit.dp
 fun Assistant(
     nextLabel: String? = null,
     nextEnabled: Boolean = true,
+    isLoading: Boolean = false,
     onNext: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     Column(Modifier.fillMaxSize()) {
+        if (isLoading)
+            ProgressBar(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp))
+
         Column(
             Modifier
                 .fillMaxWidth()
