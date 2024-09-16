@@ -38,7 +38,6 @@ import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.BasicTopAppBar
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.RadioWithSwitch
-import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.launch
 
@@ -159,7 +158,7 @@ fun TasksCard(
                         stringResource(R.string.intro_tasks_tasks_org_info),
                         HtmlCompat.FROM_HTML_MODE_COMPACT
                     ).toAnnotatedString()
-                    ClickableTextWithLink(summary)
+                    Text(summary)
                 },
                 isSelected = tasksOrgSelected,
                 isToggled = tasksOrgInstalled,

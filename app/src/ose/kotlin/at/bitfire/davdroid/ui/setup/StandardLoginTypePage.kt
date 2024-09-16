@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -25,7 +24,6 @@ import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.Assistant
-import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 
 @Composable
 fun StandardLoginTypePage(
@@ -76,8 +74,8 @@ fun StandardLoginTypePage(
             val privacy = HtmlCompat.fromHtml(
                 stringResource(R.string.login_privacy_hint, stringResource(R.string.app_name), privacyPolicy),
                 HtmlCompat.FROM_HTML_MODE_COMPACT)
-            ClickableTextWithLink(
-                privacy.toAnnotatedString(),
+            Text(
+                text = privacy.toAnnotatedString(),
                 style = MaterialTheme.typography.bodyMedium
             )
         }

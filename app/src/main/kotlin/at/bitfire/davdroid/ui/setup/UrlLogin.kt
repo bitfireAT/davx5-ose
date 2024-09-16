@@ -37,7 +37,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.davdroid.ui.composable.PasswordTextField
-import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 
 object UrlLogin : LoginType {
 
@@ -126,8 +125,8 @@ fun UrlLoginScreen(
                 .fragment(Constants.MANUAL_FRAGMENT_SERVICE_DISCOVERY)
                 .build()
             val urlInfo = HtmlCompat.fromHtml(stringResource(R.string.login_base_url_info, manualUrl), HtmlCompat.FROM_HTML_MODE_COMPACT)
-            ClickableTextWithLink(
-                urlInfo.toAnnotatedString(),
+            Text(
+                text = urlInfo.toAnnotatedString(),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
                     .fillMaxWidth()

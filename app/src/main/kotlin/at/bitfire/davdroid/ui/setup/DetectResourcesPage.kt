@@ -32,7 +32,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 
 @Composable
 fun DetectResourcesPage(
@@ -125,8 +124,12 @@ fun DetectResourcesPageContent_NothingFound(
                     .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
                     .withStatParams("DetectResourcesPage")
                     .build()
-                ClickableTextWithLink(
-                    HtmlCompat.fromHtml(stringResource(R.string.login_see_tested_services, urlServices), HtmlCompat.FROM_HTML_MODE_COMPACT).toAnnotatedString(),
+                val testedServices = HtmlCompat.fromHtml(
+                    stringResource(R.string.login_see_tested_services, urlServices),
+                    HtmlCompat.FROM_HTML_MODE_COMPACT
+                ).toAnnotatedString()
+                Text(
+                    text = testedServices,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )

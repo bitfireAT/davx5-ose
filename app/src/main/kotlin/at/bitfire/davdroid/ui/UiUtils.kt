@@ -25,9 +25,8 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -98,8 +97,6 @@ object UiUtils {
             }
     }
 
-
-    @OptIn(ExperimentalTextApi::class)
     @Composable
     fun Spanned.toAnnotatedString() = buildAnnotatedString {
         val spanned = this@toAnnotatedString
@@ -121,8 +118,8 @@ object UiUtils {
                         )
                     }
                 is URLSpan -> {
-                    addUrlAnnotation(
-                        UrlAnnotation(span.url),
+                    addLink(
+                        LinkAnnotation.Url(span.url),
                         start = start, end = end
                     )
                     addStyle(
