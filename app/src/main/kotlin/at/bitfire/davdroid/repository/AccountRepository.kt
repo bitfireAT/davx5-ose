@@ -59,7 +59,7 @@ class AccountRepository @Inject constructor(
     private val accountManager = AccountManager.get(context)
 
     /**
-     * Creates a new main account with discovered services and enables periodic syncs with
+     * Creates a new account with discovered services and enables periodic syncs with
      * default sync interval times.
      *
      * @param accountName   name of the account
@@ -82,7 +82,7 @@ class AccountRepository @Inject constructor(
         // add entries for account to service DB
         logger.log(Level.INFO, "Writing account configuration to database", config)
         try {
-            val accountSettings = accountSettingsFactory.forAccount(account)
+            val accountSettings = accountSettingsFactory.create(account)
             val defaultSyncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
 
             // Configure CardDAV service
@@ -206,7 +206,7 @@ class AccountRepository @Inject constructor(
             throw IllegalArgumentException("Account with name \"$newName\" already exists")
 
         // remember sync intervals
-        val oldSettings = accountSettingsFactory.forAccount(oldAccount)
+        val oldSettings = accountSettingsFactory.create(oldAccount)
         val authorities = mutableListOf(
             context.getString(R.string.address_books_authority),
             CalendarContract.AUTHORITY
@@ -260,7 +260,7 @@ class AccountRepository @Inject constructor(
             }
 
             // restore sync intervals
-            val newSettings = accountSettingsFactory.forAccount(newAccount)
+            val newSettings = accountSettingsFactory.create(newAccount)
             for ((authority, interval) in syncIntervals) {
                 if (interval == null)
                     ContentResolver.setIsSyncable(newAccount, authority, 0)

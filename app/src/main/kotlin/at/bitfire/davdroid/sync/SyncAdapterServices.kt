@@ -75,24 +75,28 @@ abstract class SyncAdapterService: Service() {
          */
         private val waitScope = CoroutineScope(Dispatchers.Default)
 
-        override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun onPerformSync(accountOrAddressBookAccount: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             // We have to pass this old SyncFramework extra for an Android 7 workaround
             val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
-            logger.info("Sync request via sync framework for $account $authority (upload=$upload)")
+            logger.info("Sync request via sync framework for $accountOrAddressBookAccount $authority (upload=$upload)")
+
+            val collectionId = AccountManager.get(context).getUserData(accountOrAddressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()
+            val account = if (accountOrAddressBookAccount.type == context.getString(R.string.account_type_address_book))
+                collectionId?.let {
+                    collectionRepository.get(collectionId)?.let { collection ->
+                        serviceRepository.get(collection.serviceId)?.let { service ->
+                            Account(
+                                service.accountName,
+                                context.getString(R.string.account_type)
+                            )
+                        }
+                    }
+                } ?: throw IllegalArgumentException("No valid collection/service/account for address book $accountOrAddressBookAccount")
+                else
+                    accountOrAddressBookAccount
 
             val accountSettings = try {
-               val mainAccount = if (account.type == context.getString(R.string.account_type_address_book)) {
-                   AccountManager.get(context).getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
-                        collectionRepository.get(collectionId)?.let { collection ->
-                            serviceRepository.get(collection.serviceId)?.let { service ->
-                                Account(service.accountName, context.getString(R.string.account_type))
-                            }
-                        }
-                    } ?: throw IllegalArgumentException("Main account for address book account missing. Can't sync address book")
-               } else
-                   account
-
-                accountSettingsFactory.forAccount(mainAccount)
+                accountSettingsFactory.create(account)
             } catch (e: InvalidAccountException) {
                 logger.log(Level.WARNING, "Account doesn't exist anymore", e)
                 return
@@ -108,7 +112,7 @@ abstract class SyncAdapterService: Service() {
             /* Special case for contacts: because address books are separate accounts, changed contacts cause
             this method to be called with authority = ContactsContract.AUTHORITY. However the sync worker shall be run for the
             address book authority instead. */
-            val workerAccount = accountSettings.account         // main account in case of an address book account
+            val workerAccount = account
             val workerAuthority =
                 if (authority == ContactsContract.AUTHORITY)
                     context.getString(R.string.address_books_authority)

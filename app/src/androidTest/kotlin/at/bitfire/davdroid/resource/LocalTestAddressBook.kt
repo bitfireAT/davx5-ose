@@ -15,6 +15,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.util.logging.Logger
 
 class LocalTestAddressBook @AssistedInject constructor(
     @Assisted provider: ContentProviderClient,
@@ -22,8 +23,9 @@ class LocalTestAddressBook @AssistedInject constructor(
     @ApplicationContext context: Context,
     accountSettingsFactory: AccountSettings.Factory,
     collectionRepository: DavCollectionRepository,
+    logger: Logger,
     serviceRepository: DavServiceRepository
-): LocalAddressBook(ACCOUNT, provider, context, accountSettingsFactory, collectionRepository, serviceRepository) {
+): LocalAddressBook(ACCOUNT, provider, context, accountSettingsFactory, collectionRepository, logger, serviceRepository) {
 
     companion object {
         val ACCOUNT = Account("LocalTestAddressBook", "at.bitfire.davdroid.test")

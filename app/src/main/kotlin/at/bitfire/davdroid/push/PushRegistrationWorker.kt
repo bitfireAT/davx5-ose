@@ -99,7 +99,7 @@ class PushRegistrationWorker @AssistedInject constructor(
     }
 
     private suspend fun registerPushSubscription(collection: Collection, account: Account, endpoint: String) {
-        val settings = accountSettingsFactory.forAccount(account)
+        val settings = accountSettingsFactory.create(account)
 
         runInterruptible {
             HttpClient.Builder(applicationContext, settings)
@@ -158,7 +158,7 @@ class PushRegistrationWorker @AssistedInject constructor(
     }
 
     private suspend fun unregisterPushSubscription(collection: Collection, account: Account, url: HttpUrl) {
-        val settings = accountSettingsFactory.forAccount(account)
+        val settings = accountSettingsFactory.create(account)
 
         runInterruptible {
             HttpClient.Builder(applicationContext, settings)

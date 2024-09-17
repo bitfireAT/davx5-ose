@@ -166,7 +166,7 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        HttpClient.Builder(context, accountSettingsFactory.forAccount(account))
+        HttpClient.Builder(context, accountSettingsFactory.create(account))
             .setForeground(true)
             .build().use { httpClient ->
                 withContext(Dispatchers.IO) {
@@ -266,7 +266,7 @@ class DavCollectionRepository @Inject constructor(
     // helpers
 
     private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
-        HttpClient.Builder(context, accountSettingsFactory.forAccount(account))
+        HttpClient.Builder(context, accountSettingsFactory.create(account))
             .setForeground(true)
             .build().use { httpClient ->
                 withContext(Dispatchers.IO) {

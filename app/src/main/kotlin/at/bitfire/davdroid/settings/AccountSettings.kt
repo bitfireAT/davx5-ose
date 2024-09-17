@@ -30,14 +30,13 @@ import java.util.logging.Logger
 /**
  * Manages settings of an account.
  *
- * @param accountOrAddressBookAccount    Account to take settings from. If this account is an address book account,
- * settings will be taken from the corresponding main account instead.
+ * @param account   account to take settings from
  *
- * @throws InvalidAccountException on construction when the account doesn't exist (anymore)
- * @throws IllegalArgumentException when the account type is not _DAVx5_ or _DAVx5 address book_
+ * @throws InvalidAccountException      on construction when the account doesn't exist (anymore)
+ * @throws IllegalArgumentException     when the account is not a DAVx5 account
  */
 class AccountSettings @AssistedInject constructor(
-    @Assisted accountOrAddressBookAccount: Account,
+    @Assisted val account: Account,
     @ApplicationContext val context: Context,
     private val logger: Logger,
     private val migrationsFactory: AccountSettingsMigrations.Factory,
@@ -46,10 +45,7 @@ class AccountSettings @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        /**
-         * Only for main (caldav) accounts - not for address book accounts
-         */
-        fun forAccount(account: Account): AccountSettings
+        fun create(account: Account): AccountSettings
     }
 
     companion object {
@@ -139,31 +135,17 @@ class AccountSettings @AssistedInject constructor(
 
 
     val accountManager: AccountManager = AccountManager.get(context)
-    val account: Account = when (accountOrAddressBookAccount.type) {
-            context.getString(R.string.account_type_address_book) ->
-                throw IllegalArgumentException("$accountOrAddressBookAccount is an address book account, but only main accounts store settings")
-
-            context.getString(R.string.account_type),
-            "at.bitfire.davdroid.test" /* defined in androidTest/strings/account_type_test */ ->
-                accountOrAddressBookAccount
-
-            else ->
-                throw IllegalArgumentException("Account type ${accountOrAddressBookAccount.type} not supported")
-        }
-
     init {
         // synchronize because account migration must only be run one time
         synchronized(AccountSettings::class.java) {
-            val versionStr = accountManager.getUserData(this.account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(
-                this.account
-            )
+            val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
             var version = 0
             try {
                 version = Integer.parseInt(versionStr)
             } catch (e: NumberFormatException) {
                 logger.log(Level.SEVERE, "Invalid account version: $versionStr", e)
             }
-            logger.fine("Account ${this.account.name} has version $version, current version: $CURRENT_VERSION")
+            logger.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
 
             if (version < CURRENT_VERSION) {
                 if (currentlyUpdating) {

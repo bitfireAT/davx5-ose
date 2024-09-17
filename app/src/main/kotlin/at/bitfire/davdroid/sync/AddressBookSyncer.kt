@@ -91,7 +91,7 @@ class AddressBookSyncer @AssistedInject constructor(
     /**
      * Synchronizes an address book
      *
-     * @param account address book account which stores the address book
+     * @param addressBookAccount address book account which stores the address book
      * @param extras Sync specific instructions. IE [Syncer.SYNC_EXTRAS_FULL_RESYNC]
      * @param httpClient
      * @param provider Content provider to access android contacts
@@ -99,7 +99,7 @@ class AddressBookSyncer @AssistedInject constructor(
      * @param collection The database collection associated with this address book
      */
     private fun syncAddressBook(
-        account: Account,
+        addressBookAccount: Account,
         extras: Array<String>,
         httpClient: Lazy<HttpClient>,
         provider: ContentProviderClient,
@@ -108,22 +108,20 @@ class AddressBookSyncer @AssistedInject constructor(
     ) {
         try {
             val manager = AccountManager.get(context)
-            val mainAccount = manager.getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
+            val account = manager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
                 collectionRepository.get(collectionId)?.let { collection ->
                     serviceRepository.get(collection.serviceId)?.let { service ->
                         Account(service.accountName, context.getString(R.string.account_type))
                     }
                 }
-            }
-            if (mainAccount == null)
-                throw IllegalArgumentException("Main account for address book account missing. Can't sync address book")
+            } ?: throw IllegalArgumentException("No valid collection/service/account for address book $addressBookAccount")
 
-            val accountSettings = accountSettingsFactory.forAccount(mainAccount)
-            val addressBook = localAddressbookFactory.create(account, provider)
+            val accountSettings = accountSettingsFactory.create(account)
+            val addressBook = localAddressbookFactory.create(addressBookAccount, provider)
 
             // handle group method change
             val groupMethod = accountSettings.getGroupMethod().name
-            accountSettings.accountManager.getUserData(account, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
+            accountSettings.accountManager.getUserData(addressBookAccount, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
                 if (previousGroupMethod != groupMethod) {
                     logger.info("Group method changed, deleting all local contacts/groups")
 
@@ -135,11 +133,11 @@ class AddressBookSyncer @AssistedInject constructor(
                     addressBook.syncState = null
                 }
             }
-            accountSettings.accountManager.setAndVerifyUserData(account, PREVIOUS_GROUP_METHOD, groupMethod)
+            accountSettings.accountManager.setAndVerifyUserData(addressBookAccount, PREVIOUS_GROUP_METHOD, groupMethod)
 
             logger.info("Synchronizing address book: ${addressBook.collectionUrl}")
 
-            val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
+            val syncManager = contactsSyncManagerFactory.contactsSyncManager(addressBookAccount, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
             syncManager.performSync()
 
         } catch(e: Exception) {

@@ -48,18 +48,19 @@ import java.util.logging.Logger
  * account and there is no such thing as "address books". So, DAVx5 creates a "DAVx5
  * address book" account for every CardDAV address book.
  *
- * @param account Address book account storing the actual android address book
- * @param provider Content provider needed to access and modify the address book.
+ * @param addressBookAccount Address book account (not: DAVx5 account) storing the actual android address book
+ * @param provider Content provider needed to access and modify the address book
  */
 @OpenForTesting
 open class LocalAddressBook @AssistedInject constructor(
-    @Assisted account: Account,
+    @Assisted addressBookAccount: Account,
     @Assisted provider: ContentProviderClient,
     @ApplicationContext val context: Context,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
+    private val logger: Logger,
     private val serviceRepository: DavServiceRepository
-): AndroidAddressBook<LocalContact, LocalGroup>(account, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
+): AndroidAddressBook<LocalContact, LocalGroup>(addressBookAccount, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
 
     companion object {
 
@@ -67,10 +68,8 @@ open class LocalAddressBook @AssistedInject constructor(
         @InstallIn(SingletonComponent::class)
         interface LocalAddressBookCompanionEntryPoint {
             fun localAddressBookFactory(): Factory
+            fun logger(): Logger
         }
-
-        private val logger
-            get() = Logger.getGlobal()
 
         const val USER_DATA_URL = "url"
         const val USER_DATA_COLLECTION_ID = "collection_id"
@@ -85,13 +84,15 @@ open class LocalAddressBook @AssistedInject constructor(
          * @param forceReadOnly  `true`: set the address book to "force read-only"; `false`: determine read-only flag from [info]
          */
         fun create(context: Context, provider: ContentProviderClient, info: Collection, forceReadOnly: Boolean): LocalAddressBook {
+            val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
+            val logger = entryPoint.logger()
+
             val account = Account(accountName(info), context.getString(R.string.account_type_address_book))
             val userData = initialUserData(info.url.toString(), info.id.toString())
             logger.log(Level.INFO, "Creating local address book $account", userData)
             if (!AccountUtils.createAccount(context, account, userData))
                 throw IllegalStateException("Couldn't create address book account")
 
-            val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
             val factory = entryPoint.localAddressBookFactory()
             val addressBook = factory.create(account, provider)
             addressBook.updateSyncFrameworkSettings()
@@ -125,6 +126,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
         /**
          * Deletes a [LocalAddressBook] based on its corresponding database collection.
+         *
          * @param collection The corresponding collection
          */
         fun deleteByCollection(context: Context, collection: Collection) =
@@ -161,6 +163,7 @@ open class LocalAddressBook @AssistedInject constructor(
             bundle.putString(USER_DATA_URL, url)
             return bundle
         }
+
     }
 
     @AssistedFactory
@@ -172,7 +175,7 @@ open class LocalAddressBook @AssistedInject constructor(
     override val tag: String
         get() = "contacts-${account.name}"
 
-    override val title = account.name
+    override val title = addressBookAccount.name
 
     /**
      * Whether contact groups ([LocalGroup]) are included in query results
@@ -183,21 +186,22 @@ open class LocalAddressBook @AssistedInject constructor(
      */
     open val groupMethod: GroupMethod by lazy {
         val manager = AccountManager.get(context)
-        val mainAccount = manager.getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
+        val account = manager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
             collectionRepository.get(collectionId)?.let { collection ->
                 serviceRepository.get(collection.serviceId)?.let { service ->
                     Account(service.accountName, context.getString(R.string.account_type))
                 }
             }
         }
-        if (mainAccount == null)
-            throw IllegalArgumentException("Address book account $account does not have a main account")
-        val accountSettings = accountSettingsFactory.forAccount(mainAccount)
+        if (account == null)
+            throw IllegalArgumentException("Collection of address book account $addressBookAccount does not have an account")
+        val accountSettings = accountSettingsFactory.create(account)
         accountSettings.getGroupMethod()
     }
-    val includeGroups
+    private val includeGroups
         get() = groupMethod == GroupMethod.GROUP_VCARDS
 
+    @Deprecated("Local collection should be identified by ID, not by URL")
     override var collectionUrl: String
         get() = AccountManager.get(context).getUserData(account, USER_DATA_URL)
                 ?: throw IllegalStateException("Address book has no URL")

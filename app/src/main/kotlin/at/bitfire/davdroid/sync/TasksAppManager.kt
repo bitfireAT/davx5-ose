@@ -130,7 +130,7 @@ class TasksAppManager @Inject constructor(
 
     private fun setSyncable(context: Context, account: Account, authority: String, syncable: Boolean) {
         try {
-            val settings = accountSettingsFactory.forAccount(account)
+            val settings = accountSettingsFactory.create(account)
             if (syncable) {
                 logger.info("Enabling $authority sync for $account")
 

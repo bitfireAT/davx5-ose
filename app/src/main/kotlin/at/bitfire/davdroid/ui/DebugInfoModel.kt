@@ -463,7 +463,7 @@ class DebugInfoModel @AssistedInject constructor(
         writer.append("\n\n - Account: ${account.name}\n")
         writer.append(dumpAccount(account, AccountDumpInfo.mainAccount(context, account)))
         try {
-            val accountSettings = accountSettingsFactory.forAccount(account)
+            val accountSettings = accountSettingsFactory.create(account)
 
             val credentials = accountSettings.credentials()
             val authStr = mutableListOf<String>()
@@ -536,7 +536,7 @@ class DebugInfoModel @AssistedInject constructor(
                 } catch (e: Exception) {
                     nrEntries = e.toString()
                 }
-            val accountSettings = accountSettingsFactory.forAccount(account)
+            val accountSettings = accountSettingsFactory.create(account)
             table.addLine(
                 info.authority,
                 ContentResolver.getIsSyncable(account, info.authority),

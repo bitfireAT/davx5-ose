@@ -78,7 +78,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     abstract val authority: String
     abstract val serviceType: String
 
-    val accountSettings by lazy { accountSettingsFactory.forAccount(account) }
+    val accountSettings by lazy { accountSettingsFactory.create(account) }
     val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
 
     /**
