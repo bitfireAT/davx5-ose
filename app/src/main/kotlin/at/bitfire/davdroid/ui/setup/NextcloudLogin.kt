@@ -49,8 +49,10 @@ import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 
-object NextcloudLogin : LoginType {
+@Parcelize
+data object NextcloudLogin : LoginType {
 
     override val title: Int
         get() = R.string.login_type_nextcloud

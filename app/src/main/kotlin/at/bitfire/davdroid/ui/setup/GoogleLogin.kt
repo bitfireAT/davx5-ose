@@ -52,8 +52,11 @@ import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.setup.GoogleLogin.GOOGLE_POLICY_URL
 import java.util.logging.Level
 import java.util.logging.Logger
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
-object GoogleLogin : LoginType {
+@Parcelize
+data object GoogleLogin : LoginType {
 
     override val title: Int
         get() = R.string.login_type_google
@@ -67,10 +70,12 @@ object GoogleLogin : LoginType {
 
 
     // Google API Services User Data Policy
+    @IgnoredOnParcel
     const val GOOGLE_POLICY_URL =
         "https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes"
 
     // Support site
+    @IgnoredOnParcel
     val URI_TESTED_WITH_GOOGLE: Uri =
         Constants.HOMEPAGE_URL.buildUpon()
             .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)

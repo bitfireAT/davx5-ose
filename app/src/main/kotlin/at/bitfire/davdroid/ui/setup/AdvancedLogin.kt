@@ -39,8 +39,10 @@ import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.davdroid.ui.composable.PasswordTextField
 import at.bitfire.davdroid.ui.composable.SelectClientCertificateCard
+import kotlinx.parcelize.Parcelize
 
-object AdvancedLogin : LoginType {
+@Parcelize
+data object AdvancedLogin : LoginType {
 
     override val title: Int
         get() = R.string.login_type_advanced

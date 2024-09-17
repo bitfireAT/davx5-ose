@@ -36,8 +36,10 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.davdroid.ui.composable.PasswordTextField
+import kotlinx.parcelize.Parcelize
 
-object EmailLogin : LoginType {
+@Parcelize
+data object EmailLogin : LoginType {
 
     override val title: Int
         get() = R.string.login_type_email

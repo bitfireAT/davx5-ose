@@ -4,16 +4,20 @@
 
 package at.bitfire.davdroid.db
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 import net.openid.appauth.AuthState
 
+@Parcelize
 data class Credentials(
     val username: String? = null,
     val password: String? = null,
 
     val certificateAlias: String? = null,
 
-    val authState: AuthState? = null
-) {
+    val authState: @RawValue AuthState? = null
+): Parcelable {
 
     override fun toString(): String {
         val s = mutableListOf<String>()

@@ -6,11 +6,13 @@ package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
 import android.content.Context
-import androidx.compose.runtime.getValue
+import android.os.Parcelable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
@@ -21,6 +23,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.util.logging.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +35,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
-import java.util.logging.Logger
+import kotlinx.parcelize.Parcelize
 
 @HiltViewModel(assistedFactory = LoginScreenModel.Factory::class)
 class LoginScreenModel @AssistedInject constructor(
@@ -138,9 +141,10 @@ class LoginScreenModel @AssistedInject constructor(
 
     // UI element state – first page: login type
 
+    @Parcelize
     data class LoginTypeUiState(
         val loginType: LoginType
-    )
+    ): Parcelable
 
     var loginTypeUiState by mutableStateOf(LoginTypeUiState(loginType = initialLoginType))
         private set
@@ -156,10 +160,11 @@ class LoginScreenModel @AssistedInject constructor(
     // base URI and credentials
     private var loginInfo: LoginInfo = initialLoginInfo
 
+    @Parcelize
     data class LoginDetailsUiState(
         val loginType: LoginType,
         val loginInfo: LoginInfo
-    )
+    ): Parcelable
 
     var loginDetailsUiState by mutableStateOf(LoginDetailsUiState(
         loginType = initialLoginType,
@@ -174,12 +179,13 @@ class LoginScreenModel @AssistedInject constructor(
 
     // UI element state – third page: detect resources
 
+    @Parcelize
     data class DetectResourcesUiState(
         val loading: Boolean = false,
         val foundNothing: Boolean = false,
         val encountered401: Boolean = false,
         val logs: String? = null
-    )
+    ): Parcelable
 
     var detectResourcesUiState by mutableStateOf(DetectResourcesUiState())
         private set
