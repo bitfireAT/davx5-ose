@@ -17,6 +17,7 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
+import androidx.annotation.OpenForTesting
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -30,14 +31,17 @@ import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidGroup
 import at.bitfire.vcard4android.GroupMethod
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
-import javax.inject.Inject
 
 /**
  * A local address book. Requires an own Android account, because Android manages contacts per
@@ -47,14 +51,24 @@ import javax.inject.Inject
  * @param account Address book account storing the actual android address book
  * @param provider Content provider needed to access and modify the address book.
  */
-open class LocalAddressBook @Inject constructor(
-    private val context: Context,
-    account: Account,
-    provider: ContentProviderClient
+@OpenForTesting
+open class LocalAddressBook @AssistedInject constructor(
+    @Assisted account: Account,
+    @Assisted provider: ContentProviderClient,
+    @ApplicationContext val context: Context,
+    private val accountSettingsFactory: AccountSettings.Factory,
+    private val collectionRepository: DavCollectionRepository,
+    private val serviceRepository: DavServiceRepository
 ): AndroidAddressBook<LocalContact, LocalGroup>(account, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
 
     companion object {
-        
+
+        @EntryPoint
+        @InstallIn(SingletonComponent::class)
+        interface LocalAddressBookCompanionEntryPoint {
+            fun localAddressBookFactory(): Factory
+        }
+
         private val logger
             get() = Logger.getGlobal()
 
@@ -77,7 +91,9 @@ open class LocalAddressBook @Inject constructor(
             if (!AccountUtils.createAccount(context, account, userData))
                 throw IllegalStateException("Couldn't create address book account")
 
-            val addressBook = LocalAddressBook(context, account, provider)
+            val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
+            val factory = entryPoint.localAddressBookFactory()
+            val addressBook = factory.create(account, provider)
             addressBook.updateSyncFrameworkSettings()
 
             // initialize Contacts Provider Settings
@@ -92,15 +108,20 @@ open class LocalAddressBook @Inject constructor(
 
         /**
          * Finds a [LocalAddressBook] based on its corresponding collection.
-         * @param info The corresponding collection
+         *
+         * @param info The corresponding collection. Used to calculate the address book name to look for.
+         *
          * @return The [LocalAddressBook] for the given collection or *null* if not found
          */
-        fun find(context: Context, provider: ContentProviderClient, info: Collection) =
-            AccountManager.get(context)
+        fun find(context: Context, provider: ContentProviderClient, info: Collection): LocalAddressBook? {
+            val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
+            val factory = entryPoint.localAddressBookFactory()
+            return AccountManager.get(context)
                 .getAccountsByType(context.getString(R.string.account_type_address_book))
                 .filter { account -> account.name == accountName(info) }
-                .map { account -> LocalAddressBook(context, account, provider) }
+                .map { account -> factory.create(account, provider) }
                 .firstOrNull()
+        }
 
         /**
          * Deletes a [LocalAddressBook] based on its corresponding database collection.
@@ -142,23 +163,16 @@ open class LocalAddressBook @Inject constructor(
         }
     }
 
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface LocalAddressBookEntryPoint {
-        fun accountSettingsFactory(): AccountSettings.Factory
-        fun collectionRepository(): DavCollectionRepository
-        fun serviceRepository(): DavServiceRepository
+    @AssistedFactory
+    interface Factory {
+        fun create(account: Account, provider: ContentProviderClient): LocalAddressBook
     }
-    private val entryPoint = EntryPointAccessors.fromApplication(context, LocalAddressBookEntryPoint::class.java)
-    private val accountSettingsFactory = entryPoint.accountSettingsFactory()
-    private val collectionRepository = entryPoint.collectionRepository()
-    private val serviceRepository = entryPoint.serviceRepository()
 
 
     override val tag: String
         get() = "contacts-${account.name}"
 
-    override val title = account.name!!
+    override val title = account.name
 
     /**
      * Whether contact groups ([LocalGroup]) are included in query results

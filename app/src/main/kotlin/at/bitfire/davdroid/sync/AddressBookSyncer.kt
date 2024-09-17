@@ -31,6 +31,7 @@ class AddressBookSyncer @AssistedInject constructor(
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
+    private val localAddressbookFactory: LocalAddressBook.Factory,
     settingsManager: SettingsManager
 ): Syncer<LocalAddressBook>(account, extras, syncResult) {
 
@@ -118,7 +119,7 @@ class AddressBookSyncer @AssistedInject constructor(
                 throw IllegalArgumentException("Main account for address book account missing. Can't sync address book")
 
             val accountSettings = accountSettingsFactory.forAccount(mainAccount)
-            val addressBook = LocalAddressBook(context, account, provider)
+            val addressBook = localAddressbookFactory.create(account, provider)
 
             // handle group method change
             val groupMethod = accountSettings.getGroupMethod().name
