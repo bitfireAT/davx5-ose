@@ -4,7 +4,6 @@ import android.accounts.Account
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,7 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -41,8 +40,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -54,12 +52,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -79,6 +77,7 @@ import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.ical4android.TaskProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -201,14 +200,6 @@ fun AccountScreen(
         if (invalidAccount)
             onFinish()
 
-        val pullRefreshState = rememberPullToRefreshState()
-        LaunchedEffect(pullRefreshState.isRefreshing) {
-            if (pullRefreshState.isRefreshing) {
-                onSync()
-                pullRefreshState.endRefresh()
-            }
-        }
-
         val snackbarHostState = remember { SnackbarHostState() }
         LaunchedEffect(error) {
             if (error != null)
@@ -216,6 +207,14 @@ fun AccountScreen(
                     snackbarHostState.showSnackbar(error)
                     onResetError()
                 }
+        }
+
+        var isRefreshing by remember { mutableStateOf(false) }
+        LaunchedEffect(isRefreshing) {
+            if (isRefreshing) {
+                delay(300)
+                isRefreshing = false
+            }
         }
 
         // tabs calculation
@@ -298,70 +297,71 @@ fun AccountScreen(
                 SnackbarHost(snackbarHostState)
             }
         ) { padding ->
-            Box(
-                Modifier
-                    .padding(padding)
-                    .nestedScroll(pullRefreshState.nestedScrollConnection)
+            Column(
+                modifier = Modifier.padding(padding)
             ) {
-                Column {
-                    if (nrPages > 0) {
-                        TabRow(selectedTabIndex = pagerState.currentPage) {
-                            if (idxCalDav != null) {
-                                Tab(
-                                    selected = pagerState.currentPage == idxCalDav,
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.scrollToPage(idxCalDav)
-                                        }
+                if (nrPages > 0) {
+                    TabRow(selectedTabIndex = pagerState.currentPage) {
+                        if (idxCalDav != null) {
+                            Tab(
+                                selected = pagerState.currentPage == idxCalDav,
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.scrollToPage(idxCalDav)
                                     }
-                                ) {
-                                    Text(
-                                        stringResource(R.string.account_caldav),
-                                        modifier = Modifier.padding(8.dp)
-                                    )
                                 }
-                            }
-
-                            if (idxCardDav != null) {
-                                Tab(
-                                    selected = pagerState.currentPage == idxCardDav,
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.scrollToPage(idxCardDav)
-                                        }
-                                    }
-                                ) {
-                                    Text(
-                                        stringResource(R.string.account_carddav),
-                                        modifier = Modifier.padding(8.dp)
-                                    )
-                                }
-                            }
-
-                            if (idxWebcal != null) {
-                                Tab(
-                                    selected = pagerState.currentPage == idxWebcal,
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.scrollToPage(idxWebcal)
-                                        }
-                                    }
-                                ) {
-                                    Text(
-                                        stringResource(R.string.account_webcal),
-                                        modifier = Modifier.padding(8.dp)
-                                    )
-                                }
+                            ) {
+                                Text(
+                                    stringResource(R.string.account_caldav),
+                                    modifier = Modifier.padding(8.dp)
+                                )
                             }
                         }
 
-                        HorizontalPager(
-                            pagerState,
-                            verticalAlignment = Alignment.Top,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                        ) { index ->
+                        if (idxCardDav != null) {
+                            Tab(
+                                selected = pagerState.currentPage == idxCardDav,
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.scrollToPage(idxCardDav)
+                                    }
+                                }
+                            ) {
+                                Text(
+                                    stringResource(R.string.account_carddav),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
+                        }
+
+                        if (idxWebcal != null) {
+                            Tab(
+                                selected = pagerState.currentPage == idxWebcal,
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.scrollToPage(idxWebcal)
+                                    }
+                                }
+                            ) {
+                                Text(
+                                    stringResource(R.string.account_webcal),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    HorizontalPager(
+                        pagerState,
+                        verticalAlignment = Alignment.Top,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) { index ->
+                        PullToRefreshBox(
+                            isRefreshing = isRefreshing,
+                            onRefresh = { isRefreshing = true; onSync() }
+                        ) {
                             when (index) {
                                 idxCardDav ->
                                     AccountScreen_ServiceTab(
@@ -424,18 +424,12 @@ fun AccountScreen(
                         }
                     }
                 }
-
-                PullToRefreshContainer(
-                    state = pullRefreshState,
-                    modifier = Modifier.align(Alignment.TopCenter)
-                )
             }
         }
     }
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun AccountScreen_Actions(
     accountName: String,
     canCreateAddressBook: Boolean,
@@ -512,7 +506,7 @@ fun AccountScreen_Actions(
         DropdownMenuItem(
             leadingIcon = {
                 CompositionLocalProvider(
-                    LocalMinimumInteractiveComponentEnforcement provides false
+                    LocalMinimumInteractiveComponentSize provides Dp.Unspecified
                 ) {
                     Checkbox(
                         checked = showOnlyPersonal.onlyPersonal,

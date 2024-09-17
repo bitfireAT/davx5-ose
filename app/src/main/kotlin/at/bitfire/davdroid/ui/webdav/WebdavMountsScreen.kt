@@ -12,7 +12,6 @@ import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,8 +39,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,7 +48,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -68,8 +65,8 @@ import at.bitfire.davdroid.db.WebDavMountWithQuota
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import at.bitfire.davdroid.util.DavUtils
+import kotlinx.coroutines.delay
 import okhttp3.HttpUrl
 
 @Composable
@@ -108,11 +105,11 @@ fun WebdavMountsScreen(
 ) {
     val uriHandler = LocalUriHandler.current
 
-    val refreshState = rememberPullToRefreshState()
-    LaunchedEffect(refreshState.isRefreshing) {
-        if (refreshState.isRefreshing) {
-            onRefreshQuota()
-            refreshState.endRefresh()
+    var isRefreshing by remember { mutableStateOf(false) }
+    LaunchedEffect(isRefreshing) {
+        if (isRefreshing) {
+            delay(300)
+            isRefreshing = false
         }
     }
 
@@ -155,10 +152,11 @@ fun WebdavMountsScreen(
                     contentDescription = stringResource(R.string.webdav_add_mount_add)
                 )
             }
-        },
-        modifier = Modifier.nestedScroll(refreshState.nestedScrollConnection)
+        }
     ) { paddingValues ->
-        Box(
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { isRefreshing = true; onRefreshQuota() },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -190,11 +188,6 @@ fun WebdavMountsScreen(
                     }
                 }
             }
-
-            PullToRefreshContainer(
-                state = refreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
         }
     }
 }
@@ -222,7 +215,7 @@ fun HintText() {
             ),
             0
         ).toAnnotatedString()
-        ClickableTextWithLink(
+        Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.fillMaxWidth()

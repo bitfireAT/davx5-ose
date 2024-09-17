@@ -43,19 +43,19 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -73,6 +73,7 @@ import at.bitfire.davdroid.ui.composable.ProgressBar
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -140,13 +141,11 @@ fun AccountsScreen(
         }
     }
 
-    val refreshState = rememberPullToRefreshState(
-        enabled = { showSyncAll }
-    )
-    LaunchedEffect(refreshState.isRefreshing) {
-        if (refreshState.isRefreshing) {
-            onSyncAll()
-            refreshState.endRefresh()
+    var isRefreshing by remember { mutableStateOf(false) }
+    LaunchedEffect(isRefreshing) {
+        if (isRefreshing) {
+            delay(300)
+            isRefreshing = false
         }
     }
 
@@ -225,11 +224,14 @@ fun AccountsScreen(
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) }
             ) { padding ->
-                Box(Modifier.padding(padding)) {
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = { isRefreshing = true; onSyncAll() },
+                    modifier = Modifier.padding(padding)
+                ) {
                     Box(
                         Modifier
                             .fillMaxSize()
-                            .nestedScroll(refreshState.nestedScrollConnection)
                             .verticalScroll(rememberScrollState())
                     ) {
                         // background image
@@ -293,12 +295,6 @@ fun AccountsScreen(
                                     .padding(8.dp)
                             )
                         }
-
-                        // indicate when the user pulls down
-                        PullToRefreshContainer(
-                            modifier = Modifier.align(Alignment.TopCenter),
-                            state = refreshState
-                        )
                     }
                 }
             }
@@ -347,12 +343,19 @@ fun AccountList(
 ) {
     Column(modifier) {
         if (accounts.isEmpty())
-            Box(
-                contentAlignment = Alignment.Center,
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(8.dp)
             ) {
+                Text(
+                    text = stringResource(R.string.account_list_welcome),
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, bottom = 32.dp)
+                )
                 Text(
                     text = stringResource(R.string.account_list_empty),
                     style = MaterialTheme.typography.headlineSmall,

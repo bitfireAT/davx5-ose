@@ -44,7 +44,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.Assistant
-import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.vcard4android.GroupMethod
 
 @Composable
@@ -93,17 +92,12 @@ fun AccountDetailsPageContent(
     creatingAccount: Boolean
 ) {
     Assistant(
-        nextLabel = stringResource(R.string.login_add_account),
+        nextLabel = stringResource(R.string.login_finish),
         onNext = onCreateAccount,
-        nextEnabled = !creatingAccount && accountName.isNotBlank() && !accountNameAlreadyExists
+        nextEnabled = !creatingAccount && accountName.isNotBlank() && !accountNameAlreadyExists,
+        isLoading = creatingAccount
     ) {
         Column(Modifier.padding(8.dp)) {
-            if (creatingAccount)
-                ProgressBar(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp))
-
             var expanded by remember { mutableStateOf(false) }
             ExposedDropdownMenuBox(
                 expanded = expanded,
