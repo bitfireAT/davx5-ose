@@ -112,15 +112,14 @@ abstract class SyncAdapterService: Service() {
             /* Special case for contacts: because address books are separate accounts, changed contacts cause
             this method to be called with authority = ContactsContract.AUTHORITY. However the sync worker shall be run for the
             address book authority instead. */
-            val workerAccount = account
             val workerAuthority =
                 if (authority == ContactsContract.AUTHORITY)
                     context.getString(R.string.address_books_authority)
                 else
                     authority
 
-            logger.fine("Starting OneTimeSyncWorker for $workerAccount $workerAuthority and waiting for it")
-            val workerName = OneTimeSyncWorker.enqueue(context, workerAccount, workerAuthority, upload = upload)
+            logger.fine("Starting OneTimeSyncWorker for $account $workerAuthority and waiting for it")
+            val workerName = OneTimeSyncWorker.enqueue(context, account, workerAuthority, upload = upload)
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
             use it to block the sync adapter. Instead we use a Flow to get notified when the sync
