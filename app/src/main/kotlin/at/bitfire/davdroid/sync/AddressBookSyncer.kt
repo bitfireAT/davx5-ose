@@ -5,16 +5,13 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.SyncResult
 import android.provider.ContactsContract
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
@@ -31,7 +28,6 @@ class AddressBookSyncer @AssistedInject constructor(
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
-    private val localAddressbookFactory: LocalAddressBook.Factory,
     settingsManager: SettingsManager
 ): Syncer<LocalAddressBook>(account, extras, syncResult) {
 
@@ -80,19 +76,20 @@ class AddressBookSyncer @AssistedInject constructor(
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalAddressBook, remoteCollection: Collection) {
         logger.info("Synchronizing address book $localCollection")
         syncAddressBook(
-            localCollection.account,
-            extras,
-            httpClient,
-            provider,
-            syncResult,
-            remoteCollection
+            account = account,
+            addressBook = localCollection,
+            extras = extras,
+            httpClient = httpClient,
+            provider = provider,
+            syncResult = syncResult,
+            collection = remoteCollection
         )
     }
 
     /**
      * Synchronizes an address book
      *
-     * @param addressBookAccount address book account which stores the address book
+     * @param addressBook local address book
      * @param extras Sync specific instructions. IE [Syncer.SYNC_EXTRAS_FULL_RESYNC]
      * @param httpClient
      * @param provider Content provider to access android contacts
@@ -100,7 +97,8 @@ class AddressBookSyncer @AssistedInject constructor(
      * @param collection The database collection associated with this address book
      */
     private fun syncAddressBook(
-        addressBookAccount: Account,
+        account: Account,
+        addressBook: LocalAddressBook,
         extras: Array<String>,
         httpClient: Lazy<HttpClient>,
         provider: ContentProviderClient,
@@ -108,21 +106,11 @@ class AddressBookSyncer @AssistedInject constructor(
         collection: Collection
     ) {
         try {
-            val manager = AccountManager.get(context)
-            val account = manager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
-                collectionRepository.get(collectionId)?.let { collection ->
-                    serviceRepository.get(collection.serviceId)?.let { service ->
-                        Account(service.accountName, context.getString(R.string.account_type))
-                    }
-                }
-            } ?: throw IllegalArgumentException("No valid collection/service/account for address book $addressBookAccount")
-
             val accountSettings = accountSettingsFactory.create(account)
-            val addressBook = localAddressbookFactory.create(addressBookAccount, provider)
 
             // handle group method change
             val groupMethod = accountSettings.getGroupMethod().name
-            accountSettings.accountManager.getUserData(addressBookAccount, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
+            accountSettings.accountManager.getUserData(addressBook.account, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
                 if (previousGroupMethod != groupMethod) {
                     logger.info("Group method changed, deleting all local contacts/groups")
 
@@ -134,7 +122,7 @@ class AddressBookSyncer @AssistedInject constructor(
                     addressBook.syncState = null
                 }
             }
-            accountSettings.accountManager.setAndVerifyUserData(addressBookAccount, PREVIOUS_GROUP_METHOD, groupMethod)
+            accountSettings.accountManager.setAndVerifyUserData(addressBook.account, PREVIOUS_GROUP_METHOD, groupMethod)
 
             logger.info("Synchronizing address book: ${addressBook.collectionUrl}")
 

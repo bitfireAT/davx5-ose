@@ -172,7 +172,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, provider: ContentProviderClient): LocalAddressBook
+        fun create(addressBookAccount: Account, provider: ContentProviderClient): LocalAddressBook
     }
 
 
