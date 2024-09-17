@@ -15,8 +15,6 @@ import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.repository.DavServiceRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.time.Duration
@@ -71,17 +69,17 @@ class AccountsCleanupWorker @AssistedInject constructor(
 
         // Later, accounts which are not in the DB should be deleted here
 
-        val mainAccountType = applicationContext.getString(R.string.account_type)
-        val mainAccountNames = accounts
-            .filter { account -> account.type == mainAccountType }
+        val accountType = applicationContext.getString(R.string.account_type)
+        val accountNames = accounts
+            .filter { account -> account.type == accountType }
             .map { it.name }
         
         // delete orphaned services in DB
         val serviceDao = db.serviceDao()
-        if (mainAccountNames.isEmpty())
+        if (accountNames.isEmpty())
             serviceDao.deleteAll()
         else
-            serviceDao.deleteExceptAccounts(mainAccountNames.toTypedArray())
+            serviceDao.deleteExceptAccounts(accountNames.toTypedArray())
     }
 
 }
