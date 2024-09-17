@@ -12,33 +12,24 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Bundle
-import android.os.Parcel
-import android.os.RemoteException
 import android.provider.CalendarContract
-import android.provider.ContactsContract
 import android.util.Base64
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import androidx.work.WorkManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_URL
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
-import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.UnknownProperty
-import at.bitfire.vcard4android.ContactsStorageException
-import at.bitfire.vcard4android.GroupMethod
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.Lazy
 import dagger.assisted.Assisted
@@ -47,10 +38,8 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.property.Url
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.dmfs.tasks.contract.TaskContract
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -392,105 +381,6 @@ class AccountSettingsMigrations @AssistedInject constructor(
         accountManager.setAndVerifyUserData(account, "wifi_only_ssid", null)
     }
 
-    @Suppress("unused")
-    @SuppressLint("ParcelClassLoader")
-    private fun update_5_6() {
-        fun accountName(mainAccount: Account, info: Collection): String {
-            val baos = ByteArrayOutputStream()
-            baos.write(info.url.hashCode())
-            val hash = Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP or Base64.NO_PADDING)
-
-            val sb = StringBuilder(info.displayName.let {
-                if (it.isNullOrEmpty())
-                    info.url.lastSegment
-                else
-                    it
-            })
-            sb.append(" (${mainAccount.name} $hash)")
-            return sb.toString()
-        }
-        fun initialUserData(mainAccount: Account, url: String): Bundle {
-            val bundle = Bundle(3)
-            bundle.putString("real_account_name", mainAccount.name)
-            bundle.putString("real_account_type", mainAccount.type)
-            bundle.putString(USER_DATA_URL, url)
-            return bundle
-        }
-        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
-            val parcel = Parcel.obtain()
-            try {
-                // don't run syncs during the migration
-                ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0)
-                ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 0)
-                ContentResolver.cancelSync(account, null)
-
-                // get previous address book settings (including URL)
-                val raw = ContactsContract.SyncState.get(provider, account)
-                if (raw == null)
-                    logger.info("No contacts sync state, ignoring account")
-                else {
-                    parcel.unmarshall(raw, 0, raw.size)
-                    parcel.setDataPosition(0)
-                    val params = parcel.readBundle()!!
-                    val url = params.getString("url")?.toHttpUrlOrNull()
-                    if (url == null)
-                        logger.info("No address book URL, ignoring account")
-                    else {
-                        // create new address book
-                        val info = Collection(url = url, type = Collection.TYPE_ADDRESSBOOK, displayName = account.name)
-                        logger.log(Level.INFO, "Creating new address book account", url)
-                        val addressBookAccount = Account(
-                            accountName(account, info), context.getString(
-                                R.string.account_type_address_book))
-                        if (!accountManager.addAccountExplicitly(addressBookAccount, null, initialUserData(account, info.url.toString())))
-                            throw ContactsStorageException("Couldn't create address book account")
-
-                        // move contacts to new address book
-                        logger.info("Moving contacts from $account to $addressBookAccount")
-                        val newAccount = ContentValues(2)
-                        newAccount.put(ContactsContract.RawContacts.ACCOUNT_NAME, addressBookAccount.name)
-                        newAccount.put(ContactsContract.RawContacts.ACCOUNT_TYPE, addressBookAccount.type)
-                        val affected = provider.update(
-                            ContactsContract.RawContacts.CONTENT_URI.buildUpon()
-                            .appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
-                            .appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type)
-                            .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build(),
-                            newAccount,
-                            "${ContactsContract.RawContacts.ACCOUNT_NAME}=? AND ${ContactsContract.RawContacts.ACCOUNT_TYPE}=?",
-                            arrayOf(account.name, account.type))
-                        logger.info("$affected contacts moved to new address book")
-                    }
-
-                    ContactsContract.SyncState.set(provider, account, null)
-                }
-            } catch(e: RemoteException) {
-                throw ContactsStorageException("Couldn't migrate contacts to new address book", e)
-            } finally {
-                parcel.recycle()
-            }
-        }
-
-        // update version number so that further syncs don't repeat the migration
-        accountManager.setAndVerifyUserData(account, AccountSettings.KEY_SETTINGS_VERSION, "6")
-
-        // request sync of new address book account
-        ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 1)
-        accountSettings.setSyncInterval(context.getString(R.string.address_books_authority), 4*3600)
-    }
-
-    /* Android 7.1.1 OpenTasks fix */
-    @Suppress("unused")
-    private fun update_4_5() {
-        // call PackageChangedReceiver which then enables/disables OpenTasks sync when it's (not) available
-        val manager = tasksAppManager.get()
-        manager.selectProvider(manager.currentProvider())
-    }
-
-    @Suppress("unused")
-    private fun update_3_4() {
-        accountSettings.setGroupMethod(GroupMethod.CATEGORIES)
-    }
-
-    // updates from AccountSettings version 2 and below are not supported anymore
+    // updates from AccountSettings version 5 and below are not supported anymore
 
 }
