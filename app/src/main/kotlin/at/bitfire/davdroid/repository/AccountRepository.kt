@@ -132,16 +132,11 @@ class AccountRepository @Inject constructor(
 
     suspend fun delete(accountName: String): Boolean {
         val account = fromName(accountName)
-        // remove account
-        val future = accountManager.removeAccount(account, null, null, null)
+        // remove account directly (bypassing the authenticator, which is our own)
         return try {
-            // wait for operation to complete
-            withContext(Dispatchers.Default) {
-                // blocks calling thread
-                future.result
-            }
+            accountManager.removeAccountExplicitly(account)
 
-            // delete address book accounts
+            // delete address books (= address book accounts)
             serviceRepository.getByAccountAndType(accountName, Service.TYPE_CARDDAV)?.let { service ->
                 collectionRepository.getByService(service.id).forEach { collection ->
                     LocalAddressBook.deleteByCollection(context, collection.id)
