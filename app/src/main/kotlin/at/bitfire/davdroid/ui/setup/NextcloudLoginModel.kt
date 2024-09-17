@@ -8,6 +8,7 @@ import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.network.NextcloudLoginFlow
@@ -16,18 +17,18 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.util.logging.Level
+import java.util.logging.Logger
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import java.util.logging.Level
-import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = NextcloudLoginModel.Factory::class)
 class NextcloudLoginModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     @ApplicationContext val context: Context,
-    private val logger: Logger
-    //val state: SavedStateHandle
+    private val logger: Logger,
+    val state: SavedStateHandle
 ): ViewModel() {
 
     @AssistedFactory
@@ -35,10 +36,10 @@ class NextcloudLoginModel @AssistedInject constructor(
         fun create(loginInfo: LoginInfo): NextcloudLoginModel
     }
 
-    /*companion object {
+    companion object {
         const val STATE_POLL_URL = "poll_url"
         const val STATE_TOKEN = "token"
-    }*/
+    }
 
     data class UiState(
         val baseUrl: String = "",
@@ -93,7 +94,8 @@ class NextcloudLoginModel @AssistedInject constructor(
     val loginFlow = NextcloudLoginFlow(context)
 
     // Login flow state
-    /*private var pollUrl: HttpUrl?
+    // Login flow state
+    private var pollUrl: HttpUrl?
         get() = state.get<String>(STATE_POLL_URL)?.toHttpUrlOrNull()
         set(value) {
             state[STATE_POLL_URL] = value.toString()
@@ -102,7 +104,7 @@ class NextcloudLoginModel @AssistedInject constructor(
         get() = state.get<String>(STATE_TOKEN)
         set(value) {
             state[STATE_TOKEN] = value
-        }*/
+        }
 
     override fun onCleared() {
         loginFlow.close()
@@ -125,6 +127,10 @@ class NextcloudLoginModel @AssistedInject constructor(
         viewModelScope.launch {
             try {
                 val loginUrl = loginFlow.initiate(baseUrl)
+
+                // Those values get initialized by loginFlow.initiate
+                pollUrl = loginFlow.pollUrl
+                token = loginFlow.token
 
                 uiState = uiState.copy(
                     loginUrl = loginUrl,
@@ -154,6 +160,9 @@ class NextcloudLoginModel @AssistedInject constructor(
             loginUrl = null,
             inProgress = true
         )
+
+        pollUrl?.let { loginFlow.pollUrl = it }
+        token?.let { loginFlow.token = it }
 
         val loginInfo = try {
             loginFlow.fetchLoginInfo()

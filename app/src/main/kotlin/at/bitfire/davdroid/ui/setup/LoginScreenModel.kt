@@ -37,8 +37,10 @@ import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 
+@OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel(assistedFactory = LoginScreenModel.Factory::class)
 class LoginScreenModel @AssistedInject constructor(
+    savedStateHandle: SavedStateHandle,
     @Assisted val initialLoginType: LoginType,
     @Assisted val skipLoginTypePage: Boolean,
     @Assisted val initialLoginInfo: LoginInfo,
@@ -71,10 +73,14 @@ class LoginScreenModel @AssistedInject constructor(
     else
         Page.LoginType
 
-    var page by mutableStateOf(startPage)
+    var page by savedStateHandle.saveable {
+        mutableStateOf(startPage)
+    }
         private set
 
-    var finish by mutableStateOf(false)
+    var finish by savedStateHandle.saveable {
+        mutableStateOf(false)
+    }
         private set
 
 
@@ -146,7 +152,9 @@ class LoginScreenModel @AssistedInject constructor(
         val loginType: LoginType
     ): Parcelable
 
-    var loginTypeUiState by mutableStateOf(LoginTypeUiState(loginType = initialLoginType))
+    var loginTypeUiState by savedStateHandle.saveable {
+        mutableStateOf(LoginTypeUiState(loginType = initialLoginType))
+    }
         private set
 
     fun selectLoginType(loginType: LoginType) {
@@ -166,10 +174,14 @@ class LoginScreenModel @AssistedInject constructor(
         val loginInfo: LoginInfo
     ): Parcelable
 
-    var loginDetailsUiState by mutableStateOf(LoginDetailsUiState(
-        loginType = initialLoginType,
-        loginInfo = loginInfo
-    ))
+    var loginDetailsUiState by savedStateHandle.saveable {
+        mutableStateOf(
+            LoginDetailsUiState(
+                loginType = initialLoginType,
+                loginInfo = loginInfo
+            )
+        )
+    }
         private set
 
     fun updateLoginInfo(loginInfo: LoginInfo) {
@@ -187,7 +199,9 @@ class LoginScreenModel @AssistedInject constructor(
         val logs: String? = null
     ): Parcelable
 
-    var detectResourcesUiState by mutableStateOf(DetectResourcesUiState())
+    var detectResourcesUiState by savedStateHandle.saveable {
+        mutableStateOf(DetectResourcesUiState())
+    }
         private set
 
     private var foundConfig: DavResourceFinder.Configuration? = null
