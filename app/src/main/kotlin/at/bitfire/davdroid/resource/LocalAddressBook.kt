@@ -110,16 +110,20 @@ open class LocalAddressBook @AssistedInject constructor(
         /**
          * Finds a [LocalAddressBook] based on its corresponding collection.
          *
-         * @param info The corresponding collection. Used to calculate the address book name to look for.
+         * @param id    collection ID to look for
          *
          * @return The [LocalAddressBook] for the given collection or *null* if not found
          */
-        fun find(context: Context, provider: ContentProviderClient, info: Collection): LocalAddressBook? {
+        fun findByCollection(context: Context, provider: ContentProviderClient, id: Long): LocalAddressBook? {
             val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
             val factory = entryPoint.localAddressBookFactory()
-            return AccountManager.get(context)
+
+            val accountManager = AccountManager.get(context)
+            return accountManager
                 .getAccountsByType(context.getString(R.string.account_type_address_book))
-                .filter { account -> account.name == accountName(info) }
+                .filter { account ->
+                    accountManager.getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull() == id
+                }
                 .map { account -> factory.create(account, provider) }
                 .firstOrNull()
         }
@@ -127,16 +131,16 @@ open class LocalAddressBook @AssistedInject constructor(
         /**
          * Deletes a [LocalAddressBook] based on its corresponding database collection.
          *
-         * @param collection The corresponding collection
+         * @param id    collection ID to look for
          */
-        fun deleteByCollection(context: Context, collection: Collection) =
-            AccountManager.get(context).run {
-                getAccountsByType(context.getString(R.string.account_type_address_book)).firstOrNull { account ->
-                    account.name == accountName(collection)
-                }?.let { account ->
-                    removeAccountExplicitly(account)
-                }
+        fun deleteByCollection(context: Context, id: Long) {
+            val accountManager = AccountManager.get(context)
+            val addressBookAccount = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).firstOrNull { account ->
+                accountManager.getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull() == id
             }
+            if (addressBookAccount != null)
+                accountManager.removeAccountExplicitly(addressBookAccount)
+        }
 
         /**
          * Creates a name for the address book account from its corresponding db collection info.

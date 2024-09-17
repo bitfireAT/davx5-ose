@@ -52,12 +52,13 @@ class AddressBookSyncer @AssistedInject constructor(
         get() = ContactsContract.AUTHORITY // Address books use the contacts authority for sync
 
 
+    // FIXME should return _all_ address books; otherwise address book accounts of unchecked address books will not be removed
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalAddressBook> =
         serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
             getSyncCollections(service.id).mapNotNull { collection ->
-                LocalAddressBook.find(context, provider, collection)
+                LocalAddressBook.findByCollection(context, provider, collection.id)
             }
-        } ?: emptyList()
+        }.orEmpty()
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getByServiceAndSync(serviceId)
@@ -137,7 +138,7 @@ class AddressBookSyncer @AssistedInject constructor(
 
             logger.info("Synchronizing address book: ${addressBook.collectionUrl}")
 
-            val syncManager = contactsSyncManagerFactory.contactsSyncManager(addressBookAccount, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
+            val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
             syncManager.performSync()
 
         } catch(e: Exception) {
