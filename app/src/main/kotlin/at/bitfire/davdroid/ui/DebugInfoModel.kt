@@ -464,7 +464,7 @@ class DebugInfoModel @AssistedInject constructor(
         writer.append("\n\n - Account: ${account.name}\n")
         val accountSettings = accountSettingsFactory.create(account)
 
-        writer.append(dumpAccount(account, accountSettings, AccountDumpInfo.mainAccount(context, account)))
+        writer.append(dumpAccount(account, accountSettings, AccountDumpInfo.caldavAccount(context, account)))
         try {
             val credentials = accountSettings.credentials()
             val authStr = mutableListOf<String>()
@@ -599,7 +599,7 @@ data class AccountDumpInfo(
 
     companion object {
 
-        fun mainAccount(context: Context, account: Account) = listOf(
+        fun caldavAccount(context: Context, account: Account) = listOf(
             AccountDumpInfo(account, context.getString(R.string.address_books_authority), null, null),
             AccountDumpInfo(account, CalendarContract.AUTHORITY, CalendarContract.Events.CONTENT_URI.asCalendarSyncAdapter(account), "event(s)"),
             AccountDumpInfo(account, TaskProvider.ProviderName.JtxBoard.authority, JtxContract.JtxICalObject.CONTENT_URI.asJtxSyncAdapter(account), "jtx Board ICalObject(s)"),
