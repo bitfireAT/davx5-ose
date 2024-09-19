@@ -312,7 +312,9 @@ fun AccountsScreen_Preview_Empty() {
                 Text("Menu entries")
             }
         },
-        accounts = emptyList()
+        accounts = emptyList(),
+        showAddAccount = AccountsModel.FABStyle.WithText,
+        showSyncAll = false
     )
 }
 
