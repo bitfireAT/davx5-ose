@@ -15,7 +15,7 @@ import at.bitfire.davdroid.ui.setup.LoginActivity
 
 
 /**
- * Account authenticator for the main DAVx5 account type.
+ * Account authenticator for the DAVx5 account type.
  */
 class AccountAuthenticatorService: Service() {
 

@@ -181,7 +181,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
             // create authenticating OkHttpClient (credentials taken from account settings)
             runInterruptible {
-                HttpClient.Builder(applicationContext, accountSettingsFactory.forAccount(account))
+                HttpClient.Builder(applicationContext, accountSettingsFactory.create(account))
                     .setForeground(true)
                     .build().use { client ->
                         val httpClient = client.okHttpClient

@@ -39,7 +39,7 @@ class CalendarSyncer @AssistedInject constructor(
         get() = CalendarContract.AUTHORITY
 
 
-    override fun localSyncCollections(provider: ContentProviderClient): List<LocalCalendar>
+    override fun getLocalCollections(provider: ContentProviderClient): List<LocalCalendar>
         = AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
 
     override fun prepare(provider: ContentProviderClient): Boolean {
@@ -51,7 +51,7 @@ class CalendarSyncer @AssistedInject constructor(
         return true
     }
 
-    override fun getSyncCollections(serviceId: Long): List<Collection> =
+    override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncCalendars(serviceId)
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalCalendar, remoteCollection: Collection) {

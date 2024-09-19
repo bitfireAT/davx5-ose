@@ -56,6 +56,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.dmfs.tasks.contract.TaskContract
 import java.io.File
 import java.io.IOException
 import java.io.Writer
@@ -64,9 +67,6 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.dmfs.tasks.contract.TaskContract
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
 import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
 import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
@@ -257,7 +257,7 @@ class DebugInfoModel @AssistedInject constructor(
             // system info
             val locales: Any = LocaleList.getAdjustedDefault()
             writer.append(
-                "\nSYSTEM INFORMATION\n\n" +
+                "\n\nSYSTEM INFORMATION\n\n" +
                         "Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})\n" +
                         "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n\n" +
                         "Locale(s): $locales\n" +
@@ -305,7 +305,7 @@ class DebugInfoModel @AssistedInject constructor(
 
             // connectivity
             context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
-                writer.append("\nCONNECTIVITY\n\n")
+                writer.append("\n\nCONNECTIVITY\n\n")
                 val activeNetwork = connectivityManager.activeNetwork
                 connectivityManager.allNetworks.sortedByDescending { it == activeNetwork }.forEach { network ->
                     val properties = connectivityManager.getLinkProperties(network)
@@ -340,7 +340,7 @@ class DebugInfoModel @AssistedInject constructor(
                 writer.append('\n')
             }
 
-            writer.append("\nCONFIGURATION\n\n")
+            writer.append("\n\nCONFIGURATION\n")
             // notifications
             val nm = NotificationManagerCompat.from(context)
             writer.append("\nNotifications")
@@ -379,34 +379,21 @@ class DebugInfoModel @AssistedInject constructor(
             }
             writer.append('\n')
 
-            // accounts (grouped by main account)
-            writer.append("\nACCOUNTS\n\n")
+            // accounts
+            writer.append("\nACCOUNTS")
             val accountManager = AccountManager.get(context)
-            val addressBookAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).toMutableList()
-            for (account in accountRepository.getAll()) {
-                dumpMainAccount(account, writer)
+            for (account in accountRepository.getAll())
+                dumpAccount(account, writer)
 
-                val iter = addressBookAccounts.iterator()
-                while (iter.hasNext()) {
-                    val addressBookAccount = iter.next()
-                    val mainAccount = Account(
-                        accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_MAIN_ACCOUNT_NAME),
-                        accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_MAIN_ACCOUNT_TYPE)
-                    )
-                    if (mainAccount == account) {
-                        dumpAddressBookAccount(addressBookAccount, accountManager, writer)
-                        iter.remove()
-                    }
-                }
-            }
+            val addressBookAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).toMutableList()
             if (addressBookAccounts.isNotEmpty()) {
-                writer.append("Address book accounts without main account:\n")
+                writer.append("ADDRESS BOOK ACCOUNTS\n\n")
                 for (account in addressBookAccounts)
                     dumpAddressBookAccount(account, accountManager, writer)
             }
 
             // database dump
-            writer.append("\nDATABASE DUMP\n\n")
+            writer.append("\n\nDATABASE DUMP\n\n")
             db.dump(writer, arrayOf("webdav_document"))
 
             // app settings
@@ -473,12 +460,12 @@ class DebugInfoModel @AssistedInject constructor(
      *
      * Note: Helper method of [generateDebugInfo].
      */
-    private fun dumpMainAccount(account: Account, writer: Writer) {
+    private fun dumpAccount(account: Account, writer: Writer) {
         writer.append("\n\n - Account: ${account.name}\n")
-        writer.append(dumpAccount(account, AccountDumpInfo.mainAccount(context, account)))
-        try {
-            val accountSettings = accountSettingsFactory.forAccount(account)
+        val accountSettings = accountSettingsFactory.create(account)
 
+        writer.append(dumpAccount(account, accountSettings, AccountDumpInfo.caldavAccount(context, account)))
+        try {
             val credentials = accountSettings.credentials()
             val authStr = mutableListOf<String>()
             if (credentials.username != null)
@@ -523,10 +510,11 @@ class DebugInfoModel @AssistedInject constructor(
      */
     private fun dumpAddressBookAccount(account: Account, accountManager: AccountManager, writer: Writer) {
         writer.append("  * Address book: ${account.name}\n")
-        val table = dumpAccount(account, AccountDumpInfo.addressBookAccount(account))
+        val table = dumpAccount(account, null, AccountDumpInfo.addressBookAccount(account))
         writer.append(TextTable.indent(table, 4))
-            .append("URL: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_URL)}\n")
-            .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n")
+            .append("Collection ID: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_COLLECTION_ID)}\n")
+            .append("    URL: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_URL)}\n")
+            .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
     }
 
     /**
@@ -536,7 +524,7 @@ class DebugInfoModel @AssistedInject constructor(
      *
      * @return the requested information
      */
-    private fun dumpAccount(account: Account, infos: Iterable<AccountDumpInfo>): String {
+    private fun dumpAccount(account: Account, accountSettings: AccountSettings?, infos: Iterable<AccountDumpInfo>): String {
         val table = TextTable("Authority", "isSyncable", "syncAutomatically", "Interval", "Entries")
         for (info in infos) {
             var nrEntries = "—"
@@ -550,12 +538,11 @@ class DebugInfoModel @AssistedInject constructor(
                 } catch (e: Exception) {
                     nrEntries = e.toString()
                 }
-            val accountSettings = accountSettingsFactory.forAccount(account)
             table.addLine(
                 info.authority,
                 ContentResolver.getIsSyncable(account, info.authority),
                 ContentResolver.getSyncAutomatically(account, info.authority),  // content-triggered sync
-                accountSettings.getSyncInterval(info.authority)?.takeIf { it >= 0 }?.let {"${it/60} min"},
+                accountSettings?.getSyncInterval(info.authority)?.takeIf { it >= 0 }?.let {"${it/60} min"},
                 nrEntries
             )
         }
@@ -612,7 +599,7 @@ data class AccountDumpInfo(
 
     companion object {
 
-        fun mainAccount(context: Context, account: Account) = listOf(
+        fun caldavAccount(context: Context, account: Account) = listOf(
             AccountDumpInfo(account, context.getString(R.string.address_books_authority), null, null),
             AccountDumpInfo(account, CalendarContract.AUTHORITY, CalendarContract.Events.CONTENT_URI.asCalendarSyncAdapter(account), "event(s)"),
             AccountDumpInfo(account, TaskProvider.ProviderName.JtxBoard.authority, JtxContract.JtxICalObject.CONTENT_URI.asJtxSyncAdapter(account), "jtx Board ICalObject(s)"),

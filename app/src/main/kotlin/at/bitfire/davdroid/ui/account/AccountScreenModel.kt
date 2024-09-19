@@ -67,7 +67,7 @@ class AccountScreenModel @AssistedInject constructor(
         !accounts.contains(account)
     }
 
-    private val settings = accountSettingsFactory.forAccount(account)
+    private val settings = accountSettingsFactory.create(account)
     private val refreshSettingsSignal = MutableLiveData(Unit)
     val showOnlyPersonal = refreshSettingsSignal.switchMap<Unit, AccountSettings.ShowOnlyPersonal> {
         object : LiveData<AccountSettings.ShowOnlyPersonal>() {

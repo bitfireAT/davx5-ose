@@ -57,6 +57,9 @@ class GroupMembershipBuilderTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
+    lateinit var addressbookFactory: LocalTestAddressBook.Factory
+
+    @Inject
     @ApplicationContext
     lateinit var context: Context
 
@@ -71,7 +74,7 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
-        val addressBookGroupsAsCategories = LocalTestAddressBook(context, provider, GroupMethod.CATEGORIES)
+        val addressBookGroupsAsCategories = addressbookFactory.create(provider, GroupMethod.CATEGORIES)
         GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories, false).build().also { result ->
             assertEquals(1, result.size)
             assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
@@ -84,7 +87,7 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
-        val addressBookGroupsAsVCards = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
+        val addressBookGroupsAsVCards = addressbookFactory.create(provider, GroupMethod.GROUP_VCARDS)
         GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards, false).build().also { result ->
             // group membership is constructed during post-processing
             assertEquals(0, result.size)

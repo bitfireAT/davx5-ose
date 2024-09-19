@@ -166,7 +166,7 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        HttpClient.Builder(context, accountSettingsFactory.forAccount(account))
+        HttpClient.Builder(context, accountSettingsFactory.create(account))
             .setForeground(true)
             .build().use { httpClient ->
                 withContext(Dispatchers.IO) {
@@ -182,7 +182,11 @@ class DavCollectionRepository @Inject constructor(
 
     fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
 
+    fun get(id: Long) = dao.get(id)
+
     fun getFlow(id: Long) = dao.getFlow(id)
+
+    fun getByService(serviceId: Long) = dao.getByService(serviceId)
 
     fun getByServiceAndSync(serviceId: Long) = dao.getByServiceAndSync(serviceId)
 
@@ -262,7 +266,7 @@ class DavCollectionRepository @Inject constructor(
     // helpers
 
     private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
-        HttpClient.Builder(context, accountSettingsFactory.forAccount(account))
+        HttpClient.Builder(context, accountSettingsFactory.create(account))
             .setForeground(true)
             .build().use { httpClient ->
                 withContext(Dispatchers.IO) {

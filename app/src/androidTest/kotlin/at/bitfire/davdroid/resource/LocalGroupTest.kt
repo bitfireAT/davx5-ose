@@ -13,7 +13,6 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
@@ -68,7 +67,7 @@ class LocalGroupTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var settingsManager: SettingsManager
+    lateinit var addressbookFactory: LocalTestAddressBook.Factory
 
 
     private lateinit var addressBookGroupsAsCategories: LocalTestAddressBook
@@ -78,8 +77,8 @@ class LocalGroupTest {
     fun setup() {
         hiltRule.inject()
 
-        addressBookGroupsAsCategories = LocalTestAddressBook(context, provider, GroupMethod.CATEGORIES)
-        addressBookGroupsAsVCards = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
+        addressBookGroupsAsCategories = addressbookFactory.create(provider, GroupMethod.CATEGORIES)
+        addressBookGroupsAsVCards = addressbookFactory.create(provider, GroupMethod.GROUP_VCARDS)
 
         // clear contacts
         addressBookGroupsAsCategories.clear()

@@ -162,7 +162,7 @@ abstract class BaseSyncWorker(
 
         try {
             val accountSettings = try {
-                accountSettingsFactory.forAccount(account)
+                accountSettingsFactory.create(account)
             } catch (e: InvalidAccountException) {
                 val workId = workerParams.id
                 logger.warning("Account $account doesn't exist anymore, cancelling worker $workId")

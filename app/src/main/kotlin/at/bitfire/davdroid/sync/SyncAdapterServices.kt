@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.app.Service
 import android.content.AbstractThreadedSyncAdapter
 import android.content.ContentProviderClient
@@ -18,6 +19,9 @@ import android.provider.ContactsContract
 import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,6 +58,8 @@ abstract class SyncAdapterService: Service() {
      */
     class SyncAdapter @Inject constructor(
         private val accountSettingsFactory: AccountSettings.Factory,
+        private val collectionRepository: DavCollectionRepository,
+        private val serviceRepository: DavServiceRepository,
         @ApplicationContext context: Context,
         private val logger: Logger,
         private val syncConditionsFactory: SyncConditions.Factory
@@ -69,13 +75,31 @@ abstract class SyncAdapterService: Service() {
          */
         private val waitScope = CoroutineScope(Dispatchers.Default)
 
-        override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun onPerformSync(accountOrAddressBookAccount: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             // We have to pass this old SyncFramework extra for an Android 7 workaround
             val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
-            logger.info("Sync request via sync framework for $account $authority (upload=$upload)")
+            logger.info("Sync request via sync framework for $accountOrAddressBookAccount $authority (upload=$upload)")
+
+            // If we should sync an address book account - find the account storing the settings
+            val account = if (accountOrAddressBookAccount.type == context.getString(R.string.account_type_address_book))
+                AccountManager.get(context)
+                    .getUserData(accountOrAddressBookAccount, USER_DATA_COLLECTION_ID)
+                    ?.toLongOrNull()
+                    ?.let { collectionId ->
+                    collectionRepository.get(collectionId)?.let { collection ->
+                        serviceRepository.get(collection.serviceId)?.let { service ->
+                            Account(
+                                service.accountName,
+                                context.getString(R.string.account_type)
+                            )
+                        }
+                    }
+                } ?: throw IllegalArgumentException("No valid collection/service/account for address book $accountOrAddressBookAccount")
+            else
+                accountOrAddressBookAccount
 
             val accountSettings = try {
-                accountSettingsFactory.forAccount(account)
+                accountSettingsFactory.create(account)
             } catch (e: InvalidAccountException) {
                 logger.log(Level.WARNING, "Account doesn't exist anymore", e)
                 return
@@ -91,15 +115,14 @@ abstract class SyncAdapterService: Service() {
             /* Special case for contacts: because address books are separate accounts, changed contacts cause
             this method to be called with authority = ContactsContract.AUTHORITY. However the sync worker shall be run for the
             address book authority instead. */
-            val workerAccount = accountSettings.account         // main account in case of an address book account
             val workerAuthority =
                 if (authority == ContactsContract.AUTHORITY)
                     context.getString(R.string.address_books_authority)
                 else
                     authority
 
-            logger.fine("Starting OneTimeSyncWorker for $workerAccount $workerAuthority and waiting for it")
-            val workerName = OneTimeSyncWorker.enqueue(context, workerAccount, workerAuthority, upload = upload)
+            logger.fine("Starting OneTimeSyncWorker for $account $workerAuthority and waiting for it")
+            val workerName = OneTimeSyncWorker.enqueue(context, account, workerAuthority, upload = upload)
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
             use it to block the sync adapter. Instead we use a Flow to get notified when the sync

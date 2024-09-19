@@ -175,10 +175,10 @@ class SyncerTest {
         override fun prepare(provider: ContentProviderClient): Boolean =
             true
 
-        override fun localSyncCollections(provider: ContentProviderClient): List<LocalTestCollection> =
+        override fun getLocalCollections(provider: ContentProviderClient): List<LocalTestCollection> =
             emptyList()
 
-        override fun getSyncCollections(serviceId: Long): List<Collection> =
+        override fun getDbSyncCollections(serviceId: Long): List<Collection> =
             emptyList()
 
         override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalTestCollection =

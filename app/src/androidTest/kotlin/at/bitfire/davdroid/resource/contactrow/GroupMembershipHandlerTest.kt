@@ -57,6 +57,9 @@ class GroupMembershipHandlerTest {
 
     }
 
+    @Inject
+    lateinit var addressbookFactory: LocalTestAddressBook.Factory
+
     @Inject @ApplicationContext
     lateinit var context: Context
 
@@ -71,7 +74,7 @@ class GroupMembershipHandlerTest {
 
     @Test
     fun testMembership_GroupsAsCategories() {
-        val addressBookGroupsAsCategories = LocalTestAddressBook(context, provider, GroupMethod.CATEGORIES)
+        val addressBookGroupsAsCategories = addressbookFactory.create(provider, GroupMethod.CATEGORIES)
         val addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
 
         val contact = Contact()
@@ -87,7 +90,7 @@ class GroupMembershipHandlerTest {
 
     @Test
     fun testMembership_GroupsAsVCards() {
-        val addressBookGroupsAsVCards = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
+        val addressBookGroupsAsVCards = addressbookFactory.create(provider, GroupMethod.GROUP_VCARDS)
 
         val contact = Contact()
         val localContact = LocalContact(addressBookGroupsAsVCards, contact, null, null, 0)

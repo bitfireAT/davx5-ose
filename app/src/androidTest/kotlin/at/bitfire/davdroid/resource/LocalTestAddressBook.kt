@@ -7,21 +7,34 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.vcard4android.GroupMethod
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
+import java.util.logging.Logger
 
-class LocalTestAddressBook(
-    context: Context,
-    provider: ContentProviderClient,
-    override val groupMethod: GroupMethod
-): LocalAddressBook(context, ACCOUNT, provider) {
+class LocalTestAddressBook @AssistedInject constructor(
+    @Assisted provider: ContentProviderClient,
+    @Assisted override val groupMethod: GroupMethod,
+    @ApplicationContext context: Context,
+    accountSettingsFactory: AccountSettings.Factory,
+    collectionRepository: DavCollectionRepository,
+    logger: Logger,
+    serviceRepository: DavServiceRepository
+): LocalAddressBook(ACCOUNT, provider, context, accountSettingsFactory, collectionRepository, logger, serviceRepository) {
 
     companion object {
         val ACCOUNT = Account("LocalTestAddressBook", "at.bitfire.davdroid.test")
     }
 
-    override var mainAccount: Account?
-        get() = throw NotImplementedError()
-        set(_) = throw NotImplementedError()
+    @AssistedFactory
+    interface Factory {
+        fun create(provider: ContentProviderClient, groupMethod: GroupMethod): LocalTestAddressBook
+    }
 
     override var readOnly: Boolean
         get() = false

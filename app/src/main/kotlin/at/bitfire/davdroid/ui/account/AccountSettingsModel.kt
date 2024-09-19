@@ -42,7 +42,7 @@ class AccountSettingsModel @AssistedInject constructor(
         fun create(account: Account): AccountSettingsModel
     }
 
-    private val accountSettings = accountSettingsFactory.forAccount(account)
+    private val accountSettings = accountSettingsFactory.create(account)
 
     // settings
     var syncIntervalContacts by mutableStateOf<Long?>(null)

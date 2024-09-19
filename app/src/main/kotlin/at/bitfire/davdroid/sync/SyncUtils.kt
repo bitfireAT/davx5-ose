@@ -33,7 +33,7 @@ object SyncUtils {
      * Checking the availability of authorities may be relatively expensive, so the
      * result should be cached for the current operation.
      *
-     * @return list of available sync authorities for main accounts
+     * @return list of available sync authorities for DAVx5 accounts
      */
     fun syncAuthorities(context: Context): List<String> {
         val result = mutableListOf(

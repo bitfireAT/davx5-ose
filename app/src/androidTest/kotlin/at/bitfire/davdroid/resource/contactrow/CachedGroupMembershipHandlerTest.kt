@@ -56,6 +56,9 @@ class CachedGroupMembershipHandlerTest {
 
 
     @Inject
+    lateinit var addressbookFactory: LocalTestAddressBook.Factory
+
+    @Inject
     @ApplicationContext
     lateinit var context: Context
 
@@ -70,7 +73,7 @@ class CachedGroupMembershipHandlerTest {
 
     @Test
     fun testMembership() {
-        val addressBook = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
+        val addressBook = addressbookFactory.create(provider, GroupMethod.GROUP_VCARDS)
 
         val contact = Contact()
         val localContact = LocalContact(addressBook, contact, null, null, 0)

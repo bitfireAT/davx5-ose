@@ -522,7 +522,7 @@ class SyncManagerTest {
         }
     ) = syncManagerFactory.create(
         account,
-        accountSettingsFactory.forAccount(account),
+        accountSettingsFactory.create(account),
         arrayOf(),
         "TestAuthority",
         HttpClient.Builder(context).build(),

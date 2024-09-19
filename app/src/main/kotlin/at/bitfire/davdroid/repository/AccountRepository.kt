@@ -4,16 +4,12 @@
 
 package at.bitfire.davdroid.repository
 
-import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.ContentResolver
 import android.content.Context
-import android.content.pm.PackageManager
 import android.provider.CalendarContract
-import android.provider.ContactsContract
-import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
@@ -63,7 +59,7 @@ class AccountRepository @Inject constructor(
     private val accountManager = AccountManager.get(context)
 
     /**
-     * Creates a new main account with discovered services and enables periodic syncs with
+     * Creates a new account with discovered services and enables periodic syncs with
      * default sync interval times.
      *
      * @param accountName   name of the account
@@ -86,7 +82,7 @@ class AccountRepository @Inject constructor(
         // add entries for account to service DB
         logger.log(Level.INFO, "Writing account configuration to database", config)
         try {
-            val accountSettings = accountSettingsFactory.forAccount(account)
+            val accountSettings = accountSettingsFactory.create(account)
             val defaultSyncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
 
             // Configure CardDAV service
@@ -135,17 +131,17 @@ class AccountRepository @Inject constructor(
     }
 
     suspend fun delete(accountName: String): Boolean {
-        // remove account
-        val future = accountManager.removeAccount(fromName(accountName), null, null, null)
+        val account = fromName(accountName)
+        // remove account directly (bypassing the authenticator, which is our own)
         return try {
-            // wait for operation to complete
-            withContext(Dispatchers.Default) {
-                // blocks calling thread
-                future.result
-            }
+            accountManager.removeAccountExplicitly(account)
 
-            // delete address book accounts
-            LocalAddressBook.deleteByAccount(context, accountName)
+            // delete address books (= address book accounts)
+            serviceRepository.getByAccountAndType(accountName, Service.TYPE_CARDDAV)?.let { service ->
+                collectionRepository.getByService(service.id).forEach { collection ->
+                    LocalAddressBook.deleteByCollection(context, collection.id)
+                }
+            }
 
             // delete from database
             serviceRepository.deleteByAccount(accountName)
@@ -205,7 +201,7 @@ class AccountRepository @Inject constructor(
             throw IllegalArgumentException("Account with name \"$newName\" already exists")
 
         // remember sync intervals
-        val oldSettings = accountSettingsFactory.forAccount(oldAccount)
+        val oldSettings = accountSettingsFactory.create(oldAccount)
         val authorities = mutableListOf(
             context.getString(R.string.address_books_authority),
             CalendarContract.AUTHORITY
@@ -247,21 +243,6 @@ class AccountRepository @Inject constructor(
             // update account name references in database
             serviceRepository.renameAccount(oldName, newName)
 
-            // update main account of address book accounts
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
-                try {
-                    context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
-                        for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
-                            val addressBook = LocalAddressBook(context, addrBookAccount, provider)
-                            if (oldAccount == addressBook.mainAccount)
-                                addressBook.mainAccount = Account(newName, oldAccount.type)
-                        }
-                    }
-                } catch (e: Exception) {
-                    logger.log(Level.SEVERE, "Couldn't update address book accounts", e)
-                    // Couldn't update address book accounts, but this is not a fatal error (will be fixed at next sync)
-                }
-
             // calendar provider doesn't allow changing account_name of Events
             // (all events will have to be downloaded again at next sync)
 
@@ -274,7 +255,7 @@ class AccountRepository @Inject constructor(
             }
 
             // restore sync intervals
-            val newSettings = accountSettingsFactory.forAccount(newAccount)
+            val newSettings = accountSettingsFactory.create(newAccount)
             for ((authority, interval) in syncIntervals) {
                 if (interval == null)
                     ContentResolver.setIsSyncable(newAccount, authority, 0)

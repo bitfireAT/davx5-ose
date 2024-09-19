@@ -45,7 +45,7 @@ class JtxSyncer @AssistedInject constructor(
         get() = TaskProvider.ProviderName.JtxBoard.authority
 
 
-    override fun localSyncCollections(provider: ContentProviderClient): List<LocalJtxCollection>
+    override fun getLocalCollections(provider: ContentProviderClient): List<LocalJtxCollection>
         = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
 
     override fun prepare(provider: ContentProviderClient): Boolean {
@@ -70,7 +70,7 @@ class JtxSyncer @AssistedInject constructor(
         return true
     }
 
-    override fun getSyncCollections(serviceId: Long): List<Collection> =
+    override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncJtxCollections(serviceId)
 
     override fun update(localCollection: LocalJtxCollection, remoteCollection: Collection) {

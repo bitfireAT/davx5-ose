@@ -13,7 +13,6 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.util.setAndVerifyUserData
@@ -31,23 +30,22 @@ import java.util.logging.Logger
 /**
  * Manages settings of an account.
  *
- * @param accountOrAddressBookAccount    Account to take settings from. If this account is an address book account,
- * settings will be taken from the corresponding main account instead.
+ * @param account   account to take settings from
  *
- * @throws InvalidAccountException on construction when the account doesn't exist (anymore)
- * @throws IllegalArgumentException when the account type is not _DAVx5_ or _DAVx5 address book_
+ * @throws InvalidAccountException      on construction when the account doesn't exist (anymore)
+ * @throws IllegalArgumentException     when the account is not a DAVx5 account
  */
 class AccountSettings @AssistedInject constructor(
-    @Assisted accountOrAddressBookAccount: Account,
+    @Assisted val account: Account,
     @ApplicationContext val context: Context,
     private val logger: Logger,
     private val migrationsFactory: AccountSettingsMigrations.Factory,
-    private val settingsManager: SettingsManager
+    private val settingsManager: SettingsManager,
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun forAccount(account: Account): AccountSettings
+        fun create(account: Account): AccountSettings
     }
 
     companion object {
@@ -137,34 +135,24 @@ class AccountSettings @AssistedInject constructor(
 
 
     val accountManager: AccountManager = AccountManager.get(context)
-    val account: Account = when (accountOrAddressBookAccount.type) {
-            context.getString(R.string.account_type_address_book) -> {
-                /* argument is an address book account, which is not a main account. However settings are
-                stored in the main account, so resolve and use the main account instead. */
-                LocalAddressBook.mainAccount(context, accountOrAddressBookAccount) ?: throw IllegalArgumentException("Main account of $accountOrAddressBookAccount not found")
-            }
-
-            context.getString(R.string.account_type),
-            "at.bitfire.davdroid.test" /* defined in androidTest/strings/account_type_test */ ->
-                accountOrAddressBookAccount
-
-            else ->
-                throw IllegalArgumentException("Account type ${accountOrAddressBookAccount.type} not supported")
-        }
-
     init {
+        val allowedAccountTypes = arrayOf(
+            context.getString(R.string.account_type),
+            "at.bitfire.davdroid.test"      // R.strings.account_type_test in androidTest
+        )
+        if (!allowedAccountTypes.contains(account.type))
+            throw IllegalArgumentException("Invalid account type: ${account.type}")
+
         // synchronize because account migration must only be run one time
         synchronized(AccountSettings::class.java) {
-            val versionStr = accountManager.getUserData(this.account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(
-                this.account
-            )
+            val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
             var version = 0
             try {
                 version = Integer.parseInt(versionStr)
             } catch (e: NumberFormatException) {
                 logger.log(Level.SEVERE, "Invalid account version: $versionStr", e)
             }
-            logger.fine("Account ${this.account.name} has version $version, current version: $CURRENT_VERSION")
+            logger.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
 
             if (version < CURRENT_VERSION) {
                 if (currentlyUpdating) {

@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync.account
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -15,7 +16,8 @@ import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.time.Duration
@@ -28,6 +30,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val accountRepository: AccountRepository,
+    private val collectionRepository: DavCollectionRepository,
     private val db: AppDatabase,
     private val logger: Logger
 ): Worker(appContext, workerParameters) {
@@ -70,32 +73,32 @@ class AccountsCleanupWorker @AssistedInject constructor(
 
         // Later, accounts which are not in the DB should be deleted here
 
-        val mainAccountType = applicationContext.getString(R.string.account_type)
-        val mainAccountNames = accounts
-            .filter { account -> account.type == mainAccountType }
+        val accountType = applicationContext.getString(R.string.account_type)
+        val accountNames = accounts
+            .filter { account -> account.type == accountType }
             .map { it.name }
-
-        val addressBookAccountType = applicationContext.getString(R.string.account_type_address_book)
-        val addressBooks = accounts
-            .filter { account -> account.type == addressBookAccountType }
-            .map { addressBookAccount -> LocalAddressBook(applicationContext, addressBookAccount, null) }
-        for (addressBook in addressBooks) {
-            try {
-                val mainAccount = addressBook.mainAccount
-                if (mainAccount == null || !mainAccountNames.contains(mainAccount.name))
-                    // the main account for this address book doesn't exist anymore
-                    addressBook.deleteCollection()
-            } catch(e: Exception) {
-                logger.log(Level.SEVERE, "Couldn't delete address book account", e)
-            }
-        }
 
         // delete orphaned services in DB
         val serviceDao = db.serviceDao()
-        if (mainAccountNames.isEmpty())
+        if (accountNames.isEmpty())
             serviceDao.deleteAll()
         else
-            serviceDao.deleteExceptAccounts(mainAccountNames.toTypedArray())
+            serviceDao.deleteExceptAccounts(accountNames.toTypedArray())
+
+        // Delete orphan address book accounts (where db collection is missing)
+        val accountManager = AccountManager.get(applicationContext)
+        accounts.filter { account ->
+            account.type == applicationContext.getString(R.string.account_type_address_book)
+        }.forEach { addressBookAccount ->
+            val collection = accountManager
+                .getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)
+                .toLongOrNull()?.let { collectionId ->
+                    collectionRepository.get(collectionId)
+                }
+            if (collection == null)
+                // If no collection for this address book exists, we can delete it
+                accountManager.removeAccountExplicitly(addressBookAccount)
+        }
     }
 
 }
