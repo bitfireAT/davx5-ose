@@ -136,9 +136,12 @@ class AccountSettings @AssistedInject constructor(
 
     val accountManager: AccountManager = AccountManager.get(context)
     init {
-        val requiredAccountType = context.getString(R.string.account_type)
-        if (account.type != requiredAccountType)
-            throw IllegalArgumentException("Invalid account type: ${account.type} (must be $requiredAccountType)")
+        val allowedAccountTypes = arrayOf(
+            context.getString(R.string.account_type),
+            "at.bitfire.davdroid.test"      // R.strings.account_type_test in androidTest
+        )
+        if (!allowedAccountTypes.contains(account.type))
+            throw IllegalArgumentException("Invalid account type: ${account.type}")
 
         // synchronize because account migration must only be run one time
         synchronized(AccountSettings::class.java) {
