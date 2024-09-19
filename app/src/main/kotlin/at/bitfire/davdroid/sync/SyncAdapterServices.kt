@@ -80,9 +80,12 @@ abstract class SyncAdapterService: Service() {
             val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
             logger.info("Sync request via sync framework for $accountOrAddressBookAccount $authority (upload=$upload)")
 
-            val collectionId = AccountManager.get(context).getUserData(accountOrAddressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()
+            // If we should sync an address book account - find the account storing the settings
             val account = if (accountOrAddressBookAccount.type == context.getString(R.string.account_type_address_book))
-                collectionId?.let {
+                AccountManager.get(context)
+                    .getUserData(accountOrAddressBookAccount, USER_DATA_COLLECTION_ID)
+                    ?.toLongOrNull()
+                    ?.let { collectionId ->
                     collectionRepository.get(collectionId)?.let { collection ->
                         serviceRepository.get(collection.serviceId)?.let { service ->
                             Account(
@@ -92,8 +95,8 @@ abstract class SyncAdapterService: Service() {
                         }
                     }
                 } ?: throw IllegalArgumentException("No valid collection/service/account for address book $accountOrAddressBookAccount")
-                else
-                    accountOrAddressBookAccount
+            else
+                accountOrAddressBookAccount
 
             val accountSettings = try {
                 accountSettingsFactory.create(account)
