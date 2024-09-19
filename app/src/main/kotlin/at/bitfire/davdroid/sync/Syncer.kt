@@ -96,7 +96,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
         // Find collections in database and provider which should be synced (are sync-enabled)
         val dbCollections = getSyncEnabledCollections()
-        val localCollections = localSyncCollections(provider).toMutableList()
+        val localCollections = getLocalCollections(provider).toMutableList()
 
         // Update/delete local collections and determine new (unknown) remote collections
         val newDbCollections = updateCollections(localCollections, dbCollections)
@@ -119,7 +119,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     internal fun getSyncEnabledCollections(): Map<HttpUrl, Collection> {
         val dbCollections = mutableMapOf<HttpUrl, Collection>()
         serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
-            for (dbCollection in getSyncCollections(service.id))
+            for (dbCollection in getDbSyncCollections(service.id))
                 dbCollections[dbCollection.url] = dbCollection
         }
         return dbCollections
@@ -197,23 +197,29 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     open fun prepare(provider: ContentProviderClient): Boolean = true
 
     /**
-     * Get the local collections to be updated after sync
+     * Gets all local collections (not from the database, but from the content provider).
+     *
+     * [Syncer] will remove collections which are returned by this method, but not by
+     * [getDbSyncCollections], and add collections which are returned by [getDbSyncCollections], but not by this method.
      *
      * @param provider Content provider to access local collections
      * @return Local collections to be updated
      */
-    abstract fun localSyncCollections(provider: ContentProviderClient): List<CollectionType>
+    abstract fun getLocalCollections(provider: ContentProviderClient): List<CollectionType>
 
     /**
-     * Get the local database collections which are sync-enabled (should by synchronized)
+     * Get the local database collections which are sync-enabled (should by synchronized).
+     *
+     * [Syncer] will remove collections which are returned by [getLocalCollections], but not by
+     * this method, and add collections which are returned by this method, but not by [getLocalCollections].
      *
      * @param serviceId The CalDAV or CardDAV service (account) to be synchronized
      * @return Database collections to be synchronized
      */
-    abstract fun getSyncCollections(serviceId: Long): List<Collection>
+    abstract fun getDbSyncCollections(serviceId: Long): List<Collection>
 
     /**
-     * Update an existing local collection with remote collection information
+     * Updates an existing local collection (in the content provider) with remote collection information (from the DB).
      *
      * @param localCollection The local collection to be updated
      * @param remoteCollection The new remote collection information
@@ -221,7 +227,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     abstract fun update(localCollection: CollectionType, remoteCollection: Collection)
 
     /**
-     * Create a new local collection from remote collection information
+     * Creates a new local collection (in the content provider) from remote collection information (from the DB).
      *
      * @param provider The content provider client to create the local collection
      * @param remoteCollection The remote collection to be created locally
@@ -229,7 +235,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     abstract fun create(provider: ContentProviderClient, remoteCollection: Collection): CollectionType
 
     /**
-     * Synchronise local with remote collection contents
+     * Synchronizes local with remote collection contents.
      *
      * @param provider The content provider client to access the local collection to be updated
      * @param localCollection The local collection to be synchronized
@@ -239,9 +245,10 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     abstract fun syncCollection(provider: ContentProviderClient, localCollection: CollectionType, remoteCollection: Collection)
 
     /**
-     * Prepares the sync
-     * - acquires content provider
-     * - handles occurring sync errors
+     * Prepares the sync:
+     *
+     * - acquire content provider
+     * - handle occurring sync errors
      */
     operator fun invoke() {
         logger.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))

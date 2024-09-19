@@ -48,7 +48,7 @@ class AddressBookSyncer @AssistedInject constructor(
         get() = ContactsContract.AUTHORITY // Address books use the contacts authority for sync
 
 
-    override fun localSyncCollections(provider: ContentProviderClient): List<LocalAddressBook> =
+    override fun getLocalCollections(provider: ContentProviderClient): List<LocalAddressBook> =
         serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
             // Get _all_ address books; Otherwise address book accounts of unchecked address books will not be removed
             collectionRepository.getByService(service.id).mapNotNull { collection ->
@@ -56,7 +56,7 @@ class AddressBookSyncer @AssistedInject constructor(
             }
         }.orEmpty()
 
-    override fun getSyncCollections(serviceId: Long): List<Collection> =
+    override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getByServiceAndSync(serviceId)
 
     override fun update(localCollection: LocalAddressBook, remoteCollection: Collection) {
