@@ -80,10 +80,11 @@ class OneTimeSyncWorker @AssistedInject constructor(
             account: Account,
             manual: Boolean = false,
             @ArgResync resync: Int = NO_RESYNC,
-            upload: Boolean = false
+            upload: Boolean = false,
+            isPush: Boolean = false
         ) {
             for (authority in SyncUtils.syncAuthorities(context))
-                enqueue(context, account, authority, manual = manual, resync = resync, upload = upload)
+                enqueue(context, account, authority, manual = manual, resync = resync, upload = upload, isPush = isPush)
         }
 
         /**
@@ -95,6 +96,7 @@ class OneTimeSyncWorker @AssistedInject constructor(
          * @param resync        whether to request (full) re-synchronization or not
          * @param upload        see [ContentResolver.SYNC_EXTRAS_UPLOAD] used only for contacts sync
          *                      and android 7 workaround
+         * @param isPush        whether this sync is triggered by a push notification
          * @return existing or newly created worker name
          */
         fun enqueue(
@@ -103,7 +105,8 @@ class OneTimeSyncWorker @AssistedInject constructor(
             authority: String,
             manual: Boolean = false,
             @ArgResync resync: Int = NO_RESYNC,
-            upload: Boolean = false
+            upload: Boolean = false,
+            isPush: Boolean = false
         ): String {
             // Worker arguments
             val argumentsBuilder = Data.Builder()
@@ -147,6 +150,24 @@ class OneTimeSyncWorker @AssistedInject constructor(
                 ExistingWorkPolicy.KEEP,
                 request
             )
+
+            // Show notification if called by push
+            if (isPush) {
+                val notificationRegistry = NotificationRegistry(context, Logger.getLogger("OneTimeSyncWorker"))
+                val id = account.name.hashCode() + account.type.hashCode() + authority.hashCode()
+
+                notificationRegistry.notifyIfPossible(id) {
+                    NotificationCompat.Builder(context, notificationRegistry.CHANNEL_STATUS)
+                        .setSmallIcon(R.drawable.ic_sync)
+                        .setContentTitle(context.getString(R.string.sync_notification_pending_push_title))
+                        .setContentText(context.getString(R.string.sync_notification_pending_push_message))
+                        .setPriority(NotificationCompat.PRIORITY_LOW)
+                        .setCategory(NotificationCompat.CATEGORY_STATUS)
+                        .setAutoCancel(true)
+                        .build()
+                }
+            }
+
             return name
         }
 
