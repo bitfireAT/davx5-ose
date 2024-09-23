@@ -62,7 +62,7 @@ class App: Application(), Configuration.Provider {
         @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch(Dispatchers.Default) {
             // clean up orphaned accounts in DB from time to time
-            AccountsCleanupWorker.enqueue(this@App)
+            AccountsCleanupWorker.enable(this@App)
 
             // create/update app shortcuts
             UiUtils.updateShortcuts(this@App)

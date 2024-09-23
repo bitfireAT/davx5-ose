@@ -20,10 +20,14 @@ import androidx.work.WorkManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
+import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.AndroidCalendar
@@ -61,6 +65,17 @@ class AccountSettingsMigrations @AssistedInject constructor(
 
     val accountManager: AccountManager = AccountManager.get(context)
 
+    /**
+     * With DAVx5 4.3.3 address book accounts now contain the collection ID as a unique identifier.
+     * We need to update the address book account names.
+     */
+    @Suppress("unused","FunctionName")
+    fun update_16_17() {
+        // A sync will create the new address book accounts
+        OneTimeSyncWorker.enqueue(context, account, context.getString(R.string.address_books_authority))
+        // Clean up old address book accounts
+        AccountsCleanupWorker.enqueue(context)
+    }
 
     /**
      * Between DAVx5 4.4.1-beta.1 and 4.4.1-rc.1 (both v15), the periodic sync workers were renamed (moved to another

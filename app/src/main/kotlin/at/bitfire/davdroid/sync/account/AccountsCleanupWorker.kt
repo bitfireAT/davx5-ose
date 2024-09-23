@@ -4,16 +4,14 @@
 
 package at.bitfire.davdroid.sync.account
 
-import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -48,9 +46,18 @@ class AccountsCleanupWorker @AssistedInject constructor(
         fun unlockAccountsCleanup() = mutex.release()
 
         /**
-         * Enqueues [AccountsCleanupWorker] to be run regularly (but not necessarily now).
+         * Enqueues [AccountsCleanupWorker] to be run once as soon as possible.
          */
         fun enqueue(context: Context) {
+            // run once
+            val rq = OneTimeWorkRequestBuilder<AccountsCleanupWorker>()
+            WorkManager.getInstance(context).enqueue(rq.build())
+        }
+
+        /**
+         * Enqueues [AccountsCleanupWorker] to be run regularly (but not necessarily now).
+         */
+        fun enable(context: Context) {
             // run every day
             val rq = PeriodicWorkRequestBuilder<AccountsCleanupWorker>(Duration.ofDays(1))
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.UPDATE, rq.build())
@@ -61,24 +68,26 @@ class AccountsCleanupWorker @AssistedInject constructor(
     override fun doWork(): Result {
         lockAccountsCleanup()
         try {
-            cleanupAccounts(accountRepository.getAll())
+            cleanupAccounts()
         } finally {
             unlockAccountsCleanup()
         }
         return Result.success()
     }
 
-    private fun cleanupAccounts(accounts: Array<out Account>) {
-        logger.log(Level.INFO, "Cleaning up accounts. Current accounts in DB:", accounts)
+    private fun cleanupAccounts() {
+        val accounts = accountRepository.getAll()
+        val addressBookAccounts = accountRepository.getAddressBookAccounts()
+        logger.log(
+            Level.INFO,
+            "Cleaning up accounts. Currently existing accounts:",
+            accounts + addressBookAccounts
+        )
 
         // Later, accounts which are not in the DB should be deleted here
 
-        val accountType = applicationContext.getString(R.string.account_type)
-        val accountNames = accounts
-            .filter { account -> account.type == accountType }
-            .map { it.name }
-
         // delete orphaned services in DB
+        val accountNames = accounts.map { it.name }
         val serviceDao = db.serviceDao()
         if (accountNames.isEmpty())
             serviceDao.deleteAll()
@@ -86,18 +95,15 @@ class AccountsCleanupWorker @AssistedInject constructor(
             serviceDao.deleteExceptAccounts(accountNames.toTypedArray())
 
         // Delete orphan address book accounts (where db collection is missing)
-        val accountManager = AccountManager.get(applicationContext)
-        accounts.filter { account ->
-            account.type == applicationContext.getString(R.string.account_type_address_book)
-        }.forEach { addressBookAccount ->
-            val collection = accountManager
-                .getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)
-                .toLongOrNull()?.let { collectionId ->
+        addressBookAccounts.forEach { addressBookAccount ->
+            val collection = accountRepository.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)
+                ?.toLongOrNull()
+                ?.let { collectionId ->
                     collectionRepository.get(collectionId)
                 }
             if (collection == null)
                 // If no collection for this address book exists, we can delete it
-                accountManager.removeAccountExplicitly(addressBookAccount)
+                accountRepository.removeAccountExplicitly(addressBookAccount)
         }
     }
 
