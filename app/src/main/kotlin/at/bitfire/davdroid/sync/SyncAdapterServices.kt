@@ -88,15 +88,17 @@ abstract class SyncAdapterService: Service() {
                     ?.let { collectionId ->
                     collectionRepository.get(collectionId)?.let { collection ->
                         serviceRepository.get(collection.serviceId)?.let { service ->
-                            Account(
-                                service.accountName,
-                                context.getString(R.string.account_type)
-                            )
+                            Account(service.accountName, context.getString(R.string.account_type))
                         }
                     }
-                } ?: throw IllegalArgumentException("No valid collection/service/account for address book $accountOrAddressBookAccount")
+                }
             else
                 accountOrAddressBookAccount
+
+            if (account == null) {
+                logger.warning("No valid collection/service/account for address book $accountOrAddressBookAccount")
+                return
+            }
 
             val accountSettings = try {
                 accountSettingsFactory.create(account)
