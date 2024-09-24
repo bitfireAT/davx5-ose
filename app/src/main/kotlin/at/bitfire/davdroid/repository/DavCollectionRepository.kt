@@ -188,6 +188,8 @@ class DavCollectionRepository @Inject constructor(
 
     fun getByService(serviceId: Long) = dao.getByService(serviceId)
 
+    fun getByServiceAndUrl(serviceId: Long, url: String) = dao.getByServiceAndUrl(serviceId, url)
+
     fun getByServiceAndSync(serviceId: Long) = dao.getByServiceAndSync(serviceId)
 
     fun getSyncCalendars(serviceId: Long) = dao.getSyncCalendars(serviceId)

@@ -13,6 +13,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.CalendarContract
+import android.provider.ContactsContract
 import android.util.Base64
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
@@ -20,14 +21,14 @@ import androidx.work.WorkManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
-import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.AndroidCalendar
@@ -40,6 +41,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.property.Url
 import org.dmfs.tasks.contract.TaskContract
@@ -52,8 +57,12 @@ class AccountSettingsMigrations @AssistedInject constructor(
     @Assisted val account: Account,
     @Assisted val accountSettings: AccountSettings,
     @ApplicationContext val context: Context,
+    private val accountRepository: AccountRepository,
+    private val collectionRepository: DavCollectionRepository,
     private val db: AppDatabase,
+    private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
+    private val serviceRepository: DavServiceRepository,
     private val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
@@ -61,7 +70,6 @@ class AccountSettingsMigrations @AssistedInject constructor(
     interface Factory {
         fun create(account: Account, accountSettings: AccountSettings): AccountSettingsMigrations
     }
-
 
     val accountManager: AccountManager = AccountManager.get(context)
 
@@ -71,10 +79,29 @@ class AccountSettingsMigrations @AssistedInject constructor(
      */
     @Suppress("unused","FunctionName")
     fun update_16_17() {
-        // A sync will create the new address book accounts
-        OneTimeSyncWorker.enqueue(context, account, context.getString(R.string.address_books_authority))
-        // Clean up old address book accounts
-        AccountsCleanupWorker.enqueue(context)
+        try {
+            context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
+        } catch (e: SecurityException) {
+            logger.log(Level.WARNING, "Missing permissions for contacts authority", e)
+            null
+        }.use { provider ->
+            if (provider == null) {
+                logger.warning("Couldn't connect to content provider of contacts authority")
+                return // Don't continue without provider
+            }
+            val service = serviceRepository.getByAccountAndType(account.name, Service.TYPE_CARDDAV)
+                ?: return
+            val oldAddressBookAccounts = accountRepository.getAddressBookAccounts().filter {
+                account.name == accountManager.getUserData(it, "real_account_name")
+            }
+            for (oldAddressBookAccount in oldAddressBookAccounts) {
+                val url = accountManager.getUserData(oldAddressBookAccount, LocalAddressBook.USER_DATA_URL)
+                val collection = collectionRepository.getByServiceAndUrl(service.id, url)
+                    ?: continue
+                val localAddressBook = localAddressBookFactory.create(oldAddressBookAccount, provider)
+                localAddressBook.update(collection, collection.forceReadOnly)
+            }
+        }
     }
 
     /**
