@@ -350,7 +350,7 @@ class DavCollectionRepository @Inject constructor(
                             }
                             getVTimeZone(timezoneId)?.let {
                                 insertTag(CalendarTimezone.NAME) {
-                                    cdsect(it)
+                                    text(it)
                                 }
                             }
                         }
