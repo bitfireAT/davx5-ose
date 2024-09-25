@@ -346,7 +346,7 @@ class DavCollectionRepository @Inject constructor(
                         }
                         timezoneDef?.let { timezoneId ->
                             insertTag(CalendarTimezoneId.NAME) {
-                                cdsect(timezoneId)
+                                text(timezoneId)
                             }
                             getVTimeZone(timezoneId)?.let {
                                 insertTag(CalendarTimezone.NAME) {
