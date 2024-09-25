@@ -386,7 +386,7 @@ class DavCollectionRepository @Inject constructor(
     }
 
     private fun getVTimeZone(tzId: String): String? =
-        DateUtils.ical4jTimeZone(tzId)?.toString()
+        DateUtils.ical4jTimeZone(tzId)?.vTimeZone?.toString()
 
 
     /*** OBSERVERS ***/
