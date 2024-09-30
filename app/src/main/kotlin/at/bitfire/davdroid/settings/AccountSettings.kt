@@ -30,11 +30,15 @@ import java.util.logging.Logger
 /**
  * Manages settings of an account.
  *
+ * Must not be called from main thread as it uses blocking I/O
+ * and may run migrations.
+ *
  * @param account   account to take settings from
  *
  * @throws InvalidAccountException      on construction when the account doesn't exist (anymore)
  * @throws IllegalArgumentException     when the account is not a DAVx5 account
  */
+@WorkerThread   
 class AccountSettings @AssistedInject constructor(
     @Assisted val account: Account,
     @ApplicationContext val context: Context,
@@ -45,6 +49,11 @@ class AccountSettings @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
+        /**
+         * Must not be called from main thread as AccountSettings uses blocking I/O and may run
+         * migrations.
+         */
+        @WorkerThread
         fun create(account: Account): AccountSettings
     }
 
