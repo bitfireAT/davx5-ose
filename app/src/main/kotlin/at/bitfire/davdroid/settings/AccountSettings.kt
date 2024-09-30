@@ -8,6 +8,7 @@ import android.accounts.AccountManager
 import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
+import android.os.Looper
 import android.provider.CalendarContract
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
@@ -142,6 +143,10 @@ class AccountSettings @AssistedInject constructor(
 
     }
 
+    init {
+        if (Looper.getMainLooper() == Looper.myLooper())
+            throw IllegalThreadStateException("AccountSettings may not be used on main thread")
+    }
 
     val accountManager: AccountManager = AccountManager.get(context)
     init {
