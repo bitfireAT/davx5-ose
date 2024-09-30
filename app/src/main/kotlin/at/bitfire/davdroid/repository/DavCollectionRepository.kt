@@ -41,7 +41,10 @@ import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
+import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
+import net.fortuna.ical4j.model.ComponentList
+import net.fortuna.ical4j.model.component.VTimeZone
 import okhttp3.HttpUrl
 
 /**
@@ -148,7 +151,7 @@ class DavCollectionRepository @Inject constructor(
             displayName = displayName,
             description = description,
             color = color,
-            timezone = timeZoneId?.let { getVTimeZone(it) },
+            timezone = timeZoneId?.let { getVTimeZone(it)?.toString() },
             supportsVEVENT = supportVEVENT,
             supportsVTODO = supportVTODO,
             supportsVJOURNAL = supportVJOURNAL
@@ -350,7 +353,9 @@ class DavCollectionRepository @Inject constructor(
                             }
                             getVTimeZone(timezoneId)?.let {
                                 insertTag(CalendarTimezone.NAME) {
-                                    text(it)
+                                    text(
+                                        Calendar(ComponentList(listOf(it))).toString()
+                                    )
                                 }
                             }
                         }
@@ -385,8 +390,8 @@ class DavCollectionRepository @Inject constructor(
         return writer.toString()
     }
 
-    private fun getVTimeZone(tzId: String): String? =
-        DateUtils.ical4jTimeZone(tzId)?.vTimeZone?.toString()
+    private fun getVTimeZone(tzId: String): VTimeZone? =
+        DateUtils.ical4jTimeZone(tzId)?.vTimeZone
 
 
     /*** OBSERVERS ***/
