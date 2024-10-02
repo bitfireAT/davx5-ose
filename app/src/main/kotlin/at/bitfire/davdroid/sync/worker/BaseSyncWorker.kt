@@ -139,6 +139,9 @@ abstract class BaseSyncWorker(
     lateinit var notificationRegistry: NotificationRegistry
 
     @Inject
+    lateinit var pushNotificationManager: PushNotificationManager
+
+    @Inject
     lateinit var syncConditionsFactory: SyncConditions.Factory
 
     @Inject
@@ -162,7 +165,7 @@ abstract class BaseSyncWorker(
         }
 
         // Dismiss any pending push notification
-        PushNotificationManager.dismissScheduled(applicationContext, account, authority)
+        pushNotificationManager.dismissScheduled(account, authority)
 
         try {
             val accountSettings = try {

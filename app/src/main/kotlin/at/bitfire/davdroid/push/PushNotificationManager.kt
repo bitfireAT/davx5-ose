@@ -3,12 +3,16 @@ package at.bitfire.davdroid.push
 import android.accounts.Account
 import android.content.Context
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.NotificationRegistry
-import java.util.logging.Logger
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-object PushNotificationManager {
-    private val logger = Logger.getLogger("PushNotificationManager")
+class PushNotificationManager @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val notificationRegistry: NotificationRegistry
+) {
 
     /**
      * Generates the notification ID for a push notification.
@@ -21,9 +25,7 @@ object PushNotificationManager {
      * Sends a notification to inform the user that a push notification has been received, the
      * sync has been scheduled, but it still has not run.
      */
-    fun notifyScheduled(context: Context, account: Account, authority: String) {
-        val notificationRegistry = NotificationRegistry(context, logger)
-
+    fun notify(account: Account, authority: String) {
         notificationRegistry.notifyIfPossible(notificationId(account, authority)) {
             NotificationCompat.Builder(context, notificationRegistry.CHANNEL_STATUS)
                 .setSmallIcon(R.drawable.ic_sync)
@@ -42,8 +44,8 @@ object PushNotificationManager {
      * Once the sync has been started, the notification is no longer needed and can be dismissed.
      * It's safe to call this method even if the notification has not been shown.
      */
-    fun dismissScheduled(context: Context, account: Account, authority: String) {
-        NotificationRegistry(context, logger)
-            .cancel(id = notificationId(account, authority))
+    fun dismissScheduled(account: Account, authority: String) {
+        NotificationManagerCompat.from(context)
+            .cancel(notificationId(account, authority))
     }
 }

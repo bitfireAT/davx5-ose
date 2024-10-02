@@ -153,7 +153,10 @@ class OneTimeSyncWorker @AssistedInject constructor(
             )
 
             // Show notification if called by push
-            if (isPush) PushNotificationManager.notifyScheduled(context, account, authority)
+            // FIXME: Inject PushNotificationManager
+            if (isPush) {
+                PushNotificationManager.notify(context, account, authority)
+            }
 
             return name
         }
