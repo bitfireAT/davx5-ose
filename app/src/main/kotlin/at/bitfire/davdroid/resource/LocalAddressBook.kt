@@ -68,6 +68,7 @@ open class LocalAddressBook @AssistedInject constructor(
         @InstallIn(SingletonComponent::class)
         interface LocalAddressBookCompanionEntryPoint {
             fun localAddressBookFactory(): Factory
+            fun serviceRepository(): DavServiceRepository
             fun logger(): Logger
         }
 
@@ -87,7 +88,7 @@ open class LocalAddressBook @AssistedInject constructor(
             val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
             val logger = entryPoint.logger()
 
-            val account = Account(accountName(info), context.getString(R.string.account_type_address_book))
+            val account = Account(accountName(context, info), context.getString(R.string.account_type_address_book))
             val userData = initialUserData(info.url.toString(), info.id.toString())
             logger.log(Level.INFO, "Creating local address book $account", userData)
             if (!AccountUtils.createAccount(context, account, userData))
@@ -145,18 +146,28 @@ open class LocalAddressBook @AssistedInject constructor(
         /**
          * Creates a name for the address book account from its corresponding db collection info.
          *
-         * The address book account name contains the collection display name or last URL segment as
-         * well as the collection ID, to make the name unique.
+         * The address book account name contains
+         * - the collection display name or last URL path segment
+         * - the actual account name
+         * - the collection ID, to make it unique.
          *
          * @param info The corresponding collection
          */
-        fun accountName(info: Collection): String {
+        fun accountName(context: Context, info: Collection): String {
+            val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
+            val serviceRepository = entryPoint.serviceRepository()
+            // Name the address book after given collection display name, otherwise use last URL path segment
             val sb = StringBuilder(info.displayName.let {
                 if (it.isNullOrEmpty())
                     info.url.lastSegment
                 else
                     it
             })
+            // Add the actual account name to the address book account name
+            serviceRepository.get(info.id)?.let { service ->
+                sb.append(" ${service.accountName}")
+            }
+            // Add the collection ID for uniqueness
             sb.append(" (${info.id})")
             return sb.toString()
         }
@@ -256,7 +267,7 @@ open class LocalAddressBook @AssistedInject constructor(
      * @param forceReadOnly  `true`: set the address book to "force read-only"; `false`: determine read-only flag from [info]
      */
     fun update(info: Collection, forceReadOnly: Boolean) {
-        val newAccountName = accountName(info)
+        val newAccountName = accountName(context, info)
 
         if (account.name != newAccountName) {
             // no need to re-assign contacts to new account, because they will be deleted by contacts provider in any case
