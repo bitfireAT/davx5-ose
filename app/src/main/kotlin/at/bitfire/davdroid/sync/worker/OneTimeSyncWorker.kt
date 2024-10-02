@@ -23,6 +23,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.sync.SyncDispatcher
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.ui.NotificationRegistry
@@ -152,21 +153,7 @@ class OneTimeSyncWorker @AssistedInject constructor(
             )
 
             // Show notification if called by push
-            if (isPush) {
-                val notificationRegistry = NotificationRegistry(context, Logger.getLogger("OneTimeSyncWorker"))
-                val id = account.name.hashCode() + account.type.hashCode() + authority.hashCode()
-
-                notificationRegistry.notifyIfPossible(id) {
-                    NotificationCompat.Builder(context, notificationRegistry.CHANNEL_STATUS)
-                        .setSmallIcon(R.drawable.ic_sync)
-                        .setContentTitle(context.getString(R.string.sync_notification_pending_push_title))
-                        .setContentText(context.getString(R.string.sync_notification_pending_push_message))
-                        .setPriority(NotificationCompat.PRIORITY_LOW)
-                        .setCategory(NotificationCompat.CATEGORY_STATUS)
-                        .setAutoCancel(true)
-                        .build()
-                }
-            }
+            if (isPush) PushNotificationManager.notifyScheduled(context, account, authority)
 
             return name
         }
