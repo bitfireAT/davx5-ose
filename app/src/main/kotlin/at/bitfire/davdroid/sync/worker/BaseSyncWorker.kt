@@ -20,6 +20,7 @@ import androidx.work.WorkQuery
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
@@ -30,15 +31,15 @@ import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
+import java.util.Collections
+import java.util.logging.Logger
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
-import java.util.Collections
-import java.util.logging.Logger
-import javax.inject.Inject
 
 abstract class BaseSyncWorker(
     context: Context,
@@ -159,6 +160,9 @@ abstract class BaseSyncWorker(
             logger.info("There's already another worker running for $syncTag, skipping")
             return Result.success()
         }
+
+        // Dismiss any pending push notification
+        PushNotificationManager.dismissScheduled(applicationContext, account, authority)
 
         try {
             val accountSettings = try {

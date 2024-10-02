@@ -151,6 +151,14 @@ class NotificationRegistry @Inject constructor(
             logger.warning("Notifications disabled, not showing notification $id")
     }
 
+    /**
+     * Cancels a previously shown notification.
+     */
+    fun cancel(id: Int) {
+        val nm = NotificationManagerCompat.from(context)
+        nm.cancel(id)
+    }
+
 
     // specific common notifications
 

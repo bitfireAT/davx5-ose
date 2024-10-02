@@ -37,4 +37,13 @@ object PushNotificationManager {
                 .build()
         }
     }
+
+    /**
+     * Once the sync has been started, the notification is no longer needed and can be dismissed.
+     * It's safe to call this method even if the notification has not been shown.
+     */
+    fun dismissScheduled(context: Context, account: Account, authority: String) {
+        NotificationRegistry(context, logger)
+            .cancel(id = notificationId(account, authority))
+    }
 }
