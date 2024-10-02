@@ -1,11 +1,14 @@
 package at.bitfire.davdroid.push
 
 import android.accounts.Account
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.ui.account.AccountActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -31,11 +34,21 @@ class PushNotificationManager @Inject constructor(
                 .setSmallIcon(R.drawable.ic_sync)
                 .setContentTitle(context.getString(R.string.sync_notification_pending_push_title))
                 .setContentText(context.getString(R.string.sync_notification_pending_push_message))
+                .setSubText(account.name)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setCategory(NotificationCompat.CATEGORY_STATUS)
                 .setAutoCancel(true)
-                .setOngoing(true)
                 .setOnlyAlertOnce(true)
+                .setContentIntent(
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        Intent(context, AccountActivity::class.java).apply {
+                            putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+                        },
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                )
                 .build()
         }
     }
