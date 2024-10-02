@@ -32,6 +32,8 @@ object PushNotificationManager {
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setCategory(NotificationCompat.CATEGORY_STATUS)
                 .setAutoCancel(true)
+                .setOngoing(true)
+                .setOnlyAlertOnce(true)
                 .build()
         }
     }
