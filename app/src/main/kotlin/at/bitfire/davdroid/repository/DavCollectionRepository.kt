@@ -135,7 +135,7 @@ class DavCollectionRepository @Inject constructor(
                 displayName = displayName,
                 description = description,
                 color = color,
-                timezoneDef = timeZoneId,
+                timezoneId = timeZoneId,
                 supportsVEVENT = supportVEVENT,
                 supportsVTODO = supportVTODO,
                 supportsVJOURNAL = supportVJOURNAL
@@ -291,7 +291,7 @@ class DavCollectionRepository @Inject constructor(
         displayName: String?,
         description: String?,
         color: Int? = null,
-        timezoneDef: String? = null,
+        timezoneId: String? = null,
         supportsVEVENT: Boolean = true,
         supportsVTODO: Boolean = true,
         supportsVJOURNAL: Boolean = true
@@ -347,15 +347,15 @@ class DavCollectionRepository @Inject constructor(
                                 text(DavUtils.ARGBtoCalDAVColor(it))
                             }
                         }
-                        timezoneDef?.let { timezoneId ->
+                        timezoneId?.let { id ->
                             insertTag(CalendarTimezoneId.NAME) {
-                                text(timezoneId)
+                                text(id)
                             }
-                            getVTimeZone(timezoneId)?.let {
+                            getVTimeZone(id)?.let { vTimezone ->
                                 insertTag(CalendarTimezone.NAME) {
                                     text(
                                         // spec requires "an iCalendar object with exactly one VTIMEZONE component"
-                                        Calendar(ComponentList(listOf(it))).toString()
+                                        Calendar(ComponentList(listOf(vTimezone))).toString()
                                     )
                                 }
                             }
@@ -391,8 +391,7 @@ class DavCollectionRepository @Inject constructor(
         return writer.toString()
     }
 
-    private fun getVTimeZone(tzId: String): VTimeZone? =
-        DateUtils.ical4jTimeZone(tzId)?.vTimeZone
+    private fun getVTimeZone(tzId: String): VTimeZone? = DateUtils.ical4jTimeZone(tzId)?.vTimeZone
 
 
     /*** OBSERVERS ***/
