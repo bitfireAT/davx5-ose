@@ -354,6 +354,7 @@ class DavCollectionRepository @Inject constructor(
                             getVTimeZone(timezoneId)?.let {
                                 insertTag(CalendarTimezone.NAME) {
                                     text(
+                                        // spec requires "an iCalendar object with exactly one VTIMEZONE component"
                                         Calendar(ComponentList(listOf(it))).toString()
                                     )
                                 }
