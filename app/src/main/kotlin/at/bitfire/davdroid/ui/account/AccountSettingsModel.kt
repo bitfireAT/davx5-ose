@@ -3,16 +3,12 @@ package at.bitfire.davdroid.ui.account
 import android.accounts.Account
 import android.content.Context
 import android.provider.CalendarContract
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.ical4android.TaskProvider
@@ -24,13 +20,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountSettingsModel.Factory::class)
 class AccountSettingsModel @AssistedInject constructor(
     @Assisted val account: Account,
-    accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
     private val logger: Logger,
     private val settings: SettingsManager,
@@ -42,32 +42,42 @@ class AccountSettingsModel @AssistedInject constructor(
         fun create(account: Account): AccountSettingsModel
     }
 
-    private val accountSettings = accountSettingsFactory.create(account)
-
     // settings
-    var syncIntervalContacts by mutableStateOf<Long?>(null)
-    var syncIntervalCalendars by mutableStateOf<Long?>(null)
+    data class UiState(
+        val syncIntervalContacts: Long? = null,
+        val syncIntervalCalendars: Long? = null,
+        val syncIntervalTasks: Long? = null,
+
+        val syncWifiOnly: Boolean = false,
+        val syncWifiOnlySSIDs: List<String>? = null,
+        val ignoreVpns: Boolean = false,
+
+        val credentials: Credentials = Credentials(),
+
+        val timeRangePastDays: Int? = null,
+        val defaultAlarmMinBefore: Int? = null,
+        val manageCalendarColors: Boolean = false,
+        val eventColors: Boolean = false,
+
+        val contactGroupMethod: GroupMethod = GroupMethod.GROUP_VCARDS
+    )
+
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private val tasksProvider = tasksAppManager.currentProvider()
-    var syncIntervalTasks by mutableStateOf<Long?>(null)
 
-    var syncWifiOnly by mutableStateOf(false)
-    var syncWifiOnlySSIDs by mutableStateOf<List<String>?>(null)
-    var ignoreVpns by mutableStateOf(false)
-
-    var credentials by mutableStateOf(Credentials())
-
-    var timeRangePastDays by mutableStateOf<Int?>(null)
-    var defaultAlarmMinBefore by mutableStateOf<Int?>(null)
-    var manageCalendarColors by mutableStateOf(false)
-    var eventColors by mutableStateOf(false)
-
-    var contactGroupMethod by mutableStateOf(GroupMethod.GROUP_VCARDS)
+    /**
+     * Only acquire account settings on a worker thread!
+     */
+    private val accountSettings by lazy { accountSettingsFactory.create(account) }
 
 
     init {
         settings.addOnChangeListener(this)
-        reload()
+        viewModelScope.launch {
+            reload()
+        }
     }
 
     override fun onCleared() {
@@ -76,32 +86,32 @@ class AccountSettingsModel @AssistedInject constructor(
     }
 
     override fun onSettingsChanged() {
-        reload()
-    }
-
-    private fun reload() {
-        logger.info("Reloading settings")
-
-        Snapshot.withMutableSnapshot {
-            syncIntervalContacts = accountSettings.getSyncInterval(context.getString(R.string.address_books_authority))
-            syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY)
-            syncIntervalTasks = tasksProvider?.let { accountSettings.getSyncInterval(it.authority) }
-
-            syncWifiOnly = accountSettings.getSyncWifiOnly()
-            syncWifiOnlySSIDs = accountSettings.getSyncWifiOnlySSIDs()
-            ignoreVpns = accountSettings.getIgnoreVpns()
-
-            credentials = accountSettings.credentials()
-
-            timeRangePastDays = accountSettings.getTimeRangePastDays()
-            defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
-            manageCalendarColors = accountSettings.getManageCalendarColors()
-            eventColors = accountSettings.getEventColors()
-
-            contactGroupMethod = accountSettings.getGroupMethod()
+        viewModelScope.launch {
+            reload()
         }
     }
 
+    private suspend fun reload() = withContext(Dispatchers.Default) {
+        logger.info("Reloading settings")
+        _uiState.value = UiState(
+            syncIntervalContacts = accountSettings.getSyncInterval(context.getString(R.string.address_books_authority)),
+            syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY),
+            syncIntervalTasks = tasksProvider?.let { accountSettings.getSyncInterval(it.authority) },
+
+            syncWifiOnly = accountSettings.getSyncWifiOnly(),
+            syncWifiOnlySSIDs = accountSettings.getSyncWifiOnlySSIDs(),
+            ignoreVpns = accountSettings.getIgnoreVpns(),
+
+            credentials = accountSettings.credentials(),
+
+            timeRangePastDays = accountSettings.getTimeRangePastDays(),
+            defaultAlarmMinBefore = accountSettings.getDefaultAlarm(),
+            manageCalendarColors = accountSettings.getManageCalendarColors(),
+            eventColors = accountSettings.getEventColors(),
+
+            contactGroupMethod = accountSettings.getGroupMethod(),
+        )
+    }
 
     fun updateContactsSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
@@ -126,27 +136,27 @@ class AccountSettingsModel @AssistedInject constructor(
         }
     }
 
-    fun updateSyncWifiOnly(wifiOnly: Boolean) {
+    fun updateSyncWifiOnly(wifiOnly: Boolean) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.setSyncWiFiOnly(wifiOnly)
         reload()
     }
 
-    fun updateSyncWifiOnlySSIDs(ssids: List<String>?) {
+    fun updateSyncWifiOnlySSIDs(ssids: List<String>?) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.setSyncWifiOnlySSIDs(ssids)
         reload()
     }
 
-    fun updateIgnoreVpns(ignoreVpns: Boolean) {
+    fun updateIgnoreVpns(ignoreVpns: Boolean) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.setIgnoreVpns(ignoreVpns)
         reload()
     }
 
-    fun updateCredentials(credentials: Credentials) {
+    fun updateCredentials(credentials: Credentials) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.credentials(credentials)
         reload()
     }
 
-    fun updateTimeRangePastDays(days: Int?) {
+    fun updateTimeRangePastDays(days: Int?) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.setTimeRangePastDays(days)
         reload()
 
@@ -158,28 +168,28 @@ class AccountSettingsModel @AssistedInject constructor(
         resyncCalendars(fullResync = days == null, tasks = false)
     }
 
-    fun updateDefaultAlarm(minBefore: Int?) {
+    fun updateDefaultAlarm(minBefore: Int?) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.setDefaultAlarm(minBefore)
         reload()
 
         resyncCalendars(fullResync = true, tasks = false)
     }
 
-    fun updateManageCalendarColors(manage: Boolean) {
+    fun updateManageCalendarColors(manage: Boolean) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.setManageCalendarColors(manage)
         reload()
 
         resyncCalendars(fullResync = false, tasks = true)
     }
 
-    fun updateEventColors(manageColors: Boolean) {
+    fun updateEventColors(manageColors: Boolean) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.setEventColors(manageColors)
         reload()
 
         resyncCalendars(fullResync = true, tasks = false)
     }
 
-    fun updateContactGroupMethod(groupMethod: GroupMethod) {
+    fun updateContactGroupMethod(groupMethod: GroupMethod) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.setGroupMethod(groupMethod)
         reload()
 

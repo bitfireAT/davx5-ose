@@ -30,6 +30,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,6 +71,7 @@ fun AccountSettingsScreen(
     val model = hiltViewModel { factory: AccountSettingsModel.Factory ->
         factory.create(account)
     }
+    val uiState by model.uiState.collectAsState()
     val canAccessWifiSsid by PermissionUtils.rememberCanAccessWifiSsid()
 
     AppTheme {
@@ -80,35 +82,35 @@ fun AccountSettingsScreen(
             // Sync settings
             canAccessWifiSsid = canAccessWifiSsid,
             onSyncWifiOnlyPermissionsAction = onNavWifiPermissionsScreen,
-            contactsSyncInterval = model.syncIntervalContacts,
+            contactsSyncInterval = uiState.syncIntervalContacts,
             onUpdateContactsSyncInterval = model::updateContactsSyncInterval,
-            calendarSyncInterval = model.syncIntervalCalendars,
+            calendarSyncInterval = uiState.syncIntervalCalendars,
             onUpdateCalendarSyncInterval = model::updateCalendarSyncInterval,
-            tasksSyncInterval = model.syncIntervalTasks,
+            tasksSyncInterval = uiState.syncIntervalTasks,
             onUpdateTasksSyncInterval = model::updateTasksSyncInterval,
-            syncOnlyOnWifi = model.syncWifiOnly,
+            syncOnlyOnWifi = uiState.syncWifiOnly,
             onUpdateSyncOnlyOnWifi = model::updateSyncWifiOnly,
-            onlyOnSsids = model.syncWifiOnlySSIDs,
+            onlyOnSsids = uiState.syncWifiOnlySSIDs,
             onUpdateOnlyOnSsids = model::updateSyncWifiOnlySSIDs,
-            ignoreVpns = model.ignoreVpns,
+            ignoreVpns = uiState.ignoreVpns,
             onUpdateIgnoreVpns = model::updateIgnoreVpns,
 
             // Authentication Settings
-            credentials = model.credentials,
+            credentials = uiState.credentials,
             onUpdateCredentials = model::updateCredentials,
 
             // CalDav Settings
-            timeRangePastDays = model.timeRangePastDays,
+            timeRangePastDays = uiState.timeRangePastDays,
             onUpdateTimeRangePastDays = model::updateTimeRangePastDays,
-            defaultAlarmMinBefore = model.defaultAlarmMinBefore,
+            defaultAlarmMinBefore = uiState.defaultAlarmMinBefore,
             onUpdateDefaultAlarmMinBefore = model::updateDefaultAlarm,
-            manageCalendarColors = model.manageCalendarColors,
+            manageCalendarColors = uiState.manageCalendarColors,
             onUpdateManageCalendarColors = model::updateManageCalendarColors,
-            eventColors = model.eventColors,
+            eventColors = uiState.eventColors,
             onUpdateEventColors = model::updateEventColors,
 
             // CardDav Settings
-            contactGroupMethod = model.contactGroupMethod,
+            contactGroupMethod = uiState.contactGroupMethod,
             onUpdateContactGroupMethod = model::updateContactGroupMethod,
         )
     }
