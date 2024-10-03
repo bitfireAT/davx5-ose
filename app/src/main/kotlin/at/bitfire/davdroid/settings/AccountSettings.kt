@@ -8,6 +8,7 @@ import android.accounts.AccountManager
 import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
+import android.os.Looper
 import android.provider.CalendarContract
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
@@ -30,11 +31,15 @@ import java.util.logging.Logger
 /**
  * Manages settings of an account.
  *
+ * Must not be called from main thread as it uses blocking I/O
+ * and may run migrations.
+ *
  * @param account   account to take settings from
  *
  * @throws InvalidAccountException      on construction when the account doesn't exist (anymore)
  * @throws IllegalArgumentException     when the account is not a DAVx5 account
  */
+@WorkerThread   
 class AccountSettings @AssistedInject constructor(
     @Assisted val account: Account,
     @ApplicationContext val context: Context,
@@ -45,6 +50,11 @@ class AccountSettings @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
+        /**
+         * Must not be called from main thread as AccountSettings uses blocking I/O and may run
+         * migrations.
+         */
+        @WorkerThread
         fun create(account: Account): AccountSettings
     }
 
@@ -133,6 +143,10 @@ class AccountSettings @AssistedInject constructor(
 
     }
 
+    init {
+        if (Looper.getMainLooper() == Looper.myLooper())
+            throw IllegalThreadStateException("AccountSettings may not be used on main thread")
+    }
 
     val accountManager: AccountManager = AccountManager.get(context)
     init {

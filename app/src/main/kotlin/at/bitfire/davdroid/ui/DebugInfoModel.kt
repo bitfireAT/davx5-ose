@@ -24,6 +24,7 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.text.format.DateUtils
 import android.text.format.Formatter
+import androidx.annotation.WorkerThread
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -127,7 +128,7 @@ class DebugInfoModel @AssistedInject constructor(
         // create debug info directory
         val debugDir = LogFileHandler.debugDir(context) ?: throw IOException("Couldn't create debug info directory")
 
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.Default) {
             // create log file from EXTRA_LOGS or log file
             if (details.logs != null) {
                 val file = File(debugDir, FILE_LOGS)
@@ -148,7 +149,6 @@ class DebugInfoModel @AssistedInject constructor(
                 localResource = details.localResource,
                 remoteResource = details.remoteResource
             )
-
             generateDebugInfo(
                 syncAccount = details.account,
                 syncAuthority = details.authority,
@@ -164,6 +164,7 @@ class DebugInfoModel @AssistedInject constructor(
      *
      * Note: Part of this method and all of it's helpers (listed below) should probably be extracted in the future
      */
+    @WorkerThread
     private fun generateDebugInfo(syncAccount: Account?, syncAuthority: String?, cause: Throwable?, localResource: String?, remoteResource: String?) {
         val debugInfoFile = File(LogFileHandler.debugDir(context), FILE_DEBUG_INFO)
         debugInfoFile.printWriter().use { writer ->
@@ -460,6 +461,7 @@ class DebugInfoModel @AssistedInject constructor(
      *
      * Note: Helper method of [generateDebugInfo].
      */
+    @WorkerThread
     private fun dumpAccount(account: Account, writer: Writer) {
         writer.append("\n\n - Account: ${account.name}\n")
         val accountSettings = accountSettingsFactory.create(account)
@@ -488,10 +490,10 @@ class DebugInfoModel @AssistedInject constructor(
             }
             writer.append(
                 "\n  Contact group method: ${accountSettings.getGroupMethod()}\n" +
-                        "  Time range (past days): ${accountSettings.getTimeRangePastDays()}\n" +
-                        "  Default alarm (min before): ${accountSettings.getDefaultAlarm()}\n" +
-                        "  Manage calendar colors: ${accountSettings.getManageCalendarColors()}\n" +
-                        "  Use event colors: ${accountSettings.getEventColors()}\n"
+                    "  Time range (past days): ${accountSettings.getTimeRangePastDays()}\n" +
+                    "  Default alarm (min before): ${accountSettings.getDefaultAlarm()}\n" +
+                    "  Manage calendar colors: ${accountSettings.getManageCalendarColors()}\n" +
+                    "  Use event colors: ${accountSettings.getEventColors()}\n"
             )
 
             writer.append("\nSync workers:\n")
