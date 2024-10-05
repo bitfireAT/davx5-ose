@@ -183,7 +183,7 @@ class SyncWorkerManager @Inject constructor(
                     NetworkType.CONNECTED
             ).build()
         return PeriodicWorkRequestBuilder<PeriodicSyncWorker>(interval, TimeUnit.SECONDS)
-            .addTag(PeriodicSyncWorker.Companion.workerName(account, authority))
+            .addTag(PeriodicSyncWorker.workerName(account, authority))
             .addTag(commonTag(account, authority))
             .setInputData(arguments)
             .setConstraints(constraints)
@@ -201,7 +201,7 @@ class SyncWorkerManager @Inject constructor(
     fun enablePeriodic(account: Account, authority: String, interval: Long, syncWifiOnly: Boolean): Operation {
         val workRequest = buildPeriodic(account, authority, interval, syncWifiOnly)
         return WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            PeriodicSyncWorker.Companion.workerName(account, authority),
+            PeriodicSyncWorker.workerName(account, authority),
             // if a periodic sync exists already, we want to update it with the new interval
             // and/or new required network type (applies on next iteration of periodic worker)
             ExistingPeriodicWorkPolicy.UPDATE,
@@ -218,6 +218,6 @@ class SyncWorkerManager @Inject constructor(
      */
     fun disablePeriodic(account: Account, authority: String): Operation =
         WorkManager.getInstance(context)
-            .cancelUniqueWork(PeriodicSyncWorker.Companion.workerName(account, authority))
+            .cancelUniqueWork(PeriodicSyncWorker.workerName(account, authority))
 
 }
