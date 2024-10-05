@@ -9,7 +9,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
-import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +39,9 @@ class UnifiedPushReceiver: MessagingReceiver() {
 
     @Inject
     lateinit var parsePushMessage: PushMessageParser
+
+    @Inject
+    lateinit var syncWorkerManager: SyncWorkerManager
 
 
     override fun onNewEndpoint(context: Context, endpoint: String, instance: String) {
@@ -71,14 +74,14 @@ class UnifiedPushReceiver: MessagingReceiver() {
                 collectionRepository.getSyncableByTopic(topic)?.let { collection ->
                     serviceRepository.get(collection.serviceId)?.let { service ->
                         val account = accountRepository.fromName(service.accountName)
-                        OneTimeSyncWorker.enqueueAllAuthorities(context, account)
+                        syncWorkerManager.enqueueOneTimeAllAuthorities(account)
                     }
                 }
 
             } else {
                 logger.warning("Got push message without topic, syncing all accounts")
                 for (account in accountRepository.getAll())
-                    OneTimeSyncWorker.enqueueAllAuthorities(context, account)
+                    syncWorkerManager.enqueueOneTimeAllAuthorities(account)
 
             }
         }

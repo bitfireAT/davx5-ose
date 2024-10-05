@@ -11,6 +11,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
@@ -34,7 +35,8 @@ class AccountSettingsModel @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val logger: Logger,
     private val settings: SettingsManager,
-    private val tasksAppManager: TasksAppManager
+    private val syncWorkerManager: SyncWorkerManager,
+    tasksAppManager: TasksAppManager
 ): ViewModel(), SettingsManager.OnChangeListener {
 
     @AssistedFactory
@@ -227,7 +229,7 @@ class AccountSettingsModel @AssistedInject constructor(
                 OneTimeSyncWorker.FULL_RESYNC
             else
                 OneTimeSyncWorker.RESYNC
-        OneTimeSyncWorker.enqueue(context, account, authority, resync = resync)
+        syncWorkerManager.enqueueOneTime(account, authority = authority, resync = resync)
     }
 
 }
