@@ -5,32 +5,17 @@
 package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
-import android.content.ContentResolver
 import android.content.Context
-import android.provider.CalendarContract
-import androidx.annotation.IntDef
 import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
-import androidx.work.BackoffPolicy
-import androidx.work.Constraints
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
-import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.SyncDispatcher
-import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import java.util.concurrent.TimeUnit
-import java.util.logging.Level
-import java.util.logging.Logger
 
 /**
  * One-time sync worker.
@@ -47,15 +32,6 @@ class OneTimeSyncWorker @AssistedInject constructor(
 ) : BaseSyncWorker(appContext, workerParams, syncDispatcher.dispatcher) {
 
     companion object {
-
-        const val ARG_UPLOAD = "upload"
-
-        const val ARG_RESYNC = "resync"
-        @IntDef(NO_RESYNC, RESYNC, FULL_RESYNC)
-        annotation class ArgResync
-        const val NO_RESYNC = 0
-        const val RESYNC = 1
-        const val FULL_RESYNC = 2
 
         /**
          * Unique work name of this worker. Can also be used as tag.

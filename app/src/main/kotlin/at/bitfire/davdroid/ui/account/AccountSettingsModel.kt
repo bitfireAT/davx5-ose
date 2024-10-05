@@ -10,7 +10,7 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
@@ -205,8 +205,8 @@ class AccountSettingsModel @AssistedInject constructor(
      * Initiates calendar re-synchronization.
      *
      * @param fullResync whether sync shall download all events again
-     * (_true_: sets [Syncer.SYNC_EXTRAS_FULL_RESYNC],
-     * _false_: sets [Syncer.SYNC_EXTRAS_RESYNC])
+     * (_true_: sets [at.bitfire.davdroid.sync.Syncer.SYNC_EXTRAS_FULL_RESYNC],
+     * _false_: sets [at.bitfire.davdroid.sync.Syncer.SYNC_EXTRAS_RESYNC])
      * @param tasks whether tasks shall be synchronized, too (false: only events, true: events and tasks)
      */
     private fun resyncCalendars(fullResync: Boolean, tasks: Boolean) {
@@ -226,9 +226,9 @@ class AccountSettingsModel @AssistedInject constructor(
     private fun resync(authority: String, fullResync: Boolean) {
         val resync =
             if (fullResync)
-                OneTimeSyncWorker.FULL_RESYNC
+                BaseSyncWorker.FULL_RESYNC
             else
-                OneTimeSyncWorker.RESYNC
+                BaseSyncWorker.RESYNC
         syncWorkerManager.enqueueOneTime(account, authority = authority, resync = resync)
     }
 

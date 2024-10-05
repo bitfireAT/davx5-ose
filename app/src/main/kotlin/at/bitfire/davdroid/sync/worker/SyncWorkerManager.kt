@@ -27,11 +27,11 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_NA
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_TYPE
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_AUTHORITY
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_MANUAL
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_RESYNC
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_UPLOAD
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.InputResync
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.NO_RESYNC
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
-import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker.Companion.ARG_RESYNC
-import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker.Companion.ARG_UPLOAD
-import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker.Companion.ArgResync
-import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker.Companion.NO_RESYNC
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker.Companion.workerName
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
@@ -61,7 +61,7 @@ class SyncWorkerManager @Inject constructor(
         account: Account,
         authority: String,
         manual: Boolean = false,
-        @ArgResync resync: Int = NO_RESYNC,
+        @InputResync resync: Int = NO_RESYNC,
         upload: Boolean = false
     ): OneTimeWorkRequest {
         // worker arguments
@@ -72,8 +72,8 @@ class SyncWorkerManager @Inject constructor(
         if (manual)
             argumentsBuilder.putBoolean(INPUT_MANUAL, true)
         if (resync != NO_RESYNC)
-            argumentsBuilder.putInt(ARG_RESYNC, resync)
-        argumentsBuilder.putBoolean(ARG_UPLOAD, upload)
+            argumentsBuilder.putInt(INPUT_RESYNC, resync)
+        argumentsBuilder.putBoolean(INPUT_UPLOAD, upload)
 
         // build work request
         val constraints = Constraints.Builder()
@@ -113,7 +113,7 @@ class SyncWorkerManager @Inject constructor(
         account: Account,
         authority: String,
         manual: Boolean = false,
-        @ArgResync resync: Int = NO_RESYNC,
+        @InputResync resync: Int = NO_RESYNC,
         upload: Boolean = false
     ): String {
         // enqueue and start syncing
@@ -146,7 +146,7 @@ class SyncWorkerManager @Inject constructor(
     fun enqueueOneTimeAllAuthorities(
         account: Account,
         manual: Boolean = false,
-        @ArgResync resync: Int = NO_RESYNC,
+        @InputResync resync: Int = NO_RESYNC,
         upload: Boolean = false
     ) {
         for (authority in SyncUtils.syncAuthorities(context))
