@@ -28,8 +28,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker
-import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
@@ -41,10 +40,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.property.Url
 import org.dmfs.tasks.contract.TaskContract
@@ -63,6 +58,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
+    private val syncWorkerManager: SyncWorkerManager,
     private val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
@@ -117,7 +113,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
             /* A maybe existing periodic worker references the old class name (even if it failed and/or is not active). So
             we need to explicitly disable and prune all workers. Just updating the worker is not enough – WorkManager will update
             the work details, but not the class name. */
-            val disableOp = PeriodicSyncWorker.disable(context, account, authority)
+            val disableOp = syncWorkerManager.disablePeriodic(account, authority)
             disableOp.result.get()  // block until worker with old name is disabled
 
             val pruneOp = WorkManager.getInstance(context).pruneWork()
@@ -127,13 +123,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
             if (interval != null && interval != AccountSettings.SYNC_INTERVAL_MANUALLY) {
                 // There's a sync interval for this account/authority; a periodic sync worker should be there, too.
                 val onlyWifi = accountSettings.getSyncWifiOnly()
-                PeriodicSyncWorker.enable(
-                    context,
-                    account,
-                    authority,
-                    interval,
-                    onlyWifi
-                )
+                syncWorkerManager.enablePeriodic(account, authority, interval, onlyWifi)
             }
         }
     }

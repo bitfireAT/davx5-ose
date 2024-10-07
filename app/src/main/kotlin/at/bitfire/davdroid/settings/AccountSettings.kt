@@ -8,13 +8,14 @@ import android.accounts.AccountManager
 import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
+import android.os.Looper
 import android.provider.CalendarContract
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.sync.SyncUtils
-import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.ical4android.TaskProvider
@@ -30,21 +31,31 @@ import java.util.logging.Logger
 /**
  * Manages settings of an account.
  *
+ * Must not be called from main thread as it uses blocking I/O
+ * and may run migrations.
+ *
  * @param account   account to take settings from
  *
  * @throws InvalidAccountException      on construction when the account doesn't exist (anymore)
  * @throws IllegalArgumentException     when the account is not a DAVx5 account
  */
+@WorkerThread   
 class AccountSettings @AssistedInject constructor(
     @Assisted val account: Account,
     @ApplicationContext val context: Context,
     private val logger: Logger,
     private val migrationsFactory: AccountSettingsMigrations.Factory,
     private val settingsManager: SettingsManager,
+    private val syncWorkerManager: SyncWorkerManager
 ) {
 
     @AssistedFactory
     interface Factory {
+        /**
+         * Must not be called from main thread as AccountSettings uses blocking I/O and may run
+         * migrations.
+         */
+        @WorkerThread
         fun create(account: Account): AccountSettings
     }
 
@@ -133,6 +144,10 @@ class AccountSettings @AssistedInject constructor(
 
     }
 
+    init {
+        if (Looper.getMainLooper() == Looper.myLooper())
+            throw IllegalThreadStateException("AccountSettings may not be used on main thread")
+    }
 
     val accountManager: AccountManager = AccountManager.get(context)
     init {
@@ -357,10 +372,10 @@ class AccountSettings @AssistedInject constructor(
         try {
             if (seconds == null || seconds == SYNC_INTERVAL_MANUALLY) {
                 logger.fine("Disabling periodic sync of $account/$authority")
-                PeriodicSyncWorker.disable(context, account, authority)
+                syncWorkerManager.disablePeriodic(account, authority)
             } else {
                 logger.fine("Setting periodic sync of $account/$authority to $seconds seconds (wifiOnly=$wiFiOnly)")
-                PeriodicSyncWorker.enable(context, account, authority, seconds, wiFiOnly)
+                syncWorkerManager.enablePeriodic(account, authority, seconds, wiFiOnly)
             }.result.get() // On operation (enable/disable) failure exception is thrown
         } catch (e: Exception) {
             logger.log(Level.SEVERE, "Failed to set sync interval of $account/$authority to $seconds seconds", e)

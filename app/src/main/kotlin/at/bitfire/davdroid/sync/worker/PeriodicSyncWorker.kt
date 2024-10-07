@@ -6,22 +6,14 @@ package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
 import android.content.Context
-import android.provider.CalendarContract
 import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
-import androidx.work.Constraints
-import androidx.work.Data
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.Operation
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.sync.SyncDispatcher
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import java.util.concurrent.TimeUnit
 
 /**
  * Handles scheduled sync requests.
@@ -59,53 +51,6 @@ class PeriodicSyncWorker @AssistedInject constructor(
          */
         fun workerName(account: Account, authority: String): String =
             "periodic-sync $authority ${account.type}/${account.name}"
-
-        /**
-         * Activate scheduled synchronization of an account with a specific authority.
-         *
-         * @param account    account to sync
-         * @param authority  authority to sync (for instance: [CalendarContract.AUTHORITY]])
-         * @param interval   interval between recurring syncs in seconds
-         * @return operation object to check when and whether activation was successful
-         */
-        fun enable(context: Context, account: Account, authority: String, interval: Long, syncWifiOnly: Boolean): Operation {
-            val arguments = Data.Builder()
-                .putString(INPUT_AUTHORITY, authority)
-                .putString(INPUT_ACCOUNT_NAME, account.name)
-                .putString(INPUT_ACCOUNT_TYPE, account.type)
-                .build()
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(
-                    if (syncWifiOnly)
-                        NetworkType.UNMETERED
-                    else
-                        NetworkType.CONNECTED
-                ).build()
-            val workRequest = PeriodicWorkRequestBuilder<PeriodicSyncWorker>(interval, TimeUnit.SECONDS)
-                .addTag(workerName(account, authority))
-                .addTag(commonTag(account, authority))
-                .setInputData(arguments)
-                .setConstraints(constraints)
-                .build()
-            return WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                workerName(account, authority),
-                // if a periodic sync exists already, we want to update it with the new interval
-                // and/or new required network type (applies on next iteration of periodic worker)
-                ExistingPeriodicWorkPolicy.UPDATE,
-                workRequest
-            )
-        }
-
-        /**
-         * Disables scheduled synchronization of an account for a specific authority.
-         *
-         * @param account     account to sync
-         * @param authority   authority to sync (for instance: [CalendarContract.AUTHORITY]])
-         * @return operation object to check process state of work cancellation
-         */
-        fun disable(context: Context, account: Account, authority: String): Operation =
-            WorkManager.getInstance(context)
-                .cancelUniqueWork(workerName(account, authority))
 
     }
 

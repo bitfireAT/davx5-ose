@@ -23,7 +23,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
@@ -62,7 +62,8 @@ abstract class SyncAdapterService: Service() {
         private val serviceRepository: DavServiceRepository,
         @ApplicationContext context: Context,
         private val logger: Logger,
-        private val syncConditionsFactory: SyncConditions.Factory
+        private val syncConditionsFactory: SyncConditions.Factory,
+        private val syncWorkerManager: SyncWorkerManager
     ): AbstractThreadedSyncAdapter(
         context,
         true    // isSyncable shouldn't be -1 because DAVx5 sets it to 0 or 1.
@@ -124,7 +125,7 @@ abstract class SyncAdapterService: Service() {
                     authority
 
             logger.fine("Starting OneTimeSyncWorker for $account $workerAuthority and waiting for it")
-            val workerName = OneTimeSyncWorker.enqueue(context, account, workerAuthority, upload = upload)
+            val workerName = syncWorkerManager.enqueueOneTime(account, authority = workerAuthority, upload = upload)
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
             use it to block the sync adapter. Instead we use a Flow to get notified when the sync
