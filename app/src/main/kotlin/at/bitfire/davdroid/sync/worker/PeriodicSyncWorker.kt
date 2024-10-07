@@ -38,6 +38,12 @@ class PeriodicSyncWorker @AssistedInject constructor(
     syncDispatcher: SyncDispatcher
 ) : BaseSyncWorker(appContext, workerParams, syncDispatcher.dispatcher) {
 
+    @AssistedFactory
+    @VisibleForTesting
+    interface Factory {
+        fun create(appContext: Context, workerParams: WorkerParameters): PeriodicSyncWorker
+    }
+
     companion object {
 
         /**
@@ -52,12 +58,6 @@ class PeriodicSyncWorker @AssistedInject constructor(
         fun workerName(account: Account, authority: String): String =
             "periodic-sync $authority ${account.type}/${account.name}"
 
-    }
-
-    @AssistedFactory
-    @VisibleForTesting
-    interface Factory {
-        fun create(appContext: Context, workerParams: WorkerParameters): PeriodicSyncWorker
     }
 
 }

@@ -42,38 +42,6 @@ class AccountsCleanupWorker @AssistedInject constructor(
         fun create(appContext: Context, workerParams: WorkerParameters): AccountsCleanupWorker
     }
 
-    companion object {
-        const val NAME = "accounts-cleanup"
-
-        private val mutex = Semaphore(1)
-        /**
-         * Prevents account cleanup from being run until `unlockAccountsCleanup` is called.
-         * Can only be active once at the same time globally (blocking).
-         */
-        fun lockAccountsCleanup() = mutex.acquire()
-        /** Must be called exactly one time after calling `lockAccountsCleanup`. */
-        fun unlockAccountsCleanup() = mutex.release()
-
-        /**
-         * Enqueues [AccountsCleanupWorker] to be run once as soon as possible.
-         */
-        fun enqueue(context: Context) {
-            // run once
-            val rq = OneTimeWorkRequestBuilder<AccountsCleanupWorker>()
-            WorkManager.getInstance(context).enqueue(rq.build())
-        }
-
-        /**
-         * Enqueues [AccountsCleanupWorker] to be run regularly (but not necessarily now).
-         */
-        fun enable(context: Context) {
-            // run every day
-            val rq = PeriodicWorkRequestBuilder<AccountsCleanupWorker>(Duration.ofDays(1))
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.UPDATE, rq.build())
-        }
-
-    }
-
     override fun doWork(): Result {
         lockAccountsCleanup()
         try {
@@ -125,6 +93,38 @@ class AccountsCleanupWorker @AssistedInject constructor(
                 accountRepository.removeAccountExplicitly(addressBookAccount)
             }
         }
+    }
+
+    companion object {
+        const val NAME = "accounts-cleanup"
+
+        private val mutex = Semaphore(1)
+        /**
+         * Prevents account cleanup from being run until `unlockAccountsCleanup` is called.
+         * Can only be active once at the same time globally (blocking).
+         */
+        fun lockAccountsCleanup() = mutex.acquire()
+        /** Must be called exactly one time after calling `lockAccountsCleanup`. */
+        fun unlockAccountsCleanup() = mutex.release()
+
+        /**
+         * Enqueues [AccountsCleanupWorker] to be run once as soon as possible.
+         */
+        fun enqueue(context: Context) {
+            // run once
+            val rq = OneTimeWorkRequestBuilder<AccountsCleanupWorker>()
+            WorkManager.getInstance(context).enqueue(rq.build())
+        }
+
+        /**
+         * Enqueues [AccountsCleanupWorker] to be run regularly (but not necessarily now).
+         */
+        fun enable(context: Context) {
+            // run every day
+            val rq = PeriodicWorkRequestBuilder<AccountsCleanupWorker>(Duration.ofDays(1))
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.UPDATE, rq.build())
+        }
+
     }
 
 }

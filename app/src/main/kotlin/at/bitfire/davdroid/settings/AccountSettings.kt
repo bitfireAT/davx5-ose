@@ -59,91 +59,6 @@ class AccountSettings @AssistedInject constructor(
         fun create(account: Account): AccountSettings
     }
 
-    companion object {
-
-        const val CURRENT_VERSION = 17
-        const val KEY_SETTINGS_VERSION = "version"
-
-        const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"
-        const val KEY_SYNC_INTERVAL_CALENDARS = "sync_interval_calendars"
-
-        /** Stores the tasks sync interval (in seconds) so that it can be set again when the provider is switched */
-        const val KEY_SYNC_INTERVAL_TASKS = "sync_interval_tasks"
-
-        const val KEY_USERNAME = "user_name"
-        const val KEY_CERTIFICATE_ALIAS = "certificate_alias"
-
-        /** OAuth [AuthState] (serialized as JSON) */
-        const val KEY_AUTH_STATE = "auth_state"
-
-        const val KEY_WIFI_ONLY = "wifi_only"               // sync on WiFi only (default: false)
-        const val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
-        const val KEY_IGNORE_VPNS = "ignore_vpns"           // ignore vpns at connection detection
-
-        /** Time range limitation to the past [in days]. Values:
-         *
-         * - null: default value (DEFAULT_TIME_RANGE_PAST_DAYS)
-         * - <0 (typically -1): no limit
-         * - n>0: entries more than n days in the past won't be synchronized
-         */
-        const val KEY_TIME_RANGE_PAST_DAYS = "time_range_past_days"
-        const val DEFAULT_TIME_RANGE_PAST_DAYS = 90
-
-        /**
-         * Whether a default alarm shall be assigned to received events/tasks which don't have an alarm.
-         * Value can be null (no default alarm) or an integer (default alarm shall be created this
-         * number of minutes before the event/task).
-         */
-        const val KEY_DEFAULT_ALARM = "default_alarm"
-
-        /** Whether DAVx5 sets the local calendar color to the value from service DB at every sync
-         value = *null* (not existing): true (default);
-                 "0"                    false */
-        const val KEY_MANAGE_CALENDAR_COLORS = "manage_calendar_colors"
-
-        /** Whether DAVx5 populates and uses CalendarContract.Colors
-         value = *null* (not existing)   false (default);
-                 "1"                     true */
-        const val KEY_EVENT_COLORS = "event_colors"
-
-        /** Contact group method:
-         *null (not existing)*     groups as separate vCards (default);
-         "CATEGORIES"              groups are per-contact CATEGORIES
-         */
-        const val KEY_CONTACT_GROUP_METHOD = "contact_group_method"
-
-        /** UI preference: Show only personal collections
-         value = *null* (not existing)   show all collections (default);
-         "1"                             show only personal collections */
-        const val KEY_SHOW_ONLY_PERSONAL = "show_only_personal"
-
-        const val SYNC_INTERVAL_MANUALLY = -1L
-
-        /** Static property to indicate whether AccountSettings migration is currently running.
-         * **Access must be `synchronized` with `AccountSettings::class.java`.** */
-        @Volatile
-        var currentlyUpdating = false
-
-        fun initialUserData(credentials: Credentials?): Bundle {
-            val bundle = Bundle()
-            bundle.putString(KEY_SETTINGS_VERSION, CURRENT_VERSION.toString())
-
-            if (credentials != null) {
-                if (credentials.username != null)
-                    bundle.putString(KEY_USERNAME, credentials.username)
-
-                if (credentials.certificateAlias != null)
-                    bundle.putString(KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
-
-                if (credentials.authState != null)
-                    bundle.putString(KEY_AUTH_STATE, credentials.authState.jsonSerializeString())
-            }
-
-            return bundle
-        }
-
-    }
-
     init {
         if (Looper.getMainLooper() == Looper.myLooper())
             throw IllegalThreadStateException("AccountSettings may not be used on main thread")
@@ -518,6 +433,91 @@ class AccountSettings @AssistedInject constructor(
                 logger.log(Level.SEVERE, "Couldn't update account settings", e)
             }
         }
+    }
+
+    companion object {
+
+        const val CURRENT_VERSION = 17
+        const val KEY_SETTINGS_VERSION = "version"
+
+        const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"
+        const val KEY_SYNC_INTERVAL_CALENDARS = "sync_interval_calendars"
+
+        /** Stores the tasks sync interval (in seconds) so that it can be set again when the provider is switched */
+        const val KEY_SYNC_INTERVAL_TASKS = "sync_interval_tasks"
+
+        const val KEY_USERNAME = "user_name"
+        const val KEY_CERTIFICATE_ALIAS = "certificate_alias"
+
+        /** OAuth [AuthState] (serialized as JSON) */
+        const val KEY_AUTH_STATE = "auth_state"
+
+        const val KEY_WIFI_ONLY = "wifi_only"               // sync on WiFi only (default: false)
+        const val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
+        const val KEY_IGNORE_VPNS = "ignore_vpns"           // ignore vpns at connection detection
+
+        /** Time range limitation to the past [in days]. Values:
+         *
+         * - null: default value (DEFAULT_TIME_RANGE_PAST_DAYS)
+         * - <0 (typically -1): no limit
+         * - n>0: entries more than n days in the past won't be synchronized
+         */
+        const val KEY_TIME_RANGE_PAST_DAYS = "time_range_past_days"
+        const val DEFAULT_TIME_RANGE_PAST_DAYS = 90
+
+        /**
+         * Whether a default alarm shall be assigned to received events/tasks which don't have an alarm.
+         * Value can be null (no default alarm) or an integer (default alarm shall be created this
+         * number of minutes before the event/task).
+         */
+        const val KEY_DEFAULT_ALARM = "default_alarm"
+
+        /** Whether DAVx5 sets the local calendar color to the value from service DB at every sync
+        value = *null* (not existing): true (default);
+        "0"                    false */
+        const val KEY_MANAGE_CALENDAR_COLORS = "manage_calendar_colors"
+
+        /** Whether DAVx5 populates and uses CalendarContract.Colors
+        value = *null* (not existing)   false (default);
+        "1"                     true */
+        const val KEY_EVENT_COLORS = "event_colors"
+
+        /** Contact group method:
+         *null (not existing)*     groups as separate vCards (default);
+        "CATEGORIES"              groups are per-contact CATEGORIES
+         */
+        const val KEY_CONTACT_GROUP_METHOD = "contact_group_method"
+
+        /** UI preference: Show only personal collections
+        value = *null* (not existing)   show all collections (default);
+        "1"                             show only personal collections */
+        const val KEY_SHOW_ONLY_PERSONAL = "show_only_personal"
+
+        const val SYNC_INTERVAL_MANUALLY = -1L
+
+        /** Static property to indicate whether AccountSettings migration is currently running.
+         * **Access must be `synchronized` with `AccountSettings::class.java`.** */
+        @Volatile
+        var currentlyUpdating = false
+
+        fun initialUserData(credentials: Credentials?): Bundle {
+            val bundle = Bundle()
+            bundle.putString(KEY_SETTINGS_VERSION, CURRENT_VERSION.toString())
+
+            if (credentials != null) {
+                if (credentials.username != null)
+                    bundle.putString(KEY_USERNAME, credentials.username)
+
+                if (credentials.certificateAlias != null)
+                    bundle.putString(KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
+
+                if (credentials.authState != null)
+                    bundle.putString(KEY_AUTH_STATE, credentials.authState.jsonSerializeString())
+            }
+
+            return bundle
+        }
+
     }
 
 }
