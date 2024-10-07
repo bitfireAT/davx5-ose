@@ -17,7 +17,6 @@ import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.testing.WorkManagerTestInitHelper
 import androidx.work.workDataOf
-import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
 import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
 import at.bitfire.davdroid.test.R
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -27,7 +26,6 @@ import io.mockk.mockkObject
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -68,21 +66,6 @@ class PeriodicSyncWorkerTest {
         TestAccountAuthenticator.remove(account)
     }
 
-
-    @Test
-    fun enable_enqueuesPeriodicWorker() {
-        PeriodicSyncWorker.enable(context, account, CalendarContract.AUTHORITY, 60, false)
-        val workerName = PeriodicSyncWorker.workerName(account, CalendarContract.AUTHORITY)
-        assertTrue(workScheduledOrRunning(context, workerName))
-    }
-
-    @Test
-    fun disable_removesPeriodicWorker() {
-        PeriodicSyncWorker.enable(context, account, CalendarContract.AUTHORITY, 60, false)
-        PeriodicSyncWorker.disable(context, account, CalendarContract.AUTHORITY)
-        val workerName = PeriodicSyncWorker.workerName(account, CalendarContract.AUTHORITY)
-        assertFalse(workScheduledOrRunning(context, workerName))
-    }
 
     @Test
     fun doWork_cancelsItselfOnInvalidAccount() {

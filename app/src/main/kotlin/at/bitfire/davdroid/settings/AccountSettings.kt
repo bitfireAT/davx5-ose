@@ -15,7 +15,7 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.sync.SyncUtils
-import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.ical4android.TaskProvider
@@ -46,6 +46,7 @@ class AccountSettings @AssistedInject constructor(
     private val logger: Logger,
     private val migrationsFactory: AccountSettingsMigrations.Factory,
     private val settingsManager: SettingsManager,
+    private val syncWorkerManager: SyncWorkerManager
 ) {
 
     @AssistedFactory
@@ -371,10 +372,10 @@ class AccountSettings @AssistedInject constructor(
         try {
             if (seconds == null || seconds == SYNC_INTERVAL_MANUALLY) {
                 logger.fine("Disabling periodic sync of $account/$authority")
-                PeriodicSyncWorker.disable(context, account, authority)
+                syncWorkerManager.disablePeriodic(account, authority)
             } else {
                 logger.fine("Setting periodic sync of $account/$authority to $seconds seconds (wifiOnly=$wiFiOnly)")
-                PeriodicSyncWorker.enable(context, account, authority, seconds, wiFiOnly)
+                syncWorkerManager.enablePeriodic(account, authority, seconds, wiFiOnly)
             }.result.get() // On operation (enable/disable) failure exception is thrown
         } catch (e: Exception) {
             logger.log(Level.SEVERE, "Failed to set sync interval of $account/$authority to $seconds seconds", e)

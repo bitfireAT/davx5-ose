@@ -21,6 +21,7 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.intro.IntroPage
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
@@ -48,7 +49,8 @@ class AccountsModel @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val db: AppDatabase,
     introPageFactory: IntroPageFactory,
-    private val logger: Logger
+    private val logger: Logger,
+    private val syncWorkerManager: SyncWorkerManager
 ): ViewModel() {
 
     @AssistedFactory
@@ -213,7 +215,7 @@ class AccountsModel @AssistedInject constructor(
 
         // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
         for (account in accountRepository.getAll())
-            OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
+            syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
     }
 
 }

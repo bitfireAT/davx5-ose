@@ -24,7 +24,7 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -54,7 +54,8 @@ class AccountScreenModel @AssistedInject constructor(
     getServiceCollectionPager: GetServiceCollectionPagerUseCase,
     private val logger: Logger,
     serviceRepository: DavServiceRepository,
-    private val tasksAppManager: TasksAppManager
+    private val syncWorkerManager: SyncWorkerManager,
+    tasksAppManager: TasksAppManager
 ): ViewModel() {
 
     @AssistedFactory
@@ -163,7 +164,7 @@ class AccountScreenModel @AssistedInject constructor(
 
                 // synchronize again
                 val newAccount = Account(context.getString(R.string.account_type), newName)
-                OneTimeSyncWorker.enqueueAllAuthorities(context, newAccount, manual = true)
+                syncWorkerManager.enqueueOneTimeAllAuthorities(newAccount, manual = true)
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't rename account", e)
                 error = e.localizedMessage
@@ -178,7 +179,7 @@ class AccountScreenModel @AssistedInject constructor(
     }
 
     fun sync() {
-        OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
+        syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
     }
 
 }
