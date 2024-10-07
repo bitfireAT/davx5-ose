@@ -23,8 +23,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import net.openid.appauth.AuthState
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -162,9 +160,7 @@ class AccountSettings @AssistedInject constructor(
                     throw IllegalStateException("Redundant call: migration created AccountSettings()")
                 } else {
                     currentlyUpdating = true
-                    runBlocking(Dispatchers.Default) {
-                        update(version)
-                    }
+                    update(version)
                     currentlyUpdating = false
                 }
             }
@@ -489,7 +485,7 @@ class AccountSettings @AssistedInject constructor(
 
     // update from previous account settings
 
-    private suspend fun update(baseVersion: Int) {
+    private fun update(baseVersion: Int) {
         for (toVersion in baseVersion+1 ..CURRENT_VERSION) {
             val fromVersion = toVersion-1
             logger.info("Updating account ${account.name} from version $fromVersion to $toVersion")
