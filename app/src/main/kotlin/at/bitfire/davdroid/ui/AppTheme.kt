@@ -8,10 +8,14 @@ import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
 
 @Composable
 fun AppTheme(
@@ -32,8 +36,11 @@ fun AppTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        content = content
-    )
+    val uriHandler = SafeAndroidUriHandler(LocalContext.current)
+    CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            content = content
+        )
+    }
 }
