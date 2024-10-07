@@ -154,8 +154,6 @@ open class LocalAddressBook @AssistedInject constructor(
          * @param info The corresponding collection
          */
         fun accountName(context: Context, info: Collection): String {
-            val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
-            val serviceRepository = entryPoint.serviceRepository()
             // Name the address book after given collection display name, otherwise use last URL path segment
             val sb = StringBuilder(info.displayName.let {
                 if (it.isNullOrEmpty())
@@ -164,6 +162,8 @@ open class LocalAddressBook @AssistedInject constructor(
                     it
             })
             // Add the actual account name to the address book account name
+            val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
+            val serviceRepository = entryPoint.serviceRepository()
             serviceRepository.get(info.serviceId)?.let { service ->
                 sb.append(" (${service.accountName})")
             }
