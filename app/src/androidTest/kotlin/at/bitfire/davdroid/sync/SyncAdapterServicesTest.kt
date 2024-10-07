@@ -15,8 +15,11 @@ import androidx.work.Configuration
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
-import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -39,8 +42,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.Timeout
 import java.util.concurrent.Executors
+import java.util.logging.Logger
 import javax.inject.Inject
-import javax.inject.Provider
 import kotlin.coroutines.cancellation.CancellationException
 
 @HiltAndroidTest
@@ -49,11 +52,23 @@ class SyncAdapterServicesTest {
     lateinit var account: Account
 
     @Inject
+    lateinit var accountSettingsFactory: AccountSettings.Factory
+
+    @Inject
+    lateinit var collectionRepository: DavCollectionRepository
+
+    @Inject
     @ApplicationContext
     lateinit var context: Context
 
     @Inject
-    lateinit var syncAdapterProvider: Provider<SyncAdapterService.SyncAdapter>
+    lateinit var logger: Logger
+
+    @Inject
+    lateinit var serviceRepository: DavServiceRepository
+
+    @Inject
+    lateinit var syncConditionsFactory: SyncConditions.Factory
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -87,14 +102,29 @@ class SyncAdapterServicesTest {
     }
 
 
+    private fun syncAdapter(
+        syncWorkerManager: SyncWorkerManager
+    ): SyncAdapterService.SyncAdapter =
+        SyncAdapterService.SyncAdapter(
+            accountSettingsFactory = accountSettingsFactory,
+            collectionRepository = collectionRepository,
+            serviceRepository = serviceRepository,
+            context = context,
+            logger = logger,
+            syncConditionsFactory = syncConditionsFactory,
+            syncWorkerManager = syncWorkerManager
+        )
+
+
     @Test
     fun testSyncAdapter_onPerformSync_cancellation() {
-        val syncAdapter = syncAdapterProvider.get()
+        val syncWorkerManager = mockk<SyncWorkerManager>()
+        val syncAdapter = syncAdapter(syncWorkerManager = syncWorkerManager)
         val workManager = WorkManager.getInstance(context)
 
-        mockkObject(OneTimeSyncWorker, workManager) {
+        mockkObject(workManager) {
             // don't actually create a worker
-            every { OneTimeSyncWorker.enqueue(any(), any(), any()) } returns "TheSyncWorker"
+            every { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
 
             // assume worker takes a long time
             every { workManager.getWorkInfosForUniqueWorkFlow("TheSyncWorker") } just Awaits
@@ -115,12 +145,13 @@ class SyncAdapterServicesTest {
 
     @Test
     fun testSyncAdapter_onPerformSync_returnsAfterTimeout() {
-        val syncAdapter = syncAdapterProvider.get()
+        val syncWorkerManager = mockk<SyncWorkerManager>()
+        val syncAdapter = syncAdapter(syncWorkerManager = syncWorkerManager)
         val workManager = WorkManager.getInstance(context)
 
-        mockkObject(OneTimeSyncWorker, workManager) {
+        mockkObject(workManager) {
             // don't actually create a worker
-            every { OneTimeSyncWorker.enqueue(any(), any(), any()) } returns "TheSyncWorker"
+            every { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
 
             // assume worker takes a long time
             every { workManager.getWorkInfosForUniqueWorkFlow("TheSyncWorker") } just Awaits
@@ -136,12 +167,13 @@ class SyncAdapterServicesTest {
 
     @Test
     fun testSyncAdapter_onPerformSync_runsInTime() {
-        val syncAdapter = syncAdapterProvider.get()
+        val syncWorkerManager = mockk<SyncWorkerManager>()
+        val syncAdapter = syncAdapter(syncWorkerManager = syncWorkerManager)
         val workManager = WorkManager.getInstance(context)
 
-        mockkObject(OneTimeSyncWorker, workManager) {
+        mockkObject(workManager) {
             // don't actually create a worker
-            every { OneTimeSyncWorker.enqueue(any(), any(), any()) } returns "TheSyncWorker"
+            every { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
 
             // assume worker immediately returns with success
             val success = mockk<WorkInfo>()
