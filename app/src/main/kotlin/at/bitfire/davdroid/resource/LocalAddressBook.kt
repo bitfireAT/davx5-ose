@@ -24,7 +24,7 @@ import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.sync.account.AccountUtils
+import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.vcard4android.AndroidAddressBook
@@ -91,7 +91,7 @@ open class LocalAddressBook @AssistedInject constructor(
             val account = Account(accountName(context, info), context.getString(R.string.account_type_address_book))
             val userData = initialUserData(info.url.toString(), info.id.toString())
             logger.log(Level.INFO, "Creating local address book $account", userData)
-            if (!AccountUtils.createAccount(context, account, userData))
+            if (!SystemAccountUtils.createAccount(context, account, userData))
                 throw IllegalStateException("Couldn't create address book account")
 
             val factory = entryPoint.localAddressBookFactory()

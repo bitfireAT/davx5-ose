@@ -23,7 +23,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.sync.account.AccountUtils
+import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -77,7 +77,7 @@ class AccountRepository @Inject constructor(
         val userData = AccountSettings.initialUserData(credentials)
         logger.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
 
-        if (!AccountUtils.createAccount(context, account, userData, credentials?.password))
+        if (!SystemAccountUtils.createAccount(context, account, userData, credentials?.password))
             return null
 
         // add entries for account to service DB
