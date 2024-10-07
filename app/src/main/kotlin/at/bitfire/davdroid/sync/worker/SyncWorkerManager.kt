@@ -35,7 +35,6 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker.Companion.workerName
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
-import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -45,7 +44,8 @@ import javax.inject.Inject
  * One-time sync workers can be enqueued. Periodic sync workers can be enabled and disabled.
  */
 class SyncWorkerManager @Inject constructor(
-    @ApplicationContext val context: Context
+    @ApplicationContext val context: Context,
+    val logger: Logger
 ) {
 
     // one-time sync workers
@@ -125,7 +125,7 @@ class SyncWorkerManager @Inject constructor(
             resync = resync,
             upload = upload
         )
-        Logger.getGlobal().log(Level.INFO, "Enqueueing unique worker: $name, tags = ${request.tags}")
+        logger.info("Enqueueing unique worker: $name, tags = ${request.tags}")
         WorkManager.getInstance(context).enqueueUniqueWork(
             name,
             /* If sync is already running, just continue.
