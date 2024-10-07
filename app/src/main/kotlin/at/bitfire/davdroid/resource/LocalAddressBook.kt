@@ -164,7 +164,7 @@ open class LocalAddressBook @AssistedInject constructor(
                     it
             })
             // Add the actual account name to the address book account name
-            serviceRepository.get(info.id)?.let { service ->
+            serviceRepository.get(info.serviceId)?.let { service ->
                 sb.append(" (${service.accountName})")
             }
             // Add the collection ID for uniqueness
