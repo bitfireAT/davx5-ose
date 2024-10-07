@@ -4,7 +4,9 @@
 
 package at.bitfire.davdroid.sync.account
 
+import android.accounts.Account
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -17,6 +19,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import java.time.Duration
 import java.util.concurrent.Semaphore
@@ -32,6 +35,12 @@ class AccountsCleanupWorker @AssistedInject constructor(
     private val db: AppDatabase,
     private val logger: Logger
 ): Worker(appContext, workerParameters) {
+
+    @AssistedFactory
+    @VisibleForTesting
+    interface Factory {
+        fun create(appContext: Context, workerParams: WorkerParameters): AccountsCleanupWorker
+    }
 
     companion object {
         const val NAME = "accounts-cleanup"
@@ -95,15 +104,26 @@ class AccountsCleanupWorker @AssistedInject constructor(
             serviceDao.deleteExceptAccounts(accountNames.toTypedArray())
 
         // Delete orphan address book accounts (where db collection is missing)
+        deleteOrphanAddressBookAccounts(addressBookAccounts)
+    }
+
+    /**
+     * Deletes address book accounts if they do not have a corresponding collection
+     * @param addressBookAccounts Address book accounts to check
+     */
+    @VisibleForTesting
+    internal fun deleteOrphanAddressBookAccounts(addressBookAccounts: Array<Account>) {
         addressBookAccounts.forEach { addressBookAccount ->
             val collection = accountRepository.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)
                 ?.toLongOrNull()
                 ?.let { collectionId ->
                     collectionRepository.get(collectionId)
                 }
-            if (collection == null)
+            if (collection == null) {
                 // If no collection for this address book exists, we can delete it
+                logger.info("Deleting address book account without collection: $addressBookAccount ")
                 accountRepository.removeAccountExplicitly(addressBookAccount)
+            }
         }
     }
 
