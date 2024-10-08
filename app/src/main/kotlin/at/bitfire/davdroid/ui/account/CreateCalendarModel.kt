@@ -17,6 +17,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.text.Collator
+import java.time.ZoneId
+import java.time.format.TextStyle
+import java.util.Locale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -24,11 +28,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import java.text.Collator
-import java.time.ZoneId
-import java.time.format.TextStyle
-import java.util.Locale
-import java.util.TimeZone
 
 @HiltViewModel(assistedFactory = CreateCalendarModel.Factory::class)
 class CreateCalendarModel @AssistedInject constructor(
@@ -75,7 +74,7 @@ class CreateCalendarModel @AssistedInject constructor(
         val color: Int = Css3Color.entries.random().argb,
         val displayName: String = "",
         val description: String = "",
-        val timeZoneId: String? = TimeZone.getDefault().id,
+        val timeZoneId: String? = null,
         val supportVEVENT: Boolean = true,
         val supportVTODO: Boolean = true,
         val supportVJOURNAL: Boolean = true,
