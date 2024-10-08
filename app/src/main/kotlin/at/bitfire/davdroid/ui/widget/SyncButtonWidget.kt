@@ -29,16 +29,16 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextDefaults
 import androidx.glance.unit.ColorProvider
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.ui.M3ColorScheme
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -107,16 +107,14 @@ class SyncButtonWidget : GlanceAppWidget() {
 
 
     class Model @Inject constructor(
+        private val accountRepository: AccountRepository,
         @ApplicationContext val context: Context,
-        private val accountRepository: AccountRepository
+        private val syncWorkerManager: SyncWorkerManager
     ): ViewModel() {
 
-        fun requestSync() {
-            CoroutineScope(Dispatchers.Default).launch {
-                for (account in accountRepository.getAll()) {
-                    OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
-                }
-            }
+        fun requestSync() = viewModelScope.launch(Dispatchers.Default) {
+            for (account in accountRepository.getAll())
+                syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
         }
 
     }

@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Build
 import android.provider.CalendarContract
+import androidx.annotation.IntDef
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
@@ -54,8 +55,21 @@ abstract class BaseSyncWorker(
         const val INPUT_ACCOUNT_TYPE = "accountType"
         const val INPUT_AUTHORITY = "authority"
 
-        /** set to true for user-initiated sync that skips network checks */
+        /** set to `true` for user-initiated sync that skips network checks */
         const val INPUT_MANUAL = "manual"
+
+        /** set to `true` for syncs that are caused by local changes */
+        const val INPUT_UPLOAD = "upload"
+
+        /** Whether re-synchronization is requested. One of [NO_RESYNC] (default), [RESYNC] or [FULL_RESYNC]. */
+        const val INPUT_RESYNC = "resync"
+        @IntDef(NO_RESYNC, RESYNC, FULL_RESYNC)
+        annotation class InputResync
+        const val NO_RESYNC = 0
+        /** Re-synchronization is requested. See [Syncer.SYNC_EXTRAS_RESYNC] for details. */
+        const val RESYNC = 1
+        /** Full re-synchronization is requested. See [Syncer.SYNC_EXTRAS_FULL_RESYNC] for details. */
+        const val FULL_RESYNC = 2
 
         /**
          * How often this work will be retried to run after soft (network) errors.
@@ -217,11 +231,11 @@ abstract class BaseSyncWorker(
 
         // pass possibly supplied flags to the selected syncer
         val extrasList = mutableListOf<String>()
-        when (inputData.getInt(OneTimeSyncWorker.ARG_RESYNC, OneTimeSyncWorker.NO_RESYNC)) {
-            OneTimeSyncWorker.RESYNC ->      extrasList.add(Syncer.SYNC_EXTRAS_RESYNC)
-            OneTimeSyncWorker.FULL_RESYNC -> extrasList.add(Syncer.SYNC_EXTRAS_FULL_RESYNC)
+        when (inputData.getInt(INPUT_RESYNC, NO_RESYNC)) {
+            RESYNC ->      extrasList.add(Syncer.SYNC_EXTRAS_RESYNC)
+            FULL_RESYNC -> extrasList.add(Syncer.SYNC_EXTRAS_FULL_RESYNC)
         }
-        if (inputData.getBoolean(OneTimeSyncWorker.ARG_UPLOAD, false))
+        if (inputData.getBoolean(INPUT_UPLOAD, false))
             // Comes in through SyncAdapterService and is used only by ContactsSyncManager for an Android 7 workaround.
             extrasList.add(ContentResolver.SYNC_EXTRAS_UPLOAD)
         val extras = extrasList.toTypedArray()

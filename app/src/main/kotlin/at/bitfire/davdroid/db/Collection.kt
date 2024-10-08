@@ -72,11 +72,28 @@ data class Collection(
      */
     var url: HttpUrl,
 
+    /**
+     * Whether we have the permission to change contents of the collection on the server.
+     * Even if this flag is set, there may still be other reasons why a collection is effectively read-only.
+     */
     var privWriteContent: Boolean = true,
+    /**
+     * Whether we have the permission to delete the collection on the server
+     */
     var privUnbind: Boolean = true,
+    /**
+     * Whether the user has manually set the "force read-only" flag.
+     * Even if this flag is not set, there may still be other reasons why a collection is effectively read-only.
+     */
     var forceReadOnly: Boolean = false,
 
+    /**
+     * Human-readable name of the collection
+     */
     var displayName: String? = null,
+    /**
+     * Human-readable description of the collection
+     */
     var description: String? = null,
 
     // CalDAV only

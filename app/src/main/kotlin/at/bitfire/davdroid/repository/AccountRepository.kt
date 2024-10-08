@@ -23,10 +23,10 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.sync.account.AccountUtils
+import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
-import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.vcard4android.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -52,6 +52,7 @@ class AccountRepository @Inject constructor(
     private val logger: Logger,
     private val settingsManager: SettingsManager,
     private val serviceRepository: DavServiceRepository,
+    private val syncWorkerManager: SyncWorkerManager,
     private val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
@@ -76,7 +77,7 @@ class AccountRepository @Inject constructor(
         val userData = AccountSettings.initialUserData(credentials)
         logger.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
 
-        if (!AccountUtils.createAccount(context, account, userData, credentials?.password))
+        if (!SystemAccountUtils.createAccount(context, account, userData, credentials?.password))
             return null
 
         // add entries for account to service DB
@@ -237,7 +238,7 @@ class AccountRepository @Inject constructor(
 
             // disable periodic syncs for old account
             syncIntervals.forEach { (authority, _) ->
-                PeriodicSyncWorker.disable(context, oldAccount, authority)
+                syncWorkerManager.disablePeriodic(oldAccount, authority)
             }
 
             // update account name references in database

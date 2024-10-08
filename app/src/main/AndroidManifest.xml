@@ -130,7 +130,9 @@
             <intent-filter>
                 <action android:name="loginFlow" /> <!-- Ensures this filter matches, even if the sending app is not defining an action -->
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="http" />
+                <data
+                    tools:ignore="AppLinkUrlError"
+                    android:scheme="http" />
                 <data android:scheme="https" />
             </intent-filter>
         </activity>

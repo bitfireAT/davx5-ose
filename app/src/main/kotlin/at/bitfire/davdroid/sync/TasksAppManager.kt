@@ -21,7 +21,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
@@ -46,7 +46,8 @@ class TasksAppManager @Inject constructor(
     private val db: AppDatabase,
     private val logger: Logger,
     private val notificationRegistry: Lazy<NotificationRegistry>,
-    private val settingsManager: SettingsManager
+    private val settingsManager: SettingsManager,
+    private val syncWorkerManager: SyncWorkerManager
 ) {
 
     /**
@@ -147,11 +148,11 @@ class TasksAppManager @Inject constructor(
                 ContentResolver.setIsSyncable(account, authority, 0)
 
                 // disable periodic sync worker
-                PeriodicSyncWorker.disable(context, account, authority)
+                syncWorkerManager.disablePeriodic(account, authority)
             }
         } catch (e: InvalidAccountException) {
             // account has already been removed, make sure periodic sync is disabled, too
-            PeriodicSyncWorker.disable(context, account, authority)
+            syncWorkerManager.disablePeriodic(account, authority)
         }
     }
 

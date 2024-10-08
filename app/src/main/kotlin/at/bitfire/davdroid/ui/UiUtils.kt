@@ -50,14 +50,12 @@ object UiUtils {
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface UiUtilsEntryPoint {
+        fun logger(): Logger
         fun settingsManager(): SettingsManager
     }
 
     const val SHORTCUT_SYNC_ALL = "syncAllAccounts"
-    
-    private val logger: Logger
-        get() = Logger.getGlobal()
-    
+
 
     @Composable
     fun adaptiveIconPainterResource(@DrawableRes id: Int): Painter {
@@ -92,6 +90,7 @@ object UiUtils {
                             .build()
                     )
                 } catch(e: Exception) {
+                    val logger = EntryPointAccessors.fromApplication(context, UiUtilsEntryPoint::class.java).logger()
                     logger.log(Level.WARNING, "Couldn't update dynamic shortcut(s)", e)
                 }
             }
@@ -130,8 +129,11 @@ object UiUtils {
                         start = start, end = end
                     )
                 }
-                else ->
+                else -> {
+                    val context = LocalContext.current
+                    val logger = EntryPointAccessors.fromApplication(context, UiUtilsEntryPoint::class.java).logger()
                     logger.warning("Ignoring unknown span type ${span.javaClass.name}")
+                }
             }
         }
     }

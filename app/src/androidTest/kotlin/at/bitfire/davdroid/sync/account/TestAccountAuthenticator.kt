@@ -52,7 +52,7 @@ class TestAccountAuthenticator: Service() {
             val accountType = context.getString(R.string.account_type_test)
             val account = Account("Test Account", accountType)
 
-            assertTrue(AccountUtils.createAccount(context, account, AccountSettings.initialUserData(null)))
+            assertTrue(SystemAccountUtils.createAccount(context, account, AccountSettings.initialUserData(null)))
 
             return account
         }
