@@ -10,10 +10,10 @@ import android.content.Context
 import android.os.Bundle
 import at.bitfire.davdroid.util.setAndVerifyUserData
 
-object AccountUtils {
+object SystemAccountUtils {
 
     /**
-     * Creates an account and makes sure the user data are set correctly.
+     * Creates a system account and makes sure the user data are set correctly.
      *
      * @param context  operating context
      * @param account  account to create

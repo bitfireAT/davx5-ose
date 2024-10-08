@@ -54,7 +54,7 @@ class AccountUtilsTest {
 
         val manager = AccountManager.get(context)
         try {
-            assertTrue(AccountUtils.createAccount(context, account, userData))
+            assertTrue(SystemAccountUtils.createAccount(context, account, userData))
 
             // validate user data
             assertEquals("1", manager.getUserData(account, "int"))
