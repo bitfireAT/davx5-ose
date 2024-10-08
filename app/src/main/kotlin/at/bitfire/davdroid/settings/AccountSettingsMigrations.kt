@@ -98,7 +98,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
                 val collection = collectionRepository.getByServiceAndUrl(service.id, url)
                     ?: continue
                 val localAddressBook = localAddressBookFactory.create(oldAddressBookAccount, provider)
-                localAddressBook.update(collection, collection.forceReadOnly)
+                localAddressBook.update(collection)
             }
         }
     }

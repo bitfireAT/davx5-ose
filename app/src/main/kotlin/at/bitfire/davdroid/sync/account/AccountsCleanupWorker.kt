@@ -23,7 +23,6 @@ import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECT
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Duration
 import java.util.concurrent.Semaphore
 import java.util.logging.Level
@@ -31,14 +30,13 @@ import java.util.logging.Logger
 
 @HiltWorker
 class AccountsCleanupWorker @AssistedInject constructor(
-    @Assisted appContext: Context,
+    @Assisted val context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val accountRepository: AccountRepository,
-    @ApplicationContext private val context: Context,
     private val collectionRepository: DavCollectionRepository,
     private val db: AppDatabase,
     private val logger: Logger
-): Worker(appContext, workerParameters) {
+): Worker(context, workerParameters) {
 
     @AssistedFactory
     @VisibleForTesting
