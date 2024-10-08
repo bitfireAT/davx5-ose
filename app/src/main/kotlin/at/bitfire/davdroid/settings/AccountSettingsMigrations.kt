@@ -70,11 +70,12 @@ class AccountSettingsMigrations @AssistedInject constructor(
     val accountManager: AccountManager = AccountManager.get(context)
 
     /**
-     * With DAVx5 4.3.3 address book accounts now contain the collection ID as a unique identifier.
-     * We need to update the address book account names.
+     * With DAVx5 4.3.3 address book account names now contain the collection ID as a unique
+     * identifier. We need to update the address book account names.
      */
     @Suppress("unused","FunctionName")
     fun update_16_17() {
+        val addressBookAccountType = context.getString(R.string.account_type_address_book)
         try {
             context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
         } catch (e: SecurityException) {
@@ -87,9 +88,11 @@ class AccountSettingsMigrations @AssistedInject constructor(
             }
             val service = serviceRepository.getByAccountAndType(account.name, Service.TYPE_CARDDAV)
                 ?: return
-            val oldAddressBookAccounts = accountRepository.getAddressBookAccounts().filter {
-                account.name == accountManager.getUserData(it, "real_account_name")
-            }
+            // Get all old address books = the ones which have a 'main account' in "real_account_name".
+            val oldAddressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)
+                .filter { addressBookAccount ->
+                    account.name == accountManager.getUserData(addressBookAccount, "real_account_name")
+                }
             for (oldAddressBookAccount in oldAddressBookAccounts) {
                 val url = accountManager.getUserData(oldAddressBookAccount, LocalAddressBook.USER_DATA_URL)
                 val collection = collectionRepository.getByServiceAndUrl(service.id, url)

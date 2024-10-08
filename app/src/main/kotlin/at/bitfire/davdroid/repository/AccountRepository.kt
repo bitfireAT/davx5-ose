@@ -23,8 +23,8 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
+import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.vcard4android.GroupMethod
@@ -57,7 +57,6 @@ class AccountRepository @Inject constructor(
 ) {
 
     private val accountType = context.getString(R.string.account_type)
-    private val addressBookAccountType = context.getString(R.string.account_type_address_book)
     private val accountManager = AccountManager.get(context)
 
     /**
@@ -166,16 +165,7 @@ class AccountRepository @Inject constructor(
     fun fromName(accountName: String) =
         Account(accountName, accountType)
 
-    /**
-     * Gets all real accounts (but not address book accounts)
-     */
     fun getAll(): Array<Account> = accountManager.getAccountsByType(accountType)
-
-    /**
-     * Gets only address book accounts
-     */
-    fun getAddressBookAccounts(): Array<Account> =
-        accountManager.getAccountsByType(addressBookAccountType)
 
     fun getAllFlow() = callbackFlow<Set<Account>> {
         val listener = OnAccountsUpdateListener { accounts ->
@@ -189,16 +179,6 @@ class AccountRepository @Inject constructor(
             accountManager.removeOnAccountsUpdatedListener(listener)
         }
     }
-
-    /**
-     * Get user data stored in account.
-     */
-    fun getUserData(account: Account, key: String) = accountManager.getUserData(account, key)
-
-    /**
-     * Removes the account in question directly in the background, without user interaction.
-     */
-    fun removeAccountExplicitly(account: Account) = accountManager.removeAccountExplicitly(account)
 
     /**
      * Renames an account.

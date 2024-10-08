@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync.account
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
@@ -14,6 +15,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -21,6 +23,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECT
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Duration
 import java.util.concurrent.Semaphore
 import java.util.logging.Level
@@ -31,6 +34,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val accountRepository: AccountRepository,
+    @ApplicationContext private val context: Context,
     private val collectionRepository: DavCollectionRepository,
     private val db: AppDatabase,
     private val logger: Logger
@@ -41,6 +45,8 @@ class AccountsCleanupWorker @AssistedInject constructor(
     interface Factory {
         fun create(appContext: Context, workerParams: WorkerParameters): AccountsCleanupWorker
     }
+
+    private val accountManager = AccountManager.get(context)
 
     override fun doWork(): Result {
         lockAccountsCleanup()
@@ -53,17 +59,12 @@ class AccountsCleanupWorker @AssistedInject constructor(
     }
 
     private fun cleanupAccounts() {
-        val accounts = accountRepository.getAll()
-        val addressBookAccounts = accountRepository.getAddressBookAccounts()
-        logger.log(
-            Level.INFO,
-            "Cleaning up accounts. Currently existing accounts:",
-            accounts + addressBookAccounts
-        )
 
         // Later, accounts which are not in the DB should be deleted here
 
         // delete orphaned services in DB
+        val accounts = accountRepository.getAll()
+        logger.log(Level.INFO, "Cleaning up accounts. Currently existing accounts:", accounts)
         val accountNames = accounts.map { it.name }
         val serviceDao = db.serviceDao()
         if (accountNames.isEmpty())
@@ -72,7 +73,8 @@ class AccountsCleanupWorker @AssistedInject constructor(
             serviceDao.deleteExceptAccounts(accountNames.toTypedArray())
 
         // Delete orphan address book accounts (where db collection is missing)
-        deleteOrphanAddressBookAccounts(addressBookAccounts)
+        val addressBookAccountType = context.getString(R.string.account_type_address_book)
+        deleteOrphanAddressBookAccounts(accountManager.getAccountsByType(addressBookAccountType))
     }
 
     /**
@@ -82,7 +84,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
     @VisibleForTesting
     internal fun deleteOrphanAddressBookAccounts(addressBookAccounts: Array<Account>) {
         addressBookAccounts.forEach { addressBookAccount ->
-            val collection = accountRepository.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)
+            val collection = accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)
                 ?.toLongOrNull()
                 ?.let { collectionId ->
                     collectionRepository.get(collectionId)
@@ -90,7 +92,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
             if (collection == null) {
                 // If no collection for this address book exists, we can delete it
                 logger.info("Deleting address book account without collection: $addressBookAccount ")
-                accountRepository.removeAccountExplicitly(addressBookAccount)
+                accountManager.removeAccountExplicitly(addressBookAccount)
             }
         }
     }
