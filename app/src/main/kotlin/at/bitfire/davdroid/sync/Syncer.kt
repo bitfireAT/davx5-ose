@@ -96,14 +96,19 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
         // Find collections in database and provider which should be synced (are sync-enabled)
         val dbCollections = getSyncEnabledCollections()
-        val localCollections = getLocalCollections(provider).toMutableList()
+        var localCollections = getLocalCollections(provider).toMutableList()
 
         // Update/delete local collections and determine new (unknown) remote collections
-        val newDbCollections = updateCollections(localCollections, dbCollections)
+        val (newDbCollections, deletedLocalCollections) = updateCollections(localCollections, dbCollections)
 
         // Create new local collections for newly found remote collections
         val newProviderCollections = createLocalCollections(provider, newDbCollections)
         localCollections.addAll(newProviderCollections) // Add the newly created collections
+
+        // Don't sync deleted collections
+        deletedLocalCollections.forEach { deletedLocalCollection ->
+            localCollections.remove(deletedLocalCollection)
+        }
 
         // Sync local collection contents (events, contacts, tasks)
         syncCollectionContents(provider, localCollections, dbCollections)
@@ -139,20 +144,22 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     internal fun updateCollections(
         localCollections: List<CollectionType>,
         dbCollections: Map<HttpUrl, Collection>
-    ): HashMap<HttpUrl, Collection> {
+    ): Pair<HashMap<HttpUrl, Collection>, List<CollectionType>> {
         val newDbCollections = HashMap(dbCollections)   // create a copy
+        val deletedLocalCollections = mutableListOf<CollectionType>()
         for (localCollection in localCollections) {
             val dbCollection = dbCollections[localCollection.collectionUrl?.toHttpUrlOrNull()]
-            if (dbCollection == null)
+            if (dbCollection == null) {
                 // Collection not available in db = on server (anymore), delete obsolete local collection
                 localCollection.deleteCollection()
-            else {
+                deletedLocalCollections.add(localCollection)
+            } else {
                 // Collection exists locally, update local collection and remove it from "to be created" map
                 update(localCollection, dbCollection)
                 newDbCollections -= dbCollection.url
             }
         }
-        return newDbCollections
+        return Pair(newDbCollections, deletedLocalCollections)
     }
 
     /**
