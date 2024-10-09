@@ -137,16 +137,17 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
      */
     @VisibleForTesting
     internal fun updateCollections(
-        localCollections: List<CollectionType>,
+        localCollections: MutableList<CollectionType>,
         dbCollections: Map<HttpUrl, Collection>
     ): HashMap<HttpUrl, Collection> {
         val newDbCollections = HashMap(dbCollections)   // create a copy
         for (localCollection in localCollections) {
             val dbCollection = dbCollections[localCollection.collectionUrl?.toHttpUrlOrNull()]
-            if (dbCollection == null)
+            if (dbCollection == null) {
                 // Collection not available in db = on server (anymore), delete obsolete local collection
                 localCollection.deleteCollection()
-            else {
+                localCollections -= localCollection
+            } else {
                 // Collection exists locally, update local collection and remove it from "to be created" map
                 update(localCollection, dbCollection)
                 newDbCollections -= dbCollection.url
