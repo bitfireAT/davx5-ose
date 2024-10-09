@@ -20,6 +20,7 @@ import io.mockk.spyk
 import io.mockk.verify
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -84,10 +85,13 @@ class SyncerTest {
         val localCollection = mockk<LocalTestCollection>()
         every { localCollection.collectionUrl } returns "http://delete.the/collection"
         every { localCollection.deleteCollection() } returns true
+        every { localCollection.title } returns "Collection to be deleted locally"
 
         // Should delete the localCollection if dbCollection (remote) does not exist
-        syncer.updateCollections(listOf(localCollection), dbCollections = emptyMap())
+        val localCollections = mutableListOf(localCollection)
+        syncer.updateCollections(localCollections, dbCollections = emptyMap())
         verify(exactly = 1) { localCollection.deleteCollection() }
+        assertTrue(localCollections.isEmpty())
     }
 
     @Test
@@ -99,9 +103,11 @@ class SyncerTest {
         every { localCollection.collectionUrl } returns "http://update.the/collection"
 
         // Should update the localCollection if it exists ...
-        val newCollections = syncer.updateCollections(listOf(localCollection), dbCollections)
+        val localCollections = mutableListOf(localCollection)
+        val newCollections = syncer.updateCollections(localCollections, dbCollections)
         verify(exactly = 1) { syncer.update(localCollection, dbCollection) }
         // ... and remove it from the "new found" collections which are to be created
+        assertArrayEquals(arrayOf(localCollection), localCollections.toTypedArray())
         assertTrue(newCollections.isEmpty())
     }
 
@@ -112,8 +118,10 @@ class SyncerTest {
         every { dbCollection.url } returns "http://newly.found/collection".toHttpUrl()
 
         // Should return the new collection, because it was not updated
-        val newCollections = syncer.updateCollections(listOf(), dbCollections)
+        val localCollections = mutableListOf<LocalTestCollection>()
+        val newCollections = syncer.updateCollections(localCollections, dbCollections)
         assertEquals(dbCollection, newCollections["http://newly.found/collection".toHttpUrl()])
+        assertTrue(localCollections.isEmpty())
     }
 
 
