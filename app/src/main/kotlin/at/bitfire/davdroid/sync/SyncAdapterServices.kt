@@ -97,7 +97,7 @@ abstract class SyncAdapterService: Service() {
                 accountOrAddressBookAccount
 
             if (account == null) {
-                logger.warning("No valid collection/service/account for address book $accountOrAddressBookAccount")
+                logger.warning("Address book account $accountOrAddressBookAccount doesn't have an associated collection")
                 return
             }
 
@@ -146,7 +146,7 @@ abstract class SyncAdapterService: Service() {
                         waitJob.join()              // wait until worker has finished
                     }
                 }
-            } catch (e: CancellationException) {
+            } catch (_: CancellationException) {
                 // waiting for work was cancelled, either by timeout or because the worker has finished
                 logger.fine("Not waiting for OneTimeSyncWorker anymore.")
             }

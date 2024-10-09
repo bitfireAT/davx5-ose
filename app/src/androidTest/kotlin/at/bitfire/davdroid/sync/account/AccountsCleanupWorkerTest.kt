@@ -5,6 +5,7 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
@@ -16,7 +17,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -36,17 +36,20 @@ class AccountsCleanupWorkerTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
-    @ApplicationContext
-    lateinit var context: Context
+    lateinit var accountsCleanupWorkerFactory: AccountsCleanupWorker.Factory
 
     @Inject
-    lateinit var accountsCleanupWorkerFactory: AccountsCleanupWorker.Factory
+    @ApplicationContext
+    lateinit var context: Context
 
     @Inject
     lateinit var db: AppDatabase
 
     @Inject
     lateinit var settingsManager: SettingsManager
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
 
     lateinit var accountManager: AccountManager
     lateinit var addressBookAccountType: String
@@ -57,9 +60,9 @@ class AccountsCleanupWorkerTest {
     fun setUp() {
         hiltRule.inject()
 
-        service = createTestService(Service.TYPE_CARDDAV)!!
+        service = createTestService(Service.TYPE_CARDDAV)
 
-        // Create test account
+        // Prepare test account
         accountManager = AccountManager.get(context)
         addressBookAccountType = context.getString(R.string.account_type_address_book)
         addressBookAccount = Account(
@@ -70,6 +73,7 @@ class AccountsCleanupWorkerTest {
         // Initialize WorkManager for instrumentation tests.
         val config = Configuration.Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
+            .setWorkerFactory(workerFactory)
             .build()
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
@@ -80,10 +84,12 @@ class AccountsCleanupWorkerTest {
         accountManager.removeAccountExplicitly(addressBookAccount)
     }
 
+
     @Test
-    fun testDeleteOrphanAddressBookAccounts_deletesAddressBookAccountsWithoutCollection() {
+    fun testDeleteOrphanedAddressBookAccounts_deletesAddressBookAccountWithoutCollection() {
         // Create address book account without corresponding collection
         assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, null))
+
         val addressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)
         assertEquals(addressBookAccount, addressBookAccounts.firstOrNull())
 
@@ -94,28 +100,28 @@ class AccountsCleanupWorkerTest {
                     accountsCleanupWorkerFactory.create(appContext, workerParameters)
             })
             .build()
-        worker.deleteOrphanAddressBookAccounts(addressBookAccounts)
+        worker.deleteOrphanedAddressBookAccounts(addressBookAccounts)
 
         // Verify account was deleted
         assertTrue(accountManager.getAccountsByType(addressBookAccountType).isEmpty())
     }
 
     @Test
-    fun testDeleteOrphanAddressBookAccounts_leavesAddressBookAccountsWithoutCollection() {
+    fun testDeleteOrphanedAddressBookAccounts_leavesAddressBookAccountWithCollection() {
         // Create address book account _with_ corresponding collection and verify
-        val theAccountId = 0L
+        val randomCollectionId = 12345L
         val userData = Bundle(1).apply {
-            putString(USER_DATA_COLLECTION_ID, "$theAccountId")
+            putString(USER_DATA_COLLECTION_ID, "$randomCollectionId")
         }
         assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, userData))
-        accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_COLLECTION_ID, "$theAccountId")
+
         val addressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)
-        assertEquals("$theAccountId", accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID))
+        assertEquals(randomCollectionId, accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID).toLong())
 
         // Create the collection
         val collectionDao = db.collectionDao()
         collectionDao.insert(Collection(
-            theAccountId,
+            randomCollectionId,
             serviceId = service.id,
             type = Collection.TYPE_ADDRESSBOOK,
             url = "http://www.example.com/yay.php".toHttpUrl()
@@ -128,19 +134,19 @@ class AccountsCleanupWorkerTest {
                     accountsCleanupWorkerFactory.create(appContext, workerParameters)
             })
             .build()
-        worker.deleteOrphanAddressBookAccounts(addressBookAccounts)
+        worker.deleteOrphanedAddressBookAccounts(addressBookAccounts)
 
         // Verify account was _not_ deleted
         assertEquals(addressBookAccount, addressBookAccounts.firstOrNull())
     }
 
 
-    // Test helpers and dependencies
+    // helpers
 
-    private fun createTestService(serviceType: String) : Service? {
+    private fun createTestService(serviceType: String): Service {
         val service = Service(id=0, accountName="test", type=serviceType, principal = null)
         val serviceId = db.serviceDao().insertOrReplace(service)
-        return db.serviceDao().get(serviceId)
+        return db.serviceDao().get(serviceId)!!
     }
 
 }

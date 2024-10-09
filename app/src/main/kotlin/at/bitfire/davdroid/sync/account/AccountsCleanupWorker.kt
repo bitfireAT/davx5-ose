@@ -57,30 +57,29 @@ class AccountsCleanupWorker @AssistedInject constructor(
     }
 
     private fun cleanupAccounts() {
-
         // Later, accounts which are not in the DB should be deleted here
 
-        // delete orphaned services in DB
+        // Delete orphaned services in DB – only necessary as long as accounts are implemented as system accounts (not in DB)
         val accounts = accountRepository.getAll()
         logger.log(Level.INFO, "Cleaning up accounts. Currently existing accounts:", accounts)
-        val accountNames = accounts.map { it.name }
         val serviceDao = db.serviceDao()
-        if (accountNames.isEmpty())
+        if (accounts.isEmpty())
             serviceDao.deleteAll()
         else
-            serviceDao.deleteExceptAccounts(accountNames.toTypedArray())
+            serviceDao.deleteExceptAccounts(accounts.map { it.name }.toTypedArray())
 
-        // Delete orphan address book accounts (where db collection is missing)
+        // Delete orphaned address book accounts (where db collection is missing)
         val addressBookAccountType = context.getString(R.string.account_type_address_book)
-        deleteOrphanAddressBookAccounts(accountManager.getAccountsByType(addressBookAccountType))
+        deleteOrphanedAddressBookAccounts(accountManager.getAccountsByType(addressBookAccountType))
     }
 
     /**
      * Deletes address book accounts if they do not have a corresponding collection
+     *
      * @param addressBookAccounts Address book accounts to check
      */
     @VisibleForTesting
-    internal fun deleteOrphanAddressBookAccounts(addressBookAccounts: Array<Account>) {
+    internal fun deleteOrphanedAddressBookAccounts(addressBookAccounts: Array<Account>) {
         addressBookAccounts.forEach { addressBookAccount ->
             val collection = accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)
                 ?.toLongOrNull()
@@ -89,13 +88,15 @@ class AccountsCleanupWorker @AssistedInject constructor(
                 }
             if (collection == null) {
                 // If no collection for this address book exists, we can delete it
-                logger.info("Deleting address book account without collection: $addressBookAccount ")
+                logger.info("Deleting address book account without collection: $addressBookAccount")
                 accountManager.removeAccountExplicitly(addressBookAccount)
             }
         }
     }
 
+
     companion object {
+
         const val NAME = "accounts-cleanup"
 
         private val mutex = Semaphore(1)

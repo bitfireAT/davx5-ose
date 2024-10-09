@@ -79,26 +79,26 @@ class AccountSettingsMigrations @AssistedInject constructor(
         try {
             context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
         } catch (e: SecurityException) {
-            logger.log(Level.WARNING, "Missing permissions for contacts authority", e)
+            // Not setting the collection ID will cause the address books to removed and fully re-synced as soon as there are permissions.
+            logger.log(Level.WARNING, "Missing permissions for contacts authority, won't set collection ID for address books", e)
             null
-        }.use { provider ->
-            if (provider == null) {
-                logger.warning("Couldn't connect to content provider of contacts authority")
-                return // Don't continue without provider
-            }
-            val service = serviceRepository.getByAccountAndType(account.name, Service.TYPE_CARDDAV)
-                ?: return
+        }?.use { provider ->
+            val service = serviceRepository.getByAccountAndType(account.name, Service.TYPE_CARDDAV) ?: return
+
             // Get all old address books = the ones which have a 'main account' in "real_account_name".
             val oldAddressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)
                 .filter { addressBookAccount ->
                     account.name == accountManager.getUserData(addressBookAccount, "real_account_name")
                 }
+
             for (oldAddressBookAccount in oldAddressBookAccounts) {
+                // Old address books only have a URL, so use it to determine the collection ID
                 val url = accountManager.getUserData(oldAddressBookAccount, LocalAddressBook.USER_DATA_URL)
-                val collection = collectionRepository.getByServiceAndUrl(service.id, url)
-                    ?: continue
-                val localAddressBook = localAddressBookFactory.create(oldAddressBookAccount, provider)
-                localAddressBook.update(collection)
+                collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
+                    // Set collection ID and rename the account
+                    val localAddressBook = localAddressBookFactory.create(oldAddressBookAccount, provider)
+                    localAddressBook.update(collection)
+                }
             }
         }
     }
