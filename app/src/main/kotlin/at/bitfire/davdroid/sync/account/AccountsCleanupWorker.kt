@@ -7,8 +7,10 @@ package at.bitfire.davdroid.sync.account
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
@@ -19,6 +21,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import java.time.Duration
 import java.util.concurrent.Semaphore
@@ -27,15 +30,73 @@ import java.util.logging.Logger
 
 @HiltWorker
 class AccountsCleanupWorker @AssistedInject constructor(
-    @Assisted appContext: Context,
+    @Assisted val context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val accountRepository: AccountRepository,
     private val collectionRepository: DavCollectionRepository,
     private val db: AppDatabase,
     private val logger: Logger
-): Worker(appContext, workerParameters) {
+): Worker(context, workerParameters) {
+
+    @AssistedFactory
+    @VisibleForTesting
+    interface Factory {
+        fun create(appContext: Context, workerParams: WorkerParameters): AccountsCleanupWorker
+    }
+
+    private val accountManager = AccountManager.get(context)
+
+    override fun doWork(): Result {
+        lockAccountsCleanup()
+        try {
+            cleanupAccounts()
+        } finally {
+            unlockAccountsCleanup()
+        }
+        return Result.success()
+    }
+
+    private fun cleanupAccounts() {
+        // Later, accounts which are not in the DB should be deleted here
+
+        // Delete orphaned services in DB – only necessary as long as accounts are implemented as system accounts (not in DB)
+        val accounts = accountRepository.getAll()
+        logger.log(Level.INFO, "Cleaning up accounts. Currently existing accounts:", accounts)
+        val serviceDao = db.serviceDao()
+        if (accounts.isEmpty())
+            serviceDao.deleteAll()
+        else
+            serviceDao.deleteExceptAccounts(accounts.map { it.name }.toTypedArray())
+
+        // Delete orphaned address book accounts (where db collection is missing)
+        val addressBookAccountType = context.getString(R.string.account_type_address_book)
+        deleteOrphanedAddressBookAccounts(accountManager.getAccountsByType(addressBookAccountType))
+    }
+
+    /**
+     * Deletes address book accounts if they do not have a corresponding collection
+     *
+     * @param addressBookAccounts Address book accounts to check
+     */
+    @VisibleForTesting
+    internal fun deleteOrphanedAddressBookAccounts(addressBookAccounts: Array<Account>) {
+        addressBookAccounts.forEach { addressBookAccount ->
+            val collection = accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)
+                ?.toLongOrNull()
+                ?.let { collectionId ->
+                    collectionRepository.get(collectionId)
+                }
+            if (collection == null) {
+                // If no collection for this address book exists, we can delete it
+                logger.info("Deleting address book account without collection: $addressBookAccount")
+                accountManager.removeAccountExplicitly(addressBookAccount)
+            }
+        }
+    }
+
 
     companion object {
+
         const val NAME = "accounts-cleanup"
 
         private val mutex = Semaphore(1)
@@ -48,57 +109,23 @@ class AccountsCleanupWorker @AssistedInject constructor(
         fun unlockAccountsCleanup() = mutex.release()
 
         /**
-         * Enqueues [AccountsCleanupWorker] to be run regularly (but not necessarily now).
+         * Enqueues [AccountsCleanupWorker] to be run once as soon as possible.
          */
         fun enqueue(context: Context) {
+            // run once
+            val rq = OneTimeWorkRequestBuilder<AccountsCleanupWorker>()
+            WorkManager.getInstance(context).enqueue(rq.build())
+        }
+
+        /**
+         * Enqueues [AccountsCleanupWorker] to be run regularly (but not necessarily now).
+         */
+        fun enable(context: Context) {
             // run every day
             val rq = PeriodicWorkRequestBuilder<AccountsCleanupWorker>(Duration.ofDays(1))
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.UPDATE, rq.build())
         }
 
-    }
-
-    override fun doWork(): Result {
-        lockAccountsCleanup()
-        try {
-            cleanupAccounts(accountRepository.getAll())
-        } finally {
-            unlockAccountsCleanup()
-        }
-        return Result.success()
-    }
-
-    private fun cleanupAccounts(accounts: Array<out Account>) {
-        logger.log(Level.INFO, "Cleaning up accounts. Current accounts in DB:", accounts)
-
-        // Later, accounts which are not in the DB should be deleted here
-
-        val accountType = applicationContext.getString(R.string.account_type)
-        val accountNames = accounts
-            .filter { account -> account.type == accountType }
-            .map { it.name }
-
-        // delete orphaned services in DB
-        val serviceDao = db.serviceDao()
-        if (accountNames.isEmpty())
-            serviceDao.deleteAll()
-        else
-            serviceDao.deleteExceptAccounts(accountNames.toTypedArray())
-
-        // Delete orphan address book accounts (where db collection is missing)
-        val accountManager = AccountManager.get(applicationContext)
-        accounts.filter { account ->
-            account.type == applicationContext.getString(R.string.account_type_address_book)
-        }.forEach { addressBookAccount ->
-            val collection = accountManager
-                .getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)
-                .toLongOrNull()?.let { collectionId ->
-                    collectionRepository.get(collectionId)
-                }
-            if (collection == null)
-                // If no collection for this address book exists, we can delete it
-                accountManager.removeAccountExplicitly(addressBookAccount)
-        }
     }
 
 }

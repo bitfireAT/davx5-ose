@@ -89,15 +89,17 @@ abstract class SyncAdapterService: Service() {
                     ?.let { collectionId ->
                     collectionRepository.get(collectionId)?.let { collection ->
                         serviceRepository.get(collection.serviceId)?.let { service ->
-                            Account(
-                                service.accountName,
-                                context.getString(R.string.account_type)
-                            )
+                            Account(service.accountName, context.getString(R.string.account_type))
                         }
                     }
-                } ?: throw IllegalArgumentException("No valid collection/service/account for address book $accountOrAddressBookAccount")
+                }
             else
                 accountOrAddressBookAccount
+
+            if (account == null) {
+                logger.warning("Address book account $accountOrAddressBookAccount doesn't have an associated collection")
+                return
+            }
 
             val accountSettings = try {
                 accountSettingsFactory.create(account)
@@ -144,7 +146,7 @@ abstract class SyncAdapterService: Service() {
                         waitJob.join()              // wait until worker has finished
                     }
                 }
-            } catch (e: CancellationException) {
+            } catch (_: CancellationException) {
                 // waiting for work was cancelled, either by timeout or because the worker has finished
                 logger.fine("Not waiting for OneTimeSyncWorker anymore.")
             }

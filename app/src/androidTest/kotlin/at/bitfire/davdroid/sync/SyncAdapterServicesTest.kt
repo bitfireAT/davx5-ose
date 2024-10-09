@@ -30,6 +30,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.unmockkAll
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -91,7 +92,6 @@ class SyncAdapterServicesTest {
         val config = Configuration.Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
             .setWorkerFactory(workerFactory)
-            .setTaskExecutor(Executors.newSingleThreadExecutor())
             .build()
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
@@ -99,6 +99,7 @@ class SyncAdapterServicesTest {
     @After
     fun tearDown() {
         TestAccountAuthenticator.remove(account)
+        unmockkAll()
     }
 
 

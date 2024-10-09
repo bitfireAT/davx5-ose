@@ -264,39 +264,50 @@ open class LocalAddressBook @AssistedInject constructor(
      * Updates the address book settings.
      *
      * @param info  collection where to take the settings from
-     * @param forceReadOnly  `true`: set the address book to "force read-only"; `false`: determine read-only flag from [info]
+     * @param forceReadOnly  `true`: set the address book to "force read-only";
+     *                       `false`: determine read-only flag from [info];
+     *                       `null`: don't change the existing value
      */
-    fun update(info: Collection, forceReadOnly: Boolean) {
-        val newAccountName = accountName(context, info)
+    fun update(info: Collection, forceReadOnly: Boolean? = null) {
+        logger.log(Level.INFO, "Updating local address book $account with collection $info")
+        val accountManager = AccountManager.get(context)
 
+        // Update the account name
+        val newAccountName = accountName(context, info)
         if (account.name != newAccountName) {
             // no need to re-assign contacts to new account, because they will be deleted by contacts provider in any case
-            val accountManager = AccountManager.get(context)
             val future = accountManager.renameAccount(account, newAccountName, null, null)
             account = future.result
         }
 
-        val nowReadOnly = forceReadOnly || !info.privWriteContent || info.forceReadOnly
-        if (nowReadOnly != readOnly) {
-            logger.info("Address book now read-only = $nowReadOnly, updating contacts")
+        // Update the account user data
+        accountManager.setAndVerifyUserData(account, USER_DATA_COLLECTION_ID, info.id.toString())
+        accountManager.setAndVerifyUserData(account, USER_DATA_URL, info.url.toString())
 
-            // update address book itself
-            readOnly = nowReadOnly
+        // Update force read only
+        if (forceReadOnly != null) {
+            val nowReadOnly = forceReadOnly || !info.privWriteContent || info.forceReadOnly
+            if (nowReadOnly != readOnly) {
+                logger.info("Address book now read-only = $nowReadOnly, updating contacts")
 
-            // update raw contacts
-            val rawContactValues = ContentValues(1)
-            rawContactValues.put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-            provider!!.update(rawContactsSyncUri(), rawContactValues, null, null)
+                // update address book itself
+                readOnly = nowReadOnly
 
-            // update data rows
-            val dataValues = ContentValues(1)
-            dataValues.put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-            provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
+                // update raw contacts
+                val rawContactValues = ContentValues(1)
+                rawContactValues.put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+                provider!!.update(rawContactsSyncUri(), rawContactValues, null, null)
 
-            // update group rows
-            val groupValues = ContentValues(1)
-            groupValues.put(Groups.GROUP_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-            provider!!.update(groupsSyncUri(), groupValues, null, null)
+                // update data rows
+                val dataValues = ContentValues(1)
+                dataValues.put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+                provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
+
+                // update group rows
+                val groupValues = ContentValues(1)
+                groupValues.put(Groups.GROUP_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+                provider!!.update(groupsSyncUri(), groupValues, null, null)
+            }
         }
 
         // make sure it will still be synchronized when contacts are updated
