@@ -138,7 +138,9 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
      *
      * @param localCollections The local collections to be updated or deleted
      * @param dbCollections The database collections possibly containing new information
-     * @return New found database collections to be created in provider
+     * @return Pair of:
+     *  1) New found database collections to be created in provider
+     *  2) Local collections which have been deleted
      */
     @VisibleForTesting
     internal fun updateCollections(
@@ -152,7 +154,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
             if (dbCollection == null) {
                 // Collection not available in db = on server (anymore), delete obsolete local collection
                 localCollection.deleteCollection()
-                deletedLocalCollections.add(localCollection)
+                deletedLocalCollections.add(localCollection) // Add to "not to be synced" list
             } else {
                 // Collection exists locally, update local collection and remove it from "to be created" map
                 update(localCollection, dbCollection)
