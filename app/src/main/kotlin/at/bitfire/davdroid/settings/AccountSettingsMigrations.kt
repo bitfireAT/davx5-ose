@@ -85,7 +85,8 @@ class AccountSettingsMigrations @AssistedInject constructor(
         }?.use { provider ->
             val service = serviceRepository.getByAccountAndType(account.name, Service.TYPE_CARDDAV) ?: return
 
-            // Get all old address books = the ones which have a 'main account' in "real_account_name".
+            // Get all old address books of this account, i.e. the ones which have a "real_account_name" of this account.
+            // After this migration is run, address books won't be associated to accounts anymore but only to their respective collection/URL.
             val oldAddressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)
                 .filter { addressBookAccount ->
                     account.name == accountManager.getUserData(addressBookAccount, "real_account_name")
@@ -93,6 +94,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
 
             for (oldAddressBookAccount in oldAddressBookAccounts) {
                 // Old address books only have a URL, so use it to determine the collection ID
+                logger.info("Migrating address book ${oldAddressBookAccount.name}")
                 val url = accountManager.getUserData(oldAddressBookAccount, LocalAddressBook.USER_DATA_URL)
                 collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
                     // Set collection ID and rename the account
