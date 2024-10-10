@@ -96,17 +96,13 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
         // Find collections in database and provider which should be synced (are sync-enabled)
         val dbCollections = getSyncEnabledCollections()
-        val localCollections = getLocalCollections(provider).toMutableList()
+        val localCollections = getLocalCollections(provider)
 
-        // Update/delete local collections and determine new (unknown) remote collections
-        val newDbCollections = updateCollections(localCollections, dbCollections)
-
-        // Create new local collections for newly found remote collections
-        val newProviderCollections = createLocalCollections(provider, newDbCollections)
-        localCollections.addAll(newProviderCollections) // Add the newly created collections
+        // Create/update/delete local collections according to DB
+        val updatedLocalCollections = updateCollections(provider, localCollections, dbCollections)
 
         // Sync local collection contents (events, contacts, tasks)
-        syncCollectionContents(provider, localCollections, dbCollections)
+        syncCollectionContents(provider, updatedLocalCollections, dbCollections)
     }
 
     /**
@@ -128,37 +124,44 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     /**
      * Updates and deletes local collections. Specifically:
      *
-     * - Deletes local collections if corresponding database collections are missing. If
-     * a local collection is removed because it's not in [dbCollections], **it becomes also removed from [localCollections]!**
-     *
+     * - Deletes local collections if corresponding database collections are missing.
      * - Updates local collections with possibly new info from corresponding database collections.
      * - Determines new database collections to be also created as local collections.
      *
-     * @param localCollections The local collections to be updated or deleted. May be modified by this method.
+     * @param localCollections The local collections to be updated or deleted.
      * @param dbCollections The database collections possibly containing new information
      *
      * @return New found database collections to be created in provider
      */
     @VisibleForTesting
     internal fun updateCollections(
-        localCollections: MutableList<CollectionType>,
+        provider: ContentProviderClient,
+        localCollections: List<CollectionType>,
         dbCollections: Map<HttpUrl, Collection>
-    ): HashMap<HttpUrl, Collection> {
-        val newDbCollections = HashMap(dbCollections)   // create a copy
+    ): List<CollectionType> {
+        // create mutable copies of input
+        val newLocalCollections = localCollections.toMutableList()
+        val newDbCollections = dbCollections.toMutableMap()
+
         for (localCollection in localCollections) {
             val dbCollection = dbCollections[localCollection.collectionUrl?.toHttpUrlOrNull()]
             if (dbCollection == null) {
-                // Collection not available in db = on server (anymore), delete obsolete local collection
+                // Collection not available in db = on server (anymore), delete
                 logger.info("Deleting local collection ${localCollection.title}")
                 localCollection.deleteCollection()
-                localCollections -= localCollection
+                newLocalCollections -= localCollection
             } else {
                 // Collection exists locally, update local collection and remove it from "to be created" map
                 update(localCollection, dbCollection)
                 newDbCollections -= dbCollection.url
             }
         }
-        return newDbCollections
+
+        // Create local collections which are in DB, but don't exist locally yet
+        val newProviderCollections = createLocalCollections(provider, newDbCollections.values.toList())
+        newLocalCollections.addAll(newProviderCollections) // Add the newly created collections
+
+        return newLocalCollections
     }
 
     /**
@@ -166,15 +169,15 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
      *
      * @param provider Content provider client to access local collections.
      * @param dbCollections Database collections to be created as local collections.
+     *
      * @return Newly created local collections.
      */
     @VisibleForTesting
     internal fun createLocalCollections(
         provider: ContentProviderClient,
-        dbCollections: Map<HttpUrl, Collection>
+        dbCollections: List<Collection>
     ): List<CollectionType> =
-        dbCollections.map { (_, collection) -> create(provider, collection) }
-
+        dbCollections.map { collection -> create(provider, collection) }
 
     /**
      * Synchronize the actual collection contents.
