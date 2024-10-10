@@ -122,11 +122,11 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     }
 
     /**
-     * Updates and deletes local collections. Specifically:
+     * Updates and deletes local collections.
      *
      * - Updates local collections with possibly new info from corresponding database collections.
-     * - Deletes local collections if corresponding database collections are missing.
-     * - Creates local collections if database collections without local match are available.
+     * - Deletes local collections without a corresponding database collection.
+     * - Creates local collections for database collections without local match.
      *
      * @param provider Content provider client, used to create local collections
      * @param localCollections The current local collections

@@ -137,8 +137,8 @@ class SyncerTest {
         every { dbCollection.url } returns "http://newly.found/collection".toHttpUrl()
 
         // Should return list of newly created local collections
-        val newLocalCollections = syncer.createLocalCollections(provider, listOf(dbCollection))
-        assertEquals(listOf(localCollection), newLocalCollections)
+        val result = syncer.createLocalCollections(provider, listOf(dbCollection))
+        assertEquals(listOf(localCollection), result)
     }
 
     
