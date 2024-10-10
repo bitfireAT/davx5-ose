@@ -20,6 +20,7 @@ import io.mockk.spyk
 import io.mockk.verify
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -84,10 +85,15 @@ class SyncerTest {
         val localCollection = mockk<LocalTestCollection>()
         every { localCollection.collectionUrl } returns "http://delete.the/collection"
         every { localCollection.deleteCollection() } returns true
+        every { localCollection.title } returns "Collection to be deleted locally"
 
         // Should delete the localCollection if dbCollection (remote) does not exist
-        syncer.updateCollections(listOf(localCollection), dbCollections = emptyMap())
+        val localCollections = mutableListOf(localCollection)
+        val result = syncer.updateCollections(mockk(), localCollections, emptyMap())
         verify(exactly = 1) { localCollection.deleteCollection() }
+
+        // Updated local collection list should be empty
+        assertTrue(result.isEmpty())
     }
 
     @Test
@@ -97,23 +103,28 @@ class SyncerTest {
         val dbCollections = mapOf("http://update.the/collection".toHttpUrl() to dbCollection)
         every { dbCollection.url } returns "http://update.the/collection".toHttpUrl()
         every { localCollection.collectionUrl } returns "http://update.the/collection"
+        every { localCollection.title } returns "The Local Collection"
 
-        // Should update the localCollection if it exists ...
-        val newCollections = syncer.updateCollections(listOf(localCollection), dbCollections)
+        // Should update the localCollection if it exists
+        val result = syncer.updateCollections(mockk(), listOf(localCollection), dbCollections)
         verify(exactly = 1) { syncer.update(localCollection, dbCollection) }
-        // ... and remove it from the "new found" collections which are to be created
-        assertTrue(newCollections.isEmpty())
+
+        // Updated local collection list should be same as input
+        assertArrayEquals(arrayOf(localCollection), result.toTypedArray())
     }
 
     @Test
     fun testUpdateCollections_findsNewCollection() {
         val dbCollection = mockk<Collection>()
-        val dbCollections = mapOf("http://newly.found/collection".toHttpUrl() to dbCollection)
         every { dbCollection.url } returns "http://newly.found/collection".toHttpUrl()
+        val dbCollections = mapOf(dbCollection.url to dbCollection)
 
         // Should return the new collection, because it was not updated
-        val newCollections = syncer.updateCollections(listOf(), dbCollections)
-        assertEquals(dbCollection, newCollections["http://newly.found/collection".toHttpUrl()])
+        val result = syncer.updateCollections(mockk(), emptyList(), dbCollections)
+
+        // Updated local collection list contain new entry
+        assertEquals(1, result.size)
+        assertEquals(dbCollection.url.toString(), result[0].collectionUrl)
     }
 
 
@@ -122,13 +133,12 @@ class SyncerTest {
         val provider = mockk<ContentProviderClient>()
         val localCollection = mockk<LocalTestCollection>()
         val dbCollection = mockk<Collection>()
-        val dbCollections = mapOf("http://newly.found/collection".toHttpUrl() to dbCollection)
         every { syncer.create(provider, dbCollection) } returns localCollection
         every { dbCollection.url } returns "http://newly.found/collection".toHttpUrl()
 
         // Should return list of newly created local collections
-        val newLocalCollections = syncer.createLocalCollections(provider, dbCollections)
-        assertEquals(listOf(localCollection), newLocalCollections)
+        val result = syncer.createLocalCollections(provider, listOf(dbCollection))
+        assertEquals(listOf(localCollection), result)
     }
 
     
@@ -182,7 +192,7 @@ class SyncerTest {
             emptyList()
 
         override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalTestCollection =
-            LocalTestCollection()
+            LocalTestCollection(remoteCollection.url.toString())
 
         override fun syncCollection(
             provider: ContentProviderClient,
