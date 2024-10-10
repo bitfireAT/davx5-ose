@@ -6,22 +6,14 @@ package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
 import android.content.Context
-import android.provider.CalendarContract
 import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
-import androidx.work.Constraints
-import androidx.work.Data
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.Operation
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.sync.SyncDispatcher
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import java.util.concurrent.TimeUnit
 
 /**
  * Handles scheduled sync requests.
@@ -46,6 +38,12 @@ class PeriodicSyncWorker @AssistedInject constructor(
     syncDispatcher: SyncDispatcher
 ) : BaseSyncWorker(appContext, workerParams, syncDispatcher.dispatcher) {
 
+    @AssistedFactory
+    @VisibleForTesting
+    interface Factory {
+        fun create(appContext: Context, workerParams: WorkerParameters): PeriodicSyncWorker
+    }
+
     companion object {
 
         /**
@@ -60,12 +58,6 @@ class PeriodicSyncWorker @AssistedInject constructor(
         fun workerName(account: Account, authority: String): String =
             "periodic-sync $authority ${account.type}/${account.name}"
 
-    }
-
-    @AssistedFactory
-    @VisibleForTesting
-    interface Factory {
-        fun create(appContext: Context, workerParams: WorkerParameters): PeriodicSyncWorker
     }
 
 }

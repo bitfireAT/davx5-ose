@@ -12,6 +12,7 @@ import at.bitfire.dav4jvm.XmlUtils.insertTag
 import at.bitfire.dav4jvm.property.caldav.CalendarColor
 import at.bitfire.dav4jvm.property.caldav.CalendarDescription
 import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
+import at.bitfire.dav4jvm.property.caldav.CalendarTimezoneId
 import at.bitfire.dav4jvm.property.caldav.NS_CALDAV
 import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
 import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
@@ -33,15 +34,18 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.Multibinds
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runInterruptible
-import kotlinx.coroutines.withContext
-import net.fortuna.ical4j.model.Component
-import okhttp3.HttpUrl
 import java.io.StringWriter
 import java.util.Collections
 import java.util.UUID
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withContext
+import net.fortuna.ical4j.model.Calendar
+import net.fortuna.ical4j.model.Component
+import net.fortuna.ical4j.model.ComponentList
+import net.fortuna.ical4j.model.component.VTimeZone
+import okhttp3.HttpUrl
 
 /**
  * Repository for managing collections.
@@ -131,7 +135,7 @@ class DavCollectionRepository @Inject constructor(
                 displayName = displayName,
                 description = description,
                 color = color,
-                timezoneDef = timeZoneId,
+                timezoneId = timeZoneId,
                 supportsVEVENT = supportVEVENT,
                 supportsVTODO = supportVTODO,
                 supportsVJOURNAL = supportVJOURNAL
@@ -147,7 +151,7 @@ class DavCollectionRepository @Inject constructor(
             displayName = displayName,
             description = description,
             color = color,
-            timezone = timeZoneId?.let { getVTimeZone(it) },
+            timezone = timeZoneId?.let { getVTimeZone(it)?.toString() },
             supportsVEVENT = supportVEVENT,
             supportsVTODO = supportVTODO,
             supportsVJOURNAL = supportVJOURNAL
@@ -187,6 +191,8 @@ class DavCollectionRepository @Inject constructor(
     fun getFlow(id: Long) = dao.getFlow(id)
 
     fun getByService(serviceId: Long) = dao.getByService(serviceId)
+
+    fun getByServiceAndUrl(serviceId: Long, url: String) = dao.getByServiceAndUrl(serviceId, url)
 
     fun getByServiceAndSync(serviceId: Long) = dao.getByServiceAndSync(serviceId)
 
@@ -287,7 +293,7 @@ class DavCollectionRepository @Inject constructor(
         displayName: String?,
         description: String?,
         color: Int? = null,
-        timezoneDef: String? = null,
+        timezoneId: String? = null,
         supportsVEVENT: Boolean = true,
         supportsVTODO: Boolean = true,
         supportsVJOURNAL: Boolean = true
@@ -343,9 +349,17 @@ class DavCollectionRepository @Inject constructor(
                                 text(DavUtils.ARGBtoCalDAVColor(it))
                             }
                         }
-                        timezoneDef?.let {
-                            insertTag(CalendarTimezone.NAME) {
-                                cdsect(it)
+                        timezoneId?.let { id ->
+                            insertTag(CalendarTimezoneId.NAME) {
+                                text(id)
+                            }
+                            getVTimeZone(id)?.let { vTimezone ->
+                                insertTag(CalendarTimezone.NAME) {
+                                    text(
+                                        // spec requires "an iCalendar object with exactly one VTIMEZONE component"
+                                        Calendar(ComponentList(listOf(vTimezone))).toString()
+                                    )
+                                }
                             }
                         }
 
@@ -379,8 +393,7 @@ class DavCollectionRepository @Inject constructor(
         return writer.toString()
     }
 
-    private fun getVTimeZone(tzId: String): String? =
-        DateUtils.ical4jTimeZone(tzId)?.toString()
+    private fun getVTimeZone(tzId: String): VTimeZone? = DateUtils.ical4jTimeZone(tzId)?.vTimeZone
 
 
     /*** OBSERVERS ***/

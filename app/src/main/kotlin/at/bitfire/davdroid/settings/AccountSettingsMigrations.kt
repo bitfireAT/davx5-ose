@@ -13,6 +13,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.CalendarContract
+import android.provider.ContactsContract
 import android.util.Base64
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
@@ -20,6 +21,10 @@ import androidx.work.WorkManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.repository.AccountRepository
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -47,8 +52,12 @@ class AccountSettingsMigrations @AssistedInject constructor(
     @Assisted val account: Account,
     @Assisted val accountSettings: AccountSettings,
     @ApplicationContext val context: Context,
+    private val accountRepository: AccountRepository,
+    private val collectionRepository: DavCollectionRepository,
     private val db: AppDatabase,
+    private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
+    private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: SyncWorkerManager,
     private val tasksAppManager: Lazy<TasksAppManager>
 ) {
@@ -58,9 +67,43 @@ class AccountSettingsMigrations @AssistedInject constructor(
         fun create(account: Account, accountSettings: AccountSettings): AccountSettingsMigrations
     }
 
-
     val accountManager: AccountManager = AccountManager.get(context)
 
+    /**
+     * With DAVx5 4.3.3 address book account names now contain the collection ID as a unique
+     * identifier. We need to update the address book account names.
+     */
+    @Suppress("unused","FunctionName")
+    fun update_16_17() {
+        val addressBookAccountType = context.getString(R.string.account_type_address_book)
+        try {
+            context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
+        } catch (e: SecurityException) {
+            // Not setting the collection ID will cause the address books to removed and fully re-synced as soon as there are permissions.
+            logger.log(Level.WARNING, "Missing permissions for contacts authority, won't set collection ID for address books", e)
+            null
+        }?.use { provider ->
+            val service = serviceRepository.getByAccountAndType(account.name, Service.TYPE_CARDDAV) ?: return
+
+            // Get all old address books of this account, i.e. the ones which have a "real_account_name" of this account.
+            // After this migration is run, address books won't be associated to accounts anymore but only to their respective collection/URL.
+            val oldAddressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)
+                .filter { addressBookAccount ->
+                    account.name == accountManager.getUserData(addressBookAccount, "real_account_name")
+                }
+
+            for (oldAddressBookAccount in oldAddressBookAccounts) {
+                // Old address books only have a URL, so use it to determine the collection ID
+                logger.info("Migrating address book ${oldAddressBookAccount.name}")
+                val url = accountManager.getUserData(oldAddressBookAccount, LocalAddressBook.USER_DATA_URL)
+                collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
+                    // Set collection ID and rename the account
+                    val localAddressBook = localAddressBookFactory.create(oldAddressBookAccount, provider)
+                    localAddressBook.update(collection)
+                }
+            }
+        }
+    }
 
     /**
      * Between DAVx5 4.4.1-beta.1 and 4.4.1-rc.1 (both v15), the periodic sync workers were renamed (moved to another
