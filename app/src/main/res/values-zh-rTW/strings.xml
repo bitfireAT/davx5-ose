@@ -44,6 +44,7 @@
   <!--AboutActivity-->
   <string name="about_libraries">函式庫</string>
   <string name="about_version">版本號 %1$s（%2$d）</string>
+  <string name="about_build_date">編譯於 %s</string>
   <string name="about_license_info_no_warranty">我們｢完全不保證｣本程式無瑕疵。這是個自由軟體，歡迎您在符合公用授權條款的情況下任意散布它。</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">無法創建事項記錄文檔</string>

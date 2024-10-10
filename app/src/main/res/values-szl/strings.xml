@@ -37,6 +37,7 @@
   <string name="about_translations">Przekłady</string>
   <string name="about_libraries">Bibliotyki</string>
   <string name="about_version">Wersyjo %1$s (%2$d)</string>
+  <string name="about_build_date">Skōmpilowano %s</string>
   <string name="about_license_info_no_warranty">Tyn program przichodzi BEZ ŻODNYJ GWARANCYJE. To je wolne ôprogramowanie i możesz je rozkludzać pod ôkryślōnymi warōnkami.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Niy szło stworzić zbioru dziynnika</string>

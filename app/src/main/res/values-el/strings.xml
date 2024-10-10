@@ -4,10 +4,17 @@
   <string name="account_invalid">Ο λογαριασμός δεν υπάρχει (πια)</string>
   <string name="account_title_address_book">Βιβλίο διευθύνσεων DAVx⁵</string>
   <string name="address_books_authority_title">Βιβλία διευθύνσεων</string>
+  <string name="dialog_delete">Διαγραφή</string>
+  <string name="dialog_remove">Αφαίρεση</string>
+  <string name="dialog_deny">Ακύρωση</string>
   <string name="field_required">Αυτό το πεδίο είναι απαραίτητο </string>
   <string name="help">Βοήθεια</string>
   <string name="manage_accounts">Διαχείριση λογαριασμών</string>
+  <string name="navigate_up">Πλοήγηση προς τα πάνω</string>
+  <string name="optional_label">* προαιρετικό</string>
+  <string name="options_menu">Μενού επιλογών</string>
   <string name="share">Διαμοιρασμός</string>
+  <string name="sync_started">Ο συγχρονισμός ξεκίνησε/αναμονή στην ουρά</string>
   <string name="database_destructive_migration_title">Υπάρχει σφάλμα στην βάση δεδομένων</string>
   <string name="database_destructive_migration_text">Όλοι οι λογαριασμοί έχουν διαγραφεί τοπικά</string>
   <string name="notification_channel_debugging">Αποσφαλμάτωση</string>
@@ -31,12 +38,19 @@
   <string name="intro_autostart_dont_show">Έχω κάνει τις απαιτούμενες ρυθμίσεις. Δεν θέλω άλλες υπενθυμίσεις.*</string>
   <string name="intro_leave_unchecked">Άφησε απενεργοποιημένες τις υπενθυμίσεις. Μπορούν να επαναφερθούν στις ρυθμίσεις εφαρμογών / %s.</string>
   <string name="intro_more_info">Περισσότερες πληροφορίες</string>
+  <string name="intro_tasks_jtx">Πίνακας jtx</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Υποστηρίζει συγχρονισμό εργασιών, ημερολογίων και σημειώσεων.]]></string>
   <string name="intro_tasks_title">Υποστήριξη εργασιών</string>
   <string name="intro_tasks_text1">Εάν οι εργασίες υποστηρίζονται από τον server σας, μπορούν να συγχρονιστούν με μια υποστηριζόμενη εφαρμογή εργασιών:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">Δεν φαίνεται να αναπτύσσεται πλέον - δεν συνιστάται.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Ορισμένες λειτουργίες <a href="https://www.davx5.com/faq/tasks/advanced-task-features"> δεν υποστηρίζονται </a> (ακόμα).]]></string>
   <string name="intro_tasks_no_app_store">Δεν υπάρχει διαθέσιμο κατάστημα εφαρμογών</string>
   <string name="intro_tasks_dont_show">Δεν χρειάζομαι υποστήριξη εργασιών.*</string>
   <string name="intro_open_source_title">Λογισμικό ανοικτού κώδικα</string>
+  <string name="intro_open_source_text">Χαιρόμαστε που χρησιμοποιείτε το %s, το οποίο είναι λογισμικό ανοικτού κώδικα. Η ανάπτυξη, η συντήρηση και η υποστήριξη είναι σκληρή δουλειά. Παρακαλούμε σκεφτείτε να συνεισφέρετε (υπάρχουν πολλοί τρόποι) ή να κάνετε μια δωρεά. Θα το εκτιμούσαμε ιδιαίτερα!</string>
+  <string name="intro_open_source_details">Πώς να συνεισφέρετε/δωρήσετε</string>
   <string name="intro_open_source_dont_show">Μην το εμφανίσεις στο προσεχές μέλλον</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Δικαιώματα</string>
@@ -50,12 +64,19 @@
   <string name="permissions_calendar_title">Δικαιώματα ημερολογίου</string>
   <string name="permissions_calendar_status_off">Μη συγχρονισμός ημερολογίου (δεν προτείνεται)</string>
   <string name="permissions_calendar_status_on">Ο Συγχρονισμός ημερολογίου είναι δυνατός</string>
+  <string name="permissions_notification_title">Άδεια ειδοποίησης</string>
+  <string name="permissions_notification_status_off">Οι ειδοποιήσεις είναι απενεργοποιημένες (δεν συνιστάται)</string>
+  <string name="permissions_notification_status_on">Ενεργοποιημένες ειδοποιήσεις</string>
+  <string name="permissions_jtx_title">Πίνακας αδειών jtx</string>
   <string name="permissions_opentasks_title">Δικαιώματα OpenTasks</string>
   <string name="permissions_tasksorg_title">Δικαιώματα εργασιών</string>
+  <string name="permissions_tasks_status_off">Κανένας συγχρονισμός εργασιών</string>
   <string name="permissions_tasks_status_on">Ο Συγχρονισμός εργασιών είναι διαθέσιμος</string>
   <string name="permissions_autoreset_title">Διατήρηση δικαιωμάτων</string>
   <string name="permissions_autoreset_status_off">Τα δικαιώματα μπορούν να επαναφερθούν αυτόματα (δεν προτείνεται)</string>
   <string name="permissions_autoreset_status_on">Τα δικαιώματα δεν θα επαναφερθούν αυτόματα</string>
+  <string name="permissions_autoreset_instruction">Κάντε κλικ στην επιλογή Άδειες &gt; απενεργοποιήστε την επιλογή «Κατάργηση αδειών αν η εφαρμογή δεν χρησιμοποιείται»</string>
+  <string name="permissions_app_settings_hint">Αν ο διακόπτης δεν λειτουργεί, χρησιμοποιήστε τις ρυθμίσεις της εφαρμογής / Άδειες.</string>
   <string name="permissions_app_settings">Ρυθμίσεις εφαρμογής</string>
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Δικαιώματα WiFi SSID</string>
@@ -65,6 +86,8 @@
   <string name="wifi_permissions_location_permission_off">Απενεργοποιήθηκε το δικαίωμα εντοπισμού</string>
   <string name="wifi_permissions_background_location_permission">Δικαίωμα εντοπισμού στο παρασκήνιο</string>
   <string name="wifi_permissions_background_location_permission_label">Να επιτρέπεται συνέχεια</string>
+  <string name="wifi_permissions_background_location_permission_on">Η άδεια τοποθεσίας έχει οριστεί σε: %s</string>
+  <string name="wifi_permissions_background_location_permission_off">Η άδεια τοποθεσίας δεν έχει οριστεί σε: %s</string>
   <string name="wifi_permissions_background_location_disclaimer">%s χρησιμοποιεί την υπηρεσία εντοπισμού μόνο για να προσδιορίσει το SSID του τρέχοντος WIFI για λογαριασμούς με περιορισμούς σε SSIDs. Αυτό γίνεται ακόμα και όταν η εφαρμογή βρίσκεται στο παρασκήνιο. Κανένα δεδομένο εντοπισμού δεν συλλέγεται, καταχωρείται, επεξεργάζεται η αποστέλνεται οπουδήποτε.</string>
   <string name="wifi_permissions_location_enabled">Η υπηρεσία εντοπισμού είναι πάντα ενεργοποιημένη</string>
   <string name="wifi_permissions_location_enabled_on">Η υπηρεσία εντοπισμού είναι ενεργοποιημένη</string>
@@ -73,6 +96,7 @@
   <string name="about_translations">Μεταφράσεις</string>
   <string name="about_libraries">Βιβλιοθήκες</string>
   <string name="about_version">Έκδοση %1$s (%2$d)</string>
+  <string name="about_build_date">Μεταγλωττισμένο σε %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) και συνεργάτες</string>
   <string name="about_license_info_no_warranty">Αυτό το πρόγραμμα συνοδεύεται χωρις ΚΑΜΙΑ ΕΓΓΥΗΣΗ. Είναι ελεύθερο λογισμικό και είστε ευπρόσδεκτοι να το αναδιανείμετε υπό ορισμένες προϋποθέσεις.</string>
   <!--global settings-->
@@ -93,7 +117,18 @@
   <string name="navigation_drawer_manual">Χειροκίνητα</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_community">Κοινότητα</string>
+  <string name="navigation_drawer_support_project">Υποστηρίξτε το έργο</string>
+  <string name="navigation_drawer_contribute">Πώς να συνεισφέρετε</string>
   <string name="navigation_drawer_privacy_policy">Πολιτική απορρήτου</string>
+  <string name="account_list_no_notification_permission">Οι ειδοποιήσεις είναι απενεργοποιημένες. Δεν θα λαμβάνετε ειδοποιήσεις για σφάλματα συγχρονισμού.</string>
+  <string name="account_list_no_internet">Δεν υπάρχει επικυρωμένη σύνδεση στο διαδίκτυο. Ο συγχρονισμός ενδέχεται να μην εκτελεστεί.</string>
+  <string name="account_list_manage_connections">Διαχείριση συνδέσεων</string>
+  <string name="account_list_datasaver_enabled">Ενεργοποίηση της εξοικονόμησης δεδομένων. Ο συγχρονισμός στο παρασκήνιο είναι περιορισμένος.</string>
+  <string name="account_list_manage_datasaver">Διαχείριση εξοικονόμησης δεδομένων</string>
+  <string name="account_list_battery_saver_enabled">Ενεργοποιημένη εξοικονόμηση μπαταρίας. Ο συγχρονισμός μπορεί να είναι περιορισμένος.</string>
+  <string name="account_list_manage_battery_saver">Διαχείριση εξοικονόμησης μπαταρίας</string>
+  <string name="account_list_low_storage">Χαμηλός αποθηκευτικός χώρος. Το Android δεν θα συγχρονίσει τις τοπικές αλλαγές αμέσως, αλλά κατά τη διάρκεια του επόμενου τακτικού συγχρονισμού.</string>
+  <string name="account_list_manage_storage">Διαχείριση αποθηκευτικού χώρου</string>
   <string name="account_list_empty">Καλώς ήρθατε στο DAVx⁵!\n\nΜπορείτε να προσθέσετε τώρα έναν λογαριασμό CalDAV/CardDAV.</string>
   <string name="accounts_sync_all">Συγχρονισμός όλων των λογαριασμών</string>
   <!--RefreshCollectionsWorker-->
@@ -111,8 +146,17 @@
   <string name="app_settings_logging_on">Η καταγραφή είναι ενεργή</string>
   <string name="app_settings_logging_off">Η καταγραφή είναι απενεργοποιημένη</string>
   <string name="app_settings_battery_optimization">Βελτιστοποίηση μπαταρίας</string>
+  <string name="app_settings_battery_optimization_exempted">Η εφαρμογή εξαιρείται (συνιστάται)</string>
+  <string name="app_settings_battery_optimization_optimized">Ισχύουν περιορισμοί για την μπαταρία (δεν συνιστάται)</string>
   <string name="app_settings_connection">Σύνδεση</string>
   <string name="app_settings_proxy">Τύπος Proxy</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Προεπιλογή συστήματος</item>
+    <item>Χωρίς διαμεσολαβητή</item>
+    <item>HTTP</item>
+    <item>SOCKS (για το Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Όνομα διακομιστή διαμεσολάβησης</string>
   <string name="app_settings_proxy_port">Θύρα Proxy</string>
   <string name="app_settings_security">Ασφάλεια</string>
   <string name="app_settings_security_app_permissions">Δικαιώματα εφαρμογής</string>
@@ -142,9 +186,13 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_missing_permissions">Για το συγχρονισμό αυτών των συλλογών απαιτούνται πρόσθετα δικαιώματα.</string>
+  <string name="account_manage_permissions">Διαχείριση δικαιωμάτων</string>
   <string name="account_synchronize_now">Συγχρονισμός τώρα</string>
   <string name="account_settings">Ρυθμίσεις λογαριασμού</string>
   <string name="account_rename">Μετονομασία λογαριασμού</string>
+  <string name="account_rename_new_name_description">Τα μη αποθηκευμένα τοπικά δεδομένα μπορούν να απορριφθούν. Μετά τη μετονομασία απαιτείται εκ νέου συγχρονισμός.</string>
+  <string name="account_rename_new_name">Νέο όνομα λογαριασμού</string>
   <string name="account_rename_rename">Μετονομασία</string>
   <string name="account_rename_exists_already">Το όνομα λογαριασμού έχει ήδη ληφθεί</string>
   <string name="account_rename_couldnt_rename">Αδυναμία μετονομασίας λογαριασμού</string>
@@ -154,32 +202,70 @@
   <string name="account_synchronize_this_collection">συγχρονισμός αυτής της συλλογής</string>
   <string name="account_read_only">μόνο για ανάγνωση</string>
   <string name="account_calendar">ημερολόγιο</string>
+  <string name="account_contacts">επαφές</string>
+  <string name="account_journal">ημερολόγιο</string>
+  <string name="account_task_list">εργασίες</string>
   <string name="account_only_personal">Εμφάνιση μόνο προσωπικών</string>
+  <string name="account_refresh_collections">Ανανέωση λίστας</string>
+  <string name="account_webcal_external_app">Οι συνδρομές Webcal μπορούν να συγχρονιστούν με εξωτερικές εφαρμογές.</string>
   <string name="account_no_webcal_handler_found">Δεν βρέθηκε εφαρμογή με δυνατότητα Webcal</string>
   <string name="account_install_icsx5">Εγκατάσταση ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Προσθήκη λογαριασμού</string>
+  <string name="login_generic_login">Γενική είσοδος</string>
+  <string name="login_provider_login">Είσοδος για συγκεκριμένο πάροχο</string>
+  <string name="login_continue">Συνέχεια</string>
   <string name="login_login">Είσοδος</string>
   <string name="login_type_email">Είσοδος με την διεύθυνση email</string>
   <string name="login_email_address">Διεύθυνση email</string>
   <string name="login_email_address_error">Απαιτείται έγκυρη διεύθυνση email</string>
+  <string name="login_email_address_info"><![CDATA[Ο τομέας email χρησιμοποιείται ως βασική διεύθυνση URL. <a href="%s">Οι υπηρεσίες εντοπίζονται</a> χρησιμοποιώντας εγγραφές DNS και γνωστές διευθύνσεις URL.]]></string>
   <string name="login_password">Συνθηματικό</string>
+  <string name="login_password_hide">Απόκρυψη συνθηματικού</string>
+  <string name="login_password_show">Εμφάνιση συνθηματικού</string>
+  <string name="login_password_optional">Συνθηματικό*</string>
   <string name="login_type_url">Είσοδος με την URL και το όνομα χρήστη</string>
   <string name="login_user_name">Όνομα χρήστη</string>
+  <string name="login_user_name_optional">Όνομα χρήστη*</string>
   <string name="login_base_url">Βασική URL</string>
+  <string name="login_base_url_info"><![CDATA[Η βασική διεύθυνση URL θα ελεγχθεί άμεσα, αλλά <a href="%s">οι υπηρεσίες εντοπίζονται επίσης</a> χρησιμοποιώντας εγγραφές DNS και γνωστές διευθύνσεις URL.]]></string>
   <string name="login_select_certificate">Επιλογή πιστοποιητικού</string>
   <string name="login_create_account">Δημιουργία λογαριασμού</string>
   <string name="login_account_name">Όνομα λογαριασμού</string>
+  <string name="login_account_avoid_apostrophe">Η χρήση των αποσιωπητικών (\') φαίνεται να προκαλεί προβλήματα σε ορισμένες συσκευές.</string>
   <string name="login_account_name_info">Χρησιμοποιήστε τη διεύθυνση ηλεκτρονικού ταχυδρομείου ως όνομα λογαριασμού, επειδή το Android θα χρησιμοποιεί το όνομα του λογαριασμού ως πεδίο ORGANIZER για τα συμβάντα που δημιουργείτε. Δεν μπορείτε να έχετε δύο λογαριασμούς με το ίδιο όνομα.</string>
   <string name="login_account_contact_group_method">Μέθοδος ομάδας επαφών:</string>
   <string name="login_account_name_required">Απαιτείται όνομα λογαριασμού</string>
   <string name="login_account_name_already_taken">Το όνομα λογαριασμού έχει ήδη ληφθεί</string>
   <string name="login_account_not_created">Αδυναμία δημιουργίας λογαριασμού</string>
+  <string name="login_type_advanced">Σύνδεση για προχωρημένους</string>
+  <string name="login_no_client_certificate_optional">Δεν υπάρχει πιστοποιητικό πελάτη*</string>
+  <string name="login_client_certificate_selected">Πιστοποιητικό πελάτη: %s</string>
   <string name="login_no_certificate_found">Δεν βρέθηκε πιστοποιητικό</string>
   <string name="login_install_certificate">Εγκατάσταση πιστοποιητικού</string>
+  <string name="login_type_google">Επαφές / Ημερολόγιο Google</string>
+  <string name="login_google_see_tested_with">Παρακαλούμε ανατρέξτε στη σελίδα μας «Δοκιμασμένο με τη Google» για ενημερωμένες πληροφορίες.</string>
+  <string name="login_google_unexpected_warnings">Ενδέχεται να εμφανιστούν απροσδόκητες προειδοποιήσεις ή/και να χρειαστεί να δημιουργήσετε το δικό σας αναγνωριστικό πελάτη.</string>
+  <string name="login_google_account">Λογαριασμός Google</string>
+  <string name="login_google">Συνδεθείτε με την Google</string>
+  <string name="login_google_client_id">Αναγνωριστικό πελάτη (προαιρετικό)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s μεταφέρει τα δεδομένα επαφών και ημερολογίου της Google αποκλειστικά για συγχρονισμό με αυτή τη συσκευή. Ανατρέξτε στην <a href="%2$s">πολιτική απορρήτου</a> μας για λεπτομέρειες.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s συμμορφώνεται με την <a href="%2$s">Πολιτική Δεδομένων Χρήστη των Υπηρεσιών API της Google</a>, συμπεριλαμβανομένων των απαιτήσεων περιορισμένης χρήσης.]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Αδυναμία λήψης κωδικού εξουσιοδότησης</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Συνδεθείτε με το Nextcloud</string>
+  <string name="login_nextcloud_login_flow_text">Αυτό θα ξεκινήσει τη ροή σύνδεσης στο Nextcloud σε ένα πρόγραμμα περιήγησης στο διαδίκτυο.</string>
+  <string name="login_nextcloud_login_flow_server_address">Διεύθυνση διακομιστή Nextcloud</string>
+  <string name="login_nextcloud_login_flow_sign_in">Συνδεθείτε</string>
+  <string name="login_nextcloud_login_flow_no_login_url">Δεν ήταν δυνατή η λήψη του URL σύνδεσης</string>
+  <string name="login_nextcloud_login_flow_no_login_data">Δεν ήταν δυνατή η λήψη δεδομένων σύνδεσης</string>
   <string name="login_configuration_detection">Ανίχνευση ρυθμίσεων</string>
   <string name="login_querying_server">Περιμένετε, γίνεται ερώτημα στο διακομιστή...</string>
   <string name="login_no_service">Αδυναμία εύρεσης υπηρεσίας CalDAV ή CardDAV.</string>
+  <string name="login_no_service_info">Η βασική διεύθυνση URL δεν φαίνεται να είναι προσβάσιμη διεύθυνση URL CalDAV/CardDAV και η ανίχνευση της υπηρεσίας δεν ήταν επιτυχής.</string>
+  <string name="login_see_tested_services"><![CDATA[Παρακαλούμε ανατρέξτε στο εγχειρίδιο του παρόχου της υπηρεσίας σας και <a href="%s">στον κατάλογο των δοκιμασμένων υπηρεσιών</a> και των βασικών διευθύνσεων URL τους.]]></string>
+  <string name="login_check_credentials">Παρακαλούμε ελέγξτε επίσης δύο φορές τον έλεγχο ταυτότητας (συνήθως όνομα χρήστη και συνθηματικό).</string>
+  <string name="login_logs_available">Περαιτέρω τεχνικές πληροφορίες είναι διαθέσιμες στα αρχεία καταγραφής.</string>
   <string name="login_view_logs">Προβολή ιστορικού</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Συγχρονισμός</string>
@@ -206,10 +292,16 @@
   <string name="settings_sync_wifi_only_ssids_message">Ονόματα που χωρίζονται με κόμμα (SSIDs) των επιτρεπόμενων δικτύων WiFi (αφήστε κενό για όλους)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ο περιορισμός WiFi SSID χρειάζεται επιπλέον ρυθμίσεις</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Διαχείριση</string>
+  <string name="settings_ignore_vpns">Το VPN απαιτεί υποκείμενο διαδίκτυο</string>
+  <string name="settings_ignore_vpns_on">Το VPN χωρίς υποκείμενη επικυρωμένη σύνδεση στο διαδίκτυο δεν αρκεί για την εκτέλεση του συγχρονισμού (συνιστάται)</string>
+  <string name="settings_ignore_vpns_off">Το VPN χωρίς υποκείμενη επικυρωμένη σύνδεση στο διαδίκτυο είναι αρκετό για την εκτέλεση του συγχρονισμού</string>
   <string name="settings_authentication">Πιστοποίηση</string>
   <string name="settings_username">Όνομα χρήστη</string>
   <string name="settings_password">Συνθηματικό</string>
+  <string name="settings_new_password">Νέο συνθηματικό</string>
   <string name="settings_password_summary">Ενημερώστε το συνθηματικό σύμφωνα με τον διακομιστή σας.</string>
+  <string name="settings_certificate_alias">Πιστοποιητικό πελάτη</string>
+  <string name="settings_certificate_alias_empty">Δεν υπάρχει διαθέσιμο ή επιλεγμένο πιστοποιητικό</string>
   <string name="settings_certificate_install">Εγκατάσταση πιστοποιητικού</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Προθεσμία παρελθόντος συμβάντος</string>
@@ -240,32 +332,61 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Δημιουργία βιβλίου διευθύνσεων</string>
+  <string name="create_addressbook_maybe_not_supported">Η δημιουργία βιβλίου διευθύνσεων μέσω CardDAV ενδέχεται να μην υποστηρίζεται από το διακομιστή.</string>
   <string name="create_calendar">Δημιουργία ημερολογίου</string>
+  <string name="create_calendar_time_zone_optional">Προεπιλεγμένη ζώνη ώρας*</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Πιθανές καταχωρήσεις ημερολογίου</string>
   <string name="create_calendar_type_vevent">Συμβάντα</string>
   <string name="create_calendar_type_vtodo">Εργασίες</string>
   <string name="create_calendar_type_vjournal">Σημειώσεις / ημερολόγιο</string>
+  <string name="create_calendar_maybe_not_supported">Η δημιουργία ημερολογίου μέσω CalDAV ενδέχεται να μην υποστηρίζεται από τον διακομιστή.</string>
   <string name="create_collection_color">Χρώμα</string>
   <string name="create_collection_display_name">Τίτλος</string>
   <string name="create_collection_home_set">Τοποθεσία αποθήκευσης</string>
+  <string name="create_collection_description_optional">Περιγραφή*</string>
   <string name="create_collection_create">Δημιουργία</string>
+  <string name="create_collection_optional">* προαιρετικό</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Διαγραφή συλλογής</string>
+  <string name="collection_delete_warning">Αυτή η συλλογή (%s) και όλα τα δεδομένα της θα διαγραφούν μόνιμα, τόσο τοπικά όσο και από τον διακομιστή.</string>
   <string name="collection_synchronization">Συγχρονισμός</string>
+  <string name="collection_synchronization_on">Ενεργοποιημένος συγχρονισμός</string>
+  <string name="collection_synchronization_off">Απενεργοποιημένος συγχρονισμός</string>
+  <string name="collection_read_only">Μόνο για ανάγνωση</string>
+  <string name="collection_read_only_by_server">Μόνο για ανάγνωση (από τον διακομιστή)</string>
+  <string name="collection_read_only_forced">Μόνο για ανάγνωση (μόνο τοπικά)</string>
+  <string name="collection_read_write">Ανάγνωση/εγγραφή</string>
   <string name="collection_title">Τίτλος</string>
   <string name="collection_description">Περιγραφή</string>
+  <string name="collection_owner">Ιδιοκτήτης</string>
+  <string name="collection_push_support">Υποστήριξη Push</string>
+  <string name="collection_push_web_push">Ο διακομιστής διαφημίζει την υποστήριξη Push</string>
+  <string name="collection_last_sync">Τελευταίος συγχρονισμός (%s)</string>
+  <string name="collection_url">Διεύθυνση (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Πληροφορίες αποσφαλμάτωσης</string>
   <string name="debug_info_archive_caption">ZIP αρχείο αρχειοθέτησης</string>
   <string name="debug_info_archive_subtitle">Περιέχει πληροφορίες εντοπισμού σφαλμάτων και αρχεία καταγραφής συστήματος</string>
+  <string name="debug_info_archive_text">Μοιραστείτε το αρχείο για να το μεταφέρετε σε έναν υπολογιστή, να το στείλετε με email ή να το επισυνάψετε σε ένα εισιτήριο υποστήριξης.</string>
   <string name="debug_info_archive_share">Διαμοίρασε το αρχείο αρχειοθέτησης</string>
+  <string name="debug_info_attached">Πληροφορίες εντοπισμού σφαλμάτων που επισυνάπτονται σε αυτό το μήνυμα (απαιτείται υποστήριξη συνημμένων από την εφαρμογή λήψης).</string>
   <string name="debug_info_http_error">Σφάλμα HTTP</string>
   <string name="debug_info_server_error">Σφάλμα διακομιστή</string>
   <string name="debug_info_webdav_error">Σφάλμα WebDAV</string>
   <string name="debug_info_io_error">Σφάλμα I/O</string>
+  <string name="debug_info_http_403_description">Το αίτημα απορρίφθηκε. Ελέγξτε τους σχετικούς πόρους και τις πληροφορίες εντοπισμού σφαλμάτων για λεπτομέρειες.</string>
+  <string name="debug_info_http_404_description">Ο ζητούμενος πόρος δεν υπάρχει (πλέον). Ελέγξτε τους σχετικούς πόρους και τις πληροφορίες εντοπισμού σφαλμάτων για λεπτομέρειες.</string>
+  <string name="debug_info_http_5xx_description">Παρουσιάστηκε ένα πρόβλημα από την πλευρά του διακομιστή. Παρακαλούμε επικοινωνήστε με την υποστήριξη του διακομιστή σας.</string>
+  <string name="debug_info_unexpected_error">Προέκυψε ένα απροσδόκητο σφάλμα. Δείτε τις πληροφορίες εντοπισμού σφαλμάτων για λεπτομέρειες.</string>
   <string name="debug_info_view_details">Προβολή λεπτομερειών</string>
+  <string name="debug_info_subtitle">Έχουν συλλεχθεί πληροφορίες εντοπισμού σφαλμάτων</string>
+  <string name="debug_info_involved_caption">Εμπλεκόμενοι πόροι</string>
   <string name="debug_info_involved_subtitle">Σχετικά με το πρόβλημα</string>
+  <string name="debug_info_involved_remote">Απομακρυσμένος πόρος:</string>
+  <string name="debug_info_involved_local">Τοπικός πόρος:</string>
   <string name="debug_info_logs_caption">Ιστορικό</string>
+  <string name="debug_info_logs_subtitle">Διατίθενται αναλυτικά αρχεία καταγραφής</string>
   <string name="debug_info_logs_view">Προβολή ιστορικού</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Παρουσιάστηκε σφάλμα.</string>
@@ -279,13 +400,17 @@
   <string name="webdav_mounts_unmount">Αποπροσάρτηση</string>
   <string name="webdav_add_mount_title">Προσθήκη βάσης WebDAV</string>
   <string name="webdav_mounts_empty">Απευθείας πρόσβαση στα αρχεία σας στο cloud δημιουργώντας μία προσάρτηση WebDAV</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Ανατρέξτε στο εγχειρίδιο για <a href="%1$s"> το πώς λειτουργούν οι προσαρτήσεις WebDAV </a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Εμφανιζόμενο όνομα</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Μη έγκυρο URL</string>
+  <string name="webdav_add_mount_authentication">Πιστοποίηση (προαιρετική)</string>
   <string name="webdav_add_mount_username">Όνομα χρήστη</string>
   <string name="webdav_add_mount_password">Κωδικός πρόσβασης</string>
   <string name="webdav_add_mount_add">Προσθήκη βάσης</string>
   <string name="webdav_add_mount_no_support">Δεν υπάρχει υπηρεσία WebDAV σε αυτό το URL</string>
+  <string name="webdav_remove_mount_title">Αφαίρεση σημείου προσάρτησης</string>
+  <string name="webdav_remove_mount_text">Τα στοιχεία της σύνδεσης θα χαθούν, αλλά δεν θα διαγραφούν αρχεία.</string>
   <string name="webdav_notification_access">Πρόσβαση σε αρχείο WebDAV</string>
   <string name="webdav_notification_download">Kαταφόρτωση αρχείου WebDAV</string>
   <string name="webdav_notification_upload">Ανέβασμα αρχείου WebDAV</string>
@@ -299,12 +424,14 @@
   <string name="sync_error_io">Σφάλμα δικτύου ή I/O – %s</string>
   <string name="sync_error_http_dav">Σφάλμα διακομιστής HTTP – %s</string>
   <string name="sync_error_local_storage">Σφάλμα τοπικού αποθηκευτικού χώρου – %s</string>
+  <string name="sync_error_retry_limit_reached">Σφάλμα (φτάσατε στον μέγιστο αριθμό επαναλήψεων)</string>
   <string name="sync_error_view_item">Προβολή αντικειμένου</string>
   <string name="sync_invalid_contact">Ελήφθη μη έγκυρη επαφή από το διακομιστή</string>
   <string name="sync_invalid_event">Ελήφθη μη έγκυρο συμβάν από το διακομιστή</string>
   <string name="sync_invalid_task">Έλαβε μη έγκυρη εργασία από το διακομιστή</string>
   <string name="sync_invalid_resources_ignoring">Αγνόηση ενός ή περισσοτέρων μη έγκυρων πόρων</string>
   <!--widgets-->
+  <string name="widget_sync_all">Συγχρονισμός όλων</string>
   <string name="widget_sync_all_accounts">Συγχρονισμός όλων των λογαριασμών</string>
   <!--cert4android-->
 </resources>

@@ -89,6 +89,7 @@
   <string name="about_translations">ترجمه ها</string>
   <string name="about_libraries">کتابخانه ها</string>
   <string name="about_version">ورژن %1$s (%2$d)</string>
+  <string name="about_build_date">در %s وارد شده است</string>
   <string name="about_license_info_no_warranty">این برنامه کاملاً بدون ضمانت است. این یک نرم افزار رایگان است ، و شما می توانید تحت شرایط خاص توزیع مجدد آن را انجام دهید.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">پرونده ثبت ایجاد نشد</string>

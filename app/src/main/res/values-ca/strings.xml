@@ -96,6 +96,7 @@
   <string name="about_translations">Traduccions</string>
   <string name="about_libraries">Biblioteques</string>
   <string name="about_version">Versió %1$s (%2$d)</string>
+  <string name="about_build_date">Compilat el %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) i col·laboradors</string>
   <string name="about_license_info_no_warranty">Aquest programa és distribuït sense CAP MENA DE GARANTIA. És programari lliure, i està permesa la seva redistribució segons certes condicions.</string>
   <!--global settings-->

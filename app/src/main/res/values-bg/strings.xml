@@ -4,14 +4,17 @@
   <string name="account_invalid">Регистрацията (вече) не съществува</string>
   <string name="account_title_address_book">Адресник на DAVx⁵</string>
   <string name="address_books_authority_title">Адресници</string>
+  <string name="dialog_delete">Премахване</string>
   <string name="dialog_remove">Премахване</string>
   <string name="dialog_deny">Отказ</string>
   <string name="field_required">Задължително поле</string>
   <string name="help">Помощ</string>
   <string name="manage_accounts">Управление на регистрации</string>
   <string name="navigate_up">Придвижване нагоре</string>
-  <string name="optional_label">* по избор</string>
+  <string name="optional_label">* по желание</string>
+  <string name="options_menu">Меню настройки</string>
   <string name="share">Споделяне</string>
+  <string name="sync_started">Синхронизирането е започнало/изчаква</string>
   <string name="database_destructive_migration_title">Повредено хранилище</string>
   <string name="database_destructive_migration_text">Всички местни профили са премахнати.</string>
   <string name="notification_channel_debugging">Отстраняване на дефекти</string>
@@ -54,7 +57,7 @@
   <string name="permissions_text">За да работи нормално %s се нуждае от разрешения.</string>
   <string name="permissions_all_title">Всички от изброените по-долу</string>
   <string name="permissions_all_status_off">За да включите вички възможности, изберете това (препоръчано)</string>
-  <string name="permissions_all_status_on">Всичко е разрешено</string>
+  <string name="permissions_all_status_on">Всички разрешения са получени</string>
   <string name="permissions_contacts_title">Разрешения за контактите</string>
   <string name="permissions_contacts_status_off">Контактите не могат да бъдат синхронизирани (не се препоръчва)</string>
   <string name="permissions_contacts_status_on">Контактите могат да бъдат синхронизирани</string>
@@ -83,6 +86,8 @@
   <string name="wifi_permissions_location_permission_off">Липсва разрешение за местоположението</string>
   <string name="wifi_permissions_background_location_permission">Достъп до местоположението във фонов режим</string>
   <string name="wifi_permissions_background_location_permission_label">Разрешаване във всички случаи</string>
+  <string name="wifi_permissions_background_location_permission_on">Разрешението за местоположението е зададено на: %s</string>
+  <string name="wifi_permissions_background_location_permission_off">Разрешението за местоположението не е зададено на: %s</string>
   <string name="wifi_permissions_background_location_disclaimer">%s използва разрешението за местоположение за достъп до името на мрежата, когато се изисква синхронизиране само през определена мрежа. Това се случва дори и когато приложението се изпълнява във фонов режим. Не се събират, съхраняват, обработват и разпространяват данни за местоположението.</string>
   <string name="wifi_permissions_location_enabled">Винаги включено местоположение</string>
   <string name="wifi_permissions_location_enabled_on">Услугата за местоположението е включена</string>
@@ -91,6 +96,7 @@
   <string name="about_translations">Преводи</string>
   <string name="about_libraries">Библиотеки</string>
   <string name="about_version">Издание %1$s (%2$d)</string>
+  <string name="about_build_date">Компилирано на %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) и сътрудници</string>
   <string name="about_license_info_no_warranty">Тази програма се предлага с АБСОЛЮТНО НИКАКВА ГАРАНЦИЯ. Тя е свободен софтуер и можете да я разпространявате при определени условия.</string>
   <!--global settings-->
@@ -112,6 +118,7 @@
   <string name="navigation_drawer_faq">Често задавани въпроси</string>
   <string name="navigation_drawer_community">Общност</string>
   <string name="navigation_drawer_support_project">Подкрепа за проекта</string>
+  <string name="navigation_drawer_contribute">Как да допринеса</string>
   <string name="navigation_drawer_privacy_policy">Лични данни</string>
   <string name="account_list_no_notification_permission">Известията са изключени. Няма да бъдете известявани за грешки при синхронизиране.</string>
   <string name="account_list_no_internet">Няма потвърдена връзка с интернет. Синхронизацията може да не се изпълни.</string>
@@ -125,7 +132,7 @@
   <string name="account_list_empty">Добре дошли при DAVx⁵!\n\nМожете да добавите регистрация за CalDAV/CardDAV.</string>
   <string name="accounts_sync_all">Синхронизиране на всички профили</string>
   <!--RefreshCollectionsWorker-->
-  <string name="refresh_collections_worker_refresh_failed">Откриването на услугите се провали</string>
+  <string name="refresh_collections_worker_refresh_failed">Грешка при откриване на услугите</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Грешка при презареждане</string>
   <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Работи на преден план</string>
@@ -139,6 +146,8 @@
   <string name="app_settings_logging_on">Дневникът е включен</string>
   <string name="app_settings_logging_off">Дневникът е изключен</string>
   <string name="app_settings_battery_optimization">Оптимизиране на батерията</string>
+  <string name="app_settings_battery_optimization_exempted">Приложението е в белия списък (препоръчително)</string>
+  <string name="app_settings_battery_optimization_optimized">Има ограничения за батерията (не препоръчително)</string>
   <string name="app_settings_connection">Връзка</string>
   <string name="app_settings_proxy">Вид на сървъра на прокси</string>
   <string-array name="app_settings_proxy_types">
@@ -177,7 +186,9 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_synchronize_now">Синхронизация</string>
+  <string name="account_missing_permissions">За да бъдат синхронизирани тези списъци са необходими допълнителни разрешения.</string>
+  <string name="account_manage_permissions">Управление на разрешенията</string>
+  <string name="account_synchronize_now">Синхронизиране</string>
   <string name="account_settings">Настройки на регистрацията</string>
   <string name="account_rename">Преименуване на регистрация</string>
   <string name="account_rename_new_name_description">Незапазените местни данни могат да бъдат отхвърлени. След преименуването е нужно синхронизиране.</string>
@@ -195,10 +206,15 @@
   <string name="account_journal">дневник</string>
   <string name="account_task_list">задачи</string>
   <string name="account_only_personal">Само лични</string>
-  <string name="account_no_webcal_handler_found">Няма инсталирана програма за Webcal абонамент.</string>
+  <string name="account_refresh_collections">Презареждане на списъка</string>
+  <string name="account_webcal_external_app">Абонаментите на Webcal могат да бъдат синхронизирани посредством друго приложение.</string>
+  <string name="account_no_webcal_handler_found">Липса приложение, поддържащо Webcal</string>
   <string name="account_install_icsx5">Инсталиране на ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Нова регистрация</string>
+  <string name="login_generic_login">Вход, независим от доставчик</string>
+  <string name="login_provider_login">Вход, специфичен за доставчика</string>
+  <string name="login_continue">Напред</string>
   <string name="login_login">Напред</string>
   <string name="login_type_email">Вход с електронна поща</string>
   <string name="login_email_address">Електронна поща</string>
@@ -211,7 +227,7 @@
   <string name="login_user_name">Потребителско име</string>
   <string name="login_user_name_optional">Потребителско име*</string>
   <string name="login_base_url">Основен адрес</string>
-  <string name="login_select_certificate">Избери сертификат</string>
+  <string name="login_select_certificate">Избор на сертификат</string>
   <string name="login_create_account">Създаване на регистрация</string>
   <string name="login_account_name">Име на регистрация</string>
   <string name="login_account_name_info">Използвайте адрес за електронна поща вместо име, защото Android ще го използва като адрес на организатора на събитията, които създавате. Не може да има две регистрации с еднакво име.</string>
@@ -220,6 +236,8 @@
   <string name="login_account_name_already_taken">Това име на регистрация вече се използва</string>
   <string name="login_account_not_created">Регистрацията не е създадена</string>
   <string name="login_type_advanced">Вход за напреднали</string>
+  <string name="login_no_client_certificate_optional">Липсва клиентски сертификат*</string>
+  <string name="login_client_certificate_selected">Клиентски сертификат: %s</string>
   <string name="login_no_certificate_found">Не е намерен сертификат</string>
   <string name="login_install_certificate">Инсталиране на сертификат</string>
   <string name="login_type_google">Google Contacts / Calendar</string>
@@ -243,7 +261,7 @@
   <string name="login_no_service">Не са открити услуги на CalDAV или CardDAV.</string>
   <string name="login_view_logs">Преглед</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_sync">Синхронизация</string>
+  <string name="settings_sync">Синхронизиране</string>
   <string name="settings_sync_interval_contacts">Интервал на синхронизиране на контактите</string>
   <string name="settings_sync_summary_manually">Само ръчно</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">На всеки %d минути и веднага при местна промяна</string>
@@ -275,6 +293,8 @@
   <string name="settings_password">Парола</string>
   <string name="settings_new_password">Нова парола</string>
   <string name="settings_password_summary">Променете паролата съгласно сървъра.</string>
+  <string name="settings_certificate_alias">Клиентски сертификат</string>
+  <string name="settings_certificate_alias_empty">Не е избран или няма наличен сертификат</string>
   <string name="settings_certificate_install">Инсталиране на сертификат</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Ограничения за събития от миналото</string>
@@ -306,7 +326,9 @@
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Създаване на адресник</string>
   <string name="create_calendar">Създаване на календар</string>
-  <string name="create_calendar_type">Възможни компоненти в календара</string>
+  <string name="create_calendar_time_zone_optional">Подразбиран часови пояс*</string>
+  <string name="create_calendar_time_zone_none">—</string>
+  <string name="create_calendar_type">Възможни елементи на календара</string>
   <string name="create_calendar_type_vevent">Събития</string>
   <string name="create_calendar_type_vtodo">Задачи</string>
   <string name="create_calendar_type_vjournal">Бележки / дневник</string>
@@ -318,12 +340,19 @@
   <string name="create_collection_optional">* по желание</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Премахване</string>
-  <string name="collection_synchronization">Синхронизация</string>
+  <string name="collection_delete_warning">Списъкът (%s) и цялата му информация ще бъде безвъзвратно премахната, както от устройството, така и от сървъра.</string>
+  <string name="collection_synchronization">Синхронизиране</string>
+  <string name="collection_synchronization_on">Синхронизирането е включено</string>
+  <string name="collection_synchronization_off">Синхронизирането е изключено</string>
   <string name="collection_read_only">Само за четене</string>
   <string name="collection_read_only_by_server">Само за четене (според сървъра)</string>
+  <string name="collection_read_only_forced">Само за четене (на устройството)</string>
+  <string name="collection_read_write">Четене/писане</string>
   <string name="collection_title">Заглавие</string>
   <string name="collection_description">Описание</string>
   <string name="collection_owner">Собственик</string>
+  <string name="collection_last_sync">Последно синхронизиране (%s)</string>
+  <string name="collection_url">Адрес (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Информация за отстраняване на дефекти</string>
   <string name="debug_info_archive_caption">Архив на ZIP</string>
@@ -391,6 +420,7 @@
   <string name="sync_invalid_task">Получен е недействителен файл от сървъра</string>
   <string name="sync_invalid_resources_ignoring">Пренебрегване на сбъркани данни</string>
   <!--widgets-->
+  <string name="widget_sync_all">Синхронизирането всичко</string>
   <string name="widget_sync_all_accounts">Синхронизиране на всички профили</string>
   <!--cert4android-->
 </resources>
