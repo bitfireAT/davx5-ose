@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -52,8 +53,12 @@ fun LoginScreen(
         return
     }
 
+    // get specific help URL from current login type (may be null → show "tested with" page)
+    val loginType = model.loginTypeUiState.loginType
+
     LoginScreenContent(
         page = model.page,
+        helpUri = loginType.helpUrl,
         onNavUp = onNavUp,
         onFinish = onFinish
     )
@@ -63,6 +68,7 @@ fun LoginScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 fun LoginScreenContent(
     page: LoginScreenModel.Page,
+    helpUri: Uri?,
     onNavUp: () -> Unit = {},
     onFinish: (newAccount: Account?) -> Unit = {}
 ) {
@@ -84,13 +90,14 @@ fun LoginScreenContent(
                     },
                     actions = {
                         val uriHandler = LocalUriHandler.current
-                        val testedWithUri = Constants.HOMEPAGE_URL.buildUpon()
+                        val specificHelpUri = helpUri ?:
+                            Constants.HOMEPAGE_URL.buildUpon()
                             .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
                             .withStatParams("LoginActivity")
                             .build()
                         IconButton(onClick = {
                             // show tested-with page
-                            uriHandler.openUri(testedWithUri.toString())
+                            uriHandler.openUri(specificHelpUri.toString())
                         }) {
                             Icon(Icons.AutoMirrored.Default.Help, stringResource(R.string.help))
                         }
