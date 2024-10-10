@@ -7,11 +7,11 @@ package at.bitfire.davdroid.sync
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.resource.LocalCollection
 
-class LocalTestCollection: LocalCollection<LocalTestResource> {
+class LocalTestCollection(
+    override val collectionUrl: String = "http://example.com/test/"
+): LocalCollection<LocalTestResource> {
 
     override val tag = "LocalTestCollection"
-    override val collectionUrl: String
-        get() = "https://example.com"
     override val title = "Local Test Collection"
 
     override var lastSyncState: SyncState? = null

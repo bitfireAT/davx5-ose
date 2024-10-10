@@ -124,14 +124,15 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     /**
      * Updates and deletes local collections. Specifically:
      *
-     * - Deletes local collections if corresponding database collections are missing.
      * - Updates local collections with possibly new info from corresponding database collections.
-     * - Determines new database collections to be also created as local collections.
+     * - Deletes local collections if corresponding database collections are missing.
+     * - Creates local collections if database collections without local match are available.
      *
-     * @param localCollections The local collections to be updated or deleted.
-     * @param dbCollections The database collections possibly containing new information
+     * @param provider Content provider client, used to create local collections
+     * @param localCollections The current local collections
+     * @param dbCollections The current database collections, possibly containing new information
      *
-     * @return New found database collections to be created in provider
+     * @return Updated list of local collections (obsolete collections removed, new collections added)
      */
     @VisibleForTesting
     internal fun updateCollections(
@@ -140,37 +141,43 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         dbCollections: Map<HttpUrl, Collection>
     ): List<CollectionType> {
         // create mutable copies of input
-        val newLocalCollections = localCollections.toMutableList()
+        val updatedLocalCollections = localCollections.toMutableList()
         val newDbCollections = dbCollections.toMutableMap()
 
         for (localCollection in localCollections) {
             val dbCollection = dbCollections[localCollection.collectionUrl?.toHttpUrlOrNull()]
             if (dbCollection == null) {
-                // Collection not available in db = on server (anymore), delete
-                logger.info("Deleting local collection ${localCollection.title}")
+                // Collection not available in db = on server (anymore), delete and remove from the updated list
+                logger.fine("Deleting local collection ${localCollection.title}")
                 localCollection.deleteCollection()
-                newLocalCollections -= localCollection
+                updatedLocalCollections -= localCollection
             } else {
                 // Collection exists locally, update local collection and remove it from "to be created" map
+                logger.fine("Updating local collection ${localCollection.title} with $dbCollection")
                 update(localCollection, dbCollection)
                 newDbCollections -= dbCollection.url
             }
         }
 
         // Create local collections which are in DB, but don't exist locally yet
-        val newProviderCollections = createLocalCollections(provider, newDbCollections.values.toList())
-        newLocalCollections.addAll(newProviderCollections) // Add the newly created collections
+        if (newDbCollections.isNotEmpty()) {
+            val toBeCreated = newDbCollections.values.toList()
+            logger.log(Level.FINE, "Creating new local collections", toBeCreated.toTypedArray())
+            val newLocalCollections = createLocalCollections(provider, toBeCreated)
+            // Add the newly created collections to the updated list
+            updatedLocalCollections.addAll(newLocalCollections)
+        }
 
-        return newLocalCollections
+        return updatedLocalCollections
     }
 
     /**
      * Creates new local collections from database collections.
      *
-     * @param provider Content provider client to access local collections.
-     * @param dbCollections Database collections to be created as local collections.
+     * @param provider Content provider client to access local collections
+     * @param dbCollections Database collections to be created as local collections
      *
-     * @return Newly created local collections.
+     * @return Newly created local collections
      */
     @VisibleForTesting
     internal fun createLocalCollections(
