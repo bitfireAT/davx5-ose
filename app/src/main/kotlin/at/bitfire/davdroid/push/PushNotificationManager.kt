@@ -46,7 +46,7 @@ class PushNotificationManager @Inject constructor(
                         Intent(context, AccountActivity::class.java).apply {
                             putExtra(AccountActivity.EXTRA_ACCOUNT, account)
                         },
-                        PendingIntent.FLAG_IMMUTABLE
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 )
                 .build()
@@ -57,8 +57,9 @@ class PushNotificationManager @Inject constructor(
      * Once the sync has been started, the notification is no longer needed and can be dismissed.
      * It's safe to call this method even if the notification has not been shown.
      */
-    fun dismissScheduled(account: Account, authority: String) {
+    fun dismiss(account: Account, authority: String) {
         NotificationManagerCompat.from(context)
             .cancel(notificationId(account, authority))
     }
+
 }

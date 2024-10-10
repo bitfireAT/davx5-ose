@@ -74,14 +74,14 @@ class UnifiedPushReceiver: MessagingReceiver() {
                 collectionRepository.getSyncableByTopic(topic)?.let { collection ->
                     serviceRepository.get(collection.serviceId)?.let { service ->
                         val account = accountRepository.fromName(service.accountName)
-                        syncWorkerManager.enqueueOneTimeAllAuthorities(account, isPush = true)
+                        syncWorkerManager.enqueueOneTimeAllAuthorities(account, fromPush = true)
                     }
                 }
 
             } else {
                 logger.warning("Got push message without topic, syncing all accounts")
                 for (account in accountRepository.getAll())
-                    syncWorkerManager.enqueueOneTimeAllAuthorities(account, isPush = true)
+                    syncWorkerManager.enqueueOneTimeAllAuthorities(account, fromPush = true)
 
             }
         }

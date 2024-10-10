@@ -179,7 +179,7 @@ abstract class BaseSyncWorker(
         }
 
         // Dismiss any pending push notification
-        pushNotificationManager.dismissScheduled(account, authority)
+        pushNotificationManager.dismiss(account, authority)
 
         try {
             val accountSettings = try {

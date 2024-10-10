@@ -108,7 +108,7 @@ class SyncWorkerManager @Inject constructor(
      * @param manual        user-initiated sync (ignores network checks)
      * @param resync        whether to request (full) re-synchronization or not
      * @param upload        see [ContentResolver.SYNC_EXTRAS_UPLOAD] – only used for contacts sync and Android 7 workaround
-     * @param isPush        whether this sync is initiated by a push notification
+     * @param fromPush      whether this sync is initiated by a push notification
      *
      * @return existing or newly created worker name
      */
@@ -118,7 +118,7 @@ class SyncWorkerManager @Inject constructor(
         manual: Boolean = false,
         @InputResync resync: Int = NO_RESYNC,
         upload: Boolean = false,
-        isPush: Boolean = false
+        fromPush: Boolean = false
     ): String {
         // enqueue and start syncing
         val name = workerName(account, authority)
@@ -129,7 +129,7 @@ class SyncWorkerManager @Inject constructor(
             resync = resync,
             upload = upload
         )
-        if (isPush) {
+        if (fromPush) {
             logger.fine("Showing push sync pending notification for $name")
             pushNotificationManager.notify(account, authority)
         }
@@ -156,7 +156,7 @@ class SyncWorkerManager @Inject constructor(
         manual: Boolean = false,
         @InputResync resync: Int = NO_RESYNC,
         upload: Boolean = false,
-        isPush: Boolean = false
+        fromPush: Boolean = false
     ) {
         for (authority in SyncUtils.syncAuthorities(context))
             enqueueOneTime(
@@ -165,7 +165,7 @@ class SyncWorkerManager @Inject constructor(
                 manual = manual,
                 resync = resync,
                 upload = upload,
-                isPush = isPush
+                fromPush = fromPush
             )
     }
 

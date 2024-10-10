@@ -491,7 +491,7 @@
     <string name="sync_invalid_task">Received invalid task from server</string>
     <string name="sync_invalid_resources_ignoring">Ignoring one or more invalid resources</string>
     <string name="sync_notification_pending_push_title">Sync pending</string>
-    <string name="sync_notification_pending_push_message">Received a push notification from server. Waiting to sync…</string>
+    <string name="sync_notification_pending_push_message">Remote data have changed</string>
 
     <!-- widgets -->
     <string name="widget_sync_all">Sync all</string>
