@@ -22,6 +22,7 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
+import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_NAME
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_TYPE
@@ -45,7 +46,8 @@ import javax.inject.Inject
  */
 class SyncWorkerManager @Inject constructor(
     @ApplicationContext val context: Context,
-    val logger: Logger
+    val logger: Logger,
+    val pushNotificationManager: PushNotificationManager
 ) {
 
     // one-time sync workers
@@ -106,6 +108,7 @@ class SyncWorkerManager @Inject constructor(
      * @param manual        user-initiated sync (ignores network checks)
      * @param resync        whether to request (full) re-synchronization or not
      * @param upload        see [ContentResolver.SYNC_EXTRAS_UPLOAD] – only used for contacts sync and Android 7 workaround
+     * @param fromPush      whether this sync is initiated by a push notification
      *
      * @return existing or newly created worker name
      */
@@ -114,7 +117,8 @@ class SyncWorkerManager @Inject constructor(
         authority: String,
         manual: Boolean = false,
         @InputResync resync: Int = NO_RESYNC,
-        upload: Boolean = false
+        upload: Boolean = false,
+        fromPush: Boolean = false
     ): String {
         // enqueue and start syncing
         val name = workerName(account, authority)
@@ -125,6 +129,10 @@ class SyncWorkerManager @Inject constructor(
             resync = resync,
             upload = upload
         )
+        if (fromPush) {
+            logger.fine("Showing push sync pending notification for $name")
+            pushNotificationManager.notify(account, authority)
+        }
         logger.info("Enqueueing unique worker: $name, tags = ${request.tags}")
         WorkManager.getInstance(context).enqueueUniqueWork(
             name,
@@ -147,7 +155,8 @@ class SyncWorkerManager @Inject constructor(
         account: Account,
         manual: Boolean = false,
         @InputResync resync: Int = NO_RESYNC,
-        upload: Boolean = false
+        upload: Boolean = false,
+        fromPush: Boolean = false
     ) {
         for (authority in SyncUtils.syncAuthorities(context))
             enqueueOneTime(
@@ -155,7 +164,8 @@ class SyncWorkerManager @Inject constructor(
                 authority = authority,
                 manual = manual,
                 resync = resync,
-                upload = upload
+                upload = upload,
+                fromPush = fromPush
             )
     }
 

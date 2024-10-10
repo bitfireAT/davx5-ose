@@ -151,7 +151,6 @@ class NotificationRegistry @Inject constructor(
             logger.warning("Notifications disabled, not showing notification $id")
     }
 
-
     // specific common notifications
 
     /**
