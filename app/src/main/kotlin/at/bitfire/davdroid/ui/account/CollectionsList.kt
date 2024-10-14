@@ -29,7 +29,8 @@ import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.icons.filled.Task
 import androidx.compose.material.icons.filled.Today
-import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -111,8 +112,10 @@ fun CollectionList_Item(
     if (onShowDetails != null)
         modifier = modifier.clickable(onClick = onShowDetails)
 
-    Card(
-        modifier = modifier
+    ElevatedCard(
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
     ) {
         Row(Modifier.height(IntrinsicSize.Max)) {
             Box(

@@ -29,7 +29,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -174,7 +175,7 @@ fun WebdavMountsScreen(
                         Spacer(Modifier.height(4.dp))
 
                     LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(8.dp)
@@ -253,8 +254,10 @@ fun WebdavMountsItem(
         )
     }
 
-    Card(
-        modifier = Modifier.fillMaxWidth()
+    ElevatedCard(
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
     ) {
         Column(
             modifier = Modifier
@@ -349,33 +352,59 @@ fun WebdavMountsItem(
 @Composable
 @Preview
 fun WebdavMountsScreen_Preview_Empty() {
-    WebdavMountsScreen(
-        mountInfos = emptyList(),
-        refreshingQuota = false
-    )
+    AppTheme {
+        WebdavMountsScreen(
+            mountInfos = emptyList(),
+            refreshingQuota = false
+        )
+    }
 }
 
 @Composable
 @Preview
 fun WebdavMountsScreen_Preview_TwoMounts() {
-    WebdavMountsScreen(
-        mountInfos = listOf(
-            WebDavMountWithQuota(
+    AppTheme {
+        WebdavMountsScreen(
+            mountInfos = listOf(
+                WebDavMountWithQuota(
+                    mount = WebDavMount(
+                        id = 0,
+                        name = "Preview Webdav Mount 1",
+                        url = HttpUrl.Builder()
+                            .scheme("https")
+                            .host("example.com")
+                            .build()
+                    ),
+                    quotaAvailable = 1024 * 1024 * 1024,
+                    quotaUsed = 512 * 1024 * 1024
+                ),
+                WebDavMountWithQuota(
+                    mount = WebDavMount(
+                        id = 1,
+                        name = "Preview Webdav Mount 2",
+                        url = HttpUrl.Builder()
+                            .scheme("https")
+                            .host("example.com")
+                            .build()
+                    ),
+                    quotaAvailable = 1024 * 1024 * 1024,
+                    quotaUsed = 512 * 1024 * 1024
+                )
+            ),
+            refreshingQuota = true
+        )
+    }
+}
+
+@Composable
+@Preview
+fun WebdavMountsItem_Preview() {
+    AppTheme {
+        WebdavMountsItem(
+            info = WebDavMountWithQuota(
                 mount = WebDavMount(
                     id = 0,
-                    name = "Preview Webdav Mount 1",
-                    url = HttpUrl.Builder()
-                        .scheme("https")
-                        .host("example.com")
-                        .build()
-                ),
-                quotaAvailable = 1024 * 1024 * 1024,
-                quotaUsed = 512 * 1024 * 1024
-            ),
-            WebDavMountWithQuota(
-                mount = WebDavMount(
-                    id = 1,
-                    name = "Preview Webdav Mount 2",
+                    name = "Preview Webdav Mount",
                     url = HttpUrl.Builder()
                         .scheme("https")
                         .host("example.com")
@@ -384,28 +413,8 @@ fun WebdavMountsScreen_Preview_TwoMounts() {
                 quotaAvailable = 1024 * 1024 * 1024,
                 quotaUsed = 512 * 1024 * 1024
             )
-        ),
-        refreshingQuota = true
-    )
-}
-
-@Composable
-@Preview
-fun WebdavMountsItem_Preview() {
-    WebdavMountsItem(
-        info = WebDavMountWithQuota(
-            mount = WebDavMount(
-                id = 0,
-                name = "Preview Webdav Mount",
-                url = HttpUrl.Builder()
-                    .scheme("https")
-                    .host("example.com")
-                    .build()
-            ),
-            quotaAvailable = 1024 * 1024 * 1024,
-            quotaUsed = 512 * 1024 * 1024
         )
-    )
+    }
 }
 
 
