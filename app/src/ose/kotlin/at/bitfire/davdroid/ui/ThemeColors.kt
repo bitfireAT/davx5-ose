@@ -81,7 +81,7 @@ object M3ColorScheme {
     val surfaceBrightDark = Color(0xFF4d4d4d)
     val surfaceContainerLowestDark = Color(0xFF141414)
     val surfaceContainerLowDark = Color(0xFF1f1f1f)
-    val surfaceContainerDark = Color(0xFFf5f5f5)
+    val surfaceContainerDark = Color(0xff3a3a3a)
     val surfaceContainerHighDark = Color(0xFF383838)
     val surfaceContainerHighestDark = Color(0xFF434343)
 
