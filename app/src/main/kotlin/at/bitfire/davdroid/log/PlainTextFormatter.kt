@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.log
 
+import com.google.common.base.Ascii
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.text.SimpleDateFormat
@@ -42,6 +43,11 @@ class PlainTextFormatter(
             lineSeparator = System.lineSeparator()
         )
 
+        /**
+         * Maximum length of a log line (estimate).
+         */
+        const val MAX_LENGTH = 10000
+
         fun shortClassName(className: String) = className
             .replace(Regex("^at\\.bitfire\\.(dav|cert4an|dav4an|ical4an|vcard4an)droid\\."), ".")
             .replace(Regex("\\$.*$"), "")
@@ -72,7 +78,7 @@ class PlainTextFormatter(
             }
         }
 
-        builder.append(r.message)
+        builder.append(truncate(r.message))
 
         if (withException && r.thrown != null) {
             val indentedStackTrace = stackTrace(r.thrown)
@@ -83,7 +89,7 @@ class PlainTextFormatter(
 
         r.parameters?.let {
             for ((idx, param) in it.withIndex())
-                builder.append("\n\tPARAMETER #").append(idx).append(" = ").append(param)
+                builder.append("\n\tPARAMETER #").append(idx).append(" = ").append(truncate(param.toString()))
         }
 
         if (lineSeparator != null)
@@ -91,5 +97,8 @@ class PlainTextFormatter(
 
         return builder.toString()
     }
+
+    private fun truncate(s: String) =
+        Ascii.truncate(s, MAX_LENGTH, "[…]")
 
 }
