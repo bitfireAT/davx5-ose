@@ -115,7 +115,8 @@ fun CollectionList_Item(
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
-        )
+        ),
+        modifier = modifier
     ) {
         Row(Modifier.height(IntrinsicSize.Max)) {
             Box(
