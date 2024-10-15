@@ -1,7 +1,7 @@
 # Comments apply to next line
 
 [versions]
-android-agp = "8.7.0"
+android-agp = "8.7.1"
 android-desugaring = "2.1.2"
 androidx-activityCompose = "1.9.2"
 androidx-appcompat = "1.7.0"
@@ -29,13 +29,13 @@ glance = "1.1.0"
 guava = "33.3.1-android"
 hilt = "2.52"
 # keep in sync with ksp version
-kotlin = "2.0.20"
+kotlin = "2.0.21"
 kotlinx-coroutines = "1.9.0"
 # see https://github.com/google/ksp/releases for version numbers
-ksp = "2.0.20-1.0.25"
+ksp = "2.0.21-1.0.25"
 mikepenz-aboutLibraries = "11.2.3"
 nsk90-kstatemachine = "0.31.1"
-mockk = "1.13.12"
+mockk = "1.13.13"
 okhttp = "4.12.0"
 openid-appauth = "0.11.1"
 room = "2.6.1"
