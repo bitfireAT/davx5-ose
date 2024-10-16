@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.SyncProblem
 import androidx.compose.material.icons.filled.Wifi
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -395,13 +397,23 @@ fun SyncSettings(
                 onDismiss = { showWifiOnlySsidsDialog = false }
             )
 
-        if (LocalInspectionMode.current || (onlyOnSsids != null && !canAccessWifiSsid))
+        if (LocalInspectionMode.current || onlyOnSsids != null)
             ActionCard(
-                icon = Icons.Default.SyncProblem,
+                icon = if (!canAccessWifiSsid) Icons.Default.SyncProblem else Icons.Default.Info,
                 actionText = stringResource(R.string.settings_sync_wifi_only_ssids_permissions_action),
                 onAction = onSyncWifiOnlyPermissionsAction
             ) {
-                Text(stringResource(R.string.settings_sync_wifi_only_ssids_permissions_required))
+                Column {
+                    if (!canAccessWifiSsid)
+                        Text(stringResource(R.string.settings_sync_wifi_only_ssids_permissions_required))
+                    Text(
+                        stringResource(
+                            R.string.wifi_permissions_background_location_disclaimer, stringResource(
+                                R.string.app_name)
+                        ),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
 
         SwitchSetting(

@@ -6,7 +6,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -116,6 +118,34 @@ fun WifiPermissionsScreenContent(
         Modifier
             .padding(8.dp)
             .verticalScroll(rememberScrollState())) {
+
+        // Disclaimer
+        Row {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    stringResource(
+                        R.string.wifi_permissions_background_location_disclaimer, stringResource(
+                            R.string.app_name)
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+
+                )
+                Text(
+                    stringResource(
+                        R.string.wifi_permissions_background_location_disclaimer2, stringResource(
+                            R.string.app_name)
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            Icon(Icons.Default.CloudOff, null, modifier = Modifier.padding(8.dp))
+        }
+
+        HorizontalDivider(Modifier.padding(vertical = 16.dp))
+
+        // Permission switches
         Text(
             stringResource(R.string.wifi_permissions_intro),
             style = MaterialTheme.typography.bodyLarge
@@ -150,24 +180,10 @@ fun WifiPermissionsScreenContent(
         )
         val context = LocalContext.current
         OutlinedButton(
+            modifier = Modifier.padding(top = 8.dp),
             onClick = { PermissionUtils.showAppSettings(context) }
         ) {
             Text(stringResource(R.string.permissions_app_settings))
-        }
-
-        HorizontalDivider(Modifier.padding(vertical = 16.dp))
-
-        // Disclaimer
-        Row {
-            Text(
-                stringResource(
-                    R.string.wifi_permissions_background_location_disclaimer, stringResource(
-                        R.string.app_name)
-                ),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.weight(1f)
-            )
-            Icon(Icons.Default.CloudOff, null, modifier = Modifier.padding(8.dp))
         }
     }
 }

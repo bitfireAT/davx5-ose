@@ -46,7 +46,7 @@ fun ActionCard(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(icon, "", Modifier
-                            .align(Alignment.CenterVertically)
+                            .align(Alignment.Top)
                             .padding(8.dp))
                         content()
                     }
@@ -72,6 +72,9 @@ fun ActionCard_Sample() {
         icon = Icons.Default.NotificationAdd,
         actionText = "Some Action"
     ) {
-        Text("Some Content")
+        Column {
+            Text("Some Content. Some Content. Some Content. Some Content. ")
+            Text("Other Content. Other Content. Other Content. Other Content. Other Content. Other Content. Other Content. ", style = MaterialTheme.typography.bodyMedium)
+        }
     }
 }
