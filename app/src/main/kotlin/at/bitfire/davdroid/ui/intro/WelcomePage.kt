@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,9 +33,11 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.M3ColorScheme
 
-class WelcomePage: IntroPage {
+class WelcomePage: IntroPage() {
 
-    override fun getShowPolicy() = IntroPage.ShowPolicy.SHOW_ONLY_WITH_OTHERS
+    override val disableStatusBarPadding: Boolean = true
+
+    override fun getShowPolicy() = ShowPolicy.SHOW_ONLY_WITH_OTHERS
 
     @Composable
     override fun ComposePage() {
@@ -50,7 +53,8 @@ class WelcomePage: IntroPage {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = M3ColorScheme.primaryLight),
+                .background(color = M3ColorScheme.primaryLight)
+                .statusBarsPadding(),
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_launcher_foreground),

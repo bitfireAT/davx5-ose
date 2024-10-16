@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.composable
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -59,7 +60,8 @@ fun Assistant(
                     ) {
                         Text(nextLabel)
                     }
-            }
+            },
+            windowInsets = WindowInsets(0)
         )
     }
 }
