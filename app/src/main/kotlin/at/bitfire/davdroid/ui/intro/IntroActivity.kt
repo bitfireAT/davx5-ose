@@ -13,7 +13,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.rememberCoroutineScope
 import at.bitfire.davdroid.ui.AppTheme
@@ -21,7 +20,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-@OptIn(ExperimentalFoundationApi::class)
 class IntroActivity : AppCompatActivity() {
 
     val model by viewModels<IntroModel>()
@@ -33,7 +31,12 @@ class IntroActivity : AppCompatActivity() {
         val pages = model.pages
 
         setContent {
-            AppTheme {
+            AppTheme(
+                statusBarColorProvider = { it.primary },
+                statusBarDarkColorProvider = { it.onPrimary },
+                navigationBarColorProvider = { it.primary },
+                navigationBarDarkColorProvider = { it.onPrimary }
+            ) {
                 val scope = rememberCoroutineScope()
                 val pagerState = rememberPagerState { pages.size }
 
