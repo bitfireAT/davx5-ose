@@ -5,9 +5,9 @@
 package at.bitfire.davdroid.ui.composable
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -45,9 +45,7 @@ fun Assistant(
         }
 
         BottomAppBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .imePadding(),
+            modifier = Modifier.fillMaxWidth(),
             actions = {
                 if (nextLabel != null)
                     Button(
@@ -59,7 +57,8 @@ fun Assistant(
                     ) {
                         Text(nextLabel)
                     }
-            }
+            },
+            windowInsets = WindowInsets(0)
         )
     }
 }
