@@ -4,7 +4,9 @@
 
 package at.bitfire.davdroid.ui
 
-import android.app.Activity
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -14,7 +16,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
 
 @Composable
@@ -30,9 +31,15 @@ fun AppTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            val barStyle = if (darkTheme) {
+                SystemBarStyle.dark(colorScheme.primary.toArgb())
+            } else {
+                SystemBarStyle.light(
+                    colorScheme.primary.toArgb(),
+                    colorScheme.onPrimary.toArgb()
+                )
+            }
+            (view.context as? AppCompatActivity)?.enableEdgeToEdge(barStyle, barStyle)
         }
     }
 
