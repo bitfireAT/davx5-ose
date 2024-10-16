@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.rememberCoroutineScope
 import at.bitfire.davdroid.ui.AppTheme
-import at.bitfire.davdroid.ui.M3ColorScheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -32,12 +31,7 @@ class IntroActivity : AppCompatActivity() {
         val pages = model.pages
 
         setContent {
-            AppTheme(
-                statusBarColorProvider = { M3ColorScheme.primaryLight },
-                statusBarDarkColorProvider = { M3ColorScheme.onPrimaryDark },
-                navigationBarColorProvider = { M3ColorScheme.primaryLight },
-                navigationBarDarkColorProvider = { M3ColorScheme.onPrimaryDark }
-            ) {
+            AppTheme {
                 val scope = rememberCoroutineScope()
                 val pagerState = rememberPagerState { pages.size }
 

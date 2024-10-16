@@ -8,13 +8,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -50,7 +53,6 @@ import at.bitfire.davdroid.ui.M3ColorScheme
 import kotlinx.coroutines.launch
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun IntroScreen(
     pages: List<IntroPage>,
     pagerState: PagerState = rememberPagerState { pages.size },
@@ -58,13 +60,18 @@ fun IntroScreen(
 ) {
     val scope = rememberCoroutineScope()
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        contentWindowInsets = WindowInsets(0)
+    ) { paddingValues ->
         Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
+                    .background(M3ColorScheme.primaryLight)
+                    .statusBarsPadding()
+                    .background(MaterialTheme.colorScheme.background)
             ) { pages[it].ComposePage() }
 
             Box(
@@ -72,6 +79,7 @@ fun IntroScreen(
                     .fillMaxWidth()
                     .height(90.dp)
                     .background(M3ColorScheme.primaryLight)
+                    .navigationBarsPadding()
             ) {
                 PositionIndicator(
                     index = pagerState.currentPage,
