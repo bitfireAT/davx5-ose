@@ -67,8 +67,9 @@ class DnsRecordResolver @Inject constructor(
             val dnsServers = LinkedList<InetAddress>()
 
             val connectivity = context.getSystemService<ConnectivityManager>()!!
+            @Suppress("DEPRECATION")
             connectivity.allNetworks.forEach { network ->
-                val active = connectivity.getNetworkInfo(network)?.isConnected ?: false
+                val active = connectivity.getNetworkInfo(network)?.isConnected == true
                 connectivity.getLinkProperties(network)?.let { link ->
                     if (active)
                     // active connection, insert at top of list
@@ -129,12 +130,12 @@ class DnsRecordResolver @Inject constructor(
 
         // Select records which have the minimum priority
         val minPriority = srvRecords.minOfOrNull { it.priority }
-        val useableRecords = srvRecords.filter { it.priority == minPriority }
+        val usableRecords = srvRecords.filter { it.priority == minPriority }
             .sortedBy { it.weight != 0 }    // and put those with weight 0 first
 
         val map = TreeMap<Int, SRVRecord>()
         var runningWeight = 0
-        for (record in useableRecords) {
+        for (record in usableRecords) {
             val weight = record.weight
             runningWeight += weight
             map[runningWeight] = record

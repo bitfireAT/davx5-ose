@@ -11,12 +11,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -35,20 +41,26 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
-import at.bitfire.davdroid.ui.composable.BasicTopAppBar
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.RadioWithSwitch
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TasksScreen(onNavUp: () -> Unit) {
     AppTheme {
         Scaffold(
             topBar = {
-                BasicTopAppBar(
-                    titleStringRes = R.string.intro_tasks_title,
-                    onNavigateUp = onNavUp
+                TopAppBar(
+                    title = { Text(stringResource(R.string.intro_tasks_title)) },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = onNavUp
+                        ) {
+                            Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
+                        }
+                    }
                 )
             }
         ) { paddingValues ->

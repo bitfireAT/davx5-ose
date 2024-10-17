@@ -12,10 +12,9 @@ import java.util.logging.Logger
  * [AccountManager.setUserData] has been found to be unreliable at times. This extension function
  * checks whether the user data has actually been set and retries up to ten times before failing silently.
  *
- * Note: In the future we want to store accounts + associated data in the database, never calling
- * so this method will become obsolete then.
+ * It should only be used to store the reference to the database (like the collection ID that this account represents).
+ * Everything else should be in the DB.
  */
-@Deprecated("Don't use AccountManager to store user data; use DB instead")
 fun AccountManager.setAndVerifyUserData(account: Account, key: String, value: String?) {
     for (i in 1..10) {
         setUserData(account, key, value)

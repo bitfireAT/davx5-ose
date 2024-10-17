@@ -61,7 +61,7 @@ class SyncConditions @AssistedInject constructor(
             }
 
             val wifi = context.getSystemService<WifiManager>()!!
-            val info = wifi.connectionInfo
+            @Suppress("DEPRECATION") val info = wifi.connectionInfo
             if (info == null || !onlySSIDs.contains(info.ssid.trim('"'))) {
                 logger.info("Connected to wrong WiFi network (${info.ssid}), aborting sync")
                 return false
@@ -89,6 +89,7 @@ class SyncConditions @AssistedInject constructor(
      */
     internal fun internetAvailable(): Boolean {
         val connectivityManager = context.getSystemService<ConnectivityManager>()!!
+        @Suppress("DEPRECATION")
         return connectivityManager.allNetworks.any { network ->
             val capabilities = connectivityManager.getNetworkCapabilities(network)
             logger.log(
@@ -127,6 +128,7 @@ class SyncConditions @AssistedInject constructor(
      */
     internal fun wifiAvailable(): Boolean {
         val connectivityManager = context.getSystemService<ConnectivityManager>()!!
+        @Suppress("DEPRECATION")
         connectivityManager.allNetworks.forEach { network ->
             connectivityManager.getNetworkCapabilities(network)?.let { capabilities ->
                 if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) &&
