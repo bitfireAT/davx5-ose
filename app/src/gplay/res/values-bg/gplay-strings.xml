@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="navigation_drawer_support_project">Подкрепи проекта</string>
+    <string name="nav_earn_badges">Подкрепете ни със значки</string>
     <string name="nav_rate_us">Оценки в Google Play</string>
+    <plurals name="you_earned_badges">
+        <item quantity="one">Получили сте значка, благодарим ви!</item>
+        <item quantity="other">Получили сте %d значки, благодарим ви!</item>
+    </plurals>
+    <string name="available_badges">Налични значки</string>
+    <string name="available_badges_empty">Значките не могат да бъдат заредени, съжаляваме. Влезли ли сте в Play Store?</string>
+    <string name="what_are_badges">Какво представляват значките?</string>
+    <string name="what_are_badges_title">Какво представляват значките?</string>
+    <string name="what_are_badges_body">Значките са еднократни плащания в приложението. Ще спечелите хубава малка значка и с нея ще можете да ни подкрепите във времето.</string>
+    <string name="why_badges_title">Защо DAVx5 предлага значки без функционалност?</string>
+    <string name="why_badges_body">DAVx5 наистина се разрасна през годините! Все още активно разработваме нови възможности, осигуряваме поддръжка и винаги обновяваме приложението за предстоящите издания на Андроид. Тези значки са еднократни плащания, при които можете просто да покажете подкрепата си, като ни почерпите кафе или две&#8230; или 10 :-) Желанието ни е да бъдем възможно най-отворени, така че никога и по никакъв начин няма да има нови неща, заключени зад плащане в приложението.</string>
+    <string name="button_buy_badge_free">БЕЗПЛАТНО</string>
     <string name="button_buy_badge_bought">Благодаря!</string>
+    <string name="earn_badges">Печелете значки, за да ни подкрепите!</string>
+    <string name="billing_unavailable">ППИ за фактуриране не е наличен, Play Store последно издание ли е и влезли ли сте в профила си в Google?</string>
     <string name="network_problems">Проблеми с мрежата, моля опитайте по-късно.</string>
 </resources>
