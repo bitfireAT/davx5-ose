@@ -219,6 +219,7 @@
   <string name="login_type_email">Вход с електронна поща</string>
   <string name="login_email_address">Електронна поща</string>
   <string name="login_email_address_error">Необходим е действителен електронен адрес</string>
+  <string name="login_email_address_info"><![CDATA[Домейнът на имейла се използва като основа за адреса. <a href="%s">Откриването на услугите</a> става чрез записи в DNS и добре познати адреси.]]></string>
   <string name="login_password">Парола</string>
   <string name="login_password_hide">Скриване на паролата</string>
   <string name="login_password_show">Показване на паролата</string>
@@ -227,9 +228,11 @@
   <string name="login_user_name">Потребителско име</string>
   <string name="login_user_name_optional">Потребителско име*</string>
   <string name="login_base_url">Основен адрес</string>
+  <string name="login_base_url_info"><![CDATA[Основата на адресът ще бъде директно проверен, но <a href="%s">услугите също могат да бъдат открити</a>чрез записи в DNS и добре познати адреси.]]></string>
   <string name="login_select_certificate">Избор на сертификат</string>
   <string name="login_create_account">Създаване на регистрация</string>
   <string name="login_account_name">Име на регистрация</string>
+  <string name="login_account_avoid_apostrophe">Използването на апострофи (\') изглежда води до проблеми при някои устройства.</string>
   <string name="login_account_name_info">Използвайте адрес за електронна поща вместо име, защото Android ще го използва като адрес на организатора на събитията, които създавате. Не може да има две регистрации с еднакво име.</string>
   <string name="login_account_contact_group_method">Метод за съхранение на групи от контакти:</string>
   <string name="login_account_name_required">Изисква се име на регистрацията</string>
@@ -259,6 +262,10 @@
   <string name="login_configuration_detection">Откриване на настройки</string>
   <string name="login_querying_server">Изчакайте, запитване на сървъра…</string>
   <string name="login_no_service">Не са открити услуги на CalDAV или CardDAV.</string>
+  <string name="login_no_service_info">Основата на адресът изглежда недостъпен за CalDAV/CardDAV адрес и откриването на услуги е неуспешно.</string>
+  <string name="login_see_tested_services"><![CDATA[Вижте ръководството на доставчика на услуги и <a href="%s">нашия списък с изпробвани услуг</a>и и техните основи на адреса.]]></string>
+  <string name="login_check_credentials">Също така отново проверете удостоверяването (обикновено потребителско име и парола).</string>
+  <string name="login_logs_available">Повече техническа информация има в дневника.</string>
   <string name="login_view_logs">Преглед</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Синхронизиране</string>
@@ -325,6 +332,7 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Създаване на адресник</string>
+  <string name="create_addressbook_maybe_not_supported">Създаване на адресник през CardDAV може да не е поддържано от сървъра.</string>
   <string name="create_calendar">Създаване на календар</string>
   <string name="create_calendar_time_zone_optional">Подразбиран часови пояс*</string>
   <string name="create_calendar_time_zone_none">—</string>
@@ -332,6 +340,7 @@
   <string name="create_calendar_type_vevent">Събития</string>
   <string name="create_calendar_type_vtodo">Задачи</string>
   <string name="create_calendar_type_vjournal">Бележки / дневник</string>
+  <string name="create_calendar_maybe_not_supported">Създаване на календар през CalDAV може да не е поддържано от сървъра.</string>
   <string name="create_collection_color">Цвят</string>
   <string name="create_collection_display_name">Заглавие</string>
   <string name="create_collection_home_set">Местоположение на хранилището</string>
@@ -351,6 +360,8 @@
   <string name="collection_title">Заглавие</string>
   <string name="collection_description">Описание</string>
   <string name="collection_owner">Собственик</string>
+  <string name="collection_push_support">Поддържане на Push</string>
+  <string name="collection_push_web_push">Сървърът обявява поддръжка на Push</string>
   <string name="collection_last_sync">Последно синхронизиране (%s)</string>
   <string name="collection_url">Адрес (URL)</string>
   <!--debugging and DebugInfoActivity-->
