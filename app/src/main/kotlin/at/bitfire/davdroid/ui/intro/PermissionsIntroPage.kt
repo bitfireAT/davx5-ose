@@ -16,20 +16,20 @@ import javax.inject.Inject
 
 class PermissionsIntroPage @Inject constructor(
     private val application: Application
-): IntroPage {
+): IntroPage() {
 
     var model: PermissionsModel? = null
 
-    override fun getShowPolicy(): IntroPage.ShowPolicy {
+    override fun getShowPolicy(): ShowPolicy {
         // show PermissionsFragment as intro fragment when no permissions are granted
         val permissions = CONTACT_PERMISSIONS + CALENDAR_PERMISSIONS +
                 TaskProvider.PERMISSIONS_JTX +
                 TaskProvider.PERMISSIONS_OPENTASKS +
                 TaskProvider.PERMISSIONS_TASKS_ORG
         return if (PermissionUtils.haveAnyPermission(application, permissions))
-            IntroPage.ShowPolicy.DONT_SHOW
+            ShowPolicy.DONT_SHOW
         else
-            IntroPage.ShowPolicy.SHOW_ALWAYS
+            ShowPolicy.SHOW_ALWAYS
     }
 
     @Composable

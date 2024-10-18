@@ -16,13 +16,13 @@ class TasksIntroPage @Inject constructor(
     private val application: Application,
     private val settingsManager: SettingsManager,
     private val tasksAppManager: TasksAppManager
-): IntroPage {
+): IntroPage() {
 
-    override fun getShowPolicy(): IntroPage.ShowPolicy {
+    override fun getShowPolicy(): ShowPolicy {
         return if (tasksAppManager.currentProvider() != null || settingsManager.getBooleanOrNull(TasksModel.HINT_OPENTASKS_NOT_INSTALLED) == false)
-                IntroPage.ShowPolicy.DONT_SHOW
+                ShowPolicy.DONT_SHOW
             else
-                IntroPage.ShowPolicy.SHOW_ALWAYS
+                ShowPolicy.SHOW_ALWAYS
     }
 
     @Composable
