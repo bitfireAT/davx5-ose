@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.resource
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.Context
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -15,6 +16,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.junit.Assert.assertTrue
 import java.util.logging.Logger
 
 class LocalTestAddressBook @AssistedInject constructor(
@@ -26,10 +28,6 @@ class LocalTestAddressBook @AssistedInject constructor(
     logger: Logger,
     serviceRepository: DavServiceRepository
 ): LocalAddressBook(ACCOUNT, provider, context, accountSettingsFactory, collectionRepository, logger, serviceRepository) {
-
-    companion object {
-        val ACCOUNT = Account("LocalTestAddressBook", "at.bitfire.davdroid.test")
-    }
 
     @AssistedFactory
     interface Factory {
@@ -46,6 +44,18 @@ class LocalTestAddressBook @AssistedInject constructor(
             contact.delete()
         for (group in queryGroups(null, null))
             group.delete()
+    }
+
+
+    companion object {
+
+        val ACCOUNT = Account("LocalTestAddressBook", "at.bitfire.davdroid.test")
+
+        fun createAccount(context: Context) {
+            val am = AccountManager.get(context)
+            assertTrue("Couldn't create account for local test address-book", am.addAccountExplicitly(ACCOUNT, null, null))
+        }
+
     }
 
 }
