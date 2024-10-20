@@ -70,7 +70,7 @@ class LocalAddressBookTest {
             val id = ContentUris.parseId(uri)
             val localContact = addressBook.findContactById(id)
             localContact.resetDirty()
-            assertFalse("Contact is dirty before moving", localContact.isDirty())
+            assertFalse("Contact is dirty before moving", addressBook.isContactDirty(id))
 
             // rename address book
             val newName = "New Name"
@@ -79,7 +79,7 @@ class LocalAddressBookTest {
 
             // check whether contact is still here (including data rows) and not dirty
             val result = addressBook.findContactById(id)
-            assertFalse("Contact is dirty after moving", result.isDirty())
+            assertFalse("Contact is dirty after moving", addressBook.isContactDirty(id))
 
             val contact2 = result.getContact()
             assertEquals(uid, contact2.uid)
