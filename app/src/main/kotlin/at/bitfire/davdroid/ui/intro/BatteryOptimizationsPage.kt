@@ -19,9 +19,9 @@ import javax.inject.Inject
 class BatteryOptimizationsPage @Inject constructor(
     private val application: Application,
     private val settingsManager: SettingsManager
-): IntroPage {
+): IntroPage() {
 
-    override fun getShowPolicy(): IntroPage.ShowPolicy {
+    override fun getShowPolicy(): ShowPolicy {
         // show fragment when:
         // 1. DAVx5 is not whitelisted yet and "don't show anymore" has not been clicked, and/or
         // 2a. evil manufacturer AND
@@ -30,9 +30,9 @@ class BatteryOptimizationsPage @Inject constructor(
             (!BatteryOptimizationsPageModel.isExempted(application) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
             (BatteryOptimizationsPageModel.manufacturerWarning && settingsManager.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) != false)
         )
-            IntroPage.ShowPolicy.SHOW_ALWAYS
+            ShowPolicy.SHOW_ALWAYS
         else
-            IntroPage.ShowPolicy.DONT_SHOW
+            ShowPolicy.DONT_SHOW
     }
 
     @Composable
