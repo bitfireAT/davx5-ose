@@ -214,11 +214,9 @@ open class LocalAddressBook @AssistedInject constructor(
         val oldAccount = account
         logger.info("Renaming address book from \"${oldAccount.name}\" to \"$newName\"")
 
-        // copy user data to new account
-        val accountManager = AccountManager.get(context)
+        // create new account
         val newAccount = Account(newName, oldAccount.type)
         if (!SystemAccountUtils.createAccount(context, newAccount, Bundle()))
-            // Couldn't rename account
             return false
 
         // move contacts and groups to new account
@@ -239,6 +237,7 @@ open class LocalAddressBook @AssistedInject constructor(
         account = newAccount
 
         // delete old account
+        val accountManager = AccountManager.get(context)
         accountManager.removeAccountExplicitly(oldAccount)
 
         return true

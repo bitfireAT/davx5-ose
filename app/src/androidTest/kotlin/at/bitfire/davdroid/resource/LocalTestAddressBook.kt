@@ -66,6 +66,22 @@ class LocalTestAddressBook @AssistedInject constructor(
         throw FileNotFoundException()
     }
 
+    /**
+     * Returns the dirty flag of the given contact group.
+     *
+     * @return true if the group is dirty, false otherwise
+     *
+     * @throws FileNotFoundException if the group can't be found
+     */
+    fun isGroupDirty(id: Long): Boolean {
+        val uri = ContentUris.withAppendedId(groupsSyncUri(), id)
+        provider!!.query(uri, arrayOf(ContactsContract.Groups.DIRTY), null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst())
+                return cursor.getInt(0) != 0
+        }
+        throw FileNotFoundException()
+    }
+
 
     companion object {
 
