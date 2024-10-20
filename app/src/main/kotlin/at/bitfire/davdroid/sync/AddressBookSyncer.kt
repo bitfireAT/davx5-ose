@@ -74,7 +74,7 @@ class AddressBookSyncer @AssistedInject constructor(
     }
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalAddressBook, remoteCollection: Collection) {
-        logger.info("Synchronizing address book $localCollection")
+        logger.info("Synchronizing address book: ${localCollection.account.name}")
         syncAddressBook(
             account = account,
             addressBook = localCollection,
@@ -123,8 +123,6 @@ class AddressBookSyncer @AssistedInject constructor(
                 }
             }
             accountSettings.accountManager.setAndVerifyUserData(addressBook.account, PREVIOUS_GROUP_METHOD, groupMethod)
-
-            logger.info("Synchronizing address book: ${addressBook.collectionUrl}")
 
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
             syncManager.performSync()

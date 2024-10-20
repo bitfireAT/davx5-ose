@@ -7,6 +7,7 @@ package at.bitfire.davdroid.resource
 import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
+import android.content.ContentUris
 import android.content.Context
 import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
@@ -20,6 +21,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import ezvcard.property.Telephone
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.BeforeClass
@@ -64,18 +66,25 @@ class LocalAddressBookTest {
                 displayName = "Test Contact",
                 phoneNumbers = LinkedList(listOf(LabeledProperty(Telephone("1234567890"))))
             )
-            LocalContact(addressBook, contact, null, null, 0).add()
+            val uri = LocalContact(addressBook, contact, null, null, 0).add()
+            val id = ContentUris.parseId(uri)
+            val localContact = addressBook.findContactById(id)
+            localContact.resetDirty()
+            assertFalse("Contact is dirty before moving", localContact.isDirty())
 
             // rename address book
-            val newAccount = Account("New Name", addressBook.account.type)
-            LocalAddressBook.renameAccount(context, provider, addressBook.account, newAccount.name)
-            addressBook.account = newAccount
+            val newName = "New Name"
+            addressBook.renameAccount(newName)
+            assertEquals(Account(newName, LocalTestAddressBook.ACCOUNT.type), addressBook.account)
 
-            // check whether contact is still there
-            val result = addressBook.findContactByUid(uid)!!.getContact()
-            assertEquals(uid, result.uid)
-            assertEquals(contact.displayName, result.displayName)
-            assertEquals(contact.phoneNumbers.first().component1().text, result.phoneNumbers.first().component1().text)
+            // check whether contact is still here (including data rows) and not dirty
+            val result = addressBook.findContactById(id)
+            assertFalse("Contact is dirty after moving", result.isDirty())
+
+            val contact2 = result.getContact()
+            assertEquals(uid, contact2.uid)
+            assertEquals(contact.displayName, contact2.displayName)
+            assertEquals(contact.phoneNumbers.first().component1().text, contact2.phoneNumbers.first().component1().text)
 
         } finally {
             // clean up / remove address book

@@ -73,7 +73,8 @@ open class LocalAddressBook @AssistedInject constructor(
     override val tag: String
         get() = "contacts-${account.name}"
 
-    override val title = addressBookAccount.name
+    override val title
+        get() = account.name
 
     /**
      * Whether contact groups ([LocalGroup]) are included in query results
@@ -84,16 +85,16 @@ open class LocalAddressBook @AssistedInject constructor(
      */
     open val groupMethod: GroupMethod by lazy {
         val manager = AccountManager.get(context)
-        val account = manager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
+        val associatedAccount = manager.getUserData(/* address book account */ account, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
             collectionRepository.get(collectionId)?.let { collection ->
                 serviceRepository.get(collection.serviceId)?.let { service ->
                     Account(service.accountName, context.getString(R.string.account_type))
                 }
             }
         }
-        if (account == null)
+        if (associatedAccount == null)
             throw IllegalArgumentException("Collection of address book account $addressBookAccount does not have an account")
-        val accountSettings = accountSettingsFactory.create(account)
+        val accountSettings = accountSettingsFactory.create(associatedAccount)
         accountSettings.getGroupMethod()
     }
     private val includeGroups
@@ -158,7 +159,8 @@ open class LocalAddressBook @AssistedInject constructor(
         // Update the account name
         val newAccountName = accountName(context, info)
         if (account.name != newAccountName)
-            account = renameAccount(context, provider!!, account, newAccountName)
+            // rename and update AndroidAddressBook.account
+            renameAccount(newAccountName)
 
         // Update the account user data
         accountManager.setAndVerifyUserData(account, USER_DATA_COLLECTION_ID, info.id.toString())
@@ -192,6 +194,58 @@ open class LocalAddressBook @AssistedInject constructor(
 
         // make sure it will still be synchronized when contacts are updated
         updateSyncFrameworkSettings()
+    }
+
+    /**
+     * Renames an address book account and moves the contacts.
+     *
+     * On success, [account] will be updated to the new account name.
+     *
+     * _Note:_ Previously, we had used [AccountManager.renameAccount], but then the contacts can't be moved because there's never
+     * a moment when both accounts are available.
+     *
+     * @param newName   the new account name (will have same account type as [account])
+     *
+     * @return whether the account was renamed successfully
+     */
+    @VisibleForTesting
+    internal fun renameAccount(newName: String): Boolean {
+        val oldAccount = account
+        logger.info("Renaming address book from \"${oldAccount.name}\" to \"$newName\"")
+
+        // copy user data to new account
+        val accountManager = AccountManager.get(context)
+        val userData = Bundle(2).apply {
+            putString(USER_DATA_COLLECTION_ID, accountManager.getUserData(oldAccount, USER_DATA_COLLECTION_ID))
+            putString(USER_DATA_URL, accountManager.getUserData(oldAccount, USER_DATA_URL))
+        }
+
+        val newAccount = Account(newName, oldAccount.type)
+        if (!SystemAccountUtils.createAccount(context, newAccount, userData))
+            // Couldn't rename account
+            return false
+
+        // move contacts and groups to new account
+        val batch = BatchOperation(provider!!)
+        batch.enqueue(BatchOperation.CpoBuilder
+            .newUpdate(groupsSyncUri())
+            .withSelection(Groups.ACCOUNT_NAME + "=? AND " + Groups.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
+            .withValue(Groups.ACCOUNT_NAME, newAccount.name)
+        )
+        batch.enqueue(BatchOperation.CpoBuilder
+            .newUpdate(rawContactsSyncUri())
+            .withSelection(RawContacts.ACCOUNT_NAME + "=? AND " + RawContacts.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
+            .withValue(RawContacts.ACCOUNT_NAME, newAccount.name)
+        )
+        batch.commit()
+
+        // update AndroidAddressBook.account
+        account = newAccount
+
+        // delete old account
+        accountManager.removeAccountExplicitly(oldAccount)
+
+        return true
     }
 
     override fun deleteCollection(): Boolean {
@@ -477,51 +531,6 @@ open class LocalAddressBook @AssistedInject constructor(
             bundle.putString(USER_DATA_COLLECTION_ID, collectionId)
             bundle.putString(USER_DATA_URL, url)
             return bundle
-        }
-
-        /**
-         * Renames an address book account and moves the contacts.
-         *
-         * @param provider    used to move the contacts
-         * @param oldAccount  the account to rename
-         * @param newName     the new account name (will have same account type)
-         *
-         * Previously, we had used [AccountManager.renameAccount], but then the contacts can't be moved because there's never
-         * a moment when both accounts are available.
-         *
-         * @return the resulting account name (new name if successful, old name otherwise)
-         */
-        @VisibleForTesting
-        internal fun renameAccount(context: Context, provider: ContentProviderClient, oldAccount: Account, newName: String): Account {
-            val newAccount = Account(newName, oldAccount.type)
-
-            //val future = accountManager.renameAccount(oldAccount, newName, null, null)
-            val accountManager = AccountManager.get(context)
-
-            // copy user data to new account
-            val data = Bundle(2).apply {
-                putString(USER_DATA_COLLECTION_ID, accountManager.getUserData(oldAccount, USER_DATA_COLLECTION_ID))
-                putString(USER_DATA_URL, accountManager.getUserData(oldAccount, USER_DATA_URL))
-            }
-
-            if (!SystemAccountUtils.createAccount(context, newAccount, data))
-                // Couldn't rename account
-                return oldAccount
-
-            // move contacts to new account
-            val batch = BatchOperation(provider)
-            batch.enqueue(BatchOperation.CpoBuilder
-                .newUpdate(RawContacts.CONTENT_URI)
-                .withSelection(RawContacts.ACCOUNT_NAME + "=? AND " + RawContacts.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
-                .withValue(RawContacts.ACCOUNT_NAME, newAccount.name)
-                .withValue(RawContacts.ACCOUNT_TYPE, newAccount.type)
-            )
-            batch.commit()
-
-            // delete old account
-            accountManager.removeAccountExplicitly(oldAccount)
-
-            return newAccount
         }
 
     }

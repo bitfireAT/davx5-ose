@@ -115,6 +115,21 @@ class LocalContact: AndroidContact, LocalAddress {
         this.eTag = eTag
     }
 
+    /**
+     * Returns the dirty flag of the current contact.
+     *
+     * @return true if the contact is dirty, false otherwise
+     *
+     * @throws FileNotFoundException if the current contact can't be found
+     */
+    fun isDirty(): Boolean {
+        addressBook.provider!!.query(rawContactSyncURI(), arrayOf(ContactsContract.RawContacts.DIRTY), null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst())
+                return cursor.getInt(0) != 0
+        }
+        throw FileNotFoundException()
+    }
+
     override fun resetDeleted() {
         val values = ContentValues(1)
         values.put(ContactsContract.Groups.DELETED, 0)
