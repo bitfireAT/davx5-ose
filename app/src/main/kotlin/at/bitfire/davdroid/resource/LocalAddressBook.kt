@@ -159,7 +159,7 @@ open class LocalAddressBook @AssistedInject constructor(
         // Update the account name
         val newAccountName = accountName(context, info)
         if (account.name != newAccountName)
-            // rename and update AndroidAddressBook.account
+            // rename, move contacts/groups and update [AndroidAddressBook.]account
             renameAccount(newAccountName)
 
         // Update the account user data
@@ -197,14 +197,15 @@ open class LocalAddressBook @AssistedInject constructor(
     }
 
     /**
-     * Renames an address book account and moves the contacts.
+     * Renames an address book account and moves the contacts and groups (without making them dirty).
+     * Does not keep user data of the old account, so these have to be set again.
      *
      * On success, [account] will be updated to the new account name.
      *
      * _Note:_ Previously, we had used [AccountManager.renameAccount], but then the contacts can't be moved because there's never
      * a moment when both accounts are available.
      *
-     * @param newName   the new account name (will have same account type as [account])
+     * @param newName   the new account name (account type is taken from [account])
      *
      * @return whether the account was renamed successfully
      */
@@ -215,13 +216,8 @@ open class LocalAddressBook @AssistedInject constructor(
 
         // copy user data to new account
         val accountManager = AccountManager.get(context)
-        val userData = Bundle(2).apply {
-            putString(USER_DATA_COLLECTION_ID, accountManager.getUserData(oldAccount, USER_DATA_COLLECTION_ID))
-            putString(USER_DATA_URL, accountManager.getUserData(oldAccount, USER_DATA_URL))
-        }
-
         val newAccount = Account(newName, oldAccount.type)
-        if (!SystemAccountUtils.createAccount(context, newAccount, userData))
+        if (!SystemAccountUtils.createAccount(context, newAccount, Bundle()))
             // Couldn't rename account
             return false
 
