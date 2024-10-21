@@ -23,7 +23,7 @@ android {
 
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
-        minSdk = 24        // Android 7.0
+        minSdk = 25        // Android 7.1
         targetSdk = 35     // Android 15
 
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
