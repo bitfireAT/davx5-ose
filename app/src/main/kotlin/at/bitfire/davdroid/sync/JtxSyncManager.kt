@@ -30,13 +30,13 @@ import at.bitfire.ical4android.JtxICalObject
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.HttpUrl
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
 import java.util.logging.Level
+import okhttp3.HttpUrl
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class JtxSyncManager @AssistedInject constructor(
     @Assisted account: Account,
@@ -73,10 +73,8 @@ class JtxSyncManager @AssistedInject constructor(
     }
 
 
-    override fun prepare(): Boolean {
+    override fun prepare() {
         davCollection = DavCalendar(httpClient.okHttpClient, collection.url)
-
-        return true
     }
 
     override fun queryCapabilities() =

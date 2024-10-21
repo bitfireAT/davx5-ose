@@ -33,18 +33,18 @@ import at.bitfire.ical4android.util.DateUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import net.fortuna.ical4j.model.Component
-import net.fortuna.ical4j.model.component.VAlarm
-import net.fortuna.ical4j.model.property.Action
-import okhttp3.HttpUrl
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
 import java.time.Duration
 import java.time.ZonedDateTime
 import java.util.logging.Level
+import net.fortuna.ical4j.model.Component
+import net.fortuna.ical4j.model.component.VAlarm
+import net.fortuna.ical4j.model.property.Action
+import okhttp3.HttpUrl
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 /**
  * Synchronization manager for CalDAV collections; handles events (VEVENT).
@@ -83,7 +83,7 @@ class CalendarSyncManager @AssistedInject constructor(
         ): CalendarSyncManager
     }
 
-    override fun prepare(): Boolean {
+    override fun prepare() {
         davCollection = DavCalendar(httpClient.okHttpClient, collection.url)
 
         // if there are dirty exceptions for events, mark their master events as dirty, too
@@ -91,8 +91,6 @@ class CalendarSyncManager @AssistedInject constructor(
 
         // now find dirty events that have no instances and set them to deleted
         localCollection.deleteDirtyEventsWithoutInstances()
-
-        return true
     }
 
     override fun queryCapabilities(): SyncState? =

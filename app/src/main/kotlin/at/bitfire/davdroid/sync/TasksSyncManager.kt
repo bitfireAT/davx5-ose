@@ -30,13 +30,13 @@ import at.bitfire.ical4android.Task
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.HttpUrl
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
 import java.util.logging.Level
+import okhttp3.HttpUrl
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 /**
  * Synchronization manager for CalDAV collections; handles tasks (VTODO)
@@ -76,10 +76,8 @@ class TasksSyncManager @AssistedInject constructor(
     }
 
 
-    override fun prepare(): Boolean {
+    override fun prepare() {
         davCollection = DavCalendar(httpClient.okHttpClient, collection.url)
-
-        return true
     }
 
     override fun queryCapabilities() =
