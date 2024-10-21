@@ -6,9 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.ContentResolver
 import android.content.SyncResult
-import android.os.Build
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavAddressBook
 import at.bitfire.dav4jvm.MultiResponseCallback
@@ -45,17 +43,17 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.Reader
+import java.io.StringReader
+import java.util.logging.Level
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.io.Reader
-import java.io.StringReader
-import java.util.logging.Level
 
 /**
  * Synchronization manager for CardDAV collections; handles contacts and groups.
@@ -145,23 +143,12 @@ class ContactsSyncManager @AssistedInject constructor(
     private lateinit var resourceDownloader: ResourceDownloader
 
 
-    override fun prepare(): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-            val reallyDirty = localCollection.verifyDirty()
-            val deleted = localCollection.findDeleted().size
-            if (extras.contains(ContentResolver.SYNC_EXTRAS_UPLOAD) && reallyDirty == 0 && deleted == 0) {
-                logger.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
-                return false
-            }
-        }
-
+    override fun prepare() {
         davCollection = DavAddressBook(httpClient.okHttpClient, collection.url)
 
         resourceDownloader = ResourceDownloader(davCollection.location)
 
         logger.info("Contact group strategy: ${groupStrategy::class.java.simpleName}")
-        return true
     }
 
     override fun queryCapabilities(): SyncState? {
@@ -423,10 +410,6 @@ class ContactsSyncManager @AssistedInject constructor(
                 }
                 syncResult.stats.numInserts++
             }
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                (local as? LocalContact)?.updateHashCode(null)
         }
     }
 

@@ -58,12 +58,6 @@ import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.ContactsStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import okhttp3.HttpUrl
-import okhttp3.RequestBody
-import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.HttpURLConnection
@@ -76,6 +70,12 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl
+import okhttp3.RequestBody
+import org.dmfs.tasks.contract.TaskContract
 
 /**
  * Synchronizes a local collection with a remote collection.
@@ -189,10 +189,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
         try {
             logger.info("Preparing synchronization")
-            if (!prepare()) {
-                logger.info("No reason to synchronize, aborting")
-                return
-            }
+            prepare()
             syncStatsRepository.logSyncTime(collection.id, authority)
 
             logger.info("Querying server capabilities")
@@ -346,10 +343,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     /**
      * Prepares synchronization. Sets the lateinit property [davCollection].
-     *
-     * @return whether synchronization shall be performed
      */
-    protected abstract fun prepare(): Boolean
+    protected abstract fun prepare()
 
     /**
      * Queries the server for synchronization capabilities like specific report types,
