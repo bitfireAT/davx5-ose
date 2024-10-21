@@ -7,7 +7,6 @@ package at.bitfire.davdroid.resource
 import android.content.ContentUris
 import android.content.ContentValues
 import android.net.Uri
-import android.os.Build
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
@@ -89,12 +88,6 @@ class LocalGroup: AndroidGroup, LocalAddress {
                     // Android 7 hack
                     changeContactIDs += missingMember.id!!
                 }
-
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                    // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                    changeContactIDs
-                            .map { addressBook.findContactById(it) }
-                            .forEach { it.updateHashCode(batch) }
 
                 batch.commit()
             }
