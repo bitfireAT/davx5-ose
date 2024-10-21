@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.SyncResult
-import android.os.Build
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavAddressBook
 import at.bitfire.dav4jvm.MultiResponseCallback
@@ -411,10 +410,6 @@ class ContactsSyncManager @AssistedInject constructor(
                 }
                 syncResult.stats.numInserts++
             }
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                (local as? LocalContact)?.updateHashCode(null)
         }
     }
 
