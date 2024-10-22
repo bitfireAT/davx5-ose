@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.Context
-import android.content.SyncResult
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory

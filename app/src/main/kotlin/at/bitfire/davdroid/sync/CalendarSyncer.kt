@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
-import android.content.SyncResult
 import android.provider.CalendarContract
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service

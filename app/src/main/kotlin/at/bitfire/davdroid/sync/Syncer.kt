@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
-import android.content.SyncResult
 import android.os.DeadObjectException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.InvalidAccountException
@@ -282,7 +281,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
                  - the content provider is not available at all, for instance because the respective
                    system app, like "calendar storage" is disabled */
                 logger.warning("Couldn't connect to content provider of authority $authority")
-                syncResult.stats.numParseExceptions++ // hard sync error
+                syncResult.contentProviderError = true
 
                 return // Don't continue without provider
             }
@@ -297,14 +296,14 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
                 /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)
                 is suddenly forbidden because our sync process was demoted from a "service process" to a "cached process". */
                 logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
-                syncResult.stats.numIoExceptions++
+                syncResult.stats.numDeadObjectExceptions++
 
             } catch (e: InvalidAccountException) {
                 logger.log(Level.WARNING, "Account was removed during synchronization", e)
 
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't sync $authority", e)
-                syncResult.stats.numParseExceptions++ // Hard sync error
+                syncResult.stats.numUnclassifiedErrors++ // Hard sync error
 
             } finally {
                 if (httpClient.isInitialized())

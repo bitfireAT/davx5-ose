@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.SyncResult
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
 import dagger.assisted.Assisted

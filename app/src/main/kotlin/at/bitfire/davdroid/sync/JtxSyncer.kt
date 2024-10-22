@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.ContentUris
-import android.content.SyncResult
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -54,7 +53,7 @@ class JtxSyncer @AssistedInject constructor(
             TaskProvider.checkVersion(context, TaskProvider.ProviderName.JtxBoard)
         } catch (e: TaskProvider.ProviderTooOldException) {
             tasksAppManager.get().notifyProviderTooOld(e)
-            syncResult.databaseError = true
+            syncResult.contentProviderError = true
             return false // Don't sync
         }
 

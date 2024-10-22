@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.content.SyncResult
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response

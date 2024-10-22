@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.SyncResult
 import android.provider.ContactsContract
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service

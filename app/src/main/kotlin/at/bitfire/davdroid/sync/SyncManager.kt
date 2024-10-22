@@ -9,7 +9,6 @@ import android.app.PendingIntent
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
-import android.content.SyncResult
 import android.net.Uri
 import android.os.DeadObjectException
 import android.os.RemoteException
@@ -333,7 +332,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     logger.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
                     // determine when to retry
                     syncResult.delayUntil = getDelayUntil(e.retryAfter).epochSecond
-                    syncResult.stats.numIoExceptions++ // Indicate a soft error occurred
+                    syncResult.stats.numServiceUnavailableExceptions++ // Indicate a soft error occurred
                 }
 
                 // all others
@@ -788,19 +787,19 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 is HttpException, is DavException -> {
                     logger.log(Level.SEVERE, "HTTP/DAV exception", e)
                     message = context.getString(R.string.sync_error_http_dav, e.localizedMessage)
-                    syncResult.stats.numParseExceptions++       // numIoExceptions would indicate a soft error
+                    syncResult.stats.numHttpExceptions++
                 }
 
                 is CalendarStorageException, is ContactsStorageException, is RemoteException -> {
                     logger.log(Level.SEVERE, "Couldn't access local storage", e)
                     message = context.getString(R.string.sync_error_local_storage, e.localizedMessage)
-                    syncResult.databaseError = true
+                    syncResult.localStorageError = true
                 }
 
                 else -> {
                     logger.log(Level.SEVERE, "Unclassified sync error", e)
                     message = e.localizedMessage ?: e::class.java.simpleName
-                    syncResult.stats.numParseExceptions++
+                    syncResult.stats.numUnclassifiedErrors++
                 }
             }
 
