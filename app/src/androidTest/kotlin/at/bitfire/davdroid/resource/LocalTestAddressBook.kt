@@ -25,12 +25,12 @@ import java.util.logging.Logger
 class LocalTestAddressBook @AssistedInject constructor(
     @Assisted provider: ContentProviderClient,
     @Assisted override val groupMethod: GroupMethod,
-    @ApplicationContext context: Context,
     accountSettingsFactory: AccountSettings.Factory,
     collectionRepository: DavCollectionRepository,
+    @ApplicationContext context: Context,
     logger: Logger,
     serviceRepository: DavServiceRepository
-): LocalAddressBook(ACCOUNT, provider, context, accountSettingsFactory, collectionRepository, logger, serviceRepository) {
+): LocalAddressBook(ACCOUNT, provider, accountSettingsFactory, collectionRepository, context, logger, serviceRepository) {
 
     @AssistedFactory
     interface Factory {

@@ -50,17 +50,19 @@ import java.util.logging.Logger
  * account and there is no such thing as "address books". So, DAVx5 creates a "DAVx5
  * address book" account for every CardDAV address book.
  *
- * @param _addressBookAccount Address book account (not: DAVx5 account) storing the actual android
- * address book. Not to be confused with [addressBookAccount]. Those may differ.
+ * @param _addressBookAccount Address book account (not: DAVx5 account) storing the actual Android
+ * contacts. This is the initial value of [addressBookAccount]. However when the address book is renamed,
+ * the new name will only be available in [addressBookAccount], so usually that one should be used.
+ *
  * @param provider Content provider needed to access and modify the address book
  */
 @OpenForTesting
 open class LocalAddressBook @AssistedInject constructor(
     @Assisted _addressBookAccount: Account,
     @Assisted provider: ContentProviderClient,
-    @ApplicationContext val context: Context,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
+    @ApplicationContext val context: Context,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
 ): AndroidAddressBook<LocalContact, LocalGroup>(_addressBookAccount, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
@@ -86,16 +88,16 @@ open class LocalAddressBook @AssistedInject constructor(
      */
     open val groupMethod: GroupMethod by lazy {
         val manager = AccountManager.get(context)
-        val associatedAccount = manager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
+        val account = manager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
             collectionRepository.get(collectionId)?.let { collection ->
                 serviceRepository.get(collection.serviceId)?.let { service ->
                     Account(service.accountName, context.getString(R.string.account_type))
                 }
             }
         }
-        if (associatedAccount == null)
+        if (account == null)
             throw IllegalArgumentException("Collection of address book account $addressBookAccount does not have an account")
-        val accountSettings = accountSettingsFactory.create(associatedAccount)
+        val accountSettings = accountSettingsFactory.create(account)
         accountSettings.getGroupMethod()
     }
     private val includeGroups
@@ -212,34 +214,34 @@ open class LocalAddressBook @AssistedInject constructor(
      */
     @VisibleForTesting
     internal fun renameAccount(newName: String): Boolean {
-        val oldAddressBookAccount = addressBookAccount
-        logger.info("Renaming address book from \"${oldAddressBookAccount.name}\" to \"$newName\"")
+        val oldAccount = addressBookAccount
+        logger.info("Renaming address book from \"${oldAccount.name}\" to \"$newName\"")
 
         // create new account
-        val newAddressBookAccount = Account(newName, oldAddressBookAccount.type)
-        if (!SystemAccountUtils.createAccount(context, newAddressBookAccount, Bundle()))
+        val newAccount = Account(newName, oldAccount.type)
+        if (!SystemAccountUtils.createAccount(context, newAccount, Bundle()))
             return false
 
         // move contacts and groups to new account
         val batch = BatchOperation(provider!!)
         batch.enqueue(BatchOperation.CpoBuilder
             .newUpdate(groupsSyncUri())
-            .withSelection(Groups.ACCOUNT_NAME + "=? AND " + Groups.ACCOUNT_TYPE + "=?", arrayOf(oldAddressBookAccount.name, oldAddressBookAccount.type))
-            .withValue(Groups.ACCOUNT_NAME, newAddressBookAccount.name)
+            .withSelection(Groups.ACCOUNT_NAME + "=? AND " + Groups.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
+            .withValue(Groups.ACCOUNT_NAME, newAccount.name)
         )
         batch.enqueue(BatchOperation.CpoBuilder
             .newUpdate(rawContactsSyncUri())
-            .withSelection(RawContacts.ACCOUNT_NAME + "=? AND " + RawContacts.ACCOUNT_TYPE + "=?", arrayOf(oldAddressBookAccount.name, oldAddressBookAccount.type))
-            .withValue(RawContacts.ACCOUNT_NAME, newAddressBookAccount.name)
+            .withSelection(RawContacts.ACCOUNT_NAME + "=? AND " + RawContacts.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
+            .withValue(RawContacts.ACCOUNT_NAME, newAccount.name)
         )
         batch.commit()
 
         // update AndroidAddressBook.account
-        addressBookAccount = newAddressBookAccount
+        addressBookAccount = newAccount
 
         // delete old account
         val accountManager = AccountManager.get(context)
-        accountManager.removeAccountExplicitly(oldAddressBookAccount)
+        accountManager.removeAccountExplicitly(oldAccount)
 
         return true
     }
