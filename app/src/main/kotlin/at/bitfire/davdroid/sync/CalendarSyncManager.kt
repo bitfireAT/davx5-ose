@@ -196,19 +196,21 @@ class CalendarSyncManager @AssistedInject constructor(
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
-                SyncException.wrapWithRemoteResource(response.href) wrapResponse@ {
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
                     if (!response.isSuccess()) {
-                        logger.warning("Received non-successful multiget response for ${response.href}")
-                        return@wrapResponse
+                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
+                        return@wrapResource
+                    }
+
+                    val iCal = response[CalendarData::class.java]?.iCalendar
+                    if (iCal == null) {
+                        logger.warning("Ignoring multi-get response without calendar-data")
+                        return@wrapResource
                     }
 
                     val eTag = response[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received multi-get response without ETag")
+                        ?: throw DavException("Received multi-get response without ETag")
                     val scheduleTag = response[ScheduleTag::class.java]?.scheduleTag
-
-                    val calendarData = response[CalendarData::class.java]
-                    val iCal = calendarData?.iCalendar
-                            ?: throw DavException("Received multi-get response without calendar data")
 
                     processVEvent(
                         response.href.lastSegment,

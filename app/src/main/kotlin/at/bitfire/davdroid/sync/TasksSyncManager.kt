@@ -125,16 +125,18 @@ class TasksSyncManager @AssistedInject constructor(
             davCollection.multiget(bunch) { response, _ ->
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
                     if (!response.isSuccess()) {
-                        logger.warning("Received non-successful multiget response for ${response.href}")
+                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
+                        return@wrapResource
+                    }
+
+                    val iCal = response[CalendarData::class.java]?.iCalendar
+                    if (iCal == null) {
+                        logger.warning("Ignoring multi-get response without calendar-data")
                         return@wrapResource
                     }
 
                     val eTag = response[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received multi-get response without ETag")
-
-                    val calendarData = response[CalendarData::class.java]
-                    val iCal = calendarData?.iCalendar
-                            ?: throw DavException("Received multi-get response without task data")
+                        ?: throw DavException("Received multi-get response without ETag")
 
                     processVTodo(response.href.lastSegment, eTag, StringReader(iCal))
                 }
