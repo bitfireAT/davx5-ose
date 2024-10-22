@@ -78,9 +78,9 @@ fun IntroScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .navigationBarsPadding()
                     .height(90.dp)
                     .background(M3ColorScheme.primaryLight)
-                    .navigationBarsPadding()
             ) {
                 PositionIndicator(
                     index = pagerState.currentPage,
