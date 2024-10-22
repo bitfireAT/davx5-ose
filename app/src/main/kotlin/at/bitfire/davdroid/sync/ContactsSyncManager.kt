@@ -320,23 +320,26 @@ class ContactsSyncManager @AssistedInject constructor(
                 }
             }
             davCollection.multiget(bunch, contentType, version) { response, _ ->
+                // See CalendarSyncManager for more information about the multi-get response
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
                     if (!response.isSuccess()) {
-                        logger.warning("Received non-successful multiget response for ${response.href}")
+                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
+                        return@wrapResource
+                    }
+
+                    val card = response[AddressData::class.java]?.card
+                    if (card == null) {
+                        logger.warning("Ignoring multi-get response without address-data")
                         return@wrapResource
                     }
 
                     val eTag = response[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received multi-get response without ETag")
+                        ?: throw DavException("Received multi-get response without ETag")
 
                     var isJCard = hasJCard      // assume that server has sent what we have requested (we ask for jCard only when the server advertises it)
                     response[GetContentType::class.java]?.type?.let { type ->
                         isJCard = type.sameTypeAs(DavUtils.MEDIA_TYPE_JCARD)
                     }
-
-                    val addressData = response[AddressData::class.java]
-                    val card = addressData?.card
-                            ?: throw DavException("Received multi-get response without address data")
 
                     processCard(
                         response.href.lastSegment,
