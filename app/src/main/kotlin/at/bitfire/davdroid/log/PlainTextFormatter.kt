@@ -88,8 +88,15 @@ class PlainTextFormatter(
         }
 
         r.parameters?.let {
-            for ((idx, param) in it.withIndex())
-                builder.append("\n\tPARAMETER #").append(idx).append(" = ").append(truncate(param.toString()))
+            for ((idx, param) in it.withIndex()) {
+                builder.append("\n\tPARAMETER #").append(idx + 1).append(" = ")
+
+                val valStr = if (param == null)
+                    "(null)"
+                else
+                    truncate(param.toString())
+                builder.append(valStr)
+            }
         }
 
         if (lineSeparator != null)

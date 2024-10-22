@@ -4,6 +4,7 @@
   <string name="account_invalid">ანგარიში (აღარ) არსებობს</string>
   <string name="account_title_address_book">DAVx⁵ მისამართთა წიგნაკი</string>
   <string name="address_books_authority_title">მისამართთა წიგნაკები</string>
+  <string name="dialog_delete">წაშლა</string>
   <string name="dialog_remove">ამოშლა</string>
   <string name="dialog_deny">გაუქმება</string>
   <string name="field_required">ეს ველი სავალდებულოა</string>
@@ -201,8 +202,11 @@
   <string name="account_synchronize_this_collection">ამ კოლექციის სინქრონიზირება</string>
   <string name="account_read_only">მხოლოდ წაკითხვადი</string>
   <string name="account_calendar">კალენდარი</string>
+  <string name="account_contacts">კონტაქტები</string>
   <string name="account_journal">ჟურნალი</string>
+  <string name="account_task_list">დავალებები</string>
   <string name="account_only_personal">მხოლოდ პირადის ჩვენება</string>
+  <string name="account_refresh_collections">სიის განახლება</string>
   <string name="account_webcal_external_app">Webcal გამოწერები შეიძ₾ება სინქრონიზირებულ იქნას გარე აპებთან.</string>
   <string name="account_no_webcal_handler_found">Webcal-თან თავსებადი აპი ვერ მოიძებნა</string>
   <string name="account_install_icsx5">ICSx⁵-ს დაყენება</string>
@@ -259,6 +263,7 @@
   <string name="login_querying_server">გთხოვთ, დაელოდოთ, მიმდინარეობს სერვერის გამოკითხვა...</string>
   <string name="login_no_service">CalDAV-ის ან CardDAV-ის სერვისის მოძებნა ვერ მოხერხდა.</string>
   <string name="login_no_service_info">საბაზო URL არ არის წვდომადი CalDAV/CardDAV URL და სერვერისის აღმოჩენა არ იყო წარმატებული.</string>
+  <string name="login_see_tested_services"><![CDATA[გთხოვთ, იხილოთ თქვენი მომსახურების მომწოდებლის ინსტრუქცია და <a href="%s">ჩვენს მიერ ტესტირებული სერვისების სია</a> და მათი საბაზო URL.]]></string>
   <string name="login_check_credentials">გთხოვთ, ასევე გადაამოწმოთ აუთენტიფიკაცია (ზოგადად, მომხმარებლის სახელი დაპაროლი).</string>
   <string name="login_logs_available">დამატებითი ტექნიკური ინფორმაცია ხელმისაწვდომია ჟურნალებში.</string>
   <string name="login_view_logs">ჟურნალების ნახვა</string>
@@ -327,21 +332,38 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">მისამართთა წიგნაკის შექმნა</string>
+  <string name="create_addressbook_maybe_not_supported">მისამართთა წიგნაკის შექმნა CardDAV-ით შეიძლება არ იყოს მხარდაჭერილი სერვერის მიერ.</string>
   <string name="create_calendar">კალენდარის შექმნა</string>
+  <string name="create_calendar_time_zone_optional">ნაგულისხმევი საათის სარტყელი*</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">დაშვებული კალენდარის ჩანაწერები</string>
   <string name="create_calendar_type_vevent">ღონისძიებები</string>
   <string name="create_calendar_type_vtodo">დავალებები</string>
   <string name="create_calendar_type_vjournal">შენიშვნები / ჟურნალი</string>
+  <string name="create_calendar_maybe_not_supported">კალენდრის შექმნა CalDAV-ით შეიძლება არ იყოს მხარდაჭერილი სერვერის მიერ.</string>
   <string name="create_collection_color">ფერი</string>
   <string name="create_collection_display_name">სათაური</string>
   <string name="create_collection_home_set">მეხსიერების ადგილმდებარეობა</string>
+  <string name="create_collection_description_optional">აღწერა*</string>
   <string name="create_collection_create">შექმნა</string>
   <string name="create_collection_optional">* არასავალდებულო</string>
   <!--CollectionScreen-->
   <string name="collection_delete">კოლექციის წაშლა</string>
+  <string name="collection_delete_warning">ეს კოლექცია (%s) და მისი ყველა მონაცემი სამუდამოდ წაიშლება, როგორც ადგილობრივად, ისე სერვერზეც.</string>
   <string name="collection_synchronization">სინქრონიზაცია</string>
+  <string name="collection_synchronization_on">სინქრონიზაცია ჩართულია</string>
+  <string name="collection_synchronization_off">სინქრონიზაცია გამორთულია</string>
+  <string name="collection_read_only">მხოლოდ წაკითხვადი</string>
+  <string name="collection_read_only_by_server">მხოლოდ წაკითხვადი (სერვერის მიერ)</string>
+  <string name="collection_read_only_forced">მხოლოდ წაკითხვადი (მხოლოდ ადგილობრივად)</string>
+  <string name="collection_read_write">წაკითხვა/ჩაწერა</string>
   <string name="collection_title">სათაური</string>
   <string name="collection_description">აღწერა</string>
+  <string name="collection_owner">მფლობელი</string>
+  <string name="collection_push_support">Push-ის მხარდაჭერა</string>
+  <string name="collection_push_web_push">სერვერი გადმოსცემს Push-ის მხარდაჭერას</string>
+  <string name="collection_last_sync">ბოლო სინქრონიზაცია (%s)</string>
+  <string name="collection_url">მისამართი (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">დებაგის ინფო</string>
   <string name="debug_info_archive_caption">ZIP არქივი</string>

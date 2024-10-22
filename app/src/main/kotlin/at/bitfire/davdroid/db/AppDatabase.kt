@@ -84,7 +84,7 @@ abstract class AppDatabase: RoomDatabase() {
                         // remove all accounts because they're unfortunately useless without database
                         val am = AccountManager.get(context)
                         for (account in am.getAccountsByType(context.getString(R.string.account_type)))
-                            am.removeAccount(account, null, null)
+                            am.removeAccountExplicitly(account)
                     }
                 })
                 .build()

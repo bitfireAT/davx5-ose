@@ -5,8 +5,11 @@
 package at.bitfire.davdroid.resource
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.ContentProviderClient
+import android.content.ContentUris
 import android.content.Context
+import android.provider.ContactsContract
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
@@ -15,6 +18,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.junit.Assert.assertTrue
+import java.io.FileNotFoundException
 import java.util.logging.Logger
 
 class LocalTestAddressBook @AssistedInject constructor(
@@ -26,10 +31,6 @@ class LocalTestAddressBook @AssistedInject constructor(
     logger: Logger,
     serviceRepository: DavServiceRepository
 ): LocalAddressBook(ACCOUNT, provider, context, accountSettingsFactory, collectionRepository, logger, serviceRepository) {
-
-    companion object {
-        val ACCOUNT = Account("LocalTestAddressBook", "at.bitfire.davdroid.test")
-    }
 
     @AssistedFactory
     interface Factory {
@@ -46,6 +47,51 @@ class LocalTestAddressBook @AssistedInject constructor(
             contact.delete()
         for (group in queryGroups(null, null))
             group.delete()
+    }
+
+
+    /**
+     * Returns the dirty flag of the given contact.
+     *
+     * @return true if the contact is dirty, false otherwise
+     *
+     * @throws FileNotFoundException if the contact can't be found
+     */
+    fun isContactDirty(id: Long): Boolean {
+        val uri = ContentUris.withAppendedId(rawContactsSyncUri(), id)
+        provider!!.query(uri, arrayOf(ContactsContract.RawContacts.DIRTY), null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst())
+                return cursor.getInt(0) != 0
+        }
+        throw FileNotFoundException()
+    }
+
+    /**
+     * Returns the dirty flag of the given contact group.
+     *
+     * @return true if the group is dirty, false otherwise
+     *
+     * @throws FileNotFoundException if the group can't be found
+     */
+    fun isGroupDirty(id: Long): Boolean {
+        val uri = ContentUris.withAppendedId(groupsSyncUri(), id)
+        provider!!.query(uri, arrayOf(ContactsContract.Groups.DIRTY), null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst())
+                return cursor.getInt(0) != 0
+        }
+        throw FileNotFoundException()
+    }
+
+
+    companion object {
+
+        val ACCOUNT = Account("LocalTestAddressBook", "at.bitfire.davdroid.test")
+
+        fun createAccount(context: Context) {
+            val am = AccountManager.get(context)
+            assertTrue("Couldn't create account for local test address-book", am.addAccountExplicitly(ACCOUNT, null, null))
+        }
+
     }
 
 }
