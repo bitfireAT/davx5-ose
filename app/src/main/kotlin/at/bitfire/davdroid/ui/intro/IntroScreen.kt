@@ -3,18 +3,20 @@ package at.bitfire.davdroid.ui.intro
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -50,7 +52,6 @@ import at.bitfire.davdroid.ui.M3ColorScheme
 import kotlinx.coroutines.launch
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun IntroScreen(
     pages: List<IntroPage>,
     pagerState: PagerState = rememberPagerState { pages.size },
@@ -58,18 +59,26 @@ fun IntroScreen(
 ) {
     val scope = rememberCoroutineScope()
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        contentWindowInsets = WindowInsets(0)
+    ) { paddingValues ->
         Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-            ) { pages[it].ComposePage() }
+            ) {
+                val page = pages[it]
+                Box(
+                    modifier = if (page.disableStatusBarPadding) Modifier else Modifier.statusBarsPadding()
+                ) { page.ComposePage() }
+            }
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .navigationBarsPadding()
                     .height(90.dp)
                     .background(M3ColorScheme.primaryLight)
             ) {
@@ -113,14 +122,12 @@ fun IntroScreen(
     showSystemUi = true
 )
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun IntroScreen_Preview() {
     AppTheme {
         IntroScreen(
             listOf(
-                object : IntroPage {
-                    override fun getShowPolicy(): IntroPage.ShowPolicy =
-                        IntroPage.ShowPolicy.SHOW_ALWAYS
+                object : IntroPage() {
+                    override fun getShowPolicy(): ShowPolicy = ShowPolicy.SHOW_ALWAYS
 
                     @Composable
                     override fun ComposePage() {
@@ -128,12 +135,12 @@ fun IntroScreen_Preview() {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(MaterialTheme.colorScheme.surface)
+                                .statusBarsPadding()
                         )
                     }
                 },
-                object : IntroPage {
-                    override fun getShowPolicy(): IntroPage.ShowPolicy =
-                        IntroPage.ShowPolicy.SHOW_ALWAYS
+                object : IntroPage() {
+                    override fun getShowPolicy(): ShowPolicy = ShowPolicy.SHOW_ALWAYS
 
                     @Composable
                     override fun ComposePage() {
@@ -141,6 +148,7 @@ fun IntroScreen_Preview() {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(MaterialTheme.colorScheme.primary)
+                                .statusBarsPadding()
                         )
                     }
                 }

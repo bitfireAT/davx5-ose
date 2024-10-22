@@ -6,13 +6,19 @@ package at.bitfire.davdroid.ui.intro
 
 import androidx.compose.runtime.Composable
 
-interface IntroPage {
+abstract class IntroPage {
 
     enum class ShowPolicy {
         DONT_SHOW,
         SHOW_ALWAYS,
         SHOW_ONLY_WITH_OTHERS
     }
+
+    /**
+     * Whether the status bar padding should be disabled for this page.
+     * If true, complete edge-to-edge layout is possible.
+     */
+    open val disableStatusBarPadding: Boolean = false
 
     /**
      * Used to determine whether an intro page of this type (for instance,
@@ -24,12 +30,12 @@ interface IntroPage {
      *   * [DONT_SHOW] (0): don't show the page
      *   * ≥ 0: show the page (lower numbers are shown first)
      */
-    fun getShowPolicy(): ShowPolicy
+    abstract fun getShowPolicy(): ShowPolicy
 
     /**
      * Composes this page. Will only be called when [getShowPolicy] is not [DONT_SHOW].
      */
     @Composable
-    fun ComposePage()
+    abstract fun ComposePage()
 
 }

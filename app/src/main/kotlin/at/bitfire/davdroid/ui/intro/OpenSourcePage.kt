@@ -41,13 +41,13 @@ import javax.inject.Inject
 
 class OpenSourcePage @Inject constructor(
     private val settingsManager: SettingsManager
-): IntroPage {
+): IntroPage() {
 
-    override fun getShowPolicy(): IntroPage.ShowPolicy {
+    override fun getShowPolicy(): ShowPolicy {
         return if (System.currentTimeMillis() > (settingsManager.getLongOrNull(Model.SETTING_NEXT_DONATION_POPUP) ?: 0))
-            IntroPage.ShowPolicy.SHOW_ALWAYS
+            ShowPolicy.SHOW_ALWAYS
         else
-            IntroPage.ShowPolicy.DONT_SHOW
+            ShowPolicy.DONT_SHOW
     }
 
     @Composable
