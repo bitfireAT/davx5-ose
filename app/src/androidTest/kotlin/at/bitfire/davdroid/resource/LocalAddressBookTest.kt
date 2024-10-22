@@ -19,6 +19,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import ezvcard.property.Telephone
+import java.util.LinkedList
+import javax.inject.Inject
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
@@ -29,8 +31,6 @@ import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
-import java.util.LinkedList
-import javax.inject.Inject
 
 @HiltAndroidTest
 class LocalAddressBookTest {
@@ -84,7 +84,7 @@ class LocalAddressBookTest {
         // rename address book
         val newName = "New Name"
         addressBook.renameAccount(newName)
-        assertEquals(Account(newName, LocalTestAddressBook.ACCOUNT.type), addressBook.account)
+        assertEquals(Account(newName, LocalTestAddressBook.ACCOUNT.type), addressBook.addressBookAccount)
 
         // check whether contact is still here (including data rows) and not dirty
         val result = addressBook.findContactById(id)
@@ -113,7 +113,7 @@ class LocalAddressBookTest {
         // rename address book
         val newName = "New Name"
         addressBook.renameAccount(newName)
-        assertEquals(Account(newName, LocalTestAddressBook.ACCOUNT.type), addressBook.account)
+        assertEquals(Account(newName, LocalTestAddressBook.ACCOUNT.type), addressBook.addressBookAccount)
 
         // check whether group is still here and not dirty
         val result = addressBook.findGroupById(id)

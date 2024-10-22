@@ -74,7 +74,7 @@ class AddressBookSyncer @AssistedInject constructor(
     }
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalAddressBook, remoteCollection: Collection) {
-        logger.info("Synchronizing address book: ${localCollection.account.name}")
+        logger.info("Synchronizing address book: ${localCollection.addressBookAccount.name}")
         syncAddressBook(
             account = account,
             addressBook = localCollection,
@@ -110,7 +110,7 @@ class AddressBookSyncer @AssistedInject constructor(
 
             // handle group method change
             val groupMethod = accountSettings.getGroupMethod().name
-            accountSettings.accountManager.getUserData(addressBook.account, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
+            accountSettings.accountManager.getUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
                 if (previousGroupMethod != groupMethod) {
                     logger.info("Group method changed, deleting all local contacts/groups")
 
@@ -122,7 +122,7 @@ class AddressBookSyncer @AssistedInject constructor(
                     addressBook.syncState = null
                 }
             }
-            accountSettings.accountManager.setAndVerifyUserData(addressBook.account, PREVIOUS_GROUP_METHOD, groupMethod)
+            accountSettings.accountManager.setAndVerifyUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD, groupMethod)
 
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
             syncManager.performSync()
