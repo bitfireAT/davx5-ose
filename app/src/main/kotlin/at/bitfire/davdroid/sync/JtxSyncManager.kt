@@ -123,6 +123,7 @@ class JtxSyncManager @AssistedInject constructor(
         // multiple iCalendars, use calendar-multi-get
         SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
+                // See CalendarSyncManager for more information about the multi-get response
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")

@@ -196,6 +196,19 @@ class CalendarSyncManager @AssistedInject constructor(
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
+                /*
+                 * Real-world servers may return:
+                 *
+                 * - unrelated resources
+                 * - the collection itself
+                 * - the requested resources, but with a different collection URL (for instance, `/cal/1.ics` instead of `/shared-cal/1.ics`).
+                 *
+                 * So we:
+                 *
+                 * - ignore unsuccessful responses,
+                 * - ignore responses without requested calendar data (should also ignore collections and hopefully unrelated resources), and
+                 * - take the last segment of the href as the file name and assume that it's in the requested collection.
+                 */
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
