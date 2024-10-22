@@ -31,9 +31,9 @@ fun AppTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { darkTheme }.let {
-                (view.context as? AppCompatActivity)?.enableEdgeToEdge(it, it)
-            }
+            val activity = view.context as? AppCompatActivity
+            val systemBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { darkTheme }
+            activity?.enableEdgeToEdge(systemBarStyle, systemBarStyle)
         }
     }
 
