@@ -58,9 +58,8 @@ class TestSyncManager @AssistedInject constructor(
         ): TestSyncManager
     }
 
-    override fun prepare(): Boolean {
+    override fun prepare() {
         davCollection = DavCollection(httpClient.okHttpClient, collection.url)
-        return true
     }
 
     var didQueryCapabilities = false
