@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.resource
 
 import android.content.ContentValues
-import android.os.Build
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
@@ -101,13 +100,6 @@ class LocalContact: AndroidContact, LocalAddress {
         values.put(COLUMN_ETAG, eTag)
         values.put(ContactsContract.RawContacts.DIRTY, 0)
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-            val hashCode = dataHashCode()
-            values.put(COLUMN_HASHCODE, hashCode)
-            logger.finer("Clearing dirty flag with eTag = $eTag, contact hash = $hashCode")
-        }
-
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
         if (fileName != null)
@@ -133,54 +125,6 @@ class LocalContact: AndroidContact, LocalAddress {
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
         this.flags = flags
-    }
-
-
-    /**
-     * Calculates a hash code from the contact's data (VCard) and group memberships.
-     * Attention: re-reads {@link #contact} from the database, discarding all changes in memory
-     * @return hash code of contact data (including group memberships)
-     */
-    internal fun dataHashCode(): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            throw IllegalStateException("dataHashCode() should not be called on Android != 7")
-
-        // reset contact so that getContact() reads from database
-        _contact = null
-
-        // groupMemberships is filled by getContact()
-        val dataHash = getContact().hashCode()
-        val groupHash = groupMemberships.hashCode()
-        logger.finest("Calculated data hash = $dataHash, group memberships hash = $groupHash")
-        return dataHash xor groupHash
-    }
-
-    fun updateHashCode(batch: BatchOperation?) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            throw IllegalStateException("updateHashCode() should not be called on Android != 7")
-
-        val hashCode = dataHashCode()
-        logger.fine("Storing contact hash = $hashCode")
-
-        if (batch == null) {
-            val values = ContentValues(1)
-            values.put(COLUMN_HASHCODE, hashCode)
-            addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
-        } else
-            batch.enqueue(BatchOperation.CpoBuilder
-                    .newUpdate(rawContactSyncURI())
-                    .withValue(COLUMN_HASHCODE, hashCode))
-    }
-
-    fun getLastHashCode(): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            throw IllegalStateException("getLastHashCode() should not be called on Android != 7")
-
-        addressBook.provider!!.query(rawContactSyncURI(), arrayOf(COLUMN_HASHCODE), null, null, null)?.use { c ->
-            if (c.moveToNext() && !c.isNull(0))
-                return c.getInt(0)
-        }
-        return 0
     }
 
 

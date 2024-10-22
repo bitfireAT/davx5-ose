@@ -10,7 +10,6 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
 import android.provider.ContactsContract
@@ -71,10 +70,10 @@ open class LocalAddressBook @AssistedInject constructor(
 
 
     override val tag: String
-        get() = "contacts-${account.name}"
+        get() = "contacts-${addressBookAccount.name}"
 
     override val title
-        get() = account.name
+        get() = addressBookAccount.name
 
     /**
      * Whether contact groups ([LocalGroup]) are included in query results
@@ -85,7 +84,7 @@ open class LocalAddressBook @AssistedInject constructor(
      */
     open val groupMethod: GroupMethod by lazy {
         val manager = AccountManager.get(context)
-        val associatedAccount = manager.getUserData(/* address book account */ account, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
+        val associatedAccount = manager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
             collectionRepository.get(collectionId)?.let { collection ->
                 serviceRepository.get(collection.serviceId)?.let { service ->
                     Account(service.accountName, context.getString(R.string.account_type))
@@ -102,13 +101,13 @@ open class LocalAddressBook @AssistedInject constructor(
 
     @Deprecated("Local collection should be identified by ID, not by URL")
     override var collectionUrl: String
-        get() = AccountManager.get(context).getUserData(account, USER_DATA_URL)
+        get() = AccountManager.get(context).getUserData(addressBookAccount, USER_DATA_URL)
                 ?: throw IllegalStateException("Address book has no URL")
-        set(url) = AccountManager.get(context).setAndVerifyUserData(account, USER_DATA_URL, url)
+        set(url) = AccountManager.get(context).setAndVerifyUserData(addressBookAccount, USER_DATA_URL, url)
 
     override var readOnly: Boolean
-        get() = AccountManager.get(context).getUserData(account, USER_DATA_READ_ONLY) != null
-        set(readOnly) = AccountManager.get(context).setAndVerifyUserData(account, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
+        get() = AccountManager.get(context).getUserData(addressBookAccount, USER_DATA_READ_ONLY) != null
+        set(readOnly) = AccountManager.get(context).setAndVerifyUserData(addressBookAccount, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
 
     override var lastSyncState: SyncState?
         get() = syncState?.let { SyncState.fromString(String(it)) }
@@ -153,18 +152,18 @@ open class LocalAddressBook @AssistedInject constructor(
      *                       `null`: don't change the existing value
      */
     fun update(info: Collection, forceReadOnly: Boolean? = null) {
-        logger.log(Level.INFO, "Updating local address book $account with collection $info")
+        logger.log(Level.INFO, "Updating local address book $addressBookAccount with collection $info")
         val accountManager = AccountManager.get(context)
 
         // Update the account name
         val newAccountName = accountName(context, info)
-        if (account.name != newAccountName)
+        if (addressBookAccount.name != newAccountName)
             // rename, move contacts/groups and update [AndroidAddressBook.]account
             renameAccount(newAccountName)
 
         // Update the account user data
-        accountManager.setAndVerifyUserData(account, USER_DATA_COLLECTION_ID, info.id.toString())
-        accountManager.setAndVerifyUserData(account, USER_DATA_URL, info.url.toString())
+        accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_COLLECTION_ID, info.id.toString())
+        accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_URL, info.url.toString())
 
         // Update force read only
         if (forceReadOnly != null) {
@@ -200,52 +199,52 @@ open class LocalAddressBook @AssistedInject constructor(
      * Renames an address book account and moves the contacts and groups (without making them dirty).
      * Does not keep user data of the old account, so these have to be set again.
      *
-     * On success, [account] will be updated to the new account name.
+     * On success, [addressBookAccount] will be updated to the new account name.
      *
      * _Note:_ Previously, we had used [AccountManager.renameAccount], but then the contacts can't be moved because there's never
      * a moment when both accounts are available.
      *
-     * @param newName   the new account name (account type is taken from [account])
+     * @param newName   the new account name (account type is taken from [addressBookAccount])
      *
      * @return whether the account was renamed successfully
      */
     @VisibleForTesting
     internal fun renameAccount(newName: String): Boolean {
-        val oldAccount = account
-        logger.info("Renaming address book from \"${oldAccount.name}\" to \"$newName\"")
+        val oldAddressBookAccount = addressBookAccount
+        logger.info("Renaming address book from \"${oldAddressBookAccount.name}\" to \"$newName\"")
 
         // create new account
-        val newAccount = Account(newName, oldAccount.type)
-        if (!SystemAccountUtils.createAccount(context, newAccount, Bundle()))
+        val newAddressBookAccount = Account(newName, oldAddressBookAccount.type)
+        if (!SystemAccountUtils.createAccount(context, newAddressBookAccount, Bundle()))
             return false
 
         // move contacts and groups to new account
         val batch = BatchOperation(provider!!)
         batch.enqueue(BatchOperation.CpoBuilder
             .newUpdate(groupsSyncUri())
-            .withSelection(Groups.ACCOUNT_NAME + "=? AND " + Groups.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
-            .withValue(Groups.ACCOUNT_NAME, newAccount.name)
+            .withSelection(Groups.ACCOUNT_NAME + "=? AND " + Groups.ACCOUNT_TYPE + "=?", arrayOf(oldAddressBookAccount.name, oldAddressBookAccount.type))
+            .withValue(Groups.ACCOUNT_NAME, newAddressBookAccount.name)
         )
         batch.enqueue(BatchOperation.CpoBuilder
             .newUpdate(rawContactsSyncUri())
-            .withSelection(RawContacts.ACCOUNT_NAME + "=? AND " + RawContacts.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
-            .withValue(RawContacts.ACCOUNT_NAME, newAccount.name)
+            .withSelection(RawContacts.ACCOUNT_NAME + "=? AND " + RawContacts.ACCOUNT_TYPE + "=?", arrayOf(oldAddressBookAccount.name, oldAddressBookAccount.type))
+            .withValue(RawContacts.ACCOUNT_NAME, newAddressBookAccount.name)
         )
         batch.commit()
 
         // update AndroidAddressBook.account
-        account = newAccount
+        addressBookAccount = newAddressBookAccount
 
         // delete old account
         val accountManager = AccountManager.get(context)
-        accountManager.removeAccountExplicitly(oldAccount)
+        accountManager.removeAccountExplicitly(oldAddressBookAccount)
 
         return true
     }
 
     override fun deleteCollection(): Boolean {
         val accountManager = AccountManager.get(context)
-        return accountManager.removeAccountExplicitly(account)
+        return accountManager.removeAccountExplicitly(addressBookAccount)
     }
 
 
@@ -259,15 +258,15 @@ open class LocalAddressBook @AssistedInject constructor(
      */
     fun updateSyncFrameworkSettings() {
         // Enable sync-ability
-        if (ContentResolver.getIsSyncable(account, ContactsContract.AUTHORITY) != 1)
-            ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1)
+        if (ContentResolver.getIsSyncable(addressBookAccount, ContactsContract.AUTHORITY) != 1)
+            ContentResolver.setIsSyncable(addressBookAccount, ContactsContract.AUTHORITY, 1)
 
         // Enable content trigger
-        if (!ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY))
-            ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
+        if (!ContentResolver.getSyncAutomatically(addressBookAccount, ContactsContract.AUTHORITY))
+            ContentResolver.setSyncAutomatically(addressBookAccount, ContactsContract.AUTHORITY, true)
 
         // Remove periodic syncs (setSyncAutomatically also creates periodic syncs, which we don't want)
-        for (periodicSync in ContentResolver.getPeriodicSyncs(account, ContactsContract.AUTHORITY))
+        for (periodicSync in ContentResolver.getPeriodicSyncs(addressBookAccount, ContactsContract.AUTHORITY))
             ContentResolver.removePeriodicSync(periodicSync.account, periodicSync.authority, periodicSync.extras)
     }
 
@@ -341,39 +340,6 @@ open class LocalAddressBook @AssistedInject constructor(
     }
 
 
-    /**
-     * Queries all contacts with DIRTY flag and checks whether their data checksum has changed, i.e.
-     * if they're "really dirty" (= data has changed, not only metadata, which is not hashed).
-     * The DIRTY flag is removed from contacts which are not "really dirty", i.e. from contacts
-     * whose contact data checksum has not changed.
-     * @return number of "really dirty" contacts
-     * @throws RemoteException on content provider errors
-     */
-    fun verifyDirty(): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            throw IllegalStateException("verifyDirty() should not be called on Android != 7.0")
-
-        var reallyDirty = 0
-        for (contact in findDirtyContacts()) {
-            val lastHash = contact.getLastHashCode()
-            val currentHash = contact.dataHashCode()
-            if (lastHash == currentHash) {
-                // hash is code still the same, contact is not "really dirty" (only metadata been have changed)
-                logger.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact)
-                contact.resetDirty()
-            } else {
-                logger.log(Level.FINE, "Contact data has changed from hash $lastHash to $currentHash", contact)
-                reallyDirty++
-            }
-        }
-
-        if (includeGroups)
-            reallyDirty += findDirtyGroups().size
-
-        return reallyDirty
-    }
-
-
     /* special group operations */
 
     /**
@@ -434,14 +400,14 @@ open class LocalAddressBook @AssistedInject constructor(
             val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
             val logger = entryPoint.logger()
 
-            val account = Account(accountName(context, info), context.getString(R.string.account_type_address_book))
+            val addressBookAccount = Account(accountName(context, info), context.getString(R.string.account_type_address_book))
             val userData = initialUserData(info.url.toString(), info.id.toString())
-            logger.log(Level.INFO, "Creating local address book $account", userData)
-            if (!SystemAccountUtils.createAccount(context, account, userData))
+            logger.log(Level.INFO, "Creating local address book $addressBookAccount", userData)
+            if (!SystemAccountUtils.createAccount(context, addressBookAccount, userData))
                 throw IllegalStateException("Couldn't create address book account")
 
             val factory = entryPoint.localAddressBookFactory()
-            val addressBook = factory.create(account, provider)
+            val addressBook = factory.create(addressBookAccount, provider)
             addressBook.updateSyncFrameworkSettings()
 
             // initialize Contacts Provider Settings
