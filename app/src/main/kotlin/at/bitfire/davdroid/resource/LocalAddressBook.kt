@@ -10,7 +10,6 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
 import android.provider.ContactsContract
@@ -341,39 +340,6 @@ open class LocalAddressBook @AssistedInject constructor(
                 return cursor.getString(0)
         }
         return null
-    }
-
-
-    /**
-     * Queries all contacts with DIRTY flag and checks whether their data checksum has changed, i.e.
-     * if they're "really dirty" (= data has changed, not only metadata, which is not hashed).
-     * The DIRTY flag is removed from contacts which are not "really dirty", i.e. from contacts
-     * whose contact data checksum has not changed.
-     * @return number of "really dirty" contacts
-     * @throws RemoteException on content provider errors
-     */
-    fun verifyDirty(): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            throw IllegalStateException("verifyDirty() should not be called on Android != 7.0")
-
-        var reallyDirty = 0
-        for (contact in findDirtyContacts()) {
-            val lastHash = contact.getLastHashCode()
-            val currentHash = contact.dataHashCode()
-            if (lastHash == currentHash) {
-                // hash is code still the same, contact is not "really dirty" (only metadata been have changed)
-                logger.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact)
-                contact.resetDirty()
-            } else {
-                logger.log(Level.FINE, "Contact data has changed from hash $lastHash to $currentHash", contact)
-                reallyDirty++
-            }
-        }
-
-        if (includeGroups)
-            reallyDirty += findDirtyGroups().size
-
-        return reallyDirty
     }
 
 
