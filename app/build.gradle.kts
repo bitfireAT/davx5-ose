@@ -82,6 +82,9 @@ android {
 
             signingConfig = signingConfigs.findByName("bitfire")
         }
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+        }
     }
 
     lint {
