@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.content.SyncResult
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.MultiResponseCallback

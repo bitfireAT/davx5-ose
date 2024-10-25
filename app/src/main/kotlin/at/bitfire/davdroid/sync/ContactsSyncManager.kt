@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentResolver
-import android.content.SyncResult
 import android.os.Build
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavAddressBook

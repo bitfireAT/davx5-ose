@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync.worker
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
-import android.content.SyncResult
 import android.os.Build
 import android.provider.CalendarContract
 import androidx.annotation.IntDef
@@ -27,20 +26,21 @@ import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
 import at.bitfire.davdroid.sync.JtxSyncer
 import at.bitfire.davdroid.sync.SyncConditions
+import at.bitfire.davdroid.sync.SyncResult
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
-import java.util.Collections
-import java.util.logging.Logger
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
+import java.util.Collections
+import java.util.logging.Logger
+import javax.inject.Inject
 
 abstract class BaseSyncWorker(
     context: Context,
