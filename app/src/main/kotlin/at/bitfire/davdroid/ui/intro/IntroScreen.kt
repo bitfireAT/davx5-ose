@@ -8,17 +8,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -30,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -61,36 +63,15 @@ fun IntroScreen(
     val scope = rememberCoroutineScope()
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0)
-    ) { paddingValues ->
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-        ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                val page = pages[it]
-                Box(
-                    modifier =
-                        if (page.customInsets)
-                            Modifier    // ComposePage() handles insets itself
-                        else
-                            Modifier.safeDrawingPadding()
-                ) {
-                    page.ComposePage()
-                }
-            }
-
+        contentWindowInsets = WindowInsets(0),
+        bottomBar = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .height(90.dp)
                     .background(M3ColorScheme.primaryLight)
+                    // consume bottom and side insets of safe drawing area, like BottomAppBar
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+                    .height(90.dp)
             ) {
                 PositionIndicator(
                     index = pagerState.currentPage,
@@ -125,6 +106,25 @@ fun IntroScreen(
                 }
             }
         }
+    ) { paddingValues ->
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+        ) {
+            HorizontalPager(state = pagerState) { idxPage ->
+                val page = pages[idxPage]
+                Box(
+                    modifier = if (page.customTopInsets)
+                        Modifier    // ComposePage() handles insets itself
+                    else
+                        // consume top and horizontal sides of safe drawing padding (like TopAppBar)
+                        // bottom is handled by the bottom bar
+                        Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
+                ) {
+                    page.ComposePage()
+                }
+            }
+        }
     }
 }
 
@@ -138,9 +138,6 @@ fun IntroScreen_Preview() {
         IntroScreen(
             listOf(
                 object : IntroPage() {
-                    override val customInsets: Boolean
-                        get() = true
-
                     override fun getShowPolicy(): ShowPolicy = ShowPolicy.SHOW_ALWAYS
 
                     @Composable
@@ -149,8 +146,9 @@ fun IntroScreen_Preview() {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(MaterialTheme.colorScheme.surface)
-                                .statusBarsPadding()
-                        )
+                        ) {
+                            Text("Some Text")
+                        }
                     }
                 },
                 object : IntroPage() {
@@ -162,8 +160,9 @@ fun IntroScreen_Preview() {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(MaterialTheme.colorScheme.primary)
-                                .statusBarsPadding()
-                        )
+                        ) {
+                            Text("Some Text")
+                        }
                     }
                 }
             ),

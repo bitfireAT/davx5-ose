@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.composable
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,13 +17,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import at.bitfire.davdroid.ui.AppTheme
 
+/**
+ * Simple assistant. Should be embedded as content in a [Scaffold].
+ */
 @Composable
 fun Assistant(
     nextLabel: String? = null,
@@ -62,7 +68,7 @@ fun Assistant(
                         Text(nextLabel)
                     }
             },
-            windowInsets = WindowInsets(0)      // insets already provided by parent (Scaffold)
+            windowInsets = WindowInsets(0)      // don't care about insets, they're already handled by the parent Scaffold
         )
     }
 }
@@ -70,8 +76,14 @@ fun Assistant(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview(showSystemUi = true)
-fun Assistant_Preview() {
-    Assistant(nextLabel = "Next") {
-        Text("Some Content")
+fun Assistant_Preview_InScaffold() {
+    AppTheme {
+        Scaffold { paddingValues ->
+            Box(Modifier.padding(paddingValues)) {
+                Assistant(nextLabel = "Next") {
+                    Text("Some Content")
+                }
+            }
+        }
     }
 }

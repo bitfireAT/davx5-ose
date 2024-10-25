@@ -17,10 +17,10 @@ abstract class IntroPage {
     /**
      * Whether insets are handled by [ComposePage].
      *
-     * If `true`, [ComposePage] must add insets for edge-to-edge layout itself.
-     * If `false`, [IntroScreen] will apply insets give [ComposePage] a safe content area.
+     * If `true`, [ComposePage] must add top/side insets for edge-to-edge layout itself. Bottom insets are handled by the bottom bar.
+     * If `false`, [IntroScreen] will apply all insets to give [ComposePage] a safe content area.
      */
-    open val customInsets: Boolean = false
+    open val customTopInsets: Boolean = false
 
     /**
      * Used to determine whether an intro page of this type (for instance,

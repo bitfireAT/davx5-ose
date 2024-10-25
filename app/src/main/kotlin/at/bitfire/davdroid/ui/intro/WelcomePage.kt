@@ -35,7 +35,7 @@ import at.bitfire.davdroid.ui.M3ColorScheme
 
 class WelcomePage: IntroPage() {
 
-    override val customInsets: Boolean = true
+    override val customTopInsets: Boolean = true
 
     override fun getShowPolicy() = ShowPolicy.SHOW_ONLY_WITH_OTHERS
 
