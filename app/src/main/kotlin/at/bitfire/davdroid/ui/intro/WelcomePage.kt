@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,7 +35,7 @@ import at.bitfire.davdroid.ui.M3ColorScheme
 
 class WelcomePage: IntroPage() {
 
-    override val customStatusBarPadding: Boolean = true
+    override val customInsets: Boolean = true
 
     override fun getShowPolicy() = ShowPolicy.SHOW_ONLY_WITH_OTHERS
 
@@ -54,7 +54,7 @@ class WelcomePage: IntroPage() {
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = M3ColorScheme.primaryLight)     // fill background color edge-to-edge
-                .statusBarsPadding()
+                .safeContentPadding()
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_launcher_foreground),
@@ -126,7 +126,8 @@ class WelcomePage: IntroPage() {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = MaterialTheme.colorScheme.primary),
+                    .background(color = MaterialTheme.colorScheme.primary)
+                    .safeContentPadding(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(

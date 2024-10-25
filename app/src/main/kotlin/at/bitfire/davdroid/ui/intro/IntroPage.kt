@@ -15,12 +15,12 @@ abstract class IntroPage {
     }
 
     /**
-     * Whether the status bar padding is handled by this page.
+     * Whether insets are handled by [ComposePage].
      *
-     * If `true`, [ComposePage] adds status bar padding so that complete edge-to-edge layout is possible.
-     * If `false`, [IntroScreen] will apply status bar padding and [ComposePage] doesn't have to care.
+     * If `true`, [ComposePage] must add insets for edge-to-edge layout itself.
+     * If `false`, [IntroScreen] will apply insets give [ComposePage] a safe content area.
      */
-    open val customStatusBarPadding: Boolean = false
+    open val customInsets: Boolean = false
 
     /**
      * Used to determine whether an intro page of this type (for instance,

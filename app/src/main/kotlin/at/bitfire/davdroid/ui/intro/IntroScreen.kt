@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -62,7 +63,10 @@ fun IntroScreen(
     Scaffold(
         contentWindowInsets = WindowInsets(0)
     ) { paddingValues ->
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+        ) {
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
@@ -72,10 +76,10 @@ fun IntroScreen(
                 val page = pages[it]
                 Box(
                     modifier =
-                        if (page.customStatusBarPadding)
-                            Modifier    // ComposePage() handles status bar padding
+                        if (page.customInsets)
+                            Modifier    // ComposePage() handles insets itself
                         else
-                            Modifier.statusBarsPadding()
+                            Modifier.safeDrawingPadding()
                 ) {
                     page.ComposePage()
                 }
@@ -134,7 +138,7 @@ fun IntroScreen_Preview() {
         IntroScreen(
             listOf(
                 object : IntroPage() {
-                    override val customStatusBarPadding: Boolean
+                    override val customInsets: Boolean
                         get() = true
 
                     override fun getShowPolicy(): ShowPolicy = ShowPolicy.SHOW_ALWAYS

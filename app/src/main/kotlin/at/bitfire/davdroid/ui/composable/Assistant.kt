@@ -62,7 +62,7 @@ fun Assistant(
                         Text(nextLabel)
                     }
             },
-            windowInsets = WindowInsets(0)
+            windowInsets = WindowInsets(0)      // insets already provided by parent (Scaffold)
         )
     }
 }
