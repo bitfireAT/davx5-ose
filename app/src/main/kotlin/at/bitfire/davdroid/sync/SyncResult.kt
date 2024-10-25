@@ -1,11 +1,9 @@
 package at.bitfire.davdroid.sync
 
 /**
- * This class is used to communicate the results of a sync operation from [Syncer]s to the
- * [at.bitfire.davdroid.sync.worker.BaseSyncWorker]. Based on the values here the
- * [at.bitfire.davdroid.sync.worker.BaseSyncWorker] will determine the run ability of the sync and
- * whether or not there will be retries. See the implementation of
- * [at.bitfire.davdroid.sync.worker.BaseSyncWorker.doSyncWork] for details.
+ * This class represents the results of a sync operation from [Syncer].
+ *
+ * Used by [at.bitfire.davdroid.sync.worker.BaseSyncWorker] to determine whether or not there will be retries etc.
  */
 data class SyncResult(
     var contentProviderError: Boolean = false,
@@ -60,4 +58,5 @@ data class SyncResult(
         var numIoExceptions: Long = 0,
         var numServiceUnavailableExceptions: Long = 0
     )
+
 }
