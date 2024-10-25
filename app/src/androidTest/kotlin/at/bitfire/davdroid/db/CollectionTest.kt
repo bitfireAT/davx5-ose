@@ -103,7 +103,11 @@ class CollectionTest {
                     "       <resourcetype><collection/><CAL:calendar/></resourcetype>" +
                     "       <current-user-privilege-set><privilege><read/></privilege></current-user-privilege-set>" +
                     "       <CAL:calendar-description>My Calendar</CAL:calendar-description>" +
-                    "       <CAL:calendar-timezone>TZID:US-Eastern\n" +
+                    "       <CAL:calendar-timezone>BEGIN:VCALENDAR\n" +
+                    "PRODID:-//Example Corp.//CalDAV Client//EN\n" +
+                    "VERSION:2.0\n" +
+                    "BEGIN:VTIMEZONE" +
+                    "TZID:US-Eastern\n" +
                     "LAST-MODIFIED:19870101T000000Z\n" +
                     "BEGIN:STANDARD\n" +
                     "DTSTART:19671029T020000\n" +
@@ -119,6 +123,8 @@ class CollectionTest {
                     "TZOFFSETTO:-0400\n" +
                     "TZNAME:Eastern Daylight Time (US & Canada)\n" +
                     "END:DAYLIGHT\n" +
+                    "END:VTIMEZONE\n" +
+                    "END:VCALENDAR\n" +
                     "</CAL:calendar-timezone>" +
                     "       <ICAL:calendar-color>#ff0000</ICAL:calendar-color>" +
                     "   </prop></propstat>" +
