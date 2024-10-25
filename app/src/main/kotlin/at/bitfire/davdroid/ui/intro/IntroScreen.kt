@@ -71,8 +71,14 @@ fun IntroScreen(
             ) {
                 val page = pages[it]
                 Box(
-                    modifier = if (page.disableStatusBarPadding) Modifier else Modifier.statusBarsPadding()
-                ) { page.ComposePage() }
+                    modifier =
+                        if (page.customStatusBarPadding)
+                            Modifier    // ComposePage() handles status bar padding
+                        else
+                            Modifier.statusBarsPadding()
+                ) {
+                    page.ComposePage()
+                }
             }
 
             Box(
@@ -119,7 +125,8 @@ fun IntroScreen(
 }
 
 @Preview(
-    showSystemUi = true
+    showSystemUi = true,
+    showBackground = true
 )
 @Composable
 fun IntroScreen_Preview() {
@@ -127,6 +134,9 @@ fun IntroScreen_Preview() {
         IntroScreen(
             listOf(
                 object : IntroPage() {
+                    override val customStatusBarPadding: Boolean
+                        get() = true
+
                     override fun getShowPolicy(): ShowPolicy = ShowPolicy.SHOW_ALWAYS
 
                     @Composable

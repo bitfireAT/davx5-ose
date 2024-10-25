@@ -28,17 +28,23 @@ fun AppTheme(
     else
         M3ColorScheme.darkScheme
 
+    // If applicable, call Activity.enableEdgeToEdge to enable edge-to-edge layout on Android <15, too.
+    // When we have moved everything into one Activity with Compose navigation, we can call it there instead.
     val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val activity = view.context as? AppCompatActivity
+    SideEffect {
+        (view.context as? AppCompatActivity)?.let { activity ->
             val systemBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { darkTheme }
-            activity?.enableEdgeToEdge(systemBarStyle, systemBarStyle)
+            activity.enableEdgeToEdge(systemBarStyle, systemBarStyle)
         }
     }
 
+    // Apply SafeAndroidUriHandler to the composition
     val uriHandler = SafeAndroidUriHandler(LocalContext.current)
     CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+
+        // There's no surrounding Box with Modifier.safeDrawingPadding() here, so the content() should
+        // handle insets itself if necessary. Usually, it will be handled by M3 Scaffold / TopAppBar.
+
         MaterialTheme(
             colorScheme = colorScheme,
             content = content

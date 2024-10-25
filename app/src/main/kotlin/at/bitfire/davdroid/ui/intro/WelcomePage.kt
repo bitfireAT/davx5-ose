@@ -35,7 +35,7 @@ import at.bitfire.davdroid.ui.M3ColorScheme
 
 class WelcomePage: IntroPage() {
 
-    override val disableStatusBarPadding: Boolean = true
+    override val customStatusBarPadding: Boolean = true
 
     override fun getShowPolicy() = ShowPolicy.SHOW_ONLY_WITH_OTHERS
 
@@ -53,8 +53,8 @@ class WelcomePage: IntroPage() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = M3ColorScheme.primaryLight)
-                .statusBarsPadding(),
+                .background(color = M3ColorScheme.primaryLight)     // fill background color edge-to-edge
+                .statusBarsPadding()
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_launcher_foreground),

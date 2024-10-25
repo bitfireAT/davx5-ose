@@ -15,10 +15,12 @@ abstract class IntroPage {
     }
 
     /**
-     * Whether the status bar padding should be disabled for this page.
-     * If true, complete edge-to-edge layout is possible.
+     * Whether the status bar padding is handled by this page.
+     *
+     * If `true`, [ComposePage] adds status bar padding so that complete edge-to-edge layout is possible.
+     * If `false`, [IntroScreen] will apply status bar padding and [ComposePage] doesn't have to care.
      */
-    open val disableStatusBarPadding: Boolean = false
+    open val customStatusBarPadding: Boolean = false
 
     /**
      * Used to determine whether an intro page of this type (for instance,
