@@ -79,12 +79,9 @@ class LocalCalendar private constructor(
             } else
                 values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ)
 
-            info.timezone?.let { tzData ->
+            info.timezoneId?.let { timezoneId ->
                 try {
-                    val timeZone = DateUtils.parseVTimeZone(tzData)
-                    timeZone.timeZoneId?.let { tzId ->
-                        values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(tzId.value))
-                    }
+                    values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(timezoneId))
                 } catch(e: IllegalArgumentException) {
                     logger.log(Level.WARNING, "Couldn't parse calendar default time zone", e)
                 }

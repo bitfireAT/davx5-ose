@@ -14,6 +14,7 @@ import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.property.caldav.CalendarColor
 import at.bitfire.dav4jvm.property.caldav.CalendarDescription
 import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
+import at.bitfire.dav4jvm.property.caldav.CalendarTimezoneId
 import at.bitfire.dav4jvm.property.caldav.Source
 import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
 import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
@@ -24,6 +25,7 @@ import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.trimToNull
+import at.bitfire.ical4android.util.DateUtils
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
@@ -99,8 +101,8 @@ data class Collection(
     // CalDAV only
     var color: Int? = null,
 
-    /** timezone definition (full VTIMEZONE) - not a TZID! **/
-    var timezone: String? = null,
+    /** timezone definition (only TZID) */
+    var timezoneId: String? = null,
 
     /** whether the collection supports VEVENT; in case of calendars: null means true */
     var supportsVEVENT: Boolean? = null,
@@ -166,6 +168,7 @@ data class Collection(
             var description: String? = null
             var color: Int? = null
             var timezone: String? = null
+            var timezoneId: String? = null
             var supportsVEVENT: Boolean? = null
             var supportsVTODO: Boolean? = null
             var supportsVJOURNAL: Boolean? = null
@@ -177,6 +180,7 @@ data class Collection(
                 TYPE_CALENDAR, TYPE_WEBCAL -> {
                     dav[CalendarDescription::class.java]?.let { description = it.description }
                     dav[CalendarColor::class.java]?.let { color = it.color }
+                    dav[CalendarTimezoneId::class.java]?.let { timezoneId = it.identifier }
                     dav[CalendarTimezone::class.java]?.let { timezone = it.vTimeZone }
 
                     if (type == TYPE_CALENDAR) {
@@ -202,6 +206,10 @@ data class Collection(
                 }
             }
 
+            if (timezoneId == null && timezone != null) {
+                timezoneId = DateUtils.parseVTimeZone(timezone!!).timeZoneId?.value
+            }
+
             // WebDAV-Push
             var supportsWebPush = false
             dav[PushTransports::class.java]?.let { pushTransports ->
@@ -217,7 +225,7 @@ data class Collection(
                 displayName = displayName,
                 description = description,
                 color = color,
-                timezone = timezone,
+                timezoneId = timezoneId,
                 supportsVEVENT = supportsVEVENT,
                 supportsVTODO = supportsVTODO,
                 supportsVJOURNAL = supportsVJOURNAL,

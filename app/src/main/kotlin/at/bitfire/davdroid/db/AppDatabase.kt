@@ -26,6 +26,7 @@ import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.ui.AccountsActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.ical4android.util.DateUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,7 +45,7 @@ import javax.inject.Singleton
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 14, autoMigrations = [
+], exportSchema = true, version = 15, autoMigrations = [
     AutoMigration(from = 9, to = 10),
     AutoMigration(from = 10, to = 11),
     AutoMigration(from = 11, to = 12, spec = AppDatabase.AutoMigration11_12::class),
@@ -112,6 +113,26 @@ abstract class AppDatabase: RoomDatabase() {
         // manual migrations
 
         val migrations: Array<Migration> = arrayOf(
+            object : Migration(14, 15) {
+                override fun migrate(db: SupportSQLiteDatabase) {
+                    // the timezone column has been removed, now it's timezoneId
+                    // first, create the new column to store the migrated values
+                    db.execSQL("ALTER TABLE collection ADD COLUMN timezoneId TEXT DEFAULT NULL")
+                    // now, fetch all the timezone values
+                    db.query("SELECT id, timezone FROM collection").use { cursor ->
+                        while (cursor.moveToNext()) {
+                            val id: Long = cursor.getLong(0)
+                            val timezone: String = cursor.getString(1) ?: continue
+                            val vTimeZone = DateUtils.parseVTimeZone(timezone)
+                            val timezoneId = vTimeZone.timeZoneId.value
+                            db.execSQL("UPDATE collection SET timezoneId=? WHERE id=?", arrayOf(timezoneId, id))
+                        }
+                    }
+                    // finally, drop the old column
+                    db.execSQL("ALTER TABLE collection DROP COLUMN timezone")
+                }
+            },
+
             object : Migration(8, 9) {
                 override fun migrate(db: SupportSQLiteDatabase) {
                     db.execSQL("CREATE TABLE syncstats (" +
