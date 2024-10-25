@@ -106,7 +106,7 @@ class CollectionTest {
                     "       <CAL:calendar-timezone>BEGIN:VCALENDAR\n" +
                     "PRODID:-//Example Corp.//CalDAV Client//EN\n" +
                     "VERSION:2.0\n" +
-                    "BEGIN:VTIMEZONE" +
+                    "BEGIN:VTIMEZONE\n" +
                     "TZID:US-Eastern\n" +
                     "LAST-MODIFIED:19870101T000000Z\n" +
                     "BEGIN:STANDARD\n" +
