@@ -207,7 +207,7 @@ data class Collection(
             }
 
             if (timezoneId == null && timezone != null) {
-                timezoneId = DateUtils.parseVTimeZone(timezone!!).timeZoneId?.value
+                timezoneId = DateUtils.parseVTimeZone(timezone).timeZoneId?.value
             }
 
             // WebDAV-Push
