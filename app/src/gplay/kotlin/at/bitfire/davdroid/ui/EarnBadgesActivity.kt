@@ -114,6 +114,9 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         private const val ONEUP_EXTRALIFE = "1up_extralife.2023"
         private const val ENERGY_BOOSTER = "energy_booster.2023"
         private const val DAVX5_DECADE = "davx5_decade"
+        private const val PUSH_DEVLOPMENT = "push_development"
+        private const val DAVX5_COCKTAIL = "davx5_cocktail"
+        private const val DAVX5_ANNIVERSARY = "11th_anniversary"
 
         private val BADGE_ICONS = mapOf(
             HELPING_HANDS to R.drawable.ic_badge_life_buoy,
@@ -123,7 +126,10 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             NINTH_ANNIVERSARY to R.drawable.ic_badge_ninth_anniversary,
             ONEUP_EXTRALIFE to R.drawable.ic_badge_1up_extralife,
             ENERGY_BOOSTER to R.drawable.ic_badge_energy_booster,
-            DAVX5_DECADE to R.drawable.ic_badge_davx5_decade
+            DAVX5_DECADE to R.drawable.ic_badge_davx5_decade,
+            PUSH_DEVLOPMENT to R.drawable.ic_badge_offline_bolt,
+            DAVX5_COCKTAIL to R.drawable.ic_badge_local_bar,
+            DAVX5_ANNIVERSARY to R.drawable.ic_badge_cupcake
         )
         val PRODUCT_IDS = BADGE_ICONS.keys.toList()
 
