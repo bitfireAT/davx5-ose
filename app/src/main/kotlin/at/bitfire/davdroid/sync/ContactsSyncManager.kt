@@ -6,9 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.SyncResult
-import android.content.ContentResolver
-import android.os.Build
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavAddressBook
 import at.bitfire.dav4jvm.MultiResponseCallback
@@ -45,17 +42,17 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.io.Reader
-import java.io.StringReader
-import java.util.logging.Level
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.Reader
+import java.io.StringReader
+import java.util.logging.Level
 
 /**
  * Synchronization manager for CardDAV collections; handles contacts and groups.
