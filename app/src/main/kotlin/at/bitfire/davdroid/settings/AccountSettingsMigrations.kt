@@ -69,8 +69,12 @@ class AccountSettingsMigrations @AssistedInject constructor(
 
     val accountManager: AccountManager = AccountManager.get(context)
 
+    /* IMPORTANT: No more migrations must be added without tests. Maybe https://github.com/bitfireAT/davx5-ose/issues/935
+    is done before adding new migrations. Then that PR should establish a way to define migration tests. Otherwise,
+    the next migration must add a test and therefore defines the method how run migration tests. */
+
     /**
-     * With DAVx5 4.3.3 address book account names now contain the collection ID as a unique
+     * With DAVx5 4.4.3 address book account names now contain the collection ID as a unique
      * identifier. We need to update the address book account names.
      */
     @Suppress("unused","FunctionName")
