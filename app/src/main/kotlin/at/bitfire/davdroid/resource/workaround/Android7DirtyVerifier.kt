@@ -21,6 +21,9 @@ import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
 
+/**
+ * TODO explain why this is needed.
+ */
 class Android7DirtyVerifier @Inject constructor(
     val logger: Logger
 ): ContactDirtyVerifier {
@@ -86,8 +89,8 @@ class Android7DirtyVerifier @Inject constructor(
     // contact level functions
 
     /**
-     * Calculates a hash code from the contact's data (VCard) and group memberships.
-     * Attention: re-reads {@link #contact} from the database, discarding all changes in memory
+     * Calculates a hash code from the [at.bitfire.vcard4android.Contact] data and group memberships.
+     * Attention: re-reads {@link #contact} from the database, discarding all changes in memory!
      *
      * @return hash code of contact data (including group memberships)
      */
@@ -97,8 +100,9 @@ class Android7DirtyVerifier @Inject constructor(
         // groupMemberships is filled by getContact()
         val dataHash = contact.hashCode()
         val groupHash = contact.groupMemberships.hashCode()
-        logger.finest("Calculated data hash = $dataHash, group memberships hash = $groupHash")
-        return dataHash xor groupHash
+        val combinedHash = dataHash xor groupHash
+        logger.finest("Calculated data hash = $dataHash, group memberships hash = $groupHash → combined hash = $combinedHash")
+        return combinedHash
     }
 
     override fun setHashCodeColumn(contact: LocalContact, values: ContentValues) {
