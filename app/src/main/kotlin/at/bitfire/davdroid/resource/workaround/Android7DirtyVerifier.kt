@@ -6,7 +6,6 @@ package at.bitfire.davdroid.resource.workaround
 
 import android.content.ContentValues
 import android.os.Build
-import android.os.RemoteException
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalContact.Companion.COLUMN_HASHCODE
@@ -22,7 +21,19 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 /**
- * TODO explain why this is needed.
+ * Android 7.x introduced a new behavior in the Contacts provider: when metadata of a contact (like the "last contacted" time)
+ * changes, the contact is marked as "dirty" (i.e. the [android.provider.ContactsContract.RawContacts.DIRTY] flag is set).
+ * So, under Android 7.x, every time a user calls a contact or writes an SMS to a contact, the contact is marked as dirty.
+ *
+ * **This behavior is not present in Android ≤ 6.x nor in ≥ Android 8.x, where a contact is only marked as dirty
+ * when its data actually change.**
+ *
+ * So, as a dirty workaround for Android 7.x, we need to calculate a hash code from the contact data and group memberships every
+ * time we change the contact. When then a contact is marked as dirty, we compare the hash code of the current contact data with
+ * the previous hash code. If the hash code has changed, the contact is "really dirty" and we need to upload it. Otherwise,
+ * we reset the dirty flag to ignore the meta-data change.
+ *
+ * @constructor May only be called on Android 7.x, otherwise an [IllegalStateException] is thrown.
  */
 class Android7DirtyVerifier @Inject constructor(
     val logger: Logger
@@ -38,23 +49,24 @@ class Android7DirtyVerifier @Inject constructor(
 
     override fun prepareAddressBook(addressBook: LocalAddressBook, isUpload: Boolean): Boolean {
         val reallyDirty = verifyDirtyContacts(addressBook)
+
         val deleted = addressBook.findDeleted().size
         if (isUpload && reallyDirty == 0 && deleted == 0) {
             logger.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
             return false
         }
 
-        // sync address book
         return true
     }
 
     /**
-     * Queries all contacts with DIRTY flag and checks whether their data checksum has changed, i.e.
-     * if they're "really dirty" (= data has changed, not only metadata, which is not hashed).
-     * The DIRTY flag is removed from contacts which are not "really dirty", i.e. from contacts
-     * whose contact data checksum has not changed.
+     * Queries all contacts with the [android.provider.ContactsContract.RawContacts.DIRTY] flag and checks whether their data
+     * checksum has changed, i.e. if they're "really dirty" (= data has changed, not only metadata, which is not hashed).
+     *
+     * The dirty flag is removed from contacts which are not "really dirty", i.e. from contacts whose contact data
+     * checksum has not changed.
+     *
      * @return number of "really dirty" contacts
-     * @throws RemoteException on content provider errors
      */
     private fun verifyDirtyContacts(addressBook: LocalAddressBook): Int {
         var reallyDirty = 0
@@ -98,10 +110,10 @@ class Android7DirtyVerifier @Inject constructor(
         contact.clearCachedContact()
 
         // groupMemberships is filled by getContact()
-        val dataHash = contact.hashCode()
+        val dataHash = contact.getContact().hashCode()
         val groupHash = contact.groupMemberships.hashCode()
         val combinedHash = dataHash xor groupHash
-        logger.finest("Calculated data hash = $dataHash, group memberships hash = $groupHash → combined hash = $combinedHash")
+        logger.log(Level.FINE, "Calculated data hash = $dataHash, group memberships hash = $groupHash → combined hash = $combinedHash", contact)
         return combinedHash
     }
 
