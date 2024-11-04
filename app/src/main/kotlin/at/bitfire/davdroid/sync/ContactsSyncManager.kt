@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentResolver
-import android.os.Build
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavAddressBook
 import at.bitfire.dav4jvm.MultiResponseCallback
@@ -31,6 +30,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
@@ -54,7 +54,9 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.Reader
 import java.io.StringReader
+import java.util.Optional
 import java.util.logging.Level
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Synchronization manager for CardDAV collections; handles contacts and groups.
@@ -100,7 +102,8 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
     @Assisted localAddressBook: LocalAddressBook,
-    @Assisted collection: Collection
+    @Assisted collection: Collection,
+    val dirtyVerifier: Optional<ContactDirtyVerifier>
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
     accountSettings,
@@ -145,18 +148,13 @@ class ContactsSyncManager @AssistedInject constructor(
 
 
     override fun prepare(): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-            val reallyDirty = localCollection.verifyDirty()
-            val deleted = localCollection.findDeleted().size
-            if (extras.contains(ContentResolver.SYNC_EXTRAS_UPLOAD) && reallyDirty == 0 && deleted == 0) {
-                logger.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
+        if (dirtyVerifier.isPresent) {
+            logger.info("Sync will verify dirty contacts (Android 7.x workaround)")
+            if (!dirtyVerifier.get().prepareAddressBook(localCollection, isUpload = extras.contains(ContentResolver.SYNC_EXTRAS_UPLOAD)))
                 return false
-            }
         }
 
         davCollection = DavAddressBook(httpClient.okHttpClient, collection.url)
-
         resourceDownloader = ResourceDownloader(davCollection.location)
 
         logger.info("Contact group strategy: ${groupStrategy::class.java.simpleName}")
@@ -426,9 +424,12 @@ class ContactsSyncManager @AssistedInject constructor(
                 syncResult.stats.numInserts++
             }
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            dirtyVerifier.getOrNull()?.let { verifier ->
                 // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                (local as? LocalContact)?.updateHashCode(null)
+                (local as? LocalContact)?.let { localContact ->
+                    verifier.updateHashCode(localCollection, localContact)
+                }
+            }
         }
     }
 
