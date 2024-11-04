@@ -159,17 +159,14 @@ open class LocalAddressBook @AssistedInject constructor(
      */
     fun update(info: Collection, forceReadOnly: Boolean? = null) {
         logger.log(Level.INFO, "Updating local address book $addressBookAccount with collection $info")
-        val accountManager = AccountManager.get(context)
 
-        // Update the account name
+        // Update the account name, if needed
         val newAccountName = accountName(context, info)
-        if (addressBookAccount.name != newAccountName)
-            // rename, move contacts/groups and update [AndroidAddressBook.]account
-            renameAccount(newAccountName)
-
-        // Update the account user data
-        accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_COLLECTION_ID, info.id.toString())
-        accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_URL, info.url.toString())
+        if (addressBookAccount.name != newAccountName) {
+            logger.info("Renaming address book from \"${addressBookAccount.name}\" to \"$newAccountName\"")
+            // Recreates account moving contacts/groups and updates [AndroidAddressBook.addressBookAccount]
+            recreateAccount(info)
+        }
 
         // Update force read only
         if (forceReadOnly != null) {
@@ -202,27 +199,30 @@ open class LocalAddressBook @AssistedInject constructor(
     }
 
     /**
-     * Renames an address book account and moves the contacts and groups (without making them dirty).
-     * Does not keep user data of the old account, so these have to be set again.
+     * Recreates an address book keeping the contacts and groups (without making them dirty) and not
+     * changing the read-only state.
      *
-     * On success, [addressBookAccount] will be updated to the new account name.
+     * On success, [addressBookAccount] will be updated to the new account.
      *
-     * _Note:_ Previously, we had used [AccountManager.renameAccount], but then the contacts can't be moved because there's never
-     * a moment when both accounts are available.
+     * _Note:_ Previously, we had used [AccountManager.renameAccount], but then the contacts can't
+     * be moved because there's never a moment when both an old account and new account are available.
      *
-     * @param newName   the new account name (account type is taken from [addressBookAccount])
+     * @param info      the collection of the account to be recreated
      *
-     * @return whether the account was renamed successfully
+     * @return whether the account was recreated successfully
      */
     @VisibleForTesting
-    internal fun renameAccount(newName: String): Boolean {
+    internal fun recreateAccount(info: Collection): Boolean {
         val oldAccount = addressBookAccount
-        logger.info("Renaming address book from \"${oldAccount.name}\" to \"$newName\"")
 
-        // create new account
-        val newAccount = Account(newName, oldAccount.type)
-        if (!SystemAccountUtils.createAccount(context, newAccount, Bundle()))
+        // re-create this address book with its account
+        val localAddressBook = try {
+            create(context, provider!!, info, readOnly)
+        } catch (_: java.lang.IllegalStateException) {
+            logger.info("Failed to create address book account \"${accountName(context, info)}\" from existing \"${addressBookAccount.name}\"")
             return false
+        }
+        val newAccount = localAddressBook.addressBookAccount
 
         // move contacts and groups to new account
         val batch = BatchOperation(provider!!)
@@ -397,12 +397,18 @@ open class LocalAddressBook @AssistedInject constructor(
         /**
          * Creates a new local address book.
          *
-         * @param context        app context to resolve string resources
-         * @param provider       contacts provider client
-         * @param info           collection where to take the name and settings from
-         * @param forceReadOnly  `true`: set the address book to "force read-only"; `false`: determine read-only flag from [info]
+         * @param context                   app context to resolve string resources
+         * @param provider                  contacts provider client
+         * @param info                      collection where to take the name and settings from
+         * @param forceReadOnly             `true`: set the address book to "force read-only";
+         *                                  `false`: determine read-only flag from [info]
          */
-        fun create(context: Context, provider: ContentProviderClient, info: Collection, forceReadOnly: Boolean): LocalAddressBook {
+        fun create(
+            context: Context,
+            provider: ContentProviderClient,
+            info: Collection,
+            forceReadOnly: Boolean
+        ): LocalAddressBook {
             val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
             val logger = entryPoint.logger()
 
@@ -417,10 +423,14 @@ open class LocalAddressBook @AssistedInject constructor(
             addressBook.updateSyncFrameworkSettings()
 
             // initialize Contacts Provider Settings
-            val values = ContentValues(2)
-            values.put(ContactsContract.Settings.SHOULD_SYNC, 1)
-            values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
-            addressBook.settings = values
+            addressBook.settings = ContentValues(2).apply {
+                // SHOULD_SYNC is just a hint that an account's contacts (the contacts of this local
+                // address book) are syncable.
+                put(ContactsContract.Settings.SHOULD_SYNC, 1)
+                // UNGROUPED_VISIBLE is required for making contacts work over Bluetooth (especially
+                // with some car systems).
+                put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
+            }
             addressBook.readOnly = forceReadOnly || !info.privWriteContent || info.forceReadOnly
 
             return addressBook
