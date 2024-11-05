@@ -117,9 +117,9 @@ class Android7DirtyVerifier @Inject constructor(
         return combinedHash
     }
 
-    override fun setHashCodeColumn(contact: LocalContact, values: ContentValues) {
+    override fun setHashCodeColumn(contact: LocalContact, toValues: ContentValues) {
         val hashCode = contactDataHashCode(contact)
-        values.put(COLUMN_HASHCODE, hashCode)
+        toValues.put(COLUMN_HASHCODE, hashCode)
     }
 
     override fun updateHashCode(addressBook: LocalAddressBook, contact: LocalContact) {

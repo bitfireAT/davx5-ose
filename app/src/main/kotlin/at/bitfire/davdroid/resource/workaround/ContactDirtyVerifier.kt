@@ -35,8 +35,11 @@ interface ContactDirtyVerifier {
 
     /**
      * Sets the [LocalContact.COLUMN_HASHCODE] column in the given [ContentValues] to the hash code of the contact data.
+     *
+     * @param contact   the contact to calculate the hash code for
+     * @param toValues  set the hash code into these values
      */
-    fun setHashCodeColumn(contact: LocalContact, values: ContentValues)
+    fun setHashCodeColumn(contact: LocalContact, toValues: ContentValues)
 
     /**
      * Sets the [LocalContact.COLUMN_HASHCODE] field of the contact to the hash code of the contact data directly in the content provider.
