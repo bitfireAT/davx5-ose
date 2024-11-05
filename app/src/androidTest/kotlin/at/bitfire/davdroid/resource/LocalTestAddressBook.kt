@@ -20,6 +20,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.junit.Assert.assertTrue
 import java.io.FileNotFoundException
+import java.util.Optional
 import java.util.logging.Logger
 
 class LocalTestAddressBook @AssistedInject constructor(
@@ -30,7 +31,16 @@ class LocalTestAddressBook @AssistedInject constructor(
     @ApplicationContext context: Context,
     logger: Logger,
     serviceRepository: DavServiceRepository
-): LocalAddressBook(ACCOUNT, provider, accountSettingsFactory, collectionRepository, context, logger, serviceRepository) {
+): LocalAddressBook(
+    _addressBookAccount = ACCOUNT,
+    provider = provider,
+    accountSettingsFactory = accountSettingsFactory,
+    collectionRepository = collectionRepository,
+    context = context,
+    dirtyVerifier = Optional.empty(),
+    logger = logger,
+    serviceRepository = serviceRepository
+) {
 
     @AssistedFactory
     interface Factory {
