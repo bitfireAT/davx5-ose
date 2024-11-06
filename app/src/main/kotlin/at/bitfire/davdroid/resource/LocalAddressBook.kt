@@ -10,7 +10,6 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
 import android.provider.ContactsContract
@@ -24,6 +23,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -42,6 +42,7 @@ import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.util.LinkedList
+import java.util.Optional
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -63,6 +64,7 @@ open class LocalAddressBook @AssistedInject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext val context: Context,
+    val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
 ): AndroidAddressBook<LocalContact, LocalGroup>(_addressBookAccount, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
@@ -100,7 +102,7 @@ open class LocalAddressBook @AssistedInject constructor(
         val accountSettings = accountSettingsFactory.create(account)
         accountSettings.getGroupMethod()
     }
-    private val includeGroups
+    val includeGroups
         get() = groupMethod == GroupMethod.GROUP_VCARDS
 
     @Deprecated("Local collection should be identified by ID, not by URL")
@@ -341,39 +343,6 @@ open class LocalAddressBook @AssistedInject constructor(
                 return cursor.getString(0)
         }
         return null
-    }
-
-
-    /**
-     * Queries all contacts with DIRTY flag and checks whether their data checksum has changed, i.e.
-     * if they're "really dirty" (= data has changed, not only metadata, which is not hashed).
-     * The DIRTY flag is removed from contacts which are not "really dirty", i.e. from contacts
-     * whose contact data checksum has not changed.
-     * @return number of "really dirty" contacts
-     * @throws RemoteException on content provider errors
-     */
-    fun verifyDirty(): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            throw IllegalStateException("verifyDirty() should not be called on Android != 7.0")
-
-        var reallyDirty = 0
-        for (contact in findDirtyContacts()) {
-            val lastHash = contact.getLastHashCode()
-            val currentHash = contact.dataHashCode()
-            if (lastHash == currentHash) {
-                // hash is code still the same, contact is not "really dirty" (only metadata been have changed)
-                logger.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact)
-                contact.resetDirty()
-            } else {
-                logger.log(Level.FINE, "Contact data has changed from hash $lastHash to $currentHash", contact)
-                reallyDirty++
-            }
-        }
-
-        if (includeGroups)
-            reallyDirty += findDirtyGroups().size
-
-        return reallyDirty
     }
 
 

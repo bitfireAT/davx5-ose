@@ -25,6 +25,7 @@ import at.bitfire.vcard4android.Contact
 import java.util.LinkedList
 import java.util.UUID
 import java.util.logging.Logger
+import kotlin.jvm.optionals.getOrNull
 
 class LocalGroup: AndroidGroup, LocalAddress {
 
@@ -90,11 +91,14 @@ class LocalGroup: AndroidGroup, LocalAddress {
                     changeContactIDs += missingMember.id!!
                 }
 
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                addressBook.dirtyVerifier.getOrNull()?.let { verifier ->
                     // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
                     changeContactIDs
-                            .map { addressBook.findContactById(it) }
-                            .forEach { it.updateHashCode(batch) }
+                        .map { id -> addressBook.findContactById(id) }
+                        .forEach { contact ->
+                            verifier.updateHashCode(contact, batch)
+                        }
+                }
 
                 batch.commit()
             }

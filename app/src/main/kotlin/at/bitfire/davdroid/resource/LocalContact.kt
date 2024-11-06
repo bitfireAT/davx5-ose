@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.resource
 
 import android.content.ContentValues
-import android.os.Build
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
@@ -25,7 +24,7 @@ import at.bitfire.vcard4android.Contact
 import ezvcard.Ezvcard
 import java.io.FileNotFoundException
 import java.util.UUID
-import java.util.logging.Logger
+import kotlin.jvm.optionals.getOrNull
 
 class LocalContact: AndroidContact, LocalAddress {
 
@@ -38,8 +37,6 @@ class LocalContact: AndroidContact, LocalAddress {
         const val COLUMN_FLAGS = ContactsContract.RawContacts.SYNC4
         const val COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3
     }
-
-    private val logger: Logger = Logger.getGlobal()
 
     override val addressBook: LocalAddressBook
         get() = super.addressBook as LocalAddressBook
@@ -91,6 +88,13 @@ class LocalContact: AndroidContact, LocalAddress {
         return "$uid.vcf"
     }
 
+    /**
+     * Clears cached [contact] so that the next read of [contact] will query the content provider again.
+     */
+    fun clearCachedContact() {
+        _contact = null
+    }
+
     override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             throw IllegalArgumentException("Contacts must not have a Schedule-Tag")
@@ -101,12 +105,8 @@ class LocalContact: AndroidContact, LocalAddress {
         values.put(COLUMN_ETAG, eTag)
         values.put(ContactsContract.RawContacts.DIRTY, 0)
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-            val hashCode = dataHashCode()
-            values.put(COLUMN_HASHCODE, hashCode)
-            logger.finer("Clearing dirty flag with eTag = $eTag, contact hash = $hashCode")
-        }
+        // Android 7 workaround
+        addressBook.dirtyVerifier.getOrNull()?.setHashCodeColumn(this, values)
 
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
@@ -133,54 +133,6 @@ class LocalContact: AndroidContact, LocalAddress {
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
         this.flags = flags
-    }
-
-
-    /**
-     * Calculates a hash code from the contact's data (VCard) and group memberships.
-     * Attention: re-reads {@link #contact} from the database, discarding all changes in memory
-     * @return hash code of contact data (including group memberships)
-     */
-    internal fun dataHashCode(): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            throw IllegalStateException("dataHashCode() should not be called on Android != 7")
-
-        // reset contact so that getContact() reads from database
-        _contact = null
-
-        // groupMemberships is filled by getContact()
-        val dataHash = getContact().hashCode()
-        val groupHash = groupMemberships.hashCode()
-        logger.finest("Calculated data hash = $dataHash, group memberships hash = $groupHash")
-        return dataHash xor groupHash
-    }
-
-    fun updateHashCode(batch: BatchOperation?) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            throw IllegalStateException("updateHashCode() should not be called on Android != 7")
-
-        val hashCode = dataHashCode()
-        logger.fine("Storing contact hash = $hashCode")
-
-        if (batch == null) {
-            val values = ContentValues(1)
-            values.put(COLUMN_HASHCODE, hashCode)
-            addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
-        } else
-            batch.enqueue(BatchOperation.CpoBuilder
-                    .newUpdate(rawContactSyncURI())
-                    .withValue(COLUMN_HASHCODE, hashCode))
-    }
-
-    fun getLastHashCode(): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            throw IllegalStateException("getLastHashCode() should not be called on Android != 7")
-
-        addressBook.provider!!.query(rawContactSyncURI(), arrayOf(COLUMN_HASHCODE), null, null, null)?.use { c ->
-            if (c.moveToNext() && !c.isNull(0))
-                return c.getInt(0)
-        }
-        return 0
     }
 
 
@@ -238,6 +190,7 @@ class LocalContact: AndroidContact, LocalAddress {
 
 
     // data rows
+
     override fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
         builder.withValue(COLUMN_FLAGS, flags)
         super.buildContact(builder, update)
