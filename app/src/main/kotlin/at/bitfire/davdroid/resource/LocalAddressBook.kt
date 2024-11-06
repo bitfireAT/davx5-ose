@@ -175,30 +175,29 @@ open class LocalAddressBook @AssistedInject constructor(
         settings = contactsProviderSettings
 
         // Update force read only
-        if (forceReadOnly != null) {
-            val nowReadOnly = forceReadOnly || !info.privWriteContent || info.forceReadOnly
-            if (nowReadOnly != readOnly) {
-                logger.info("Address book now read-only = $nowReadOnly, updating contacts")
+        val nowReadOnly = forceReadOnly == true || !info.privWriteContent || info.forceReadOnly
+        if (nowReadOnly != readOnly) {
+            logger.info("Address book now read-only = $nowReadOnly, updating contacts")
 
-                // update address book itself
-                readOnly = nowReadOnly
+            // update address book itself
+            readOnly = nowReadOnly
 
-                // update raw contacts
-                val rawContactValues = ContentValues(1)
-                rawContactValues.put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-                provider!!.update(rawContactsSyncUri(), rawContactValues, null, null)
+            // update raw contacts
+            val rawContactValues = ContentValues(1)
+            rawContactValues.put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            provider!!.update(rawContactsSyncUri(), rawContactValues, null, null)
 
-                // update data rows
-                val dataValues = ContentValues(1)
-                dataValues.put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-                provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
+            // update data rows
+            val dataValues = ContentValues(1)
+            dataValues.put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
 
-                // update group rows
-                val groupValues = ContentValues(1)
-                groupValues.put(Groups.GROUP_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-                provider!!.update(groupsSyncUri(), groupValues, null, null)
-            }
+            // update group rows
+            val groupValues = ContentValues(1)
+            groupValues.put(Groups.GROUP_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            provider!!.update(groupsSyncUri(), groupValues, null, null)
         }
+
 
         // make sure it will still be synchronized when contacts are updated
         updateSyncFrameworkSettings()
