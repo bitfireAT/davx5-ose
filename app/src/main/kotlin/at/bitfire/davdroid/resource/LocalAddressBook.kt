@@ -171,6 +171,9 @@ open class LocalAddressBook @AssistedInject constructor(
         accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_COLLECTION_ID, info.id.toString())
         accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_URL, info.url.toString())
 
+        // Set contacts provider settings
+        settings = contactsProviderSettings
+
         // Update force read only
         if (forceReadOnly != null) {
             val nowReadOnly = forceReadOnly || !info.privWriteContent || info.forceReadOnly
@@ -392,6 +395,18 @@ open class LocalAddressBook @AssistedInject constructor(
         const val USER_DATA_COLLECTION_ID = "collection_id"
         const val USER_DATA_READ_ONLY = "read_only"
 
+        /**
+         * Contacts Provider Settings (equal for every address book)
+         */
+        val contactsProviderSettings = ContentValues(2).apply {
+            // SHOULD_SYNC is just a hint that an account's contacts (the contacts of this local
+            // address book) are syncable.
+            put(ContactsContract.Settings.SHOULD_SYNC, 1)
+            // UNGROUPED_VISIBLE is required for making contacts work over Bluetooth (especially
+            // with some car systems).
+            put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
+        }
+
         // create/query/delete
 
         /**
@@ -414,13 +429,9 @@ open class LocalAddressBook @AssistedInject constructor(
 
             val factory = entryPoint.localAddressBookFactory()
             val addressBook = factory.create(account, provider)
-            addressBook.updateSyncFrameworkSettings()
 
-            // initialize Contacts Provider Settings
-            val values = ContentValues(2)
-            values.put(ContactsContract.Settings.SHOULD_SYNC, 1)
-            values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
-            addressBook.settings = values
+            addressBook.updateSyncFrameworkSettings()
+            addressBook.settings = contactsProviderSettings
             addressBook.readOnly = forceReadOnly || !info.privWriteContent || info.forceReadOnly
 
             return addressBook
