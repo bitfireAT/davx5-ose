@@ -12,6 +12,9 @@ import android.content.Context
 import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.sync.LocalTestCollection
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import at.bitfire.vcard4android.LabeledProperty
@@ -19,6 +22,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import ezvcard.property.Telephone
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import io.mockk.spyk
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.LinkedList
 import javax.inject.Inject
 import org.junit.After
@@ -67,7 +76,7 @@ class LocalAddressBookTest {
      * Tests whether contacts are moved (and not lost) when an address book is renamed.
      */
     @Test
-    fun test_renameAccount_retainsContacts() {
+    fun test_recreateAccount_retainsContacts() {
         // insert contact with data row
         val uid = "12345"
         val contact = Contact(
@@ -83,7 +92,16 @@ class LocalAddressBookTest {
 
         // rename address book
         val newName = "New Name"
-        addressBook.renameAccount(newName)
+        val collection = mockk<Collection>()
+        every { collection.url } returns "http://update.the/collection".toHttpUrl()
+        every { collection.id } returns 1L
+        every { collection.privWriteContent } returns false
+        every { collection.displayName } returns "Collection Name"
+        every { collection.serviceId } returns 1
+        every { collection.forceReadOnly } returns false
+        mockkObject(LocalAddressBook.Companion)
+        every { LocalAddressBook.accountName(any(), collection) } returns newName
+        addressBook.recreateAccount(collection)
         assertEquals(Account(newName, LocalTestAddressBook.ACCOUNT.type), addressBook.addressBookAccount)
 
         // check whether contact is still here (including data rows) and not dirty
@@ -100,7 +118,7 @@ class LocalAddressBookTest {
      * Tests whether groups are moved (and not lost) when an address book is renamed.
      */
     @Test
-    fun test_renameAccount_retainsGroups() {
+    fun test_recreateAccount_retainsGroups() {
         // insert group
         val localGroup = LocalGroup(addressBook, Contact(displayName = "Test Group"), null, null, 0)
         val uri = localGroup.add()
@@ -110,9 +128,21 @@ class LocalAddressBookTest {
         localGroup.clearDirty(null, null, null)
         assertFalse("Group is dirty before moving", addressBook.isGroupDirty(id))
 
-        // rename address book
+        // mock and spy
         val newName = "New Name"
-        addressBook.renameAccount(newName)
+        val collection = mockk<Collection>()
+        every { collection.url } returns "http://update.the/collection".toHttpUrl()
+        every { collection.id } returns 1L
+        every { collection.displayName } returns "Collection Name"
+        every { collection.privWriteContent } returns false
+        every { collection.forceReadOnly } returns false
+        val spiedContext = spyk(context)
+        every { spiedContext.getString(R.string.account_type_address_book) } returns LocalTestAddressBook.ACCOUNT.type
+        mockkObject(LocalAddressBook.Companion)
+        every { LocalAddressBook.accountName(spiedContext, collection) } returns newName
+
+        // rename address book
+        addressBook.recreateAccount(collection)
         assertEquals(Account(newName, LocalTestAddressBook.ACCOUNT.type), addressBook.addressBookAccount)
 
         // check whether group is still here and not dirty
