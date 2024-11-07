@@ -436,10 +436,10 @@ open class LocalAddressBook @AssistedInject constructor(
         }
 
         /**
-         * Determines whether the address book should be set to read only.
+         * Determines whether the address book should be set to read-only.
          *
-         * @param forceReadOnly     Whether managed setting should overwrite read-only
-         * @param info              Determine read-only flag from collection data
+         * @param forceReadOnly     Whether (usually managed, app-wide) setting should overwrite local read-only information
+         * @param info              Collection data to determine read-only status from (either user-set read-only flag or missing write privilege)
          */
         @VisibleForTesting
         internal fun shouldBeReadOnly(info: Collection, forceReadOnly: Boolean): Boolean =

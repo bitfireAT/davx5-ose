@@ -21,7 +21,6 @@ import androidx.work.WorkManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -52,7 +51,6 @@ class AccountSettingsMigrations @AssistedInject constructor(
     @Assisted val account: Account,
     @Assisted val accountSettings: AccountSettings,
     @ApplicationContext val context: Context,
-    private val accountRepository: AccountRepository,
     private val collectionRepository: DavCollectionRepository,
     private val db: AppDatabase,
     private val localAddressBookFactory: LocalAddressBook.Factory,
@@ -103,7 +101,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
                 collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
                     // Set collection ID and rename the account
                     val localAddressBook = localAddressBookFactory.create(oldAddressBookAccount, provider)
-                    localAddressBook.update(collection, false)
+                    localAddressBook.update(collection, /* read-only flag will be updated at next sync */ forceReadOnly = false)
                 }
             }
         }
