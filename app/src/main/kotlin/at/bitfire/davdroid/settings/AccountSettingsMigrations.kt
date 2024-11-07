@@ -103,7 +103,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
                 collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
                     // Set collection ID and rename the account
                     val localAddressBook = localAddressBookFactory.create(oldAddressBookAccount, provider)
-                    localAddressBook.update(collection)
+                    localAddressBook.update(collection, false)
                 }
             }
         }

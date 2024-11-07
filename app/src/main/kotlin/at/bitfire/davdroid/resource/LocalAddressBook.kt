@@ -155,9 +155,8 @@ open class LocalAddressBook @AssistedInject constructor(
      * @param info  collection where to take the settings from
      * @param forceReadOnly  `true`: set the address book to "force read-only";
      *                       `false`: determine read-only flag from [info];
-     *                       `null`: don't change the existing value
      */
-    fun update(info: Collection, forceReadOnly: Boolean? = null) {
+    fun update(info: Collection, forceReadOnly: Boolean) {
         logger.log(Level.INFO, "Updating local address book $addressBookAccount with collection $info")
         val accountManager = AccountManager.get(context)
 
@@ -443,8 +442,8 @@ open class LocalAddressBook @AssistedInject constructor(
          * @param info              Determine read-only flag from collection data
          */
         @VisibleForTesting
-        internal fun shouldBeReadOnly(info: Collection, forceReadOnly: Boolean? = null,): Boolean =
-            forceReadOnly == true || info.readOnly()
+        internal fun shouldBeReadOnly(info: Collection, forceReadOnly: Boolean): Boolean =
+            info.readOnly() || forceReadOnly
 
         /**
          * Finds a [LocalAddressBook] based on its corresponding collection.

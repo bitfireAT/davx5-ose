@@ -133,12 +133,10 @@ class LocalAddressBookTest {
     @Test
     fun test_shouldBeReadOnly() {
         val collectionReadOnly = mockk<Collection> { every { readOnly() } returns true }
-        assertTrue(LocalAddressBook.shouldBeReadOnly(collectionReadOnly, null))
         assertTrue(LocalAddressBook.shouldBeReadOnly(collectionReadOnly, false))
         assertTrue(LocalAddressBook.shouldBeReadOnly(collectionReadOnly, true))
 
         val collectionNotReadOnly = mockk<Collection> { every { readOnly() } returns false }
-        assertFalse(LocalAddressBook.shouldBeReadOnly(collectionNotReadOnly, null))
         assertFalse(LocalAddressBook.shouldBeReadOnly(collectionNotReadOnly, false))
         assertTrue(LocalAddressBook.shouldBeReadOnly(collectionNotReadOnly, true))
     }
