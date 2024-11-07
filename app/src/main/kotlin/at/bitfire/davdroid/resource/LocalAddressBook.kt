@@ -155,9 +155,8 @@ open class LocalAddressBook @AssistedInject constructor(
      * @param info  collection where to take the settings from
      * @param forceReadOnly  `true`: set the address book to "force read-only";
      *                       `false`: determine read-only flag from [info];
-     *                       `null`: don't change the existing value
      */
-    fun update(info: Collection, forceReadOnly: Boolean? = null) {
+    fun update(info: Collection, forceReadOnly: Boolean) {
         logger.log(Level.INFO, "Updating local address book $addressBookAccount with collection $info")
         val accountManager = AccountManager.get(context)
 
@@ -175,30 +174,29 @@ open class LocalAddressBook @AssistedInject constructor(
         settings = contactsProviderSettings
 
         // Update force read only
-        if (forceReadOnly != null) {
-            val nowReadOnly = forceReadOnly || !info.privWriteContent || info.forceReadOnly
-            if (nowReadOnly != readOnly) {
-                logger.info("Address book now read-only = $nowReadOnly, updating contacts")
+        val nowReadOnly = shouldBeReadOnly(info, forceReadOnly)
+        if (nowReadOnly != readOnly) {
+            logger.info("Address book now read-only = $nowReadOnly, updating contacts")
 
-                // update address book itself
-                readOnly = nowReadOnly
+            // update address book itself
+            readOnly = nowReadOnly
 
-                // update raw contacts
-                val rawContactValues = ContentValues(1)
-                rawContactValues.put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-                provider!!.update(rawContactsSyncUri(), rawContactValues, null, null)
+            // update raw contacts
+            val rawContactValues = ContentValues(1)
+            rawContactValues.put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            provider!!.update(rawContactsSyncUri(), rawContactValues, null, null)
 
-                // update data rows
-                val dataValues = ContentValues(1)
-                dataValues.put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-                provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
+            // update data rows
+            val dataValues = ContentValues(1)
+            dataValues.put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
 
-                // update group rows
-                val groupValues = ContentValues(1)
-                groupValues.put(Groups.GROUP_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-                provider!!.update(groupsSyncUri(), groupValues, null, null)
-            }
+            // update group rows
+            val groupValues = ContentValues(1)
+            groupValues.put(Groups.GROUP_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            provider!!.update(groupsSyncUri(), groupValues, null, null)
         }
+
 
         // make sure it will still be synchronized when contacts are updated
         updateSyncFrameworkSettings()
@@ -432,10 +430,20 @@ open class LocalAddressBook @AssistedInject constructor(
 
             addressBook.updateSyncFrameworkSettings()
             addressBook.settings = contactsProviderSettings
-            addressBook.readOnly = forceReadOnly || !info.privWriteContent || info.forceReadOnly
+            addressBook.readOnly = shouldBeReadOnly(info, forceReadOnly)
 
             return addressBook
         }
+
+        /**
+         * Determines whether the address book should be set to read-only.
+         *
+         * @param forceReadOnly     Whether (usually managed, app-wide) setting should overwrite local read-only information
+         * @param info              Collection data to determine read-only status from (either user-set read-only flag or missing write privilege)
+         */
+        @VisibleForTesting
+        internal fun shouldBeReadOnly(info: Collection, forceReadOnly: Boolean): Boolean =
+            info.readOnly() || forceReadOnly
 
         /**
          * Finds a [LocalAddressBook] based on its corresponding collection.
