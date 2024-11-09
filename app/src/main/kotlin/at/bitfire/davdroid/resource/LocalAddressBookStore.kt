@@ -107,18 +107,21 @@ class LocalAddressBookStore @Inject constructor(
             localCollection.readOnly = nowReadOnly
 
             // update raw contacts
-            val rawContactValues = ContentValues(1)
-            rawContactValues.put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            val rawContactValues = ContentValues(1).apply {
+                put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            }
             provider.update(localCollection.rawContactsSyncUri(), rawContactValues, null, null)
 
             // update data rows
-            val dataValues = ContentValues(1)
-            dataValues.put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            val dataValues = ContentValues(1).apply {
+                put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            }
             provider.update(localCollection.syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
 
             // update group rows
-            val groupValues = ContentValues(1)
-            groupValues.put(Groups.GROUP_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            val groupValues = ContentValues(1).apply {
+                put(Groups.GROUP_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            }
             provider.update(localCollection.groupsSyncUri(), groupValues, null, null)
         }
 
@@ -145,13 +148,14 @@ class LocalAddressBookStore @Inject constructor(
         /**
          * Contacts Provider Settings (equal for every address book)
          */
-        val contactsProviderSettings = ContentValues(2).apply {
-            // SHOULD_SYNC is just a hint that an account's contacts (the contacts of this local address book) are syncable.
-            put(ContactsContract.Settings.SHOULD_SYNC, 1)
+        val contactsProviderSettings
+            get() = ContentValues(2).apply {
+                // SHOULD_SYNC is just a hint that an account's contacts (the contacts of this local address book) are syncable.
+                put(ContactsContract.Settings.SHOULD_SYNC, 1)
 
-            // UNGROUPED_VISIBLE is required for making contacts work over Bluetooth (especially with some car systems).
-            put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
-        }
+                // UNGROUPED_VISIBLE is required for making contacts work over Bluetooth (especially with some car systems).
+                put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
+            }
 
         /**
          * Determines whether the address book should be set to read-only.

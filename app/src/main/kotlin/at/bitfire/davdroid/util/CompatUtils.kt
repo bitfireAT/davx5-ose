@@ -17,9 +17,13 @@ import java.util.logging.Logger
  */
 fun AccountManager.setAndVerifyUserData(account: Account, key: String, value: String?) {
     for (i in 1..10) {
-        if (getUserData(account, key) != value)
-            setUserData(account, key, value)
+        if (getUserData(account, key) == value)
+            /* already set / success */
+            return
 
+        setUserData(account, key, value)
+
+        // wait a bit because AccountManager access sometimes seems a bit asynchronous
         Thread.sleep(100)
     }
     Logger.getGlobal().warning("AccountManager failed to set $account user data $key := $value")
