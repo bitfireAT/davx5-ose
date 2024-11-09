@@ -11,8 +11,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.settings.Settings
-import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -26,20 +25,16 @@ class AddressBookSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
-    private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
-    settingsManager: SettingsManager
-): Syncer<LocalAddressBook>(account, extras, syncResult) {
+    addressBookStore: LocalAddressBookStore,
+    private val contactsSyncManagerFactory: ContactsSyncManager.Factory
+): Syncer<LocalAddressBookStore, LocalAddressBook>(account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {
         fun create(account: Account, extras: Array<String>, syncResult: SyncResult): AddressBookSyncer
     }
 
-    companion object {
-        const val PREVIOUS_GROUP_METHOD = "previous_group_method"
-    }
-
-    private val forceAllReadOnly = settingsManager.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
+    override val dataStore = addressBookStore
 
     override val serviceType: String
         get() = Service.TYPE_CARDDAV
@@ -57,20 +52,6 @@ class AddressBookSyncer @AssistedInject constructor(
 
     override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getByServiceAndSync(serviceId)
-
-    override fun update(localCollection: LocalAddressBook, remoteCollection: Collection) {
-        try {
-            logger.log(Level.FINE, "Updating local address book ${remoteCollection.url}", remoteCollection)
-            localCollection.update(remoteCollection, forceAllReadOnly)
-        } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't rename address book account", e)
-        }
-    }
-
-    override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalAddressBook {
-        logger.log(Level.INFO, "Adding local address book", remoteCollection)
-        return LocalAddressBook.create(context, provider, remoteCollection, forceAllReadOnly)
-    }
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalAddressBook, remoteCollection: Collection) {
         logger.info("Synchronizing address book: ${localCollection.addressBookAccount.name}")
@@ -131,6 +112,13 @@ class AddressBookSyncer @AssistedInject constructor(
         }
 
         logger.info("Contacts sync complete")
+    }
+
+
+    companion object {
+
+        const val PREVIOUS_GROUP_METHOD = "previous_group_method"
+
     }
 
 }

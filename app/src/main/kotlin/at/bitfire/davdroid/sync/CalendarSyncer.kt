@@ -6,16 +6,15 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.ContentUris
 import android.provider.CalendarContract
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalCalendar
+import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.ical4android.AndroidCalendar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import java.util.logging.Level
 
 /**
  * Sync logic for calendars
@@ -24,13 +23,16 @@ class CalendarSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
+    calendarStore: LocalCalendarStore,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory
-): Syncer<LocalCalendar>(account, extras, syncResult) {
+): Syncer<LocalCalendarStore, LocalCalendar>(account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {
         fun create(account: Account, extras: Array<String>, syncResult: SyncResult): CalendarSyncer
     }
+
+    override val dataStore = calendarStore
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV
@@ -67,17 +69,6 @@ class CalendarSyncer @AssistedInject constructor(
             remoteCollection
         )
         syncManager.performSync()
-    }
-
-    override fun update(localCollection: LocalCalendar, remoteCollection: Collection) {
-        logger.log(Level.FINE, "Updating local calendar ${remoteCollection.url}", remoteCollection)
-        localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
-    }
-
-    override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalCalendar {
-        logger.log(Level.INFO, "Adding local calendar", remoteCollection)
-        val uri = LocalCalendar.create(account, provider, remoteCollection)
-        return AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
     }
 
 }

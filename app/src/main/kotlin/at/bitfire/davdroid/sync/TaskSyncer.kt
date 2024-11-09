@@ -7,18 +7,17 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.content.ContentUris
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.resource.LocalTaskListStore
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import org.dmfs.tasks.contract.TaskContract.TaskLists
-import java.util.logging.Level
 
 /**
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
@@ -30,7 +29,7 @@ class TaskSyncer @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
-): Syncer<LocalTaskList>(account, extras, syncResult) {
+): Syncer<LocalTaskListStore, LocalTaskList>(account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {
@@ -38,6 +37,9 @@ class TaskSyncer @AssistedInject constructor(
     }
 
     private val providerName = TaskProvider.ProviderName.fromAuthority(authority)
+
+    override val dataStore: LocalTaskListStore
+        get() = TODO("Not yet implemented")
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV
@@ -70,16 +72,16 @@ class TaskSyncer @AssistedInject constructor(
     override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncTaskLists(serviceId)
 
-    override fun update(localCollection: LocalTaskList, remoteCollection: Collection) {
+    /*override fun update(localCollection: LocalTaskList, remoteCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list ${remoteCollection.url}", remoteCollection)
         localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
-    }
+    }*/
 
-    override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalTaskList {
+    /*override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalTaskList {
         logger.log(Level.INFO, "Adding local task list", remoteCollection)
         val uri = LocalTaskList.create(account, provider, providerName, remoteCollection)
         return DmfsTaskList.findByID(account, provider, providerName, LocalTaskList.Factory, ContentUris.parseId(uri))
-    }
+    }*/
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalTaskList, remoteCollection: Collection) {
         logger.info("Synchronizing task list #${localCollection.id} [${localCollection.syncId}]")

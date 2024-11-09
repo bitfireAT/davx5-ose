@@ -150,59 +150,6 @@ open class LocalAddressBook @AssistedInject constructor(
     }
 
     /**
-     * Updates the address book settings.
-     *
-     * @param info  collection where to take the settings from
-     * @param forceReadOnly  `true`: set the address book to "force read-only";
-     *                       `false`: determine read-only flag from [info];
-     */
-    fun update(info: Collection, forceReadOnly: Boolean) {
-        logger.log(Level.INFO, "Updating local address book $addressBookAccount with collection $info")
-        val accountManager = AccountManager.get(context)
-
-        // Update the account name
-        val newAccountName = accountName(context, info)
-        if (addressBookAccount.name != newAccountName)
-            // rename, move contacts/groups and update [AndroidAddressBook.]account
-            renameAccount(newAccountName)
-
-        // Update the account user data
-        accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_COLLECTION_ID, info.id.toString())
-        accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_URL, info.url.toString())
-
-        // Set contacts provider settings
-        settings = contactsProviderSettings
-
-        // Update force read only
-        val nowReadOnly = shouldBeReadOnly(info, forceReadOnly)
-        if (nowReadOnly != readOnly) {
-            logger.info("Address book now read-only = $nowReadOnly, updating contacts")
-
-            // update address book itself
-            readOnly = nowReadOnly
-
-            // update raw contacts
-            val rawContactValues = ContentValues(1)
-            rawContactValues.put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-            provider!!.update(rawContactsSyncUri(), rawContactValues, null, null)
-
-            // update data rows
-            val dataValues = ContentValues(1)
-            dataValues.put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-            provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
-
-            // update group rows
-            val groupValues = ContentValues(1)
-            groupValues.put(Groups.GROUP_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-            provider!!.update(groupsSyncUri(), groupValues, null, null)
-        }
-
-
-        // make sure it will still be synchronized when contacts are updated
-        updateSyncFrameworkSettings()
-    }
-
-    /**
      * Renames an address book account and moves the contacts and groups (without making them dirty).
      * Does not keep user data of the old account, so these have to be set again.
      *
@@ -215,7 +162,6 @@ open class LocalAddressBook @AssistedInject constructor(
      *
      * @return whether the account was renamed successfully
      */
-    @VisibleForTesting
     internal fun renameAccount(newName: String): Boolean {
         val oldAccount = addressBookAccount
         logger.info("Renaming address book from \"${oldAccount.name}\" to \"$newName\"")
@@ -247,11 +193,6 @@ open class LocalAddressBook @AssistedInject constructor(
         accountManager.removeAccountExplicitly(oldAccount)
 
         return true
-    }
-
-    override fun deleteCollection(): Boolean {
-        val accountManager = AccountManager.get(context)
-        return accountManager.removeAccountExplicitly(addressBookAccount)
     }
 
 
@@ -393,57 +334,8 @@ open class LocalAddressBook @AssistedInject constructor(
         const val USER_DATA_COLLECTION_ID = "collection_id"
         const val USER_DATA_READ_ONLY = "read_only"
 
-        /**
-         * Contacts Provider Settings (equal for every address book)
-         */
-        val contactsProviderSettings = ContentValues(2).apply {
-            // SHOULD_SYNC is just a hint that an account's contacts (the contacts of this local
-            // address book) are syncable.
-            put(ContactsContract.Settings.SHOULD_SYNC, 1)
-            // UNGROUPED_VISIBLE is required for making contacts work over Bluetooth (especially
-            // with some car systems).
-            put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
-        }
 
         // create/query/delete
-
-        /**
-         * Creates a new local address book.
-         *
-         * @param context        app context to resolve string resources
-         * @param provider       contacts provider client
-         * @param info           collection where to take the name and settings from
-         * @param forceReadOnly  `true`: set the address book to "force read-only"; `false`: determine read-only flag from [info]
-         */
-        fun create(context: Context, provider: ContentProviderClient, info: Collection, forceReadOnly: Boolean): LocalAddressBook {
-            val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
-            val logger = entryPoint.logger()
-
-            val account = Account(accountName(context, info), context.getString(R.string.account_type_address_book))
-            val userData = initialUserData(info.url.toString(), info.id.toString())
-            logger.log(Level.INFO, "Creating local address book $account", userData)
-            if (!SystemAccountUtils.createAccount(context, account, userData))
-                throw IllegalStateException("Couldn't create address book account")
-
-            val factory = entryPoint.localAddressBookFactory()
-            val addressBook = factory.create(account, provider)
-
-            addressBook.updateSyncFrameworkSettings()
-            addressBook.settings = contactsProviderSettings
-            addressBook.readOnly = shouldBeReadOnly(info, forceReadOnly)
-
-            return addressBook
-        }
-
-        /**
-         * Determines whether the address book should be set to read-only.
-         *
-         * @param forceReadOnly     Whether (usually managed, app-wide) setting should overwrite local read-only information
-         * @param info              Collection data to determine read-only status from (either user-set read-only flag or missing write privilege)
-         */
-        @VisibleForTesting
-        internal fun shouldBeReadOnly(info: Collection, forceReadOnly: Boolean): Boolean =
-            info.readOnly() || forceReadOnly
 
         /**
          * Finds a [LocalAddressBook] based on its corresponding collection.
@@ -512,7 +404,7 @@ open class LocalAddressBook @AssistedInject constructor(
             return sb.toString()
         }
 
-        private fun initialUserData(url: String, collectionId: String): Bundle {
+        internal fun initialUserData(url: String, collectionId: String): Bundle {
             val bundle = Bundle(3)
             bundle.putString(USER_DATA_COLLECTION_ID, collectionId)
             bundle.putString(USER_DATA_URL, url)

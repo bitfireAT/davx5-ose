@@ -15,6 +15,7 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCollection
+import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.settings.AccountSettings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
@@ -29,7 +30,7 @@ import javax.inject.Inject
  *
  * Contains generic sync code, equal for all sync authorities.
  */
-abstract class Syncer<CollectionType: LocalCollection<*>>(
+abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType: LocalCollection<*>>(
     protected val account: Account,
     protected val extras: Array<String>,
     protected val syncResult: SyncResult
@@ -57,6 +58,8 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         const val SYNC_EXTRAS_FULL_RESYNC = "full_resync"
 
     }
+
+    abstract val dataStore: StoreType
 
     @Inject
     lateinit var accountSettingsFactory: AccountSettings.Factory
@@ -148,12 +151,12 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
             if (dbCollection == null) {
                 // Collection not available in db = on server (anymore), delete and remove from the updated list
                 logger.fine("Deleting local collection ${localCollection.title}")
-                localCollection.deleteCollection()
+                dataStore.delete(localCollection)
                 updatedLocalCollections -= localCollection
             } else {
                 // Collection exists locally, update local collection and remove it from "to be created" map
                 logger.fine("Updating local collection ${localCollection.title} with $dbCollection")
-                update(localCollection, dbCollection)
+                dataStore.update(provider, localCollection, dbCollection)
                 newDbCollections -= dbCollection.url
             }
         }
@@ -183,7 +186,10 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         provider: ContentProviderClient,
         dbCollections: List<Collection>
     ): List<CollectionType> =
-        dbCollections.map { collection -> create(provider, collection) }
+        dbCollections.map { collection ->
+            dataStore.create(provider, collection)
+                ?: throw IllegalStateException("Couldn't create local collection for $collection")
+        }
 
     /**
      * Synchronize the actual collection contents.
@@ -232,22 +238,6 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
      * @return Database collections to be synchronized
      */
     abstract fun getDbSyncCollections(serviceId: Long): List<Collection>
-
-    /**
-     * Updates an existing local collection (in the content provider) with remote collection information (from the DB).
-     *
-     * @param localCollection The local collection to be updated
-     * @param remoteCollection The new remote collection information
-     */
-    abstract fun update(localCollection: CollectionType, remoteCollection: Collection)
-
-    /**
-     * Creates a new local collection (in the content provider) from remote collection information (from the DB).
-     *
-     * @param provider The content provider client to create the local collection
-     * @param remoteCollection The remote collection to be created locally
-     */
-    abstract fun create(provider: ContentProviderClient, remoteCollection: Collection): CollectionType
 
     /**
      * Synchronizes local with remote collection contents.
