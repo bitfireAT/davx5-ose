@@ -17,16 +17,13 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import androidx.annotation.OpenForTesting
-import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
-import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
@@ -36,11 +33,7 @@ import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import java.util.LinkedList
 import java.util.Optional
 import java.util.logging.Level
@@ -322,92 +315,16 @@ open class LocalAddressBook @AssistedInject constructor(
 
     companion object {
 
-        @EntryPoint
-        @InstallIn(SingletonComponent::class)
-        interface LocalAddressBookCompanionEntryPoint {
-            fun localAddressBookFactory(): Factory
-            fun serviceRepository(): DavServiceRepository
-            fun logger(): Logger
-        }
-
         const val USER_DATA_URL = "url"
         const val USER_DATA_COLLECTION_ID = "collection_id"
+
         const val USER_DATA_READ_ONLY = "read_only"
-
-
-        // create/query/delete
-
-        /**
-         * Finds a [LocalAddressBook] based on its corresponding collection.
-         *
-         * @param id    collection ID to look for
-         *
-         * @return The [LocalAddressBook] for the given collection or *null* if not found
-         */
-        fun findByCollection(context: Context, provider: ContentProviderClient, id: Long): LocalAddressBook? {
-            val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
-            val factory = entryPoint.localAddressBookFactory()
-
-            val accountManager = AccountManager.get(context)
-            return accountManager
-                .getAccountsByType(context.getString(R.string.account_type_address_book))
-                .filter { account ->
-                    accountManager.getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull() == id
-                }
-                .map { account -> factory.create(account, provider) }
-                .firstOrNull()
-        }
-
-        /**
-         * Deletes a [LocalAddressBook] based on its corresponding database collection.
-         *
-         * @param id    collection ID to look for
-         */
-        fun deleteByCollection(context: Context, id: Long) {
-            val accountManager = AccountManager.get(context)
-            val addressBookAccount = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).firstOrNull { account ->
-                accountManager.getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull() == id
-            }
-            if (addressBookAccount != null)
-                accountManager.removeAccountExplicitly(addressBookAccount)
-        }
-
-
-        // helpers
-
-        /**
-         * Creates a name for the address book account from its corresponding db collection info.
-         *
-         * The address book account name contains
-         * - the collection display name or last URL path segment
-         * - the actual account name
-         * - the collection ID, to make it unique.
-         *
-         * @param info The corresponding collection
-         */
-        fun accountName(context: Context, info: Collection): String {
-            // Name the address book after given collection display name, otherwise use last URL path segment
-            val sb = StringBuilder(info.displayName.let {
-                if (it.isNullOrEmpty())
-                    info.url.lastSegment
-                else
-                    it
-            })
-            // Add the actual account name to the address book account name
-            val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookCompanionEntryPoint>(context)
-            val serviceRepository = entryPoint.serviceRepository()
-            serviceRepository.get(info.serviceId)?.let { service ->
-                sb.append(" (${service.accountName})")
-            }
-            // Add the collection ID for uniqueness
-            sb.append(" #${info.id}")
-            return sb.toString()
-        }
 
         internal fun initialUserData(url: String, collectionId: String): Bundle {
             val bundle = Bundle(3)
             bundle.putString(USER_DATA_COLLECTION_ID, collectionId)
             bundle.putString(USER_DATA_URL, url)
+            // TODO read-only??
             return bundle
         }
 

@@ -8,17 +8,12 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
-import android.net.Uri
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
 import at.bitfire.ical4android.BatchOperation
-import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import java.util.LinkedList
 import java.util.logging.Level
@@ -41,39 +36,6 @@ class LocalCalendar private constructor(
 
         private val logger: Logger
             get() = Logger.getGlobal()
-
-        fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
-            val values = ContentValues()
-            values.put(Calendars.NAME, info.url.toString())
-            values.put(Calendars.CALENDAR_DISPLAY_NAME,
-                if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
-
-            if (withColor && info.color != null)
-                values.put(Calendars.CALENDAR_COLOR, info.color)
-
-            if (info.privWriteContent && !info.forceReadOnly) {
-                values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER)
-                values.put(Calendars.CAN_MODIFY_TIME_ZONE, 1)
-                values.put(Calendars.CAN_ORGANIZER_RESPOND, 1)
-            } else
-                values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ)
-
-            info.timezone?.let { tzData ->
-                try {
-                    val timeZone = DateUtils.parseVTimeZone(tzData)
-                    timeZone.timeZoneId?.let { tzId ->
-                        values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(tzId.value))
-                    }
-                } catch(e: IllegalArgumentException) {
-                    logger.log(Level.WARNING, "Couldn't parse calendar default time zone", e)
-                }
-            }
-
-            // add base values for Calendars
-            values.putAll(calendarBaseValues)
-
-            return values
-        }
 
     }
 
@@ -108,9 +70,6 @@ class LocalCalendar private constructor(
         super.populate(info)
         accessLevel = info.getAsInteger(Calendars.CALENDAR_ACCESS_LEVEL) ?: Calendars.CAL_ACCESS_OWNER
     }
-
-    fun update(info: Collection, updateColor: Boolean) =
-        update(valuesFromCollectionInfo(info, updateColor))
 
 
     override fun findDeleted() =

@@ -7,15 +7,18 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
 import android.provider.CalendarContract.Calendars
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.resource.LocalCalendar.Companion.valuesFromCollectionInfo
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.AndroidCalendar
+import at.bitfire.ical4android.AndroidCalendar.Companion.calendarBaseValues
+import at.bitfire.ical4android.util.DateUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -58,14 +61,52 @@ class LocalCalendarStore @Inject constructor(
         return AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
     }
 
+
     override fun getAll(account: Account, provider: ContentProviderClient) =
         AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${Calendars.SYNC_EVENTS}!=0", null)
 
+
     override fun update(provider: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
-        logger.log(Level.FINE, "Updating local calendar ${fromCollection.url}", fromCollection)
         val accountSettings = accountSettingsFactory.create(localCollection.account)
-        localCollection.update(fromCollection, accountSettings.getManageCalendarColors())
+        val values = valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors())
+
+        logger.log(Level.FINE, "Updating local calendar ${fromCollection.url}", values)
+        localCollection.update(values)
     }
+
+    private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
+        val values = ContentValues()
+        values.put(Calendars.NAME, info.url.toString())
+        values.put(Calendars.CALENDAR_DISPLAY_NAME,
+            if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
+
+        if (withColor && info.color != null)
+            values.put(Calendars.CALENDAR_COLOR, info.color)
+
+        if (info.privWriteContent && !info.forceReadOnly) {
+            values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER)
+            values.put(Calendars.CAN_MODIFY_TIME_ZONE, 1)
+            values.put(Calendars.CAN_ORGANIZER_RESPOND, 1)
+        } else
+            values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ)
+
+        info.timezone?.let { tzData ->
+            try {
+                val timeZone = DateUtils.parseVTimeZone(tzData)
+                timeZone.timeZoneId?.let { tzId ->
+                    values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(tzId.value))
+                }
+            } catch(e: IllegalArgumentException) {
+                logger.log(Level.WARNING, "Couldn't parse calendar default time zone", e)
+            }
+        }
+
+        // add base values for Calendars
+        values.putAll(calendarBaseValues)
+
+        return values
+    }
+
 
     override fun delete(localCollection: LocalCalendar) {
         logger.log(Level.INFO, "Deleting local calendar", localCollection)
