@@ -25,6 +25,7 @@ class TaskSyncer @AssistedInject constructor(
     @Assisted override val authority: String,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
+    private val localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
 ): Syncer<LocalTaskListStore, LocalTaskList>(account, extras, syncResult) {
@@ -36,14 +37,11 @@ class TaskSyncer @AssistedInject constructor(
 
     private val providerName = TaskProvider.ProviderName.fromAuthority(authority)
 
-    override val dataStore: LocalTaskListStore
-        get() = TODO("Not yet implemented")
+    override val dataStore = localTaskListStoreFactory.create(authority)
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV
 
-    /*override fun getLocalCollections(provider: ContentProviderClient): List<LocalTaskList>
-        = DmfsTaskList.find(account, LocalTaskList.Factory, provider, providerName, "${TaskLists.SYNC_ENABLED}!=0", null)*/
 
     override fun prepare(provider: ContentProviderClient): Boolean {
         // Don't sync if task provider is too old
@@ -69,17 +67,6 @@ class TaskSyncer @AssistedInject constructor(
 
     override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncTaskLists(serviceId)
-
-    /*override fun update(localCollection: LocalTaskList, remoteCollection: Collection) {
-        logger.log(Level.FINE, "Updating local task list ${remoteCollection.url}", remoteCollection)
-        localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
-    }*/
-
-    /*override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalTaskList {
-        logger.log(Level.INFO, "Adding local task list", remoteCollection)
-        val uri = LocalTaskList.create(account, provider, providerName, remoteCollection)
-        return DmfsTaskList.findByID(account, provider, providerName, LocalTaskList.Factory, ContentUris.parseId(uri))
-    }*/
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalTaskList, remoteCollection: Collection) {
         logger.info("Synchronizing task list #${localCollection.id} [${localCollection.syncId}]")

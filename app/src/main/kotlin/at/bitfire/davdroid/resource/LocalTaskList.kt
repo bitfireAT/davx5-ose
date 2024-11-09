@@ -9,11 +9,7 @@ import android.annotation.SuppressLint
 import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.content.Context
-import android.net.Uri
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.DmfsTaskListFactory
 import at.bitfire.ical4android.TaskProvider
@@ -35,18 +31,6 @@ class LocalTaskList private constructor(
 
     companion object {
 
-        fun create(account: Account, provider: ContentProviderClient, providerName: TaskProvider.ProviderName, info: Collection): Uri {
-            // If the collection doesn't have a color, use a default color.
-            if (info.color != null)
-                info.color = Constants.DAVDROID_GREEN_RGBA
-
-            val values = valuesFromCollectionInfo(info, withColor = true)
-            values.put(TaskLists.OWNER, account.name)
-            values.put(TaskLists.SYNC_ENABLED, 1)
-            values.put(TaskLists.VISIBLE, 1)
-            return create(account, provider, providerName, values)
-        }
-
         @SuppressLint("Recycle")
         @Throws(Exception::class)
         fun onRenameAccount(context: Context, oldName: String, newName: String) {
@@ -59,23 +43,6 @@ class LocalTaskList private constructor(
                         "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldName)
                 )
             }
-        }
-
-        private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
-            val values = ContentValues(3)
-            values.put(TaskLists._SYNC_ID, info.url.toString())
-            values.put(TaskLists.LIST_NAME,
-                if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
-
-            if (withColor && info.color != null)
-                values.put(TaskLists.LIST_COLOR, info.color)
-
-            if (info.privWriteContent && !info.forceReadOnly)
-                values.put(TaskListColumns.ACCESS_LEVEL, TaskListColumns.ACCESS_LEVEL_OWNER)
-            else
-                values.put(TaskListColumns.ACCESS_LEVEL, TaskListColumns.ACCESS_LEVEL_READ)
-
-            return values
         }
 
     }
@@ -123,9 +90,6 @@ class LocalTaskList private constructor(
         super.populate(values)
         accessLevel = values.getAsInteger(TaskListColumns.ACCESS_LEVEL)
     }
-
-    fun update(info: Collection, updateColor: Boolean) =
-        update(valuesFromCollectionInfo(info, updateColor))
 
 
     override fun findDeleted() = queryTasks(Tasks._DELETED, null)
