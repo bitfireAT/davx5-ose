@@ -15,6 +15,9 @@ import android.provider.ContactsContract.RawContacts
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_URL
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.accountName
@@ -26,12 +29,15 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import kotlin.collections.orEmpty
 
 class LocalAddressBookStore @Inject constructor(
     val addressBookFactory: LocalAddressBook.Factory,
+    val collectionRepository: DavCollectionRepository,
     @ApplicationContext val context: Context,
     val logger: Logger,
-    val settings: SettingsManager
+    val settings: SettingsManager,
+    val serviceRepository: DavServiceRepository
 ): LocalDataStore<LocalAddressBook> {
 
     /** whether a (usually managed) setting wants all address-books to be read-only **/
@@ -40,7 +46,7 @@ class LocalAddressBookStore @Inject constructor(
 
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalAddressBook? {
-        val name = LocalAddressBook.accountName(context, fromCollection)
+        val name = accountName(context, fromCollection)
         val account = createAccount(
             name = name,
             id = fromCollection.id,
@@ -121,6 +127,12 @@ class LocalAddressBookStore @Inject constructor(
         localCollection.updateSyncFrameworkSettings()
     }
 
+    override fun getAll(account: Account, provider: ContentProviderClient): List<LocalAddressBook> =
+        serviceRepository.getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
+            collectionRepository.getByService(service.id).mapNotNull { collection ->
+                LocalAddressBook.findByCollection(context, provider, collection.id)
+            }
+        }.orEmpty()
 
     override fun delete(localCollection: LocalAddressBook) {
         val accountManager = AccountManager.get(context)

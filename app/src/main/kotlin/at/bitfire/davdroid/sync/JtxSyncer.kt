@@ -46,8 +46,8 @@ class JtxSyncer @AssistedInject constructor(
         get() = TaskProvider.ProviderName.JtxBoard.authority
 
 
-    override fun getLocalCollections(provider: ContentProviderClient): List<LocalJtxCollection>
-        = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
+    /*override fun getLocalCollections(provider: ContentProviderClient): List<LocalJtxCollection>
+        = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)*/
 
     override fun prepare(provider: ContentProviderClient): Boolean {
         // check whether jtx Board is new enough

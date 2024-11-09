@@ -98,7 +98,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
         // Find collections in database and provider which should be synced (are sync-enabled)
         val dbCollections = getSyncEnabledCollections()
-        val localCollections = getLocalCollections(provider)
+        val localCollections = dataStore.getAll(account, provider)
 
         // Create/update/delete local collections according to DB
         val updatedLocalCollections = updateCollections(provider, localCollections, dbCollections)
@@ -216,17 +216,6 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @return *true* to run the sync; *false* to abort
      */
     open fun prepare(provider: ContentProviderClient): Boolean = true
-
-    /**
-     * Gets all local collections (not from the database, but from the content provider).
-     *
-     * [Syncer] will remove collections which are returned by this method, but not by
-     * [getDbSyncCollections], and add collections which are returned by [getDbSyncCollections], but not by this method.
-     *
-     * @param provider Content provider to access local collections
-     * @return Local collections to be updated
-     */
-    abstract fun getLocalCollections(provider: ContentProviderClient): List<CollectionType>
 
     /**
      * Get the local database collections which are sync-enabled (should by synchronized).

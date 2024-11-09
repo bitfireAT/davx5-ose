@@ -4,12 +4,17 @@
 
 package at.bitfire.davdroid.resource
 
+import android.accounts.Account
 import android.content.ContentProviderClient
 import at.bitfire.davdroid.db.Collection
 
 class LocalTaskListStore: LocalDataStore<LocalTaskList> {
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalTaskList? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAll(account: Account, provider: ContentProviderClient): List<LocalTaskList> {
         TODO("Not yet implemented")
     }
 

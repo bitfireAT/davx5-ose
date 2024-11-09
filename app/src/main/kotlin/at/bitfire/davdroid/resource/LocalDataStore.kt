@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.resource
 
+import android.accounts.Account
 import android.content.ContentProviderClient
 import at.bitfire.davdroid.db.Collection
 
@@ -22,6 +23,8 @@ interface LocalDataStore<T: LocalCollection<*>> {
      * @return the new local collection, or `null` if creation failed
      */
     fun create(provider: ContentProviderClient, fromCollection: Collection): T?
+
+    fun getAll(account: Account, provider: ContentProviderClient): List<T>
 
     /**
      * Updates the local collection with the data from the given (remote) collection info.

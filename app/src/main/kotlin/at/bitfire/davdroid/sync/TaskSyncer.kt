@@ -12,12 +12,10 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.LocalTaskListStore
-import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import org.dmfs.tasks.contract.TaskContract.TaskLists
 
 /**
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
@@ -44,8 +42,8 @@ class TaskSyncer @AssistedInject constructor(
     override val serviceType: String
         get() = Service.TYPE_CALDAV
 
-    override fun getLocalCollections(provider: ContentProviderClient): List<LocalTaskList>
-        = DmfsTaskList.find(account, LocalTaskList.Factory, provider, providerName, "${TaskLists.SYNC_ENABLED}!=0", null)
+    /*override fun getLocalCollections(provider: ContentProviderClient): List<LocalTaskList>
+        = DmfsTaskList.find(account, LocalTaskList.Factory, provider, providerName, "${TaskLists.SYNC_ENABLED}!=0", null)*/
 
     override fun prepare(provider: ContentProviderClient): Boolean {
         // Don't sync if task provider is too old

@@ -58,6 +58,9 @@ class LocalCalendarStore @Inject constructor(
         return AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
     }
 
+    override fun getAll(account: Account, provider: ContentProviderClient) =
+        AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${Calendars.SYNC_EVENTS}!=0", null)
+
     override fun update(provider: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
         logger.log(Level.FINE, "Updating local calendar ${fromCollection.url}", fromCollection)
         val accountSettings = accountSettingsFactory.create(localCollection.account)
