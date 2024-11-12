@@ -11,8 +11,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.provider.ContactsContract
-import android.provider.ContactsContract.Groups
-import android.provider.ContactsContract.RawContacts
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
@@ -161,28 +159,8 @@ class LocalAddressBookStore @Inject constructor(
         // Update force read only
         val nowReadOnly = shouldBeReadOnly(fromCollection, forceAllReadOnly)
         if (nowReadOnly != localCollection.readOnly) {
-            logger.info("Address book now read-only = $nowReadOnly, updating contacts")
-
-            // update address book itself
+            logger.info("Address book has changed to read-only = $nowReadOnly")
             localCollection.readOnly = nowReadOnly
-
-            // update raw contacts
-            val rawContactValues = ContentValues(1).apply {
-                put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-            }
-            provider.update(localCollection.rawContactsSyncUri(), rawContactValues, null, null)
-
-            // update data rows
-            val dataValues = ContentValues(1).apply {
-                put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-            }
-            provider.update(localCollection.syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
-
-            // update group rows
-            val groupValues = ContentValues(1).apply {
-                put(Groups.GROUP_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
-            }
-            provider.update(localCollection.groupsSyncUri(), groupValues, null, null)
         }
 
 

@@ -67,7 +67,6 @@ open class LocalAddressBook @AssistedInject constructor(
         fun create(addressBookAccount: Account, provider: ContentProviderClient): LocalAddressBook
     }
 
-
     override val tag: String
         get() = "contacts-${addressBookAccount.name}"
 
@@ -106,7 +105,28 @@ open class LocalAddressBook @AssistedInject constructor(
 
     override var readOnly: Boolean
         get() = AccountManager.get(context).getUserData(addressBookAccount, USER_DATA_READ_ONLY) != null
-        set(readOnly) = AccountManager.get(context).setAndVerifyUserData(addressBookAccount, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
+        set(readOnly) {
+            // set read-only flag for address book itself
+            AccountManager.get(context).setAndVerifyUserData(addressBookAccount, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
+
+            // update raw contacts
+            val rawContactValues = ContentValues(1).apply {
+                put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (readOnly) 1 else 0)
+            }
+            provider!!.update(rawContactsSyncUri(), rawContactValues, null, null)
+
+            // update data rows
+            val dataValues = ContentValues(1).apply {
+                put(ContactsContract.Data.IS_READ_ONLY, if (readOnly) 1 else 0)
+            }
+            provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
+
+            // update group rows
+            val groupValues = ContentValues(1).apply {
+                put(Groups.GROUP_IS_READ_ONLY, if (readOnly) 1 else 0)
+            }
+            provider!!.update(groupsSyncUri(), groupValues, null, null)
+        }
 
     override var lastSyncState: SyncState?
         get() = syncState?.let { SyncState.fromString(String(it)) }
