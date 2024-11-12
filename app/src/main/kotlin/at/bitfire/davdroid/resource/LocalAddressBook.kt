@@ -315,18 +315,27 @@ open class LocalAddressBook @AssistedInject constructor(
 
     companion object {
 
+        /**
+         * URL of the corresponding CardDAV address book.
+         *
+         * User data of the address book account (String).
+         */
+        @Deprecated("Use the URL of the DB collection instead")
         const val USER_DATA_URL = "url"
+
+        /**
+         * ID of the corresponding database [at.bitfire.davdroid.db.Collection].
+         *
+         * User data of the address book account (Long).
+         */
         const val USER_DATA_COLLECTION_ID = "collection_id"
 
+        /**
+         * Indicates whether the address book is currently set to read-only (i.e. its contacts and groups have the read-only flag).
+         *
+         * User data of the address book account (Boolean).
+         */
         const val USER_DATA_READ_ONLY = "read_only"
-
-        internal fun initialUserData(url: String, collectionId: String): Bundle {
-            val bundle = Bundle(3)
-            bundle.putString(USER_DATA_COLLECTION_ID, collectionId)
-            bundle.putString(USER_DATA_URL, url)
-            // TODO read-only??
-            return bundle
-        }
 
     }
 

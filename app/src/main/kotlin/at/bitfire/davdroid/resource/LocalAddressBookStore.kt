@@ -9,6 +9,7 @@ import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.content.Context
+import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
@@ -94,12 +95,12 @@ class LocalAddressBookStore @Inject constructor(
     }
 
     fun createAccount(name: String, id: Long, url: String): Account? {
-        // create account
+        // create account with collection ID and URL
         val account = Account(name, context.getString(R.string.account_type_address_book))
-        val userData = LocalAddressBook.initialUserData(
-            url = url,
-            collectionId = id.toString()
-        )
+        val userData = Bundle(2).apply {
+            putString(USER_DATA_COLLECTION_ID, id.toString())
+            putString(USER_DATA_URL, url)
+        }
         if (!SystemAccountUtils.createAccount(context, account, userData)) {
             logger.warning("Couldn't create address book account: $account")
             return null
