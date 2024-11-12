@@ -103,6 +103,18 @@ open class LocalAddressBook @AssistedInject constructor(
                 ?: throw IllegalStateException("Address book has no URL")
         set(url) = AccountManager.get(context).setAndVerifyUserData(addressBookAccount, USER_DATA_URL, url)
 
+    /**
+     * Read-only flag for the address book itself.
+     *
+     * Setting this flag:
+     *
+     * - stores the new value in [USER_DATA_READ_ONLY] and
+     * - sets the read-only flag for all contacts and groups in the address book in the content provider, which will
+     * prevent non-sync-adapter apps from modifying them. However new entries can still be created, so the address book
+     * is not really read-only.
+     *
+     * Reading this flag returns the stored value from [USER_DATA_READ_ONLY].
+     */
     override var readOnly: Boolean
         get() = AccountManager.get(context).getUserData(addressBookAccount, USER_DATA_READ_ONLY) != null
         set(readOnly) {

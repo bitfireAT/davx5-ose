@@ -87,7 +87,7 @@ class LocalAddressBookStore @Inject constructor(
         // update settings
         addressBook.updateSyncFrameworkSettings()
         addressBook.settings = contactsProviderSettings
-        addressBook.readOnly = forceAllReadOnly || fromCollection.readOnly()
+        addressBook.readOnly = shouldBeReadOnly(fromCollection, forceAllReadOnly)
 
         return addressBook
     }
@@ -162,7 +162,6 @@ class LocalAddressBookStore @Inject constructor(
             logger.info("Address book has changed to read-only = $nowReadOnly")
             localCollection.readOnly = nowReadOnly
         }
-
 
         // make sure it will still be synchronized when contacts are updated
         localCollection.updateSyncFrameworkSettings()
