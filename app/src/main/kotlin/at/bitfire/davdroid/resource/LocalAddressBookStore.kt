@@ -31,7 +31,6 @@ import javax.inject.Inject
 import kotlin.collections.orEmpty
 
 class LocalAddressBookStore @Inject constructor(
-    val addressBookFactory: LocalAddressBook.Factory,
     val collectionRepository: DavCollectionRepository,
     @ApplicationContext val context: Context,
     val localAddressBookFactory: LocalAddressBook.Factory,
@@ -82,7 +81,7 @@ class LocalAddressBookStore @Inject constructor(
             url = fromCollection.url.toString()
         ) ?: return null
 
-        val addressBook = addressBookFactory.create(account, provider)
+        val addressBook = localAddressBookFactory.create(account, provider)
 
         // update settings
         addressBook.updateSyncFrameworkSettings()
