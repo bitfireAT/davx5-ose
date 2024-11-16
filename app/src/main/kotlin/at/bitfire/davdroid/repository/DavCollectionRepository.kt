@@ -256,8 +256,8 @@ class DavCollectionRepository @Inject constructor(
         notifyOnChangeListeners()
     }
 
-    fun updatePushSubscription(id: Long, subscriptionUrl: String?) {
-        dao.updatePushSubscription(id, subscriptionUrl)
+    fun updatePushSubscription(id: Long, subscriptionUrl: String?, expires: Long?) {
+        dao.updatePushSubscription(id, subscriptionUrl, expires)
     }
 
     /**

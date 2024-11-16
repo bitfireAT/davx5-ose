@@ -16,6 +16,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
@@ -41,6 +42,8 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.StringWriter
+import java.time.Duration
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -126,9 +129,12 @@ class PushRegistrationWorker @AssistedInject constructor(
                     val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
                     DavCollection(httpClient, collection.url).post(xml) { response ->
                         if (response.isSuccessful) {
-                            response.header("Location")?.let  { subscriptionUrl ->
-                                collectionRepository.updatePushSubscription(collection.id, subscriptionUrl)
-                            }
+                            // store subscription URL and expiration
+                            val subscriptionUrl = response.header("Location")
+                            val expires = response.header("Expires")?.let { expiresDate ->
+                                HttpUtils.parseDate(expiresDate)
+                            } ?: (Instant.now() + Duration.ofDays(3))
+                            collectionRepository.updatePushSubscription(collection.id, subscriptionUrl, expires?.epochSecond)
                         } else
                             logger.warning("Couldn't register push for ${collection.url}: $response")
                     }
@@ -176,7 +182,7 @@ class PushRegistrationWorker @AssistedInject constructor(
                     }
 
                     // remove registration URL from DB in any case
-                    collectionRepository.updatePushSubscription(collection.id, null)
+                    collectionRepository.updatePushSubscription(collection.id, null, null)
                 }
         }
     }

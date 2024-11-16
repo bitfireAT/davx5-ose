@@ -127,7 +127,10 @@ data class Collection(
     /** WebDAV-Push subscription URL */
     var pushSubscription: String? = null,
 
-    /** when the [pushSubscription] was created/updated (used to determine whether we need to re-subscribe) */
+    /** when the [pushSubscription] expires (timestamp) */
+    var pushSubscriptionExpires: Long? = null,
+
+    /** when the [pushSubscription] was created/updated (timestamp, used to determine whether we need to re-subscribe) */
     var pushSubscriptionCreated: Long? = null
 
 ) {
