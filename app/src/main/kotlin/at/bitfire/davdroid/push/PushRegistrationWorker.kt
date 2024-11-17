@@ -7,12 +7,7 @@ package at.bitfire.davdroid.push
 import android.accounts.Account
 import android.content.Context
 import androidx.hilt.work.HiltWorker
-import androidx.work.Constraints
 import androidx.work.CoroutineWorker
-import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
@@ -44,7 +39,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.StringWriter
 import java.time.Duration
 import java.time.Instant
-import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -68,29 +62,6 @@ class PushRegistrationWorker @AssistedInject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val serviceRepository: DavServiceRepository
 ) : CoroutineWorker(context, workerParameters) {
-
-    companion object {
-
-        private const val UNIQUE_WORK_NAME = "push-registration"
-
-        /**
-         * Enqueues a push registration worker with a minimum delay of 5 seconds.
-         */
-        fun enqueue(context: Context) {
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)   // require a network connection
-                .build()
-            val workRequest = OneTimeWorkRequestBuilder<PushRegistrationWorker>()
-                .setInitialDelay(5, TimeUnit.SECONDS)
-                .setConstraints(constraints)
-                .build()
-            Logger.getGlobal().info("Enqueueing push registration worker")
-            WorkManager.getInstance(context)
-                .enqueueUniqueWork(UNIQUE_WORK_NAME, ExistingWorkPolicy.REPLACE, workRequest)
-        }
-
-    }
-
 
     override suspend fun doWork(): Result {
         logger.info("Running push registration worker")
@@ -133,7 +104,7 @@ class PushRegistrationWorker @AssistedInject constructor(
                             val subscriptionUrl = response.header("Location")
                             val expires = response.header("Expires")?.let { expiresDate ->
                                 HttpUtils.parseDate(expiresDate)
-                            } ?: (Instant.now() + Duration.ofDays(3))
+                            } ?: /* or assume 3 days */ (Instant.now() + Duration.ofDays(3))
                             collectionRepository.updatePushSubscription(collection.id, subscriptionUrl, expires?.epochSecond)
                         } else
                             logger.warning("Couldn't register push for ${collection.url}: $response")
@@ -200,13 +171,24 @@ class PushRegistrationWorker @AssistedInject constructor(
     }
 
 
+    companion object {
+
+
+    }
+
+
     /**
      * Listener that enqueues a push registration worker when the collection list changes.
      */
     class CollectionsListener @Inject constructor(
-        @ApplicationContext val context: Context
+        @ApplicationContext val context: Context,
+        val workerManager: PushRegistrationWorkerManager
     ): DavCollectionRepository.OnChangeListener {
-        override fun onCollectionsChanged() = enqueue(context)
+
+        override fun onCollectionsChanged() {
+            workerManager.updatePeriodicWorker()
+        }
+
     }
 
     /**

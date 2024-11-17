@@ -38,6 +38,9 @@ interface CollectionDao {
     @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND type=:type")
     suspend fun anyOfType(serviceId: Long, type: String): Boolean
 
+    @Query("SELECT COUNT(*) FROM collection WHERE sync AND supportsWebPush AND pushTopic IS NOT NULL")
+    suspend fun anySyncableAndPushCapable(): Boolean
+
     /**
      * Returns collections which
      *   - support VEVENT and/or VTODO (= supported calendar collections), or
