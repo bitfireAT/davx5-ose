@@ -24,14 +24,8 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.AccountSettings
-import dagger.Binds
-import dagger.Module
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.IntoSet
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -41,7 +35,6 @@ import java.time.Duration
 import java.time.Instant
 import java.util.logging.Level
 import java.util.logging.Logger
-import javax.inject.Inject
 
 /**
  * Worker that registers push for all collections that support it.
@@ -119,6 +112,15 @@ class PushRegistrationWorker @AssistedInject constructor(
         // register push subscription for syncable collections
         if (endpoint != null)
             for (collection in collectionRepository.getPushCapableAndSyncable()) {
+                val expires = collection.pushSubscriptionExpires
+                // calculate next run time, but use the duplicate interval for safety (times are not exact)
+                val nextRun = Instant.now() + Duration.ofDays(2*PushRegistrationWorkerManager.INTERVAL_DAYS)
+                if (expires != null && expires >= nextRun.epochSecond) {
+                    logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
+                    continue
+                }
+
+                // no existing subscription or expiring soon
                 logger.info("Registering push for ${collection.url}")
                 serviceRepository.get(collection.serviceId)?.let { service ->
                     val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
@@ -168,38 +170,6 @@ class PushRegistrationWorker @AssistedInject constructor(
                 }
             }
         }
-    }
-
-
-    companion object {
-
-
-    }
-
-
-    /**
-     * Listener that enqueues a push registration worker when the collection list changes.
-     */
-    class CollectionsListener @Inject constructor(
-        @ApplicationContext val context: Context,
-        val workerManager: PushRegistrationWorkerManager
-    ): DavCollectionRepository.OnChangeListener {
-
-        override fun onCollectionsChanged() {
-            workerManager.updatePeriodicWorker()
-        }
-
-    }
-
-    /**
-     * Hilt module that registers [CollectionsListener] in [DavCollectionRepository].
-     */
-    @Module
-    @InstallIn(SingletonComponent::class)
-    interface PushRegistrationWorkerModule {
-        @Binds
-        @IntoSet
-        fun listener(impl: CollectionsListener): DavCollectionRepository.OnChangeListener
     }
 
 }
