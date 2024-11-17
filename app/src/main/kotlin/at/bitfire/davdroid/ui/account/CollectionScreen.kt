@@ -97,6 +97,7 @@ fun CollectionScreen(
         lastSynced = model.lastSynced.collectAsStateWithLifecycle(emptyList()).value,
         supportsWebPush = collection.supportsWebPush,
         pushSubscriptionCreated = collection.pushSubscriptionCreated,
+        pushSubscriptionExpires = collection.pushSubscriptionExpires,
         url = collection.url.toString(),
         onDelete = model::delete,
         onNavUp = onNavUp
@@ -121,6 +122,7 @@ fun CollectionScreen(
     lastSynced: List<DavSyncStatsRepository.LastSynced> = emptyList(),
     supportsWebPush: Boolean = false,
     pushSubscriptionCreated: Long? = null,
+    pushSubscriptionExpires: Long? = null,
     url: String,
     onDelete: () -> Unit = {},
     onNavUp: () -> Unit = {}
@@ -249,10 +251,13 @@ fun CollectionScreen(
 
                     if (supportsWebPush) {
                         val text =
-                            if (pushSubscriptionCreated != null) {
+                            if (pushSubscriptionCreated != null && pushSubscriptionExpires != null) {
                                 val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault())
-                                val time = Instant.ofEpochMilli(pushSubscriptionCreated)
-                                stringResource(R.string.collection_push_subscribed_at, formatter.format(time))
+                                stringResource(
+                                    R.string.collection_push_subscribed_at,
+                                    formatter.format(Instant.ofEpochSecond(pushSubscriptionCreated)),
+                                    formatter.format(Instant.ofEpochSecond(pushSubscriptionExpires))
+                                )
                             } else
                                 stringResource(R.string.collection_push_web_push)
                         CollectionScreen_Entry(
@@ -360,7 +365,9 @@ fun CollectionScreen_Preview() {
                 lastSynced = 1234567890
             )
         ),
-        supportsWebPush = true
+        supportsWebPush = true,
+        pushSubscriptionCreated = 1731846565,
+        pushSubscriptionExpires = 1731847565
     )
 }
 

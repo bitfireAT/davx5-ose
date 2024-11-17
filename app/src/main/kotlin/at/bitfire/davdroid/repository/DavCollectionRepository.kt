@@ -69,7 +69,7 @@ class DavCollectionRepository @Inject constructor(
      * Whether there are any collections that are registered for push.
      */
     suspend fun anyPushCapable() =
-        dao.anySyncableAndPushCapable()
+        dao.anyPushCapable()
 
     /**
      * Creates address book collection on server and locally
@@ -264,7 +264,11 @@ class DavCollectionRepository @Inject constructor(
     }
 
     fun updatePushSubscription(id: Long, subscriptionUrl: String?, expires: Long?) {
-        dao.updatePushSubscription(id, subscriptionUrl, expires)
+        dao.updatePushSubscription(
+            id = id,
+            pushSubscription = subscriptionUrl,
+            pushSubscriptionExpires = expires
+        )
     }
 
     /**

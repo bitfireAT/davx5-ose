@@ -416,7 +416,7 @@
     <string name="collection_owner">Owner</string>
     <string name="collection_push_support">Push support</string>
     <string name="collection_push_web_push">Server advertises Push support</string>
-    <string name="collection_push_subscribed_at">Subscribed (%s)</string>
+    <string name="collection_push_subscribed_at">Subscribed at %1$s, expires at %2$s</string>
     <string name="collection_last_sync">Last sync (%s)</string>
     <string name="collection_url">Address (URL)</string>
 

@@ -41,9 +41,6 @@ import java.util.logging.Logger
  * Worker that registers push for all collections that support it.
  * To be run as soon as a collection that supports push is changed (selected for sync status
  * changes, or collection is created, deleted, etc).
- *
- * TODO Should run periodically, too (to refresh registrations that are about to expire).
- * Not required for a first demonstration version.
  */
 @Suppress("unused")
 @HiltWorker
@@ -106,12 +103,15 @@ class PushRegistrationWorker @AssistedInject constructor(
                     val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
                     DavCollection(httpClient, collection.url).post(xml) { response ->
                         if (response.isSuccessful) {
-                            // store subscription URL and expiration
                             val subscriptionUrl = response.header("Location")
                             val expires = response.header("Expires")?.let { expiresDate ->
                                 HttpUtils.parseDate(expiresDate)
-                            } ?: /* or assume requested expiration */ requestedExpiration
-                            collectionRepository.updatePushSubscription(collection.id, subscriptionUrl, expires?.epochSecond)
+                            } ?: requestedExpiration
+                            collectionRepository.updatePushSubscription(
+                                id = collection.id,
+                                subscriptionUrl = subscriptionUrl,
+                                expires = expires?.epochSecond
+                            )
                         } else
                             logger.warning("Couldn't register push for ${collection.url}: $response")
                     }
@@ -168,7 +168,11 @@ class PushRegistrationWorker @AssistedInject constructor(
                     }
 
                     // remove registration URL from DB in any case
-                    collectionRepository.updatePushSubscription(collection.id, null, null)
+                    collectionRepository.updatePushSubscription(
+                        id = collection.id,
+                        subscriptionUrl = null,
+                        expires = null
+                    )
                 }
         }
     }
