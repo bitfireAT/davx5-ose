@@ -30,6 +30,7 @@ import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
 import java.io.StringWriter
 import java.time.Duration
 import java.time.Instant
@@ -59,8 +60,12 @@ class PushRegistrationWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         logger.info("Running push registration worker")
 
-        registerSyncable()
-        unregisterNotSyncable()
+        try {
+            registerSyncable()
+            unregisterNotSyncable()
+        } catch (_: IOException) {
+            return Result.retry()       // retry on I/O errors
+        }
 
         return Result.success()
     }

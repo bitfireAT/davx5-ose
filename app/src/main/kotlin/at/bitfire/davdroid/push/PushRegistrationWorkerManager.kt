@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
+import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -54,6 +55,7 @@ class PushRegistrationWorkerManager @Inject constructor(
                             .setRequiredNetworkType(NetworkType.CONNECTED)
                             .build()
                     )
+                    .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.MINUTES)
                     .build()
             )
         } else {
