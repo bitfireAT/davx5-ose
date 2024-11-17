@@ -38,6 +38,9 @@ interface CollectionDao {
     @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND type=:type")
     suspend fun anyOfType(serviceId: Long, type: String): Boolean
 
+    @Query("SELECT COUNT(*) FROM collection WHERE supportsWebPush AND pushTopic IS NOT NULL")
+    suspend fun anyPushCapable(): Boolean
+
     /**
      * Returns collections which
      *   - support VEVENT and/or VTODO (= supported calendar collections), or
@@ -87,8 +90,8 @@ interface CollectionDao {
     @Query("UPDATE collection SET forceReadOnly=:forceReadOnly WHERE id=:id")
     suspend fun updateForceReadOnly(id: Long, forceReadOnly: Boolean)
 
-    @Query("UPDATE collection SET pushSubscription=:pushSubscription, pushSubscriptionCreated=:updatedAt WHERE id=:id")
-    fun updatePushSubscription(id: Long, pushSubscription: String?, updatedAt: Long = System.currentTimeMillis())
+    @Query("UPDATE collection SET pushSubscription=:pushSubscription, pushSubscriptionExpires=:pushSubscriptionExpires, pushSubscriptionCreated=:updatedAt WHERE id=:id")
+    fun updatePushSubscription(id: Long, pushSubscription: String?, pushSubscriptionExpires: Long?, updatedAt: Long = System.currentTimeMillis()/1000)
 
     @Query("UPDATE collection SET sync=:sync WHERE id=:id")
     suspend fun updateSync(id: Long, sync: Boolean)
