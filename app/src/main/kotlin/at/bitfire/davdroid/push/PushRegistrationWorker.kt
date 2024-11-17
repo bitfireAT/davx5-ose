@@ -92,10 +92,10 @@ class PushRegistrationWorker @AssistedInject constructor(
                                     text(endpoint)
                                 }
                             }
-                            // requested expiration
-                            serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "expires")) {
-                                text(HttpUtils.formatDate(requestedExpiration))
-                            }
+                        }
+                        // requested expiration
+                        serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "expires")) {
+                            text(HttpUtils.formatDate(requestedExpiration))
                         }
                     }
                     serializer.endDocument()
