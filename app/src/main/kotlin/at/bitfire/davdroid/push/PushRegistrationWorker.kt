@@ -80,16 +80,24 @@ class PushRegistrationWorker @AssistedInject constructor(
                 .use { client ->
                     val httpClient = client.okHttpClient
 
+                    // requested expiration time: 3 days
+                    val requestedExpiration = Instant.now() + Duration.ofDays(3)
+
                     val serializer = XmlUtils.newSerializer()
                     val writer = StringWriter()
                     serializer.setOutput(writer)
                     serializer.startDocument("UTF-8", true)
                     serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-register")) {
                         serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "subscription")) {
+                            // subscription URL
                             serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "web-push-subscription")) {
                                 serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-resource")) {
                                     text(endpoint)
                                 }
+                            }
+                            // requested expiration
+                            serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "expires")) {
+                                text(HttpUtils.formatDate(requestedExpiration))
                             }
                         }
                     }
@@ -102,7 +110,7 @@ class PushRegistrationWorker @AssistedInject constructor(
                             val subscriptionUrl = response.header("Location")
                             val expires = response.header("Expires")?.let { expiresDate ->
                                 HttpUtils.parseDate(expiresDate)
-                            } ?: /* or assume 3 days */ (Instant.now() + Duration.ofDays(3))
+                            } ?: /* or assume requested expiration */ requestedExpiration
                             collectionRepository.updatePushSubscription(collection.id, subscriptionUrl, expires?.epochSecond)
                         } else
                             logger.warning("Couldn't register push for ${collection.url}: $response")
