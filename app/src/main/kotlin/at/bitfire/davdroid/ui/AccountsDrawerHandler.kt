@@ -249,9 +249,9 @@ fun MenuEntry_Preview() {
 fun BrandingHeader() {
     Column(
         Modifier
+            .statusBarsPadding()
             .background(Color.DarkGray)
             .fillMaxWidth()
-            .statusBarsPadding()
             .padding(16.dp)
     ) {
         Spacer(Modifier.height(16.dp))
