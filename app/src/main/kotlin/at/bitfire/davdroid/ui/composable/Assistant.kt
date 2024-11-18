@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -64,6 +65,7 @@ fun Assistant(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .wrapContentSize(Alignment.CenterEnd)
+                            .navigationBarsPadding()
                     ) {
                         Text(nextLabel)
                     }
