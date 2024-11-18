@@ -6,7 +6,6 @@ import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -172,8 +171,7 @@ fun AppSettingsScreen(
                 }
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        contentWindowInsets = WindowInsets(0.dp) // let content show through nav-bar
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
             Modifier

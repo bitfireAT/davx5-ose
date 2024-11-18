@@ -63,7 +63,6 @@ fun IntroScreen(
     val scope = rememberCoroutineScope()
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0),
         bottomBar = {
             Box(
                 modifier = Modifier
