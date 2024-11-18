@@ -5,6 +5,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.settings.AccountSettings
+import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -63,7 +64,17 @@ class DavCollectionRepositoryTest {
             )
         )
         val testObserver = mockk<DavCollectionRepository.OnChangeListener>(relaxed = true)
-        val collectionRepository = DavCollectionRepository(accountSettingsFactory, context, db, mutableSetOf(testObserver), serviceRepository)
+        val collectionRepository = DavCollectionRepository(
+            accountSettingsFactory,
+            context,
+            db,
+            object : Lazy<Set<DavCollectionRepository.OnChangeListener>> {
+                override fun get(): Set<DavCollectionRepository.OnChangeListener> {
+                    return mutableSetOf(testObserver)
+                }
+            },
+            serviceRepository
+        )
 
         assert(db.collectionDao().get(collectionId)?.forceReadOnly == false)
         verify(exactly = 0) {

@@ -7,15 +7,11 @@ package at.bitfire.davdroid.push
 import android.accounts.Account
 import android.content.Context
 import androidx.hilt.work.HiltWorker
-import androidx.work.Constraints
 import androidx.work.CoroutineWorker
-import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
@@ -28,31 +24,23 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.AccountSettings
-import dagger.Binds
-import dagger.Module
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.IntoSet
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
 import java.io.StringWriter
-import java.util.concurrent.TimeUnit
+import java.time.Duration
+import java.time.Instant
 import java.util.logging.Level
 import java.util.logging.Logger
-import javax.inject.Inject
 
 /**
  * Worker that registers push for all collections that support it.
  * To be run as soon as a collection that supports push is changed (selected for sync status
  * changes, or collection is created, deleted, etc).
- *
- * TODO Should run periodically, too (to refresh registrations that are about to expire).
- * Not required for a first demonstration version.
  */
 @Suppress("unused")
 @HiltWorker
@@ -66,34 +54,15 @@ class PushRegistrationWorker @AssistedInject constructor(
     private val serviceRepository: DavServiceRepository
 ) : CoroutineWorker(context, workerParameters) {
 
-    companion object {
-
-        private const val UNIQUE_WORK_NAME = "push-registration"
-
-        /**
-         * Enqueues a push registration worker with a minimum delay of 5 seconds.
-         */
-        fun enqueue(context: Context) {
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)   // require a network connection
-                .build()
-            val workRequest = OneTimeWorkRequestBuilder<PushRegistrationWorker>()
-                .setInitialDelay(5, TimeUnit.SECONDS)
-                .setConstraints(constraints)
-                .build()
-            Logger.getGlobal().info("Enqueueing push registration worker")
-            WorkManager.getInstance(context)
-                .enqueueUniqueWork(UNIQUE_WORK_NAME, ExistingWorkPolicy.REPLACE, workRequest)
-        }
-
-    }
-
-
     override suspend fun doWork(): Result {
         logger.info("Running push registration worker")
 
-        registerSyncable()
-        unregisterNotSyncable()
+        try {
+            registerSyncable()
+            unregisterNotSyncable()
+        } catch (_: IOException) {
+            return Result.retry()       // retry on I/O errors
+        }
 
         return Result.success()
     }
@@ -108,17 +77,25 @@ class PushRegistrationWorker @AssistedInject constructor(
                 .use { client ->
                     val httpClient = client.okHttpClient
 
+                    // requested expiration time: 3 days
+                    val requestedExpiration = Instant.now() + Duration.ofDays(3)
+
                     val serializer = XmlUtils.newSerializer()
                     val writer = StringWriter()
                     serializer.setOutput(writer)
                     serializer.startDocument("UTF-8", true)
                     serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-register")) {
                         serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "subscription")) {
+                            // subscription URL
                             serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "web-push-subscription")) {
                                 serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-resource")) {
                                     text(endpoint)
                                 }
                             }
+                        }
+                        // requested expiration
+                        serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "expires")) {
+                            text(HttpUtils.formatDate(requestedExpiration))
                         }
                     }
                     serializer.endDocument()
@@ -126,9 +103,15 @@ class PushRegistrationWorker @AssistedInject constructor(
                     val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
                     DavCollection(httpClient, collection.url).post(xml) { response ->
                         if (response.isSuccessful) {
-                            response.header("Location")?.let  { subscriptionUrl ->
-                                collectionRepository.updatePushSubscription(collection.id, subscriptionUrl)
-                            }
+                            val subscriptionUrl = response.header("Location")
+                            val expires = response.header("Expires")?.let { expiresDate ->
+                                HttpUtils.parseDate(expiresDate)
+                            } ?: requestedExpiration
+                            collectionRepository.updatePushSubscription(
+                                id = collection.id,
+                                subscriptionUrl = subscriptionUrl,
+                                expires = expires?.epochSecond
+                            )
                         } else
                             logger.warning("Couldn't register push for ${collection.url}: $response")
                     }
@@ -142,6 +125,15 @@ class PushRegistrationWorker @AssistedInject constructor(
         // register push subscription for syncable collections
         if (endpoint != null)
             for (collection in collectionRepository.getPushCapableAndSyncable()) {
+                val expires = collection.pushSubscriptionExpires
+                // calculate next run time, but use the duplicate interval for safety (times are not exact)
+                val nextRun = Instant.now() + Duration.ofDays(2*PushRegistrationWorkerManager.INTERVAL_DAYS)
+                if (expires != null && expires >= nextRun.epochSecond) {
+                    logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
+                    continue
+                }
+
+                // no existing subscription or expiring soon
                 logger.info("Registering push for ${collection.url}")
                 serviceRepository.get(collection.serviceId)?.let { service ->
                     val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
@@ -176,7 +168,11 @@ class PushRegistrationWorker @AssistedInject constructor(
                     }
 
                     // remove registration URL from DB in any case
-                    collectionRepository.updatePushSubscription(collection.id, null)
+                    collectionRepository.updatePushSubscription(
+                        id = collection.id,
+                        subscriptionUrl = null,
+                        expires = null
+                    )
                 }
         }
     }
@@ -191,27 +187,6 @@ class PushRegistrationWorker @AssistedInject constructor(
                 }
             }
         }
-    }
-
-
-    /**
-     * Listener that enqueues a push registration worker when the collection list changes.
-     */
-    class CollectionsListener @Inject constructor(
-        @ApplicationContext val context: Context
-    ): DavCollectionRepository.OnChangeListener {
-        override fun onCollectionsChanged() = enqueue(context)
-    }
-
-    /**
-     * Hilt module that registers [CollectionsListener] in [DavCollectionRepository].
-     */
-    @Module
-    @InstallIn(SingletonComponent::class)
-    interface PushRegistrationWorkerModule {
-        @Binds
-        @IntoSet
-        fun listener(impl: CollectionsListener): DavCollectionRepository.OnChangeListener
     }
 
 }

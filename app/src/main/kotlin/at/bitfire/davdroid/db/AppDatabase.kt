@@ -44,12 +44,13 @@ import javax.inject.Singleton
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 14, autoMigrations = [
+], exportSchema = true, version = 15, autoMigrations = [
     AutoMigration(from = 9, to = 10),
     AutoMigration(from = 10, to = 11),
     AutoMigration(from = 11, to = 12, spec = AppDatabase.AutoMigration11_12::class),
     AutoMigration(from = 12, to = 13),
-    AutoMigration(from = 13, to = 14)
+    AutoMigration(from = 13, to = 14),
+    AutoMigration(from = 14, to = 15)
 ])
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
@@ -218,28 +219,6 @@ abstract class AppDatabase: RoomDatabase() {
                     // We don't have access to the context in a Room migration now, so
                     // we will just drop those settings from old DAVx5 versions.
                     Logger.getGlobal().warning("Dropping settings distrustSystemCerts and overrideProxy*")
-
-                    /*val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
-                    try {
-                        db.query("settings", arrayOf("setting", "value"), null, null, null, null, null).use { cursor ->
-                            while (cursor.moveToNext()) {
-                                when (cursor.getString(0)) {
-                                    "distrustSystemCerts" -> edit.putBoolean(App.DISTRUST_SYSTEM_CERTIFICATES, cursor.getInt(1) != 0)
-                                    "overrideProxy" -> edit.putBoolean(App.OVERRIDE_PROXY, cursor.getInt(1) != 0)
-                                    "overrideProxyHost" -> edit.putString(App.OVERRIDE_PROXY_HOST, cursor.getString(1))
-                                    "overrideProxyPort" -> edit.putInt(App.OVERRIDE_PROXY_PORT, cursor.getInt(1))
-
-                                    StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED ->
-                                        edit.putBoolean(StartupDialogFragment.HINT_GOOGLE_PLAY_ACCOUNTS_REMOVED, cursor.getInt(1) != 0)
-                                    StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED ->
-                                        edit.putBoolean(StartupDialogFragment.HINT_OPENTASKS_NOT_INSTALLED, cursor.getInt(1) != 0)
-                                }
-                            }
-                        }
-                        db.execSQL("DROP TABLE settings")
-                    } finally {
-                        edit.apply()
-                    }*/
                 }
             },
 

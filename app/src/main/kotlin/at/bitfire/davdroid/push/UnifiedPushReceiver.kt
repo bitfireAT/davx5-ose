@@ -11,13 +11,13 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.logging.Level
-import java.util.logging.Logger
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.unifiedpush.android.connector.MessagingReceiver
+import java.util.logging.Level
+import java.util.logging.Logger
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class UnifiedPushReceiver: MessagingReceiver() {
@@ -41,6 +41,9 @@ class UnifiedPushReceiver: MessagingReceiver() {
     lateinit var parsePushMessage: PushMessageParser
 
     @Inject
+    lateinit var pushRegistrationWorkerManager: PushRegistrationWorkerManager
+
+    @Inject
     lateinit var syncWorkerManager: SyncWorkerManager
 
 
@@ -49,7 +52,7 @@ class UnifiedPushReceiver: MessagingReceiver() {
         preferenceRepository.unifiedPushEndpoint(endpoint)
 
         // register new endpoint at CalDAV/CardDAV servers
-        PushRegistrationWorker.enqueue(context)
+        pushRegistrationWorkerManager.updatePeriodicWorker()
     }
 
     override fun onUnregistered(context: Context, instance: String) {

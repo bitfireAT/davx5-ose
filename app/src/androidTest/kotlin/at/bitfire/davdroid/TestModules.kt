@@ -1,6 +1,6 @@
 package at.bitfire.davdroid
 
-import at.bitfire.davdroid.push.PushRegistrationWorker
+import at.bitfire.davdroid.push.PushRegistrationWorkerManager
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.startup.StartupPlugin
 import at.bitfire.davdroid.startup.TasksAppWatcher
@@ -15,7 +15,7 @@ interface TestModules {
     @Module
     @TestInstallIn(
         components = [SingletonComponent::class],
-        replaces = [PushRegistrationWorker.PushRegistrationWorkerModule::class]
+        replaces = [PushRegistrationWorkerManager.PushRegistrationWorkerModule::class]
     )
     abstract class TestPushRegistrationWorkerModule {
         // provides empty set of listeners
