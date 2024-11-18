@@ -178,7 +178,7 @@ fun WebdavMountsScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(8.dp)
+                            .padding(horizontal = 8.dp)
                     ) {
                         items(mountInfos, key = { it.mount.id }, contentType = { "mount" }) {
                             WebdavMountsItem(
