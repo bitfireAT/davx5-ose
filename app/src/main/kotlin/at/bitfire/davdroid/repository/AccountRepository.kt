@@ -15,7 +15,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -49,6 +49,7 @@ class AccountRepository @Inject constructor(
     @ApplicationContext val context: Context,
     private val collectionRepository: DavCollectionRepository,
     private val homeSetRepository: DavHomeSetRepository,
+    private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger,
     private val settingsManager: SettingsManager,
     private val serviceRepository: DavServiceRepository,
@@ -140,7 +141,7 @@ class AccountRepository @Inject constructor(
             // delete address books (= address book accounts)
             serviceRepository.getByAccountAndType(accountName, Service.TYPE_CARDDAV)?.let { service ->
                 collectionRepository.getByService(service.id).forEach { collection ->
-                    LocalAddressBook.deleteByCollection(context, collection.id)
+                    localAddressBookStore.get().deleteByCollectionId(collection.id)
                 }
             }
 
