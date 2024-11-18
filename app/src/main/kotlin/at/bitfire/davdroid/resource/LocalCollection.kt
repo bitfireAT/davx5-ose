@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.resource
 
-import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.db.SyncState
 
 interface LocalCollection<out T: LocalResource<*>> {
@@ -26,13 +25,6 @@ interface LocalCollection<out T: LocalResource<*>> {
      * Stops uploading dirty events (Server side changes are still downloaded).
      */
     val readOnly: Boolean
-
-    /**
-     * Deletes the local collection.
-     *
-     * @return true if the collection was deleted, false otherwise
-     */
-    fun deleteCollection(): Boolean
 
     /**
      * Finds local resources of this collection which have been marked as *deleted* by the user

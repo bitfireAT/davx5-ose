@@ -6,13 +6,13 @@ package at.bitfire.davdroid.resource
 
 import android.Manifest
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.Context
 import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.davdroid.db.Collection
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import at.bitfire.vcard4android.LabeledProperty
@@ -20,21 +20,18 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import ezvcard.property.Telephone
-import io.mockk.every
-import io.mockk.mockk
-import java.util.LinkedList
-import javax.inject.Inject
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
+import java.util.LinkedList
+import javax.inject.Inject
 
 @HiltAndroidTest
 class LocalAddressBookTest {
@@ -63,7 +60,8 @@ class LocalAddressBookTest {
     @After
     fun tearDown() {
         // remove address book
-        addressBook.deleteCollection()
+        val accountManager = AccountManager.get(context)
+        accountManager.removeAccountExplicitly(addressBook.addressBookAccount)
     }
 
 
@@ -126,21 +124,6 @@ class LocalAddressBookTest {
         val group = result.getContact()
         assertEquals("Test Group", group.displayName)
     }
-
-    /**
-     * Tests the calculation of read only state is correct
-     */
-    @Test
-    fun test_shouldBeReadOnly() {
-        val collectionReadOnly = mockk<Collection> { every { readOnly() } returns true }
-        assertTrue(LocalAddressBook.shouldBeReadOnly(collectionReadOnly, false))
-        assertTrue(LocalAddressBook.shouldBeReadOnly(collectionReadOnly, true))
-
-        val collectionNotReadOnly = mockk<Collection> { every { readOnly() } returns false }
-        assertFalse(LocalAddressBook.shouldBeReadOnly(collectionNotReadOnly, false))
-        assertTrue(LocalAddressBook.shouldBeReadOnly(collectionNotReadOnly, true))
-    }
-
 
     companion object {
 
