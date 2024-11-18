@@ -3,10 +3,12 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
-import android.provider.ContactsContract
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.sync.account.SystemAccountUtils
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.SpyK
@@ -20,11 +22,14 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@HiltAndroidTest
 class LocalAddressBookStoreTest {
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
 
     @get:Rule
     val mockkRule = MockKRule(this)
@@ -61,7 +66,6 @@ class LocalAddressBookStoreTest {
         },
         settings = mockk(relaxed = true)
     )
-
 
     @Test
     fun test_accountName_missingService() {
@@ -126,6 +130,18 @@ class LocalAddressBookStoreTest {
         every { addressBook.readOnly } returns false
         val addrBook2 = localAddressBookStore.create(provider, collection)!!
         assertEquals(false, addrBook2.readOnly)
+    }
+
+    @Test
+    fun test_createAccount_succeeds() {
+        mockkObject(SystemAccountUtils)
+        every { SystemAccountUtils.createAccount(any(), any(), any()) } returns true
+        val account = Account("MrRobert@example.com", "com.bitfire.davdroid.addressbook")
+        val createdAccount: Account = localAddressBookStore.createAccount(
+            "MrRobert@example.com", 42, "https://example.com/addressbook/funnyfriends"
+        )!!
+        verify(exactly = 1) { SystemAccountUtils.createAccount(context, account, any()) }
+        assertEquals(account, createdAccount)
     }
 
 
