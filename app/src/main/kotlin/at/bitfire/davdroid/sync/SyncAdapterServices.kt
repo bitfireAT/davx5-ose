@@ -15,6 +15,7 @@ import android.content.Intent
 import android.content.SyncResult
 import android.os.Bundle
 import android.os.IBinder
+import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
@@ -24,6 +25,7 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import at.bitfire.ical4android.TaskProvider.ProviderName.*
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
@@ -115,17 +117,20 @@ abstract class SyncAdapterService: Service() {
                 return
             }
 
-            /* Special case for contacts: because address books are separate accounts, changed contacts cause
-            this method to be called with authority = ContactsContract.AUTHORITY. However the sync worker shall be run for the
-            address book authority instead. */
-            val workerAuthority =
-                if (authority == ContactsContract.AUTHORITY)
-                    context.getString(R.string.address_books_authority)
-                else
-                    authority
+            val workerSyncType: String = when (authority) {
+                ContactsContract.AUTHORITY -> SYNC_TYPE_ADDRESS_BOOKS
+                CalendarContract.AUTHORITY -> authority // SYNC_TYPE_CALENDERS
+                JtxBoard.authority,
+                OpenTasks.authority,
+                TasksOrg.authority -> authority // SYNC_TYPE_TASK_LISTS
+                else -> {
+                    logger.warning("Unknown authority $authority. Aborting sync framework initiated sync")
+                    return
+                }
+            }
 
-            logger.fine("Starting OneTimeSyncWorker for $account $workerAuthority and waiting for it")
-            val workerName = syncWorkerManager.enqueueOneTime(account, authority = workerAuthority, upload = upload)
+            logger.fine("Starting OneTimeSyncWorker for $account $workerSyncType and waiting for it")
+            val workerName = syncWorkerManager.enqueueOneTime(account, authority = workerSyncType, upload = upload)
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
             use it to block the sync adapter. Instead we use a Flow to get notified when the sync
@@ -167,6 +172,12 @@ abstract class SyncAdapterService: Service() {
 
         override fun onSyncCanceled(thread: Thread) = onSyncCanceled()
 
+    }
+    
+    companion object {
+        const val SYNC_TYPE_ADDRESS_BOOKS: String = "ADDRESS_BOOKS"
+//        const val SYNC_TYPE_CALENDERS: String = "CALENDERS"
+//        const val SYNC_TYPE_TASK_LISTS: String = "TASK_LISTS"
     }
 
 }

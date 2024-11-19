@@ -6,7 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.content.Context
 import android.provider.CalendarContract
-import at.bitfire.davdroid.R
+import at.bitfire.davdroid.sync.SyncAdapterService.Companion.SYNC_TYPE_ADDRESS_BOOKS
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -38,7 +38,7 @@ object SyncUtils {
     fun syncAuthorities(context: Context): List<String> {
         val result = mutableListOf(
             CalendarContract.AUTHORITY,
-            context.getString(R.string.address_books_authority)
+            SYNC_TYPE_ADDRESS_BOOKS
         )
 
         val entryPoint = EntryPointAccessors.fromApplication<SyncUtilsEntryPoint>(context)

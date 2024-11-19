@@ -47,6 +47,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncAdapterService.Companion.SYNC_TYPE_ADDRESS_BOOKS
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract
@@ -559,7 +560,7 @@ class DebugInfoModel @AssistedInject constructor(
     private fun dumpSyncWorkersInfo(account: Account): String {
         val table = TextTable("Tags", "Authority", "State", "Next run", "Retries", "Generation", "Periodicity")
         listOf(
-            context.getString(R.string.address_books_authority),
+            SYNC_TYPE_ADDRESS_BOOKS,
             CalendarContract.AUTHORITY,
             TaskProvider.ProviderName.JtxBoard.authority,
             TaskProvider.ProviderName.OpenTasks.authority,
@@ -602,7 +603,7 @@ data class AccountDumpInfo(
     companion object {
 
         fun caldavAccount(context: Context, account: Account) = listOf(
-            AccountDumpInfo(account, context.getString(R.string.address_books_authority), null, null),
+            AccountDumpInfo(account, SYNC_TYPE_ADDRESS_BOOKS, null, null),
             AccountDumpInfo(account, CalendarContract.AUTHORITY, CalendarContract.Events.CONTENT_URI.asCalendarSyncAdapter(account), "event(s)"),
             AccountDumpInfo(account, TaskProvider.ProviderName.JtxBoard.authority, JtxContract.JtxICalObject.CONTENT_URI.asJtxSyncAdapter(account), "jtx Board ICalObject(s)"),
             AccountDumpInfo(account, TaskProvider.ProviderName.OpenTasks.authority, TaskContract.Tasks.getContentUri(

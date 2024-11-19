@@ -23,6 +23,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.SyncAdapterService.Companion.SYNC_TYPE_ADDRESS_BOOKS
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.assisted.Assisted
@@ -95,7 +96,7 @@ class AccountScreenModel @AssistedInject constructor(
     val cardDavProgress: Flow<AccountProgress> = accountProgressUseCase(
         account = account,
         serviceFlow = cardDavSvc,
-        authoritiesFlow = flowOf(listOf(context.getString(R.string.address_books_authority)))
+        authoritiesFlow = flowOf(listOf(SYNC_TYPE_ADDRESS_BOOKS))
     )
     val addressBooks = getServiceCollectionPager(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
 

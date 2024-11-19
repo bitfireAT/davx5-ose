@@ -5,10 +5,10 @@ import android.content.Context
 import android.provider.CalendarContract
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncAdapterService.Companion.SYNC_TYPE_ADDRESS_BOOKS
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -96,7 +96,7 @@ class AccountSettingsModel @AssistedInject constructor(
     private suspend fun reload() = withContext(Dispatchers.Default) {
         logger.info("Reloading settings")
         _uiState.value = UiState(
-            syncIntervalContacts = accountSettings.getSyncInterval(context.getString(R.string.address_books_authority)),
+            syncIntervalContacts = accountSettings.getSyncInterval(SYNC_TYPE_ADDRESS_BOOKS),
             syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY),
             syncIntervalTasks = tasksProvider?.let { accountSettings.getSyncInterval(it.authority) },
 
@@ -117,7 +117,7 @@ class AccountSettingsModel @AssistedInject constructor(
 
     fun updateContactsSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountSettings.setSyncInterval(context.getString(R.string.address_books_authority), syncInterval)
+            accountSettings.setSyncInterval(SYNC_TYPE_ADDRESS_BOOKS, syncInterval)
             reload()
         }
     }
@@ -196,7 +196,7 @@ class AccountSettingsModel @AssistedInject constructor(
         reload()
 
         resync(
-            authority = context.getString(R.string.address_books_authority),
+            authority = SYNC_TYPE_ADDRESS_BOOKS,
             fullResync = true
         )
     }

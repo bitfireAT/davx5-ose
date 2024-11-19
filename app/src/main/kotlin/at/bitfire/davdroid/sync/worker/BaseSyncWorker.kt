@@ -25,6 +25,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
 import at.bitfire.davdroid.sync.JtxSyncer
+import at.bitfire.davdroid.sync.SyncAdapterService.Companion.SYNC_TYPE_ADDRESS_BOOKS
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncResult
 import at.bitfire.davdroid.sync.SyncUtils
@@ -246,7 +247,7 @@ abstract class BaseSyncWorker(
 
         // What are we going to sync? Select syncer based on authority
         val syncer = when (authority) {
-            applicationContext.getString(R.string.address_books_authority) ->
+            SYNC_TYPE_ADDRESS_BOOKS ->
                 addressBookSyncer.create(account, extras, result)
             CalendarContract.AUTHORITY ->
                 calendarSyncer.create(account, extras, result)

@@ -22,6 +22,7 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncAdapterService.Companion.SYNC_TYPE_ADDRESS_BOOKS
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
@@ -88,14 +89,13 @@ class AccountRepository @Inject constructor(
             val defaultSyncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
 
             // Configure CardDAV service
-            val addrBookAuthority = context.getString(R.string.address_books_authority)
             if (config.cardDAV != null) {
                 // insert CardDAV service
                 val id = insertService(accountName, Service.TYPE_CARDDAV, config.cardDAV)
 
                 // initial CardDAV account settings and sync intervals
                 accountSettings.setGroupMethod(groupMethod)
-                accountSettings.setSyncInterval(addrBookAuthority, defaultSyncInterval)
+                accountSettings.setSyncInterval(SYNC_TYPE_ADDRESS_BOOKS, defaultSyncInterval)
 
                 // start CardDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
@@ -205,7 +205,7 @@ class AccountRepository @Inject constructor(
         // remember sync intervals
         val oldSettings = accountSettingsFactory.create(oldAccount)
         val authorities = mutableListOf(
-            context.getString(R.string.address_books_authority),
+            SYNC_TYPE_ADDRESS_BOOKS,
             CalendarContract.AUTHORITY
         )
         val tasksProvider = tasksAppManager.get().currentProvider()

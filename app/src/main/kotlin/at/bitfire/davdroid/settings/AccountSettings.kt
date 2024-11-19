@@ -14,6 +14,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.sync.SyncAdapterService.Companion.SYNC_TYPE_ADDRESS_BOOKS
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
@@ -133,13 +134,11 @@ class AccountSettings @AssistedInject constructor(
      * @return sync interval in seconds; *[SYNC_INTERVAL_MANUALLY]* if manual sync; *null* if not set
      */
     fun getSyncInterval(authority: String): Long? {
-        val addrBookAuthority = context.getString(R.string.address_books_authority)
-
-        if (ContentResolver.getIsSyncable(account, authority) <= 0 && authority != addrBookAuthority)
+        if (ContentResolver.getIsSyncable(account, authority) <= 0 && authority != SYNC_TYPE_ADDRESS_BOOKS)
             return null
 
         val key = when {
-            authority == addrBookAuthority ->
+            authority == SYNC_TYPE_ADDRESS_BOOKS ->
                 KEY_SYNC_INTERVAL_ADDRESSBOOKS
             authority == CalendarContract.AUTHORITY ->
                 KEY_SYNC_INTERVAL_CALENDARS
@@ -173,7 +172,7 @@ class AccountSettings @AssistedInject constructor(
 
         // Store (user defined) sync interval in account settings
         val key = when {
-            authority == context.getString(R.string.address_books_authority) ->
+            authority == SYNC_TYPE_ADDRESS_BOOKS ->
                 KEY_SYNC_INTERVAL_ADDRESSBOOKS
             authority == CalendarContract.AUTHORITY ->
                 KEY_SYNC_INTERVAL_CALENDARS
