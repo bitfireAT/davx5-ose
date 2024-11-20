@@ -6,13 +6,21 @@ package at.bitfire.davdroid.ui.intro
 
 import androidx.compose.runtime.Composable
 
-interface IntroPage {
+abstract class IntroPage {
 
     enum class ShowPolicy {
         DONT_SHOW,
         SHOW_ALWAYS,
         SHOW_ONLY_WITH_OTHERS
     }
+
+    /**
+     * Whether insets are handled by [ComposePage].
+     *
+     * If `true`, [ComposePage] must add top/side insets for edge-to-edge layout itself. Bottom insets are handled by the bottom bar.
+     * If `false`, [IntroScreen] will apply all insets to give [ComposePage] a safe content area.
+     */
+    open val customTopInsets: Boolean = false
 
     /**
      * Used to determine whether an intro page of this type (for instance,
@@ -24,12 +32,12 @@ interface IntroPage {
      *   * [DONT_SHOW] (0): don't show the page
      *   * ≥ 0: show the page (lower numbers are shown first)
      */
-    fun getShowPolicy(): ShowPolicy
+    abstract fun getShowPolicy(): ShowPolicy
 
     /**
      * Composes this page. Will only be called when [getShowPolicy] is not [DONT_SHOW].
      */
     @Composable
-    fun ComposePage()
+    abstract fun ComposePage()
 
 }

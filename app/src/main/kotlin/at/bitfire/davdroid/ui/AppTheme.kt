@@ -4,7 +4,9 @@
 
 package at.bitfire.davdroid.ui
 
-import android.app.Activity
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -14,7 +16,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
 
 @Composable
@@ -22,24 +23,26 @@ fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (!darkTheme)
-        M3ColorScheme.lightScheme
-    else
-        M3ColorScheme.darkScheme
-
     val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
-        }
+    SideEffect {
+        // If applicable, call Activity.enableEdgeToEdge to enable edge-to-edge layout on Android <15, too.
+        // When we have moved everything into one Activity with Compose navigation, we can call it there instead.
+        (view.context as? AppCompatActivity)?.enableEdgeToEdge(
+            navigationBarStyle = SystemBarStyle.auto(
+                lightScrim = M3ColorScheme.lightScheme.scrim.toArgb(),
+                darkScrim = M3ColorScheme.darkScheme.scrim.toArgb()
+            ) { darkTheme }
+        )
     }
 
+    // Apply SafeAndroidUriHandler to the composition
     val uriHandler = SafeAndroidUriHandler(LocalContext.current)
     CompositionLocalProvider(LocalUriHandler provides uriHandler) {
         MaterialTheme(
-            colorScheme = colorScheme,
+            colorScheme = if (!darkTheme)
+                M3ColorScheme.lightScheme
+            else
+                M3ColorScheme.darkScheme,
             content = content
         )
     }
