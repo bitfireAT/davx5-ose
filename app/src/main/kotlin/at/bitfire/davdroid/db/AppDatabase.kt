@@ -45,7 +45,7 @@ import javax.inject.Singleton
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 15, autoMigrations = [
+], exportSchema = true, version = 16, autoMigrations = [
     AutoMigration(from = 9, to = 10),
     AutoMigration(from = 10, to = 11),
     AutoMigration(from = 11, to = 12, spec = AppDatabase.AutoMigration11_12::class),
@@ -114,7 +114,7 @@ abstract class AppDatabase: RoomDatabase() {
         // manual migrations
 
         val migrations: Array<Migration> = arrayOf(
-            object : Migration(14, 15) {
+            object : Migration(15, 16) {
                 override fun migrate(db: SupportSQLiteDatabase) {
                     // the timezone column has been removed, now it's timezoneId
                     // first, create the new column to store the migrated values
