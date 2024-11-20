@@ -8,6 +8,7 @@ import android.accounts.AccountManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteQueryBuilder
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
@@ -137,7 +138,12 @@ abstract class AppDatabase: RoomDatabase() {
                             db.execSQL("UPDATE collection SET timezoneId=? WHERE id=?", arrayOf(timezoneId, id))
                         }
                     }
-                    // DROP COLUMN is not available on old versions of SQLite, so just keep the "timezone" column.
+                    try {
+                        db.execSQL("ALTER TABLE collection DROP COLUMN timezone")
+                    } catch (_: SQLiteException) {
+                        // DROP COLUMN is not available on old versions of SQLite, so if the drop
+                        // fails, just keep the "timezone" column.
+                    }
                 }
             },
 
