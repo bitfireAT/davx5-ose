@@ -66,7 +66,7 @@ fun Assistant(
 
 @Composable
 @Preview
-fun Assistant_Preview() {
+fun Assistant_Preview_InScaffold() {
     Assistant(nextLabel = "Next") {
         Text("Some Content")
     }
