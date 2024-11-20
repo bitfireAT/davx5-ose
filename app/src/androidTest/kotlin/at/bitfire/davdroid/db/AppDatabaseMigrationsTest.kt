@@ -75,7 +75,6 @@ class AppDatabaseMigrationsTest {
 
     /**
      * Test migrations from full VTIMEZONE to just timezone ID
-     * @see <a href="https://github.com/bitfireAT/davx5-ose/pull/1104">PR</a>
      */
     @Test
     fun migrate15To16_WithTimezone() {
@@ -107,7 +106,6 @@ class AppDatabaseMigrationsTest {
 
     /**
      * Test migrations from full VTIMEZONE to just timezone ID
-     * @see <a href="https://github.com/bitfireAT/davx5-ose/pull/1104">PR</a>
      */
     @Test
     fun migrate15To16_WithoutTimezone() {
