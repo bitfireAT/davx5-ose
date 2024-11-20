@@ -90,15 +90,8 @@ class LocalCalendarStore @Inject constructor(
         } else
             values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ)
 
-        info.timezone?.let { tzData ->
-            try {
-                val timeZone = DateUtils.parseVTimeZone(tzData)
-                timeZone.timeZoneId?.let { tzId ->
-                    values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(tzId.value))
-                }
-            } catch(e: IllegalArgumentException) {
-                logger.log(Level.WARNING, "Couldn't parse calendar default time zone", e)
-            }
+        info.timezoneId?.let { tzId ->
+            values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(tzId))
         }
 
         // add base values for Calendars

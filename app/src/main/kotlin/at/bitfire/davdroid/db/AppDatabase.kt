@@ -9,6 +9,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteQueryBuilder
+import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.core.database.getStringOrNull
 import androidx.room.AutoMigration
@@ -110,6 +111,13 @@ abstract class AppDatabase: RoomDatabase() {
 
 
     companion object {
+
+        // automatic migrations
+
+        @VisibleForTesting
+        val autoMigrationSpecs: List<(Context) -> AutoMigrationSpec> = listOf(
+            { AutoMigration11_12(it) }
+        )
 
         // manual migrations
 
