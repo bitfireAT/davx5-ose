@@ -42,9 +42,8 @@ fun AppTheme(
             colorScheme = if (!darkTheme)
                 M3ColorScheme.lightScheme
             else
-                M3ColorScheme.darkScheme
-        ) {
-            content()
-        }
+                M3ColorScheme.darkScheme,
+            content = content
+        )
     }
 }
