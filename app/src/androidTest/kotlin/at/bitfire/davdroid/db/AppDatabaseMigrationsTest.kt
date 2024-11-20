@@ -40,14 +40,14 @@ class AppDatabaseMigrationsTest {
      * @param toVersion The target version to test
      * @param setup Run here all the SQL queries that prepare the database with the data required
      * to perform the migration process.
-     * @param block Run here all the assertions for [AppDatabase] to make sure the migration was
-     * performed correctly.
+     * @param assertionsBlock Run here all the assertions for [AppDatabase] to make sure the
+     * migration was performed correctly.
      */
     private fun testMigration(
         fromVersion: Int,
         toVersion: Int,
         setup: SupportSQLiteDatabase.() -> Unit,
-        block: (AppDatabase) -> Unit
+        assertionsBlock: (AppDatabase) -> Unit
     ) {
         var db = helper.createDatabase(TEST_DB, fromVersion).apply {
             setup()
@@ -70,7 +70,7 @@ class AppDatabaseMigrationsTest {
                 }
             }
             .build()
-        block(database)
+        assertionsBlock(database)
     }
 
     /**
@@ -98,12 +98,11 @@ class AppDatabaseMigrationsTest {
                         1000, 0, TYPE_CALENDAR, "https://example.com", true, true, false, false, minimalVTimezone
                     )
                 )
-            },
-            block = { database ->
-                val collection = database.collectionDao().get(1000)
-                assertEquals("America/New_York", collection?.timezoneId)
             }
-        )
+        ) { database ->
+            val collection = database.collectionDao().get(1000)
+            assertEquals("America/New_York", collection?.timezoneId)
+        }
     }
 
     /**
@@ -122,13 +121,12 @@ class AppDatabaseMigrationsTest {
                         1000, 0, TYPE_CALENDAR, "https://example.com", true, true, false, false
                     )
                 )
-            },
-            block = { database ->
-                val collection = database.collectionDao().get(1000)
-                assertNotNull(collection)
-                assertNull(collection?.timezoneId)
             }
-        )
+        ) { database ->
+            val collection = database.collectionDao().get(1000)
+            assertNotNull(collection)
+            assertNull(collection?.timezoneId)
+        }
     }
 
 }
