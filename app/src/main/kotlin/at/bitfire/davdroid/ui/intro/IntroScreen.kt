@@ -3,19 +3,23 @@ package at.bitfire.davdroid.ui.intro
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -27,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,7 +55,6 @@ import at.bitfire.davdroid.ui.M3ColorScheme
 import kotlinx.coroutines.launch
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun IntroScreen(
     pages: List<IntroPage>,
     pagerState: PagerState = rememberPagerState { pages.size },
@@ -58,20 +62,15 @@ fun IntroScreen(
 ) {
     val scope = rememberCoroutineScope()
 
-    Scaffold { paddingValues ->
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) { pages[it].ComposePage() }
-
+    Scaffold(
+        bottomBar = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(90.dp)
                     .background(M3ColorScheme.primaryLight)
+                    // consume bottom and side insets of safe drawing area, like BottomAppBar
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+                    .height(90.dp)
             ) {
                 PositionIndicator(
                     index = pagerState.currentPage,
@@ -105,22 +104,41 @@ fun IntroScreen(
                     }
                 }
             }
+        },
+        contentWindowInsets = WindowInsets(0.dp)
+    ) { paddingValues ->
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+        ) {
+            HorizontalPager(state = pagerState) { idxPage ->
+                val page = pages[idxPage]
+                Box(
+                    modifier = if (page.customTopInsets)
+                        Modifier    // ComposePage() handles insets itself
+                    else
+                        // consume top and horizontal sides of safe drawing padding (like TopAppBar)
+                        // bottom is handled by the bottom bar
+                        Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
+                ) {
+                    page.ComposePage()
+                }
+            }
         }
     }
 }
 
 @Preview(
-    showSystemUi = true
+    showSystemUi = true,
+    showBackground = true
 )
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun IntroScreen_Preview() {
     AppTheme {
         IntroScreen(
             listOf(
-                object : IntroPage {
-                    override fun getShowPolicy(): IntroPage.ShowPolicy =
-                        IntroPage.ShowPolicy.SHOW_ALWAYS
+                object : IntroPage() {
+                    override fun getShowPolicy(): ShowPolicy = ShowPolicy.SHOW_ALWAYS
 
                     @Composable
                     override fun ComposePage() {
@@ -128,12 +146,13 @@ fun IntroScreen_Preview() {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(MaterialTheme.colorScheme.surface)
-                        )
+                        ) {
+                            Text("Some Text")
+                        }
                     }
                 },
-                object : IntroPage {
-                    override fun getShowPolicy(): IntroPage.ShowPolicy =
-                        IntroPage.ShowPolicy.SHOW_ALWAYS
+                object : IntroPage() {
+                    override fun getShowPolicy(): ShowPolicy = ShowPolicy.SHOW_ALWAYS
 
                     @Composable
                     override fun ComposePage() {
@@ -141,7 +160,9 @@ fun IntroScreen_Preview() {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(MaterialTheme.colorScheme.primary)
-                        )
+                        ) {
+                            Text("Some Text")
+                        }
                     }
                 }
             ),
