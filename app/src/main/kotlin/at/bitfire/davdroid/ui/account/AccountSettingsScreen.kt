@@ -6,8 +6,6 @@ import android.security.KeyChain
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -315,9 +313,6 @@ fun AccountSettings_FromModel(
             contactGroupMethod = contactGroupMethod,
             onUpdateContactGroupMethod = onUpdateContactGroupMethod
         )
-
-        // Add padding to the end for filling the space used by the navigation bar
-        Spacer(Modifier.navigationBarsPadding())
     }
 }
 

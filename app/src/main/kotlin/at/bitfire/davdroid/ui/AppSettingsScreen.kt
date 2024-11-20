@@ -5,8 +5,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -229,9 +227,6 @@ fun AppSettingsScreen(
                     pushEndpoint = pushEndpoint,
                     onNavTasksScreen = onNavTasksScreen
                 )
-
-                // Add padding to the end for filling the space used by the navigation bar
-                Spacer(Modifier.navigationBarsPadding())
             }
         }
     }
