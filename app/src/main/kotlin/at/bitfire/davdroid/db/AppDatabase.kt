@@ -137,8 +137,6 @@ abstract class AppDatabase: RoomDatabase() {
                             db.execSQL("UPDATE collection SET timezoneId=? WHERE id=?", arrayOf(timezoneId, id))
                         }
                     }
-                    // Finally, drop the old column.
-                    // db.execSQL("ALTER TABLE collection DROP COLUMN timezone")
                     // DROP COLUMN is not available on old versions of SQLite, so just keep the "timezone" column.
                 }
             },
