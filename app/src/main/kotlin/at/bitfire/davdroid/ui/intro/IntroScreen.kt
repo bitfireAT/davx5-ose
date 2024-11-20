@@ -104,7 +104,8 @@ fun IntroScreen(
                     }
                 }
             }
-        }
+        },
+        contentWindowInsets = WindowInsets(0.dp)
     ) { paddingValues ->
         Column(modifier = Modifier
             .fillMaxSize()
