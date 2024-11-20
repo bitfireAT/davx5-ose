@@ -8,17 +8,12 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
-import android.net.Uri
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
 import at.bitfire.ical4android.BatchOperation
-import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import java.util.LinkedList
 import java.util.logging.Level
@@ -42,57 +37,6 @@ class LocalCalendar private constructor(
         private val logger: Logger
             get() = Logger.getGlobal()
 
-        fun create(account: Account, provider: ContentProviderClient, info: Collection): Uri {
-            // If the collection doesn't have a color, use a default color.
-            if (info.color != null)
-                info.color = Constants.DAVDROID_GREEN_RGBA
-
-            val values = valuesFromCollectionInfo(info, withColor = true)
-
-            // ACCOUNT_NAME and ACCOUNT_TYPE are required (see docs)! If it's missing, other apps will crash.
-            values.put(Calendars.ACCOUNT_NAME, account.name)
-            values.put(Calendars.ACCOUNT_TYPE, account.type)
-
-            // Email address for scheduling. Used by the calendar provider to determine whether the
-            // user is ORGANIZER/ATTENDEE for a certain event.
-            values.put(Calendars.OWNER_ACCOUNT, account.name)
-
-            // flag as visible & synchronizable at creation, might be changed by user at any time
-            values.put(Calendars.VISIBLE, 1)
-            values.put(Calendars.SYNC_EVENTS, 1)
-            return create(account, provider, values)
-        }
-
-        private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
-            val values = ContentValues()
-            values.put(Calendars.NAME, info.url.toString())
-            values.put(Calendars.CALENDAR_DISPLAY_NAME,
-                if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
-
-            if (withColor && info.color != null)
-                values.put(Calendars.CALENDAR_COLOR, info.color)
-
-            if (info.privWriteContent && !info.forceReadOnly) {
-                values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER)
-                values.put(Calendars.CAN_MODIFY_TIME_ZONE, 1)
-                values.put(Calendars.CAN_ORGANIZER_RESPOND, 1)
-            } else
-                values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ)
-
-            info.timezoneId?.let { timezoneId ->
-                try {
-                    values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(timezoneId))
-                } catch(e: IllegalArgumentException) {
-                    logger.log(Level.WARNING, "Couldn't parse calendar default time zone", e)
-                }
-            }
-
-            // add base values for Calendars
-            values.putAll(calendarBaseValues)
-
-            return values
-        }
-
     }
 
     override val collectionUrl: String?
@@ -107,8 +51,6 @@ class LocalCalendar private constructor(
     private var accessLevel: Int = Calendars.CAL_ACCESS_OWNER   // assume full access if not specified
     override val readOnly
         get() = accessLevel <= Calendars.CAL_ACCESS_READ
-
-    override fun deleteCollection(): Boolean = delete()
 
     override var lastSyncState: SyncState?
         get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_SYNC_STATE), null, null, null)?.use { cursor ->
@@ -128,9 +70,6 @@ class LocalCalendar private constructor(
         super.populate(info)
         accessLevel = info.getAsInteger(Calendars.CALENDAR_ACCESS_LEVEL) ?: Calendars.CAL_ACCESS_OWNER
     }
-
-    fun update(info: Collection, updateColor: Boolean) =
-        update(valuesFromCollectionInfo(info, updateColor))
 
 
     override fun findDeleted() =

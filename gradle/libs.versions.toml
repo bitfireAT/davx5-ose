@@ -32,7 +32,7 @@ hilt = "2.52"
 kotlin = "2.0.21"
 kotlinx-coroutines = "1.9.0"
 # see https://github.com/google/ksp/releases for version numbers
-ksp = "2.0.21-1.0.25"
+ksp = "2.0.21-1.0.26"
 mikepenz-aboutLibraries = "11.2.3"
 nsk90-kstatemachine = "0.31.1"
 mockk = "1.13.13"

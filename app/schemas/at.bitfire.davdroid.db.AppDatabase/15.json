@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 15,
-    "identityHash": "75e03132ad89541889bf0f0bc21f42ac",
+    "identityHash": "ab1cb6057d8e050f6648bea46ae0943d",
     "entities": [
       {
         "tableName": "service",
@@ -128,7 +128,7 @@
       },
       {
         "tableName": "collection",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `serviceId` INTEGER NOT NULL, `homeSetId` INTEGER, `ownerId` INTEGER, `type` TEXT NOT NULL, `url` TEXT NOT NULL, `privWriteContent` INTEGER NOT NULL, `privUnbind` INTEGER NOT NULL, `forceReadOnly` INTEGER NOT NULL, `displayName` TEXT, `description` TEXT, `color` INTEGER, `timezoneId` TEXT, `supportsVEVENT` INTEGER, `supportsVTODO` INTEGER, `supportsVJOURNAL` INTEGER, `source` TEXT, `sync` INTEGER NOT NULL, `pushTopic` TEXT, `supportsWebPush` INTEGER NOT NULL DEFAULT 0, `pushSubscription` TEXT, `pushSubscriptionCreated` INTEGER, FOREIGN KEY(`serviceId`) REFERENCES `service`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`homeSetId`) REFERENCES `homeset`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`ownerId`) REFERENCES `principal`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `serviceId` INTEGER NOT NULL, `homeSetId` INTEGER, `ownerId` INTEGER, `type` TEXT NOT NULL, `url` TEXT NOT NULL, `privWriteContent` INTEGER NOT NULL, `privUnbind` INTEGER NOT NULL, `forceReadOnly` INTEGER NOT NULL, `displayName` TEXT, `description` TEXT, `color` INTEGER, `timezone` TEXT, `supportsVEVENT` INTEGER, `supportsVTODO` INTEGER, `supportsVJOURNAL` INTEGER, `source` TEXT, `sync` INTEGER NOT NULL, `pushTopic` TEXT, `supportsWebPush` INTEGER NOT NULL DEFAULT 0, `pushSubscription` TEXT, `pushSubscriptionExpires` INTEGER, `pushSubscriptionCreated` INTEGER, FOREIGN KEY(`serviceId`) REFERENCES `service`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`homeSetId`) REFERENCES `homeset`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`ownerId`) REFERENCES `principal`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -203,8 +203,8 @@
             "notNull": false
           },
           {
-            "fieldPath": "timezoneId",
-            "columnName": "timezoneId",
+            "fieldPath": "timezone",
+            "columnName": "timezone",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -255,6 +255,12 @@
             "fieldPath": "pushSubscription",
             "columnName": "pushSubscription",
             "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "pushSubscriptionExpires",
+            "columnName": "pushSubscriptionExpires",
+            "affinity": "INTEGER",
             "notNull": false
           },
           {
@@ -663,7 +669,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '75e03132ad89541889bf0f0bc21f42ac')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ab1cb6057d8e050f6648bea46ae0943d')"
     ]
   }
 }

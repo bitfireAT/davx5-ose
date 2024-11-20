@@ -24,6 +24,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -53,6 +54,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val collectionRepository: DavCollectionRepository,
     private val db: AppDatabase,
+    private val localAddressBookStore: LocalAddressBookStore,
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
@@ -97,11 +99,11 @@ class AccountSettingsMigrations @AssistedInject constructor(
             for (oldAddressBookAccount in oldAddressBookAccounts) {
                 // Old address books only have a URL, so use it to determine the collection ID
                 logger.info("Migrating address book ${oldAddressBookAccount.name}")
+                val oldAddressBook = localAddressBookFactory.create(oldAddressBookAccount, provider)
                 val url = accountManager.getUserData(oldAddressBookAccount, LocalAddressBook.USER_DATA_URL)
                 collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
                     // Set collection ID and rename the account
-                    val localAddressBook = localAddressBookFactory.create(oldAddressBookAccount, provider)
-                    localAddressBook.update(collection, /* read-only flag will be updated at next sync */ forceReadOnly = false)
+                    localAddressBookStore.update(provider, oldAddressBook, collection)
                 }
             }
         }

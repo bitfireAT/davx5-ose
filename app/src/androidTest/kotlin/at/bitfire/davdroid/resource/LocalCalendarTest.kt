@@ -66,7 +66,7 @@ class LocalCalendarTest {
 
     @After
     fun tearDown() {
-        calendar.deleteCollection()
+        calendar.delete()
     }
 
 

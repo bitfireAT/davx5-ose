@@ -12,6 +12,7 @@ import android.os.Build
 import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
+import androidx.datastore.dataStore
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.InitCalendarProviderRule
 import at.bitfire.ical4android.AndroidCalendar
@@ -74,7 +75,7 @@ class LocalEventTest {
 
     @After
     fun removeCalendar() {
-        calendar.deleteCollection()
+        calendar.delete()
     }
 
 
@@ -282,7 +283,7 @@ class LocalEventTest {
             })
         }
         val localEvent = LocalEvent(calendar, event, "filename.ics", null, null, 0)
-        val uri = localEvent.add()
+        localEvent.add()
 
         calendar.findById(localEvent.id!!)
 

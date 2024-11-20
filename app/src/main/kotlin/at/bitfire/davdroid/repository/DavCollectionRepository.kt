@@ -29,15 +29,12 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.util.DateUtils
+import dagger.Lazy
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.Multibinds
-import java.io.StringWriter
-import java.util.Collections
-import java.util.UUID
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
@@ -46,6 +43,10 @@ import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.ComponentList
 import net.fortuna.ical4j.model.component.VTimeZone
 import okhttp3.HttpUrl
+import java.io.StringWriter
+import java.util.Collections
+import java.util.UUID
+import javax.inject.Inject
 
 /**
  * Repository for managing collections.
@@ -56,13 +57,19 @@ class DavCollectionRepository @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
     db: AppDatabase,
-    defaultListeners: Set<@JvmSuppressWildcards OnChangeListener>,
+    defaultListeners: Lazy<Set<@JvmSuppressWildcards OnChangeListener>>,
     private val serviceRepository: DavServiceRepository
 ) {
 
-    private val listeners = Collections.synchronizedSet(defaultListeners.toMutableSet())
+    private val listeners by lazy { Collections.synchronizedSet(defaultListeners.get().toMutableSet()) }
 
     private val dao = db.collectionDao()
+
+    /**
+     * Whether there are any collections that are registered for push.
+     */
+    suspend fun anyPushCapable() =
+        dao.anyPushCapable()
 
     /**
      * Creates address book collection on server and locally
@@ -256,8 +263,12 @@ class DavCollectionRepository @Inject constructor(
         notifyOnChangeListeners()
     }
 
-    fun updatePushSubscription(id: Long, subscriptionUrl: String?) {
-        dao.updatePushSubscription(id, subscriptionUrl)
+    fun updatePushSubscription(id: Long, subscriptionUrl: String?, expires: Long?) {
+        dao.updatePushSubscription(
+            id = id,
+            pushSubscription = subscriptionUrl,
+            pushSubscriptionExpires = expires
+        )
     }
 
     /**

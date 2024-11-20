@@ -7,56 +7,42 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
+import at.bitfire.davdroid.resource.LocalDataStore
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.impl.annotations.SpyK
+import io.mockk.junit4.MockKRule
+import io.mockk.just
 import io.mockk.mockk
-import io.mockk.spyk
+import io.mockk.runs
 import io.mockk.verify
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
+import java.util.logging.Logger
 
-@HiltAndroidTest
 class SyncerTest {
 
     @get:Rule
-    val hiltRule = HiltAndroidRule(this)
+    val mockkRule = MockKRule(this)
 
-    @Inject
-    lateinit var testSyncer: TestSyncer.Factory
+    @RelaxedMockK
+    lateinit var logger: Logger
 
-    lateinit var account: Account
+    val dataStore: LocalTestStore = mockk(relaxed = true)
+    val provider: ContentProviderClient = mockk(relaxed = true)
 
-    private lateinit var syncer: TestSyncer
-
-    @Before
-    fun setUp() {
-        hiltRule.inject()
-
-        account = TestAccountAuthenticator.create()
-        syncer = spyk(testSyncer.create(account, emptyArray(), SyncResult()))
-    }
-
-    @After
-    fun tearDown() {
-        TestAccountAuthenticator.remove(account)
-    }
+    @SpyK
+    @InjectMockKs
+    var syncer = TestSyncer(mockk(relaxed = true), emptyArray(), SyncResult(), dataStore)
 
 
     @Test
     fun testSync_prepare_fails() {
-        val provider = mockk<ContentProviderClient>()
         every { syncer.prepare(provider) } returns false
         every { syncer.getSyncEnabledCollections() } returns emptyMap()
 
@@ -68,7 +54,6 @@ class SyncerTest {
 
     @Test
     fun testSync_prepare_succeeds() {
-        val provider = mockk<ContentProviderClient>()
         every { syncer.prepare(provider) } returns true
         every { syncer.getSyncEnabledCollections() } returns emptyMap()
 
@@ -83,13 +68,12 @@ class SyncerTest {
     fun testUpdateCollections_deletesCollection() {
         val localCollection = mockk<LocalTestCollection>()
         every { localCollection.collectionUrl } returns "http://delete.the/collection"
-        every { localCollection.deleteCollection() } returns true
         every { localCollection.title } returns "Collection to be deleted locally"
 
         // Should delete the localCollection if dbCollection (remote) does not exist
         val localCollections = mutableListOf(localCollection)
         val result = syncer.updateCollections(mockk(), localCollections, emptyMap())
-        verify(exactly = 1) { localCollection.deleteCollection() }
+        verify(exactly = 1) { dataStore.delete(localCollection) }
 
         // Updated local collection list should be empty
         assertTrue(result.isEmpty())
@@ -105,8 +89,8 @@ class SyncerTest {
         every { localCollection.title } returns "The Local Collection"
 
         // Should update the localCollection if it exists
-        val result = syncer.updateCollections(mockk(), listOf(localCollection), dbCollections)
-        verify(exactly = 1) { syncer.update(localCollection, dbCollection) }
+        val result = syncer.updateCollections(provider, listOf(localCollection), dbCollections)
+        verify(exactly = 1) { dataStore.update(provider, localCollection, dbCollection) }
 
         // Updated local collection list should be same as input
         assertArrayEquals(arrayOf(localCollection), result.toTypedArray())
@@ -114,12 +98,18 @@ class SyncerTest {
 
     @Test
     fun testUpdateCollections_findsNewCollection() {
-        val dbCollection = mockk<Collection>()
-        every { dbCollection.url } returns "http://newly.found/collection".toHttpUrl()
-        val dbCollections = mapOf(dbCollection.url to dbCollection)
+        val dbCollection = mockk<Collection> {
+            every { url } returns "http://newly.found/collection".toHttpUrl()
+        }
+        val localCollections = listOf(mockk<LocalTestCollection> {
+            every { collectionUrl } returns "http://newly.found/collection"
+        })
+        val dbCollections = listOf(dbCollection)
+        val dbCollectionsMap = mapOf(dbCollection.url to dbCollection)
+        every { syncer.createLocalCollections(provider, dbCollections) } returns localCollections
 
         // Should return the new collection, because it was not updated
-        val result = syncer.updateCollections(mockk(), emptyList(), dbCollections)
+        val result = syncer.updateCollections(provider, emptyList(), dbCollectionsMap)
 
         // Updated local collection list contain new entry
         assertEquals(1, result.size)
@@ -129,21 +119,18 @@ class SyncerTest {
 
     @Test
     fun testCreateLocalCollections() {
-        val provider = mockk<ContentProviderClient>()
         val localCollection = mockk<LocalTestCollection>()
         val dbCollection = mockk<Collection>()
-        every { syncer.create(provider, dbCollection) } returns localCollection
-        every { dbCollection.url } returns "http://newly.found/collection".toHttpUrl()
+        every { dataStore.create(provider, dbCollection) } returns localCollection
 
         // Should return list of newly created local collections
         val result = syncer.createLocalCollections(provider, listOf(dbCollection))
         assertEquals(listOf(localCollection), result)
     }
 
-    
+
     @Test
     fun testSyncCollectionContents() {
-        val provider = mockk<ContentProviderClient>()
         val dbCollection1 = mockk<Collection>()
         val dbCollection2 = mockk<Collection>()
         val dbCollections = mapOf(
@@ -155,6 +142,7 @@ class SyncerTest {
         val localCollections = listOf(localCollection1, localCollection2)
         every { localCollection1.collectionUrl } returns "http://newly.found/collection1"
         every { localCollection2.collectionUrl } returns "http://newly.found/collection2"
+        every { syncer.syncCollection(provider, any(), any()) } just runs
 
         // Should call the collection content sync on both collections
         syncer.syncCollectionContents(provider, localCollections, dbCollections)
@@ -165,41 +153,65 @@ class SyncerTest {
 
     // Test helpers
 
-    class TestSyncer @AssistedInject constructor(
-        @Assisted account: Account,
-        @Assisted extras: Array<String>,
-        @Assisted syncResult: SyncResult
-    ) : Syncer<LocalTestCollection>(account, extras, syncResult) {
+    class TestSyncer (
+        account: Account,
+        extras: Array<String>,
+        syncResult: SyncResult,
+        theDataStore: LocalTestStore
+    ) : Syncer<LocalTestStore, LocalTestCollection>(account, extras, syncResult) {
 
-        @AssistedFactory
-        interface Factory {
-            fun create(account: Account, extras: Array<String>, syncResult: SyncResult): TestSyncer
-        }
+        override val dataStore: LocalTestStore =
+            theDataStore
 
         override val authority: String
-            get() = ""
+            get() = throw NotImplementedError()
+
         override val serviceType: String
-            get() = ""
+            get() = throw NotImplementedError()
 
         override fun prepare(provider: ContentProviderClient): Boolean =
-            true
-
-        override fun getLocalCollections(provider: ContentProviderClient): List<LocalTestCollection> =
-            emptyList()
+            throw NotImplementedError()
 
         override fun getDbSyncCollections(serviceId: Long): List<Collection> =
-            emptyList()
-
-        override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalTestCollection =
-            LocalTestCollection(remoteCollection.url.toString())
+            throw NotImplementedError()
 
         override fun syncCollection(
             provider: ContentProviderClient,
             localCollection: LocalTestCollection,
             remoteCollection: Collection
-        ) {}
+        ) {
+            throw NotImplementedError()
+        }
 
-        override fun update(localCollection: LocalTestCollection, remoteCollection: Collection) {}
+    }
+
+    class LocalTestStore : LocalDataStore<LocalTestCollection> {
+
+        override fun create(
+            provider: ContentProviderClient,
+            fromCollection: Collection
+        ): LocalTestCollection? {
+            throw NotImplementedError()
+        }
+
+        override fun getAll(
+            account: Account,
+            provider: ContentProviderClient
+        ): List<LocalTestCollection> {
+            throw NotImplementedError()
+        }
+
+        override fun update(
+            provider: ContentProviderClient,
+            localCollection: LocalTestCollection,
+            fromCollection: Collection
+        ) {
+            throw NotImplementedError()
+        }
+
+        override fun delete(localCollection: LocalTestCollection) {
+            throw NotImplementedError()
+        }
 
     }
 
