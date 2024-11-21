@@ -56,6 +56,7 @@ import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.ContactsStorageException
+import com.google.common.base.Ascii
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -853,21 +854,25 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
     }
 
-    private fun buildDebugInfoIntent(e: Throwable, local: LocalResource<*>?, remote: HttpUrl?) =
-        DebugInfoActivity.IntentBuilder(context)
+    private fun buildDebugInfoIntent(e: Throwable, local: LocalResource<*>?, remote: HttpUrl?): Intent {
+        val builder = DebugInfoActivity.IntentBuilder(context)
             .withAccount(account)
             .withAuthority(authority)
             .withCause(e)
-            .withLocalResource(
-                try {
-                    local?.toString()
-                } catch (e: OutOfMemoryError) {
-                    // for instance because of a huge contact photo; maybe we're lucky and can fetch it
-                    null
-                }
-            )
-            .withRemoteResource(remote)
-            .build()
+
+        if (local != null)
+            try {
+                // Truncate the string to avoid the Intent to be > 1 MB, which doesn't work (IPC limit)
+                builder.withLocalResource(Ascii.truncate(local.toString(), 10000, "[…]"))
+            } catch (_: OutOfMemoryError) {
+                // For instance because of a huge contact photo; maybe we're lucky and can catch it
+            }
+
+        if (remote != null)
+            builder.withRemoteResource(remote)
+
+        return builder.build()
+    }
 
     private fun buildViewItemAction(local: LocalResource<*>): NotificationCompat.Action? {
         logger.log(Level.FINE, "Adding view action for local resource", local)
