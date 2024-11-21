@@ -7,7 +7,6 @@ package at.bitfire.davdroid.repository
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
-import android.content.ContentResolver
 import android.content.Context
 import android.provider.CalendarContract
 import at.bitfire.davdroid.InvalidAccountException
@@ -22,6 +21,7 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
@@ -53,6 +53,7 @@ class AccountRepository @Inject constructor(
     private val logger: Logger,
     private val settingsManager: SettingsManager,
     private val serviceRepository: DavServiceRepository,
+    private val syncFramework: SyncFrameworkIntegration,
     private val syncWorkerManager: SyncWorkerManager,
     private val tasksAppManager: Lazy<TasksAppManager>
 ) {
@@ -107,13 +108,13 @@ class AccountRepository @Inject constructor(
                 val id = insertService(accountName, Service.TYPE_CALDAV, config.calDAV)
 
                 // set default sync interval and enable sync regardless of permissions
-                ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
+                syncFramework.enableSyncAbility(account, CalendarContract.AUTHORITY)
                 accountSettings.setSyncInterval(CalendarContract.AUTHORITY, defaultSyncInterval)
 
                 // if task provider present, set task sync interval and enable sync
                 val taskProvider = tasksAppManager.get().currentProvider()
                 if (taskProvider != null) {
-                    ContentResolver.setIsSyncable(account, taskProvider.authority, 1)
+                    syncFramework.enableSyncAbility(account, taskProvider.authority)
                     accountSettings.setSyncInterval(taskProvider.authority, defaultSyncInterval)
                     // further changes will be handled by TasksWatcher on app start or when tasks app is (un)installed
                     logger.info("Tasks provider ${taskProvider.authority} found. Tasks sync enabled.")
@@ -123,7 +124,7 @@ class AccountRepository @Inject constructor(
                 // start CalDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
             } else
-                ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
+                syncFramework.disableSyncAbility(account, CalendarContract.AUTHORITY)
 
         } catch(e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Couldn't access account settings", e)
@@ -260,9 +261,9 @@ class AccountRepository @Inject constructor(
             val newSettings = accountSettingsFactory.create(newAccount)
             for ((authority, interval) in syncIntervals) {
                 if (interval == null)
-                    ContentResolver.setIsSyncable(newAccount, authority, 0)
+                    syncFramework.disableSyncAbility(newAccount, authority)
                 else {
-                    ContentResolver.setIsSyncable(newAccount, authority, 1)
+                    syncFramework.enableSyncAbility(newAccount, authority)
                     newSettings.setSyncInterval(authority, interval)
                 }
             }
