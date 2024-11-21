@@ -9,8 +9,10 @@ import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
+import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.db.Collection.Companion.TYPE_CALENDAR
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -21,7 +23,8 @@ class AppDatabaseMigrationsTest {
 
     private val TEST_DB = "test"
 
-    val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    @ApplicationContext
+    lateinit var context: Context
 
     private val autoMigrationSpecs = AppDatabase.autoMigrationSpecs.map { it(context) }
 
@@ -77,6 +80,7 @@ class AppDatabaseMigrationsTest {
      * Test migrations from full VTIMEZONE to just timezone ID
      */
     @Test
+    @SdkSuppress(minSdkVersion = 34)
     fun migrate15To16_WithTimezone() {
         testMigration(
             fromVersion = 15,
@@ -108,6 +112,7 @@ class AppDatabaseMigrationsTest {
      * Test migrations from full VTIMEZONE to just timezone ID
      */
     @Test
+    @SdkSuppress(minSdkVersion = 34)
     fun migrate15To16_WithoutTimezone() {
         testMigration(
             fromVersion = 15,
