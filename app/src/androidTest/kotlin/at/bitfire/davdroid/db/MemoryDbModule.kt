@@ -26,8 +26,12 @@ class MemoryDbModule {
     @Singleton
     fun inMemoryDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
-            // auto-migrations that need to be specified explicitly
-            .addAutoMigrationSpec(AppDatabase.AutoMigration11_12(context))
+            // auto-migration specs that need to be specified explicitly
+            .apply {
+                for (spec in AppDatabase.getAutoMigrationSpecs(context)) {
+                    addAutoMigrationSpec(spec)
+                }
+            }
             .build()
 
 }

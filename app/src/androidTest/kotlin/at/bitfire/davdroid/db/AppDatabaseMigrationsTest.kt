@@ -75,9 +75,7 @@ class AppDatabaseMigrationsTest {
         validate(db)
     }
 
-    /**
-     * Test migrations from full VTIMEZONE to just timezone ID. Case: minimal VTIMEZONE
-     */
+
     @Test
     @SdkSuppress(minSdkVersion = 34)
     fun migrate15To16_WithTimeZone() {
@@ -95,23 +93,46 @@ class AppDatabaseMigrationsTest {
                     END:VCALENDAR
                 """.trimIndent()
                 db.execSQL(
+                    "INSERT INTO service (id, accountName, type) VALUES (?, ?, ?)",
+                    arrayOf(1, "test", Service.TYPE_CALDAV)
+                )
+                db.execSQL(
                     "INSERT INTO collection (id, serviceId, type, url, privWriteContent, privUnbind, forceReadOnly, sync, timezone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    arrayOf(
-                        1000, 0, TYPE_CALENDAR, "https://example.com", true, true, false, false, minimalVTimezone
-                    )
+                    arrayOf(1, 1, TYPE_CALENDAR, "https://example.com", true, true, false, false, minimalVTimezone)
                 )
             }
         ) { db ->
-            db.query("SELECT timezoneId FROM collection WHERE id=1000").use { cursor ->
+            db.query("SELECT timezoneId FROM collection WHERE id=1").use { cursor ->
                 cursor.moveToFirst()
                 assertEquals("America/New_York", cursor.getString(0))
             }
         }
     }
 
-    /**
-     * Test migrations from full VTIMEZONE to just timezone ID. Case: no VTIMEZONE
-     */
+    @Test
+    @SdkSuppress(minSdkVersion = 34)
+    fun migrate15To16_WithTimeZone_Unparseable() {
+        testMigration(
+            fromVersion = 15,
+            toVersion = 16,
+            prepare = { db ->
+                db.execSQL(
+                    "INSERT INTO service (id, accountName, type) VALUES (?, ?, ?)",
+                    arrayOf(1, "test", Service.TYPE_CALDAV)
+                )
+                db.execSQL(
+                    "INSERT INTO collection (id, serviceId, type, url, privWriteContent, privUnbind, forceReadOnly, sync, timezone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    arrayOf(1, 1, TYPE_CALENDAR, "https://example.com", true, true, false, false, "Some Garbage Content")
+                )
+            }
+        ) { db ->
+            db.query("SELECT timezoneId FROM collection WHERE id=1").use { cursor ->
+                cursor.moveToFirst()
+                assertNull(cursor.getString(0))
+            }
+        }
+    }
+
     @Test
     @SdkSuppress(minSdkVersion = 34)
     fun migrate15To16_WithoutTimezone() {
@@ -120,14 +141,16 @@ class AppDatabaseMigrationsTest {
             toVersion = 16,
             prepare = { db ->
                 db.execSQL(
+                    "INSERT INTO service (id, accountName, type) VALUES (?, ?, ?)",
+                    arrayOf(1, "test", Service.TYPE_CALDAV)
+                )
+                db.execSQL(
                     "INSERT INTO collection (id, serviceId, type, url, privWriteContent, privUnbind, forceReadOnly, sync) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    arrayOf(
-                        1000, 0, TYPE_CALENDAR, "https://example.com", true, true, false, false
-                    )
+                    arrayOf(1, 1, TYPE_CALENDAR, "https://example.com", true, true, false, false)
                 )
             }
         ) { db ->
-            db.query("SELECT timezoneId FROM collection WHERE id=1000").use { cursor ->
+            db.query("SELECT timezoneId FROM collection WHERE id=1").use { cursor ->
                 cursor.moveToFirst()
                 assertNull(cursor.getString(0))
             }

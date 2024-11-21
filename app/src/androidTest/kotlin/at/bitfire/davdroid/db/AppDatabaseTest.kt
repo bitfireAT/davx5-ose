@@ -15,6 +15,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.logging.Logger
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -27,36 +28,40 @@ class AppDatabaseTest {
     @ApplicationContext
     lateinit var context: Context
 
+    @Inject
+    lateinit var logger: Logger
+
     @Before
     fun setup() {
         hiltRule.inject()
     }
 
 
+    /**
+     * Creates a database with schema version 8 (the first exported one) and then migrates it to the latest version.
+     */
     @Test
     fun testAllMigrations() {
-        // DB schema is available since version 8, so create DB with v8
-        val helper = MigrationTestHelper(
+        // Create DB with v8
+        MigrationTestHelper(
             InstrumentationRegistry.getInstrumentation(),
             AppDatabase::class.java,
             listOf(), // no auto migrations until v8
             FrameworkSQLiteOpenHelperFactory()
-        )
-        helper.createDatabase(TEST_DB, 8).close()
+        ).createDatabase(TEST_DB, 8).close()
 
-        val db = Room.databaseBuilder(context, AppDatabase::class.java, TEST_DB)
+        // open and migrate (to current version) database
+        Room.databaseBuilder(context, AppDatabase::class.java, TEST_DB)
             // manual migrations
             .addMigrations(*AppDatabase.manualMigrations)
             // auto-migrations that need to be specified explicitly
-            .addAutoMigrationSpec(AppDatabase.AutoMigration11_12(context))
+            .apply {
+                for (spec in AppDatabase.getAutoMigrationSpecs(context))
+                    addAutoMigrationSpec(spec)
+            }
             .build()
-        try {
-            // open (with version 8) + migrate (to current version) database
-
-            db.openHelper.writableDatabase
-        } finally {
-            db.close()
-        }
+            .openHelper.writableDatabase    // this will run all migrations
+            .close()
     }
 
 

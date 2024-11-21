@@ -16,6 +16,7 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.DeleteColumn
 import androidx.room.ProvidedAutoMigrationSpec
+import androidx.room.RenameColumn
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -34,6 +35,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.io.Writer
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Singleton
 
@@ -52,7 +54,8 @@ import javax.inject.Singleton
     AutoMigration(from = 11, to = 12, spec = AppDatabase.AutoMigration11_12::class),
     AutoMigration(from = 12, to = 13),
     AutoMigration(from = 13, to = 14),
-    AutoMigration(from = 14, to = 15)
+    AutoMigration(from = 14, to = 15),
+    AutoMigration(from = 15, to = 16, spec = AppDatabase.AutoMigration15_16::class)
 ])
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
@@ -101,6 +104,29 @@ abstract class AppDatabase: RoomDatabase() {
     // auto migrations
 
     @ProvidedAutoMigrationSpec
+    @RenameColumn(tableName = "collection", fromColumnName = "timezone", toColumnName = "timezoneId")
+    class AutoMigration15_16: AutoMigrationSpec {
+        override fun onPostMigrate(db: SupportSQLiteDatabase) {
+            // The timezone column has been renamed to timezoneId, but still contains the VTIMEZONE.
+            // So we need to parse the VTIMEZONE, extract the timezone ID and save it back.
+            db.query("SELECT id, timezoneId FROM collection").use { cursor ->
+                while (cursor.moveToNext()) {
+                    val id: Long = cursor.getLong(0)
+                    val timezone: String = cursor.getString(1) ?: continue
+                    val vTimeZone = try {
+                        DateUtils.parseVTimeZone(timezone)
+                    } catch (e: Exception) {
+                        Logger.getGlobal().log(Level.WARNING, "Failed to parse VTIMEZONE: $timezone", e)
+                        null
+                    }
+                    val timezoneId = vTimeZone?.timeZoneId?.value
+                    db.execSQL("UPDATE collection SET timezoneId=? WHERE id=?", arrayOf(timezoneId, id))
+                }
+            }
+        }
+    }
+
+    @ProvidedAutoMigrationSpec
     @DeleteColumn(tableName = "collection", columnName = "owner")
     class AutoMigration11_12(val context: Context): AutoMigrationSpec {
         override fun onPostMigrate(db: SupportSQLiteDatabase) {
@@ -119,30 +145,14 @@ abstract class AppDatabase: RoomDatabase() {
 
         // automatic migrations
 
-        fun getAutoMigrationSpecs(context: Context): List<AutoMigrationSpec> = listOf(
-            AutoMigration11_12(context)
+        fun getAutoMigrationSpecs(context: Context) = listOf(
+            AutoMigration11_12(context),
+            AutoMigration15_16()
         )
 
         // manual migrations
 
         val manualMigrations: Array<Migration> = arrayOf(
-            Migration(15, 16) { db ->
-                // The timezone column has been removed, now it's timezoneId.
-                // First, create the new column to store the migrated values.
-                db.execSQL("ALTER TABLE collection ADD COLUMN timezoneId TEXT DEFAULT NULL")
-                // Now, fetch all the timezone values.
-                db.query("SELECT id, timezone FROM collection").use { cursor ->
-                    while (cursor.moveToNext()) {
-                        val id: Long = cursor.getLong(0)
-                        val timezone: String = cursor.getString(1) ?: continue
-                        val vTimeZone = DateUtils.parseVTimeZone(timezone)
-                        val timezoneId = vTimeZone.timeZoneId.value
-                        db.execSQL("UPDATE collection SET timezoneId=? WHERE id=?", arrayOf(timezoneId, id))
-                    }
-                }
-                dropColumn(db, table = "collection", column = "timezone")
-            },
-
             Migration(8, 9) { db ->
                 db.execSQL("CREATE TABLE syncstats (" +
                         "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
@@ -252,6 +262,8 @@ abstract class AppDatabase: RoomDatabase() {
         /**
          * `DROP COLUMN` is available since SQLite 3.35.0, which is available since API 34.
          * So for older versions, we just keep the respective column.
+         *
+         * If possible, use an [AutoMigrationSpec] with `@DeleteColumn` instead.
          */
         private fun dropColumn(db: SupportSQLiteDatabase, table: String, column: String) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
