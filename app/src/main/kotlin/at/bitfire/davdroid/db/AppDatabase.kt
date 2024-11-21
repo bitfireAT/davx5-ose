@@ -140,7 +140,7 @@ abstract class AppDatabase: RoomDatabase() {
                     }
                     // DROP COLUMN is available since SQLite 3.35.0, which is available since API 34,
                     // in older versions just keep the timezone column
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                         db.execSQL("ALTER TABLE collection DROP COLUMN timezone")
                     }
                 }
