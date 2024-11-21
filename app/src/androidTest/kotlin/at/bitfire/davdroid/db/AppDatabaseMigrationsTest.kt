@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.db
 
 import android.content.Context
-import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
@@ -16,7 +15,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
@@ -39,66 +37,54 @@ class AppDatabaseMigrationsTest {
     }
 
 
-    private val autoMigrationSpecs by lazy { AppDatabase.getAutoMigrationSpecs(context) }
-
-    val helper by lazy {
-        MigrationTestHelper(
-            InstrumentationRegistry.getInstrumentation(),
-            AppDatabase::class.java,
-            autoMigrationSpecs,
-            FrameworkSQLiteOpenHelperFactory()
-        )
-    }
-
     /**
      * Used for testing the migration process between two versions.
-     * @param fromVersion The version from which to start testing.
-     * @param toVersion The target version to test
-     * @param setup Run here all the SQL queries that prepare the database with the data required
-     * to perform the migration process.
-     * @param assertionsBlock Run here all the assertions for [AppDatabase] to make sure the
-     * migration was performed correctly.
+     *
+     * @param fromVersion  The version from which to start testing
+     * @param toVersion    The target version to test
+     * @param prepare      Callback to prepare the database. Will be run with database schema in version [fromVersion].
+     * @param validate     Callback to validate the migration result. Will be run with database schema in version [toVersion].
      */
     private fun testMigration(
         fromVersion: Int,
         toVersion: Int,
-        setup: SupportSQLiteDatabase.() -> Unit,
-        assertionsBlock: (AppDatabase) -> Unit
+        prepare: (SupportSQLiteDatabase) -> Unit,
+        validate: (SupportSQLiteDatabase) -> Unit
     ) {
-        var db = helper.createDatabase(TEST_DB, fromVersion).apply {
-            setup()
+        val helper = MigrationTestHelper(
+            InstrumentationRegistry.getInstrumentation(),
+            AppDatabase::class.java,
+            AppDatabase.getAutoMigrationSpecs(context),
+            FrameworkSQLiteOpenHelperFactory()
+        )
 
-            // Prepare for the next version.
+        // Prepare the database with the initial version.
+        helper.createDatabase(TEST_DB, version = fromVersion).apply {
+            prepare(this)
             close()
         }
 
         // Re-open the database with the new version and provide all the migrations.
-        db = helper.runMigrationsAndValidate(TEST_DB, toVersion, true, *AppDatabase.migrations)
+        val db = helper.runMigrationsAndValidate(
+            name = TEST_DB,
+            version = toVersion,
+            validateDroppedTables = true,
+            migrations = AppDatabase.manualMigrations
+        )
 
-        // Once the migration process is complete, load AppDatabase
-        val database = Room.databaseBuilder(context, AppDatabase::class.java, TEST_DB)
-            // Include all manual migrations
-            .addMigrations(*AppDatabase.migrations)
-            // And all auto migration specs
-            .apply {
-                for (spec in autoMigrationSpecs) {
-                    addAutoMigrationSpec(spec)
-                }
-            }
-            .build()
-        assertionsBlock(database)
+        validate(db)
     }
 
     /**
-     * Test migrations from full VTIMEZONE to just timezone ID
+     * Test migrations from full VTIMEZONE to just timezone ID. Case: minimal VTIMEZONE
      */
     @Test
     @SdkSuppress(minSdkVersion = 34)
-    fun migrate15To16_WithTimezone() {
+    fun migrate15To16_WithTimeZone() {
         testMigration(
             fromVersion = 15,
             toVersion = 16,
-            setup = {
+            prepare = { db ->
                 val minimalVTimezone = """
                     BEGIN:VCALENDAR
                     VERSION:2.0
@@ -108,21 +94,23 @@ class AppDatabaseMigrationsTest {
                     END:VTIMEZONE
                     END:VCALENDAR
                 """.trimIndent()
-                execSQL(
+                db.execSQL(
                     "INSERT INTO collection (id, serviceId, type, url, privWriteContent, privUnbind, forceReadOnly, sync, timezone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     arrayOf(
                         1000, 0, TYPE_CALENDAR, "https://example.com", true, true, false, false, minimalVTimezone
                     )
                 )
             }
-        ) { database ->
-            val collection = database.collectionDao().get(1000)
-            assertEquals("America/New_York", collection?.timezoneId)
+        ) { db ->
+            db.query("SELECT timezoneId FROM collection WHERE id=1000").use { cursor ->
+                cursor.moveToFirst()
+                assertEquals("America/New_York", cursor.getString(0))
+            }
         }
     }
 
     /**
-     * Test migrations from full VTIMEZONE to just timezone ID
+     * Test migrations from full VTIMEZONE to just timezone ID. Case: no VTIMEZONE
      */
     @Test
     @SdkSuppress(minSdkVersion = 34)
@@ -130,18 +118,19 @@ class AppDatabaseMigrationsTest {
         testMigration(
             fromVersion = 15,
             toVersion = 16,
-            setup = {
-                execSQL(
+            prepare = { db ->
+                db.execSQL(
                     "INSERT INTO collection (id, serviceId, type, url, privWriteContent, privUnbind, forceReadOnly, sync) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     arrayOf(
                         1000, 0, TYPE_CALENDAR, "https://example.com", true, true, false, false
                     )
                 )
             }
-        ) { database ->
-            val collection = database.collectionDao().get(1000)
-            assertNotNull(collection)
-            assertNull(collection?.timezoneId)
+        ) { db ->
+            db.query("SELECT timezoneId FROM collection WHERE id=1000").use { cursor ->
+                cursor.moveToFirst()
+                assertNull(cursor.getString(0))
+            }
         }
     }
 

@@ -46,7 +46,7 @@ class AppDatabaseTest {
 
         val db = Room.databaseBuilder(context, AppDatabase::class.java, TEST_DB)
             // manual migrations
-            .addMigrations(*AppDatabase.migrations)
+            .addMigrations(*AppDatabase.manualMigrations)
             // auto-migrations that need to be specified explicitly
             .addAutoMigrationSpec(AppDatabase.AutoMigration11_12(context))
             .build()
