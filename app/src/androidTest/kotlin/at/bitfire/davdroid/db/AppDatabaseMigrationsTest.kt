@@ -12,7 +12,6 @@ import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.db.Collection.Companion.TYPE_CALENDAR
-import dagger.hilt.android.qualifiers.ApplicationContext
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -23,8 +22,7 @@ class AppDatabaseMigrationsTest {
 
     private val TEST_DB = "test"
 
-    @ApplicationContext
-    lateinit var context: Context
+    val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
     private val autoMigrationSpecs = AppDatabase.autoMigrationSpecs.map { it(context) }
 
