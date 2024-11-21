@@ -9,28 +9,39 @@ import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.platform.app.InstrumentationRegistry
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
+@HiltAndroidTest
 class AppDatabaseTest {
 
-    val TEST_DB = "test"
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
 
-    val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
 
-    @Rule
-    @JvmField
-    val helper = MigrationTestHelper(
-        InstrumentationRegistry.getInstrumentation(),
-        AppDatabase::class.java,
-        listOf(), // no auto migrations until v8
-        FrameworkSQLiteOpenHelperFactory()
-    )
+    @Before
+    fun setup() {
+        hiltRule.inject()
+    }
 
 
     @Test
     fun testAllMigrations() {
         // DB schema is available since version 8, so create DB with v8
+        val helper = MigrationTestHelper(
+            InstrumentationRegistry.getInstrumentation(),
+            AppDatabase::class.java,
+            listOf(), // no auto migrations until v8
+            FrameworkSQLiteOpenHelperFactory()
+        )
         helper.createDatabase(TEST_DB, 8).close()
 
         val db = Room.databaseBuilder(context, AppDatabase::class.java, TEST_DB)
@@ -41,10 +52,16 @@ class AppDatabaseTest {
             .build()
         try {
             // open (with version 8) + migrate (to current version) database
+
             db.openHelper.writableDatabase
         } finally {
             db.close()
         }
+    }
+
+
+    companion object {
+        const val TEST_DB = "test"
     }
 
 }

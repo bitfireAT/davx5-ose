@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteQueryBuilder
 import android.os.Build
-import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.core.database.getStringOrNull
 import androidx.room.AutoMigration
@@ -61,6 +60,7 @@ abstract class AppDatabase: RoomDatabase() {
     @Module
     @InstallIn(SingletonComponent::class)
     object AppDatabaseModule {
+
         @Provides
         @Singleton
         fun appDatabase(
@@ -69,7 +69,10 @@ abstract class AppDatabase: RoomDatabase() {
         ): AppDatabase =
             Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
                 .addMigrations(*migrations)
-                .addAutoMigrationSpec(AutoMigration11_12(context))
+                .apply {
+                    for (spec in getAutoMigrationSpecs(context))
+                        addAutoMigrationSpec(spec)
+                }
                 .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
                 .addCallback(object: Callback() {
                     override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
@@ -92,6 +95,7 @@ abstract class AppDatabase: RoomDatabase() {
                     }
                 })
                 .build()
+
     }
 
     // auto migrations
@@ -115,9 +119,8 @@ abstract class AppDatabase: RoomDatabase() {
 
         // automatic migrations
 
-        @VisibleForTesting
-        val autoMigrationSpecs: List<(Context) -> AutoMigrationSpec> = listOf(
-            { AutoMigration11_12(it) }
+        fun getAutoMigrationSpecs(context: Context): List<AutoMigrationSpec> = listOf(
+            AutoMigration11_12(context)
         )
 
         // manual migrations

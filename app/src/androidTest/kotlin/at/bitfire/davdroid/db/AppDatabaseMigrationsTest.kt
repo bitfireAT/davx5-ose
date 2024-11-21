@@ -12,28 +12,43 @@ import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.db.Collection.Companion.TYPE_CALENDAR
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
+@HiltAndroidTest
 class AppDatabaseMigrationsTest {
 
-    private val TEST_DB = "test"
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
 
-    val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
 
-    private val autoMigrationSpecs = AppDatabase.autoMigrationSpecs.map { it(context) }
+    @Before
+    fun setup() {
+        hiltRule.inject()
+    }
 
-    @Rule
-    @JvmField
-    val helper = MigrationTestHelper(
-        InstrumentationRegistry.getInstrumentation(),
-        AppDatabase::class.java,
-        autoMigrationSpecs,
-        FrameworkSQLiteOpenHelperFactory()
-    )
+
+    private val autoMigrationSpecs by lazy { AppDatabase.getAutoMigrationSpecs(context) }
+
+    val helper by lazy {
+        MigrationTestHelper(
+            InstrumentationRegistry.getInstrumentation(),
+            AppDatabase::class.java,
+            autoMigrationSpecs,
+            FrameworkSQLiteOpenHelperFactory()
+        )
+    }
 
     /**
      * Used for testing the migration process between two versions.
@@ -128,6 +143,11 @@ class AppDatabaseMigrationsTest {
             assertNotNull(collection)
             assertNull(collection?.timezoneId)
         }
+    }
+
+
+    companion object {
+        const val TEST_DB = "test"
     }
 
 }
