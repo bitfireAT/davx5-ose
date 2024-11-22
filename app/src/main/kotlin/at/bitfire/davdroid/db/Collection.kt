@@ -170,7 +170,6 @@ data class Collection(
 
             var description: String? = null
             var color: Int? = null
-            var timezone: String? = null
             var timezoneId: String? = null
             var supportsVEVENT: Boolean? = null
             var supportsVTODO: Boolean? = null
@@ -184,7 +183,10 @@ data class Collection(
                     dav[CalendarDescription::class.java]?.let { description = it.description }
                     dav[CalendarColor::class.java]?.let { color = it.color }
                     dav[CalendarTimezoneId::class.java]?.let { timezoneId = it.identifier }
-                    dav[CalendarTimezone::class.java]?.let { timezone = it.vTimeZone }
+                    if (timezoneId == null)
+                        dav[CalendarTimezone::class.java]?.vTimeZone?.let {
+                            timezoneId = DateUtils.parseVTimeZone(it)?.timeZoneId?.value
+                        }
 
                     if (type == TYPE_CALENDAR) {
                         supportsVEVENT = true
@@ -208,9 +210,6 @@ data class Collection(
                     }
                 }
             }
-
-            if (timezoneId == null && timezone != null)
-                timezoneId = DateUtils.parseVTimeZone(timezone)?.timeZoneId?.value
 
             // WebDAV-Push
             var supportsWebPush = false

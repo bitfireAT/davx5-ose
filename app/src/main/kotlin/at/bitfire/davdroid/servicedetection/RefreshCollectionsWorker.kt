@@ -24,6 +24,8 @@ import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.exception.UnauthorizedException
 import at.bitfire.dav4jvm.property.caldav.CalendarColor
 import at.bitfire.dav4jvm.property.caldav.CalendarDescription
+import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
+import at.bitfire.dav4jvm.property.caldav.CalendarTimezoneId
 import at.bitfire.dav4jvm.property.caldav.Source
 import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
 import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
@@ -85,14 +87,14 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         const val ARG_SERVICE_ID = "serviceId"
         const val WORKER_TAG = "refreshCollectionsWorker"
 
-        // Collection properties to ask for in a propfind request to the Cal- or CardDAV server
+        // Collection properties to ask for in a propfind request to the CalDAV/CardDAV server
         val DAV_COLLECTION_PROPERTIES = arrayOf(
             ResourceType.NAME,
             CurrentUserPrivilegeSet.NAME,
             DisplayName.NAME,
             Owner.NAME,
             AddressbookDescription.NAME, SupportedAddressData.NAME,
-            CalendarDescription.NAME, CalendarColor.NAME, SupportedCalendarComponentSet.NAME,
+            CalendarDescription.NAME, CalendarColor.NAME, CalendarTimezone.NAME, CalendarTimezoneId.NAME, SupportedCalendarComponentSet.NAME,
             Source.NAME,
             // WebDAV Push
             PushTransports.NAME,

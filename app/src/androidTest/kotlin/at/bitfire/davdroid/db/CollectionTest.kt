@@ -134,7 +134,7 @@ class CollectionTest {
         lateinit var info: Collection
         DavResource(httpClient.okHttpClient, server.url("/"))
             .propfind(0, ResourceType.NAME) { response, _ ->
-                info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
+                info = Collection.fromDavResponse(response)!!
             }
         assertEquals(Collection.TYPE_CALENDAR, info.type)
         assertFalse(info.privWriteContent)
@@ -170,7 +170,7 @@ class CollectionTest {
         lateinit var info: Collection
         DavResource(httpClient.okHttpClient, server.url("/"))
             .propfind(0, ResourceType.NAME) { response, _ ->
-                info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
+                info = Collection.fromDavResponse(response)!!
             }
         assertEquals(Collection.TYPE_CALENDAR, info.type)
         assertFalse(info.privWriteContent)
