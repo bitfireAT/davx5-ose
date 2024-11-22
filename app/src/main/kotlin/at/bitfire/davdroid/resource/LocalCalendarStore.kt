@@ -93,7 +93,7 @@ class LocalCalendarStore @Inject constructor(
         info.timezone?.let { tzData ->
             try {
                 val timeZone = DateUtils.parseVTimeZone(tzData)
-                timeZone.timeZoneId?.let { tzId ->
+                timeZone?.timeZoneId?.let { tzId ->
                     values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(tzId.value))
                 }
             } catch(e: IllegalArgumentException) {
