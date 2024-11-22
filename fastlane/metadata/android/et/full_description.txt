@@ -1,0 +1,5 @@
+DAVx⁵ on CalDAVi/CardDAVi haldus- ja sünkroniseerimisrakendus Androidi jaoks, mis sujuvalt liidestub Androidi kalendri- ja kontaktirakendustega.
+
+Kasuta seda oma kontaktide, sündmuste ja ülesannete privaatseks haldamiseks kas oma serveris või usaldusväärse teenusepakkuja juures.
+
+Lisateavet ja testitud serverite ning teenuste loendi leiad meie veebisaidist.

@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="account_invalid">Kasutajakontot ei leidu (enam)</string>
+  <string name="account_title_address_book">DAVx⁵ aadressiraamat</string>
+  <string name="address_books_authority_title">Aadressiraamatud</string>
+  <string name="dialog_delete">Kustuta</string>
+  <string name="dialog_remove">Eemalda</string>
+  <string name="dialog_deny">Katkesta</string>
+  <string name="field_required">See väli on kohustuslik</string>
+  <string name="help">Abiteave</string>
+  <string name="manage_accounts">Halda kasutajakontosid</string>
+  <string name="navigate_up">Liigu üles</string>
+  <string name="optional_label">* valikuline</string>
+  <string name="options_menu">Valikute menüü</string>
+  <string name="share">Jaga</string>
+  <string name="database_destructive_migration_title">Andmebaas on vigane</string>
+  <string name="database_destructive_migration_text">Kõik kasutajakontod on kohalikust seadmest eemaldatud</string>
+  <string name="notification_channel_debugging">Silumine ja veaotsing</string>
+  <string name="notification_channel_general">Muud olulised sõnumid</string>
+  <string name="notification_channel_status">Väheolulised olekuteated</string>
+  <string name="notification_channel_sync">Sünkroniseerimine</string>
+  <string name="notification_channel_sync_errors">Sünkroniseerimisvead</string>
+  <string name="notification_channel_sync_errors_desc">Olulised vead, mis peatavad sünkroniseerimise, nagu näiteks ootamatud päringuvastused serverist</string>
+  <string name="notification_channel_sync_warnings">Sünkroniseerimishoiatused</string>
+  <string name="notification_channel_sync_warnings_desc">Vähetõsised sünkroniseerimisteated näiteks vigaste failide kohta</string>
+  <string name="notification_channel_sync_io_errors">Võrgu- ja sisend/väljundvead</string>
+  <string name="notification_channel_sync_io_errors_desc">Ühenduste aegumine ja muud sarnased probleemid (tihti ajutised)</string>
+  <!--IntroActivity-->
+  <string name="intro_slogan1">Sinu andmed. Sinu valik.</string>
+  <string name="intro_more_info">Lisateave</string>
+  <string name="intro_open_source_title">Avatud lähtekoodiga tarkvara</string>
+  <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
+  <!--AboutActivity-->
+  <string name="about_translations">Tõlked</string>
+  <string name="about_libraries">Teegid</string>
+  <string name="about_version">Versioon %1$s (%2$d)</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) ja kaasautorid</string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">Logifaili loomine ei õnnestunud</string>
+  <string name="logging_notification_view_share">Vaata/jaga</string>
+  <!--AccountsScreen-->
+  <string name="navigation_drawer_about">Teave / litsents</string>
+  <string name="navigation_drawer_beta_feedback">Beetaversiooni tagasiside</string>
+  <string name="install_browser">Palun paigalda veebibrauser</string>
+  <string name="navigation_drawer_settings">Seadistused</string>
+  <string name="navigation_drawer_news_updates">Uudised ja uuendused</string>
+  <string name="navigation_drawer_tools">Tarvikud</string>
+  <string name="navigation_drawer_external_links">Välised lingid</string>
+  <string name="navigation_drawer_website">Veebisait</string>
+  <string name="navigation_drawer_manual">Käsiraamat</string>
+  <string name="navigation_drawer_faq">KKK</string>
+  <string name="navigation_drawer_community">Kogukond</string>
+  <string name="navigation_drawer_support_project">Toeta projekti</string>
+  <string name="navigation_drawer_contribute">Osalemise viisid</string>
+  <string name="navigation_drawer_privacy_policy">Privaatsuspoliitika</string>
+  <string name="accounts_sync_all">Sünkroniseeri kõik kasutajakontod</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Teenuse tuvastamine ei õnnestunud</string>
+  <!--Foreground service used by WorkManager on Android <12-->
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Seadistused</string>
+  <string name="app_settings_debug">Silumine ja veaotsing</string>
+  <string name="app_settings_show_debug_info">Näita silumisteavet</string>
+  <!--AccountScreen-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_manage_permissions">Halda õigusi</string>
+  <string name="account_synchronize_now">Sünkroniseeri nüüd</string>
+  <string name="account_settings">Kasutajakonto seadistused</string>
+  <string name="account_rename">Muuda kasutajakonto nime</string>
+  <string name="account_rename_new_name">Kasutajakonto uus nimi</string>
+  <string name="account_rename_rename">Muuda nime</string>
+  <string name="account_rename_exists_already">Selline nimi on juba kasutusel</string>
+  <string name="account_rename_couldnt_rename">Kasutajakonto nime muutmine ei õnnestunud</string>
+  <string name="account_delete">Kustuta kasutajakonto</string>
+  <string name="account_delete_confirmation_title">Kas tõesti kustutame kasutajakonto?</string>
+  <string name="account_delete_confirmation_text">Sellega kustutame ka kõik aadresside, kalendrite ja ülesannete kohalikud koopiad.</string>
+  <string name="account_install_icsx5">Paigalda ICSx⁵</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Lisa kasutajakonto</string>
+  <string name="login_generic_login">Üldine sisselogimine</string>
+  <string name="login_provider_login">Teenusepakkujakohane sisselogimine</string>
+  <string name="login_continue">Jätka</string>
+  <string name="login_login">Logi sisse</string>
+  <string name="login_type_email">Logi sisse e-posti aadressiga</string>
+  <string name="login_email_address">E-posti aadress</string>
+  <string name="login_email_address_error">Nõutav on korrektne e-posti aadress</string>
+  <string name="login_password">Salasõna</string>
+  <string name="login_password_hide">Peida salasõna</string>
+  <string name="login_password_show">Näita salasõna</string>
+  <string name="login_password_optional">Salasõna*</string>
+  <string name="login_type_url">Logi sisse võrguaadressi ja kasutajanimega</string>
+  <string name="login_user_name">Kasutajanimi</string>
+  <string name="login_user_name_optional">Kasutajanimi*</string>
+  <string name="login_base_url">Baas-võrguaadress</string>
+  <string name="login_select_certificate">Vali sertifikaat</string>
+  <string name="login_create_account">Loo kasutajakonto</string>
+  <string name="login_account_name">Kasutajakonto nimi</string>
+  <string name="login_account_name_required">Kasutajakonto nimi on nõutav</string>
+  <string name="login_account_name_already_taken">Selline nimi on juba kasutusel</string>
+  <string name="login_account_not_created">Kasutajakonto loomine ei õnnestunud</string>
+  <string name="login_install_certificate">Paigalda sertifikaat</string>
+  <string name="login_google_account">Google\'i kasutajakonto</string>
+  <string name="login_nextcloud_login_flow_server_address">Nextcloudi serveri aadress</string>
+  <string name="login_check_credentials">Palun samuti topeltkontrolli autentimist (tavaliselt kasutajanimi ja salasõna)</string>
+  <string name="login_logs_available">Täiendav tehniline teade leidub logides.</string>
+  <string name="login_view_logs">Vaata logisid</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_sync">Sünkroniseerimine</string>
+  <string name="settings_username">Kasutajanimi</string>
+  <string name="settings_password">Salasõna</string>
+  <string name="settings_new_password">Uus salasõna</string>
+  <string name="settings_password_summary">Uuenda salasõna vastavalt oma serveri juhendile.</string>
+  <string name="settings_certificate_alias">Kliendi sertifikaat</string>
+  <string name="settings_certificate_alias_empty">Sertifikaati pole saadaval või paigaldatud</string>
+  <string name="settings_certificate_install">Paigalda sertifikaat</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_carddav">CardDAV</string>
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
+  <string name="create_addressbook">Loo aadressiraamat</string>
+  <string name="create_calendar">Loo kalender</string>
+  <string name="create_calendar_time_zone_optional">Vaikimisi ajavöönd*</string>
+  <string name="create_collection_optional">* valikuline</string>
+  <!--CollectionScreen-->
+  <string name="collection_synchronization">Sünkroniseerimine</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_view_details">Vaata üksikasju</string>
+  <string name="debug_info_logs_view">Vaata logisid</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">Tekkis viga.</string>
+  <string name="exception_httpexception">Tekkis http-viga.</string>
+  <string name="exception_ioexception">Tekkis sisend-väljundviga.</string>
+  <string name="exception_show_details">Näita üksikasju</string>
+  <!--WebDAV accounts-->
+  <string name="webdav_mounts_quota_used_available">Kasutatud mahukvoot: %1$s / saadaval: %2$s</string>
+  <string name="webdav_mounts_share_content">Jaga sisu</string>
+  <string name="webdav_add_mount_url">WebDAVi võrguaadress</string>
+  <string name="webdav_add_mount_url_invalid">Vigane võrguaadress</string>
+  <string name="webdav_add_mount_username">Kasutajanimi</string>
+  <string name="webdav_add_mount_password">Salasõna</string>
+  <!--sync-->
+  <!--widgets-->
+  <string name="widget_sync_all">Sünkroniseeri kõik</string>
+  <string name="widget_sync_all_accounts">Sünkroniseeri kõik kasutajakontod</string>
+  <!--cert4android-->
+</resources>
