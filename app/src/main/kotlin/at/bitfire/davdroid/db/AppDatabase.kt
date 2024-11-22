@@ -9,7 +9,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteQueryBuilder
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.database.getStringOrNull
 import androidx.room.AutoMigration
@@ -229,7 +228,7 @@ abstract class AppDatabase: RoomDatabase() {
                 db.execSQL("ALTER TABLE collections ADD COLUMN privUnbind INTEGER DEFAULT 0 NOT NULL")
                 db.execSQL("UPDATE collections SET privUnbind=NOT readOnly")
 
-                dropColumn(db, table = "collections", column = "readOnly")
+                // there's no DROP COLUMN in SQLite, so just keep the "readOnly" column
             },
 
             Migration(3, 4) { db ->
@@ -252,17 +251,6 @@ abstract class AppDatabase: RoomDatabase() {
                         arrayOf("caldav", "CALENDAR", "ADDRESS_BOOK"))
             }
         )
-
-        /**
-         * `DROP COLUMN` is available since SQLite 3.35.0, which is available since API 34.
-         * So for older versions, we just keep the respective column.
-         *
-         * If possible, use an [AutoMigrationSpec] with `@DeleteColumn` instead.
-         */
-        private fun dropColumn(db: SupportSQLiteDatabase, table: String, column: String) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-                db.execSQL("ALTER TABLE $table DROP COLUMN $column")
-        }
 
     }
 
