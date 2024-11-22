@@ -158,7 +158,7 @@ class DavCollectionRepository @Inject constructor(
             displayName = displayName,
             description = description,
             color = color,
-            timezone = timeZoneId?.let { getVTimeZone(it)?.toString() },
+            timezoneId = timeZoneId,
             supportsVEVENT = supportVEVENT,
             supportsVTODO = supportVTODO,
             supportsVJOURNAL = supportVJOURNAL

@@ -9,42 +9,64 @@ import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.platform.app.InstrumentationRegistry
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.logging.Logger
+import javax.inject.Inject
 
+@HiltAndroidTest
 class AppDatabaseTest {
 
-    val TEST_DB = "test"
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
 
-    val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
 
-    @Rule
-    @JvmField
-    val helper = MigrationTestHelper(
-        InstrumentationRegistry.getInstrumentation(),
-        AppDatabase::class.java,
-        listOf(), // no auto migrations until v8
-        FrameworkSQLiteOpenHelperFactory()
-    )
+    @Inject
+    lateinit var logger: Logger
+
+    @Before
+    fun setup() {
+        hiltRule.inject()
+    }
 
 
+    /**
+     * Creates a database with schema version 8 (the first exported one) and then migrates it to the latest version.
+     */
     @Test
     fun testAllMigrations() {
-        // DB schema is available since version 8, so create DB with v8
-        helper.createDatabase(TEST_DB, 8).close()
+        // Create DB with v8
+        MigrationTestHelper(
+            InstrumentationRegistry.getInstrumentation(),
+            AppDatabase::class.java,
+            listOf(), // no auto migrations until v8
+            FrameworkSQLiteOpenHelperFactory()
+        ).createDatabase(TEST_DB, 8).close()
 
-        val db = Room.databaseBuilder(context, AppDatabase::class.java, TEST_DB)
+        // open and migrate (to current version) database
+        Room.databaseBuilder(context, AppDatabase::class.java, TEST_DB)
             // manual migrations
-            .addMigrations(*AppDatabase.migrations)
+            .addMigrations(*AppDatabase.manualMigrations)
             // auto-migrations that need to be specified explicitly
-            .addAutoMigrationSpec(AppDatabase.AutoMigration11_12(context))
+            .apply {
+                for (spec in AppDatabase.getAutoMigrationSpecs(context))
+                    addAutoMigrationSpec(spec)
+            }
             .build()
-        try {
-            // open (with version 8) + migrate (to current version) database
-            db.openHelper.writableDatabase
-        } finally {
-            db.close()
-        }
+            .openHelper.writableDatabase    // this will run all migrations
+            .close()
+    }
+
+
+    companion object {
+        const val TEST_DB = "test"
     }
 
 }
