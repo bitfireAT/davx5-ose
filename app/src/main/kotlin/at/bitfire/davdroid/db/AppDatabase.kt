@@ -35,7 +35,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.io.Writer
-import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Singleton
 
@@ -112,13 +111,8 @@ abstract class AppDatabase: RoomDatabase() {
             db.query("SELECT id, timezoneId FROM collection").use { cursor ->
                 while (cursor.moveToNext()) {
                     val id: Long = cursor.getLong(0)
-                    val timezone: String = cursor.getString(1) ?: continue
-                    val vTimeZone = try {
-                        DateUtils.parseVTimeZone(timezone)
-                    } catch (e: Exception) {
-                        Logger.getGlobal().log(Level.WARNING, "Failed to parse VTIMEZONE: $timezone", e)
-                        null
-                    }
+                    val timezoneDef: String = cursor.getString(1) ?: continue
+                    val vTimeZone = DateUtils.parseVTimeZone(timezoneDef)
                     val timezoneId = vTimeZone?.timeZoneId?.value
                     db.execSQL("UPDATE collection SET timezoneId=? WHERE id=?", arrayOf(timezoneId, id))
                 }
