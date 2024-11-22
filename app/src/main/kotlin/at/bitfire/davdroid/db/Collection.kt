@@ -101,7 +101,7 @@ data class Collection(
     // CalDAV only
     var color: Int? = null,
 
-    /** timezone definition (only TZID) */
+    /** default timezone (only timezone ID, like `Europe/Vienna`) */
     var timezoneId: String? = null,
 
     /** whether the collection supports VEVENT; in case of calendars: null means true */
