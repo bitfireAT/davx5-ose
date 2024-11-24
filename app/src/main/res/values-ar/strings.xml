@@ -54,7 +54,6 @@
   <!--AboutActivity-->
   <string name="about_libraries">المكتبات</string>
   <string name="about_version">النسخة %1$s (%2$d)</string>
-  <string name="about_build_date">التجميع على %s</string>
   <string name="about_license_info_no_warranty">يقدَّم هذا البرنامج دون أدنى مسؤولية.  إنه برنامج حر، وندعوك لإعادة توزيعه حسب أحكام محددة.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">لا يمكن إنشاء ملف سجل</string>
@@ -68,7 +67,6 @@
   <string name="navigation_drawer_website">موقع الويب</string>
   <string name="navigation_drawer_manual">دليل الاستخدام</string>
   <string name="navigation_drawer_faq">الأسئلة الشائعة</string>
-  <string name="account_list_empty">مرحباً بك في DAVx⁵ !\n\n يمكنك إضافة حساب CalDAV أو CardDAV الآن.</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">فشل اكتشاف الخدمة</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">لم يتمكن التطبيق من تجديد قائمة المجموعة</string>
@@ -77,9 +75,7 @@
   <string name="app_settings">الإعدادات</string>
   <string name="app_settings_debug">تصحيح العلل</string>
   <string name="app_settings_show_debug_info">عرض معلومات التصحيح</string>
-  <string name="app_settings_show_debug_info_details">عرض/مشاركة تفاصيل البرنامج والضبط</string>
   <string name="app_settings_logging">التسجيل المفصّل</string>
-  <string name="app_settings_logging_on">التسجيل مفعَّل</string>
   <string name="app_settings_logging_off">التسجيل معطَّل</string>
   <string name="app_settings_connection">الاتصال</string>
   <string name="app_settings_security">الأمن</string>
@@ -123,13 +119,12 @@
   <string name="login_user_name">اسم المستخدم</string>
   <string name="login_base_url">URL الأساس</string>
   <string name="login_select_certificate">اختيار الشهادة</string>
-  <string name="login_create_account">إنشاء حساب</string>
+  <string name="login_add_account">إضافة حساب</string>
   <string name="login_account_name">اسم الحساب</string>
   <string name="login_account_name_info">استخدم عنوان بريدك الإلكتروني اسماً للحساب لأن آندرويد يستخدم اسم الحساب في حقل المنظّم ORGANIZER للأحداث التي تنشئها.  لايمكن أن تمتلك حسابين بالاسم نفسه.</string>
   <string name="login_account_contact_group_method">طريقة مجموعة جهة الاتصال:</string>
   <string name="login_account_name_required">اسم الحساب مطلوب</string>
   <string name="login_account_name_already_taken">اسم الحساب مأخوذ بالفعل</string>
-  <string name="login_account_not_created">لم نتمكن من إنشاء الحساب</string>
   <string name="login_configuration_detection">اكتشاف الضبط</string>
   <string name="login_querying_server">يجري استعلام الخادم … يرجى الانتظار</string>
   <string name="login_no_service">لم نجِد خدمة CalDAV أو CardDAV.</string>

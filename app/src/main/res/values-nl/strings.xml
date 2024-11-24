@@ -45,13 +45,13 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Schijnt niet meer ontwikkeld te worden - niet aanbevolen.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Sommige functies<a href="https://www.davx5.com/faq/tasks/advanced-task-features">worden (nog) niet ondersteund</a>.]]></string>
   <string name="intro_tasks_no_app_store">Geen app-store beschikbaar</string>
   <string name="intro_tasks_dont_show">Ik hoef geen ondersteuning van taken.*</string>
   <string name="intro_open_source_title">Open-source software</string>
   <string name="intro_open_source_text">We zijn blij dat de keuze valt op open source software %s. Ontwikkelen, onderhouden en ondersteunen is veel werk. Overweeg daarom bij te dragen (kan op vele manieren) of een donatie. Wij waarderen het zeer!</string>
   <string name="intro_open_source_details">Hoe bijdragen/doneren</string>
   <string name="intro_open_source_dont_show">In de nabije toekomst niet weergeven</string>
+  <string name="intro_next">Volgende</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Rechten toestaan</string>
   <string name="permissions_text">%s heeft rechten nodig om goed te werken.</string>
@@ -88,7 +88,6 @@
   <string name="wifi_permissions_background_location_permission_label">Onbeperkt toestaan</string>
   <string name="wifi_permissions_background_location_permission_on">Locatietoestemming ingesteld op: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Locatietoestemming niet ingesteld op: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%sgebruikt het locatie recht alleen om de huidige WiFi-SSID voor SSID-beperkte accounts te bepalen. Dit gebeurt zelfs als de app zich op de achtergrond bevindt. Locatiegegevens worden niet verzameld, opgeslagen, verwerkt of verzonden.</string>
   <string name="wifi_permissions_location_enabled">Toegang tot locatie altijd ingeschakeld</string>
   <string name="wifi_permissions_location_enabled_on">Toegang tot locatie is ingeschakeld</string>
   <string name="wifi_permissions_location_enabled_off">Toegang tot locatie is uitgeschakeld</string>
@@ -96,7 +95,6 @@
   <string name="about_translations">Vertalingen</string>
   <string name="about_libraries">Bibliotheken</string>
   <string name="about_version">Versie%1$s (%2$d)</string>
-  <string name="about_build_date">Gecompileerd op %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) en bijdragers</string>
   <string name="about_license_info_no_warranty">Dit programma wordt geleverd met ABSOLUUT GEEN GARANTIE. Het is gratis software, en mag opnieuw worden verspreid onder bepaalde voorwaarden.</string>
   <!--global settings-->
@@ -129,7 +127,6 @@
   <string name="account_list_manage_battery_saver">Batterijbesparing beheren</string>
   <string name="account_list_low_storage">Weinig opslagruimte. Android zal lokale wijzigingen niet onmiddellijk synchroniseren, maar tijdens de volgende reguliere synchronisatie.</string>
   <string name="account_list_manage_storage">Opslag beheren</string>
-  <string name="account_list_empty">Welkom bij DAVx⁵!\n\nJe kunt nu een CalDAV/CardDAV account toevoegen.</string>
   <string name="accounts_sync_all">Alle accounts synchroniseren</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Service herkenning is mislukt</string>
@@ -141,9 +138,7 @@
   <string name="app_settings">Instellingen</string>
   <string name="app_settings_debug">Debuggen</string>
   <string name="app_settings_show_debug_info">Debug-info</string>
-  <string name="app_settings_show_debug_info_details">Details over software en configuratie bekijken en delen</string>
   <string name="app_settings_logging">Uitgebreid loggen</string>
-  <string name="app_settings_logging_on">Loggen is actief</string>
   <string name="app_settings_logging_off">Loggen is niet actief</string>
   <string name="app_settings_battery_optimization">Batterijoptimalisatie</string>
   <string name="app_settings_battery_optimization_exempted">App is vrijgesteld (aanbevolen)</string>
@@ -230,14 +225,13 @@
   <string name="login_base_url">Basis-URL</string>
   <string name="login_base_url_info"><![CDATA[De basis URL wordt direct gecontroleerd, maar <a href="%s">services worden ook ontdekt</a> met behulp van DNS records en bekende URL\'s.]]></string>
   <string name="login_select_certificate">Certificaat selecteren</string>
-  <string name="login_create_account">Account aanmaken</string>
+  <string name="login_add_account">Account toevoegen</string>
   <string name="login_account_name">Accountnaam</string>
   <string name="login_account_avoid_apostrophe">Het gebruik van apostrofs (\') lijkt problemen te veroorzaken op sommige apparaten.</string>
   <string name="login_account_name_info">Gebruik het eigen e-mailadres als accountnaam, want Android gebruikt het als ORGANIZER veld voor gebeurtenissen. Twee accounts met hetzelfde adres kan niet.</string>
   <string name="login_account_contact_group_method">Methode voor contact-groepen:</string>
   <string name="login_account_name_required">Accountnaam verplicht</string>
   <string name="login_account_name_already_taken">Accountnaam is al in gebruik</string>
-  <string name="login_account_not_created">Account aanmaken lukt niet.</string>
   <string name="login_type_advanced">Geavanceerd inloggen</string>
   <string name="login_no_client_certificate_optional">Geen cliëntcertificaat*</string>
   <string name="login_client_certificate_selected">Cliëntcertificaat: %s</string>

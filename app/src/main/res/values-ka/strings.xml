@@ -45,7 +45,6 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">აღარ მიმდინარეობს განვითარება - არ არის რეკომენდებული.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Some features <a href="https://www.davx5.com/faq/tasks/advanced-task-features">are not supported</a> (yet).]]></string>
   <string name="intro_tasks_no_app_store">აპების მაღაზია ხელმიუწვდომია</string>
   <string name="intro_tasks_dont_show">მე არ მჭირდება დავალებების მხარდაჭერა.*</string>
   <string name="intro_open_source_title">ღია კოდის პროგრამული უზრუნველყოფა</string>
@@ -88,7 +87,6 @@
   <string name="wifi_permissions_background_location_permission_label">ყოველთვის დაშვება</string>
   <string name="wifi_permissions_background_location_permission_on">ადგილმდებარეობის უფლების მნიშვნელობა: %s</string>
   <string name="wifi_permissions_background_location_permission_off">ადგილმდებარეობის უფლება არ არის შემდეგი: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s იყენებს ადგილმდებარეობის უფლებას მხოლოდ რათ დაადგინოს მიმდინარე WiFi-ს SSID SSID-თი შეზღუდული ანგარიშებისთვის. ეს მოხდება მაშინაც, როდესაც აპი ფონურ რეჟიმშია. არანაირი ადგილმდებარეობიაპის მონაცემები არ იკრიფება, ინახება, მუშავდება ან სადმე იგზავნება.</string>
   <string name="wifi_permissions_location_enabled">ადგილმდებარეობა ყოველთვის ჩართულია</string>
   <string name="wifi_permissions_location_enabled_on">ადგილმდებარეობის სერვისი ჩართულია</string>
   <string name="wifi_permissions_location_enabled_off">ადგილმდებარეობის სერვისი გათიშულია</string>
@@ -96,7 +94,6 @@
   <string name="about_translations">თარგმანი</string>
   <string name="about_libraries">ბიბლიოთეკები</string>
   <string name="about_version">ვერსია %1$s (%2$d)</string>
-  <string name="about_build_date">კომპილირებულია %s-ს</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) და მონაწილეები</string>
   <string name="about_license_info_no_warranty">ამ პროგრამას არ აქვს არანაირი გარანტია. იგი არის უფასო პროგრამული უზრუნველყოფა, ხოლო თქვენ შეგეძლეიათ იგი გაავრცელოთ გარკვეული პირობების გათვალისწინებით.</string>
   <!--global settings-->
@@ -129,7 +126,6 @@
   <string name="account_list_manage_battery_saver">კვების ელემენტის შემნახველის მართვა</string>
   <string name="account_list_low_storage">მეხსიერება ცოტა დარჩა. Android არ დაასინქრონიზირებს ადგილობრივ ცვლილებებს დაუყონებლივ, ხოლო დაასინქრონიზირებს შემდეგი რეგულარული სინქრონიზაციის დროს.</string>
   <string name="account_list_manage_storage">მეხსიერების მართვა</string>
-  <string name="account_list_empty">კეტილი იყოს თქვენი მობრძანება DAVx⁵-ში!\n\nაწი შეგიძლიათ დაამატოთ CalDAV/CardDAV ანგარიში.</string>
   <string name="accounts_sync_all">ყველა ანგარიშის სინქრონიზაცია</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">სერვისის აღმოჩენა ჩაიშალა</string>
@@ -141,9 +137,7 @@
   <string name="app_settings">პარამეტრები</string>
   <string name="app_settings_debug">დებაგი</string>
   <string name="app_settings_show_debug_info">დებაგის ინფორმაციის ჩვენება</string>
-  <string name="app_settings_show_debug_info_details">პროგრამული უზრუნველყოფის და კონფიგურაციის დეტალების ნახვა/გაზიარება</string>
   <string name="app_settings_logging">დეტალური ჟურნალში ჩაწერა</string>
-  <string name="app_settings_logging_on">ჟურნალში ჩაწერა აქტიურია</string>
   <string name="app_settings_logging_off">ჟურნალში ჩაწერა გათიშულია</string>
   <string name="app_settings_battery_optimization">კვების ელემენტის ოპტიმიზაცია</string>
   <string name="app_settings_battery_optimization_exempted">აპი გამორიცხულია (რეკომენდებულია)</string>
@@ -230,14 +224,13 @@
   <string name="login_base_url">საბაზო URL</string>
   <string name="login_base_url_info"><![CDATA[საბაზო URL-ი პირადპირ იქნება შემოწმებული, მაგრამ <a href="%s">ასევე აღმოჩენილია სერვისები</a> DNS ჩანაწერების და კარგად ცნობილი URL-ების მეშვეობით.]]></string>
   <string name="login_select_certificate">სერტიფიკატის არჩევა</string>
-  <string name="login_create_account">ანგარიშის შექმნა</string>
+  <string name="login_add_account">ანგარიშის დამატება</string>
   <string name="login_account_name">ანგარიშის სახელი</string>
   <string name="login_account_avoid_apostrophe">აპოსტროფების (\') გამოყენება იწვევს პრობლემებს ზოგ მოწყობილობაზე.</string>
   <string name="login_account_name_info">გამოიყენეთ თქვენი ელ. ფოსტის მსიამართი ანგარიშის სახელად, რადგან Android გამოიყენებს ანგარიშის სახელს ორგანიზატორის ველში თქვენს მიერ შექმნილ ღონისძიებებისთვის. თქვენ არ შეიძლება გქონდეთ ორი ანგარიში იგივე სახელით.</string>
   <string name="login_account_contact_group_method">კონტაქტების დაჯგუფების მეთოდი:</string>
   <string name="login_account_name_required">საჭიროა ანგარიშის სახელი</string>
   <string name="login_account_name_already_taken">ანგარიშის სახელი უკვე დაკავებულია</string>
-  <string name="login_account_not_created">ანგარიში ვერ შეიქმნა</string>
   <string name="login_type_advanced">გაფართოებული შესვლა</string>
   <string name="login_no_client_certificate_optional">კლიენტის სერტიფიკატი არ არის*</string>
   <string name="login_client_certificate_selected">კლიენტის სერტიფიკატი: %s</string>

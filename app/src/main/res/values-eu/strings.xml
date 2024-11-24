@@ -45,7 +45,6 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Badirudi ez dela garatzen – ez da gomendatzen.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Ezaugarri batzuk <a href="https://www.davx5.com/faq/tasks/advanced-task-features">ez dira onartzen</a> (oraindik).]]></string>
   <string name="intro_tasks_no_app_store">Ez dago denda aplikaziorik eskuragarri </string>
   <string name="intro_tasks_dont_show">Ez dut zereginen funtzionalitatea behar.*</string>
   <string name="intro_open_source_title">Kode irekiko softwarea</string>
@@ -89,7 +88,6 @@
   <string name="wifi_permissions_background_location_permission_on">Kokapen-baimena honela ezarri da: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Kokapen-baimena ez da honela ezarri:
 %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s zure kokapen baimena erabiltzen du uneko WiFi SSIDa SSIDz murriztatutako kontuen kontra egiaztatzeko. Hau aplikazioa atzeko planoan badago ere gertatuko da. Ez da kokapen daturik biltzen, gordetzen, prozesatzen edo inora bidaltzen.</string>
   <string name="wifi_permissions_location_enabled">Kokapena beti gaituta</string>
   <string name="wifi_permissions_location_enabled_on">Kokapen zerbitzua gaituta dago</string>
   <string name="wifi_permissions_location_enabled_off">Kokapen zerbitzua desgaituta dago</string>
@@ -97,7 +95,6 @@
   <string name="about_translations">Itzulpenak</string>
   <string name="about_libraries">Liburutegiak</string>
   <string name="about_version">%1$s (%2$d) bertsioa</string>
-  <string name="about_build_date">%s(e)an konpilatuta</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) eta kolaboratzaileak</string>
   <string name="about_license_info_no_warranty">Programa hau INOLAKO BERMERIK GABE dator. Software librea da, eta birbanatzeko baimena duzu baldintza batzuk kontuan hartuz.</string>
   <!--global settings-->
@@ -130,7 +127,6 @@
   <string name="account_list_manage_battery_saver">Kudeatu bateria-arrezpena</string>
   <string name="account_list_low_storage">Biltegiratze lekua baxua. Android-ek ez ditu tokiko aldaketak berehala sinkronizatuko, hurrengo sinkronizazio arruntean baizik.</string>
   <string name="account_list_manage_storage">Kudeatu biltegia</string>
-  <string name="account_list_empty">Ongi etorri DAVx⁵ aplikaziora!\n\nCalDAV/CardDAV kontu bat gehitu dezakezu orain.</string>
   <string name="accounts_sync_all">Sinkronizatu kontu guztiak</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Zerbitzuaren detekzioak huts egin du</string>
@@ -142,9 +138,7 @@
   <string name="app_settings">Ezarpenak</string>
   <string name="app_settings_debug">Arazketa</string>
   <string name="app_settings_show_debug_info">Erakutsi arazte informazioa</string>
-  <string name="app_settings_show_debug_info_details">Ikusi/partekatu software eta konfigurazio xehetasunak</string>
   <string name="app_settings_logging">Erregistro xehatuak</string>
-  <string name="app_settings_logging_on">Erregistratzea gaituta dago</string>
   <string name="app_settings_logging_off">Erregistratzea desgaituta dago</string>
   <string name="app_settings_battery_optimization">Bateria optimizazioa</string>
   <string name="app_settings_battery_optimization_exempted">Aplikazioa salbuetsita dago (gomendatua)</string>
@@ -231,14 +225,13 @@
   <string name="login_base_url">Oinarri URL</string>
   <string name="login_base_url_info"><![CDATA[Oinarrizko URLa zuzenean egiaztatuko da, baina <a href="%s">zerbitzuak ere aurkitzen dira</a> DNS erregistroak eta URL ezagunak erabilita.]]></string>
   <string name="login_select_certificate">Aukeratu ziurtagiria</string>
-  <string name="login_create_account">Sortu kontua</string>
+  <string name="login_add_account">Gehitu kontua</string>
   <string name="login_account_name">Kontuaren izena</string>
   <string name="login_account_avoid_apostrophe">Apostrofoak (\') erabiltzeak gailu batzuetan.arazoak sortzen dituela dirudi.</string>
   <string name="login_account_name_info">Erabili zure eposta helbidea kontu izen bezala Androidek kontuaren izena ANTOLATZAILE eremuan ezarriko duelako sortzen dituzun gertaerentzako. Ezin dituzu bi kontu izen berdinarekin eduki.</string>
   <string name="login_account_contact_group_method">Kontaktuen taldekatze metodoa:</string>
   <string name="login_account_name_required">Kontuaren izena beharrezkoa</string>
   <string name="login_account_name_already_taken">Kontuaren izena hartuta dago</string>
-  <string name="login_account_not_created">Ezin izan da kontua sortu</string>
   <string name="login_type_advanced">Saio-hasiera aurreratua</string>
   <string name="login_no_client_certificate_optional">Ez dago bezeroaren ziurtagiririk*</string>
   <string name="login_client_certificate_selected">Bezeroaren ziurtagiria: %s</string>

@@ -45,7 +45,6 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Nu pare a mai fi dezvoltat – nu este recomandat.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Unele caracteristici <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nu sunt acceptate</a> (încă).]]></string>
   <string name="intro_tasks_no_app_store">Nu există un magazin de aplicații disponibil</string>
   <string name="intro_tasks_dont_show">Nu am nevoie de suport pentru sarcini.*</string>
   <string name="intro_open_source_title">Software cu sursă deschisă</string>
@@ -88,7 +87,6 @@
   <string name="wifi_permissions_background_location_permission_label">Permite tot timpul</string>
   <string name="wifi_permissions_background_location_permission_on">Permisiunea locației setată la: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Permisiunea de locație nu este setată la: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s folosește permisiunea Locație numai pentru a determina SSID-ul WiFi actual pentru conturile restricționate de SSID. Acest lucru se va întâmpla chiar și atunci când aplicația este în fundal. Nu sunt colectate, stocate, procesate sau trimise nicăieri date despre locație.</string>
   <string name="wifi_permissions_location_enabled">Locația este întotdeauna activată</string>
   <string name="wifi_permissions_location_enabled_on">Serviciul de localizare este activat</string>
   <string name="wifi_permissions_location_enabled_off">Serviciul de localizare este dezactivat</string>
@@ -96,7 +94,6 @@
   <string name="about_translations">Traduceri</string>
   <string name="about_libraries">Biblioteci</string>
   <string name="about_version">Versiune %1$s (%2$d)</string>
-  <string name="about_build_date">Compilată la %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (inginerie web bitfire GmbH) și contribuitori</string>
   <string name="about_license_info_no_warranty">Acest program vine cu ABSOLUT NICIO GARANȚIE. Este software gratuit și ești binevenit să îl redistribui în anumite condiții.</string>
   <!--global settings-->
@@ -129,7 +126,6 @@
   <string name="account_list_manage_battery_saver">Gestionează economisirea bateriei</string>
   <string name="account_list_low_storage">Spațiu de depozitare redus. Android nu va sincroniza modificările locale imediat, ci în timpul următoarei sincronizări obișnuite.</string>
   <string name="account_list_manage_storage">Gestionează stocarea</string>
-  <string name="account_list_empty">Bun venit la DAVx⁵!\n\nPoți adăuga acum un cont CalDAV/CardDAV.</string>
   <string name="accounts_sync_all">Sincronizează toate conturile</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Detectarea serviciului a eșuat</string>
@@ -141,9 +137,7 @@
   <string name="app_settings">Setări</string>
   <string name="app_settings_debug">Depanare</string>
   <string name="app_settings_show_debug_info">Afișează informațiile de depanare</string>
-  <string name="app_settings_show_debug_info_details">Vizualizează/partajează software-ul și detaliile de configurare</string>
   <string name="app_settings_logging">Jurnalizare detaliată</string>
-  <string name="app_settings_logging_on">Înregistrarea este activă</string>
   <string name="app_settings_logging_off">Înregistrarea este dezactivată</string>
   <string name="app_settings_battery_optimization">Optimizarea bateriei</string>
   <string name="app_settings_battery_optimization_exempted">Aplicația este exclusă (recomandat)</string>
@@ -230,14 +224,13 @@
   <string name="login_base_url">Adresa URL de bază</string>
   <string name="login_base_url_info"><![CDATA[Adresa URL de bază va fi verificată direct, dar <a href="%s">serviciile sunt de asemenea descoperite</a> folosind înregistrări DNS și adrese URL bine-cunoscute.]]></string>
   <string name="login_select_certificate">Selectează certificatul</string>
-  <string name="login_create_account">Creează cont</string>
+  <string name="login_add_account">Adaugă contul</string>
   <string name="login_account_name">Nume de cont</string>
   <string name="login_account_avoid_apostrophe">Utilizarea apostrofelor (\') pare să cauzeze probleme pe unele dispozitive.</string>
   <string name="login_account_name_info">Utilizează adresa de e-mail ca nume de cont, deoarece Android va folosi numele contului ca câmp ORGANIZATOR pentru evenimentele pe care le creezi. Nu poți avea două conturi cu același nume.</string>
   <string name="login_account_contact_group_method">Metoda de grupare a contactelor:</string>
   <string name="login_account_name_required">Numele contului este necesar</string>
   <string name="login_account_name_already_taken">Numele contului este deja luat</string>
-  <string name="login_account_not_created">Contul nu a putut fi creat</string>
   <string name="login_type_advanced">Autentificare avansată</string>
   <string name="login_no_client_certificate_optional">Fără certificat de client*</string>
   <string name="login_client_certificate_selected">Certificat de client: %s</string>

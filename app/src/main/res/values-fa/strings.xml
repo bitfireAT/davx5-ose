@@ -40,7 +40,6 @@
   <string name="intro_tasks_opentasks">وظایف را باز کنید</string>
   <string name="intro_tasks_opentasks_info">عدم توسعه توسط برنامه نویسان - توصیه نمیشود.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[برخی از قابلیت ها <a href="https://www.davx5.com/faq/tasks/advanced-task-features">پشتیبانی نمیشود</a> (فعلا).]]></string>
   <string name="intro_tasks_no_app_store">فروشگاه در دسترس نیست</string>
   <string name="intro_tasks_dont_show">من به پشتیبانی وظایف نیاز ندارم. *</string>
   <string name="intro_open_source_title">برنامه‌های متن باز</string>
@@ -81,7 +80,6 @@
   <string name="wifi_permissions_location_permission_off">مجوز مکان رد شد</string>
   <string name="wifi_permissions_background_location_permission">مجوز مکان پس زمینه</string>
   <string name="wifi_permissions_background_location_permission_label">همیشه اجازه دهید</string>
-  <string name="wifi_permissions_background_location_disclaimer">%sفقط از مجوز مکان برای تعیین SSID WiFi فعلی برای حساب‌های محدود شده با SSID استفاده می‌کند. حتی وقتی برنامه در پس زمینه باشد این اتفاق می افتد. هیچ کدام اطلاعات مکانی  ، ذخیره ، پردازش و یا ارسال نمی شود.</string>
   <string name="wifi_permissions_location_enabled">مکان همیشه فعال است</string>
   <string name="wifi_permissions_location_enabled_on">سرویس مکان فعال است</string>
   <string name="wifi_permissions_location_enabled_off">سرویس مکان غیرفعال است</string>
@@ -89,7 +87,6 @@
   <string name="about_translations">ترجمه ها</string>
   <string name="about_libraries">کتابخانه ها</string>
   <string name="about_version">ورژن %1$s (%2$d)</string>
-  <string name="about_build_date">در %s وارد شده است</string>
   <string name="about_license_info_no_warranty">این برنامه کاملاً بدون ضمانت است. این یک نرم افزار رایگان است ، و شما می توانید تحت شرایط خاص توزیع مجدد آن را انجام دهید.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">پرونده ثبت ایجاد نشد</string>
@@ -115,7 +112,6 @@
   <string name="account_list_datasaver_enabled">محافظ داده فعال است. همگام سازی در پس زمینه محدود می شود.</string>
   <string name="account_list_manage_datasaver">مدیریت محافظ داده</string>
   <string name="account_list_manage_storage">مدیریت حافظه</string>
-  <string name="account_list_empty">به همگام‌ساز DAVx⁵ خوش آمدید</string>
   <string name="accounts_sync_all">همگام سازی همه حساب‌ها</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">تشخیص سرویس ناموفق بود</string>
@@ -127,9 +123,7 @@
   <string name="app_settings">تنظیمات</string>
   <string name="app_settings_debug">اشکال زدایی</string>
   <string name="app_settings_show_debug_info">نمایش اطلاعات اشکال زدایی</string>
-  <string name="app_settings_show_debug_info_details">جزئیات نرم افزار و پیکربندی را مشاهده یا به اشتراک بگذارید</string>
   <string name="app_settings_logging">ورود به سیستم</string>
-  <string name="app_settings_logging_on">ورود به سیستم فعال است</string>
   <string name="app_settings_logging_off">ورود به سیستم غیرفعال است</string>
   <string name="app_settings_battery_optimization">بهینه ساز باتری</string>
   <string name="app_settings_connection">ارتباط</string>
@@ -197,13 +191,12 @@
   <string name="login_user_name">نام کاربری</string>
   <string name="login_base_url">آدرس پایه</string>
   <string name="login_select_certificate">گواهی را انتخاب کنید</string>
-  <string name="login_create_account">ساخت حساب</string>
+  <string name="login_add_account">افزودن حساب</string>
   <string name="login_account_name">عنوان حساب</string>
   <string name="login_account_name_info">از آدرس ایمیل خود به عنوان نام حساب استفاده کنید زیرا Android از نام حساب به عنوان قسمت ORGANIZER برای رویدادهایی که ایجاد می کنید استفاده خواهد کرد. نمی توانید دو حساب با یک نام داشته باشید.</string>
   <string name="login_account_contact_group_method">روش گروه تماس:</string>
   <string name="login_account_name_required">نام حساب لازم است</string>
   <string name="login_account_name_already_taken">نام حساب قبلاً گرفته شده است</string>
-  <string name="login_account_not_created">حساب ایجاد نشد</string>
   <string name="login_no_certificate_found">گواهی یافت نشد</string>
   <string name="login_install_certificate">نصب گواهی</string>
   <string name="login_configuration_detection">تشخیص پیکربندی</string>

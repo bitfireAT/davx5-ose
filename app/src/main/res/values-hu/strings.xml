@@ -44,13 +44,13 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">A fejlesztése leállt – nem ajánlott.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Néhány funkció <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nem támogatott</a> (még).]]></string>
   <string name="intro_tasks_no_app_store">Nincs elérhető alkalmazás-áruház</string>
   <string name="intro_tasks_dont_show">Nincs szükségem a feladatok támogatására.*</string>
   <string name="intro_open_source_title">Nyílt forráskódú szoftver</string>
   <string name="intro_open_source_text">Nagyon örülünk, hogy a %s felhasználói közé tartozik, amely nyílt forráskódú szoftver.  A fejlesztés, karbantartás és támogatás ugyanakkor kemény munkát igényel.  Fontolja meg, hogy ezt pénzzel, vagy valamilyen más módon támogassa (több lehetőség közül is választhat). Nagyon megköszönnénk!</string>
   <string name="intro_open_source_details">A hozzájárulás lehetőségei</string>
   <string name="intro_open_source_dont_show">Ne mutassa a közeljövőben</string>
+  <string name="intro_next">Tovább</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Engedélyek</string>
   <string name="permissions_text">A %s megfelelő működése bizonyos engedélyeket igényel.</string>
@@ -87,7 +87,6 @@
   <string name="wifi_permissions_background_location_permission_label">Engedélyezés mindig</string>
   <string name="wifi_permissions_background_location_permission_on">A Helyadatok engedély erre van állítva: %s</string>
   <string name="wifi_permissions_background_location_permission_off">A Helyadatok engedély nincs erre állítva: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s a Helyadatok engedélyt csak arra használja, hogy a jelenlegi WiFi SSID-jét meghatározza az SSID-ra korlátozott fiókokhoz. Ez a funkció akkor is működik, ha az alkalmazás háttérben van. Semmilyen helyadatot nem gyűjtünk, tárolunk, dolgozunk fel vagy küldünk bárhová.</string>
   <string name="wifi_permissions_location_enabled">A helyadatok mindig engedélyezve vannak</string>
   <string name="wifi_permissions_location_enabled_on">A helyadat-szolgáltatás bekapcsolva</string>
   <string name="wifi_permissions_location_enabled_off">A helyadat-szolgáltatás kikapcsolva</string>
@@ -95,7 +94,6 @@
   <string name="about_translations">Fordítások</string>
   <string name="about_libraries">Programkönyvtárak</string>
   <string name="about_version">Verziószám:%1$s (%2$d)</string>
-  <string name="about_build_date">Fordítás ideje: %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) és a közreműködők</string>
   <string name="about_license_info_no_warranty">Ehhez a program SEMMIFÉLE GARANCIA NEM JÁR. Szabad szoftver, amely bizonyos feltételek mellett szabadon terjeszthető.</string>
   <!--global settings-->
@@ -128,7 +126,6 @@
   <string name="account_list_manage_battery_saver">Akkumulátorkímélés kezelése</string>
   <string name="account_list_low_storage">A rendelkezésre álló tárhely kevés.  Az Android nem fogja a helyi erőforrásokat azonnal szinkronizálni, csak a következő rendes alkalommal.</string>
   <string name="account_list_manage_storage">Tárhely kezelése</string>
-  <string name="account_list_empty">Üdvözöljük a DAVx⁵ felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
   <string name="accounts_sync_all">Az összes fiók szinkronizálása</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
@@ -140,9 +137,7 @@
   <string name="app_settings">Beállítások</string>
   <string name="app_settings_debug">Hibakeresés</string>
   <string name="app_settings_show_debug_info">Hibakeresési információ megtekintése</string>
-  <string name="app_settings_show_debug_info_details">Szoftver- és konfigurációs részletek megtekintése/megosztása</string>
   <string name="app_settings_logging">Részletes naplózás</string>
-  <string name="app_settings_logging_on">Naplózás bekapcsolva</string>
   <string name="app_settings_logging_off">Naplózás kikapcsolva</string>
   <string name="app_settings_battery_optimization">Akkumulátorhasználat optimalizálása</string>
   <string name="app_settings_battery_optimization_exempted">Az alkalmazás kivétel alóla (ajánlott)</string>
@@ -226,14 +221,13 @@
   <string name="login_base_url">Alapwebcím</string>
   <string name="login_base_url_info"><![CDATA[Az alapwebcím közvetlenül lesz ellenőrizve, de a <a href="%s">szolgáltatások felfedezése</a> DNS rekordok és jól ismert webcímek alapján is történik.]]></string>
   <string name="login_select_certificate">Tanúsítvány kiválasztása</string>
-  <string name="login_create_account">Fiók létrehozása</string>
+  <string name="login_add_account">Fiók hozzáadása</string>
   <string name="login_account_name">A fiók neve</string>
   <string name="login_account_avoid_apostrophe">Az aposztrófok (\') használata a visszajelzések szerinte egyes eszközökön problémát okoz.</string>
   <string name="login_account_name_info">Használja az e-mail-címét fióknévként, mert később a létrehozandó események szervezőjeként (ORGANIZER mező) az Android ezt fogja használni. Két fiókot nem lehet azonos néven létrehozni.</string>
   <string name="login_account_contact_group_method">A csoportok kezelésének módja:</string>
   <string name="login_account_name_required">A fióknév kötelező</string>
   <string name="login_account_name_already_taken">A fióknév már használatban van</string>
-  <string name="login_account_not_created">A fiók létrehozása nem sikerült</string>
   <string name="login_type_advanced">Speciális bejelentkezés</string>
   <string name="login_no_client_certificate_optional">Nincs klienstanúsítvány*</string>
   <string name="login_client_certificate_selected">Klienstanúsítvány: %s</string>

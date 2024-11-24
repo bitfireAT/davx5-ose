@@ -45,13 +45,13 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">開発を停止している可能性があります – 非推奨</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[いくつかの機能は (まだ) <a href="https://www.davx5.com/faq/tasks/advanced-task-features">対応していません</a>]]></string>
   <string name="intro_tasks_no_app_store">アプリストアが利用できません</string>
   <string name="intro_tasks_dont_show">ToDo リスト対応は不要です*</string>
   <string name="intro_open_source_title">オープンソースソフトウェア</string>
   <string name="intro_open_source_text">オープンソースソフトウェアとして %s をお届けできることをとても嬉しく思っています。開発・維持・サポートは簡単ではありません。貢献 (さまざまな方法があります) や寄付をご検討ください。プロジェクトはそれらに支えられています。</string>
   <string name="intro_open_source_details">貢献/寄付の方法</string>
   <string name="intro_open_source_dont_show">しばらく非表示にする</string>
+  <string name="intro_next">次へ</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">許可</string>
   <string name="permissions_text">%s が正しく動作するには権限を許可する必要があります</string>
@@ -88,7 +88,6 @@
   <string name="wifi_permissions_background_location_permission_label">常に許可</string>
   <string name="wifi_permissions_background_location_permission_on">位置情報の権限は %s に設定されています</string>
   <string name="wifi_permissions_background_location_permission_off">位置情報の権限は %s に設定されていません</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s は位置情報の権限を SSID で制限されたアカウントのために現在の WiFi SSID を確認する目的にのみ使用します。これはアプリがバックグラウンドでも発生します。位置情報データが収集、保存、処理および送信されることはありません。</string>
   <string name="wifi_permissions_location_enabled">位置情報は常に有効です</string>
   <string name="wifi_permissions_location_enabled_on">位置情報サービスは有効です</string>
   <string name="wifi_permissions_location_enabled_off">位置情報サービスは無効です</string>
@@ -96,7 +95,6 @@
   <string name="about_translations">翻訳</string>
   <string name="about_libraries">ライブラリー</string>
   <string name="about_version">バージョン %1$s (%2$d)</string>
-  <string name="about_build_date">コンパイル日時 %s</string>
   <string name="about_copyright">© Ricki Hirner、Bernhard Stockmann (bitfire web engineering GmbH) と貢献者</string>
   <string name="about_license_info_no_warranty">このプログラムは完全に無保証で提供されます。これはフリーソフトウェアで、特定の条件下での再頒布を歓迎します。</string>
   <!--global settings-->
@@ -129,7 +127,6 @@
   <string name="account_list_manage_battery_saver">バッテリー最適化機能を管理</string>
   <string name="account_list_low_storage">ストレージの容量が残りわずかです。Android はローカルの変更を即座に同期しませんが、次の通常サイクルで同期します。</string>
   <string name="account_list_manage_storage">ストレージを管理</string>
-  <string name="account_list_empty">DAVx⁵ にようこそ！\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
   <string name="accounts_sync_all">すべてのアカウントを同期</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">サービスの検出に失敗しました</string>
@@ -141,9 +138,7 @@
   <string name="app_settings">設定</string>
   <string name="app_settings_debug">デバッグ</string>
   <string name="app_settings_show_debug_info">デバッグ情報を表示</string>
-  <string name="app_settings_show_debug_info_details">ソフトウェアと設定の詳細を表示/共有します</string>
   <string name="app_settings_logging">詳細ログ</string>
-  <string name="app_settings_logging_on">ログを取得します</string>
   <string name="app_settings_logging_off">ログを取得しません</string>
   <string name="app_settings_battery_optimization">バッテリー最適化</string>
   <string name="app_settings_battery_optimization_exempted">アプリは除外されています (推奨)</string>
@@ -230,14 +225,13 @@
   <string name="login_base_url">ベース URL</string>
   <string name="login_base_url_info"><![CDATA[ベース URL は直接確認します。ただし、<a href="%s">サービスの検出</a>には DNS レコードと well-known URL も使用します。]]></string>
   <string name="login_select_certificate">証明書を選択</string>
-  <string name="login_create_account">アカウントを作成</string>
+  <string name="login_add_account">アカウントを追加</string>
   <string name="login_account_name">アカウント名</string>
   <string name="login_account_avoid_apostrophe">アポストロフィー「\'」を使用すると一部のデバイスで問題が発生します。</string>
   <string name="login_account_name_info">Android はあなたが作成した予定の ORGANIZER フィールドにアカウント名を使用するので、アカウント名としてメールアドレスを使用してください。同じ名前のアカウントを 2 つ持つことはできません。</string>
   <string name="login_account_contact_group_method">連絡先グループ方法:</string>
   <string name="login_account_name_required">アカウント名が必要です</string>
   <string name="login_account_name_already_taken">アカウント名はすでに取得されています</string>
-  <string name="login_account_not_created">アカウントを作成できません</string>
   <string name="login_type_advanced">高度なログイン</string>
   <string name="login_no_client_certificate_optional">クライアント証明書なし*</string>
   <string name="login_client_certificate_selected">クライアント証明書: %s</string>

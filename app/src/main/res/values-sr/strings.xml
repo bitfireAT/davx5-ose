@@ -39,12 +39,12 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Изгледа да се више не развија - не препоручује се.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Неке функционалности <a href="https://www.davx5.com/faq/tasks/advanced-task-features">нису подржане</a> (за сада).]]></string>
   <string name="intro_tasks_no_app_store">Ниједна продавница апликација није доступна</string>
   <string name="intro_tasks_dont_show">Не треба ми подршка за задатке.*</string>
   <string name="intro_open_source_title">Софтвер отвореног кода</string>
   <string name="intro_open_source_details">Како допринети/донирати</string>
   <string name="intro_open_source_dont_show">Не приказуј у блиској будућности</string>
+  <string name="intro_next">Следеће</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Дозволе</string>
   <string name="permissions_text">%s захтева дозволе да би исправно радила.</string>
@@ -84,7 +84,6 @@
   <string name="about_translations">Преводи</string>
   <string name="about_libraries">Библиотеке</string>
   <string name="about_version">Издање %1$s (%2$d)</string>
-  <string name="about_build_date">Компилован %s</string>
   <string name="about_license_info_no_warranty">Овај програм НЕМА НИКАКВЕ ГАРАНЦИЈЕ. Бесплатан је софтвер којег можете слободно да делите под одређеним условима.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Није се могла направити датотека записа</string>
@@ -107,7 +106,6 @@
   <string name="navigation_drawer_privacy_policy">Политика приватности</string>
   <string name="account_list_no_notification_permission">Обавештења су онемогућена. Нећете бити обавештени о проблемима са синхронизацијом.</string>
   <string name="account_list_manage_storage">Управљајте складиштем</string>
-  <string name="account_list_empty">Добро дошли у ДАВдроид!\n\nМожете сада да додате КалДАВ/КардДАВ налог.</string>
   <string name="accounts_sync_all">Синхронизуј све налоге</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Откривање услуге није успело</string>
@@ -118,7 +116,6 @@
   <string name="app_settings">Поставке</string>
   <string name="app_settings_debug">Тражење грешака</string>
   <string name="app_settings_show_debug_info">Прикажи податке за исправљање грешака</string>
-  <string name="app_settings_show_debug_info_details">Приказ/дељење детаља софтвера и поставки</string>
   <string name="app_settings_logging">Исцрпна евиденција</string>
   <string name="app_settings_battery_optimization">Оптимизација батерије</string>
   <string name="app_settings_connection">Повезивање</string>
@@ -185,13 +182,12 @@
   <string name="login_user_name">Корисничко име</string>
   <string name="login_base_url">Корени УРЛ</string>
   <string name="login_select_certificate">Изабери сертификат</string>
-  <string name="login_create_account">Направи налог</string>
+  <string name="login_add_account">Додај налог</string>
   <string name="login_account_name">Назив налога</string>
   <string name="login_account_name_info">Користите вашу е-адресу за назив налога јер Андроид користи назив налога за поље ОРГАНИЗАТОР за догађаје које направите. Не можете имати два налога истог назива.</string>
   <string name="login_account_contact_group_method">Режим група контаката:</string>
   <string name="login_account_name_required">Назив налога је обавезан</string>
   <string name="login_account_name_already_taken">Назив налога је већ заузет</string>
-  <string name="login_account_not_created">Не могох направити налог</string>
   <string name="login_no_certificate_found">Сертификат није пронађен</string>
   <string name="login_install_certificate">Инсталирај сертификат</string>
   <string name="login_type_google">Гугл контакти / календар</string>

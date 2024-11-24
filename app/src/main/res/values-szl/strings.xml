@@ -37,7 +37,6 @@
   <string name="about_translations">Przekłady</string>
   <string name="about_libraries">Bibliotyki</string>
   <string name="about_version">Wersyjo %1$s (%2$d)</string>
-  <string name="about_build_date">Skōmpilowano %s</string>
   <string name="about_license_info_no_warranty">Tyn program przichodzi BEZ ŻODNYJ GWARANCYJE. To je wolne ôprogramowanie i możesz je rozkludzać pod ôkryślōnymi warōnkami.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Niy szło stworzić zbioru dziynnika</string>
@@ -53,7 +52,6 @@
   <string name="navigation_drawer_manual">Ryncznie</string>
   <string name="navigation_drawer_faq">Pytania i ôdpowiedzi</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
-  <string name="account_list_empty">Witōmy w DAVx⁵!\n\nMożesz teroz przidać kōnto CalDAV/CardDAV.</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Niy szło ôdświyżyć serwisu</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Niy szło ôdświyżyć listy kolekcyje</string>
@@ -62,9 +60,7 @@
   <string name="app_settings">Sztelōnki</string>
   <string name="app_settings_debug">Debugowanie</string>
   <string name="app_settings_show_debug_info">Pokoż informacyje do debugowanio</string>
-  <string name="app_settings_show_debug_info_details">Przejzdrzij abo udostympnij informacyje ô programie i jego kōnfiguracyji</string>
   <string name="app_settings_logging">Rozwlykłe zapisowanie</string>
-  <string name="app_settings_logging_on">Zapisowanie je aktywne</string>
   <string name="app_settings_logging_off">Zapisowanie je zastawiōne</string>
   <string name="app_settings_connection">Łōnczność</string>
   <string name="app_settings_security">Bezpieczyństwo</string>
@@ -108,13 +104,12 @@
   <string name="login_user_name">Miano używocza</string>
   <string name="login_base_url">Bazowy URL</string>
   <string name="login_select_certificate">Ôbier certyfikat</string>
-  <string name="login_create_account">Stwōrz kōnto</string>
+  <string name="login_add_account">Przidej kōnto</string>
   <string name="login_account_name">Miano kōnta</string>
   <string name="login_account_name_info">Użyj swojij adresy e-mail za miano kōnta, bo Android bydzie używoł miana kōnta za pola ÔRGANIZATŌR dlo zdarzyń, co je stworzisz. Niy możesz posiadać dwōch kōnt ze takim samym mianym.</string>
   <string name="login_account_contact_group_method">Spusōb grupowanio kōntaktōw:</string>
   <string name="login_account_name_required">Wymogane miano kōnta</string>
   <string name="login_account_name_already_taken">Miano kōnta je już zajynte</string>
-  <string name="login_account_not_created">Kōnto niy mogło być stworzōne</string>
   <string name="login_configuration_detection">Wykrywanie kōnfiguracyje</string>
   <string name="login_querying_server">Czekej, ôdpytowanie serwera…</string>
   <string name="login_no_service">Niy idzie znojść usugi CalDAV abo CardDAV.</string>

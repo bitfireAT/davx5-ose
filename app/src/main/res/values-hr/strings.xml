@@ -31,7 +31,6 @@
   <string name="intro_tasks_title">Podrška za zadatke</string>
   <string name="intro_tasks_text1">Ukoliko su zadatci podržani od strane vašeg poslužitelja, moguće ih je sinkronizirati sa podržanom aplikacijom za zadatke:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Neke mogućnosti <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nisu podržane</a> (još).]]></string>
   <string name="intro_tasks_no_app_store">Trgovina aplikacijama nije dostupna</string>
   <string name="intro_tasks_dont_show">Ne trebam podršku za zadatke.*</string>
   <string name="intro_open_source_title">Softver otvorenog koda</string>
@@ -66,7 +65,6 @@
   <string name="wifi_permissions_location_permission_off">Dopuštenja lokacije odbijena</string>
   <string name="wifi_permissions_background_location_permission">Pozadinska dopuštenja lokacije</string>
   <string name="wifi_permissions_background_location_permission_label">Dopusti cijelo vrijeme</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s koristi dopuštenje za lokaciju samo kako bi se utvrdilo sadašnje WiFi SSID za SSID-ograničenim računa. To će se dogoditi čak i kada je aplikacija u pozadini. Podaci o lokaciji se ne prikupljaju, pohranjuju, obrađuju ili šalju bilo gdje.</string>
   <string name="wifi_permissions_location_enabled">Lokacija uvijek omogućena</string>
   <string name="wifi_permissions_location_enabled_on">Lokacijske usluge su omogućene</string>
   <string name="wifi_permissions_location_enabled_off">Lokacijske usluge su onemogućene</string>
@@ -74,7 +72,6 @@
   <string name="about_translations">Prijevodi</string>
   <string name="about_libraries">Bibiloteke</string>
   <string name="about_version">Verzija %1$s(%2$d)</string>
-  <string name="about_build_date">Kompilirano na %s</string>
   <string name="about_license_info_no_warranty">Ovaj program dolazi BEZ APSOLUTNO BILO KAKVOG JAMSTVA. To je besplatni softver i možete ga distribuirati pod određenim uvjetima. </string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Couldn\'t create log file</string>
@@ -93,7 +90,6 @@
   <string name="navigation_drawer_manual">Upute</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_privacy_policy">Pravila o zaštiti privatnosti</string>
-  <string name="account_list_empty">Dobrodošli u DAVx⁵!\n\nSada možete dodati CalDAV/CardDAV račun.</string>
   <string name="accounts_sync_all">Sinkroniziraj sve račune</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Detekcija servisa nije uspjela</string>
@@ -105,9 +101,7 @@
   <string name="app_settings">Postavke</string>
   <string name="app_settings_debug">Debugging</string>
   <string name="app_settings_show_debug_info">Prikaži debug informacije</string>
-  <string name="app_settings_show_debug_info_details">Pregledaj/podijeli softver i konfiguracijske detalje</string>
   <string name="app_settings_logging">Verbose logging</string>
-  <string name="app_settings_logging_on">Logging je aktivan</string>
   <string name="app_settings_logging_off">Logging je onemogućen</string>
   <string name="app_settings_connection">Veza</string>
   <string name="app_settings_security">Sigurnost</string>
@@ -158,13 +152,12 @@
   <string name="login_user_name">Korisničko ime</string>
   <string name="login_base_url">Osnovni URL</string>
   <string name="login_select_certificate">Odaberi certifikat</string>
-  <string name="login_create_account">Kreiraj račun</string>
+  <string name="login_add_account">Dodaj račun</string>
   <string name="login_account_name">Naziv računa</string>
   <string name="login_account_name_info">Koristite svoju adresu e-pošte kao naziv računa jer Android će koristiti naziv računa kao ORGANIZER polje za događaje koje kreirate. Nije moguće imati dva računa sa istim imenom.</string>
   <string name="login_account_contact_group_method">Metoda kontaktnih grupa:</string>
   <string name="login_account_name_required">Potreban je naziv računa</string>
   <string name="login_account_name_already_taken">Naziv računa se već koristi</string>
-  <string name="login_account_not_created">Nije moguće napraviti račun</string>
   <string name="login_no_certificate_found">Certifikat nije pronađen</string>
   <string name="login_install_certificate">Instaliraj certifikat</string>
   <string name="login_configuration_detection">Detektiranje konfiguracije</string>

@@ -45,13 +45,13 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Al parecer ya no tiene soporte – no se recomienda.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Algunas características <a href="https://www.davx5.com/faq/tasks/advanced-task-features">no son compatibles</a> (todavía).]]></string>
   <string name="intro_tasks_no_app_store">Ninguna tienda de aplicaciones disponible</string>
   <string name="intro_tasks_dont_show">No necesito soporte para tareas.*</string>
   <string name="intro_open_source_title">Software open-source</string>
   <string name="intro_open_source_text">Nos complace que use%s, que es software open-source. Desarrollar, mantener y asistir a usuarios es un trabajo duro. Por favor, considere contribuir (hay muchas maneras) o hacer una donación. ¡Se agradecería mucho!</string>
   <string name="intro_open_source_details">Cómo contribuir o donar</string>
   <string name="intro_open_source_dont_show">No mostrar en un futuro próximo</string>
+  <string name="intro_next">Siguiente</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisos</string>
   <string name="permissions_text">%s necesita permisos para funcionar correctamente.</string>
@@ -88,7 +88,6 @@
   <string name="wifi_permissions_background_location_permission_label">Permitir todo el tiemp</string>
   <string name="wifi_permissions_background_location_permission_on">Acceso a la ubicación concedido para: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Acceso a la ubicación no concedido para: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s usa el permiso de ubicación solo para determinar el SSID del WiFi actual para las cuentas con restricción de SSID. Esto ocurrirá incluso cuando la aplicación esté en segundo plano. No se recogen, almacenan, procesan o envían datos de ubicación a ninguna parte.</string>
   <string name="wifi_permissions_location_enabled">Ubicación siempre activada</string>
   <string name="wifi_permissions_location_enabled_on">El servicio de ubicación está activado</string>
   <string name="wifi_permissions_location_enabled_off">El servicio de ubicación está desactivado</string>
@@ -96,7 +95,6 @@
   <string name="about_translations">Traducciones</string>
   <string name="about_libraries">Bibliotecas</string>
   <string name="about_version">Versión %1$s (%2$d)</string>
-  <string name="about_build_date">Compilada en %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) y colaboradores </string>
   <string name="about_license_info_no_warranty">Este programa viene sin NINGÚN TIPO DE GARANTÍA. Es software libre, y cualquier contribución es bienvenida y redistribuida bajo ciertas condiciones.</string>
   <!--global settings-->
@@ -129,7 +127,6 @@
   <string name="account_list_manage_battery_saver">Administrar ahorro de batería</string>
   <string name="account_list_low_storage">Poco espacio de almacenamiento disponible. Android no sincronizará los cambios hechos localmente de manera inmediata, pero sí lo hará en la siguiente sincronización programada.</string>
   <string name="account_list_manage_storage">Administrar almacenamiento</string>
-  <string name="account_list_empty">Bienvenido a DAVx⁵!\n\nAhora puedes añadir una cuenta CalDAV/CardDAV.</string>
   <string name="accounts_sync_all">Sincronizar todas las cuentas</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Falló la detección del servicio</string>
@@ -141,9 +138,7 @@
   <string name="app_settings">Ajustes</string>
   <string name="app_settings_debug">Depuración</string>
   <string name="app_settings_show_debug_info">Mostrar la información de depuración</string>
-  <string name="app_settings_show_debug_info_details">Ver/compartir detalles de software y configuración</string>
   <string name="app_settings_logging">Registro extendido</string>
-  <string name="app_settings_logging_on">El registro está activo</string>
   <string name="app_settings_logging_off">El registro está deshabilitado</string>
   <string name="app_settings_battery_optimization">Optimización de batería</string>
   <string name="app_settings_battery_optimization_exempted">La app está exenta (recomendado)</string>
@@ -230,14 +225,13 @@
   <string name="login_base_url">URL base</string>
   <string name="login_base_url_info"><![CDATA[La URL base será comprobada directamente, pero <a href="%s">los servicios también son detectados</a> usando registros DNS y URLs well-known.]]></string>
   <string name="login_select_certificate">Seleccionar un certificado</string>
-  <string name="login_create_account">Crear cuenta</string>
+  <string name="login_add_account">Añadir cuenta</string>
   <string name="login_account_name">Nombre de cuenta</string>
   <string name="login_account_avoid_apostrophe">El uso de comillas (\') puede causar problemas en algunos dispositivos.</string>
   <string name="login_account_name_info">Usa tu dirección de correo como nombre de cuenta puesto que Android usará el nombre de la cuenta como campo de \"organizador\" en los eventos que cree. No puedes tener dos cuentas con el mismo nombre.</string>
   <string name="login_account_contact_group_method">Método de contacto de grupo:</string>
   <string name="login_account_name_required">Nombre de cuenta requerido</string>
   <string name="login_account_name_already_taken">El nombre de la cuenta ya está siendo utilizado</string>
-  <string name="login_account_not_created">La cuenta no pudo ser creada</string>
   <string name="login_type_advanced">Inicio de sesión avanzado</string>
   <string name="login_no_client_certificate_optional">Sin certificado de cliente*</string>
   <string name="login_client_certificate_selected">Certificado de cliente: %s</string>

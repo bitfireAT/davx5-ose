@@ -45,7 +45,6 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Изглежда не се разработва вече, не се препоръчва.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Някои възможности <a href="https://www.davx5.com/faq/tasks/advanced-task-features">(още) не се поддържат</a>.]]></string>
   <string name="intro_tasks_no_app_store">Няма достъпен магазин за приложения</string>
   <string name="intro_tasks_dont_show">Не се нуждая от поддръжка на задачи.*</string>
   <string name="intro_open_source_title">Приложение с отворен код</string>
@@ -88,7 +87,6 @@
   <string name="wifi_permissions_background_location_permission_label">Разрешаване във всички случаи</string>
   <string name="wifi_permissions_background_location_permission_on">Разрешението за местоположението е зададено на: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Разрешението за местоположението не е зададено на: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s използва разрешението за местоположение за достъп до името на мрежата, когато се изисква синхронизиране само през определена мрежа. Това се случва дори и когато приложението се изпълнява във фонов режим. Не се събират, съхраняват, обработват и разпространяват данни за местоположението.</string>
   <string name="wifi_permissions_location_enabled">Винаги включено местоположение</string>
   <string name="wifi_permissions_location_enabled_on">Услугата за местоположението е включена</string>
   <string name="wifi_permissions_location_enabled_off">Услугата за местоположението е изключена</string>
@@ -96,7 +94,6 @@
   <string name="about_translations">Преводи</string>
   <string name="about_libraries">Библиотеки</string>
   <string name="about_version">Издание %1$s (%2$d)</string>
-  <string name="about_build_date">Компилирано на %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) и сътрудници</string>
   <string name="about_license_info_no_warranty">Тази програма се предлага с АБСОЛЮТНО НИКАКВА ГАРАНЦИЯ. Тя е свободен софтуер и можете да я разпространявате при определени условия.</string>
   <!--global settings-->
@@ -129,7 +126,6 @@
   <string name="account_list_manage_battery_saver">Икономия на батерия</string>
   <string name="account_list_low_storage">Пространството за съхранение е малко. Андроид няма да синхронизира местните промени веднага, а по време на следващата редовна синхронизация.</string>
   <string name="account_list_manage_storage">Управление на хранилището</string>
-  <string name="account_list_empty">Добре дошли при DAVx⁵!\n\nМожете да добавите регистрация за CalDAV/CardDAV.</string>
   <string name="accounts_sync_all">Синхронизиране на всички профили</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Грешка при откриване на услугите</string>
@@ -141,9 +137,7 @@
   <string name="app_settings">Настройки</string>
   <string name="app_settings_debug">Отстраняване на дефекти</string>
   <string name="app_settings_show_debug_info">Информация за отстраняване на дефекти</string>
-  <string name="app_settings_show_debug_info_details">Преглед/споделяне на информация за приложението и настройките</string>
   <string name="app_settings_logging">Подробен дневник</string>
-  <string name="app_settings_logging_on">Дневникът е включен</string>
   <string name="app_settings_logging_off">Дневникът е изключен</string>
   <string name="app_settings_battery_optimization">Оптимизиране на батерията</string>
   <string name="app_settings_battery_optimization_exempted">Приложението е в белия списък (препоръчително)</string>
@@ -230,14 +224,13 @@
   <string name="login_base_url">Основен адрес</string>
   <string name="login_base_url_info"><![CDATA[Основата на адресът ще бъде директно проверен, но <a href="%s">услугите също могат да бъдат открити</a>чрез записи в DNS и добре познати адреси.]]></string>
   <string name="login_select_certificate">Избор на сертификат</string>
-  <string name="login_create_account">Създаване на регистрация</string>
+  <string name="login_add_account">Нова регистрация</string>
   <string name="login_account_name">Име на регистрация</string>
   <string name="login_account_avoid_apostrophe">Използването на апострофи (\') изглежда води до проблеми при някои устройства.</string>
   <string name="login_account_name_info">Използвайте адрес за електронна поща вместо име, защото Android ще го използва като адрес на организатора на събитията, които създавате. Не може да има две регистрации с еднакво име.</string>
   <string name="login_account_contact_group_method">Метод за съхранение на групи от контакти:</string>
   <string name="login_account_name_required">Изисква се име на регистрацията</string>
   <string name="login_account_name_already_taken">Това име на регистрация вече се използва</string>
-  <string name="login_account_not_created">Регистрацията не е създадена</string>
   <string name="login_type_advanced">Вход за напреднали</string>
   <string name="login_no_client_certificate_optional">Липсва клиентски сертификат*</string>
   <string name="login_client_certificate_selected">Клиентски сертификат: %s</string>

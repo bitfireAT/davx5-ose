@@ -38,7 +38,6 @@
   <string name="intro_tasks_title">Hỗ trợ công việc</string>
   <string name="intro_tasks_text1">Nếu máy chủ của bạn hỗ trợ công việc, chúng có thể được đồng bộ hoá bằng một ứng dụng công việc được hỗ trợ:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Một số tính năng (chưa) <a href="https://www.davx5.com/faq/tasks/advanced-task-features">không được hỗ trợ</a>.]]></string>
   <string name="intro_tasks_no_app_store">Không có cửa hàng ứng dụng nào có sẵn</string>
   <string name="intro_tasks_dont_show">Tôi không cần hỗ trợ công việc.*</string>
   <string name="intro_open_source_title">Phần mềm mã nguồn mở</string>
@@ -76,7 +75,6 @@
   <string name="wifi_permissions_location_permission_off">Đã từ chối quyền vị trí</string>
   <string name="wifi_permissions_background_location_permission">Quyền vị trí trong nền</string>
   <string name="wifi_permissions_background_location_permission_label">Luôn cho phép</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s sử dụng quyền Vị trí chỉ để xác định SSID của mạng WiFi hiện tại cho các tài khoản bị giới hạn SSID. Điều này sẽ xảy ra kể cả khi ứng dụng này ở trong nền. Không có dữ liệu vị trí nào được thu thập, lưu trữ, xử lý hay gửi đi đâu cả.</string>
   <string name="wifi_permissions_location_enabled">Vị trí luôn được bật</string>
   <string name="wifi_permissions_location_enabled_on">Dịch vụ vị trí đã bật</string>
   <string name="wifi_permissions_location_enabled_off">Dịch vụ vị trí đã tắt</string>
@@ -84,7 +82,6 @@
   <string name="about_translations">Bản dịch</string>
   <string name="about_libraries">Thư viện</string>
   <string name="about_version">Phiên bản %1$s (%2$d)</string>
-  <string name="about_build_date">Biên dịch vào %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) và những người đóng góp</string>
   <string name="about_license_info_no_warranty">Chương trình này KHÔNG CÓ SỰ ĐẢM BẢO NÀO. Nó là phần mềm tự do, và bạn có thể tuỳ ý phân phối lại nó dưới các điều kiện cụ thể. </string>
   <!--global settings-->
@@ -106,7 +103,6 @@
   <string name="navigation_drawer_faq">Câu hỏi thường gặp</string>
   <string name="navigation_drawer_community">Cộng đồng</string>
   <string name="navigation_drawer_privacy_policy">Chính sách riêng tư</string>
-  <string name="account_list_empty">Chào mừng đến DAVx⁵!\n\nBạn có thể thêm một tài khoản CalDAV/CardDAV ngay.</string>
   <string name="accounts_sync_all">Đồng bộ tất cả tài khoản</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Dò tìm dịch vụ thất bại</string>
@@ -118,9 +114,7 @@
   <string name="app_settings">Cài đặt</string>
   <string name="app_settings_debug">Gỡ lỗi</string>
   <string name="app_settings_show_debug_info">Hiện thông tin gỡ lỗi</string>
-  <string name="app_settings_show_debug_info_details">Xem/chia sẻ chi tiết phần mềm và thiết lập</string>
   <string name="app_settings_logging">Ghi nhật ký chi tiết</string>
-  <string name="app_settings_logging_on">Ghi nhật ký đang hoạt động</string>
   <string name="app_settings_logging_off">Ghi nhật ký đã tắt</string>
   <string name="app_settings_battery_optimization">Tối ưu hoá pin</string>
   <string name="app_settings_connection">Kết nối</string>
@@ -188,13 +182,12 @@
   <string name="login_user_name">Tên người dùng</string>
   <string name="login_base_url">URL cơ sở</string>
   <string name="login_select_certificate">Chọn chứng chỉ</string>
-  <string name="login_create_account">Tạo tài khoản</string>
+  <string name="login_add_account">Thêm tài khoản</string>
   <string name="login_account_name">Tên tài khoản</string>
   <string name="login_account_name_info">Sử dụng địa chỉ email của bạn làm tên tài khoản vì Android sẽ sử dụng tên tài khoản làm trường ORGANIZER cho các sự kiện bạn tạo. Bạn không thể có hai tài khoản với cùng một tên.</string>
   <string name="login_account_contact_group_method">Phương pháp nhóm danh bạ:</string>
   <string name="login_account_name_required">Yêu cầu tên tài khoản</string>
   <string name="login_account_name_already_taken">Tên tài khoản đã được sử dụng</string>
-  <string name="login_account_not_created">Không thể tạo tài khoản</string>
   <string name="login_no_certificate_found">Không tìm thấy chứng chỉ nào</string>
   <string name="login_install_certificate">Cài đặt chứng chỉ</string>
   <string name="login_configuration_detection">Dò tìm thiết lập</string>

@@ -45,13 +45,13 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">По всей видимости, больше не разрабатывается (не рекомендуется)</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Некоторые возможности <a href="https://www.davx5.com/faq/tasks/advanced-task-features">не поддерживаются</a> (пока).]]></string>
   <string name="intro_tasks_no_app_store">Магазин приложений недоступен</string>
   <string name="intro_tasks_dont_show">Мне не нужна поддержка задач.*</string>
   <string name="intro_open_source_title">ПО с открытым исходным кодом</string>
   <string name="intro_open_source_text">Мы рады, что вы используете %s, программное обеспечение с открытым исходным кодом. Разработка, сопровождение и поддержка - это тяжелая работа. Пожалуйста, подумайте о том, чтобы внести свой вклад (существует множество способов) или сделать пожертвование. Будем очень признательны!</string>
   <string name="intro_open_source_details">Как внести свой вклад/пожертвовать</string>
   <string name="intro_open_source_dont_show">Не показывать в ближайшем будущем</string>
+  <string name="intro_next">Далее</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Разрешения</string>
   <string name="permissions_text">Для правильной работы %s требуются разрешения.</string>
@@ -88,7 +88,6 @@
   <string name="wifi_permissions_background_location_permission_label">Разрешать всегда</string>
   <string name="wifi_permissions_background_location_permission_on">Геолокация задана: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Геолокация не задана: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s использует разрешение на доступ к местоположению только для определения текущего SSID WiFi для аккацнтов с ограничениями SSID. Это будет происходить даже когда приложение находится в фоновом режиме. Никакие данные о местоположении не собираются, не хранятся, не обрабатываются и не отправляются куда-либо.</string>
   <string name="wifi_permissions_location_enabled">Определение местоположения всегда включено</string>
   <string name="wifi_permissions_location_enabled_on">Служба определения местоположения включена</string>
   <string name="wifi_permissions_location_enabled_off">Служба определения местоположения отключена</string>
@@ -96,7 +95,6 @@
   <string name="about_translations">Переводы</string>
   <string name="about_libraries">Библиотеки</string>
   <string name="about_version">Версия %1$s (%2$d)</string>
-  <string name="about_build_date">Скомпилировано %s</string>
   <string name="about_copyright">© Рикки Хирнер (Ricki Hirner), Бернхард Штокманн (Bernhard Stockmann) (bitfire web engineering GmbH) и контрибьюторы</string>
   <string name="about_license_info_no_warranty">Эта программа поставляется БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ. Это свободное программное обеспечение и вы можете распространять его при соблюдении определенных условий.</string>
   <!--global settings-->
@@ -129,7 +127,6 @@
   <string name="account_list_manage_battery_saver">Управлять экономией заряда батареи</string>
   <string name="account_list_low_storage">Недостаточно памяти для хранения данных. Android будет синхронизировать локальные изменения не сразу, а во время следующей регулярной синхронизации.</string>
   <string name="account_list_manage_storage">Управление хранилищем</string>
-  <string name="account_list_empty">Добро пожаловать в DAVx⁵!\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
   <string name="accounts_sync_all">Синхронизировать все аккаунты</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Не удалось обнаружить службу</string>
@@ -141,9 +138,7 @@
   <string name="app_settings">Настройки</string>
   <string name="app_settings_debug">Отладка</string>
   <string name="app_settings_show_debug_info">Показать отладочную информацию</string>
-  <string name="app_settings_show_debug_info_details">Просмотреть/поделиться сведениями о ПО и конфигурации</string>
   <string name="app_settings_logging">Подробное логирование</string>
-  <string name="app_settings_logging_on">Логирование активно</string>
   <string name="app_settings_logging_off">Логирование отключено</string>
   <string name="app_settings_battery_optimization">Оптимизация батареи</string>
   <string name="app_settings_battery_optimization_exempted">Приложение исключено (рекомендуется)</string>
@@ -230,14 +225,13 @@
   <string name="login_base_url">Базовый URL</string>
   <string name="login_base_url_info"><![CDATA[Базовый URL проверяется напрямую, но <a href="%s">сервисы также обнаруживаются</a> по записям DNS и известным URL.]]></string>
   <string name="login_select_certificate">Выберите сертификат</string>
-  <string name="login_create_account">Создать аккаунт</string>
+  <string name="login_add_account">Добавить аккаунт</string>
   <string name="login_account_name">Название аккаунта</string>
   <string name="login_account_avoid_apostrophe">Использование апострофов (\'), как оказалось, вызывает проблемы на некоторых устройствах.</string>
   <string name="login_account_name_info">Укажите ваш адрес email в качестве названия аккаунта, поскольку Android будет его использовать в поле ORGANIZER для создаваемых событий. У вас не может быть двух аккаунтов с тем же именем.</string>
   <string name="login_account_contact_group_method">Метод группировки контактов:</string>
   <string name="login_account_name_required">Название аккаунта обязательно</string>
   <string name="login_account_name_already_taken">Название аккаунта уже используется</string>
-  <string name="login_account_not_created">Аккаунт не может быть создан</string>
   <string name="login_type_advanced">Расширенный вход</string>
   <string name="login_no_client_certificate_optional">Нет клиентского сертификата*</string>
   <string name="login_client_certificate_selected">Сертификат клиента: %s</string>

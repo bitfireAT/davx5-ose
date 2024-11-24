@@ -45,7 +45,6 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Δεν φαίνεται να αναπτύσσεται πλέον - δεν συνιστάται.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Ορισμένες λειτουργίες <a href="https://www.davx5.com/faq/tasks/advanced-task-features"> δεν υποστηρίζονται </a> (ακόμα).]]></string>
   <string name="intro_tasks_no_app_store">Δεν υπάρχει διαθέσιμο κατάστημα εφαρμογών</string>
   <string name="intro_tasks_dont_show">Δεν χρειάζομαι υποστήριξη εργασιών.*</string>
   <string name="intro_open_source_title">Λογισμικό ανοικτού κώδικα</string>
@@ -88,7 +87,6 @@
   <string name="wifi_permissions_background_location_permission_label">Να επιτρέπεται συνέχεια</string>
   <string name="wifi_permissions_background_location_permission_on">Η άδεια τοποθεσίας έχει οριστεί σε: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Η άδεια τοποθεσίας δεν έχει οριστεί σε: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s χρησιμοποιεί την υπηρεσία εντοπισμού μόνο για να προσδιορίσει το SSID του τρέχοντος WIFI για λογαριασμούς με περιορισμούς σε SSIDs. Αυτό γίνεται ακόμα και όταν η εφαρμογή βρίσκεται στο παρασκήνιο. Κανένα δεδομένο εντοπισμού δεν συλλέγεται, καταχωρείται, επεξεργάζεται η αποστέλνεται οπουδήποτε.</string>
   <string name="wifi_permissions_location_enabled">Η υπηρεσία εντοπισμού είναι πάντα ενεργοποιημένη</string>
   <string name="wifi_permissions_location_enabled_on">Η υπηρεσία εντοπισμού είναι ενεργοποιημένη</string>
   <string name="wifi_permissions_location_enabled_off">Η υπηρεσία εντοπισμού είναι απενεργοποιημένη</string>
@@ -96,7 +94,6 @@
   <string name="about_translations">Μεταφράσεις</string>
   <string name="about_libraries">Βιβλιοθήκες</string>
   <string name="about_version">Έκδοση %1$s (%2$d)</string>
-  <string name="about_build_date">Μεταγλωττισμένο σε %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) και συνεργάτες</string>
   <string name="about_license_info_no_warranty">Αυτό το πρόγραμμα συνοδεύεται χωρις ΚΑΜΙΑ ΕΓΓΥΗΣΗ. Είναι ελεύθερο λογισμικό και είστε ευπρόσδεκτοι να το αναδιανείμετε υπό ορισμένες προϋποθέσεις.</string>
   <!--global settings-->
@@ -129,7 +126,6 @@
   <string name="account_list_manage_battery_saver">Διαχείριση εξοικονόμησης μπαταρίας</string>
   <string name="account_list_low_storage">Χαμηλός αποθηκευτικός χώρος. Το Android δεν θα συγχρονίσει τις τοπικές αλλαγές αμέσως, αλλά κατά τη διάρκεια του επόμενου τακτικού συγχρονισμού.</string>
   <string name="account_list_manage_storage">Διαχείριση αποθηκευτικού χώρου</string>
-  <string name="account_list_empty">Καλώς ήρθατε στο DAVx⁵!\n\nΜπορείτε να προσθέσετε τώρα έναν λογαριασμό CalDAV/CardDAV.</string>
   <string name="accounts_sync_all">Συγχρονισμός όλων των λογαριασμών</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Αποτυχία ανίχνευσης υπηρεσίας</string>
@@ -141,9 +137,7 @@
   <string name="app_settings">Ρυθμίσεις</string>
   <string name="app_settings_debug">Αποσφαλμάτωση</string>
   <string name="app_settings_show_debug_info">Προβολή πληροφοριών αποσφαλμάτωσης</string>
-  <string name="app_settings_show_debug_info_details">Προβολή/διαμοιρασμός λογισμικού και λεπτομερειών διαμόρφωσης</string>
   <string name="app_settings_logging">Λεπτομερής καταγραφή</string>
-  <string name="app_settings_logging_on">Η καταγραφή είναι ενεργή</string>
   <string name="app_settings_logging_off">Η καταγραφή είναι απενεργοποιημένη</string>
   <string name="app_settings_battery_optimization">Βελτιστοποίηση μπαταρίας</string>
   <string name="app_settings_battery_optimization_exempted">Η εφαρμογή εξαιρείται (συνιστάται)</string>
@@ -230,14 +224,13 @@
   <string name="login_base_url">Βασική URL</string>
   <string name="login_base_url_info"><![CDATA[Η βασική διεύθυνση URL θα ελεγχθεί άμεσα, αλλά <a href="%s">οι υπηρεσίες εντοπίζονται επίσης</a> χρησιμοποιώντας εγγραφές DNS και γνωστές διευθύνσεις URL.]]></string>
   <string name="login_select_certificate">Επιλογή πιστοποιητικού</string>
-  <string name="login_create_account">Δημιουργία λογαριασμού</string>
+  <string name="login_add_account">Προσθήκη λογαριασμού</string>
   <string name="login_account_name">Όνομα λογαριασμού</string>
   <string name="login_account_avoid_apostrophe">Η χρήση των αποσιωπητικών (\') φαίνεται να προκαλεί προβλήματα σε ορισμένες συσκευές.</string>
   <string name="login_account_name_info">Χρησιμοποιήστε τη διεύθυνση ηλεκτρονικού ταχυδρομείου ως όνομα λογαριασμού, επειδή το Android θα χρησιμοποιεί το όνομα του λογαριασμού ως πεδίο ORGANIZER για τα συμβάντα που δημιουργείτε. Δεν μπορείτε να έχετε δύο λογαριασμούς με το ίδιο όνομα.</string>
   <string name="login_account_contact_group_method">Μέθοδος ομάδας επαφών:</string>
   <string name="login_account_name_required">Απαιτείται όνομα λογαριασμού</string>
   <string name="login_account_name_already_taken">Το όνομα λογαριασμού έχει ήδη ληφθεί</string>
-  <string name="login_account_not_created">Αδυναμία δημιουργίας λογαριασμού</string>
   <string name="login_type_advanced">Σύνδεση για προχωρημένους</string>
   <string name="login_no_client_certificate_optional">Δεν υπάρχει πιστοποιητικό πελάτη*</string>
   <string name="login_client_certificate_selected">Πιστοποιητικό πελάτη: %s</string>

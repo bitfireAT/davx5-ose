@@ -40,7 +40,6 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Doesn\'t seem to be developed anymore – not recommended.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Some features <a href="https://www.davx5.com/faq/tasks/advanced-task-features">are not supported</a> (yet).]]></string>
   <string name="intro_tasks_no_app_store">No app store available</string>
   <string name="intro_tasks_dont_show">I don\'t need tasks support.*</string>
   <string name="intro_open_source_title">Open-source software</string>
@@ -81,7 +80,6 @@
   <string name="wifi_permissions_location_permission_off">Location permission denied</string>
   <string name="wifi_permissions_background_location_permission">Background location permission</string>
   <string name="wifi_permissions_background_location_permission_label">Allow all the time</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s uses the Location permission only to determine the current WiFi\'s SSID for SSID-restricted accounts. This will happen even when the app is in background. No location data are collected, stored, processed or sent anywhere.</string>
   <string name="wifi_permissions_location_enabled">Location always enabled</string>
   <string name="wifi_permissions_location_enabled_on">Location service is enabled</string>
   <string name="wifi_permissions_location_enabled_off">Location service is disabled</string>
@@ -89,7 +87,6 @@
   <string name="about_translations">Translations</string>
   <string name="about_libraries">Libraries</string>
   <string name="about_version">Version %1$s (%2$d)</string>
-  <string name="about_build_date">Compiled on %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) and contributors</string>
   <string name="about_license_info_no_warranty">This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions.</string>
   <!--global settings-->
@@ -118,7 +115,6 @@
   <string name="account_list_manage_datasaver">Manage data saver</string>
   <string name="account_list_low_storage">Storage space low. Android will not sync local changes immediately, but during the next regular sync.</string>
   <string name="account_list_manage_storage">Manage storage</string>
-  <string name="account_list_empty">Welcome to DAVx⁵!\n\nYou can add a CalDAV/CardDAV account now.</string>
   <string name="accounts_sync_all">Sync all accounts</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Service detection failed</string>
@@ -130,9 +126,7 @@
   <string name="app_settings">Settings</string>
   <string name="app_settings_debug">Debugging</string>
   <string name="app_settings_show_debug_info">Show debug info</string>
-  <string name="app_settings_show_debug_info_details">View/share software and configuration details</string>
   <string name="app_settings_logging">Verbose logging</string>
-  <string name="app_settings_logging_on">Logging is active</string>
   <string name="app_settings_logging_off">Logging is disabled</string>
   <string name="app_settings_battery_optimization">Battery optimisation</string>
   <string name="app_settings_connection">Connection</string>
@@ -200,13 +194,12 @@
   <string name="login_user_name">User name</string>
   <string name="login_base_url">Base URL</string>
   <string name="login_select_certificate">Select certificate</string>
-  <string name="login_create_account">Create account</string>
+  <string name="login_add_account">Add account</string>
   <string name="login_account_name">Account name</string>
   <string name="login_account_name_info">Use your email address as account name because Android will use the account name as ORGANISER field for events you create. You can\'t have two accounts with the same name.</string>
   <string name="login_account_contact_group_method">Contact group method:</string>
   <string name="login_account_name_required">Account name required</string>
   <string name="login_account_name_already_taken">Account name already taken</string>
-  <string name="login_account_not_created">Account could not be created</string>
   <string name="login_no_certificate_found">No certificate found</string>
   <string name="login_install_certificate">Install certificate</string>
   <string name="login_type_google">Google Contacts / Calendar</string>

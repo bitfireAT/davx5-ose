@@ -21,7 +21,6 @@
   <!--AboutActivity-->
   <string name="about_libraries">Knižnice</string>
   <string name="about_version">Verzia %1$s (%2$d)</string>
-  <string name="about_build_date">Preložené na %s</string>
   <string name="about_license_info_no_warranty">Tento program sa poskytuje BEZ AKEJKOĽVEK ZÁRUKY. Je to slobodný softvér a môžete ho ďalej šíriť pri splnení určitých podmienok.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Nie je možné vytvoriť súbor protokolu</string>
@@ -37,7 +36,6 @@
   <string name="navigation_drawer_manual">Manuál</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_privacy_policy">Zásady bezpečnosti</string>
-  <string name="account_list_empty">Vitajte v programe DAVx⁵!\n\nTeraz môžete pridať používateľský účet pre CalDAV/CardDAV .</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Zisťovanie služby zlyhalo</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Nie je možné obnoviť zoznam kolekcií</string>
@@ -46,9 +44,7 @@
   <string name="app_settings">Nastavenia</string>
   <string name="app_settings_debug">Ladenie</string>
   <string name="app_settings_show_debug_info">Zobraziť ladiace informácie</string>
-  <string name="app_settings_show_debug_info_details">Zobraziť/zdieľať softvér a konfiguračné detaily</string>
   <string name="app_settings_logging">Zvýšené protokolovanie</string>
-  <string name="app_settings_logging_on">Protokolovanie je aktívne</string>
   <string name="app_settings_logging_off">Protokolovanie je zakázané</string>
   <string name="app_settings_connection">Spojenie</string>
   <string name="app_settings_security">Zabezpečenie</string>
@@ -92,13 +88,12 @@
   <string name="login_user_name">Používateľské meno</string>
   <string name="login_base_url">Základné URL</string>
   <string name="login_select_certificate">Zvoliť certifikát</string>
-  <string name="login_create_account">Vytvoriť používateľský účet</string>
+  <string name="login_add_account">Pridať účet</string>
   <string name="login_account_name">Meno používateľského účtu</string>
   <string name="login_account_name_info">Použite vašu e-mailovú adresu ako meno používateľského účtu pretože Android používa meno účtu v poli ORGANIZÁTOR pre udalosti ktoré vytvoríte. Nie je možné mať dva používateľské účty s rovnakým menom.</string>
   <string name="login_account_contact_group_method">Spôsob práce so skupinami</string>
   <string name="login_account_name_required">Vyžaduje sa meno používateľského účtu</string>
   <string name="login_account_name_already_taken">Meno účtu sa už používa</string>
-  <string name="login_account_not_created">Nie je možné vytvoriť používateľský účet</string>
   <string name="login_configuration_detection">Zisťuje sa konfigurácia</string>
   <string name="login_querying_server">Čakajte, prosím, zasiela sa dopyt na server...</string>
   <string name="login_no_service">Nie je možné nájsť služby CalDAV ani CardDAV.</string>

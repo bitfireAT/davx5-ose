@@ -22,7 +22,6 @@
   <!--AboutActivity-->
   <string name="about_libraries">Bibliotek</string>
   <string name="about_version">Versjon %1$s(%2$d)</string>
-  <string name="about_build_date">Kompilert på %s</string>
   <string name="about_license_info_no_warranty">Dette programmet kommer uten NOEN FORM FOR GARANTI. Det er fri programvare, og du er velkommen til å redistribuere det under gitte forhold.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Kan ikke opprette loggfil</string>
@@ -36,7 +35,6 @@
   <string name="navigation_drawer_website">Nettside</string>
   <string name="navigation_drawer_manual">Manuell</string>
   <string name="navigation_drawer_faq">O-S-S</string>
-  <string name="account_list_empty">Velkommen til DAVx⁵.\n\nDu kan legge til en CalDAV/CardDAV-konto nå.</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Tjenesteoppdagelse mislyktes</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Kunne ikke gjenoppfriske innsamlingsliste</string>
@@ -45,9 +43,7 @@
   <string name="app_settings">Innstillinger</string>
   <string name="app_settings_debug">Feilretting</string>
   <string name="app_settings_show_debug_info">Vis feilrettingsinfo</string>
-  <string name="app_settings_show_debug_info_details">Vis/del programvare- og oppsettsdetaljer</string>
   <string name="app_settings_logging">Grundig logging</string>
-  <string name="app_settings_logging_on">Logging er aktivert</string>
   <string name="app_settings_logging_off">Logging er skrudd av</string>
   <string name="app_settings_connection">Tilkobling</string>
   <string name="app_settings_security">Sikkerhet</string>
@@ -89,13 +85,12 @@
   <string name="login_type_url">Logg inn med nettadresse og brukernavn</string>
   <string name="login_user_name">Brukernavn</string>
   <string name="login_base_url">Landings-nettadresse</string>
-  <string name="login_create_account">Opprett konto</string>
+  <string name="login_add_account">Legg til konto</string>
   <string name="login_account_name">Kontonavn</string>
   <string name="login_account_name_info">Bruk din e-postadresse som kontonavn fordi Android vil bruke kontonavnet som ORGANISATOR-felt for hendelser du oppretter. Du kan ikke ha to kontoer med samme navn.</string>
   <string name="login_account_contact_group_method">Kontaktgruppemetode:</string>
   <string name="login_account_name_required">Kontonavn påkrevd</string>
   <string name="login_account_name_already_taken">Brukernavnet er allerede i bruk</string>
-  <string name="login_account_not_created">Kontonavnet kan ikke opprettes</string>
   <string name="login_configuration_detection">Oppdagelse av oppsett</string>
   <string name="login_querying_server">Vent, spør tjener…</string>
   <string name="login_no_service">Fant ikke CalDAV eller CardDAV-tjeneste.</string>

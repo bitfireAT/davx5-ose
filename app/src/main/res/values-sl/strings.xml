@@ -52,7 +52,6 @@
   <!--AboutActivity-->
   <string name="about_libraries">Knjižnice </string>
   <string name="about_version">Verzija %1$s (%2$d)</string>
-  <string name="about_build_date">Združeno na %s</string>
   <string name="about_license_info_no_warranty">Ta program ne vsebuje NIČ garancije. To je brezplačna programska oprema in jo lahko pod določenimi pogoji delite naprej.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Ni bilo mogoče ustvariti zapisnika</string>
@@ -66,7 +65,6 @@
   <string name="navigation_drawer_website">Spletna stran</string>
   <string name="navigation_drawer_manual">Priročnik</string>
   <string name="navigation_drawer_faq">Pogosta vprašanja</string>
-  <string name="account_list_empty">Dobrodošli v DAVx⁵!\n\nZdaj lahko dodate CalDAV/CardDAV račun.</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Zaznava storitve ni uspela</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Zbirke ni bilo mogoče osvežiti</string>
@@ -75,9 +73,7 @@
   <string name="app_settings">Nastavitve</string>
   <string name="app_settings_debug">Razhroščevalnik</string>
   <string name="app_settings_show_debug_info">Prikaži informacije razhroščevalnika</string>
-  <string name="app_settings_show_debug_info_details">Preglej/deli podrobnosti programske opreme in konfiguracije</string>
   <string name="app_settings_logging">Podrobno zapisovanje procesov</string>
-  <string name="app_settings_logging_on">Zapisovanje je aktivno</string>
   <string name="app_settings_logging_off">Zapisovanje je onemogočeno</string>
   <string name="app_settings_connection">Povezava</string>
   <string name="app_settings_security">Varnost</string>
@@ -123,13 +119,12 @@
   <string name="login_user_name">Uporabniško ime</string>
   <string name="login_base_url">URL osnova</string>
   <string name="login_select_certificate">Izberi certifikat</string>
-  <string name="login_create_account">Ustvari račun</string>
+  <string name="login_add_account">Dodaj račun</string>
   <string name="login_account_name">Ime računa</string>
   <string name="login_account_name_info">Uporabi email naslov kot ime računa, ker bo Android uporabil to ime računa kot organizacijsko povelj za dogodke, ki jih ustvariš. Dveh računov z istim imenom ni mogoče imeti.</string>
   <string name="login_account_contact_group_method">Metoda skupine kontaktov:</string>
   <string name="login_account_name_required">Zahtevano je ime računa</string>
   <string name="login_account_name_already_taken">Ima računa že obstaja</string>
-  <string name="login_account_not_created">Računa ni bilo mogoče ustvariti</string>
   <string name="login_configuration_detection">Zaznava konfiguracije</string>
   <string name="login_querying_server">Prosim počakajte, povezava s strežnikom je v teku...</string>
   <string name="login_no_service">CalDAV ali CardDAV storitve ni bilo mogoče najti.</string>

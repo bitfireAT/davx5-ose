@@ -36,7 +36,6 @@
   <string name="intro_tasks_title">작업 지원</string>
   <string name="intro_tasks_text1">서버에서 작업을 지원하는 경우 지원되는 작업 앱과 동기화할 수 있습니다.</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[일부 기능은 <a href="https://www.davx5.com/faq/tasks/advanced-task-features">아직 지원되지 않습니다.</a>(yet)]]></string>
   <string name="intro_tasks_no_app_store">사용 가능한 앱 스토어 없음</string>
   <string name="intro_tasks_dont_show">업무 지원은 필요 없습니다.*</string>
   <string name="intro_open_source_title">오픈-소스 소프트웨어</string>
@@ -74,7 +73,6 @@
   <string name="wifi_permissions_location_permission_off">위치 권한 거부</string>
   <string name="wifi_permissions_background_location_permission">백그라운드 위치 권한</string>
   <string name="wifi_permissions_background_location_permission_label">항상 허용</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s은 SSID 제한 계정에 대한 현재 WiFi의 SSID를 확인하는 데만 위치 권한을 사용합니다. 이것은 앱이 백그라운드에 있을 때에도 발생할 것이다. 어떤 위치 데이터도 수집, 저장, 처리 또는 어디로든 전송되지 않습니다.</string>
   <string name="wifi_permissions_location_enabled">위치 정보 항상 사용</string>
   <string name="wifi_permissions_location_enabled_on">위치 서비스를 사용할 수 있습니다.</string>
   <string name="wifi_permissions_location_enabled_off">위치 서비스가 거부되었습니다.</string>
@@ -82,7 +80,6 @@
   <string name="about_translations">번역</string>
   <string name="about_libraries">라이브러리</string>
   <string name="about_version">버전 %1$s (%2$d)</string>
-  <string name="about_build_date">%s에서 컴파일</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) and contributors</string>
   <string name="about_license_info_no_warranty">이 프로그램은 보증 없이 제공됩니다. 그것은 무료 소프트웨어이며, 특정한 조건 하에서 재배포하는 것을 환영합니다.</string>
   <!--global settings-->
@@ -104,8 +101,6 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_community">커뮤니티</string>
   <string name="navigation_drawer_privacy_policy">개인 정보 보호 정책</string>
-  <string name="account_list_empty">DAVx⁵에 오신 것을 환영 합니다!/n/n
-당신은  CalDAV/CardDAV 계정을 지금 추가 할 수 있습니다.</string>
   <string name="accounts_sync_all">모든 계정 동기화</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">서비스 검색 실패</string>
@@ -117,9 +112,7 @@
   <string name="app_settings">설정</string>
   <string name="app_settings_debug">Debugging</string>
   <string name="app_settings_show_debug_info">debug info 보기</string>
-  <string name="app_settings_show_debug_info_details">소프트웨어 및 구성 세부 정보 보기/공유</string>
   <string name="app_settings_logging">상세 로그</string>
-  <string name="app_settings_logging_on">logging이 활성되었습니다.</string>
   <string name="app_settings_logging_off">logging이 비활성화되었습니다.</string>
   <string name="app_settings_battery_optimization">배터리 최적화</string>
   <string name="app_settings_connection">연결</string>
@@ -187,13 +180,12 @@
   <string name="login_user_name">사용자 이름</string>
   <string name="login_base_url">기본 URL</string>
   <string name="login_select_certificate">인증서 선택</string>
-  <string name="login_create_account">계정 생성</string>
+  <string name="login_add_account">계정 추가</string>
   <string name="login_account_name">계정 이름</string>
   <string name="login_account_name_info">Android는 사용자가 만든 이벤트에 대해 계정 이름을 ORGANGER 필드로 사용하므로 전자 메일 주소를 계정 이름으로 사용합니다. 이름이 같은 두 개의 계정을 가질 수 없습니다.</string>
   <string name="login_account_contact_group_method">연락처 분류 방법:</string>
   <string name="login_account_name_required">계정 이름 필요</string>
   <string name="login_account_name_already_taken">계정 이름이 이미 사용되었습니다.</string>
-  <string name="login_account_not_created">계정을 만들 수 없습니다.</string>
   <string name="login_no_certificate_found">인증서를 찾을 수 없음</string>
   <string name="login_install_certificate">인증서 설치</string>
   <string name="login_configuration_detection">구성 탐색</string>

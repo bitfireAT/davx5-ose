@@ -43,7 +43,6 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Non sembra essere più sviluppato - non raccomandato.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Alcune funzionalità <a href="https://www.davx5.com/faq/tasks/advanced-task-features"> non sono (ancora) supportate </a>.]]></string>
   <string name="intro_tasks_no_app_store">Nessun app store disponibile</string>
   <string name="intro_tasks_dont_show">Non ho bisogno del supporto alle attività.*</string>
   <string name="intro_open_source_title">Software open-source</string>
@@ -84,7 +83,6 @@
   <string name="wifi_permissions_background_location_permission_label">Permettere sempre</string>
   <string name="wifi_permissions_background_location_permission_on">Permessi di localizzazione impostati a: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Permessi di localizzazione non impostati a: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">1%s utilizza l\'autorizzazione della posizione solo per determinare l\'SSID del WIFI attuale per gli account SSID-limitati. Questo accade anche quando l\'applicazione è in modalità background. Nessun dato sulla posizione è raccolto, salvato, processato o mandato da qualche parte.</string>
   <string name="wifi_permissions_location_enabled">Posizione sempre disabilitata</string>
   <string name="wifi_permissions_location_enabled_on">Servizio di posizione abiltato</string>
   <string name="wifi_permissions_location_enabled_off">Servizio di posizione disabilitato</string>
@@ -92,7 +90,6 @@
   <string name="about_translations">Traduzioni</string>
   <string name="about_libraries">Librerie</string>
   <string name="about_version">Versione %1$s (%2$d)</string>
-  <string name="about_build_date">Compilato su %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) e contibutori</string>
   <string name="about_license_info_no_warranty">Il programma è distribuito SENZA ALCUNA GARANZIA. È software libero e può essere redistribuito sotto alcune condizioni.</string>
   <!--global settings-->
@@ -124,7 +121,6 @@
   <string name="account_list_manage_battery_saver">Gestisci risparmio energetico</string>
   <string name="account_list_low_storage">Spazio di memorizzazione scarso. Androin non salverà immediatamente i cambiamente, ma alla prossima sincronizzazione programmata.</string>
   <string name="account_list_manage_storage">Gestisci spazio di memorizzazione</string>
-  <string name="account_list_empty">Benvenuto a DAVx⁵!\n\nÈ ora possibile aggiungere account CalDAV/CardDAV.</string>
   <string name="accounts_sync_all">Sincronizzazione di tutti gli account</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Impossibile trovare il servizio</string>
@@ -136,9 +132,7 @@
   <string name="app_settings">Impostazioni</string>
   <string name="app_settings_debug">Debug</string>
   <string name="app_settings_show_debug_info">Mostra informazioni di debug</string>
-  <string name="app_settings_show_debug_info_details">Mostra e condividi i dettagli del programma e della configurazione</string>
   <string name="app_settings_logging">Log completo</string>
-  <string name="app_settings_logging_on">Log attivo</string>
   <string name="app_settings_logging_off">Log disabilitato</string>
   <string name="app_settings_battery_optimization">Ottimizzazione batteria</string>
   <string name="app_settings_connection">Connessione</string>
@@ -223,14 +217,13 @@
   <string name="login_base_url">Base URL</string>
   <string name="login_base_url_info"><![CDATA[La URL base viene controllata direttamente, ma <a href="%s">i servizi sono individuati anche </a> usando record DNS records e le URL well-known.]]></string>
   <string name="login_select_certificate">Seleziona certificato</string>
-  <string name="login_create_account">Crea account</string>
+  <string name="login_add_account">Aggiungi account</string>
   <string name="login_account_name">Nome account</string>
   <string name="login_account_avoid_apostrophe">L\'uso degli apostrofi (\') potrebbe causare problemi su alcuni dispositivi.</string>
   <string name="login_account_name_info">Inserisci il tuo indirizzo email come nome dell\'account in quanto Android userà il nome dell\'account nel campo ORGANIZER degli eventi creati. Non è possibile avere due account con nome uguale.</string>
   <string name="login_account_contact_group_method">Metodo del contact group:</string>
   <string name="login_account_name_required">Richiesto il nome dell\'account</string>
   <string name="login_account_name_already_taken">Nome account già usato</string>
-  <string name="login_account_not_created">L\'account non può essere creato</string>
   <string name="login_type_advanced">Login avanzato</string>
   <string name="login_no_client_certificate_optional">Nessun certificato client*</string>
   <string name="login_client_certificate_selected">Certificato client: %s</string>

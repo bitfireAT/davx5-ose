@@ -45,13 +45,13 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Nezdá se už být vyvíjeno – nedoporučeno.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Některé funkce (ještě) <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nejsou podporovány</a>.]]></string>
   <string name="intro_tasks_no_app_store">Není k dispozici žádný obchod s aplikacemi</string>
   <string name="intro_tasks_dont_show">Nepotřebuji podporu pro úkoly.*</string>
   <string name="intro_open_source_title">Opensource software</string>
   <string name="intro_open_source_text">Jsme rádi, že %s používáte. Jde o opensource software. Vývoj, údržba a podpora je ale těžká práce. Prosím zvažte zapojení se (je mnoho způsobů jak) nebo podpoření vývoje darem. Bude to velmi oceněno!</string>
   <string name="intro_open_source_details">Jak se zapojit / podpořit vývoj darem</string>
   <string name="intro_open_source_dont_show">Nějakou dobu teď nezobrazovat</string>
+  <string name="intro_next">Další</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Oprávnění</string>
   <string name="permissions_text">Aby fungovalo správně, %s vyžaduje oprávnění.</string>
@@ -88,7 +88,6 @@
   <string name="wifi_permissions_background_location_permission_label">Povolit napořád</string>
   <string name="wifi_permissions_background_location_permission_on">Stav oprávnění polohy je: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Stav oprávnění polohy není: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s používá oprávnění k přístupu k poloze pouze pro zjišťování názvu (SSID) WiFi sítě, ke které jste právě připojení a to pro účely účtů, omezených právě na dané SSID. Toto se děje i když je aplikace spuštěná na pozadí. Žádná data o poloze nejsou shromažďována, ukládána, zpracovávána ani nikam odesílána.</string>
   <string name="wifi_permissions_location_enabled">Určování polohy vždy zapnuté</string>
   <string name="wifi_permissions_location_enabled_on">Služba určování polohy je zapnutá</string>
   <string name="wifi_permissions_location_enabled_off">Služba určování polohy je vypnutá</string>
@@ -96,7 +95,6 @@
   <string name="about_translations">Překlady</string>
   <string name="about_libraries">Knihovny</string>
   <string name="about_version">Verze %1$s (%2$d)</string>
-  <string name="about_build_date">Sestaveno %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) a přispěvatelé</string>
   <string name="about_license_info_no_warranty">Na tento program nejsou poskytovány ŽÁDNÉ ZÁRUKY. Jedná se o svobodný software a jeho šíření dál je vítáno, ovšem za podmínky, že stejné svobody zůstanou zachovány i všem dalším příjemcům.</string>
   <!--global settings-->
@@ -129,7 +127,6 @@
   <string name="account_list_manage_battery_saver">Spravovat spořič baterie</string>
   <string name="account_list_low_storage">Málo volného místa v úložišti. Android nebude synchronizovat místní změny okamžitě, ale při další běžné synchronizaci.</string>
   <string name="account_list_manage_storage">Spravovat úložiště</string>
-  <string name="account_list_empty">Vítejte v aplikaci DAVx⁵!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
   <string name="accounts_sync_all">Synchronizovat všechny účty</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Vyhledání služby se nezdařilo</string>
@@ -141,9 +138,7 @@
   <string name="app_settings">Nastavení</string>
   <string name="app_settings_debug">Ladění</string>
   <string name="app_settings_show_debug_info">Zobrazit ladící informace</string>
-  <string name="app_settings_show_debug_info_details">Zobrazit/sdílet podrobnosti o software a nastavení</string>
   <string name="app_settings_logging">Podrobnější zaznamenávání událostí</string>
-  <string name="app_settings_logging_on">Zaznamenávání událostí je aktivní</string>
   <string name="app_settings_logging_off">Zaznamenávání událostí je vypnuté</string>
   <string name="app_settings_battery_optimization">Optimalizace akumulátoru</string>
   <string name="app_settings_battery_optimization_exempted">Aplikace je vyjmuta (doporučeno)</string>
@@ -227,14 +222,13 @@
   <string name="login_user_name_optional">Uživatelské jméno*</string>
   <string name="login_base_url">Základ URL</string>
   <string name="login_select_certificate">Vybrat certifikát</string>
-  <string name="login_create_account">Vytvořit účet</string>
+  <string name="login_add_account">Přidat účet</string>
   <string name="login_account_name">Název účtu</string>
   <string name="login_account_avoid_apostrophe">Používání apostrofů (\') může způsobit problémy na některých zařízeních.</string>
   <string name="login_account_name_info">Pro jméno účtu použijte svou e-mailovou adresu, protože Android bude brát jméno účtu jako údaj pro ORGANIZÁTORA vytvořených událostí. Nelze mít dva účty stejného jména.</string>
   <string name="login_account_contact_group_method">Metoda seskupování kontaktů:</string>
   <string name="login_account_name_required">Je třeba zadat název pro účet</string>
   <string name="login_account_name_already_taken">Tento název účtu už je používán někým jiným</string>
-  <string name="login_account_not_created">Účet nelze vytvořit</string>
   <string name="login_type_advanced">Pokročilé přihlášení</string>
   <string name="login_no_client_certificate_optional">Bez certifikátu klienta</string>
   <string name="login_client_certificate_selected">Certifikát klienta: %s</string>

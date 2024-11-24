@@ -34,7 +34,6 @@
   <string name="intro_tasks_jtx_info"><![CDATA[支持任務、日記及筆記同步]]></string>
   <string name="intro_tasks_title">待辦事項支援</string>
   <string name="intro_tasks_text1">如果你的服務器支持任務，它們可以與支援任務的app同步:</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[有些功能<a href="https://www.davx5.com/faq/tasks/advanced-task-features">尚未支援</a>]]></string>
   <string name="intro_tasks_no_app_store">沒有應用商店可用</string>
   <!--PermissionsActivity-->
   <string name="permissions_contacts_title">通訊錄權限</string>
@@ -44,7 +43,6 @@
   <!--AboutActivity-->
   <string name="about_libraries">函式庫</string>
   <string name="about_version">版本號 %1$s（%2$d）</string>
-  <string name="about_build_date">編譯於 %s</string>
   <string name="about_license_info_no_warranty">我們｢完全不保證｣本程式無瑕疵。這是個自由軟體，歡迎您在符合公用授權條款的情況下任意散布它。</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">無法創建事項記錄文檔</string>
@@ -60,7 +58,6 @@
   <string name="navigation_drawer_manual">使用説明書</string>
   <string name="navigation_drawer_faq">常見問答</string>
   <string name="navigation_drawer_privacy_policy">隱私權政策</string>
-  <string name="account_list_empty">歡迎使用 DAVx⁵!\n\n您現在可以新增 CalDAV/CardDAV 帳號</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">未發現遠端服務</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">無法更新清單</string>
@@ -69,9 +66,7 @@
   <string name="app_settings">設定</string>
   <string name="app_settings_debug">除錯</string>
   <string name="app_settings_show_debug_info">顯示除錯訊息</string>
-  <string name="app_settings_show_debug_info_details">檢視/分享本軟體及設定檔細節</string>
   <string name="app_settings_logging">詳細除錯記錄</string>
-  <string name="app_settings_logging_on">日誌記錄已啟用</string>
   <string name="app_settings_logging_off">日誌記錄已停用</string>
   <string name="app_settings_battery_optimization">電池最佳化</string>
   <string name="app_settings_connection">網路連線</string>
@@ -118,13 +113,12 @@
   <string name="login_user_name">使用者帳號</string>
   <string name="login_base_url">根 URL</string>
   <string name="login_select_certificate">點選憑證</string>
-  <string name="login_create_account">新建帳號</string>
+  <string name="login_add_account">新增帳號</string>
   <string name="login_account_name">帳號名稱</string>
   <string name="login_account_name_info">使用 Email 地址當作裝置上的帳號顯示名稱，因為當您在行事曆創建活動時，Android 會把帳號顯示名稱放到｢活動發起人」欄位。兩個帳號不能有相同的名稱。</string>
   <string name="login_account_contact_group_method">聯絡人群組的儲存格式</string>
   <string name="login_account_name_required">需要帳號名稱</string>
   <string name="login_account_name_already_taken">這個賬號名稱已經被取過了</string>
-  <string name="login_account_not_created">無法建立帳號</string>
   <string name="login_configuration_detection">設定錯誤</string>
   <string name="login_querying_server">請稍待，正在詢問伺服器…</string>
   <string name="login_no_service">找不到 CalDAV 或 CardDAV 服務。</string>

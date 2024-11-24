@@ -45,13 +45,13 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Wird anscheinend nicht weiterentwickelt - nicht empfehlenswert.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Einige Funktionen <a href="https://www.davx5.com/faq/tasks/advanced-task-features">werden (noch) nicht unterstützt</a>.]]></string>
   <string name="intro_tasks_no_app_store">Kein App-Store verfügbar</string>
   <string name="intro_tasks_dont_show">Ich brauche keine Unterstützung für Aufgaben.*</string>
   <string name="intro_open_source_title">Open-Source-Software</string>
   <string name="intro_open_source_text">Wir freuen uns, dass Sie die Open-Source-Software %s verwenden. Entwicklung, Wartung und Support sind viel Arbeit. Ziehen Sie daher bitte in Betracht, mitzuhelfen (dazu gibt es viele Möglichkeiten) oder zu spenden. Vielen Dank!</string>
   <string name="intro_open_source_details">Infos zum Mithelfen/Spenden</string>
   <string name="intro_open_source_dont_show">In nächster Zeit nicht anzeigen</string>
+  <string name="intro_next">Weiter</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Rechteverwaltung</string>
   <string name="permissions_text">%s benötigt Berechtigungen, um ordnungsgemäß zu funktionieren.</string>
@@ -88,7 +88,6 @@
   <string name="wifi_permissions_background_location_permission_label">Immer zulassen</string>
   <string name="wifi_permissions_background_location_permission_on">Standort-Zugriff eingestellt auf: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Standort-Zugriff nicht eingestellt auf: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s verwendet die Standort-Berechtigung ausschließlich zum Bestimmen der aktuellen WLAN-SSID für SSID-beschränkte Accounts. Dies findet auch statt, wenn die App geschlossen ist bzw. im Hintergrund läuft. Standortdaten werden weder gesammelt, gespeichert, verarbeitet noch irgendwohin gesendet.</string>
   <string name="wifi_permissions_location_enabled">Standort-Dienst immer aktiviert</string>
   <string name="wifi_permissions_location_enabled_on">Standort-Dienst aktiv</string>
   <string name="wifi_permissions_location_enabled_off">Standort-Dienst inaktiv</string>
@@ -96,7 +95,6 @@
   <string name="about_translations">Übersetzungen</string>
   <string name="about_libraries">Bibliotheken</string>
   <string name="about_version">Version %1$s (%2$d)</string>
-  <string name="about_build_date">Erstellt am %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) und Mitwirkende</string>
   <string name="about_license_info_no_warranty">Dieses Programm wird OHNE JEDE GEWÄHRLEISTUNG bereitgestellt. Es ist freie Software – Sie können es also unter bestimmten Bedingungen weiterverbreiten.</string>
   <!--global settings-->
@@ -129,7 +127,6 @@
   <string name="account_list_manage_battery_saver">Akkusparen verwalten</string>
   <string name="account_list_low_storage">Wenig Speicherplatz. Android wird lokale Änderungen nicht sofort synchronisieren, sondern bei der nächsten regulären Synchronisierung.</string>
   <string name="account_list_manage_storage">Speicherplatz verwalten</string>
-  <string name="account_list_empty">Herzlich willkommen!\n\nSie können jetzt ein CalDAV/CardDAV-Konto hinzufügen.</string>
   <string name="accounts_sync_all">Alle Konten synchronisieren</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Diensterkennung fehlgeschlagen</string>
@@ -141,9 +138,7 @@
   <string name="app_settings">Einstellungen</string>
   <string name="app_settings_debug">Fehlersuche</string>
   <string name="app_settings_show_debug_info">Informationen zur Fehlersuche</string>
-  <string name="app_settings_show_debug_info_details">Software- und Konfigurationsdetails anzeigen und teilen</string>
   <string name="app_settings_logging">Ausführliche Protokollierung</string>
-  <string name="app_settings_logging_on">Protokollierung läuft</string>
   <string name="app_settings_logging_off">Keine Protokollierung</string>
   <string name="app_settings_battery_optimization">Akku-Optimierung</string>
   <string name="app_settings_battery_optimization_exempted">App ist ausgenommen (empfohlen)</string>
@@ -230,14 +225,13 @@
   <string name="login_base_url">Basis-URL</string>
   <string name="login_base_url_info"><![CDATA[Die Basis-URL wird direkt geprüft, aber <a href="%s">Dienste werden auch ermittelt</a>, anhand von DNS-Einträgen und bekannten URLs.]]></string>
   <string name="login_select_certificate">Zertifikat auswählen</string>
-  <string name="login_create_account">Konto anlegen</string>
+  <string name="login_add_account">Konto hinzufügen</string>
   <string name="login_account_name">Kontoname</string>
   <string name="login_account_avoid_apostrophe">Das Verwenden von Apostrophen (\') scheint auf einigen Geräten Probleme zu verursachen.</string>
   <string name="login_account_name_info">Verwenden Sie Ihre E-Mail-Adresse als Kontonamen, da Android den Kontonamen als ORGANIZER einsetzt. Es kann allerdings keine zwei Konten mit dem gleichen Namen geben.</string>
   <string name="login_account_contact_group_method">Kontaktgruppen-Methode:</string>
   <string name="login_account_name_required">Kontoname wird benötigt</string>
   <string name="login_account_name_already_taken">Kontoname bereits verwendet</string>
-  <string name="login_account_not_created">Konto konnte nicht angelegt werden</string>
   <string name="login_type_advanced">Erweiterte Anmeldung</string>
   <string name="login_no_client_certificate_optional">Kein Client-Zertifikat*</string>
   <string name="login_client_certificate_selected">Client-Zertifikat: %s</string>

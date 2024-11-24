@@ -97,11 +97,10 @@
   <string name="login_user_name_optional">Kasutajanimi*</string>
   <string name="login_base_url">Baas-võrguaadress</string>
   <string name="login_select_certificate">Vali sertifikaat</string>
-  <string name="login_create_account">Loo kasutajakonto</string>
+  <string name="login_add_account">Lisa kasutajakonto</string>
   <string name="login_account_name">Kasutajakonto nimi</string>
   <string name="login_account_name_required">Kasutajakonto nimi on nõutav</string>
   <string name="login_account_name_already_taken">Selline nimi on juba kasutusel</string>
-  <string name="login_account_not_created">Kasutajakonto loomine ei õnnestunud</string>
   <string name="login_install_certificate">Paigalda sertifikaat</string>
   <string name="login_google_account">Google\'i kasutajakonto</string>
   <string name="login_nextcloud_login_flow_server_address">Nextcloudi serveri aadress</string>

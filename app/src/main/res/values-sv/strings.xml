@@ -44,7 +44,6 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Verkar inte utvecklas och underhållas längre - ej rekommenderad.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Vissa funktioner <a href="https://www.davx5.com/faq/tasks/advanced-task-features">stöds inte</a> (ännu).]]></string>
   <string name="intro_tasks_no_app_store">Ingen app butik tillgänglig</string>
   <string name="intro_tasks_dont_show">Jag behöver inte stöd för att-göra.*</string>
   <string name="intro_open_source_title">Öppen källkod mjukvara</string>
@@ -87,7 +86,6 @@
   <string name="wifi_permissions_background_location_permission_label">Tillåt hela tiden</string>
   <string name="wifi_permissions_background_location_permission_on">Platsbehörighet satt till: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Platsbehörighet inte satt till: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s använder platsbehörigheten endast för att bestämma den aktuella WiFi:s SSID för konton med SSID-begränsning. Detta kommer att hända även när appen är i bakgrunden. Ingen platsdata samlas in, lagras, bearbetas eller skickas någonstans.</string>
   <string name="wifi_permissions_location_enabled">Plats alltid påslagen</string>
   <string name="wifi_permissions_location_enabled_on">Platstjänster är påslagna</string>
   <string name="wifi_permissions_location_enabled_off">Platstjänster är avstängda</string>
@@ -95,7 +93,6 @@
   <string name="about_translations">Översättningar</string>
   <string name="about_libraries">Bibliotek</string>
   <string name="about_version">Version %1$s (%2$d)</string>
-  <string name="about_build_date">Kompilerad på %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) och bidragsgivare</string>
   <string name="about_license_info_no_warranty">Detta program levereras med ABSOLUT INGEN GARANTI. Det är fri programvara, och du kan vidaredistribuera den under vissa förutsättningar.</string>
   <!--global settings-->
@@ -128,7 +125,6 @@
   <string name="account_list_manage_battery_saver">Hantera batterisparare</string>
   <string name="account_list_low_storage">Lagringsutrymmet är lågt. Android kommer inte synka lokala ändringar direkt, utan vänta till nästa regelbundna synkronisering.</string>
   <string name="account_list_manage_storage">Hantera lagring</string>
-  <string name="account_list_empty">Välkommen till DAVx⁵!\n\nDu kan lägga till ett CalDAV/CardDAV-konto nu.</string>
   <string name="accounts_sync_all">Synkronisera alla konton</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Servicedetektering misslyckades</string>
@@ -140,9 +136,7 @@
   <string name="app_settings">InstÃ¤llningar</string>
   <string name="app_settings_debug">Felsökning</string>
   <string name="app_settings_show_debug_info">Visa felsökningsinformation</string>
-  <string name="app_settings_show_debug_info_details">Visa/dela programvara och konfigurationsdetaljer</string>
   <string name="app_settings_logging">Omfattande loggning</string>
-  <string name="app_settings_logging_on">Loggning är påslagen</string>
   <string name="app_settings_logging_off">Loggning är avstängd</string>
   <string name="app_settings_battery_optimization">Batterioptimering</string>
   <string name="app_settings_battery_optimization_exempted">Appen är undantagen (rekommenderas)</string>
@@ -224,14 +218,13 @@
   <string name="login_user_name_optional">Användarnamn*</string>
   <string name="login_base_url">Bas-URL</string>
   <string name="login_select_certificate">Välj certifikat</string>
-  <string name="login_create_account">Skapa konto</string>
+  <string name="login_add_account">Lägg till konto</string>
   <string name="login_account_name">Kontonamn</string>
   <string name="login_account_avoid_apostrophe">Användning av apostrof (\') verkar orsaka problem på vissa enheter.</string>
   <string name="login_account_name_info">Använd din e-postadress som kontonamn eftersom Android kommer att använda kontonamnet som fält för ARRANGÖR för händelser du skapar. Du kan inte ha två konton med samma namn.</string>
   <string name="login_account_contact_group_method">Kontaktgruppsmetod:</string>
   <string name="login_account_name_required">Konto namn krävs</string>
   <string name="login_account_name_already_taken">Kontonamn är upptaget</string>
-  <string name="login_account_not_created">Konto kunde inte skapas</string>
   <string name="login_type_advanced">Avancerad inloggning</string>
   <string name="login_no_client_certificate_optional">Inget klientcertifikat*</string>
   <string name="login_client_certificate_selected">Klientcertifikat: %s</string>

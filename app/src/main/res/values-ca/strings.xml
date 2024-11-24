@@ -45,13 +45,13 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Sembla que ja no es desenvolupa, no es recomana.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Algunes funcions <a href="https://www.davx5.com/faq/tasks/advanced-task-features">no estan disponibles</a> (encara).]]></string>
   <string name="intro_tasks_no_app_store">No hi ha cap mercat d\'aplicacions disponible</string>
   <string name="intro_tasks_dont_show">No necessito suport per les tasques.*</string>
   <string name="intro_open_source_title">Programari de codi obert</string>
   <string name="intro_open_source_text">Ens alegra saber que utilitzes %s, que és programari de codi obert. El desenvolupament, manteniment i suport requereixen un gran treball. Si us plau, considera contribuir (hi ha moltes formes) o realitzar una donació. Seria molt apreciat!</string>
   <string name="intro_open_source_details">Com contribuir/donar</string>
   <string name="intro_open_source_dont_show">No mostrar en el futur pròxim</string>
+  <string name="intro_next">Següent</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisos</string>
   <string name="permissions_text">%s requereix permisos per a funcionar correctament.</string>
@@ -88,7 +88,6 @@
   <string name="wifi_permissions_background_location_permission_label">Permetre tota l\'estona</string>
   <string name="wifi_permissions_background_location_permission_on">El permís d\'ubicació s\'ha definit a: %s</string>
   <string name="wifi_permissions_background_location_permission_off">El permís d\'ubicació no s\'ha definit a: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s utilitza el permís de localització només per a determinar l\'SSID de la Wi-Fi actual per als comptes restringits de SSID. Això ocorrerà fins i tot quan l\'aplicació estigui en segon pla. No es recullen, s\'emmagatzemen, es processen ni s\'envien a cap lloc.</string>
   <string name="wifi_permissions_location_enabled">Localització sempre habilitada</string>
   <string name="wifi_permissions_location_enabled_on">El servei de localització està habilitat</string>
   <string name="wifi_permissions_location_enabled_off">Servei de localització deshabilitat</string>
@@ -96,7 +95,6 @@
   <string name="about_translations">Traduccions</string>
   <string name="about_libraries">Biblioteques</string>
   <string name="about_version">Versió %1$s (%2$d)</string>
-  <string name="about_build_date">Compilat el %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) i col·laboradors</string>
   <string name="about_license_info_no_warranty">Aquest programa és distribuït sense CAP MENA DE GARANTIA. És programari lliure, i està permesa la seva redistribució segons certes condicions.</string>
   <!--global settings-->
@@ -129,7 +127,6 @@
   <string name="account_list_manage_battery_saver">Gestiona l\'estalvi de bateria</string>
   <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no sincronitzarà els canvis locals immediatament, sinó durant la pròxima sincronització normal.</string>
   <string name="account_list_manage_storage">Gestiona l\'emmagatzematge</string>
-  <string name="account_list_empty">Us donem la benvinguda a DAVx⁵! \n\nAra podeu afegir un compte CalDAV / CardDAV.</string>
   <string name="accounts_sync_all">Sincronitza tots els comptes</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Ha fallat la detecció del servei</string>
@@ -141,9 +138,7 @@
   <string name="app_settings">Configuració</string>
   <string name="app_settings_debug">Depurador</string>
   <string name="app_settings_show_debug_info">Informació de depuració</string>
-  <string name="app_settings_show_debug_info_details">Mostra/comparteix detalls del programari i de la configuració</string>
   <string name="app_settings_logging">Registre detallat</string>
-  <string name="app_settings_logging_on">Registre actiu</string>
   <string name="app_settings_logging_off">Registre inactiu</string>
   <string name="app_settings_battery_optimization">Optimització de la bateria</string>
   <string name="app_settings_battery_optimization_exempted">L\'aplicació està exempta (recomanat)</string>
@@ -230,14 +225,13 @@
   <string name="login_base_url">URL base</string>
   <string name="login_base_url_info"><![CDATA[L\'URL base es comprovarà directament, però els <a href="%s">serveis també es descobreixen</a> utilitzant els registres de DNS i els URL ben coneguts.]]></string>
   <string name="login_select_certificate">Selecciona el certificat</string>
-  <string name="login_create_account">Crea un compte</string>
+  <string name="login_add_account">Afegeix un compte</string>
   <string name="login_account_name">Nom del compte</string>
   <string name="login_account_avoid_apostrophe">L\'ús d\'apòstrofs (\') sembla que provoca problemes en alguns dispositius.</string>
   <string name="login_account_name_info">Utilitzeu la vostra adreça de correu electrònic com a nom del compte perquè l\'Android utilitzarà el nom del compte com a camp ORGANITZADOR per als esdeveniments que creeu. No poden haver-hi dos comptes amb el mateix nom.</string>
   <string name="login_account_contact_group_method">Mètode dels grups de contactes:</string>
   <string name="login_account_name_required">Nom del compte obligatori</string>
   <string name="login_account_name_already_taken">Nom de compte existent</string>
-  <string name="login_account_not_created">No s\'ha pogut crear el compte</string>
   <string name="login_type_advanced">Inici de sessió avançat</string>
   <string name="login_no_client_certificate_optional">Sense certificat del client*</string>
   <string name="login_client_certificate_selected">Certificat del client: %s</string>
