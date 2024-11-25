@@ -13,13 +13,17 @@ import javax.inject.Singleton
  * `ContentResolver.setIsSyncable()` or something similar themselves. Everything sync-framework
  * related must be handled by this class.
  *
- * Sync requests from the sync adapter framework are handled by [SyncAdapterService].
+ * Sync requests from the Sync Adapter Framework are handled by [SyncAdapterService].
  */
 @Singleton
 class SyncFrameworkIntegration @Inject constructor(
     private val logger: Logger
 ) {
 
+    /**
+     * Gets the global auto-sync setting that applies to all the providers and accounts. If this is
+     * false then the per-provider auto-sync setting is ignored.
+     */
     fun getMasterSyncAutomatically() =
         ContentResolver.getMasterSyncAutomatically()
 
