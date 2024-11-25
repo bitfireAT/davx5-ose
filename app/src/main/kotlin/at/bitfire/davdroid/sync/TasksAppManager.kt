@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.app.PendingIntent
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -28,13 +27,13 @@ import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.logging.Logger
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import java.util.logging.Logger
+import javax.inject.Inject
 
 /**
  * Responsible for setting/getting the currently used tasks app, and for communicating with it.
@@ -47,6 +46,7 @@ class TasksAppManager @Inject constructor(
     private val logger: Logger,
     private val notificationRegistry: Lazy<NotificationRegistry>,
     private val settingsManager: SettingsManager,
+    private val syncFramework: SyncFrameworkIntegration,
     private val syncWorkerManager: SyncWorkerManager
 ) {
 
@@ -136,7 +136,7 @@ class TasksAppManager @Inject constructor(
                 logger.info("Enabling $authority sync for $account")
 
                 // make account syncable by sync framework
-                ContentResolver.setIsSyncable(account, authority, 1)
+                syncFramework.enableSyncAbility(account, authority)
 
                 // set sync interval according to settings; also updates periodic sync workers and sync framework on-content-change
                 val interval = settings.getTasksSyncInterval() ?: settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
@@ -145,7 +145,7 @@ class TasksAppManager @Inject constructor(
                 logger.info("Disabling $authority sync for $account")
 
                 // make account not syncable by sync framework
-                ContentResolver.setIsSyncable(account, authority, 0)
+                syncFramework.disableSyncAbility(account, authority)
 
                 // disable periodic sync worker
                 syncWorkerManager.disablePeriodic(account, authority)

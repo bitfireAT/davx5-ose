@@ -5,7 +5,6 @@ package at.bitfire.davdroid.settings
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
 import android.os.Looper
@@ -14,6 +13,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
@@ -46,6 +46,7 @@ class AccountSettings @AssistedInject constructor(
     private val logger: Logger,
     private val migrationsFactory: AccountSettingsMigrations.Factory,
     private val settingsManager: SettingsManager,
+    private val syncFramework: SyncFrameworkIntegration,
     private val syncWorkerManager: SyncWorkerManager
 ) {
 
@@ -135,7 +136,7 @@ class AccountSettings @AssistedInject constructor(
     fun getSyncInterval(authority: String): Long? {
         val addrBookAuthority = context.getString(R.string.address_books_authority)
 
-        if (ContentResolver.getIsSyncable(account, authority) <= 0 && authority != addrBookAuthority)
+        if (!syncFramework.isSyncable(account, authority) && authority != addrBookAuthority)
             return null
 
         val key = when {
@@ -154,7 +155,6 @@ class AccountSettings @AssistedInject constructor(
 
     /**
      * Sets the sync interval and en- or disables periodic sync for the given account and authority.
-     * Does *not* call [ContentResolver.setIsSyncable].
      *
      * This method blocks until a worker as been created and enqueued (sync active) or removed
      * (sync disabled), so it should not be called from the UI thread.
@@ -189,52 +189,11 @@ class AccountSettings @AssistedInject constructor(
         // update sync workers (needs already updated sync interval in AccountSettings)
         updatePeriodicSyncWorker(authority, seconds, getSyncWifiOnly())
 
-        // Also enable/disable content change triggered syncs (SyncFramework automatic sync).
-        // We could make this a separate user adjustable setting later on.
-        setSyncOnContentChange(authority, seconds != SYNC_INTERVAL_MANUALLY)
-    }
-
-    /**
-     * Enables/disables sync adapter automatic sync (content triggered sync) for the given
-     * account and authority. Does *not* call [ContentResolver.setIsSyncable].
-     *
-     * We use the sync adapter framework only for the trigger, actual syncing is implemented
-     * with WorkManager. The trigger comes in through SyncAdapterService.
-     *
-     * This method blocks until the sync-on-content-change has been enabled or disabled, so it
-     * should not be called from the UI thread.
-     *
-     * @param enable    *true* enables automatic sync; *false* disables it
-     * @param authority sync authority (like [CalendarContract.AUTHORITY])
-     * @return whether the content triggered sync was enabled successfully
-     */
-    @WorkerThread
-    fun setSyncOnContentChange(authority: String, enable: Boolean): Boolean {
-        // Enable content change triggers (sync adapter framework)
-        val setContentTrigger: () -> Boolean =
-            /* Ugly hack: because there is no callback for when the sync status/interval has been
-            updated, we need to make this call blocking. */
-            if (enable) {{
-                logger.fine("Enabling content-triggered sync of $account/$authority")
-                ContentResolver.setSyncAutomatically(account, authority, true) // enables content triggers
-                // Remove unwanted sync framework periodic syncs created by setSyncAutomatically
-                for (periodicSync in ContentResolver.getPeriodicSyncs(account, authority))
-                    ContentResolver.removePeriodicSync(periodicSync.account, periodicSync.authority, periodicSync.extras)
-                /* return */ ContentResolver.getSyncAutomatically(account, authority)
-            }} else {{
-                logger.fine("Disabling content-triggered sync of $account/$authority")
-                ContentResolver.setSyncAutomatically(account, authority, false) // disables content triggers
-                /* return */ !ContentResolver.getSyncAutomatically(account, authority)
-            }}
-
-        // try up to 10 times with 100 ms pause
-        for (idxTry in 0 until 10) {
-            if (setContentTrigger())
-                // successfully set
-                return true
-            Thread.sleep(100)
-        }
-        return false
+        // Also enable/disable content change triggered syncs
+        if (seconds != SYNC_INTERVAL_MANUALLY)
+            syncFramework.enableSyncOnContentChange(account, authority)
+        else
+            syncFramework.disableSyncOnContentChange(account, authority)
     }
 
     fun getSyncWifiOnly() =

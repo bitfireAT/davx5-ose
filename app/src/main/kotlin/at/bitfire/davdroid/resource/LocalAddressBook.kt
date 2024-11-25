@@ -6,7 +6,6 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
@@ -23,6 +22,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.vcard4android.AndroidAddressBook
@@ -59,7 +59,8 @@ open class LocalAddressBook @AssistedInject constructor(
     @ApplicationContext val context: Context,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,
-    private val serviceRepository: DavServiceRepository
+    private val serviceRepository: DavServiceRepository,
+    private val syncFramework: SyncFrameworkIntegration
 ): AndroidAddressBook<LocalContact, LocalGroup>(_addressBookAccount, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
 
     @AssistedFactory
@@ -222,25 +223,15 @@ open class LocalAddressBook @AssistedInject constructor(
 
 
     /**
-     * Updates the sync framework settings for this address book:
-     *
-     * - Contacts sync of this address book account shall be possible -> isSyncable = 1
-     * - When a contact is changed, a sync shall be initiated -> syncAutomatically = true
-     * - Remove unwanted sync framework periodic syncs created by setSyncAutomatically, as
-     * we use PeriodicSyncWorker for scheduled syncs
+     * Makes contacts of this address book available to be synced and activates synchronization upon
+     * contact data changes.
      */
     fun updateSyncFrameworkSettings() {
-        // Enable sync-ability
-        if (ContentResolver.getIsSyncable(addressBookAccount, ContactsContract.AUTHORITY) != 1)
-            ContentResolver.setIsSyncable(addressBookAccount, ContactsContract.AUTHORITY, 1)
+        // Enable sync-ability of contacts
+        syncFramework.enableSyncAbility(addressBookAccount, ContactsContract.AUTHORITY)
 
-        // Enable content trigger
-        if (!ContentResolver.getSyncAutomatically(addressBookAccount, ContactsContract.AUTHORITY))
-            ContentResolver.setSyncAutomatically(addressBookAccount, ContactsContract.AUTHORITY, true)
-
-        // Remove periodic syncs (setSyncAutomatically also creates periodic syncs, which we don't want)
-        for (periodicSync in ContentResolver.getPeriodicSyncs(addressBookAccount, ContactsContract.AUTHORITY))
-            ContentResolver.removePeriodicSync(periodicSync.account, periodicSync.authority, periodicSync.extras)
+        // Changes in contact data should trigger syncs
+        syncFramework.enableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
     }
 
 

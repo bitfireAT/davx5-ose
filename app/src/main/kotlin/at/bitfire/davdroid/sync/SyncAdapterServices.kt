@@ -48,13 +48,15 @@ abstract class SyncAdapterService: Service() {
     }
 
     /**
-     * Entry point for the sync adapter framework.
+     * Entry point for the Sync Adapter Framework.
      *
-     * Handles incoming sync requests from the sync adapter framework.
+     * Handles incoming sync requests from the Sync Adapter Framework.
      *
      * Although we do not use the sync adapter for syncing anymore, we keep this sole
      * adapter to provide exported services, which allow android system components and calendar,
      * contacts or task apps to sync via DAVx5.
+     *
+     * All Sync Adapter Framework related interaction should happen inside [SyncFrameworkIntegration].
      */
     class SyncAdapter @Inject constructor(
         private val accountSettingsFactory: AccountSettings.Factory,
@@ -66,8 +68,8 @@ abstract class SyncAdapterService: Service() {
         private val syncWorkerManager: SyncWorkerManager
     ): AbstractThreadedSyncAdapter(
         context,
-        true    // isSyncable shouldn't be -1 because DAVx5 sets it to 0 or 1.
-                           // However, if it is -1 by accident, set it to 1 to avoid endless sync loops.
+        true    // isSyncable shouldn't be -1 because DAVx5 (SyncFrameworkIntegration) sets it to 0 or 1.
+                // However, if it is -1 by accident, set it to 1 to avoid endless sync loops.
     ) {
 
         /**

@@ -7,7 +7,6 @@ package at.bitfire.davdroid.ui
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.usage.UsageStatsManager
-import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
@@ -47,6 +46,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract
@@ -80,7 +80,8 @@ class DebugInfoModel @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
-    private val settings: SettingsManager
+    private val settings: SettingsManager,
+    private val syncFramework: SyncFrameworkIntegration
 ) : ViewModel() {
 
     data class DebugInfoDetails(
@@ -301,7 +302,7 @@ class DebugInfoModel @AssistedInject constructor(
             }
             // system-wide sync
             writer.append("System-wide synchronization: ")
-                .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "manually")
+                .append(if (syncFramework.getMasterSyncAutomatically()) "automatically" else "manually")
                 .append("\n\n")
 
             // connectivity
@@ -527,7 +528,7 @@ class DebugInfoModel @AssistedInject constructor(
      * @return the requested information
      */
     private fun dumpAccount(account: Account, accountSettings: AccountSettings?, infos: Iterable<AccountDumpInfo>): String {
-        val table = TextTable("Authority", "isSyncable", "syncAutomatically", "Interval", "Entries")
+        val table = TextTable("Authority", "isSyncable", "syncsOnContentChange", "Interval", "Entries")
         for (info in infos) {
             var nrEntries = "—"
             if (info.countUri != null)
@@ -542,8 +543,8 @@ class DebugInfoModel @AssistedInject constructor(
                 }
             table.addLine(
                 info.authority,
-                ContentResolver.getIsSyncable(account, info.authority),
-                ContentResolver.getSyncAutomatically(account, info.authority),  // content-triggered sync
+                syncFramework.isSyncable(account, info.authority),
+                syncFramework.syncsOnContentChange(account, info.authority),
                 accountSettings?.getSyncInterval(info.authority)?.takeIf { it >= 0 }?.let {"${it/60} min"},
                 nrEntries
             )
