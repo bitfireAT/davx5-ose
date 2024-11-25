@@ -27,7 +27,7 @@ class SyncFrameworkIntegration @Inject constructor(
      * Check if this account/provider is syncable.
      */
     fun isSyncable(account: Account, authority: String): Boolean =
-        ContentResolver.getIsSyncable(account, authority) >= 0
+        ContentResolver.getIsSyncable(account, authority) > 0
 
     /**
      * Enable this account/provider to be syncable.
