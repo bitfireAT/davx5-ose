@@ -6,7 +6,6 @@ import android.provider.CalendarContract
 import androidx.annotation.WorkerThread
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Handles all Sync Adapter Framework related interaction. Other classes should never call
@@ -77,33 +76,20 @@ class SyncFrameworkIntegration @Inject constructor(
      * We use the sync adapter framework only for the trigger, actual syncing is implemented
      * with WorkManager. The trigger comes in through SyncAdapterService.
      *
-     * This method blocks until the sync-on-content-change has been enabled or disabled, so it
-     * should not be called from the UI thread.
+     * Because there is no callback for when the sync status/interval has been updated, this method
+     * blocks until the sync-on-content-change has been enabled or disabled, so it should not be
+     * called from the UI thread.
      *
+     * @param account   account to enable/disable content change sync triggers for
      * @param enable    *true* enables automatic sync; *false* disables it
      * @param authority sync authority (like [CalendarContract.AUTHORITY])
      * @return whether the content triggered sync was enabled successfully
      */
     @WorkerThread
     private fun setSyncOnContentChange(account: Account, authority: String, enable: Boolean): Boolean {
-        // Enable content change triggers (sync adapter framework)
-        val setContentTrigger: () -> Boolean =
-            /* Ugly hack: because there is no callback for when the sync status/interval has been
-            updated, we need to make this call blocking. */
-            if (enable) {{
-                logger.fine("Enabling content-triggered sync of $account/$authority")
-                ContentResolver.setSyncAutomatically(account, authority, true) // enables content triggers
-                /* return */ ContentResolver.getSyncAutomatically(account, authority)
-            }} else {{
-                logger.fine("Disabling content-triggered sync of $account/$authority")
-                ContentResolver.setSyncAutomatically(account, authority, false) // disables content triggers
-                /* return */ !ContentResolver.getSyncAutomatically(account, authority)
-            }}
-
-        // try up to 10 times with 100 ms pause
+        // Try up to 10 times with 100 ms pause
         repeat(10) {
-            if (setContentTrigger()) {
-                // Successfully set
+            if (setContentTrigger(account, authority, enable)) {
                 // Remove periodic syncs created by ContentResolver.setSyncAutomatically
                 ContentResolver.getPeriodicSyncs(account, authority).forEach { periodicSync ->
                     ContentResolver.removePeriodicSync(
@@ -112,11 +98,32 @@ class SyncFrameworkIntegration @Inject constructor(
                         periodicSync.extras
                     )
                 }
+                // Set successfully
                 return true
             }
             Thread.sleep(100)
         }
+        // Failed to set
         return false
     }
+
+    /**
+     * Enable or disable content change sync triggers of the Sync Adapter Framework.
+     *
+     * @param account   account to enable/disable content change sync triggers for
+     * @param enable    *true* enables automatic sync; *false* disables it
+     * @param authority sync authority (like [CalendarContract.AUTHORITY])
+     * @return whether the content triggered sync was enabled successfully
+     */
+    private fun setContentTrigger(account: Account, authority: String, enable: Boolean): Boolean =
+        if (enable) {
+            logger.fine("Enabling content-triggered sync of $account/$authority")
+            ContentResolver.setSyncAutomatically(account, authority, true)
+            /* return */ ContentResolver.getSyncAutomatically(account, authority)
+        } else {
+            logger.fine("Disabling content-triggered sync of $account/$authority")
+            ContentResolver.setSyncAutomatically(account, authority, false)
+            /* return */ !ContentResolver.getSyncAutomatically(account, authority)
+        }
 
 }
