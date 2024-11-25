@@ -13,6 +13,7 @@ import android.provider.ContactsContract
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -30,7 +31,8 @@ class LocalTestAddressBook @AssistedInject constructor(
     collectionRepository: DavCollectionRepository,
     @ApplicationContext context: Context,
     logger: Logger,
-    serviceRepository: DavServiceRepository
+    serviceRepository: DavServiceRepository,
+    syncFramework: SyncFrameworkIntegration
 ): LocalAddressBook(
     _addressBookAccount = ACCOUNT,
     provider = provider,
@@ -39,7 +41,8 @@ class LocalTestAddressBook @AssistedInject constructor(
     context = context,
     dirtyVerifier = Optional.empty(),
     logger = logger,
-    serviceRepository = serviceRepository
+    serviceRepository = serviceRepository,
+    syncFramework = syncFramework
 ) {
 
     @AssistedFactory
