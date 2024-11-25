@@ -15,7 +15,6 @@ import javax.inject.Singleton
  *
  * Sync requests from the Sync Adapter Framework are handled by [SyncAdapterService].
  */
-@Singleton
 class SyncFrameworkIntegration @Inject constructor(
     private val logger: Logger
 ) {
