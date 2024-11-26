@@ -96,8 +96,9 @@ fun AccountsScreen(
     val showSyncAll by model.showSyncAll.collectAsStateWithLifecycle(true)
     val showAddAccount by model.showAddAccount.collectAsStateWithLifecycle(AccountsModel.FABStyle.Standard)
 
-    val showAppIntro by model.showAppIntro.collectAsState(false)
+    // Remember shown state, so the intro does not restart on rotation or theme-change
     var shown by rememberSaveable { mutableStateOf(false) }
+    val showAppIntro by model.showAppIntro.collectAsState(false)
     LaunchedEffect(showAppIntro) {
         if (showAppIntro && !shown) {
             shown = true
