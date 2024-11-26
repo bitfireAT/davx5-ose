@@ -53,6 +53,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -96,9 +97,12 @@ fun AccountsScreen(
     val showAddAccount by model.showAddAccount.collectAsStateWithLifecycle(AccountsModel.FABStyle.Standard)
 
     val showAppIntro by model.showAppIntro.collectAsState(false)
+    var shown by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(showAppIntro) {
-        if (showAppIntro)
+        if (showAppIntro && !shown) {
+            shown = true
             onShowAppIntro()
+        }
     }
 
     AccountsScreen(
