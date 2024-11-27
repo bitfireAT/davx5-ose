@@ -53,6 +53,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -95,10 +96,14 @@ fun AccountsScreen(
     val showSyncAll by model.showSyncAll.collectAsStateWithLifecycle(true)
     val showAddAccount by model.showAddAccount.collectAsStateWithLifecycle(AccountsModel.FABStyle.Standard)
 
+    // Remember shown state, so the intro does not restart on rotation or theme-change
+    var shown by rememberSaveable { mutableStateOf(false) }
     val showAppIntro by model.showAppIntro.collectAsState(false)
     LaunchedEffect(showAppIntro) {
-        if (showAppIntro)
+        if (showAppIntro && !shown) {
+            shown = true
             onShowAppIntro()
+        }
     }
 
     AccountsScreen(
