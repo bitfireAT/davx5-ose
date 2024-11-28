@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -25,14 +24,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -46,9 +48,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
@@ -62,21 +61,9 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import java.text.Collator
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.util.LinkedList
-import java.util.Locale
 import java.util.Optional
-import java.util.logging.Level
-import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.jvm.optionals.getOrNull
 
@@ -96,6 +83,9 @@ class AboutActivity: AppCompatActivity() {
         setContent {
             AppTheme {
                 val uriHandler = LocalUriHandler.current
+
+                val scope = rememberCoroutineScope()
+                val state = rememberPagerState(pageCount = { 3 })
 
                 Scaffold(
                     topBar = {
@@ -125,39 +115,46 @@ class AboutActivity: AppCompatActivity() {
                                 }
                             }
                         )
+                    },
+                    bottomBar = {
+                        NavigationBar {
+                            NavigationBarItem(
+                                selected = state.currentPage == 0,
+                                icon = {
+                                    Icon(
+                                        Icons.Default.Info,
+                                        stringResource(R.string.app_name)
+                                    )
+                                },
+                                label = { Text(stringResource(R.string.app_name)) },
+                                onClick = { scope.launch { state.animateScrollToPage(0) } }
+                            )
+                            NavigationBarItem(
+                                selected = state.currentPage == 1,
+                                icon = {
+                                    Icon(
+                                        Icons.Default.Language,
+                                        stringResource(R.string.about_translations)
+                                    )
+                                },
+                                label = { Text(stringResource(R.string.about_translations)) },
+                                onClick = { scope.launch { state.animateScrollToPage(1) } }
+                            )
+                            NavigationBarItem(
+                                selected = state.currentPage == 2,
+                                icon = {
+                                    Icon(
+                                        Icons.AutoMirrored.Default.LibraryBooks,
+                                        stringResource(R.string.about_libraries)
+                                    )
+                                },
+                                label = { Text(stringResource(R.string.about_libraries)) },
+                                onClick = { scope.launch { state.animateScrollToPage(2) } }
+                            )
+                        }
                     }
                 ) { paddingValues ->
                     Column(Modifier.padding(paddingValues)) {
-                        val scope = rememberCoroutineScope()
-                        val state = rememberPagerState(pageCount = { 3 })
-
-                        TabRow(state.currentPage) {
-                            Tab(state.currentPage == 0, onClick = {
-                                scope.launch { state.scrollToPage(0) }
-                            }) {
-                                Text(
-                                    stringResource(R.string.app_name),
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                            Tab(state.currentPage == 1, onClick = {
-                                scope.launch { state.scrollToPage(1) }
-                            }) {
-                                Text(
-                                    stringResource(R.string.about_translations),
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                            Tab(state.currentPage == 2, onClick = {
-                                scope.launch { state.scrollToPage(2) }
-                            }) {
-                                Text(
-                                    stringResource(R.string.about_libraries),
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                        }
-
                         HorizontalPager(
                             state,
                             modifier = Modifier
