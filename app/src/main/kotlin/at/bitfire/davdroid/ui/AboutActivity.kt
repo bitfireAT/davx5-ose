@@ -83,7 +83,7 @@ import kotlin.jvm.optionals.getOrNull
 @AndroidEntryPoint
 class AboutActivity: AppCompatActivity() {
 
-    val model by viewModels<Model>()
+    val model by viewModels<AboutModel>()
 
     @Inject
     lateinit var licenseInfoProvider: Optional<AppLicenseInfoProvider>
@@ -189,57 +189,6 @@ class AboutActivity: AppCompatActivity() {
     }
 
 
-    @HiltViewModel
-    class Model @Inject constructor(
-        @ApplicationContext val context: Context,
-        private val logger: Logger
-    ): ViewModel() {
-
-        data class Translation(
-            val language: String,
-            val translators: Set<String>
-        )
-
-        val translations = MutableLiveData<List<Translation>>()
-
-        init {
-            viewModelScope.launch(Dispatchers.IO) {
-                loadTranslations()
-            }
-        }
-
-        private fun loadTranslations() {
-            try {
-                context.resources.assets.open("translators.json").use { stream ->
-                    val jsonTranslations = JSONObject(stream.readBytes().decodeToString())
-                    val result = LinkedList<Translation>()
-                    for (langCode in jsonTranslations.keys()) {
-                        val jsonTranslators = jsonTranslations.getJSONArray(langCode)
-                        val translators = Array<String>(jsonTranslators.length()) { idx ->
-                            jsonTranslators.getString(idx)
-                        }
-
-                        val langTag = langCode.replace('_', '-')
-                        val language = Locale.forLanguageTag(langTag).displayName
-                        result += Translation(language, translators.toSet())
-                    }
-
-                    // sort translations by localized language name
-                    val collator = Collator.getInstance()
-                    result.sortWith { o1, o2 ->
-                        collator.compare(o1.language, o2.language)
-                    }
-
-                    translations.postValue(result)
-                }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't load translators", e)
-            }
-        }
-
-    }
-
-
     interface AppLicenseInfoProvider {
         @Composable
         fun LicenseInfo()
@@ -327,7 +276,7 @@ fun AboutApp_Preview() {
 
 @Composable
 fun TranslatorsGallery(
-    translations: List<AboutActivity.Model.Translation>
+    translations: List<AboutModel.Translation>
 ) {
     val collator = Collator.getInstance()
     LazyColumn(Modifier.padding(8.dp)) {
@@ -352,7 +301,7 @@ fun TranslatorsGallery(
 @Preview
 fun TranslatorsGallery_Sample() {
     TranslatorsGallery(listOf(
-        AboutActivity.Model.Translation("Some Language", setOf("User 1", "User 2")),
-        AboutActivity.Model.Translation("Another Language", setOf("User 3", "User 4"))
+        AboutModel.Translation("Some Language", setOf("User 1", "User 2")),
+        AboutModel.Translation("Another Language", setOf("User 3", "User 4"))
     ))
 }
