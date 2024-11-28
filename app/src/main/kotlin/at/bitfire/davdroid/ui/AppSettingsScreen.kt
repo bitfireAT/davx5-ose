@@ -113,8 +113,6 @@ fun AppSettingsScreen(
             tasksAppName = model.appName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
             tasksAppIcon = model.icon.collectAsStateWithLifecycle(null).value,
             pushEndpoint = model.pushEndpoint.collectAsStateWithLifecycle(null).value,
-            pushDistributor = model.pushDistributor.collectAsStateWithLifecycle(null).value,
-            onPushDistributorSelected = model::updatePushDistributor,
             onNavTasksScreen = onNavTasksScreen
         )
     }
@@ -154,8 +152,6 @@ fun AppSettingsScreen(
     tasksAppName: String,
     tasksAppIcon: Drawable?,
     pushEndpoint: String?,
-    pushDistributor: String?,
-    onPushDistributorSelected: (String) -> Unit,
     onNavTasksScreen: () -> Unit,
 
     onShowNotificationSettings: () -> Unit,
@@ -243,8 +239,6 @@ fun AppSettingsScreen(
                     appName = tasksAppName,
                     icon = tasksAppIcon,
                     pushEndpoint = pushEndpoint,
-                    pushDistributor = pushDistributor,
-                    onPushDistributorSelected = onPushDistributorSelected,
                     onNavTasksScreen = onNavTasksScreen
                 )
             }
@@ -281,8 +275,6 @@ fun AppSettingsScreen_Preview() {
             tasksAppName = "No tasks app",
             tasksAppIcon = null,
             pushEndpoint = null,
-            pushDistributor = null,
-            onPushDistributorSelected = {},
             onNavTasksScreen = {}
         )
     }
@@ -494,8 +486,6 @@ fun AppSettings_UserInterface(
 fun AppSettings_Integration(
     appName: String,
     pushEndpoint: String?,
-    pushDistributor: String?,
-    onPushDistributorSelected: (String) -> Unit,
     icon: Drawable? = null,
     onNavTasksScreen: () -> Unit = {}
 ) {
@@ -518,6 +508,7 @@ fun AppSettings_Integration(
     val context = LocalContext.current
     val pm = context.applicationContext.packageManager
 
+    var distributor by remember { mutableStateOf(UnifiedPush.getSavedDistributor(context)) }
     val distributors = remember { UnifiedPush.getDistributors(context) }
     LaunchedEffect(Unit) {
         UnifiedPush.getAckDistributor(context)?.let {
@@ -527,7 +518,7 @@ fun AppSettings_Integration(
 
     var showingDistributorDialog by remember { mutableStateOf(false) }
     if (showingDistributorDialog) {
-        var selectedDistributor by remember { mutableStateOf(pushDistributor) }
+        var selectedDistributor by remember { mutableStateOf(distributor) }
 
         AlertDialog(
             onDismissRequest = { showingDistributorDialog = false },
@@ -537,7 +528,7 @@ fun AppSettings_Integration(
                     onClick = {
                         UnifiedPush.saveDistributor(context, selectedDistributor!!)
                         UnifiedPush.registerApp(context)
-                        onPushDistributorSelected(selectedDistributor!!)
+                        distributor = selectedDistributor
                         showingDistributorDialog = false
                     }
                 ) { Text(stringResource(android.R.string.ok)) }
@@ -608,10 +599,10 @@ fun AppSettings_Integration(
         )
     }
 
-    val applicationName = remember(pushDistributor) {
-        pushDistributor?.let { distributor ->
+    val applicationName = remember(distributor) {
+        distributor?.let {
             try {
-                val info = pm.getApplicationInfo(distributor, 0)
+                val info = pm.getApplicationInfo(it, 0)
                 pm.getApplicationLabel(info).toString()
             } catch (_: PackageManager.NameNotFoundException) {
                 null
