@@ -106,9 +106,5 @@ class AppSettingsModel @Inject constructor(
     // push
 
     val pushEndpoint = preference.unifiedPushEndpointFlow()
-    val pushDistributor = preference.unifiedPushDistributorFlow()
-    fun updatePushDistributor(distributor: String) {
-        preference.unifiedPushDistributor(distributor)
-    }
 
 }
