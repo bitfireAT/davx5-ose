@@ -1,11 +1,17 @@
 package at.bitfire.davdroid.ui
 
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -15,16 +21,24 @@ import androidx.compose.material.icons.filled.Adb
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.InvertColors
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.RadioButtonChecked
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.SyncProblem
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -99,6 +113,8 @@ fun AppSettingsScreen(
             tasksAppName = model.appName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
             tasksAppIcon = model.icon.collectAsStateWithLifecycle(null).value,
             pushEndpoint = model.pushEndpoint.collectAsStateWithLifecycle(null).value,
+            pushDistributor = model.pushDistributor.collectAsStateWithLifecycle(null).value,
+            onPushDistributorSelected = model::updatePushDistributor,
             onNavTasksScreen = onNavTasksScreen
         )
     }
@@ -138,6 +154,8 @@ fun AppSettingsScreen(
     tasksAppName: String,
     tasksAppIcon: Drawable?,
     pushEndpoint: String?,
+    pushDistributor: String?,
+    onPushDistributorSelected: (String) -> Unit,
     onNavTasksScreen: () -> Unit,
 
     onShowNotificationSettings: () -> Unit,
@@ -225,6 +243,8 @@ fun AppSettingsScreen(
                     appName = tasksAppName,
                     icon = tasksAppIcon,
                     pushEndpoint = pushEndpoint,
+                    pushDistributor = pushDistributor,
+                    onPushDistributorSelected = onPushDistributorSelected,
                     onNavTasksScreen = onNavTasksScreen
                 )
             }
@@ -261,6 +281,8 @@ fun AppSettingsScreen_Preview() {
             tasksAppName = "No tasks app",
             tasksAppIcon = null,
             pushEndpoint = null,
+            pushDistributor = null,
+            onPushDistributorSelected = {},
             onNavTasksScreen = {}
         )
     }
@@ -472,6 +494,8 @@ fun AppSettings_UserInterface(
 fun AppSettings_Integration(
     appName: String,
     pushEndpoint: String?,
+    pushDistributor: String?,
+    onPushDistributorSelected: (String) -> Unit,
     icon: Drawable? = null,
     onNavTasksScreen: () -> Unit = {}
 ) {
@@ -492,15 +516,117 @@ fun AppSettings_Integration(
     )
 
     val context = LocalContext.current
+    val pm = context.applicationContext.packageManager
+
+    val distributors = remember { UnifiedPush.getDistributors(context) }
+    LaunchedEffect(Unit) {
+        UnifiedPush.getAckDistributor(context)?.let {
+            UnifiedPush.registerApp(context)
+        }
+    }
+
+    var showingDistributorDialog by remember { mutableStateOf(false) }
+    if (showingDistributorDialog) {
+        var selectedDistributor by remember { mutableStateOf(pushDistributor) }
+
+        AlertDialog(
+            onDismissRequest = { showingDistributorDialog = false },
+            confirmButton = {
+                TextButton(
+                    enabled = selectedDistributor != null,
+                    onClick = {
+                        UnifiedPush.saveDistributor(context, selectedDistributor!!)
+                        UnifiedPush.registerApp(context)
+                        onPushDistributorSelected(selectedDistributor!!)
+                        showingDistributorDialog = false
+                    }
+                ) { Text(stringResource(android.R.string.ok)) }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showingDistributorDialog = false }
+                ) { Text(stringResource(android.R.string.cancel)) }
+            },
+            title = {
+                Text(stringResource(R.string.app_settings_unifiedpush_endpoint_choose))
+            },
+            text = {
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    if (distributors.isEmpty()) item {
+                        Text(stringResource(R.string.app_settings_unifiedpush_endpoint_none))
+                    }
+
+                    items(distributors) { distributor ->
+                        val applicationInfo = remember(distributor) {
+                            try {
+                                pm.getApplicationInfo(distributor, 0)
+                            } catch (_: PackageManager.NameNotFoundException) {
+                                null
+                            }
+                        }
+                        val applicationName = remember(applicationInfo) {
+                            applicationInfo?.let { pm.getApplicationLabel(applicationInfo).toString() }
+                        }
+                        val applicationIcon = remember(applicationInfo) {
+                            applicationInfo?.let { pm.getApplicationIcon(applicationInfo) }
+                        }
+
+                        ListItem(
+                            leadingContent = {
+                                Icon(
+                                    imageVector = if (distributor == selectedDistributor) {
+                                        Icons.Default.RadioButtonChecked
+                                    } else {
+                                        Icons.Default.RadioButtonUnchecked
+                                    },
+                                    contentDescription = null
+                                )
+                            },
+                            trailingContent = {
+                                applicationIcon?.let { icon ->
+                                    Image(
+                                        bitmap = icon.toBitmap().asImageBitmap(),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
+                            },
+                            headlineContent = {
+                                Text(applicationName ?: distributor)
+                            },
+                            modifier = Modifier.clickable {
+                                selectedDistributor = distributor
+                            },
+                            colors = ListItemDefaults.colors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                headlineColor = MaterialTheme.colorScheme.onSurface
+                            )
+                        )
+                    }
+                }
+            }
+        )
+    }
+
+    val applicationName = remember(pushDistributor) {
+        pushDistributor?.let { distributor ->
+            try {
+                val info = pm.getApplicationInfo(distributor, 0)
+                pm.getApplicationLabel(info).toString()
+            } catch (_: PackageManager.NameNotFoundException) {
+                null
+            }
+        }
+    }
 
     Setting(
         name = stringResource(R.string.app_settings_unifiedpush),
         summary = if (pushEndpoint != null)
             stringResource(R.string.app_settings_unifiedpush_endpoint_domain, pushEndpoint.toHttpUrlOrNull()?.host ?: pushEndpoint)
+        else if (applicationName != null)
+            stringResource(R.string.app_settings_unifiedpush_no_endpoint_with_distributor, applicationName)
         else
             stringResource(R.string.app_settings_unifiedpush_no_endpoint),
-        onClick = {
-            UnifiedPush.registerAppWithDialog(context)
-        }
+        onClick = { showingDistributorDialog = true }
     )
 }

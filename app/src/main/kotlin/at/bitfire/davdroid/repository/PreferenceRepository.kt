@@ -23,6 +23,7 @@ class PreferenceRepository @Inject constructor(
 
     companion object {
         const val LOG_TO_FILE = "log_to_file"
+        const val UNIFIED_PUSH_DISTRIBUTOR = "unified_push_distributor"
         const val UNIFIED_PUSH_ENDPOINT = "unified_push_endpoint"
     }
 
@@ -64,6 +65,20 @@ class PreferenceRepository @Inject constructor(
         preferences
             .edit()
             .putString(UNIFIED_PUSH_ENDPOINT, endpoint)
+            .apply()
+    }
+
+    fun unifiedPushDistributor() =
+        preferences.getString(UNIFIED_PUSH_DISTRIBUTOR, null)
+
+    fun unifiedPushDistributorFlow() = observeAsFlow(UNIFIED_PUSH_DISTRIBUTOR) {
+        unifiedPushDistributor()
+    }
+
+    fun unifiedPushDistributor(endpoint: String?) {
+        preferences
+            .edit()
+            .putString(UNIFIED_PUSH_DISTRIBUTOR, endpoint)
             .apply()
     }
 
