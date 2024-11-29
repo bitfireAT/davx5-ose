@@ -3,6 +3,7 @@ package at.bitfire.davdroid.ui
 import android.content.Context
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.os.PowerManager
 import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
@@ -19,9 +20,14 @@ import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import org.unifiedpush.android.connector.UnifiedPush
 import javax.inject.Inject
 
 @HiltViewModel
@@ -106,5 +112,62 @@ class AppSettingsModel @Inject constructor(
     // push
 
     val pushEndpoint = preference.unifiedPushEndpointFlow()
+
+    private val _pushDistributor = MutableStateFlow<String?>(null)
+    val pushDistributor get() = _pushDistributor
+        .asStateFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    private val _pushDistributors = MutableStateFlow<List<String>?>(null)
+    val pushDistributors get() = _pushDistributors
+        .asStateFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    private val _pushDistributorsData = MutableStateFlow<Map<String, Pair<String, Drawable>>?>(null)
+
+    /**
+     * Contains a map with the package name of the app associated with the available distributors as
+     * key, and a pair with the app's display name and icon as values.
+     */
+    val pushDistributorsData get() = _pushDistributorsData
+        .asStateFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    fun updatePushDistributor(pushDistributor: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            UnifiedPush.saveDistributor(context, pushDistributor)
+            UnifiedPush.registerApp(context)
+            _pushDistributor.emit(pushDistributor)
+        }
+    }
+
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            val savedPushDistributor = UnifiedPush.getSavedDistributor(context)
+            _pushDistributor.emit(savedPushDistributor)
+
+            val pushDistributors = UnifiedPush.getDistributors(context)
+            _pushDistributors.emit(pushDistributors)
+
+            val pushDistributorsData = mutableMapOf<String, Pair<String, Drawable>>()
+            for (pushDistributor in pushDistributors) {
+                try {
+                    val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
+                    val label = pm.getApplicationLabel(applicationInfo).toString()
+                    val icon = pm.getApplicationIcon(applicationInfo)
+                    pushDistributorsData[pushDistributor] = label to icon
+                } catch (_: PackageManager.NameNotFoundException) {
+                    // the app is not available for some reason, do not add anything
+                }
+            }
+            _pushDistributorsData.emit(pushDistributorsData)
+
+            // If there's already a distributor configured, register the app
+            UnifiedPush.getAckDistributor(context)?.let {
+                UnifiedPush.registerApp(context)
+            }
+        }
+    }
 
 }

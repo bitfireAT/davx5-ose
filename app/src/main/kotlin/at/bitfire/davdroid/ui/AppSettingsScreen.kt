@@ -1,7 +1,6 @@
 package at.bitfire.davdroid.ui
 
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.compose.foundation.Image
@@ -38,7 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,7 +45,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -66,7 +64,6 @@ import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import org.unifiedpush.android.connector.UnifiedPush
 
 @Composable
 fun AppSettingsScreen(
@@ -113,6 +110,10 @@ fun AppSettingsScreen(
             tasksAppName = model.appName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
             tasksAppIcon = model.icon.collectAsStateWithLifecycle(null).value,
             pushEndpoint = model.pushEndpoint.collectAsStateWithLifecycle(null).value,
+            pushDistributors = model.pushDistributors.collectAsState().value,
+            pushDistributorsData = model.pushDistributorsData.collectAsState().value,
+            pushDistributor = model.pushDistributor.collectAsState().value,
+            onPushDistributorChange = model::updatePushDistributor,
             onNavTasksScreen = onNavTasksScreen
         )
     }
@@ -152,6 +153,10 @@ fun AppSettingsScreen(
     tasksAppName: String,
     tasksAppIcon: Drawable?,
     pushEndpoint: String?,
+    pushDistributors: List<String>?,
+    pushDistributorsData: Map<String, Pair<String, Drawable>>?,
+    pushDistributor: String?,
+    onPushDistributorChange: (String) -> Unit,
     onNavTasksScreen: () -> Unit,
 
     onShowNotificationSettings: () -> Unit,
@@ -239,6 +244,10 @@ fun AppSettingsScreen(
                     appName = tasksAppName,
                     icon = tasksAppIcon,
                     pushEndpoint = pushEndpoint,
+                    pushDistributors = pushDistributors,
+                    pushDistributorsData = pushDistributorsData,
+                    pushDistributor = pushDistributor,
+                    onPushDistributorChange = onPushDistributorChange,
                     onNavTasksScreen = onNavTasksScreen
                 )
             }
@@ -275,6 +284,10 @@ fun AppSettingsScreen_Preview() {
             tasksAppName = "No tasks app",
             tasksAppIcon = null,
             pushEndpoint = null,
+            pushDistributors = null,
+            pushDistributorsData = null,
+            pushDistributor = null,
+            onPushDistributorChange = {},
             onNavTasksScreen = {}
         )
     }
@@ -486,6 +499,10 @@ fun AppSettings_UserInterface(
 fun AppSettings_Integration(
     appName: String,
     pushEndpoint: String?,
+    pushDistributors: List<String>?,
+    pushDistributor: String?,
+    onPushDistributorChange: (String) -> Unit,
+    pushDistributorsData: Map<String, Pair<String, Drawable>>?,
     icon: Drawable? = null,
     onNavTasksScreen: () -> Unit = {}
 ) {
@@ -505,20 +522,9 @@ fun AppSettings_Integration(
         onClick = onNavTasksScreen
     )
 
-    val context = LocalContext.current
-    val pm = context.applicationContext.packageManager
-
-    var distributor by remember { mutableStateOf(UnifiedPush.getSavedDistributor(context)) }
-    val distributors = remember { UnifiedPush.getDistributors(context) }
-    LaunchedEffect(Unit) {
-        UnifiedPush.getAckDistributor(context)?.let {
-            UnifiedPush.registerApp(context)
-        }
-    }
-
     var showingDistributorDialog by remember { mutableStateOf(false) }
     if (showingDistributorDialog) {
-        var selectedDistributor by remember { mutableStateOf(distributor) }
+        var selectedDistributor by remember { mutableStateOf(pushDistributor) }
 
         AlertDialog(
             onDismissRequest = { showingDistributorDialog = false },
@@ -526,9 +532,7 @@ fun AppSettings_Integration(
                 TextButton(
                     enabled = selectedDistributor != null,
                     onClick = {
-                        UnifiedPush.saveDistributor(context, selectedDistributor!!)
-                        UnifiedPush.registerApp(context)
-                        distributor = selectedDistributor
+                        onPushDistributorChange(selectedDistributor!!)
                         showingDistributorDialog = false
                     }
                 ) { Text(stringResource(android.R.string.ok)) }
@@ -543,24 +547,14 @@ fun AppSettings_Integration(
             },
             text = {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    if (distributors.isEmpty()) item {
+                    if (pushDistributors.isNullOrEmpty()) item {
                         Text(stringResource(R.string.app_settings_unifiedpush_endpoint_none))
                     }
 
-                    items(distributors) { distributor ->
-                        val applicationInfo = remember(distributor) {
-                            try {
-                                pm.getApplicationInfo(distributor, 0)
-                            } catch (_: PackageManager.NameNotFoundException) {
-                                null
-                            }
-                        }
-                        val applicationName = remember(applicationInfo) {
-                            applicationInfo?.let { pm.getApplicationLabel(applicationInfo).toString() }
-                        }
-                        val applicationIcon = remember(applicationInfo) {
-                            applicationInfo?.let { pm.getApplicationIcon(applicationInfo) }
-                        }
+                    items(pushDistributors.orEmpty()) { distributor ->
+                        val applicationData = pushDistributorsData?.get(distributor)
+                        val applicationName = applicationData?.first
+                        val applicationIcon = applicationData?.second
 
                         ListItem(
                             leadingContent = {
@@ -599,16 +593,7 @@ fun AppSettings_Integration(
         )
     }
 
-    val applicationName = remember(distributor) {
-        distributor?.let {
-            try {
-                val info = pm.getApplicationInfo(it, 0)
-                pm.getApplicationLabel(info).toString()
-            } catch (_: PackageManager.NameNotFoundException) {
-                null
-            }
-        }
-    }
+    val applicationName = pushDistributor?.let { pushDistributorsData?.get(it) }?.first
 
     Setting(
         name = stringResource(R.string.app_settings_unifiedpush),
