@@ -39,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -187,10 +186,11 @@ fun BoughtBadgeListItem(badge: Badge) {
                     containerColor = Color.White,
                 ),
             ) {
+                val (icon, tint) = BADGE_ICONS[badge.productDetails.productId]!!
                 Icon(
-                    painterResource(BADGE_ICONS[badge.productDetails.productId]!!),
+                    imageVector = icon,
                     contentDescription = badge.productDetails.productId,
-                    tint = Color.Unspecified,
+                    tint = tint,
                     modifier = Modifier
                         .size(65.dp)
                         .padding(3.dp)
@@ -216,10 +216,12 @@ fun BuyBadgeListItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
         ) {
+            val (icon, tint) = BADGE_ICONS[badge.productDetails.productId]!!
             Icon(
-                painterResource(BADGE_ICONS[badge.productDetails.productId]!!),
+                imageVector = icon,
                 contentDescription = badge.productDetails.productId,
-                Modifier.size(30.dp)
+                tint = tint,
+                modifier = Modifier.size(30.dp)
             )
             Column(
                 modifier = Modifier

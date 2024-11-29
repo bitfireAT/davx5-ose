@@ -1,6 +1,19 @@
 package at.bitfire.davdroid
 
 import android.app.Activity
+import androidx.compose.ui.graphics.Color
+import at.bitfire.davdroid.ui.icons.Badge1UpExtralife
+import at.bitfire.davdroid.ui.icons.BadgeCoffee
+import at.bitfire.davdroid.ui.icons.BadgeCupcake
+import at.bitfire.davdroid.ui.icons.BadgeDavx5Decade
+import at.bitfire.davdroid.ui.icons.BadgeEnergyBooster
+import at.bitfire.davdroid.ui.icons.BadgeLifeBuoy
+import at.bitfire.davdroid.ui.icons.BadgeLocalBar
+import at.bitfire.davdroid.ui.icons.BadgeMedal
+import at.bitfire.davdroid.ui.icons.BadgeNinthAnniversary
+import at.bitfire.davdroid.ui.icons.BadgeOfflineBolt
+import at.bitfire.davdroid.ui.icons.BadgeSailboat
+import at.bitfire.davdroid.ui.icons.BadgesIcons
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
@@ -357,17 +370,17 @@ class PlayClient @AssistedInject constructor(
         const val BILLINGCLIENT_CONNECTION_MAX_RETRIES = 4
 
         val BADGE_ICONS = mapOf(
-            "helping_hands.2022" to R.drawable.ic_badge_life_buoy,
-            "a_coffee_for_you.2022" to R.drawable.ic_badge_coffee,
-            "loyal_foss_backer.2022" to R.drawable.ic_badge_medal,
-            "part_of_the_journey.2022" to R.drawable.ic_badge_sailboat,
-            "9th_anniversary.2022" to R.drawable.ic_badge_ninth_anniversary,
-            "1up_extralife.2023" to R.drawable.ic_badge_1up_extralife,
-            "energy_booster.2023" to R.drawable.ic_badge_energy_booster,
-            "davx5_decade" to R.drawable.ic_badge_davx5_decade,
-            "push_development" to R.drawable.ic_badge_offline_bolt,
-            "davx5_cocktail" to R.drawable.ic_badge_local_bar,
-            "11th_anniversary" to R.drawable.ic_badge_cupcake
+            "helping_hands.2022" to (BadgesIcons.BadgeLifeBuoy to Color(0xFFFF6A00)),
+            "a_coffee_for_you.2022" to (BadgesIcons.BadgeCoffee to Color(0xFF352B1B) ),
+            "loyal_foss_backer.2022" to (BadgesIcons.BadgeMedal to Color(0xFFFFC200)),
+            "part_of_the_journey.2022" to (BadgesIcons.BadgeSailboat to Color(0xFF083D77)),
+            "9th_anniversary.2022" to (BadgesIcons.BadgeNinthAnniversary to Color(0xFFFA8072)),
+            "1up_extralife.2023" to (BadgesIcons.Badge1UpExtralife to Color(0xFFD32F2F)),
+            "energy_booster.2023" to (BadgesIcons.BadgeEnergyBooster to Color(0xFFFDD835)),
+            "davx5_decade" to (BadgesIcons.BadgeDavx5Decade to Color(0xFF43A047)),
+            "push_development" to (BadgesIcons.BadgeOfflineBolt to Color(0xFFFDD835)),
+            "davx5_cocktail" to (BadgesIcons.BadgeLocalBar to Color(0xFF29CC00)),
+            "11th_anniversary" to (BadgesIcons.BadgeCupcake to Color(0xFFF679E5)),
         )
         val productIds = BADGE_ICONS.keys.toList()
     }
