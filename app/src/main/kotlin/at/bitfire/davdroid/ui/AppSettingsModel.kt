@@ -93,14 +93,14 @@ class AppSettingsModel @Inject constructor(
 
     // tasks
 
-    val pm: PackageManager = context.packageManager
+    private val pm: PackageManager = context.packageManager
     private val appInfoFlow = tasksAppManager.currentProviderFlow(viewModelScope).map { tasksProvider ->
         tasksProvider?.packageName?.let { pkgName ->
             pm.getApplicationInfo(pkgName, 0)
         }
     }
-    val appName = appInfoFlow.map { it?.loadLabel(pm)?.toString() }
-    val icon = appInfoFlow.map { it?.loadIcon(pm) }
+    val tasksAppName = appInfoFlow.map { it?.loadLabel(pm)?.toString() }
+    val tasksAppIcon = appInfoFlow.map { it?.loadIcon(pm) }
 
 
     // push

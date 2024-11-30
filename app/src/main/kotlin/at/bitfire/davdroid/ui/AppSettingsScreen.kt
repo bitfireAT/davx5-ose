@@ -96,8 +96,8 @@ fun AppSettingsScreen(
             onResetHints = model::resetHints,
 
             // Integration (Tasks and Push)
-            tasksAppName = model.appName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
-            tasksAppIcon = model.icon.collectAsStateWithLifecycle(null).value,
+            tasksAppName = model.tasksAppName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
+            tasksAppIcon = model.tasksAppIcon.collectAsStateWithLifecycle(null).value,
             pushEndpoint = model.pushEndpoint.collectAsStateWithLifecycle(null).value,
             onNavTasksScreen = onNavTasksScreen
         )
@@ -222,8 +222,8 @@ fun AppSettingsScreen(
                 )
 
                 AppSettings_Integration(
-                    appName = tasksAppName,
-                    icon = tasksAppIcon,
+                    tasksAppName = tasksAppName,
+                    tasksAppIcon = tasksAppIcon,
                     pushEndpoint = pushEndpoint,
                     onNavTasksScreen = onNavTasksScreen
                 )
@@ -470,9 +470,9 @@ fun AppSettings_UserInterface(
 
 @Composable
 fun AppSettings_Integration(
-    appName: String,
+    tasksAppName: String,
+    tasksAppIcon: Drawable? = null,
     pushEndpoint: String?,
-    icon: Drawable? = null,
     onNavTasksScreen: () -> Unit = {}
 ) {
     SettingsHeader(divider = true) {
@@ -483,11 +483,11 @@ fun AppSettings_Integration(
             Text(stringResource(R.string.app_settings_tasks_provider))
         },
         icon = {
-               icon?.let {
-                   Image(icon.toBitmap().asImageBitmap(), appName)
+               tasksAppIcon?.let {
+                   Image(tasksAppIcon.toBitmap().asImageBitmap(), tasksAppName)
                }
         },
-        summary = appName,
+        summary = tasksAppName,
         onClick = onNavTasksScreen
     )
 
