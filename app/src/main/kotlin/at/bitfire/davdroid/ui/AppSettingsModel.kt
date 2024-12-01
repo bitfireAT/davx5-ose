@@ -118,18 +118,8 @@ class AppSettingsModel @Inject constructor(
         .asStateFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    private val _pushDistributors = MutableStateFlow<List<String>?>(null)
+    private val _pushDistributors = MutableStateFlow<List<PushDistributorInfo>?>(null)
     val pushDistributors get() = _pushDistributors
-        .asStateFlow()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-
-    private val _pushDistributorsData = MutableStateFlow<Map<String, Pair<String, Drawable>>?>(null)
-
-    /**
-     * Contains a map with the package name of the app associated with the available distributors as
-     * key, and a pair with the app's display name and icon as values.
-     */
-    val pushDistributorsData get() = _pushDistributorsData
         .asStateFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
@@ -148,7 +138,6 @@ class AppSettingsModel @Inject constructor(
             _pushDistributor.emit(savedPushDistributor)
 
             val pushDistributors = UnifiedPush.getDistributors(context)
-            _pushDistributors.emit(pushDistributors)
 
             val pushDistributorsData = mutableMapOf<String, Pair<String, Drawable>>()
             for (pushDistributor in pushDistributors) {
@@ -161,7 +150,12 @@ class AppSettingsModel @Inject constructor(
                     // the app is not available for some reason, do not add anything
                 }
             }
-            _pushDistributorsData.emit(pushDistributorsData)
+            _pushDistributors.emit(
+                pushDistributors.map { distributor ->
+                    val data = pushDistributorsData[distributor]
+                    PushDistributorInfo(distributor, data?.first, data?.second)
+                }
+            )
 
             // If there's already a distributor configured, register the app
             UnifiedPush.getAckDistributor(context)?.let {
@@ -169,5 +163,12 @@ class AppSettingsModel @Inject constructor(
             }
         }
     }
+
+
+    data class PushDistributorInfo(
+        val packageName: String,
+        val appName: String?,
+        val appIcon: Drawable?
+    )
 
 }

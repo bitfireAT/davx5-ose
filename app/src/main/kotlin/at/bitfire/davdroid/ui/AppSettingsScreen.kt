@@ -111,7 +111,6 @@ fun AppSettingsScreen(
             tasksAppIcon = model.icon.collectAsStateWithLifecycle(null).value,
             pushEndpoint = model.pushEndpoint.collectAsStateWithLifecycle(null).value,
             pushDistributors = model.pushDistributors.collectAsState().value,
-            pushDistributorsData = model.pushDistributorsData.collectAsState().value,
             pushDistributor = model.pushDistributor.collectAsState().value,
             onPushDistributorChange = model::updatePushDistributor,
             onNavTasksScreen = onNavTasksScreen
@@ -153,8 +152,7 @@ fun AppSettingsScreen(
     tasksAppName: String,
     tasksAppIcon: Drawable?,
     pushEndpoint: String?,
-    pushDistributors: List<String>?,
-    pushDistributorsData: Map<String, Pair<String, Drawable>>?,
+    pushDistributors: List<AppSettingsModel.PushDistributorInfo>?,
     pushDistributor: String?,
     onPushDistributorChange: (String) -> Unit,
     onNavTasksScreen: () -> Unit,
@@ -245,7 +243,6 @@ fun AppSettingsScreen(
                     icon = tasksAppIcon,
                     pushEndpoint = pushEndpoint,
                     pushDistributors = pushDistributors,
-                    pushDistributorsData = pushDistributorsData,
                     pushDistributor = pushDistributor,
                     onPushDistributorChange = onPushDistributorChange,
                     onNavTasksScreen = onNavTasksScreen
@@ -285,7 +282,6 @@ fun AppSettingsScreen_Preview() {
             tasksAppIcon = null,
             pushEndpoint = null,
             pushDistributors = null,
-            pushDistributorsData = null,
             pushDistributor = null,
             onPushDistributorChange = {},
             onNavTasksScreen = {}
@@ -499,10 +495,9 @@ fun AppSettings_UserInterface(
 fun AppSettings_Integration(
     appName: String,
     pushEndpoint: String?,
-    pushDistributors: List<String>?,
+    pushDistributors: List<AppSettingsModel.PushDistributorInfo>?,
     pushDistributor: String?,
     onPushDistributorChange: (String) -> Unit,
-    pushDistributorsData: Map<String, Pair<String, Drawable>>?,
     icon: Drawable? = null,
     onNavTasksScreen: () -> Unit = {}
 ) {
@@ -551,10 +546,7 @@ fun AppSettings_Integration(
                         Text(stringResource(R.string.app_settings_unifiedpush_endpoint_none))
                     }
 
-                    items(pushDistributors.orEmpty()) { distributor ->
-                        val applicationData = pushDistributorsData?.get(distributor)
-                        val applicationName = applicationData?.first
-                        val applicationIcon = applicationData?.second
+                    items(pushDistributors.orEmpty()) { (distributor, name, icon) ->
 
                         ListItem(
                             leadingContent = {
@@ -568,7 +560,7 @@ fun AppSettings_Integration(
                                 )
                             },
                             trailingContent = {
-                                applicationIcon?.let { icon ->
+                                icon?.let {
                                     Image(
                                         bitmap = icon.toBitmap().asImageBitmap(),
                                         contentDescription = null,
@@ -577,7 +569,7 @@ fun AppSettings_Integration(
                                 }
                             },
                             headlineContent = {
-                                Text(applicationName ?: distributor)
+                                Text(name ?: distributor)
                             },
                             modifier = Modifier.clickable {
                                 selectedDistributor = distributor
@@ -593,14 +585,16 @@ fun AppSettings_Integration(
         )
     }
 
-    val applicationName = pushDistributor?.let { pushDistributorsData?.get(it) }?.first
+    val applicationName = pushDistributor?.let {
+        pushDistributors?.find { it.packageName == pushDistributor }
+    }?.appName
 
     Setting(
         name = stringResource(R.string.app_settings_unifiedpush),
         summary = if (pushEndpoint != null)
             stringResource(R.string.app_settings_unifiedpush_endpoint_domain, pushEndpoint.toHttpUrlOrNull()?.host ?: pushEndpoint)
-        else if (applicationName != null)
-            stringResource(R.string.app_settings_unifiedpush_no_endpoint_with_distributor, applicationName)
+        else if (pushDistributor != null)
+            stringResource(R.string.app_settings_unifiedpush_no_endpoint_with_distributor, applicationName ?: pushDistributor)
         else
             stringResource(R.string.app_settings_unifiedpush_no_endpoint),
         onClick = { showingDistributorDialog = true }
