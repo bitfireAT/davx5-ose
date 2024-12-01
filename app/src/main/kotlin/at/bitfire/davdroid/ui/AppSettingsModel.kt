@@ -114,14 +114,10 @@ class AppSettingsModel @Inject constructor(
     val pushEndpoint = preference.unifiedPushEndpointFlow()
 
     private val _pushDistributor = MutableStateFlow<String?>(null)
-    val pushDistributor get() = _pushDistributor
-        .asStateFlow()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+    val pushDistributor get() = _pushDistributor.asStateFlow()
 
     private val _pushDistributors = MutableStateFlow<List<PushDistributorInfo>?>(null)
-    val pushDistributors get() = _pushDistributors
-        .asStateFlow()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+    val pushDistributors get() = _pushDistributors.asStateFlow()
 
     fun updatePushDistributor(pushDistributor: String) {
         viewModelScope.launch(Dispatchers.IO) {
