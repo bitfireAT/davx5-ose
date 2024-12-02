@@ -499,7 +499,6 @@ fun AppSettings_Integration(
     pushDistributors: List<AppSettingsModel.PushDistributorInfo>?,
     pushDistributor: String?,
     onPushDistributorChange: (String) -> Unit,
-    icon: Drawable? = null,
     onNavTasksScreen: () -> Unit = {}
 ) {
     SettingsHeader(divider = true) {
@@ -510,9 +509,9 @@ fun AppSettings_Integration(
             Text(stringResource(R.string.app_settings_tasks_provider))
         },
         icon = {
-               tasksAppIcon?.let {
-                   Image(tasksAppIcon.toBitmap().asImageBitmap(), tasksAppName)
-               }
+           tasksAppIcon?.let {
+               Image(tasksAppIcon.toBitmap().asImageBitmap(), tasksAppName)
+           }
         },
         summary = tasksAppName,
         onClick = onNavTasksScreen
