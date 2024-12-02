@@ -35,7 +35,7 @@ class AppSettingsModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val preference: PreferenceRepository,
     private val settings: SettingsManager,
-    private val tasksAppManager: TasksAppManager
+    tasksAppManager: TasksAppManager
 ) : ViewModel() {
 
     init {

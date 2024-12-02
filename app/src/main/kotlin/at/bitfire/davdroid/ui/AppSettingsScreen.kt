@@ -631,7 +631,6 @@ fun PushDistributorSelectionDialog_Preview_DistributorSelected() {
 fun AppSettings_Integration(
     tasksAppName: String,
     tasksAppIcon: Drawable? = null,
-    pushEndpoint: String?,
     pushDistributors: List<PushDistributorInfo>?,
     pushDistributor: String?,
     onPushDistributorChange: (String?) -> Unit,
@@ -656,9 +655,9 @@ fun AppSettings_Integration(
     var showingDistributorDialog by remember { mutableStateOf(false) }
     if (showingDistributorDialog) {
         PushDistributorSelectionDialog(
-            pushDistributor,
-            onPushDistributorChange,
-            pushDistributors
+            pushDistributor = pushDistributor,
+            onPushDistributorChange = onPushDistributorChange,
+            pushDistributors = pushDistributors
         ) { showingDistributorDialog = false }
     }
 
