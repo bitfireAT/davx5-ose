@@ -38,6 +38,12 @@ class AppSettingsModel @Inject constructor(
     private val tasksAppManager: TasksAppManager
 ) : ViewModel() {
 
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            loadPushDistributors()
+        }
+    }
+
     // debugging
 
     private val powerManager = context.getSystemService<PowerManager>()!!
@@ -127,44 +133,40 @@ class AppSettingsModel @Inject constructor(
         }
     }
 
+    private suspend fun loadPushDistributors() {
+        val savedPushDistributor = UnifiedPush.getSavedDistributor(context)
+        _pushDistributor.emit(savedPushDistributor)
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            val savedPushDistributor = UnifiedPush.getSavedDistributor(context)
-            _pushDistributor.emit(savedPushDistributor)
-
-            val pushDistributors = UnifiedPush.getDistributors(context)
-
-            val pushDistributorsData = mutableMapOf<String, Pair<String, Drawable>>()
-            for (pushDistributor in pushDistributors) {
+        val pushDistributors = UnifiedPush.getDistributors(context)
+            .map { pushDistributor ->
                 try {
                     val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
                     val label = pm.getApplicationLabel(applicationInfo).toString()
                     val icon = pm.getApplicationIcon(applicationInfo)
-                    pushDistributorsData[pushDistributor] = label to icon
+                    PushDistributorInfo(pushDistributor, label, icon)
                 } catch (_: PackageManager.NameNotFoundException) {
-                    // the app is not available for some reason, do not add anything
+                    // The app is not available for some reason, do not include the app data.
+                    PushDistributorInfo(pushDistributor)
                 }
             }
-            _pushDistributors.emit(
-                pushDistributors.map { distributor ->
-                    val data = pushDistributorsData[distributor]
-                    PushDistributorInfo(distributor, data?.first, data?.second)
-                }
-            )
+        _pushDistributors.emit(pushDistributors)
 
-            // If there's already a distributor configured, register the app
-            UnifiedPush.getAckDistributor(context)?.let {
-                UnifiedPush.registerApp(context)
-            }
+        // If there's only one distributor, select it by default.
+        pushDistributors.singleOrNull()?.let { (distributor) ->
+            updatePushDistributor(distributor)
+        }
+
+        // If there's already a distributor configured, register the app
+        UnifiedPush.getAckDistributor(context)?.let {
+            UnifiedPush.registerApp(context)
         }
     }
 
 
     data class PushDistributorInfo(
         val packageName: String,
-        val appName: String?,
-        val appIcon: Drawable?
+        val appName: String? = null,
+        val appIcon: Drawable? = null
     )
 
 }
