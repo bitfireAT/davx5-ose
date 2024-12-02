@@ -3,6 +3,7 @@ package at.bitfire.davdroid.ui
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Build
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -45,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -57,6 +59,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.ui.AppSettingsModel.PushDistributorInfo
 import at.bitfire.davdroid.ui.composable.EditTextInputDialog
 import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
 import at.bitfire.davdroid.ui.composable.Setting
@@ -64,6 +67,7 @@ import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import kotlin.collections.orEmpty
 
 @Composable
 fun AppSettingsScreen(
@@ -152,7 +156,7 @@ fun AppSettingsScreen(
     tasksAppName: String,
     tasksAppIcon: Drawable?,
     pushEndpoint: String?,
-    pushDistributors: List<AppSettingsModel.PushDistributorInfo>?,
+    pushDistributors: List<PushDistributorInfo>?,
     pushDistributor: String?,
     onPushDistributorChange: (String?) -> Unit,
     onNavTasksScreen: () -> Unit,
@@ -492,11 +496,144 @@ fun AppSettings_UserInterface(
 }
 
 @Composable
+private fun PushDistributorSelectionDialog(
+    pushDistributor: String?,
+    onPushDistributorChange: (String?) -> Unit,
+    pushDistributors: List<PushDistributorInfo>?,
+    onDismissRequested: () -> Unit
+) {
+    var selectedDistributor by remember { mutableStateOf(pushDistributor) }
+
+    AlertDialog(
+        onDismissRequest = onDismissRequested,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onPushDistributorChange(selectedDistributor)
+                    onDismissRequested()
+                }
+            ) { Text(stringResource(android.R.string.ok)) }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequested
+            ) { Text(stringResource(android.R.string.cancel)) }
+        },
+        title = {
+            Text(stringResource(R.string.app_settings_unifiedpush_endpoint_choose))
+        },
+        text = {
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                if (pushDistributors.isNullOrEmpty()) item {
+                    Text(stringResource(R.string.app_settings_unifiedpush_endpoint_none))
+                } else item {
+                    ListItem(
+                        leadingContent = {
+                            Icon(
+                                imageVector = if (selectedDistributor == null) {
+                                    Icons.Default.RadioButtonChecked
+                                } else {
+                                    Icons.Default.RadioButtonUnchecked
+                                },
+                                contentDescription = null
+                            )
+                        },
+                        headlineContent = {
+                            Text(stringResource(R.string.app_settings_unifiedpush_disable))
+                        },
+                        modifier = Modifier.clickable {
+                            selectedDistributor = null
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent
+                        )
+                    )
+                }
+
+                items(pushDistributors.orEmpty()) { (distributor, name, icon) ->
+                    ListItem(
+                        leadingContent = {
+                            Icon(
+                                imageVector = if (selectedDistributor == distributor) {
+                                    Icons.Default.RadioButtonChecked
+                                } else {
+                                    Icons.Default.RadioButtonUnchecked
+                                },
+                                contentDescription = null
+                            )
+                        },
+                        trailingContent = {
+                            icon?.let {
+                                Image(
+                                    bitmap = icon.toBitmap().asImageBitmap(),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
+                        },
+                        headlineContent = {
+                            Text(name ?: distributor)
+                        },
+                        modifier = Modifier.clickable {
+                            selectedDistributor = distributor
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent
+                        )
+                    )
+                }
+            }
+        }
+    )
+}
+
+@Composable
+@Preview("No distributors installed", "PushDistributorSelectionDialog")
+fun PushDistributorSelectionDialog_Preview_NoDistributors() {
+    PushDistributorSelectionDialog(null, {}, null) { }
+}
+
+@Composable
+@Preview("Push disabled", "PushDistributorSelectionDialog")
+fun PushDistributorSelectionDialog_Preview_PushDisabled() {
+    val ctx = LocalContext.current
+    PushDistributorSelectionDialog(
+        null,
+        {},
+        listOf(
+            PushDistributorInfo(
+                "com.example.distributor1",
+                "Distributor 1",
+                AppCompatResources.getDrawable(ctx, R.drawable.ic_launcher_foreground)
+            )
+        )
+    ) { }
+}
+
+@Composable
+@Preview("Distributor Selected", "PushDistributorSelectionDialog")
+fun PushDistributorSelectionDialog_Preview_DistributorSelected() {
+    val ctx = LocalContext.current
+    PushDistributorSelectionDialog(
+        "com.example.distributor1",
+        {},
+        listOf(
+            PushDistributorInfo(
+                "com.example.distributor1",
+                "Distributor 1",
+                AppCompatResources.getDrawable(ctx, R.drawable.ic_launcher_foreground)
+            ),
+            PushDistributorInfo("com.example.distributor2")
+        )
+    ) { }
+}
+
+@Composable
 fun AppSettings_Integration(
     tasksAppName: String,
     tasksAppIcon: Drawable? = null,
     pushEndpoint: String?,
-    pushDistributors: List<AppSettingsModel.PushDistributorInfo>?,
+    pushDistributors: List<PushDistributorInfo>?,
     pushDistributor: String?,
     onPushDistributorChange: (String?) -> Unit,
     onNavTasksScreen: () -> Unit = {}
@@ -519,89 +656,11 @@ fun AppSettings_Integration(
 
     var showingDistributorDialog by remember { mutableStateOf(false) }
     if (showingDistributorDialog) {
-        var selectedDistributor by remember { mutableStateOf(pushDistributor) }
-
-        AlertDialog(
-            onDismissRequest = { showingDistributorDialog = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onPushDistributorChange(selectedDistributor)
-                        showingDistributorDialog = false
-                    }
-                ) { Text(stringResource(android.R.string.ok)) }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showingDistributorDialog = false }
-                ) { Text(stringResource(android.R.string.cancel)) }
-            },
-            title = {
-                Text(stringResource(R.string.app_settings_unifiedpush_endpoint_choose))
-            },
-            text = {
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    if (pushDistributors.isNullOrEmpty()) item {
-                        Text(stringResource(R.string.app_settings_unifiedpush_endpoint_none))
-                    } else item {
-                        ListItem(
-                            leadingContent = {
-                                Icon(
-                                    imageVector = if (selectedDistributor == null) {
-                                        Icons.Default.RadioButtonChecked
-                                    } else {
-                                        Icons.Default.RadioButtonUnchecked
-                                    },
-                                    contentDescription = null
-                                )
-                            },
-                            headlineContent = {
-                                Text(stringResource(R.string.app_settings_unifiedpush_disable))
-                            },
-                            modifier = Modifier.clickable {
-                                selectedDistributor = null
-                            },
-                            colors = ListItemDefaults.colors(
-                                containerColor = Color.Transparent
-                            )
-                        )
-                    }
-
-                    items(pushDistributors.orEmpty()) { (distributor, name, icon) ->
-                        ListItem(
-                            leadingContent = {
-                                Icon(
-                                    imageVector = if (selectedDistributor == distributor) {
-                                        Icons.Default.RadioButtonChecked
-                                    } else {
-                                        Icons.Default.RadioButtonUnchecked
-                                    },
-                                    contentDescription = null
-                                )
-                            },
-                            trailingContent = {
-                                icon?.let {
-                                    Image(
-                                        bitmap = icon.toBitmap().asImageBitmap(),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
-                            },
-                            headlineContent = {
-                                Text(name ?: distributor)
-                            },
-                            modifier = Modifier.clickable {
-                                selectedDistributor = distributor
-                            },
-                            colors = ListItemDefaults.colors(
-                                containerColor = Color.Transparent
-                            )
-                        )
-                    }
-                }
-            }
-        )
+        PushDistributorSelectionDialog(
+            pushDistributor,
+            onPushDistributorChange,
+            pushDistributors
+        ) { showingDistributorDialog = false }
     }
 
     val applicationName = pushDistributor?.let {
