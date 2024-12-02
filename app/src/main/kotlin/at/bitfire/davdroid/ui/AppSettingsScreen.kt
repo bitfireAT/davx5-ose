@@ -29,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -44,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringArrayResource
@@ -154,7 +154,7 @@ fun AppSettingsScreen(
     pushEndpoint: String?,
     pushDistributors: List<AppSettingsModel.PushDistributorInfo>?,
     pushDistributor: String?,
-    onPushDistributorChange: (String) -> Unit,
+    onPushDistributorChange: (String?) -> Unit,
     onNavTasksScreen: () -> Unit,
 
     onShowNotificationSettings: () -> Unit,
@@ -498,7 +498,7 @@ fun AppSettings_Integration(
     pushEndpoint: String?,
     pushDistributors: List<AppSettingsModel.PushDistributorInfo>?,
     pushDistributor: String?,
-    onPushDistributorChange: (String) -> Unit,
+    onPushDistributorChange: (String?) -> Unit,
     onNavTasksScreen: () -> Unit = {}
 ) {
     SettingsHeader(divider = true) {
@@ -525,9 +525,8 @@ fun AppSettings_Integration(
             onDismissRequest = { showingDistributorDialog = false },
             confirmButton = {
                 TextButton(
-                    enabled = selectedDistributor != null,
                     onClick = {
-                        onPushDistributorChange(selectedDistributor!!)
+                        onPushDistributorChange(selectedDistributor)
                         showingDistributorDialog = false
                     }
                 ) { Text(stringResource(android.R.string.ok)) }
@@ -544,14 +543,35 @@ fun AppSettings_Integration(
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     if (pushDistributors.isNullOrEmpty()) item {
                         Text(stringResource(R.string.app_settings_unifiedpush_endpoint_none))
-                    }
-
-                    items(pushDistributors.orEmpty()) { (distributor, name, icon) ->
-
+                    } else item {
                         ListItem(
                             leadingContent = {
                                 Icon(
-                                    imageVector = if (distributor == selectedDistributor) {
+                                    imageVector = if (selectedDistributor == null) {
+                                        Icons.Default.RadioButtonChecked
+                                    } else {
+                                        Icons.Default.RadioButtonUnchecked
+                                    },
+                                    contentDescription = null
+                                )
+                            },
+                            headlineContent = {
+                                Text(stringResource(R.string.app_settings_unifiedpush_disable))
+                            },
+                            modifier = Modifier.clickable {
+                                selectedDistributor = null
+                            },
+                            colors = ListItemDefaults.colors(
+                                containerColor = Color.Transparent
+                            )
+                        )
+                    }
+
+                    items(pushDistributors.orEmpty()) { (distributor, name, icon) ->
+                        ListItem(
+                            leadingContent = {
+                                Icon(
+                                    imageVector = if (selectedDistributor == distributor) {
                                         Icons.Default.RadioButtonChecked
                                     } else {
                                         Icons.Default.RadioButtonUnchecked
@@ -575,8 +595,7 @@ fun AppSettings_Integration(
                                 selectedDistributor = distributor
                             },
                             colors = ListItemDefaults.colors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                                headlineColor = MaterialTheme.colorScheme.onSurface
+                                containerColor = Color.Transparent
                             )
                         )
                     }

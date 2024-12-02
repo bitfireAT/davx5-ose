@@ -215,6 +215,7 @@
     <string name="app_settings_unifiedpush_endpoint_choose">Choose an Endpoint</string>
     <string name="app_settings_unifiedpush_endpoint_none">No push distributor installed</string>
     <string name="app_settings_unifiedpush_endpoint_domain">Ready to receive push notifications (%s)</string>
+    <string name="app_settings_unifiedpush_disable">Disable Push notifications</string>
     <string name="app_settings_unifiedpush_no_endpoint">No endpoint configured</string>
     <string name="app_settings_unifiedpush_no_endpoint_with_distributor">Awaiting endpoint from %s</string>
 

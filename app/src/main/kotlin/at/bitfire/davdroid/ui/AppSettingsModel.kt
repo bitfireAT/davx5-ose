@@ -130,10 +130,17 @@ class AppSettingsModel @Inject constructor(
      * Saves the preference in UnifiedPush, registers DAVx⁵, and emits the selection to [pushDistributor].
      * @param pushDistributor The package name of the push distributor.
      */
-    fun updatePushDistributor(pushDistributor: String) {
+    fun updatePushDistributor(pushDistributor: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            UnifiedPush.saveDistributor(context, pushDistributor)
-            UnifiedPush.registerApp(context)
+            if (pushDistributor == null) {
+                // Disable UnifiedPush if the distributor given is null
+                UnifiedPush.safeRemoveDistributor(context)
+                UnifiedPush.unregisterApp(context)
+            } else {
+                // If a distributor was passed, store it an register the app
+                UnifiedPush.saveDistributor(context, pushDistributor)
+                UnifiedPush.registerApp(context)
+            }
             _pushDistributor.emit(pushDistributor)
         }
     }
