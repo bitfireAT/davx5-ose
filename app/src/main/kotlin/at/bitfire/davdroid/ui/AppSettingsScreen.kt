@@ -66,7 +66,6 @@ import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import kotlin.collections.orEmpty
 
 @Composable
@@ -520,12 +519,12 @@ private fun PushDistributorSelectionDialog(
             ) { Text(stringResource(android.R.string.cancel)) }
         },
         title = {
-            Text(stringResource(R.string.app_settings_unifiedpush_endpoint_choose))
+            Text(stringResource(R.string.app_settings_unifiedpush_choose_distributor))
         },
         text = {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 if (pushDistributors.isNullOrEmpty()) item {
-                    Text(stringResource(R.string.app_settings_unifiedpush_endpoint_none))
+                    Text(stringResource(R.string.app_settings_unifiedpush_no_distributor))
                 } else item {
                     ListItem(
                         leadingContent = {
@@ -663,16 +662,13 @@ fun AppSettings_Integration(
         ) { showingDistributorDialog = false }
     }
 
-    val applicationName = pushDistributor?.let {
+    val pushAppName = pushDistributor?.let {
         pushDistributors?.find { it.packageName == pushDistributor }
     }?.appName
-
     Setting(
         name = stringResource(R.string.app_settings_unifiedpush),
-        summary = if (pushEndpoint != null)
-            stringResource(R.string.app_settings_unifiedpush_endpoint_domain, pushEndpoint.toHttpUrlOrNull()?.host ?: pushEndpoint)
-        else if (pushDistributor != null)
-            stringResource(R.string.app_settings_unifiedpush_no_endpoint_with_distributor, applicationName ?: pushDistributor)
+        summary = if (pushDistributor != null)
+            stringResource(R.string.app_settings_unifiedpush_ready, pushAppName ?: pushDistributor)
         else
             stringResource(R.string.app_settings_unifiedpush_no_endpoint),
         onClick = { showingDistributorDialog = true }

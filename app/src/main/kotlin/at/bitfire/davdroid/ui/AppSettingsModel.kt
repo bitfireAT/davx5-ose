@@ -44,6 +44,7 @@ class AppSettingsModel @Inject constructor(
         }
     }
 
+
     // debugging
 
     private val powerManager = context.getSystemService<PowerManager>()!!
@@ -120,33 +121,14 @@ class AppSettingsModel @Inject constructor(
     val pushEndpoint = preference.unifiedPushEndpointFlow()
 
     private val _pushDistributor = MutableStateFlow<String?>(null)
-    val pushDistributor get() = _pushDistributor.asStateFlow()
+    val pushDistributor = _pushDistributor.asStateFlow()
 
     private val _pushDistributors = MutableStateFlow<List<PushDistributorInfo>?>(null)
-    val pushDistributors get() = _pushDistributors.asStateFlow()
+    val pushDistributors = _pushDistributors.asStateFlow()
 
     /**
-     * Updates the current push distributor selection.
-     * Saves the preference in UnifiedPush, registers DAVx⁵, and emits the selection to [pushDistributor].
-     * @param pushDistributor The package name of the push distributor.
-     */
-    fun updatePushDistributor(pushDistributor: String?) {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (pushDistributor == null) {
-                // Disable UnifiedPush if the distributor given is null
-                UnifiedPush.safeRemoveDistributor(context)
-                UnifiedPush.unregisterApp(context)
-            } else {
-                // If a distributor was passed, store it an register the app
-                UnifiedPush.saveDistributor(context, pushDistributor)
-                UnifiedPush.registerApp(context)
-            }
-            _pushDistributor.emit(pushDistributor)
-        }
-    }
-
-    /**
-     * Loads the push distributors configuration.
+     * Loads the push distributors configuration:
+     *
      * - Loads the currently selected distributor into [pushDistributor].
      * - Loads all the available distributors into [pushDistributors].
      * - If there's only one push distributor available, and none is selected, it's selected automatically.
@@ -178,6 +160,28 @@ class AppSettingsModel @Inject constructor(
         // If there's already a distributor configured, register the app
         UnifiedPush.getAckDistributor(context)?.let {
             UnifiedPush.registerApp(context)
+        }
+    }
+
+    /**
+     * Updates the current push distributor selection.
+     *
+     * Saves the preference in UnifiedPush, (un)registers the app, and emits the selection to [pushDistributor].
+     *
+     * @param pushDistributor The package name of the push distributor, _null_ to disable push.
+     */
+    fun updatePushDistributor(pushDistributor: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (pushDistributor == null) {
+                // Disable UnifiedPush if the distributor given is null
+                UnifiedPush.safeRemoveDistributor(context)
+                UnifiedPush.unregisterApp(context)
+            } else {
+                // If a distributor was passed, store it and register the app
+                UnifiedPush.saveDistributor(context, pushDistributor)
+                UnifiedPush.registerApp(context)
+            }
+            _pushDistributor.emit(pushDistributor)
         }
     }
 
