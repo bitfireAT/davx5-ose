@@ -14,7 +14,6 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
-import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.davdroid.util.trimToNull
@@ -206,7 +205,7 @@ class AccountSettings @AssistedInject constructor(
         accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
         // update sync workers (needs already updated wifi-only flag in AccountSettings)
-        for (authority in SyncUtils.syncAuthorities(context))
+        for (authority in syncWorkerManager.syncAuthorities())
             updatePeriodicSyncWorker(authority, getSyncInterval(authority), wiFiOnly)
     }
 
