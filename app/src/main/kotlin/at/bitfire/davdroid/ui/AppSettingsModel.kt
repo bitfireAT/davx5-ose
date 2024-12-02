@@ -125,6 +125,11 @@ class AppSettingsModel @Inject constructor(
     private val _pushDistributors = MutableStateFlow<List<PushDistributorInfo>?>(null)
     val pushDistributors get() = _pushDistributors.asStateFlow()
 
+    /**
+     * Updates the current push distributor selection.
+     * Saves the preference in UnifiedPush, registers DAVx⁵, and emits the selection to [pushDistributor].
+     * @param pushDistributor The package name of the push distributor.
+     */
     fun updatePushDistributor(pushDistributor: String) {
         viewModelScope.launch(Dispatchers.IO) {
             UnifiedPush.saveDistributor(context, pushDistributor)
@@ -133,6 +138,13 @@ class AppSettingsModel @Inject constructor(
         }
     }
 
+    /**
+     * Loads the push distributors configuration.
+     * - Loads the currently selected distributor into [pushDistributor].
+     * - Loads all the available distributors into [pushDistributors].
+     * - If there's only one push distributor available, and none is selected, it's selected automatically.
+     * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
+     */
     private suspend fun loadPushDistributors() {
         val savedPushDistributor = UnifiedPush.getSavedDistributor(context)
         _pushDistributor.emit(savedPushDistributor)
@@ -152,8 +164,8 @@ class AppSettingsModel @Inject constructor(
         _pushDistributors.emit(pushDistributors)
 
         // If there's only one distributor, select it by default.
-        pushDistributors.singleOrNull()?.let { (distributor) ->
-            updatePushDistributor(distributor)
+        if (pushDistributors.size == 1 && savedPushDistributor == null) {
+            updatePushDistributor(pushDistributors.first().packageName)
         }
 
         // If there's already a distributor configured, register the app
