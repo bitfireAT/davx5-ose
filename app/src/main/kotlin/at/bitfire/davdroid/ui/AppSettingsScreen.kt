@@ -280,7 +280,6 @@ fun AppSettingsScreen_Preview() {
             onResetHints = {},
             tasksAppName = "No tasks app",
             tasksAppIcon = null,
-            pushEndpoint = null,
             pushDistributors = null,
             pushDistributor = null,
             onPushDistributorChange = {},
