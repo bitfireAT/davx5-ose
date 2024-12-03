@@ -149,16 +149,6 @@ class AppSettingsModel @Inject constructor(
                 }
             }
         _pushDistributors.emit(pushDistributors)
-
-        // If there's only one distributor, select it by default.
-        if (pushDistributors.size == 1 && savedPushDistributor == null) {
-            updatePushDistributor(pushDistributors.first().packageName)
-        }
-
-        // If there's already a distributor configured, register the app
-        UnifiedPush.getAckDistributor(context)?.let {
-            UnifiedPush.registerApp(context)
-        }
     }
 
     /**
