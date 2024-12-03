@@ -38,12 +38,6 @@ class AppSettingsModel @Inject constructor(
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            loadPushDistributors()
-        }
-    }
-
 
     // debugging
 
@@ -170,6 +164,13 @@ class AppSettingsModel @Inject constructor(
                 UnifiedPush.registerApp(context)
             }
             _pushDistributor.emit(pushDistributor)
+        }
+    }
+
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            loadPushDistributors()
         }
     }
 
