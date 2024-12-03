@@ -118,8 +118,6 @@ class AppSettingsModel @Inject constructor(
 
     // push
 
-    val pushEndpoint = preference.unifiedPushEndpointFlow()
-
     private val _pushDistributor = MutableStateFlow<String?>(null)
     val pushDistributor = _pushDistributor.asStateFlow()
 

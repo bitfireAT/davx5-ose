@@ -112,7 +112,6 @@ fun AppSettingsScreen(
             // Integration (Tasks and Push)
             tasksAppName = model.tasksAppName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
             tasksAppIcon = model.tasksAppIcon.collectAsStateWithLifecycle(null).value,
-            pushEndpoint = model.pushEndpoint.collectAsStateWithLifecycle(null).value,
             pushDistributors = model.pushDistributors.collectAsState().value,
             pushDistributor = model.pushDistributor.collectAsState().value,
             onPushDistributorChange = model::updatePushDistributor,
@@ -154,7 +153,6 @@ fun AppSettingsScreen(
     // AppSettings Integration
     tasksAppName: String,
     tasksAppIcon: Drawable?,
-    pushEndpoint: String?,
     pushDistributors: List<PushDistributorInfo>?,
     pushDistributor: String?,
     onPushDistributorChange: (String?) -> Unit,
@@ -244,7 +242,6 @@ fun AppSettingsScreen(
                 AppSettings_Integration(
                     tasksAppName = tasksAppName,
                     tasksAppIcon = tasksAppIcon,
-                    pushEndpoint = pushEndpoint,
                     pushDistributors = pushDistributors,
                     pushDistributor = pushDistributor,
                     onPushDistributorChange = onPushDistributorChange,
