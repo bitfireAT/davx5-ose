@@ -18,7 +18,6 @@ import androidx.work.WorkQuery
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
-import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -85,7 +84,7 @@ class AccountsModel @AssistedInject constructor(
     private val runningWorkers = workManager.getWorkInfosFlow(WorkQuery.fromStates(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
 
     val accountInfos: Flow<List<AccountInfo>> = combine(accounts, runningWorkers) { accounts, workInfos ->
-        val authorities = SyncUtils.syncAuthorities(context)
+        val authorities = syncWorkerManager.syncAuthorities()
         val collator = Collator.getInstance()
 
         accounts

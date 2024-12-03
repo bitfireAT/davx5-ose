@@ -26,7 +26,6 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalTask
-import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
@@ -116,7 +115,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
      */
     @Suppress("unused","FunctionName")
     fun update_15_16() {
-        for (authority in SyncUtils.syncAuthorities(context)) {
+        for (authority in syncWorkerManager.syncAuthorities()) {
             logger.info("Re-enqueuing periodic sync workers for $account/$authority, if necessary")
 
             /* A maybe existing periodic worker references the old class name (even if it failed and/or is not active). So
@@ -146,7 +145,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
      */
     @Suppress("unused","FunctionName")
     fun update_14_15() {
-        for (authority in SyncUtils.syncAuthorities(context)) {
+        for (authority in syncWorkerManager.syncAuthorities()) {
             val interval = accountSettings.getSyncInterval(authority)
             accountSettings.setSyncInterval(authority, interval ?: AccountSettings.SYNC_INTERVAL_MANUALLY)
         }

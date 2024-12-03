@@ -27,7 +27,6 @@ import at.bitfire.davdroid.sync.CalendarSyncer
 import at.bitfire.davdroid.sync.JtxSyncer
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncResult
-import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.ui.NotificationRegistry
@@ -82,17 +81,6 @@ abstract class BaseSyncWorker(
          * Set of currently running syncs, identified by their [commonTag].
          */
         private val runningSyncs = Collections.synchronizedSet(HashSet<String>())
-
-        /**
-         * Stops running sync workers and removes pending sync workers from queue, for all authorities.
-         */
-        fun cancelAllWork(context: Context, account: Account) {
-            val workManager = WorkManager.getInstance(context)
-            for (authority in SyncUtils.syncAuthorities(context)) {
-                workManager.cancelUniqueWork(OneTimeSyncWorker.workerName(account, authority))
-                workManager.cancelUniqueWork(PeriodicSyncWorker.workerName(account, authority))
-            }
-        }
 
         /**
          * This tag shall be added to every worker that is enqueued by a subclass.

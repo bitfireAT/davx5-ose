@@ -22,8 +22,9 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.push.PushNotificationManager
-import at.bitfire.davdroid.sync.SyncUtils
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_NAME
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_TYPE
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_AUTHORITY
@@ -33,7 +34,7 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_UPLOAD
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.InputResync
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.NO_RESYNC
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
-import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker.Companion.workerName
+import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
@@ -47,7 +48,8 @@ import javax.inject.Inject
 class SyncWorkerManager @Inject constructor(
     @ApplicationContext val context: Context,
     val logger: Logger,
-    val pushNotificationManager: PushNotificationManager
+    val pushNotificationManager: PushNotificationManager,
+    val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
     // one-time sync workers
@@ -82,7 +84,7 @@ class SyncWorkerManager @Inject constructor(
             .setRequiredNetworkType(NetworkType.CONNECTED)   // require a network connection
             .build()
         return OneTimeWorkRequestBuilder<OneTimeSyncWorker>()
-            .addTag(workerName(account, authority))
+            .addTag(OneTimeSyncWorker.workerName(account, authority))
             .addTag(commonTag(account, authority))
             .setInputData(argumentsBuilder.build())
             .setBackoffCriteria(
@@ -121,7 +123,7 @@ class SyncWorkerManager @Inject constructor(
         fromPush: Boolean = false
     ): String {
         // enqueue and start syncing
-        val name = workerName(account, authority)
+        val name = OneTimeSyncWorker.workerName(account, authority)
         val request = buildOneTime(
             account = account,
             authority = authority,
@@ -158,7 +160,7 @@ class SyncWorkerManager @Inject constructor(
         upload: Boolean = false,
         fromPush: Boolean = false
     ) {
-        for (authority in SyncUtils.syncAuthorities(context))
+        for (authority in syncAuthorities())
             enqueueOneTime(
                 account = account,
                 authority = authority,
@@ -229,5 +231,44 @@ class SyncWorkerManager @Inject constructor(
     fun disablePeriodic(account: Account, authority: String): Operation =
         WorkManager.getInstance(context)
             .cancelUniqueWork(PeriodicSyncWorker.workerName(account, authority))
+
+
+    // common / helpers
+
+    /**
+     * Stops running sync workers and removes pending sync workers from queue, for all authorities.
+     */
+    fun cancelAllWork(account: Account) {
+        val workManager = WorkManager.getInstance(context)
+        for (authority in syncAuthorities()) {
+            workManager.cancelUniqueWork(OneTimeSyncWorker.workerName(account, authority))
+            workManager.cancelUniqueWork(PeriodicSyncWorker.workerName(account, authority))
+        }
+    }
+
+    /**
+     * Returns a list of all available sync authorities:
+     *
+     *   1. calendar authority
+     *   2. address books authority
+     *   3. current tasks authority (if available)
+     *
+     * Checking the availability of authorities may be relatively expensive, so the
+     * result should be cached for the current operation.
+     *
+     * @return list of available sync authorities for DAVx5 accounts
+     */
+    fun syncAuthorities(): List<String> {
+        val result = mutableListOf(
+            CalendarContract.AUTHORITY,
+            context.getString(R.string.address_books_authority)
+        )
+
+        tasksAppManager.get().currentProvider()?.let { taskProvider ->
+            result += taskProvider.authority
+        }
+
+        return result
+    }
 
 }
