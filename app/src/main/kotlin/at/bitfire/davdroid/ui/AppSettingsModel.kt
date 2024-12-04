@@ -128,7 +128,7 @@ class AppSettingsModel @Inject constructor(
      */
     private suspend fun loadPushDistributors() {
         val savedPushDistributor = UnifiedPush.getSavedDistributor(context)
-        _pushDistributor.emit(savedPushDistributor)
+        _pushDistributor.value = savedPushDistributor
 
         val pushDistributors = UnifiedPush.getDistributors(context)
             .map { pushDistributor ->
@@ -142,13 +142,13 @@ class AppSettingsModel @Inject constructor(
                     PushDistributorInfo(pushDistributor)
                 }
             }
-        _pushDistributors.emit(pushDistributors)
+        _pushDistributors.value = pushDistributors
     }
 
     /**
      * Updates the current push distributor selection.
      *
-     * Saves the preference in UnifiedPush, (un)registers the app, and emits the selection to [pushDistributor].
+     * Saves the preference in UnifiedPush, (un)registers the app, and writes the selection to [pushDistributor].
      *
      * @param pushDistributor The package name of the push distributor, _null_ to disable push.
      */
@@ -163,7 +163,7 @@ class AppSettingsModel @Inject constructor(
                 UnifiedPush.saveDistributor(context, pushDistributor)
                 UnifiedPush.registerApp(context)
             }
-            _pushDistributor.emit(pushDistributor)
+            _pushDistributor.value = pushDistributor
         }
     }
 
