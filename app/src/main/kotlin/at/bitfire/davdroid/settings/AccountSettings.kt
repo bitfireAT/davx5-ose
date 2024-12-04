@@ -16,11 +16,13 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
+import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -49,7 +51,8 @@ class AccountSettings @AssistedInject constructor(
     private val settingsManager: SettingsManager,
     private val automaticSyncManager: AutomaticSyncManager,
     private val syncFramework: SyncFrameworkIntegration,
-    private val syncWorkerManager: SyncWorkerManager
+    private val syncWorkerManager: SyncWorkerManager,
+    private val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
     @AssistedFactory
@@ -165,6 +168,7 @@ class AccountSettings @AssistedInject constructor(
      * @param _seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled;
      * otherwise (must be ≥ 15 min): automatic sync will be enabled and set to the given number of seconds
      */
+    @Deprecated("Use setSyncInterval(SyncDataType, Int) instead")
     @WorkerThread
     fun setSyncInterval(authority: String, _seconds: Long) {
         val seconds =
@@ -197,8 +201,21 @@ class AccountSettings @AssistedInject constructor(
         )
     }
 
+    /**
+     * Sets the sync interval and en- or disables periodic sync for the given account and data type.
+     *
+     * @param dataType  data type to synchronize
+     * @param minutes   interval in minutes; *null*: disable periodic sync (only sync on local data changes)
+     */
     fun setSyncInterval(dataType: SyncDataType, minutes: Int) {
+        // TODO: move logic from setSyncInterval(authority) to here
 
+        val authority = dataType.toAuthority {
+            tasksAppManager.get().currentProvider()
+        }
+
+        if (authority != null)
+            setSyncInterval(authority, minutes*60L)
     }
 
     fun getSyncWifiOnly() =

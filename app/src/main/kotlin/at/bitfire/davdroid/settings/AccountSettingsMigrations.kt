@@ -26,6 +26,7 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalTask
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
@@ -140,8 +141,8 @@ class AccountSettingsMigrations @AssistedInject constructor(
     /**
      * Updates the periodic sync workers by re-setting the same sync interval.
      *
-     * The goal is to add the [BaseSyncWorker.commonTag] to all existing periodic sync workers so that they can be detected by
-     * the new [BaseSyncWorker.exists] and [at.bitfire.davdroid.ui.AccountsActivity.Model].
+     * The goal is to add the BaseSyncWorker.commonTag to all existing periodic sync workers so that they can be detected by
+     * the new BaseSyncWorker.exists and at.bitfire.davdroid.ui.AccountsActivity.Model.
      */
     @Suppress("unused","FunctionName")
     fun update_14_15() {
