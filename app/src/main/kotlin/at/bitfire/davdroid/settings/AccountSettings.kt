@@ -15,12 +15,9 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.vcard4android.GroupMethod
-import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -47,9 +44,7 @@ class AccountSettings @AssistedInject constructor(
     private val logger: Logger,
     private val migrationsFactory: AccountSettingsMigrations.Factory,
     private val settingsManager: SettingsManager,
-    private val automaticSyncManager: AutomaticSyncManager,
-    private val syncWorkerManager: SyncWorkerManager,
-    private val tasksAppManager: Lazy<TasksAppManager>
+    private val automaticSyncManager: AutomaticSyncManager
 ) {
 
     @AssistedFactory
@@ -163,9 +158,6 @@ class AccountSettings @AssistedInject constructor(
             (secondsOrManual/60).toInt()
     }
 
-    @Deprecated("Use getSyncInterval(SyncDataType.TASKS) instead (modified meaning of return value!)")
-    fun getTasksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_TASKS)?.toLong()
-
     /**
      * Sets the sync interval and en- or disables periodic sync for the given account and authority.
      *
@@ -200,16 +192,12 @@ class AccountSettings @AssistedInject constructor(
         accountManager.setAndVerifyUserData(account, key, minutes?.times(60)?.toString())
 
         // update automatic sync
-        val authority = dataType.toAuthority {
-            tasksAppManager.get().currentProvider()
-        }
-        if (authority != null)
-            automaticSyncManager.setSyncInterval(
-                account = account,
-                authority = authority,
-                wifiOnly = getSyncWifiOnly(),
-                minutes = minutes
-            )
+        automaticSyncManager.setSyncInterval(
+            account = account,
+            dataType = dataType,
+            wifiOnly = getSyncWifiOnly(),
+            minutes = minutes
+        )
     }
 
     fun getSyncWifiOnly() =
@@ -222,11 +210,11 @@ class AccountSettings @AssistedInject constructor(
         accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
         // update sync workers (needs already updated wifi-only flag in AccountSettings)
-        for (authority in syncWorkerManager.syncAuthorities()) {
-            val interval = getSyncInterval(authority)?.let { it.toInt()/60 }
+        for (dataType in SyncDataType.entries) {
+            val interval = getSyncInterval(dataType)?.let { it.toInt()/60 }
             automaticSyncManager.setSyncInterval(
                 account = account,
-                authority = authority,
+                dataType = dataType,
                 wifiOnly = wiFiOnly,
                 minutes = interval
             )

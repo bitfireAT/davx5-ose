@@ -138,8 +138,9 @@ class TasksAppManager @Inject constructor(
                 syncFramework.enableSyncAbility(account, authority)
 
                 // set sync interval according to settings; also updates periodic sync workers and sync framework on-content-change
-                val interval = settings.getTasksSyncInterval() ?: settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
-                settings.setSyncInterval(authority, interval)
+                val defaultSyncInterval by lazy { (settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)/60).toInt() }
+                val interval = settings.getSyncInterval(SyncDataType.TASKS) ?: defaultSyncInterval
+                settings.setSyncInterval(SyncDataType.TASKS, interval)
             } else {
                 logger.info("Disabling $authority sync for $account")
 

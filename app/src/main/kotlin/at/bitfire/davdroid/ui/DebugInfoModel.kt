@@ -46,6 +46,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.ical4android.TaskProvider
@@ -545,7 +546,7 @@ class DebugInfoModel @AssistedInject constructor(
                 info.authority,
                 syncFramework.isSyncable(account, info.authority),
                 syncFramework.syncsOnContentChange(account, info.authority),
-                accountSettings?.getSyncInterval(info.authority)?.takeIf { it >= 0 }?.let {"${it/60} min"},
+                accountSettings?.getSyncInterval(SyncDataType.fromAuthority(context, info.authority))?.let {"$it min"},
                 nrEntries
             )
         }
