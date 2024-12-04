@@ -143,19 +143,6 @@ class AccountSettings @AssistedInject constructor(
     }
 
     /**
-     * Sets the sync interval and en- or disables periodic sync for the given account and authority.
-     *
-     * @param authority sync authority (like [CalendarContract.AUTHORITY])
-     * @param seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled;
-     * otherwise (must be ≥ 15 min): automatic sync will be enabled and set to the given number of seconds
-     */
-    @Deprecated("Use setSyncInterval(SyncDataType, Int) instead")
-    fun setSyncInterval(authority: String, seconds: Long) {
-        val minutes = if (seconds == SYNC_INTERVAL_MANUALLY) null else seconds.toInt()/60
-        setSyncInterval(SyncDataType.fromAuthority(context, authority), minutes)
-    }
-
-    /**
      * Sets the sync interval and en- or disables periodic sync for the given account and data type.
      *
      * @param dataType  data type to synchronize

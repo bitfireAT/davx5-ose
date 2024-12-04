@@ -22,7 +22,12 @@ class AutomaticSyncManager @Inject constructor(
 ) {
 
     /**
-     * Enables automatic synchronization and sets it to the given interval.
+     * Enables automatic synchronization and sets it to the given interval:
+     *
+     * 1. Sets up periodic sync for the given data type with the given interval.
+     * 2. Enables sync in the sync framework for the given data type and sets up periodic sync with the given interval.
+     *
+     * If [dataType] is [SyncDataType.TASKS] and not tasks provider is set, this method does nothing.
      *
      * @param account   the account to synchronize
      * @param dataType  kind of data to synchronize
