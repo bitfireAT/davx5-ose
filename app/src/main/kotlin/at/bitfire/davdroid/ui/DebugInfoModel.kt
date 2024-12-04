@@ -303,7 +303,7 @@ class DebugInfoModel @AssistedInject constructor(
             }
             // system-wide sync
             writer.append("System-wide synchronization: ")
-                .append(if (syncFramework.getMasterSyncAutomatically()) "automatically" else "manually")
+                .append(if (syncFramework.getGlobalSyncAutomatically()) "automatically" else "manually")
                 .append("\n\n")
 
             // connectivity

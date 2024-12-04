@@ -125,22 +125,6 @@ class AccountSettings @AssistedInject constructor(
     // sync. settings
 
     /**
-     * Gets the currently set sync interval for this account in seconds.
-     *
-     * @param authority authority to check (for instance: [CalendarContract.AUTHORITY]])
-     * @return sync interval in seconds or *[SYNC_INTERVAL_MANUALLY]* if no automatic sync interval is set
-     */
-    @Deprecated("Use getSyncInterval(SyncDataType) instead (modified meaning of return value!)")
-    fun getSyncInterval(authority: String): Long? {
-        val dataType = SyncDataType.fromAuthority(context, authority)
-        val minutes = getSyncInterval(dataType)
-        return if (minutes == null)
-            SYNC_INTERVAL_MANUALLY
-        else
-            minutes.times(60L)
-    }
-
-    /**
      * Gets the sync interval for the given account and data type.
      *
      * @return interval in minutes; *null* if periodic sync is disabled

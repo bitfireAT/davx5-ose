@@ -128,11 +128,12 @@ class AccountSettingsMigrations @AssistedInject constructor(
             val pruneOp = WorkManager.getInstance(context).pruneWork()
             pruneOp.result.get()    // block until worker with old name is removed from DB
 
-            val interval = accountSettings.getSyncInterval(authority)
-            if (interval != null && interval != AccountSettings.SYNC_INTERVAL_MANUALLY) {
+            val dataType = SyncDataType.fromAuthority(context, authority)
+            val minutes = accountSettings.getSyncInterval(dataType)
+            if (minutes != null) {
                 // There's a sync interval for this account/authority; a periodic sync worker should be there, too.
                 val onlyWifi = accountSettings.getSyncWifiOnly()
-                syncWorkerManager.enablePeriodic(account, authority, interval, onlyWifi)
+                syncWorkerManager.enablePeriodic(account, authority, minutes*60L, onlyWifi)
             }
         }
     }
@@ -146,9 +147,9 @@ class AccountSettingsMigrations @AssistedInject constructor(
      */
     @Suppress("unused","FunctionName")
     fun update_14_15() {
-        for (authority in syncWorkerManager.syncAuthorities()) {
-            val interval = accountSettings.getSyncInterval(authority)
-            accountSettings.setSyncInterval(authority, interval ?: AccountSettings.SYNC_INTERVAL_MANUALLY)
+        for (dataType in SyncDataType.entries) {
+            val interval = accountSettings.getSyncInterval(dataType)
+            accountSettings.setSyncInterval(dataType, interval)
         }
     }
 
@@ -177,10 +178,10 @@ class AccountSettingsMigrations @AssistedInject constructor(
         }
     }
     private fun v14_enableWorkManager(authority: String) {
-        val enabled = accountSettings.getSyncInterval(authority)?.let { syncInterval ->
-            accountSettings.setSyncInterval(authority, syncInterval)
-        } ?: false
-        logger.info("PeriodicSyncWorker for $account/$authority enabled=$enabled")
+        val dataType = SyncDataType.fromAuthority(context, authority)
+        accountSettings.getSyncInterval(dataType)?.let { minutes ->
+            accountSettings.setSyncInterval(dataType, minutes)
+        }
     }
     private fun v14_disableSyncFramework(authority: String) {
         // Disable periodic syncs (sync adapter framework)
@@ -332,12 +333,8 @@ class AccountSettingsMigrations @AssistedInject constructor(
      * again when the tasks provider is switched.
      */
     private fun update_10_11() {
-        tasksAppManager.get().currentProvider()?.let { provider ->
-            val interval = accountSettings.getSyncInterval(provider.authority)
-            if (interval != null)
-                accountManager.setAndVerifyUserData(account,
-                    AccountSettings.KEY_SYNC_INTERVAL_TASKS, interval.toString())
-        }
+        val interval = accountSettings.getSyncInterval(SyncDataType.TASKS)
+        accountSettings.setSyncInterval(SyncDataType.TASKS, interval)
     }
 
     @Suppress("unused","FunctionName")

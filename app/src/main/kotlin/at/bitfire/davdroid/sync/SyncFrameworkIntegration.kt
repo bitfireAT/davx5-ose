@@ -22,7 +22,7 @@ class SyncFrameworkIntegration @Inject constructor(
      * Gets the global auto-sync setting that applies to all the providers and accounts. If this is
      * false then the per-provider auto-sync setting is ignored.
      */
-    fun getMasterSyncAutomatically() =
+    fun getGlobalSyncAutomatically() =
         ContentResolver.getMasterSyncAutomatically()
 
     /**
@@ -56,7 +56,6 @@ class SyncFrameworkIntegration @Inject constructor(
     /**
      * Enable syncing on content (contact, calendar event or task) changes.
      */
-    // TODO setSyncOnContentChange
     fun enableSyncOnContentChange(account: Account, authority: String) {
         if (!ContentResolver.getSyncAutomatically(account, authority))
             setSyncOnContentChange(account, authority, true)

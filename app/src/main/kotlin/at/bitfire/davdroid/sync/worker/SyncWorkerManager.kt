@@ -186,7 +186,7 @@ class SyncWorkerManager @Inject constructor(
      *
      * @return periodic sync work request for the given arguments
      */
-    fun buildPeriodic(account: Account, authority: String, interval: Long, syncWifiOnly: Boolean): PeriodicWorkRequest {
+    fun buildPeriodic(account: Account, authority: String, seconds: Long, syncWifiOnly: Boolean): PeriodicWorkRequest {
         val arguments = Data.Builder()
             .putString(INPUT_AUTHORITY, authority)
             .putString(INPUT_ACCOUNT_NAME, account.name)
@@ -199,7 +199,7 @@ class SyncWorkerManager @Inject constructor(
                 else
                     NetworkType.CONNECTED
             ).build()
-        return PeriodicWorkRequestBuilder<PeriodicSyncWorker>(interval, TimeUnit.SECONDS)
+        return PeriodicWorkRequestBuilder<PeriodicSyncWorker>(seconds, TimeUnit.SECONDS)
             .addTag(PeriodicSyncWorker.workerName(account, authority))
             .addTag(commonTag(account, authority))
             .setInputData(arguments)
@@ -212,11 +212,11 @@ class SyncWorkerManager @Inject constructor(
      *
      * @param account    account to sync
      * @param authority  authority to sync (for instance: [CalendarContract.AUTHORITY]])
-     * @param interval   interval between recurring syncs in seconds
+     * @param seconds    interval between recurring syncs in seconds
      * @return operation object to check when and whether activation was successful
      */
-    fun enablePeriodic(account: Account, authority: String, interval: Long, syncWifiOnly: Boolean): Operation {
-        val workRequest = buildPeriodic(account, authority, interval, syncWifiOnly)
+    fun enablePeriodic(account: Account, authority: String, seconds: Long, syncWifiOnly: Boolean): Operation {
+        val workRequest = buildPeriodic(account, authority, seconds, syncWifiOnly)
         return WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             PeriodicSyncWorker.workerName(account, authority),
             // if a periodic sync exists already, we want to update it with the new interval
