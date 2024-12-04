@@ -241,10 +241,11 @@ class SyncWorkerManager @Inject constructor(
     // common / helpers
 
     /**
-     * Stops running sync workers and removes pending sync workers from queue, for all authorities.
+     * Stops running sync workers and removes pending sync workers (one-time and periodic) from queue, for all authorities.
      */
     fun cancelAllWork(account: Account) {
         val workManager = WorkManager.getInstance(context)
+
         for (authority in syncAuthorities()) {
             workManager.cancelUniqueWork(OneTimeSyncWorker.workerName(account, authority))
             workManager.cancelUniqueWork(PeriodicSyncWorker.workerName(account, authority))

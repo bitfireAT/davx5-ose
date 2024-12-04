@@ -21,6 +21,7 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
@@ -204,13 +205,7 @@ class AccountRepository @Inject constructor(
 
         // remember sync intervals
         val oldSettings = accountSettingsFactory.create(oldAccount)
-        val authorities = mutableListOf(
-            context.getString(R.string.address_books_authority),
-            CalendarContract.AUTHORITY
-        )
-        val tasksProvider = tasksAppManager.get().currentProvider()
-        tasksProvider?.authority?.let { authorities.add(it) }
-        val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
+        val syncIntervals = SyncDataType.entries.map { Pair(it, oldSettings.getSyncInterval(it)) }
 
         // rename account
         try {
@@ -237,11 +232,6 @@ class AccountRepository @Inject constructor(
             // account renamed, cancel maybe running synchronization of old account
             syncWorkerManager.cancelAllWork(oldAccount)
 
-            // disable periodic syncs for old account
-            syncIntervals.forEach { (authority, _) ->
-                syncWorkerManager.disablePeriodic(oldAccount, authority)
-            }
-
             // update account name references in database
             serviceRepository.renameAccount(oldName, newName)
 
@@ -258,14 +248,9 @@ class AccountRepository @Inject constructor(
 
             // restore sync intervals
             val newSettings = accountSettingsFactory.create(newAccount)
-            for ((authority, interval) in syncIntervals) {
-                if (interval == null)
-                    syncFramework.disableSyncAbility(newAccount, authority)
-                else {
-                    syncFramework.enableSyncAbility(newAccount, authority)
-                    newSettings.setSyncInterval(authority, interval)
-                }
-            }
+            for ((dataType, minutes) in syncIntervals)
+                newSettings.setSyncInterval(dataType, minutes)
+
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()

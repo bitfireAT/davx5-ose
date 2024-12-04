@@ -39,10 +39,13 @@ class AutomaticSyncManager @Inject constructor(
             workerManager.disablePeriodic(account, authority)
 
         // sync on local data changes
-        if (minutes != null)
+        if (minutes != null) {
+            if (!frameworkIntegration.isSyncable(account, authority))
+                frameworkIntegration.enableSyncAbility(account, authority)
             frameworkIntegration.enableSyncOnContentChange(account, authority)
-        else
+        } else {
             frameworkIntegration.disableSyncOnContentChange(account, authority)
+        }
     }
 
 }
