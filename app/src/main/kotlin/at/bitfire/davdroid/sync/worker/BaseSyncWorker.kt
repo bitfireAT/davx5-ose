@@ -40,7 +40,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 abstract class BaseSyncWorker(
-    context: Context,
+    private val context: Context,
     private val workerParams: WorkerParameters,
     private val syncDispatcher: CoroutineDispatcher
 ) : CoroutineWorker(context, workerParams) {
@@ -90,7 +90,7 @@ abstract class BaseSyncWorker(
         }
 
         // Dismiss any pending push notification
-        pushNotificationManager.dismiss(account, SyncDataType.fromAuthority(authority))
+        pushNotificationManager.dismiss(account, SyncDataType.fromAuthority(context, authority))
 
         try {
             val accountSettings = try {

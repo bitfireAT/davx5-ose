@@ -138,7 +138,7 @@ class SyncWorkerManager @Inject constructor(
         )
         if (fromPush) {
             logger.fine("Showing push sync pending notification for $name")
-            pushNotificationManager.notify(account, SyncDataType.fromAuthority(authority))
+            pushNotificationManager.notify(account, SyncDataType.fromAuthority(context, authority))
         }
         logger.info("Enqueueing unique worker: $name, tags = ${request.tags}")
         WorkManager.getInstance(context).enqueueUniqueWork(

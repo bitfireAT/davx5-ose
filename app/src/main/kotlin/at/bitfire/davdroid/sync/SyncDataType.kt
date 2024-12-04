@@ -4,9 +4,10 @@
 
 package at.bitfire.davdroid.sync
 
-import android.Manifest.permission_group.CONTACTS
+import android.content.Context
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import at.bitfire.davdroid.R
 import at.bitfire.ical4android.TaskProvider
 
 /**
@@ -37,14 +38,17 @@ enum class SyncDataType {
 
     companion object {
 
-        fun fromAuthority(authority: String): SyncDataType =
+        fun fromAuthority(context: Context, authority: String): SyncDataType =
             when (authority) {
-                ContactsContract.AUTHORITY -> CONTACTS
+                ContactsContract.AUTHORITY,
+                context.getString(R.string.address_books_authority) -> CONTACTS
+
                 CalendarContract.AUTHORITY -> EVENTS
-                TaskProvider.ProviderName.JtxBoard.authority -> TASKS
-                TaskProvider.ProviderName.OpenTasks.authority -> TASKS
+
+                TaskProvider.ProviderName.JtxBoard.authority,
+                TaskProvider.ProviderName.OpenTasks.authority,
                 TaskProvider.ProviderName.TasksOrg.authority -> TASKS
-                else -> throw IllegalArgumentException()
+                else -> throw IllegalArgumentException("Unknown authority: $authority")
             }
 
     }
