@@ -13,14 +13,14 @@ import at.bitfire.ical4android.TaskProvider
  *
  * The specific content provider that syncs this kind of data is specified by the authority.
  */
-enum class SyncDomain {
+enum class SyncDataType {
     CONTACTS,
     EVENTS,
     TASKS;
 
     companion object {
 
-        fun fromAuthority(authority: String): SyncDomain =
+        fun fromAuthority(authority: String): SyncDataType =
             when (authority) {
                 ContactsContract.AUTHORITY -> CONTACTS
                 CalendarContract.AUTHORITY -> EVENTS

@@ -13,6 +13,8 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.sync.AutomaticSyncManager
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
@@ -45,6 +47,7 @@ class AccountSettings @AssistedInject constructor(
     private val logger: Logger,
     private val migrationsFactory: AccountSettingsMigrations.Factory,
     private val settingsManager: SettingsManager,
+    private val automaticSyncManager: AutomaticSyncManager,
     private val syncFramework: SyncFrameworkIntegration,
     private val syncWorkerManager: SyncWorkerManager
 ) {
@@ -185,14 +188,17 @@ class AccountSettings @AssistedInject constructor(
         }
         accountManager.setAndVerifyUserData(account, key, seconds.toString())
 
-        // update sync workers (needs already updated sync interval in AccountSettings)
-        updatePeriodicSyncWorker(authority, seconds, getSyncWifiOnly())
+        // update automatic sync
+        automaticSyncManager.setSyncInterval(
+            account = account,
+            authority = authority,
+            wifiOnly = getSyncWifiOnly(),
+            minutes = if (_seconds == SYNC_INTERVAL_MANUALLY) null else seconds.toInt()/60
+        )
+    }
 
-        // Also enable/disable content change triggered syncs
-        if (seconds != SYNC_INTERVAL_MANUALLY)
-            syncFramework.enableSyncOnContentChange(account, authority)
-        else
-            syncFramework.disableSyncOnContentChange(account, authority)
+    fun setSyncInterval(dataType: SyncDataType, minutes: Int) {
+
     }
 
     fun getSyncWifiOnly() =
@@ -205,8 +211,15 @@ class AccountSettings @AssistedInject constructor(
         accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
         // update sync workers (needs already updated wifi-only flag in AccountSettings)
-        for (authority in syncWorkerManager.syncAuthorities())
-            updatePeriodicSyncWorker(authority, getSyncInterval(authority), wiFiOnly)
+        for (authority in syncWorkerManager.syncAuthorities()) {
+            val interval = getSyncInterval(authority)?.let { it.toInt()/60 }
+            automaticSyncManager.setSyncInterval(
+                account = account,
+                authority = authority,
+                wifiOnly = wiFiOnly,
+                minutes = interval
+            )
+        }
     }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =
@@ -230,30 +243,6 @@ class AccountSettings @AssistedInject constructor(
 
     fun setIgnoreVpns(ignoreVpns: Boolean) =
         accountManager.setAndVerifyUserData(account, KEY_IGNORE_VPNS, if (ignoreVpns) "1" else "0")
-
-    /**
-     * Updates the periodic sync worker of an authority according to
-     *
-     * - the sync interval and
-     * - the _Sync WiFi only_ flag.
-     *
-     * @param authority   periodic sync workers for this authority will be updated
-     * @param seconds     sync interval in seconds (`null` or [SYNC_INTERVAL_MANUALLY] disables periodic sync)
-     * @param wiFiOnly    sync Wifi only flag
-     */
-    fun updatePeriodicSyncWorker(authority: String, seconds: Long?, wiFiOnly: Boolean) {
-        try {
-            if (seconds == null || seconds == SYNC_INTERVAL_MANUALLY) {
-                logger.fine("Disabling periodic sync of $account/$authority")
-                syncWorkerManager.disablePeriodic(account, authority)
-            } else {
-                logger.fine("Setting periodic sync of $account/$authority to $seconds seconds (wifiOnly=$wiFiOnly)")
-                syncWorkerManager.enablePeriodic(account, authority, seconds, wiFiOnly)
-            }.result.get() // On operation (enable/disable) failure exception is thrown
-        } catch (e: Exception) {
-            logger.log(Level.SEVERE, "Failed to set sync interval of $account/$authority to $seconds seconds", e)
-        }
-    }
 
 
     // CalDAV settings

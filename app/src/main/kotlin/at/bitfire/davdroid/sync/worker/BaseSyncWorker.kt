@@ -25,7 +25,7 @@ import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
 import at.bitfire.davdroid.sync.JtxSyncer
 import at.bitfire.davdroid.sync.SyncConditions
-import at.bitfire.davdroid.sync.SyncDomain
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncResult
 import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TaskSyncer
@@ -90,7 +90,7 @@ abstract class BaseSyncWorker(
         }
 
         // Dismiss any pending push notification
-        pushNotificationManager.dismiss(account, SyncDomain.fromAuthority(authority))
+        pushNotificationManager.dismiss(account, SyncDataType.fromAuthority(authority))
 
         try {
             val accountSettings = try {

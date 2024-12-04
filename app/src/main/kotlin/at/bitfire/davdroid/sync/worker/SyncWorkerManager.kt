@@ -26,7 +26,7 @@ import androidx.work.WorkQuery
 import androidx.work.WorkRequest
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.push.PushNotificationManager
-import at.bitfire.davdroid.sync.SyncDomain
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_NAME
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_TYPE
@@ -138,7 +138,7 @@ class SyncWorkerManager @Inject constructor(
         )
         if (fromPush) {
             logger.fine("Showing push sync pending notification for $name")
-            pushNotificationManager.notify(account, SyncDomain.fromAuthority(authority))
+            pushNotificationManager.notify(account, SyncDataType.fromAuthority(authority))
         }
         logger.info("Enqueueing unique worker: $name, tags = ${request.tags}")
         WorkManager.getInstance(context).enqueueUniqueWork(
