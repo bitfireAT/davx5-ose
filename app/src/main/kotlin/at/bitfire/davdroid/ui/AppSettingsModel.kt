@@ -3,6 +3,7 @@ package at.bitfire.davdroid.ui
 import android.content.Context
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.os.PowerManager
 import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
@@ -19,9 +20,14 @@ import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import org.unifiedpush.android.connector.UnifiedPush
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,8 +35,9 @@ class AppSettingsModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val preference: PreferenceRepository,
     private val settings: SettingsManager,
-    private val tasksAppManager: TasksAppManager
+    tasksAppManager: TasksAppManager
 ) : ViewModel() {
+
 
     // debugging
 
@@ -105,6 +112,73 @@ class AppSettingsModel @Inject constructor(
 
     // push
 
-    val pushEndpoint = preference.unifiedPushEndpointFlow()
+    private val _pushDistributor = MutableStateFlow<String?>(null)
+    val pushDistributor = _pushDistributor.asStateFlow()
+
+    private val _pushDistributors = MutableStateFlow<List<PushDistributorInfo>?>(null)
+    val pushDistributors = _pushDistributors.asStateFlow()
+
+    /**
+     * Loads the push distributors configuration:
+     *
+     * - Loads the currently selected distributor into [pushDistributor].
+     * - Loads all the available distributors into [pushDistributors].
+     * - If there's only one push distributor available, and none is selected, it's selected automatically.
+     * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
+     */
+    private suspend fun loadPushDistributors() {
+        val savedPushDistributor = UnifiedPush.getSavedDistributor(context)
+        _pushDistributor.value = savedPushDistributor
+
+        val pushDistributors = UnifiedPush.getDistributors(context)
+            .map { pushDistributor ->
+                try {
+                    val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
+                    val label = pm.getApplicationLabel(applicationInfo).toString()
+                    val icon = pm.getApplicationIcon(applicationInfo)
+                    PushDistributorInfo(pushDistributor, label, icon)
+                } catch (_: PackageManager.NameNotFoundException) {
+                    // The app is not available for some reason, do not include the app data.
+                    PushDistributorInfo(pushDistributor)
+                }
+            }
+        _pushDistributors.value = pushDistributors
+    }
+
+    /**
+     * Updates the current push distributor selection.
+     *
+     * Saves the preference in UnifiedPush, (un)registers the app, and writes the selection to [pushDistributor].
+     *
+     * @param pushDistributor The package name of the push distributor, _null_ to disable push.
+     */
+    fun updatePushDistributor(pushDistributor: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (pushDistributor == null) {
+                // Disable UnifiedPush if the distributor given is null
+                UnifiedPush.safeRemoveDistributor(context)
+                UnifiedPush.unregisterApp(context)
+            } else {
+                // If a distributor was passed, store it and register the app
+                UnifiedPush.saveDistributor(context, pushDistributor)
+                UnifiedPush.registerApp(context)
+            }
+            _pushDistributor.value = pushDistributor
+        }
+    }
+
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            loadPushDistributors()
+        }
+    }
+
+
+    data class PushDistributorInfo(
+        val packageName: String,
+        val appName: String? = null,
+        val appIcon: Drawable? = null
+    )
 
 }

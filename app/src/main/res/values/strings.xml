@@ -212,8 +212,11 @@
     <string name="app_settings_tasks_provider">Tasks app</string>
     <string name="app_settings_tasks_provider_none">No compatible tasks app found</string>
     <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
-    <string name="app_settings_unifiedpush_endpoint_domain">Ready to receive push notifications (%s)</string>
+    <string name="app_settings_unifiedpush_disable">None (disable push)</string>
+    <string name="app_settings_unifiedpush_choose_distributor">Choose a distributor</string>
+    <string name="app_settings_unifiedpush_no_distributor">No push distributor installed</string>
     <string name="app_settings_unifiedpush_no_endpoint">No endpoint configured</string>
+    <string name="app_settings_unifiedpush_ready">Ready to receive push messages over %s</string>
 
     <!-- AccountScreen -->
     <string name="account_carddav">CardDAV</string>
