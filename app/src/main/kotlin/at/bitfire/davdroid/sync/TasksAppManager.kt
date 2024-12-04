@@ -111,7 +111,6 @@ class TasksAppManager @Inject constructor(
 
                 // enable/disable sync for the given account and authority
                 setSyncable(
-                    context,
                     account,
                     providerName.authority,
                     syncable
@@ -129,7 +128,7 @@ class TasksAppManager @Inject constructor(
         }
     }
 
-    private fun setSyncable(context: Context, account: Account, authority: String, syncable: Boolean) {
+    private fun setSyncable(account: Account, authority: String, syncable: Boolean) {
         try {
             val settings = accountSettingsFactory.create(account)
             if (syncable) {
