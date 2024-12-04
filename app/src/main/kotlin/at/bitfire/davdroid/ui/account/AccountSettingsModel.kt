@@ -6,9 +6,12 @@ import android.provider.CalendarContract
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -33,6 +36,7 @@ class AccountSettingsModel @AssistedInject constructor(
     @Assisted val account: Account,
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
+    private val db: AppDatabase,
     private val logger: Logger,
     private val settings: SettingsManager,
     private val syncWorkerManager: SyncWorkerManager,
@@ -46,9 +50,12 @@ class AccountSettingsModel @AssistedInject constructor(
 
     // settings
     data class UiState(
-        val syncIntervalContacts: Long? = null,
-        val syncIntervalCalendars: Long? = null,
-        val syncIntervalTasks: Long? = null,
+        val hasContactsSync: Boolean = false,
+        val syncIntervalContacts: Int? = null,
+        val hasCalendarSync: Boolean = false,
+        val syncIntervalCalendars: Int? = null,
+        val hasTaskSync: Boolean = false,
+        val syncIntervalTasks: Int? = null,
 
         val syncWifiOnly: Boolean = false,
         val syncWifiOnlySSIDs: List<String>? = null,
@@ -95,10 +102,19 @@ class AccountSettingsModel @AssistedInject constructor(
 
     private suspend fun reload() = withContext(Dispatchers.Default) {
         logger.info("Reloading settings")
+
+        val serviceDao = db.serviceDao()
+        val hasContactsSync = serviceDao.getByAccountAndType(account.name, Service.TYPE_CARDDAV) != null
+        val hasCalendarSync = serviceDao.getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
+        val hasTasksSync = hasCalendarSync && tasksProvider != null
+
         _uiState.value = UiState(
-            syncIntervalContacts = accountSettings.getSyncInterval(context.getString(R.string.address_books_authority)),
-            syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY),
-            syncIntervalTasks = tasksProvider?.let { accountSettings.getSyncInterval(it.authority) },
+            hasContactsSync = hasContactsSync,
+            syncIntervalContacts = accountSettings.getSyncInterval(SyncDataType.CONTACTS),
+            hasCalendarSync = hasCalendarSync,
+            syncIntervalCalendars = accountSettings.getSyncInterval(SyncDataType.EVENTS),
+            hasTaskSync = hasTasksSync,
+            syncIntervalTasks = accountSettings.getSyncInterval(SyncDataType.TASKS),
 
             syncWifiOnly = accountSettings.getSyncWifiOnly(),
             syncWifiOnlySSIDs = accountSettings.getSyncWifiOnlySSIDs(),
@@ -115,26 +131,24 @@ class AccountSettingsModel @AssistedInject constructor(
         )
     }
 
-    fun updateContactsSyncInterval(syncInterval: Long) {
+    fun updateContactsSyncInterval(syncInterval: Int?) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountSettings.setSyncInterval(context.getString(R.string.address_books_authority), syncInterval)
+            accountSettings.setSyncInterval(SyncDataType.CONTACTS, syncInterval)
             reload()
         }
     }
 
-    fun updateCalendarSyncInterval(syncInterval: Long) {
+    fun updateCalendarSyncInterval(syncInterval: Int?) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountSettings.setSyncInterval(CalendarContract.AUTHORITY, syncInterval)
+            accountSettings.setSyncInterval(SyncDataType.EVENTS, syncInterval)
             reload()
         }
     }
 
-    fun updateTasksSyncInterval(syncInterval: Long) {
+    fun updateTasksSyncInterval(syncInterval: Int?) {
         CoroutineScope(Dispatchers.Default).launch {
-            tasksProvider?.authority?.let { tasksAuthority ->
-                accountSettings.setSyncInterval(tasksAuthority, syncInterval)
-                reload()
-            }
+            accountSettings.setSyncInterval(SyncDataType.TASKS, syncInterval)
+            reload()
         }
     }
 
@@ -218,10 +232,10 @@ class AccountSettingsModel @AssistedInject constructor(
     /**
      * Initiates re-synchronization for given authority.
      *
-     * @param authority authority to re-sync
+     * @param authority  authority to re-sync
      * @param fullResync whether sync shall download all events again
-     * (_true_: sets [Syncer.SYNC_EXTRAS_FULL_RESYNC],
-     * _false_: sets [Syncer.SYNC_EXTRAS_RESYNC])
+     * (_true_: sets [BaseSyncWorker.FULL_RESYNC],
+     * _false_: sets [BaseSyncWorker.RESYNC])
      */
     private fun resync(authority: String, fullResync: Boolean) {
         val resync =

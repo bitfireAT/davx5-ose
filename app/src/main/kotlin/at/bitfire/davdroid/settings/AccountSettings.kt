@@ -15,12 +15,10 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.davdroid.util.trimToNull
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.Lazy
 import dagger.assisted.Assisted
@@ -50,7 +48,6 @@ class AccountSettings @AssistedInject constructor(
     private val migrationsFactory: AccountSettingsMigrations.Factory,
     private val settingsManager: SettingsManager,
     private val automaticSyncManager: AutomaticSyncManager,
-    private val syncFramework: SyncFrameworkIntegration,
     private val syncWorkerManager: SyncWorkerManager,
     private val tasksAppManager: Lazy<TasksAppManager>
 ) {
@@ -136,86 +133,83 @@ class AccountSettings @AssistedInject constructor(
      * Gets the currently set sync interval for this account in seconds.
      *
      * @param authority authority to check (for instance: [CalendarContract.AUTHORITY]])
-     * @return sync interval in seconds; *[SYNC_INTERVAL_MANUALLY]* if manual sync; *null* if not set
+     * @return sync interval in seconds or *[SYNC_INTERVAL_MANUALLY]* if no automatic sync interval is set
      */
+    @Deprecated("Use getSyncInterval(SyncDataType) instead (modified meaning of return value!)")
     fun getSyncInterval(authority: String): Long? {
-        val addrBookAuthority = context.getString(R.string.address_books_authority)
-
-        if (!syncFramework.isSyncable(account, authority) && authority != addrBookAuthority)
-            return null
-
-        val key = when {
-            authority == addrBookAuthority ->
-                KEY_SYNC_INTERVAL_ADDRESSBOOKS
-            authority == CalendarContract.AUTHORITY ->
-                KEY_SYNC_INTERVAL_CALENDARS
-            TaskProvider.ProviderName.entries.any { it.authority == authority } ->
-                KEY_SYNC_INTERVAL_TASKS
-            else -> return null
-        }
-        return accountManager.getUserData(account, key)?.toLong()
+        val dataType = SyncDataType.fromAuthority(context, authority)
+        val minutes = getSyncInterval(dataType)
+        return if (minutes == null)
+            SYNC_INTERVAL_MANUALLY
+        else
+            minutes.times(60L)
     }
 
+    /**
+     * Gets the sync interval for the given account and data type.
+     *
+     * @return interval in minutes; *null* if periodic sync is disabled
+     */
+    fun getSyncInterval(dataType: SyncDataType): Int? {
+        val key = when (dataType) {
+            SyncDataType.CONTACTS -> KEY_SYNC_INTERVAL_ADDRESSBOOKS
+            SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
+            SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
+        }
+        val secondsOrManual = accountManager.getUserData(account, key)?.toLong()
+        return if (secondsOrManual == null || secondsOrManual == SYNC_INTERVAL_MANUALLY)
+            null
+        else
+            (secondsOrManual/60).toInt()
+    }
+
+    @Deprecated("Use getSyncInterval(SyncDataType.TASKS) instead (modified meaning of return value!)")
     fun getTasksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_TASKS)?.toLong()
 
     /**
      * Sets the sync interval and en- or disables periodic sync for the given account and authority.
      *
-     * This method blocks until a worker as been created and enqueued (sync active) or removed
-     * (sync disabled), so it should not be called from the UI thread.
-     *
      * @param authority sync authority (like [CalendarContract.AUTHORITY])
-     * @param _seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled;
+     * @param seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled;
      * otherwise (must be ≥ 15 min): automatic sync will be enabled and set to the given number of seconds
      */
     @Deprecated("Use setSyncInterval(SyncDataType, Int) instead")
-    @WorkerThread
-    fun setSyncInterval(authority: String, _seconds: Long) {
-        val seconds =
-            if (_seconds != SYNC_INTERVAL_MANUALLY && _seconds < 60*15)
-                60*15
-            else
-                _seconds
-
-        // Store (user defined) sync interval in account settings
-        val key = when {
-            authority == context.getString(R.string.address_books_authority) ->
-                KEY_SYNC_INTERVAL_ADDRESSBOOKS
-            authority == CalendarContract.AUTHORITY ->
-                KEY_SYNC_INTERVAL_CALENDARS
-            TaskProvider.ProviderName.entries.any { it.authority == authority } ->
-                KEY_SYNC_INTERVAL_TASKS
-            else -> {
-                logger.warning("Sync interval not applicable to authority $authority")
-                return
-            }
-        }
-        accountManager.setAndVerifyUserData(account, key, seconds.toString())
-
-        // update automatic sync
-        automaticSyncManager.setSyncInterval(
-            account = account,
-            authority = authority,
-            wifiOnly = getSyncWifiOnly(),
-            minutes = if (_seconds == SYNC_INTERVAL_MANUALLY) null else seconds.toInt()/60
-        )
+    fun setSyncInterval(authority: String, seconds: Long) {
+        val minutes = if (seconds == SYNC_INTERVAL_MANUALLY) null else seconds.toInt()/60
+        setSyncInterval(SyncDataType.fromAuthority(context, authority), minutes)
     }
 
     /**
      * Sets the sync interval and en- or disables periodic sync for the given account and data type.
      *
      * @param dataType  data type to synchronize
-     * @param minutes   interval in minutes; *null*: disable periodic sync (only sync on local data changes)
+     * @param minutes   interval in minutes (minimum: 15, required by Android); *null*: disable periodic sync (only sync on local data changes)
+     *
+     * @throws IllegalArgumentException if the interval is less than 15 minutes
      */
-    fun setSyncInterval(dataType: SyncDataType, minutes: Int) {
-        // TODO: move logic from setSyncInterval(authority) to here
+    fun setSyncInterval(dataType: SyncDataType, minutes: Int?) {
+        if (minutes != null && minutes < 15)
+            throw IllegalArgumentException("Sync interval can't be less than 15 minutes (given: $minutes)")
 
+        // Store (user defined) sync interval in account settings
+        val key = when (dataType) {
+            SyncDataType.CONTACTS -> KEY_SYNC_INTERVAL_ADDRESSBOOKS
+            SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
+            SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
+        }
+        accountManager.setAndVerifyUserData(account, key, minutes?.times(60)?.toString())
+
+        // update automatic sync
         val authority = dataType.toAuthority {
             tasksAppManager.get().currentProvider()
         }
-
         if (authority != null)
-            setSyncInterval(authority, minutes*60L)
+            automaticSyncManager.setSyncInterval(
+                account = account,
+                authority = authority,
+                wifiOnly = getSyncWifiOnly(),
+                minutes = minutes
+            )
     }
 
     fun getSyncWifiOnly() =
@@ -457,6 +451,7 @@ class AccountSettings @AssistedInject constructor(
         "1"                             show only personal collections */
         const val KEY_SHOW_ONLY_PERSONAL = "show_only_personal"
 
+        @Deprecated("Use null sync interval instead")
         const val SYNC_INTERVAL_MANUALLY = -1L
 
         /** Static property to indicate whether AccountSettings migration is currently running.
