@@ -31,23 +31,6 @@ class OneTimeSyncWorker @AssistedInject constructor(
     syncDispatcher: SyncDispatcher
 ) : BaseSyncWorker(appContext, workerParams, syncDispatcher.dispatcher) {
 
-    companion object {
-
-        /**
-         * Unique work name of this worker. Can also be used as tag.
-         *
-         * Mainly used to query [WorkManager] for work state (by unique work name or tag).
-         *
-         * @param account the account this worker is running for
-         * @param authority the authority this worker is running for
-         * @return Name of this worker composed as "onetime-sync $authority ${account.type}/${account.name}"
-         */
-        fun workerName(account: Account, authority: String): String =
-            "onetime-sync $authority ${account.type}/${account.name}"
-
-    }
-
-
     /**
      * Used by WorkManager to show a foreground service notification for expedited jobs on Android <12.
      */
@@ -63,6 +46,23 @@ class OneTimeSyncWorker @AssistedInject constructor(
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_DEFERRED)
             .build()
         return ForegroundInfo(NotificationRegistry.NOTIFY_SYNC_EXPEDITED, notification)
+    }
+
+
+    companion object {
+
+        /**
+         * Unique work name of this worker. Can also be used as tag.
+         *
+         * Mainly used to query [WorkManager] for work state (by unique work name or tag).
+         *
+         * @param account the account this worker is running for
+         * @param authority the authority this worker is running for
+         * @return Name of this worker composed as "onetime-sync $authority ${account.type}/${account.name}"
+         */
+        fun workerName(account: Account, authority: String): String =
+            "onetime-sync $authority ${account.type}/${account.name}"
+
     }
 
 }

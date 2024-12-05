@@ -3,9 +3,15 @@ package at.bitfire.davdroid.ui
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Build
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -15,22 +21,30 @@ import androidx.compose.material.icons.filled.Adb
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.InvertColors
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.RadioButtonChecked
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.SyncProblem
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -45,14 +59,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.ui.AppSettingsModel.PushDistributorInfo
 import at.bitfire.davdroid.ui.composable.EditTextInputDialog
 import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
 import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import org.unifiedpush.android.connector.UnifiedPush
+import kotlin.collections.orEmpty
 
 @Composable
 fun AppSettingsScreen(
@@ -98,7 +112,9 @@ fun AppSettingsScreen(
             // Integration (Tasks and Push)
             tasksAppName = model.tasksAppName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
             tasksAppIcon = model.tasksAppIcon.collectAsStateWithLifecycle(null).value,
-            pushEndpoint = model.pushEndpoint.collectAsStateWithLifecycle(null).value,
+            pushDistributors = model.pushDistributors.collectAsState().value,
+            pushDistributor = model.pushDistributor.collectAsState().value,
+            onPushDistributorChange = model::updatePushDistributor,
             onNavTasksScreen = onNavTasksScreen
         )
     }
@@ -137,7 +153,9 @@ fun AppSettingsScreen(
     // AppSettings Integration
     tasksAppName: String,
     tasksAppIcon: Drawable?,
-    pushEndpoint: String?,
+    pushDistributors: List<PushDistributorInfo>?,
+    pushDistributor: String?,
+    onPushDistributorChange: (String?) -> Unit,
     onNavTasksScreen: () -> Unit,
 
     onShowNotificationSettings: () -> Unit,
@@ -224,7 +242,9 @@ fun AppSettingsScreen(
                 AppSettings_Integration(
                     tasksAppName = tasksAppName,
                     tasksAppIcon = tasksAppIcon,
-                    pushEndpoint = pushEndpoint,
+                    pushDistributors = pushDistributors,
+                    pushDistributor = pushDistributor,
+                    onPushDistributorChange = onPushDistributorChange,
                     onNavTasksScreen = onNavTasksScreen
                 )
             }
@@ -260,7 +280,9 @@ fun AppSettingsScreen_Preview() {
             onResetHints = {},
             tasksAppName = "No tasks app",
             tasksAppIcon = null,
-            pushEndpoint = null,
+            pushDistributors = null,
+            pushDistributor = null,
+            onPushDistributorChange = {},
             onNavTasksScreen = {}
         )
     }
@@ -469,10 +491,145 @@ fun AppSettings_UserInterface(
 }
 
 @Composable
+private fun PushDistributorSelectionDialog(
+    pushDistributor: String?,
+    onPushDistributorChange: (String?) -> Unit,
+    pushDistributors: List<PushDistributorInfo>?,
+    onDismissRequested: () -> Unit
+) {
+    var selectedDistributor by remember { mutableStateOf(pushDistributor) }
+
+    AlertDialog(
+        onDismissRequest = onDismissRequested,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onPushDistributorChange(selectedDistributor)
+                    onDismissRequested()
+                }
+            ) { Text(stringResource(android.R.string.ok)) }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequested
+            ) { Text(stringResource(android.R.string.cancel)) }
+        },
+        title = {
+            Text(stringResource(R.string.app_settings_unifiedpush_choose_distributor))
+        },
+        text = {
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                if (pushDistributors.isNullOrEmpty()) item {
+                    Text(stringResource(R.string.app_settings_unifiedpush_no_distributor))
+                } else item {
+                    ListItem(
+                        leadingContent = {
+                            Icon(
+                                imageVector = if (selectedDistributor == null) {
+                                    Icons.Default.RadioButtonChecked
+                                } else {
+                                    Icons.Default.RadioButtonUnchecked
+                                },
+                                contentDescription = null
+                            )
+                        },
+                        headlineContent = {
+                            Text(stringResource(R.string.app_settings_unifiedpush_disable))
+                        },
+                        modifier = Modifier.clickable {
+                            selectedDistributor = null
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent
+                        )
+                    )
+                }
+
+                items(pushDistributors.orEmpty()) { (distributor, name, icon) ->
+                    ListItem(
+                        leadingContent = {
+                            Icon(
+                                imageVector = if (selectedDistributor == distributor) {
+                                    Icons.Default.RadioButtonChecked
+                                } else {
+                                    Icons.Default.RadioButtonUnchecked
+                                },
+                                contentDescription = null
+                            )
+                        },
+                        trailingContent = {
+                            icon?.let {
+                                Image(
+                                    bitmap = icon.toBitmap().asImageBitmap(),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
+                        },
+                        headlineContent = {
+                            Text(name ?: distributor)
+                        },
+                        modifier = Modifier.clickable {
+                            selectedDistributor = distributor
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent
+                        )
+                    )
+                }
+            }
+        }
+    )
+}
+
+@Composable
+@Preview("No distributors installed", "PushDistributorSelectionDialog")
+fun PushDistributorSelectionDialog_Preview_NoDistributors() {
+    PushDistributorSelectionDialog(null, {}, null) { }
+}
+
+@Composable
+@Preview("Push disabled", "PushDistributorSelectionDialog")
+fun PushDistributorSelectionDialog_Preview_PushDisabled() {
+    val ctx = LocalContext.current
+    PushDistributorSelectionDialog(
+        null,
+        {},
+        listOf(
+            PushDistributorInfo(
+                "com.example.distributor1",
+                "Distributor 1",
+                AppCompatResources.getDrawable(ctx, R.drawable.ic_launcher_foreground)
+            )
+        )
+    ) { }
+}
+
+@Composable
+@Preview("Distributor Selected", "PushDistributorSelectionDialog")
+fun PushDistributorSelectionDialog_Preview_DistributorSelected() {
+    val ctx = LocalContext.current
+    PushDistributorSelectionDialog(
+        "com.example.distributor1",
+        {},
+        listOf(
+            PushDistributorInfo(
+                "com.example.distributor1",
+                "Distributor 1",
+                AppCompatResources.getDrawable(ctx, R.drawable.ic_launcher_foreground)
+            ),
+            PushDistributorInfo("com.example.distributor2")
+        )
+    ) { }
+}
+
+@Composable
 fun AppSettings_Integration(
     tasksAppName: String,
     tasksAppIcon: Drawable? = null,
-    pushEndpoint: String?,
+    pushDistributors: List<PushDistributorInfo>?,
+    pushDistributor: String?,
+    onPushDistributorChange: (String?) -> Unit,
     onNavTasksScreen: () -> Unit = {}
 ) {
     SettingsHeader(divider = true) {
@@ -483,24 +640,32 @@ fun AppSettings_Integration(
             Text(stringResource(R.string.app_settings_tasks_provider))
         },
         icon = {
-               tasksAppIcon?.let {
-                   Image(tasksAppIcon.toBitmap().asImageBitmap(), tasksAppName)
-               }
+           tasksAppIcon?.let {
+               Image(tasksAppIcon.toBitmap().asImageBitmap(), tasksAppName)
+           }
         },
         summary = tasksAppName,
         onClick = onNavTasksScreen
     )
 
-    val context = LocalContext.current
+    var showingDistributorDialog by remember { mutableStateOf(false) }
+    if (showingDistributorDialog) {
+        PushDistributorSelectionDialog(
+            pushDistributor = pushDistributor,
+            onPushDistributorChange = onPushDistributorChange,
+            pushDistributors = pushDistributors
+        ) { showingDistributorDialog = false }
+    }
 
+    val pushAppName = pushDistributor?.let {
+        pushDistributors?.find { it.packageName == pushDistributor }
+    }?.appName
     Setting(
         name = stringResource(R.string.app_settings_unifiedpush),
-        summary = if (pushEndpoint != null)
-            stringResource(R.string.app_settings_unifiedpush_endpoint_domain, pushEndpoint.toHttpUrlOrNull()?.host ?: pushEndpoint)
+        summary = if (pushDistributor != null)
+            stringResource(R.string.app_settings_unifiedpush_ready, pushAppName ?: pushDistributor)
         else
             stringResource(R.string.app_settings_unifiedpush_no_endpoint),
-        onClick = {
-            UnifiedPush.registerAppWithDialog(context)
-        }
+        onClick = { showingDistributorDialog = true }
     )
 }

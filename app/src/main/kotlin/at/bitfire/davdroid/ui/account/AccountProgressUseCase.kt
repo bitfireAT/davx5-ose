@@ -9,8 +9,8 @@ import android.content.Context
 import androidx.work.WorkInfo
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +20,8 @@ import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 class AccountProgressUseCase @Inject constructor(
-    @ApplicationContext val context: Context
+    @ApplicationContext val context: Context,
+    private val syncWorkerManager: SyncWorkerManager
 ) {
 
     operator fun invoke(
@@ -53,8 +54,7 @@ class AccountProgressUseCase @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     fun isSyncPending(account: Account, authoritiesFlow: Flow<List<String>>): Flow<Boolean> =
         authoritiesFlow.flatMapLatest { authorities ->
-            BaseSyncWorker.exists(
-                context = context,
+            syncWorkerManager.hasAnyFlow(
                 workStates = listOf(WorkInfo.State.ENQUEUED),
                 account = account,
                 authorities = authorities,
@@ -68,8 +68,7 @@ class AccountProgressUseCase @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     fun isSyncRunning(account: Account, authoritiesFlow: Flow<List<String>>): Flow<Boolean> =
         authoritiesFlow.flatMapLatest { authorities ->
-            BaseSyncWorker.exists(
-                context = context,
+            syncWorkerManager.hasAnyFlow(
                 workStates = listOf(WorkInfo.State.RUNNING),
                 account = account,
                 authorities = authorities
