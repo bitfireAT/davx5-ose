@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
-import android.provider.CalendarContract
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
@@ -21,13 +20,11 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.SyncFrameworkIntegration
-import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -47,6 +44,7 @@ import javax.inject.Inject
  */
 class AccountRepository @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
+    private val automaticSyncManager: AutomaticSyncManager,
     @ApplicationContext val context: Context,
     private val collectionRepository: DavCollectionRepository,
     private val homeSetRepository: DavHomeSetRepository,
@@ -54,9 +52,7 @@ class AccountRepository @Inject constructor(
     private val logger: Logger,
     private val settingsManager: SettingsManager,
     private val serviceRepository: DavServiceRepository,
-    private val syncFramework: SyncFrameworkIntegration,
-    private val syncWorkerManager: SyncWorkerManager,
-    private val tasksAppManager: Lazy<TasksAppManager>
+    private val syncWorkerManager: SyncWorkerManager
 ) {
 
     private val accountType = context.getString(R.string.account_type)
@@ -90,44 +86,33 @@ class AccountRepository @Inject constructor(
             val defaultSyncInterval = (settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)/60).toInt()
 
             // Configure CardDAV service
-            val addrBookAuthority = context.getString(R.string.address_books_authority)
             if (config.cardDAV != null) {
                 // insert CardDAV service
                 val id = insertService(accountName, Service.TYPE_CARDDAV, config.cardDAV)
 
-                // initial CardDAV account settings and sync intervals
+                // initial CardDAV account settings and sync intervals (sets up automatic sync)
                 accountSettings.setGroupMethod(groupMethod)
                 accountSettings.setSyncInterval(SyncDataType.CONTACTS, defaultSyncInterval)
 
                 // start CardDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
-            }
+            } else
+                automaticSyncManager.disable(account, SyncDataType.CONTACTS)
 
             // Configure CalDAV service
             if (config.calDAV != null) {
                 // insert CalDAV service
                 val id = insertService(accountName, Service.TYPE_CALDAV, config.calDAV)
 
-                // set default sync interval and enable sync regardless of permissions
+                // set default sync interval (sets up automatic sync)
                 accountSettings.setSyncInterval(SyncDataType.EVENTS, defaultSyncInterval)
-
-                // if task provider present, set task sync interval and enable sync
-                val taskProvider = tasksAppManager.get().currentProvider()
-                if (taskProvider != null) {
-                    accountSettings.setSyncInterval(SyncDataType.TASKS, defaultSyncInterval)
-                    // further changes will be handled by TasksWatcher on app start or when tasks app is (un)installed
-                    logger.info("Tasks provider ${taskProvider.authority} found. Tasks sync enabled.")
-                } else
-                    logger.info("No tasks provider found. Did not enable tasks sync.")
+                accountSettings.setSyncInterval(SyncDataType.TASKS, defaultSyncInterval)
 
                 // start CalDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
             } else {
-                // disable event sync adapter
-                syncFramework.disableSyncAbility(account, CalendarContract.AUTHORITY)
-                // disable all task sync adapters
-                for (provider in TaskProvider.TASK_PROVIDERS)
-                    syncFramework.disableSyncAbility(account, provider.authority)
+                automaticSyncManager.disable(account, SyncDataType.EVENTS)
+                automaticSyncManager.disable(account, SyncDataType.TASKS)
             }
 
         } catch(e: InvalidAccountException) {

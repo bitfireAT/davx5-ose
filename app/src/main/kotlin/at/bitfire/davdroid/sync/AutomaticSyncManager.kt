@@ -5,7 +5,10 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import at.bitfire.ical4android.TaskProvider
 import dagger.Lazy
 import javax.inject.Inject
 
@@ -22,7 +25,23 @@ class AutomaticSyncManager @Inject constructor(
 ) {
 
     /**
-     * Enables automatic synchronization and sets it to the given interval:
+     * Disables automatic synchronization for the given account and datatype.
+     */
+    fun disable(account: Account, dataType: SyncDataType) {
+        val authorities = mutableListOf<String>()
+
+        when (dataType) {
+            SyncDataType.CONTACTS -> authorities += ContactsContract.AUTHORITY
+            SyncDataType.EVENTS -> authorities += CalendarContract.AUTHORITY
+            SyncDataType.TASKS -> authorities += TaskProvider.TASK_PROVIDERS.map { it.authority }
+        }
+
+        for (authority in authorities)
+            frameworkIntegration.disableSyncAbility(account, authority)
+    }
+
+    /**
+     * Enables automatic synchronization for the given account and data type and sets it to the given interval:
      *
      * 1. Sets up periodic sync for the given data type with the given interval.
      * 2. Enables sync in the sync framework for the given data type and sets up periodic sync with the given interval.
