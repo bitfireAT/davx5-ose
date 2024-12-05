@@ -16,7 +16,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.WorkQuery
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
@@ -33,8 +32,6 @@ import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import java.util.Collections
@@ -46,81 +43,6 @@ abstract class BaseSyncWorker(
     private val workerParams: WorkerParameters,
     private val syncDispatcher: CoroutineDispatcher
 ) : CoroutineWorker(context, workerParams) {
-
-    companion object {
-
-        // common worker input parameters
-        const val INPUT_ACCOUNT_NAME = "accountName"
-        const val INPUT_ACCOUNT_TYPE = "accountType"
-        const val INPUT_AUTHORITY = "authority"
-
-        /** set to `true` for user-initiated sync that skips network checks */
-        const val INPUT_MANUAL = "manual"
-
-        /** set to `true` for syncs that are caused by local changes */
-        const val INPUT_UPLOAD = "upload"
-
-        /** Whether re-synchronization is requested. One of [NO_RESYNC] (default), [RESYNC] or [FULL_RESYNC]. */
-        const val INPUT_RESYNC = "resync"
-        @IntDef(NO_RESYNC, RESYNC, FULL_RESYNC)
-        annotation class InputResync
-        const val NO_RESYNC = 0
-        /** Re-synchronization is requested. See [Syncer.SYNC_EXTRAS_RESYNC] for details. */
-        const val RESYNC = 1
-        /** Full re-synchronization is requested. See [Syncer.SYNC_EXTRAS_FULL_RESYNC] for details. */
-        const val FULL_RESYNC = 2
-
-        /**
-         * How often this work will be retried to run after soft (network) errors.
-         *
-         * Retry strategy is defined in work request ([enqueue]).
-         */
-        internal const val MAX_RUN_ATTEMPTS = 5
-
-        /**
-         * Set of currently running syncs, identified by their [commonTag].
-         */
-        private val runningSyncs = Collections.synchronizedSet(HashSet<String>())
-
-        /**
-         * This tag shall be added to every worker that is enqueued by a subclass.
-         */
-        fun commonTag(account: Account, authority: String): String =
-            "sync-$authority ${account.type}/${account.name}"
-
-        /**
-         * Observes whether >0 sync workers (both [PeriodicSyncWorker] and [OneTimeSyncWorker])
-         * exist, belonging to given account and authorities, and which are/is in the given worker state.
-         *
-         * @param workStates   list of states of workers to match
-         * @param account      the account which the workers belong to
-         * @param authorities  type of sync work, ie [CalendarContract.AUTHORITY]
-         * @param whichTag     function to generate tag that should be observed for given account and authority
-         *
-         * @return flow that emits `true` if at least one worker with matching query was found; `false` otherwise
-         */
-        fun exists(
-            context: Context,
-            workStates: List<WorkInfo.State>,
-            account: Account? = null,
-            authorities: List<String>? = null,
-            whichTag: (account: Account, authority: String) -> String = { account, authority ->
-                commonTag(account, authority)
-            }
-        ): Flow<Boolean> {
-            val workQuery = WorkQuery.Builder.fromStates(workStates)
-            if (account != null && authorities != null)
-                workQuery.addTags(
-                    authorities.map { authority -> whichTag(account, authority) }
-                )
-            return WorkManager.getInstance(context)
-                .getWorkInfosFlow(workQuery.build())
-                .map { workInfoList ->
-                    workInfoList.isNotEmpty()
-                }
-        }
-
-    }
 
     @Inject
     lateinit var accountSettingsFactory: AccountSettings.Factory
@@ -172,7 +94,7 @@ abstract class BaseSyncWorker(
         try {
             val accountSettings = try {
                 accountSettingsFactory.create(account)
-            } catch (e: InvalidAccountException) {
+            } catch (_: InvalidAccountException) {
                 val workId = workerParams.id
                 logger.warning("Account $account doesn't exist anymore, cancelling worker $workId")
 
@@ -310,6 +232,50 @@ abstract class BaseSyncWorker(
         }
 
         return@withContext Result.success()
+    }
+
+
+    companion object {
+
+        // common worker input parameters
+        const val INPUT_ACCOUNT_NAME = "accountName"
+        const val INPUT_ACCOUNT_TYPE = "accountType"
+        const val INPUT_AUTHORITY = "authority"
+
+        /** set to `true` for user-initiated sync that skips network checks */
+        const val INPUT_MANUAL = "manual"
+
+        /** set to `true` for syncs that are caused by local changes */
+        const val INPUT_UPLOAD = "upload"
+
+        /** Whether re-synchronization is requested. One of [NO_RESYNC] (default), [RESYNC] or [FULL_RESYNC]. */
+        const val INPUT_RESYNC = "resync"
+        @IntDef(NO_RESYNC, RESYNC, FULL_RESYNC)
+        annotation class InputResync
+        const val NO_RESYNC = 0
+        /** Re-synchronization is requested. See [Syncer.SYNC_EXTRAS_RESYNC] for details. */
+        const val RESYNC = 1
+        /** Full re-synchronization is requested. See [Syncer.SYNC_EXTRAS_FULL_RESYNC] for details. */
+        const val FULL_RESYNC = 2
+
+        /**
+         * How often this work will be retried to run after soft (network) errors.
+         *
+         * Retry strategy is defined in work request ([enqueue]).
+         */
+        internal const val MAX_RUN_ATTEMPTS = 5
+
+        /**
+         * Set of currently running syncs, identified by their [commonTag].
+         */
+        private val runningSyncs = Collections.synchronizedSet(HashSet<String>())
+
+        /**
+         * This tag shall be added to every worker that is enqueued by a subclass.
+         */
+        fun commonTag(account: Account, authority: String): String =
+            "sync-$authority ${account.type}/${account.name}"
+
     }
 
 }

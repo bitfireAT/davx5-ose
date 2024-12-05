@@ -20,7 +20,9 @@ import androidx.work.Operation
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.WorkQuery
 import androidx.work.WorkRequest
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.push.PushNotificationManager
@@ -36,6 +38,8 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.NO_RESYNC
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -244,6 +248,37 @@ class SyncWorkerManager @Inject constructor(
             workManager.cancelUniqueWork(OneTimeSyncWorker.workerName(account, authority))
             workManager.cancelUniqueWork(PeriodicSyncWorker.workerName(account, authority))
         }
+    }
+
+    /**
+     * Observes whether >0 sync workers (both [PeriodicSyncWorker] and [OneTimeSyncWorker])
+     * exist, belonging to given account and authorities, and which are/is in the given worker state.
+     *
+     * @param workStates   list of states of workers to match
+     * @param account      the account which the workers belong to
+     * @param authorities  type of sync work, ie [CalendarContract.AUTHORITY]
+     * @param whichTag     function to generate tag that should be observed for given account and authority
+     *
+     * @return flow that emits `true` if at least one worker with matching query was found; `false` otherwise
+     */
+    fun hasAnyFlow(
+        workStates: List<WorkInfo.State>,
+        account: Account? = null,
+        authorities: List<String>? = null,
+        whichTag: (account: Account, authority: String) -> String = { account, authority ->
+            commonTag(account, authority)
+        }
+    ): Flow<Boolean> {
+        val workQuery = WorkQuery.Builder.fromStates(workStates)
+        if (account != null && authorities != null)
+            workQuery.addTags(
+                authorities.map { authority -> whichTag(account, authority) }
+            )
+        return WorkManager.getInstance(context)
+            .getWorkInfosFlow(workQuery.build())
+            .map { workInfoList ->
+                workInfoList.isNotEmpty()
+            }
     }
 
     /**
