@@ -559,21 +559,15 @@ class DebugInfoModel @AssistedInject constructor(
      * whether they exist one by one
      */
     private fun dumpSyncWorkersInfo(account: Account): String {
-        val table = TextTable("Tags", "Authority", "State", "Next run", "Retries", "Generation", "Periodicity")
-        listOf(
-            context.getString(R.string.address_books_authority),
-            CalendarContract.AUTHORITY,
-            TaskProvider.ProviderName.JtxBoard.authority,
-            TaskProvider.ProviderName.OpenTasks.authority,
-            TaskProvider.ProviderName.TasksOrg.authority
-        ).forEach { authority ->
-            val tag = BaseSyncWorker.commonTag(account, authority)
+        val table = TextTable("Tags", "Data type", "State", "Next run", "Retries", "Generation", "Periodicity")
+        for (dataType in SyncDataType.entries) {
+            val tag = BaseSyncWorker.commonTag(account, dataType)
             WorkManager.getInstance(context).getWorkInfos(
                 WorkQuery.Builder.fromTags(listOf(tag)).build()
             ).get().forEach { workInfo ->
                 table.addLine(
                     workInfo.tags.map { it.replace("\\bat\\.bitfire\\.davdroid\\.".toRegex(), ".") },
-                    authority,
+                    dataType,
                     "${workInfo.state} (${workInfo.stopReason})",
                     workInfo.nextScheduleTimeMillis.let { nextRun ->
                         when (nextRun) {

@@ -18,6 +18,7 @@ import androidx.work.WorkQuery
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -84,7 +85,6 @@ class AccountsModel @AssistedInject constructor(
     private val runningWorkers = workManager.getWorkInfosFlow(WorkQuery.fromStates(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
 
     val accountInfos: Flow<List<AccountInfo>> = combine(accounts, runningWorkers) { accounts, workInfos ->
-        val authorities = syncWorkerManager.syncAuthorities()
         val collator = Collator.getInstance()
 
         accounts
@@ -96,15 +96,15 @@ class AccountsModel @AssistedInject constructor(
                         info.state == WorkInfo.State.RUNNING && (
                                 services.any { serviceId ->
                                     info.tags.contains(RefreshCollectionsWorker.workerName(serviceId))
-                                } || authorities.any { authority ->
-                                    info.tags.contains(BaseSyncWorker.commonTag(account, authority))
+                                } || SyncDataType.entries.any { dataType ->
+                                    info.tags.contains(BaseSyncWorker.commonTag(account, dataType))
                                 }
                             )
                     } -> AccountProgress.Active
 
                     workInfos.any { info ->
-                        info.state == WorkInfo.State.ENQUEUED && authorities.any { authority ->
-                            info.tags.contains(OneTimeSyncWorker.workerName(account, authority))
+                        info.state == WorkInfo.State.ENQUEUED && SyncDataType.entries.any { dataType ->
+                            info.tags.contains(OneTimeSyncWorker.workerName(account, dataType))
                         }
                     } -> AccountProgress.Pending
 

@@ -30,7 +30,7 @@ import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_NAME
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_TYPE
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_AUTHORITY
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_DATA_TYPE
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_MANUAL
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_RESYNC
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_UPLOAD
@@ -75,13 +75,9 @@ class SyncWorkerManager @Inject constructor(
         @InputResync resync: Int = NO_RESYNC,
         upload: Boolean = false
     ): OneTimeWorkRequest {
-        val authority = dataType.toAuthority {
-            tasksAppManager.get().currentProvider()
-        } ?: throw IllegalArgumentException("No tasks app installed")
-
         // worker arguments
         val argumentsBuilder = Data.Builder()
-            .putString(INPUT_AUTHORITY, authority)
+            .putString(INPUT_DATA_TYPE, dataType.toString())
             .putString(INPUT_ACCOUNT_NAME, account.name)
             .putString(INPUT_ACCOUNT_TYPE, account.type)
         if (manual)
@@ -95,8 +91,8 @@ class SyncWorkerManager @Inject constructor(
             .setRequiredNetworkType(NetworkType.CONNECTED)   // require a network connection
             .build()
         return OneTimeWorkRequestBuilder<OneTimeSyncWorker>()
-            .addTag(OneTimeSyncWorker.workerName(account, authority))
-            .addTag(commonTag(account, authority))
+            .addTag(OneTimeSyncWorker.workerName(account, dataType))
+            .addTag(commonTag(account, dataType))
             .setInputData(argumentsBuilder.build())
             .setBackoffCriteria(
                 BackoffPolicy.EXPONENTIAL,
@@ -133,12 +129,8 @@ class SyncWorkerManager @Inject constructor(
         upload: Boolean = false,
         fromPush: Boolean = false
     ): String {
-        val authority = dataType.toAuthority {
-            tasksAppManager.get().currentProvider()
-        } ?: throw IllegalArgumentException("No tasks app installed")
-
         // enqueue and start syncing
-        val name = OneTimeSyncWorker.workerName(account, authority)
+        val name = OneTimeSyncWorker.workerName(account, dataType)
         val request = buildOneTime(
             account = account,
             dataType = dataType,
@@ -148,7 +140,7 @@ class SyncWorkerManager @Inject constructor(
         )
         if (fromPush) {
             logger.fine("Showing push sync pending notification for $name")
-            pushNotificationManager.notify(account, SyncDataType.fromAuthority(context, authority))
+            pushNotificationManager.notify(account, dataType)
         }
         logger.info("Enqueueing unique worker: $name, tags = ${request.tags}")
         WorkManager.getInstance(context).enqueueUniqueWork(
@@ -197,12 +189,8 @@ class SyncWorkerManager @Inject constructor(
      * @return periodic sync work request for the given arguments
      */
     fun buildPeriodic(account: Account, dataType: SyncDataType, seconds: Long, syncWifiOnly: Boolean): PeriodicWorkRequest {
-        val authority = dataType.toAuthority {
-            tasksAppManager.get().currentProvider()
-        } ?: throw IllegalArgumentException("No tasks app installed")
-
         val arguments = Data.Builder()
-            .putString(INPUT_AUTHORITY, authority)
+            .putString(INPUT_DATA_TYPE, dataType.toString())
             .putString(INPUT_ACCOUNT_NAME, account.name)
             .putString(INPUT_ACCOUNT_TYPE, account.type)
             .build()
@@ -214,8 +202,8 @@ class SyncWorkerManager @Inject constructor(
                     NetworkType.CONNECTED
             ).build()
         return PeriodicWorkRequestBuilder<PeriodicSyncWorker>(seconds, TimeUnit.SECONDS)
-            .addTag(PeriodicSyncWorker.workerName(account, authority))
-            .addTag(commonTag(account, authority))
+            .addTag(PeriodicSyncWorker.workerName(account, dataType))
+            .addTag(commonTag(account, dataType))
             .setInputData(arguments)
             .setConstraints(constraints)
             .build()
@@ -230,13 +218,9 @@ class SyncWorkerManager @Inject constructor(
      * @return operation object to check when and whether activation was successful
      */
     fun enablePeriodic(account: Account, dataType: SyncDataType, seconds: Long, syncWifiOnly: Boolean): Operation {
-        val authority = dataType.toAuthority {
-            tasksAppManager.get().currentProvider()
-        } ?: throw IllegalArgumentException("No tasks app installed")
-
         val workRequest = buildPeriodic(account, dataType, seconds, syncWifiOnly)
         return WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            PeriodicSyncWorker.workerName(account, authority),
+            PeriodicSyncWorker.workerName(account, dataType),
             // if a periodic sync exists already, we want to update it with the new interval
             // and/or new required network type (applies on next iteration of periodic worker)
             ExistingPeriodicWorkPolicy.UPDATE,
@@ -252,12 +236,8 @@ class SyncWorkerManager @Inject constructor(
      * @return operation object to check process state of work cancellation
      */
     fun disablePeriodic(account: Account, dataType: SyncDataType): Operation {
-        val authority = dataType.toAuthority {
-            tasksAppManager.get().currentProvider()
-        } ?: throw IllegalArgumentException("No tasks app installed")
-
         return WorkManager.getInstance(context)
-            .cancelUniqueWork(PeriodicSyncWorker.workerName(account, authority))
+            .cancelUniqueWork(PeriodicSyncWorker.workerName(account, dataType))
     }
 
 
@@ -269,9 +249,9 @@ class SyncWorkerManager @Inject constructor(
     fun cancelAllWork(account: Account) {
         val workManager = WorkManager.getInstance(context)
 
-        for (authority in syncAuthorities()) {
-            workManager.cancelUniqueWork(OneTimeSyncWorker.workerName(account, authority))
-            workManager.cancelUniqueWork(PeriodicSyncWorker.workerName(account, authority))
+        for (dataType in SyncDataType.entries) {
+            workManager.cancelUniqueWork(OneTimeSyncWorker.workerName(account, dataType))
+            workManager.cancelUniqueWork(PeriodicSyncWorker.workerName(account, dataType))
         }
     }
 
@@ -281,7 +261,7 @@ class SyncWorkerManager @Inject constructor(
      *
      * @param workStates   list of states of workers to match
      * @param account      the account which the workers belong to
-     * @param authorities  type of sync work, ie [CalendarContract.AUTHORITY]
+     * @param dataTypes
      * @param whichTag     function to generate tag that should be observed for given account and authority
      *
      * @return flow that emits `true` if at least one worker with matching query was found; `false` otherwise
@@ -290,19 +270,15 @@ class SyncWorkerManager @Inject constructor(
         workStates: List<WorkInfo.State>,
         account: Account? = null,
         dataTypes: List<SyncDataType>? = null,
-        whichTag: (account: Account, authority: String) -> String = { account, authority ->
-            commonTag(account, authority)
+        whichTag: (account: Account, dataType: SyncDataType) -> String = { account, dataType ->
+            commonTag(account, dataType)
         }
     ): Flow<Boolean> {
         val workQuery = WorkQuery.Builder.fromStates(workStates)
         if (account != null && dataTypes != null)
             workQuery.addTags(
                 dataTypes.map { dataType ->
-                    val authority = dataType.toAuthority {
-                        tasksAppManager.get().currentProvider()
-                    } ?: throw IllegalArgumentException("No tasks app installed")
-
-                    whichTag(account, authority)
+                    whichTag(account, dataType)
                 }
             )
         return WorkManager.getInstance(context)

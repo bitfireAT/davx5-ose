@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncDispatcher
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -55,8 +56,8 @@ class PeriodicSyncWorker @AssistedInject constructor(
          * @param authority the authority this worker is running for
          * @return Name of this worker composed as "periodic-sync $authority ${account.type}/${account.name}"
          */
-        fun workerName(account: Account, authority: String): String =
-            "periodic-sync $authority ${account.type}/${account.name}"
+        fun workerName(account: Account, dataType: SyncDataType): String =
+            "periodic-sync type-$dataType ${account.type}/${account.name}"
 
     }
 

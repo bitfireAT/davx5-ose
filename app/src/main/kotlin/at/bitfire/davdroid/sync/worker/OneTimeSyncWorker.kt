@@ -12,6 +12,7 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncDispatcher
 import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.assisted.Assisted
@@ -56,12 +57,13 @@ class OneTimeSyncWorker @AssistedInject constructor(
          *
          * Mainly used to query [WorkManager] for work state (by unique work name or tag).
          *
-         * @param account the account this worker is running for
-         * @param authority the authority this worker is running for
+         * @param account   the account this worker is running for
+         * @param dataType  the data type this worker is running for
+         *
          * @return Name of this worker composed as "onetime-sync $authority ${account.type}/${account.name}"
          */
-        fun workerName(account: Account, authority: String): String =
-            "onetime-sync $authority ${account.type}/${account.name}"
+        fun workerName(account: Account, dataType: SyncDataType): String =
+            "onetime-sync type-$dataType ${account.type}/${account.name}"
 
     }
 
