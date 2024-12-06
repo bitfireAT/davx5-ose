@@ -224,7 +224,7 @@ class AccountSettingsModel @AssistedInject constructor(
     }
 
     /**
-     * Initiates re-synchronization for given authority.
+     * Initiates re-synchronization for given data type.
      *
      * @param dataType   kind of data to re-sync
      * @param fullResync whether sync shall download all events again

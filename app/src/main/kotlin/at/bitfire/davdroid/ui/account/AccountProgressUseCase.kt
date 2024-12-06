@@ -59,9 +59,9 @@ class AccountProgressUseCase @Inject constructor(
                 workStates = listOf(WorkInfo.State.ENQUEUED),
                 account = account,
                 dataTypes = dataTypes,
-                whichTag = { _, authority ->
+                whichTag = { _, dataType ->
                     // we are only interested in pending OneTimeSyncWorkers because there's always a pending PeriodicSyncWorker
-                    OneTimeSyncWorker.workerName(account, authority)
+                    OneTimeSyncWorker.workerName(account, dataType)
                 }
             )
         }

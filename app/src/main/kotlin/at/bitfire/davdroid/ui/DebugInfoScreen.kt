@@ -60,7 +60,7 @@ fun DebugInfoScreen(
 ) {
     val model: DebugInfoModel = hiltViewModel(
         creationCallback = { factory: DebugInfoModel.Factory ->
-            factory.createWithDetails(DebugInfoModel.DebugInfoDetails(
+            factory.create(DebugInfoModel.DebugInfoDetails(
                 account = account,
                 authority = authority,
                 cause = cause,

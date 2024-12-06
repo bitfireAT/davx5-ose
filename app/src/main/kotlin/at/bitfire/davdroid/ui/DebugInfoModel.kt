@@ -96,7 +96,7 @@ class DebugInfoModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun createWithDetails(details: DebugInfoDetails): DebugInfoModel
+        fun create(details: DebugInfoDetails): DebugInfoModel
     }
 
     companion object {
