@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.content.Context
-import android.provider.CalendarContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -23,6 +22,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.assisted.Assisted
@@ -95,7 +95,7 @@ class AccountScreenModel @AssistedInject constructor(
     val cardDavProgress: Flow<AccountProgress> = accountProgressUseCase(
         account = account,
         serviceFlow = cardDavSvc,
-        authoritiesFlow = flowOf(listOf(context.getString(R.string.address_books_authority)))
+        dataTypesFlow = flowOf(listOf(SyncDataType.CONTACTS))
     )
     val addressBooks = getServiceCollectionPager(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
 
@@ -107,13 +107,10 @@ class AccountScreenModel @AssistedInject constructor(
         homeSets.isNotEmpty()
     }
     val tasksProvider = tasksAppManager.currentProviderFlow(viewModelScope)
-    private val calDavAuthorities = tasksProvider.map { tasks ->
-        listOfNotNull(CalendarContract.AUTHORITY, tasks?.authority)
-    }
     val calDavProgress = accountProgressUseCase(
         account = account,
         serviceFlow = calDavSvc,
-        authoritiesFlow = calDavAuthorities
+        dataTypesFlow = flowOf(listOf(SyncDataType.EVENTS, SyncDataType.TASKS))
     )
     val calendars = getServiceCollectionPager(calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal)
     val subscriptions = getServiceCollectionPager(calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal)
@@ -164,7 +161,7 @@ class AccountScreenModel @AssistedInject constructor(
 
                 // synchronize again
                 val newAccount = Account(context.getString(R.string.account_type), newName)
-                syncWorkerManager.enqueueOneTimeAllAuthorities(newAccount, manual = true)
+                syncWorkerManager.enqueueOneTimeAllTypes(newAccount, manual = true)
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't rename account", e)
                 error = e.localizedMessage
@@ -179,7 +176,7 @@ class AccountScreenModel @AssistedInject constructor(
     }
 
     fun sync() {
-        syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+        syncWorkerManager.enqueueOneTimeAllTypes(account, manual = true)
     }
 
 }

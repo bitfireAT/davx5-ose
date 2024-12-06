@@ -57,6 +57,8 @@ class SyncWorkerManager @Inject constructor(
     val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
+    // FIXME: Contains IllegalArgumentExceptions for missing tasks app, which should be handled more gracefully.
+
     // one-time sync workers
 
     /**
@@ -68,11 +70,15 @@ class SyncWorkerManager @Inject constructor(
      */
     fun buildOneTime(
         account: Account,
-        authority: String,
+        dataType: SyncDataType,
         manual: Boolean = false,
         @InputResync resync: Int = NO_RESYNC,
         upload: Boolean = false
     ): OneTimeWorkRequest {
+        val authority = dataType.toAuthority {
+            tasksAppManager.get().currentProvider()
+        } ?: throw IllegalArgumentException("No tasks app installed")
+
         // worker arguments
         val argumentsBuilder = Data.Builder()
             .putString(INPUT_AUTHORITY, authority)
@@ -111,7 +117,7 @@ class SyncWorkerManager @Inject constructor(
      * Requests immediate synchronization of an account with a specific authority.
      *
      * @param account       account to sync
-     * @param authority     authority to sync (for instance: [CalendarContract.AUTHORITY])
+     * @param dataType      type of data to sync
      * @param manual        user-initiated sync (ignores network checks)
      * @param resync        whether to request (full) re-synchronization or not
      * @param upload        see [ContentResolver.SYNC_EXTRAS_UPLOAD] – only used for contacts sync and Android 7 workaround
@@ -121,17 +127,21 @@ class SyncWorkerManager @Inject constructor(
      */
     fun enqueueOneTime(
         account: Account,
-        authority: String,
+        dataType: SyncDataType,
         manual: Boolean = false,
         @InputResync resync: Int = NO_RESYNC,
         upload: Boolean = false,
         fromPush: Boolean = false
     ): String {
+        val authority = dataType.toAuthority {
+            tasksAppManager.get().currentProvider()
+        } ?: throw IllegalArgumentException("No tasks app installed")
+
         // enqueue and start syncing
         val name = OneTimeSyncWorker.workerName(account, authority)
         val request = buildOneTime(
             account = account,
-            authority = authority,
+            dataType = dataType,
             manual = manual,
             resync = resync,
             upload = upload
@@ -158,17 +168,17 @@ class SyncWorkerManager @Inject constructor(
      *
      * Arguments: see [enqueueOneTime]
      */
-    fun enqueueOneTimeAllAuthorities(
+    fun enqueueOneTimeAllTypes(
         account: Account,
         manual: Boolean = false,
         @InputResync resync: Int = NO_RESYNC,
         upload: Boolean = false,
         fromPush: Boolean = false
     ) {
-        for (authority in syncAuthorities())
+        for (dataType in SyncDataType.entries)
             enqueueOneTime(
                 account = account,
-                authority = authority,
+                dataType = dataType,
                 manual = manual,
                 resync = resync,
                 upload = upload,
@@ -186,7 +196,11 @@ class SyncWorkerManager @Inject constructor(
      *
      * @return periodic sync work request for the given arguments
      */
-    fun buildPeriodic(account: Account, authority: String, seconds: Long, syncWifiOnly: Boolean): PeriodicWorkRequest {
+    fun buildPeriodic(account: Account, dataType: SyncDataType, seconds: Long, syncWifiOnly: Boolean): PeriodicWorkRequest {
+        val authority = dataType.toAuthority {
+            tasksAppManager.get().currentProvider()
+        } ?: throw IllegalArgumentException("No tasks app installed")
+
         val arguments = Data.Builder()
             .putString(INPUT_AUTHORITY, authority)
             .putString(INPUT_ACCOUNT_NAME, account.name)
@@ -211,12 +225,16 @@ class SyncWorkerManager @Inject constructor(
      * Activate periodic synchronization of an account with a specific authority.
      *
      * @param account    account to sync
-     * @param authority  authority to sync (for instance: [CalendarContract.AUTHORITY]])
+     * @param dataType   type of data to sync
      * @param seconds    interval between recurring syncs in seconds
      * @return operation object to check when and whether activation was successful
      */
-    fun enablePeriodic(account: Account, authority: String, seconds: Long, syncWifiOnly: Boolean): Operation {
-        val workRequest = buildPeriodic(account, authority, seconds, syncWifiOnly)
+    fun enablePeriodic(account: Account, dataType: SyncDataType, seconds: Long, syncWifiOnly: Boolean): Operation {
+        val authority = dataType.toAuthority {
+            tasksAppManager.get().currentProvider()
+        } ?: throw IllegalArgumentException("No tasks app installed")
+
+        val workRequest = buildPeriodic(account, dataType, seconds, syncWifiOnly)
         return WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             PeriodicSyncWorker.workerName(account, authority),
             // if a periodic sync exists already, we want to update it with the new interval
@@ -230,12 +248,17 @@ class SyncWorkerManager @Inject constructor(
      * Disables periodic synchronization of an account for a specific authority.
      *
      * @param account     account to sync
-     * @param authority   authority to sync (for instance: [CalendarContract.AUTHORITY]])
+     * @param dataType    type of data to sync
      * @return operation object to check process state of work cancellation
      */
-    fun disablePeriodic(account: Account, authority: String): Operation =
-        WorkManager.getInstance(context)
+    fun disablePeriodic(account: Account, dataType: SyncDataType): Operation {
+        val authority = dataType.toAuthority {
+            tasksAppManager.get().currentProvider()
+        } ?: throw IllegalArgumentException("No tasks app installed")
+
+        return WorkManager.getInstance(context)
             .cancelUniqueWork(PeriodicSyncWorker.workerName(account, authority))
+    }
 
 
     // common / helpers
@@ -266,15 +289,21 @@ class SyncWorkerManager @Inject constructor(
     fun hasAnyFlow(
         workStates: List<WorkInfo.State>,
         account: Account? = null,
-        authorities: List<String>? = null,
+        dataTypes: List<SyncDataType>? = null,
         whichTag: (account: Account, authority: String) -> String = { account, authority ->
             commonTag(account, authority)
         }
     ): Flow<Boolean> {
         val workQuery = WorkQuery.Builder.fromStates(workStates)
-        if (account != null && authorities != null)
+        if (account != null && dataTypes != null)
             workQuery.addTags(
-                authorities.map { authority -> whichTag(account, authority) }
+                dataTypes.map { dataType ->
+                    val authority = dataType.toAuthority {
+                        tasksAppManager.get().currentProvider()
+                    } ?: throw IllegalArgumentException("No tasks app installed")
+
+                    whichTag(account, authority)
+                }
             )
         return WorkManager.getInstance(context)
             .getWorkInfosFlow(workQuery.build())
@@ -295,6 +324,7 @@ class SyncWorkerManager @Inject constructor(
      *
      * @return list of available sync authorities for DAVx5 accounts
      */
+    @Deprecated("Enumerate SyncDataType instead")
     fun syncAuthorities(): List<String> {
         val result = mutableListOf(
             CalendarContract.AUTHORITY,

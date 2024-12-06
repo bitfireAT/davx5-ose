@@ -54,15 +54,14 @@ class AutomaticSyncManager @Inject constructor(
      * @param minutes   interval in minutes, or `null` to disable periodic sync (only sync on local data changes)
      */
     fun setSyncInterval(account: Account, dataType: SyncDataType, wifiOnly: Boolean, minutes: Int?) {
-        val authority = dataType.toAuthority { tasksAppManager.get().currentProvider() } ?: return
-
         // periodic sync worker
         if (minutes != null)
-            workerManager.enablePeriodic(account, authority, minutes*60L, wifiOnly)
+            workerManager.enablePeriodic(account, dataType, minutes*60L, wifiOnly)
         else
-            workerManager.disablePeriodic(account, authority)
+            workerManager.disablePeriodic(account, dataType)
 
         // sync on local data changes
+        val authority = dataType.toAuthority { tasksAppManager.get().currentProvider() } ?: return
         if (minutes != null) {
             if (!frameworkIntegration.isSyncable(account, authority))
                 frameworkIntegration.enableSyncAbility(account, authority)

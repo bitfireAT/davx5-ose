@@ -116,24 +116,23 @@ class AccountSettingsMigrations @AssistedInject constructor(
      */
     @Suppress("unused","FunctionName")
     fun update_15_16() {
-        for (authority in syncWorkerManager.syncAuthorities()) {
-            logger.info("Re-enqueuing periodic sync workers for $account/$authority, if necessary")
+        for (dataType in SyncDataType.entries) {
+            logger.info("Re-enqueuing periodic sync workers for $account/$dataType, if necessary")
 
             /* A maybe existing periodic worker references the old class name (even if it failed and/or is not active). So
             we need to explicitly disable and prune all workers. Just updating the worker is not enough – WorkManager will update
             the work details, but not the class name. */
-            val disableOp = syncWorkerManager.disablePeriodic(account, authority)
+            val disableOp = syncWorkerManager.disablePeriodic(account, dataType)
             disableOp.result.get()  // block until worker with old name is disabled
 
             val pruneOp = WorkManager.getInstance(context).pruneWork()
             pruneOp.result.get()    // block until worker with old name is removed from DB
 
-            val dataType = SyncDataType.fromAuthority(context, authority)
             val minutes = accountSettings.getSyncInterval(dataType)
             if (minutes != null) {
                 // There's a sync interval for this account/authority; a periodic sync worker should be there, too.
                 val onlyWifi = accountSettings.getSyncWifiOnly()
-                syncWorkerManager.enablePeriodic(account, authority, minutes*60L, onlyWifi)
+                syncWorkerManager.enablePeriodic(account, dataType, minutes*60L, onlyWifi)
             }
         }
     }

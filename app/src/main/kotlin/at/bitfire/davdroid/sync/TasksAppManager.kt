@@ -129,6 +129,8 @@ class TasksAppManager @Inject constructor(
     }
 
     private fun setSyncable(account: Account, authority: String, syncable: Boolean) {
+        val dataType = SyncDataType.fromAuthority(context, authority)
+
         try {
             val settings = accountSettingsFactory.create(account)
             if (syncable) {
@@ -148,11 +150,11 @@ class TasksAppManager @Inject constructor(
                 syncFramework.disableSyncAbility(account, authority)
 
                 // disable periodic sync worker
-                syncWorkerManager.disablePeriodic(account, authority)
+                syncWorkerManager.disablePeriodic(account, dataType)
             }
-        } catch (e: InvalidAccountException) {
+        } catch (_: InvalidAccountException) {
             // account has already been removed, make sure periodic sync is disabled, too
-            syncWorkerManager.disablePeriodic(account, authority)
+            syncWorkerManager.disablePeriodic(account, dataType)
         }
     }
 

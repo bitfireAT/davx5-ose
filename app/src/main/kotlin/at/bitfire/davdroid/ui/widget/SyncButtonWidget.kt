@@ -114,7 +114,7 @@ class SyncButtonWidget : GlanceAppWidget() {
 
         fun requestSync() = viewModelScope.launch(Dispatchers.Default) {
             for (account in accountRepository.getAll())
-                syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+                syncWorkerManager.enqueueOneTimeAllTypes(account, manual = true)
         }
 
     }

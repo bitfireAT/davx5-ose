@@ -214,7 +214,7 @@ class AccountsModel @AssistedInject constructor(
 
         // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
         for (account in accountRepository.getAll())
-            syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+            syncWorkerManager.enqueueOneTimeAllTypes(account, manual = true)
     }
 
 }
