@@ -48,7 +48,6 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import at.bitfire.davdroid.webdav.DavDocumentsProvider.DavDocumentsActor
-import at.bitfire.davdroid.webdav.cache.HeadResponseCache
 import at.bitfire.davdroid.webdav.cache.ThumbnailCache
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
@@ -96,7 +95,6 @@ class DavDocumentsProvider: DocumentsProvider() {
     @InstallIn(WebdavComponent::class)
     interface DavDocumentsProviderWebdavEntryPoint {
         fun credentialsStore(): CredentialsStore
-        fun headResponseCache(): HeadResponseCache
         fun thumbnailCache(): ThumbnailCache
     }
 
@@ -139,7 +137,6 @@ class DavDocumentsProvider: DocumentsProvider() {
 
     private val credentialsStore by lazy { webdavEntryPoint.credentialsStore() }
     private val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
-    private val headResponseCache by lazy { webdavEntryPoint.headResponseCache() }
     private val thumbnailCache by lazy { webdavEntryPoint.thumbnailCache() }
 
     private val connectivityManager by lazy { ourContext.getSystemService<ConnectivityManager>()!! }
@@ -510,14 +507,7 @@ class DavDocumentsProvider: DocumentsProvider() {
             else -> throw UnsupportedOperationException("Mode $mode not supported by WebDAV")
         }
 
-        val cacheKey = doc.cacheKey()
-        val fileInfo = if (cacheKey != null)
-            headResponseCache.get(cacheKey) {
-                headRequest(client, url, signal)
-            }
-        else
-            // don't try cache
-            headRequest(client, url, signal)
+        val fileInfo = headRequest(client, url, signal)
         logger.fine("Received file info: $fileInfo")
 
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
