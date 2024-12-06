@@ -168,12 +168,12 @@ abstract class BaseSyncWorker(
                 calendarSyncer.create(account, extras, result)
 
             SyncDataType.TASKS -> {
-                when (val provider = tasksAppManager.get().currentProvider()) {
+                when (tasksAppManager.get().currentProvider()) {
                     TaskProvider.ProviderName.JtxBoard ->
                         jtxSyncer.create(account, extras, result)
                     TaskProvider.ProviderName.TasksOrg,
                     TaskProvider.ProviderName.OpenTasks ->
-                        taskSyncer.create(account, provider.authority, extras, result)
+                        taskSyncer.create(account, extras, result)
                     null -> {
                         // TODO Tasks sync running, but no tasks app installed. Shouldn't happen.
                         null

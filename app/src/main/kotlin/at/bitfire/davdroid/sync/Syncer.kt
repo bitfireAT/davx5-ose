@@ -220,8 +220,8 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     /**
      * Get the local database collections which are sync-enabled (should by synchronized).
      *
-     * [Syncer] will remove collections which are returned by [getLocalCollections], but not by
-     * this method, and add collections which are returned by this method, but not by [getLocalCollections].
+     * [Syncer] will remove collections which are returned by [getSyncEnabledCollections], but not by
+     * this method, and add collections which are returned by this method, but not by [getSyncEnabledCollections].
      *
      * @param serviceId The CalDAV or CardDAV service (account) to be synchronized
      * @return Database collections to be synchronized

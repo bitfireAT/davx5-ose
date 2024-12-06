@@ -22,20 +22,24 @@ import dagger.assisted.AssistedInject
  */
 class TaskSyncer @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted override val authority: String,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
-    private val localTaskListStoreFactory: LocalTaskListStore.Factory,
-    private val tasksAppManager: dagger.Lazy<TasksAppManager>,
+    localTaskListStoreFactory: LocalTaskListStore.Factory,
+    private val tasksAppManager: TasksAppManager,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
 ): Syncer<LocalTaskListStore, LocalTaskList>(account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, authority: String, extras: Array<String>, syncResult: SyncResult): TaskSyncer
+        fun create(account: Account, extras: Array<String>, syncResult: SyncResult): TaskSyncer
     }
 
-    private val providerName = TaskProvider.ProviderName.fromAuthority(authority)
+    private val providerName = tasksAppManager.currentProvider().takeIf {
+        // filter allowed task providers for this class
+        it == TaskProvider.ProviderName.TasksOrg || it == TaskProvider.ProviderName.OpenTasks
+    } ?: TaskProvider.ProviderName.TasksOrg
+    override val authority: String
+        get() = providerName.authority
 
     override val dataStore = localTaskListStoreFactory.create(authority)
 
@@ -48,7 +52,7 @@ class TaskSyncer @AssistedInject constructor(
         try {
             TaskProvider.checkVersion(context, providerName)
         } catch (e: TaskProvider.ProviderTooOldException) {
-            tasksAppManager.get().notifyProviderTooOld(e)
+            tasksAppManager.notifyProviderTooOld(e)
             syncResult.contentProviderError = true
             return false // Don't sync
         }
