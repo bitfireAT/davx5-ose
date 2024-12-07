@@ -6,7 +6,9 @@ import android.provider.CalendarContract
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -26,17 +28,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountSettingsModel.Factory::class)
 class AccountSettingsModel @AssistedInject constructor(
     @Assisted val account: Account,
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
-    private val logger: Logger,
+    db: AppDatabase,
     private val settings: SettingsManager,
     private val syncWorkerManager: SyncWorkerManager,
-    tasksAppManager: TasksAppManager
+    private val tasksAppManager: TasksAppManager
 ): ViewModel(), SettingsManager.OnChangeListener {
 
     @AssistedFactory
@@ -46,8 +47,11 @@ class AccountSettingsModel @AssistedInject constructor(
 
     // settings
     data class UiState(
+        val hasContactsSync: Boolean = false,
         val syncIntervalContacts: Long? = null,
+        val hasCalendarsSync: Boolean = false,
         val syncIntervalCalendars: Long? = null,
+        val hasTasksSync: Boolean = false,
         val syncIntervalTasks: Long? = null,
 
         val syncWifiOnly: Boolean = false,
@@ -67,7 +71,9 @@ class AccountSettingsModel @AssistedInject constructor(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val tasksProvider = tasksAppManager.currentProvider()
+    private val serviceDao = db.serviceDao()
+    private val tasksProvider
+        get() = tasksAppManager.currentProvider()
 
     /**
      * Only acquire account settings on a worker thread!
@@ -94,10 +100,16 @@ class AccountSettingsModel @AssistedInject constructor(
     }
 
     private suspend fun reload() = withContext(Dispatchers.Default) {
-        logger.info("Reloading settings")
+        val hasContactsSync = serviceDao.getByAccountAndType(account.name, Service.TYPE_CARDDAV) != null
+        val hasCalendarSync = serviceDao.getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
+        val hasTasksSync = hasCalendarSync && tasksProvider != null
+
         _uiState.value = UiState(
+            hasContactsSync = hasContactsSync,
             syncIntervalContacts = accountSettings.getSyncInterval(context.getString(R.string.address_books_authority)),
+            hasCalendarsSync = hasCalendarSync,
             syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY),
+            hasTasksSync = hasTasksSync,
             syncIntervalTasks = tasksProvider?.let { accountSettings.getSyncInterval(it.authority) },
 
             syncWifiOnly = accountSettings.getSyncWifiOnly(),
@@ -220,8 +232,8 @@ class AccountSettingsModel @AssistedInject constructor(
      *
      * @param authority authority to re-sync
      * @param fullResync whether sync shall download all events again
-     * (_true_: sets [Syncer.SYNC_EXTRAS_FULL_RESYNC],
-     * _false_: sets [Syncer.SYNC_EXTRAS_RESYNC])
+     * (_true_: sets [at.bitfire.davdroid.sync.worker.BaseSyncWorker.FULL_RESYNC],
+     * _false_: sets [BaseSyncWorker.RESYNC])
      */
     private fun resync(authority: String, fullResync: Boolean) {
         val resync =
