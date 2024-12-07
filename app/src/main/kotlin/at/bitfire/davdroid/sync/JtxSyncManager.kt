@@ -174,14 +174,12 @@ class JtxSyncManager @AssistedInject constructor(
                     logger.log(Level.INFO, "Updating $fileName with recur instance ${jtxICalObject.recurid} in local list", jtxICalObject)
                     if(local != null) {
                         local.update(jtxICalObject)
-                        syncResult.stats.numUpdates++
                     } else {
                         val newLocal = LocalJtxICalObject(localCollection, fileName, eTag, null, LocalResource.FLAG_REMOTELY_PRESENT)
                         SyncException.wrapWithLocalResource(newLocal) {
                             newLocal.applyNewData(jtxICalObject)
                             newLocal.add()
                         }
-                        syncResult.stats.numInserts++
                     }
                 }
             } else {
@@ -192,7 +190,6 @@ class JtxSyncManager @AssistedInject constructor(
                         logger.log(Level.INFO, "Updating $fileName in local list", jtxICalObject)
                         local.eTag = eTag
                         local.update(jtxICalObject)
-                        syncResult.stats.numUpdates++
                     } else {
                         logger.log(Level.INFO, "Adding $fileName to local list", jtxICalObject)
 
@@ -201,7 +198,6 @@ class JtxSyncManager @AssistedInject constructor(
                             newLocal.applyNewData(jtxICalObject)
                             newLocal.add()
                         }
-                        syncResult.stats.numInserts++
                     }
                 }
             }

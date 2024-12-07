@@ -35,6 +35,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import java.util.Collections
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -152,19 +153,19 @@ abstract class BaseSyncWorker(
 
         // We still use the sync adapter framework's SyncResult to pass the sync results, but this
         // is only for legacy reasons and can be replaced by our own result class in the future.
-        val result = SyncResult()
+        val syncResult = SyncResult()
 
         // What are we going to sync? Select syncer based on authority
         val syncer = when (authority) {
             applicationContext.getString(R.string.address_books_authority) ->
-                addressBookSyncer.create(account, extras, result)
+                addressBookSyncer.create(account, extras, syncResult)
             CalendarContract.AUTHORITY ->
-                calendarSyncer.create(account, extras, result)
+                calendarSyncer.create(account, extras, syncResult)
             TaskProvider.ProviderName.JtxBoard.authority ->
-                jtxSyncer.create(account, extras, result)
+                jtxSyncer.create(account, extras, syncResult)
             TaskProvider.ProviderName.OpenTasks.authority,
             TaskProvider.ProviderName.TasksOrg.authority ->
-                taskSyncer.create(account, authority, extras, result)
+                taskSyncer.create(account, authority, extras, syncResult)
             else ->
                 throw IllegalArgumentException("Invalid authority $authority")
         }
@@ -174,20 +175,19 @@ abstract class BaseSyncWorker(
             syncer()
         }
 
-        // Check for errors
-        if (result.hasError()) {
-            val syncResult = Data.Builder()
-                .putString("syncresult", result.toString())
-                .putString("syncResultStats", result.stats.toString())
-                .build()
+        // convert SyncResult from Syncers to worker Data
+        val output = Data.Builder()
+            .putString("syncresult", syncResult.toString())
 
+        // Check for errors
+        if (syncResult.hasError()) {
             val softErrorNotificationTag = account.type + "-" + account.name + "-" + authority
 
             // On soft errors the sync is retried a few times before considered failed
-            if (result.hasSoftError()) {
-                logger.warning("Soft error while syncing: result=$result, stats=${result.stats}")
+            if (syncResult.hasSoftError()) {
+                logger.log(Level.WARNING, "Soft error while syncing", syncResult)
                 if (runAttemptCount < MAX_RUN_ATTEMPTS) {
-                    val blockDuration = result.delayUntil - System.currentTimeMillis() / 1000
+                    val blockDuration = syncResult.delayUntil - System.currentTimeMillis() / 1000
                     logger.warning("Waiting for $blockDuration seconds, before retrying ...")
 
                     // We block the SyncWorker here so that it won't be started by the sync framework immediately again.
@@ -200,7 +200,6 @@ abstract class BaseSyncWorker(
                 }
 
                 logger.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
-
                 notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = softErrorNotificationTag) {
                     NotificationCompat.Builder(applicationContext, notificationRegistry.CHANNEL_SYNC_IO_ERRORS)
                         .setSmallIcon(R.drawable.ic_sync_problem_notify)
@@ -213,7 +212,8 @@ abstract class BaseSyncWorker(
                         .build()
                 }
 
-                return@withContext Result.failure(syncResult)
+                output.putBoolean(OUTPUT_TOO_MANY_RETRIES, true)
+                return@withContext Result.failure(output.build())
             }
 
             // If no soft error found, dismiss sync error notification
@@ -225,13 +225,14 @@ abstract class BaseSyncWorker(
 
             // On a hard error - fail with an error message
             // Note: SyncManager should have notified the user
-            if (result.hasHardError()) {
-                logger.warning("Hard error while syncing: result=$result, stats=${result.stats}")
-                return@withContext Result.failure(syncResult)
+            if (syncResult.hasHardError()) {
+                logger.log(Level.WARNING, "Hard error while syncing", syncResult)
+                return@withContext Result.failure(output.build())
             }
         }
 
-        return@withContext Result.success()
+        logger.log(Level.INFO, "Sync worker succeeded", syncResult)
+        return@withContext Result.success(output.build())
     }
 
 
@@ -257,6 +258,8 @@ abstract class BaseSyncWorker(
         const val RESYNC = 1
         /** Full re-synchronization is requested. See [Syncer.SYNC_EXTRAS_FULL_RESYNC] for details. */
         const val FULL_RESYNC = 2
+
+        const val OUTPUT_TOO_MANY_RETRIES = "tooManyRetries"
 
         /**
          * How often this work will be retried to run after soft (network) errors.

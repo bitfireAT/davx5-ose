@@ -275,14 +275,14 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)
                 is suddenly forbidden because our sync process was demoted from a "service process" to a "cached process". */
                 logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
-                syncResult.stats.numDeadObjectExceptions++
+                syncResult.numDeadObjectExceptions++
 
             } catch (e: InvalidAccountException) {
                 logger.log(Level.WARNING, "Account was removed during synchronization", e)
 
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't sync $authority", e)
-                syncResult.stats.numUnclassifiedErrors++ // Hard sync error
+                syncResult.numUnclassifiedErrors++ // Hard sync error
 
             } finally {
                 if (httpClient.isInitialized())
