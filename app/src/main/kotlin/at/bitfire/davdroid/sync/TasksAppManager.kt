@@ -20,7 +20,6 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
@@ -39,15 +38,14 @@ import javax.inject.Inject
  * Responsible for setting/getting the currently used tasks app, and for communicating with it.
  */
 class TasksAppManager @Inject constructor(
-    @ApplicationContext val context: Context,
+    private val automaticSyncManager: AutomaticSyncManager,
+    @ApplicationContext private val context: Context,
     private val accountRepository: Lazy<AccountRepository>,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val db: AppDatabase,
     private val logger: Logger,
     private val notificationRegistry: Lazy<NotificationRegistry>,
-    private val settingsManager: SettingsManager,
-    private val syncFramework: SyncFrameworkIntegration,
-    private val syncWorkerManager: SyncWorkerManager
+    private val settingsManager: SettingsManager
 ) {
 
     /**
@@ -110,12 +108,7 @@ class TasksAppManager @Inject constructor(
                 val syncable = hasCalDAV && providerName == selectedProvider
 
                 // enable/disable sync for the given account and authority
-                setSyncable(
-                    context,
-                    account,
-                    providerName.authority,
-                    syncable
-                )
+                setSyncable(account, providerName.authority, syncable)
 
                 // if sync has just been enabled: check whether additional permissions are required
                 if (syncable && !PermissionUtils.havePermissions(context, providerName.permissions))
@@ -129,30 +122,22 @@ class TasksAppManager @Inject constructor(
         }
     }
 
-    private fun setSyncable(context: Context, account: Account, authority: String, syncable: Boolean) {
+    private fun setSyncable(account: Account, authority: String, syncable: Boolean) {
         try {
             val settings = accountSettingsFactory.create(account)
             if (syncable) {
                 logger.info("Enabling $authority sync for $account")
-
-                // make account syncable by sync framework
-                syncFramework.enableSyncAbility(account, authority)
 
                 // set sync interval according to settings; also updates periodic sync workers and sync framework on-content-change
                 val interval = settings.getTasksSyncInterval() ?: settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
                 settings.setSyncInterval(authority, interval)
             } else {
                 logger.info("Disabling $authority sync for $account")
-
-                // make account not syncable by sync framework
-                syncFramework.disableSyncAbility(account, authority)
-
-                // disable periodic sync worker
-                syncWorkerManager.disablePeriodic(account, authority)
+                automaticSyncManager.disable(account, authority)
             }
-        } catch (e: InvalidAccountException) {
+        } catch (_: InvalidAccountException) {
             // account has already been removed, make sure periodic sync is disabled, too
-            syncWorkerManager.disablePeriodic(account, authority)
+            automaticSyncManager.disable(account, authority)
         }
     }
 

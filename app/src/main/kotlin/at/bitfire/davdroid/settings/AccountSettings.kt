@@ -187,7 +187,7 @@ class AccountSettings @AssistedInject constructor(
         }
         accountManager.setAndVerifyUserData(account, key, seconds.toString())
 
-        automaticSyncManager.enableWithSyncInterval(account, authority, seconds, getSyncWifiOnly())
+        automaticSyncManager.setSyncInterval(account, authority, seconds, getSyncWifiOnly())
     }
 
     fun getSyncWifiOnly() =
@@ -201,7 +201,7 @@ class AccountSettings @AssistedInject constructor(
 
         // update automatic sync (needs already updated wifi-only flag in AccountSettings)
         for (authority in syncWorkerManager.syncAuthorities())
-            automaticSyncManager.enableWithSyncInterval(account, authority, getSyncInterval(authority), wiFiOnly)
+            automaticSyncManager.setSyncInterval(account, authority, getSyncInterval(authority), wiFiOnly)
     }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =
