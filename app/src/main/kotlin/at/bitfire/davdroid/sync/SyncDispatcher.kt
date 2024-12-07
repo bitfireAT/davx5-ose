@@ -4,7 +4,8 @@
 
 package at.bitfire.davdroid.sync
 
-import android.app.Application
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.LinkedBlockingQueue
@@ -25,7 +26,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class SyncDispatcher @Inject constructor(
-    context: Application
+    @ApplicationContext context: Context
 ) {
 
     val dispatcher = createDispatcher(context.classLoader)
