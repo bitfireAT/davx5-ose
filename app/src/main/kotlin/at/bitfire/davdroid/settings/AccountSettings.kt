@@ -41,7 +41,7 @@ import java.util.logging.Logger
  */
 @WorkerThread   
 class AccountSettings @AssistedInject constructor(
-    @Assisted private val account: Account,
+    @Assisted val account: Account,
     private val automaticSyncManager: AutomaticSyncManager,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
