@@ -21,11 +21,12 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.SyncFrameworkIntegration
+import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -45,14 +46,14 @@ import javax.inject.Inject
  */
 class AccountRepository @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext val context: Context,
+    private val automaticSyncManager: AutomaticSyncManager,
+    @ApplicationContext private val context: Context,
     private val collectionRepository: DavCollectionRepository,
     private val homeSetRepository: DavHomeSetRepository,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger,
     private val settingsManager: SettingsManager,
     private val serviceRepository: DavServiceRepository,
-    private val syncFramework: SyncFrameworkIntegration,
     private val syncWorkerManager: SyncWorkerManager,
     private val tasksAppManager: Lazy<TasksAppManager>
 ) {
@@ -93,13 +94,14 @@ class AccountRepository @Inject constructor(
                 // insert CardDAV service
                 val id = insertService(accountName, Service.TYPE_CARDDAV, config.cardDAV)
 
-                // initial CardDAV account settings and sync intervals
+                // set initial CardDAV account settings and set sync intervals (enables automatic sync)
                 accountSettings.setGroupMethod(groupMethod)
                 accountSettings.setSyncInterval(addrBookAuthority, defaultSyncInterval)
 
                 // start CardDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
-            }
+            } else
+                automaticSyncManager.disable(account, addrBookAuthority)
 
             // Configure CalDAV service
             if (config.calDAV != null) {
@@ -107,13 +109,11 @@ class AccountRepository @Inject constructor(
                 val id = insertService(accountName, Service.TYPE_CALDAV, config.calDAV)
 
                 // set default sync interval and enable sync regardless of permissions
-                syncFramework.enableSyncAbility(account, CalendarContract.AUTHORITY)
                 accountSettings.setSyncInterval(CalendarContract.AUTHORITY, defaultSyncInterval)
 
                 // if task provider present, set task sync interval and enable sync
                 val taskProvider = tasksAppManager.get().currentProvider()
                 if (taskProvider != null) {
-                    syncFramework.enableSyncAbility(account, taskProvider.authority)
                     accountSettings.setSyncInterval(taskProvider.authority, defaultSyncInterval)
                     // further changes will be handled by TasksWatcher on app start or when tasks app is (un)installed
                     logger.info("Tasks provider ${taskProvider.authority} found. Tasks sync enabled.")
@@ -122,8 +122,11 @@ class AccountRepository @Inject constructor(
 
                 // start CalDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
-            } else
-                syncFramework.disableSyncAbility(account, CalendarContract.AUTHORITY)
+            } else {
+                automaticSyncManager.disable(account, CalendarContract.AUTHORITY)
+                for (provider in TaskProvider.ProviderName.entries)
+                    automaticSyncManager.disable(account, provider.authority)
+            }
 
         } catch(e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Couldn't access account settings", e)
@@ -260,11 +263,9 @@ class AccountRepository @Inject constructor(
             val newSettings = accountSettingsFactory.create(newAccount)
             for ((authority, interval) in syncIntervals) {
                 if (interval == null)
-                    syncFramework.disableSyncAbility(newAccount, authority)
-                else {
-                    syncFramework.enableSyncAbility(newAccount, authority)
+                    automaticSyncManager.disable(newAccount, authority)
+                else
                     newSettings.setSyncInterval(authority, interval)
-                }
             }
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine
