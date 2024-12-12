@@ -33,7 +33,7 @@ class PushMessageParser @Inject constructor(
             XmlReader(parser).processTag(PushMessage.NAME) {
                 val pushMessage = PushMessage.Factory.create(parser)
                 val properties = pushMessage.propStat?.properties ?: return@processTag
-                val pushTopic = properties.find { it is Topic } as Topic?
+                val pushTopic = properties.filterIsInstance<Topic>().firstOrNull()
                 topic = pushTopic?.topic
             }
         } catch (e: XmlPullParserException) {
