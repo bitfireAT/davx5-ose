@@ -84,10 +84,13 @@ fun AccountSettingsScreen(
             // Sync settings
             canAccessWifiSsid = canAccessWifiSsid,
             onSyncWifiOnlyPermissionsAction = onNavWifiPermissionsScreen,
+            hasContactsSync = uiState.hasContactsSync,
             contactsSyncInterval = uiState.syncIntervalContacts,
             onUpdateContactsSyncInterval = model::updateContactsSyncInterval,
+            hasCalendarsSync = uiState.hasCalendarsSync,
             calendarSyncInterval = uiState.syncIntervalCalendars,
             onUpdateCalendarSyncInterval = model::updateCalendarSyncInterval,
+            hasTasksSync = uiState.hasTasksSync,
             tasksSyncInterval = uiState.syncIntervalTasks,
             onUpdateTasksSyncInterval = model::updateTasksSyncInterval,
             syncOnlyOnWifi = uiState.syncWifiOnly,
@@ -127,10 +130,13 @@ fun AccountSettingsScreen(
     // Sync settings
     canAccessWifiSsid: Boolean,
     onSyncWifiOnlyPermissionsAction: () -> Unit,
+    hasContactsSync: Boolean,
     contactsSyncInterval: Long?,
     onUpdateContactsSyncInterval: ((Long) -> Unit) = {},
+    hasCalendarsSync: Boolean,
     calendarSyncInterval: Long?,
     onUpdateCalendarSyncInterval: ((Long) -> Unit) = {},
+    hasTasksSync: Boolean,
     tasksSyncInterval: Long?,
     onUpdateTasksSyncInterval: ((Long) -> Unit) = {},
     syncOnlyOnWifi: Boolean,
@@ -199,10 +205,13 @@ fun AccountSettingsScreen(
                 // Sync settings
                 canAccessWifiSsid = canAccessWifiSsid,
                 onSyncWifiOnlyPermissionsAction = onSyncWifiOnlyPermissionsAction,
+                hasContactsSync = hasContactsSync,
                 contactsSyncInterval = contactsSyncInterval,
                 onUpdateContactsSyncInterval = onUpdateContactsSyncInterval,
+                hasCalendarsSync = hasCalendarsSync,
                 calendarSyncInterval = calendarSyncInterval,
                 onUpdateCalendarSyncInterval = onUpdateCalendarSyncInterval,
+                hasTasksSync = hasTasksSync,
                 taskSyncInterval = tasksSyncInterval,
                 onUpdateTaskSyncInterval = onUpdateTasksSyncInterval,
                 syncOnlyOnWifi = syncOnlyOnWifi,
@@ -228,7 +237,7 @@ fun AccountSettingsScreen(
 
                 // CardDav Settings
                 contactGroupMethod = contactGroupMethod,
-                onUpdateContactGroupMethod = onUpdateContactGroupMethod,
+                onUpdateContactGroupMethod = onUpdateContactGroupMethod
             )
         }
     }
@@ -241,10 +250,13 @@ fun AccountSettings_FromModel(
     // Sync settings
     canAccessWifiSsid: Boolean,
     onSyncWifiOnlyPermissionsAction: () -> Unit,
+    hasContactsSync: Boolean,
     contactsSyncInterval: Long?,
     onUpdateContactsSyncInterval: ((Long) -> Unit) = {},
+    hasCalendarsSync: Boolean,
     calendarSyncInterval: Long?,
     onUpdateCalendarSyncInterval: ((Long) -> Unit) = {},
+    hasTasksSync: Boolean,
     taskSyncInterval: Long?,
     onUpdateTaskSyncInterval: ((Long) -> Unit) = {},
     syncOnlyOnWifi: Boolean,
@@ -276,10 +288,13 @@ fun AccountSettings_FromModel(
         SyncSettings(
             canAccessWifiSsid = canAccessWifiSsid,
             onSyncWifiOnlyPermissionsAction = onSyncWifiOnlyPermissionsAction,
+            hasContactsSync = hasContactsSync,
             contactsSyncInterval = contactsSyncInterval,
             onUpdateContactsSyncInterval = onUpdateContactsSyncInterval,
+            hasCalendarsSync = hasCalendarsSync,
             calendarSyncInterval = calendarSyncInterval,
             onUpdateCalendarSyncInterval = onUpdateCalendarSyncInterval,
+            hasTasksSync = hasTasksSync,
             taskSyncInterval = taskSyncInterval,
             onUpdateTaskSyncInterval = onUpdateTaskSyncInterval,
             syncOnlyOnWifi = syncOnlyOnWifi,
@@ -320,10 +335,13 @@ fun AccountSettings_FromModel(
 fun SyncSettings(
     canAccessWifiSsid: Boolean,
     onSyncWifiOnlyPermissionsAction: () -> Unit,
+    hasContactsSync: Boolean,
     contactsSyncInterval: Long?,
     onUpdateContactsSyncInterval: ((Long) -> Unit) = {},
+    hasCalendarsSync: Boolean,
     calendarSyncInterval: Long?,
     onUpdateCalendarSyncInterval: ((Long) -> Unit) = {},
+    hasTasksSync: Boolean,
     taskSyncInterval: Long?,
     onUpdateTaskSyncInterval: ((Long) -> Unit) = {},
     syncOnlyOnWifi: Boolean,
@@ -338,21 +356,21 @@ fun SyncSettings(
             Text(stringResource(R.string.settings_sync))
         }
 
-        if (contactsSyncInterval != null)
+        if (hasContactsSync)
             SyncIntervalSetting(
                 icon = Icons.Default.Contacts,
                 name = R.string.settings_sync_interval_contacts,
                 syncInterval = contactsSyncInterval,
                 onUpdateSyncInterval = onUpdateContactsSyncInterval
             )
-        if (calendarSyncInterval != null)
+        if (hasCalendarsSync)
             SyncIntervalSetting(
                 icon = Icons.Default.Event,
                 name = R.string.settings_sync_interval_calendars,
                 syncInterval = calendarSyncInterval,
                 onUpdateSyncInterval = onUpdateCalendarSyncInterval
             )
-        if (taskSyncInterval != null)
+        if (hasTasksSync)
             SyncIntervalSetting(
                 icon = Icons.Outlined.Task,
                 name = R.string.settings_sync_interval_tasks,
@@ -431,7 +449,7 @@ fun SyncSettings(
 fun SyncIntervalSetting(
     icon: ImageVector,
     @StringRes name: Int,
-    syncInterval: Long,
+    syncInterval: Long?,
     onUpdateSyncInterval: (Long) -> Unit
 ) {
     var showSyncIntervalDialog by remember { mutableStateOf(false) }
@@ -439,7 +457,7 @@ fun SyncIntervalSetting(
         icon = icon,
         name = stringResource(name),
         summary =
-        if (syncInterval == AccountSettings.SYNC_INTERVAL_MANUALLY)
+        if (syncInterval == null || syncInterval == AccountSettings.SYNC_INTERVAL_MANUALLY)
             stringResource(R.string.settings_sync_summary_manually)
         else
             stringResource(R.string.settings_sync_summary_periodically, syncInterval / 60),
@@ -693,10 +711,13 @@ fun AccountSettingsScreen_Preview() {
             // Sync settings
             canAccessWifiSsid = true,
             onSyncWifiOnlyPermissionsAction = {},
+            hasContactsSync = true,
             contactsSyncInterval = 80000L,
             onUpdateContactsSyncInterval = {},
+            hasCalendarsSync = true,
             calendarSyncInterval = 50000L,
             onUpdateCalendarSyncInterval = {},
+            hasTasksSync = true,
             tasksSyncInterval = 900000L,
             onUpdateTasksSyncInterval = {},
             syncOnlyOnWifi = true,

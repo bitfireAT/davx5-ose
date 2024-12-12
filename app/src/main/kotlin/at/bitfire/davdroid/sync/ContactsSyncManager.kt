@@ -389,14 +389,12 @@ class ContactsSyncManager @AssistedInject constructor(
                     local.eTag = eTag
                     local.flags = LocalResource.FLAG_REMOTELY_PRESENT
                     local.update(newData)
-                    syncResult.stats.numUpdates++
 
                 } else if (local is LocalContact && !newData.group) {
                     // update contact
                     local.eTag = eTag
                     local.flags = LocalResource.FLAG_REMOTELY_PRESENT
                     local.update(newData)
-                    syncResult.stats.numUpdates++
 
                 } else {
                     // group has become an individual contact or vice versa, delete and create with new type
@@ -421,7 +419,6 @@ class ContactsSyncManager @AssistedInject constructor(
                         local = newContact
                     }
                 }
-                syncResult.stats.numInserts++
             }
 
             dirtyVerifier.getOrNull()?.let { verifier ->

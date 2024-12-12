@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.intro
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -14,11 +13,12 @@ import androidx.compose.runtime.Composable
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel.Companion.HINT_BATTERY_OPTIMIZATIONS
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class BatteryOptimizationsPage @Inject constructor(
-    private val application: Application,
-    private val settingsManager: SettingsManager
+    @ApplicationContext val context: Context,
+    val settingsManager: SettingsManager
 ): IntroPage() {
 
     override fun getShowPolicy(): ShowPolicy {
@@ -27,7 +27,7 @@ class BatteryOptimizationsPage @Inject constructor(
         // 2a. evil manufacturer AND
         // 2b. "don't show anymore" has not been clicked
         return if (
-            (!BatteryOptimizationsPageModel.isExempted(application) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
+            (!BatteryOptimizationsPageModel.isExempted(context) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
             (BatteryOptimizationsPageModel.manufacturerWarning && settingsManager.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) != false)
         )
             ShowPolicy.SHOW_ALWAYS

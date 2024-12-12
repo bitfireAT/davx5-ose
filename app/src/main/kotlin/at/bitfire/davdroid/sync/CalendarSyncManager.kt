@@ -273,14 +273,12 @@ class CalendarSyncManager @AssistedInject constructor(
                     local.eTag = eTag
                     local.scheduleTag = scheduleTag
                     local.update(event)
-                    syncResult.stats.numUpdates++
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local calendar", event)
                     val newLocal = LocalEvent(localCollection, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT)
                     SyncException.wrapWithLocalResource(newLocal) {
                         newLocal.add()
                     }
-                    syncResult.stats.numInserts++
                 }
             }
         } else

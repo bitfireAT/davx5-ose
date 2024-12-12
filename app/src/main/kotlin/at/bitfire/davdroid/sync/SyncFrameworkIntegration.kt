@@ -57,6 +57,9 @@ class SyncFrameworkIntegration @Inject constructor(
      * Enable syncing on content (contact, calendar event or task) changes.
      */
     fun enableSyncOnContentChange(account: Account, authority: String) {
+        if (!isSyncable(account, authority))
+            enableSyncAbility(account, authority)
+
         if (!ContentResolver.getSyncAutomatically(account, authority))
             setSyncOnContentChange(account, authority, true)
     }

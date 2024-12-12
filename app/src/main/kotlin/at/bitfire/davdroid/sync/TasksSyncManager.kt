@@ -171,14 +171,12 @@ class TasksSyncManager @AssistedInject constructor(
                     logger.log(Level.INFO, "Updating $fileName in local task list", newData)
                     local.eTag = eTag
                     local.update(newData)
-                    syncResult.stats.numUpdates++
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local task list", newData)
                     val newLocal = LocalTask(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                     SyncException.wrapWithLocalResource(newLocal) {
                         newLocal.add()
                     }
-                    syncResult.stats.numInserts++
                 }
             }
         } else

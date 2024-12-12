@@ -4,9 +4,10 @@
 
 package at.bitfire.davdroid.repository
 
-import android.app.Application
+import android.content.Context
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.preference.PreferenceManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -18,7 +19,7 @@ import javax.inject.Inject
  * [at.bitfire.davdroid.settings.SettingsManager].
  */
 class PreferenceRepository @Inject constructor(
-    context: Application
+    @ApplicationContext context: Context
 ) {
 
     companion object {

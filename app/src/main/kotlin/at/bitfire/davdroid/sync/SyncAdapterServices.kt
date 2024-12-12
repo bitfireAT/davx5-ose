@@ -16,6 +16,7 @@ import android.content.SyncResult
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.ContactsContract
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
@@ -23,6 +24,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -137,9 +139,17 @@ abstract class SyncAdapterService: Service() {
             try {
                 val waitJob = waitScope.launch {
                     // wait for finished worker state
-                    workManager.getWorkInfosForUniqueWorkFlow(workerName).collect { info ->
-                        if (info.any { it.state.isFinished })
-                            cancel("$workerName has finished")
+                    workManager.getWorkInfosForUniqueWorkFlow(workerName).collect { infoList ->
+                        for (info in infoList)
+                            if (info.state.isFinished) {
+                                if (info.state == WorkInfo.State.FAILED) {
+                                    if (info.outputData.getBoolean(BaseSyncWorker.OUTPUT_TOO_MANY_RETRIES, false))
+                                        syncResult.tooManyRetries = true
+                                    else
+                                        syncResult.databaseError = true
+                                }
+                                cancel("$workerName has finished")
+                            }
                     }
                 }
 
@@ -153,7 +163,7 @@ abstract class SyncAdapterService: Service() {
                 logger.fine("Not waiting for OneTimeSyncWorker anymore.")
             }
 
-            logger.info("Returning to sync framework.")
+            logger.log(Level.INFO, "Returning to sync framework.", syncResult)
         }
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {

@@ -71,7 +71,6 @@ import java.security.cert.CertificateException
 import java.time.Instant
 import java.util.LinkedList
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -333,7 +332,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     logger.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
                     // determine when to retry
                     syncResult.delayUntil = getDelayUntil(e.retryAfter).epochSecond
-                    syncResult.stats.numServiceUnavailableExceptions++ // Indicate a soft error occurred
+                    syncResult.numServiceUnavailableExceptions++ // Indicate a soft error occurred
                 }
 
                 // all others
@@ -396,7 +395,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 } else
                     logger.info("Removing local record #${local.id} which has been deleted locally and was never uploaded")
                 local.delete()
-                syncResult.stats.numDeletes++
             }
         }
         logger.info("Removed $numDeleted record(s) from server")
@@ -424,7 +422,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     }
                 }
         }
-        syncResult.stats.numEntries += numUploaded
         logger.info("Sent $numUploaded record(s) to server")
         return numUploaded > 0
     }
@@ -582,12 +579,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
     protected open fun syncRemote(listRemote: (MultiResponseCallback) -> Unit) {
-        // thread-safe sync stats
-        val nInserted = AtomicInteger()
-        val nUpdated = AtomicInteger()
-        val nDeleted = AtomicInteger()
-        val nSkipped = AtomicInteger()
-
         runBlocking {
             // download queue
             val toDownload = LinkedBlockingQueue<HttpUrl>()
@@ -627,18 +618,15 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                                 if (local == null) {
                                     logger.info("$name has been added remotely, queueing download")
                                     download(response.href)
-                                    nInserted.incrementAndGet()
                                 } else {
                                     val localETag = local.eTag
                                     val remoteETag = response[GetETag::class.java]?.eTag
                                         ?: throw DavException("Server didn't provide ETag")
                                     if (localETag == remoteETag) {
                                         logger.info("$name has not been changed on server (ETag still $remoteETag)")
-                                        nSkipped.incrementAndGet()
                                     } else {
                                         logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
                                         download(response.href)
-                                        nUpdated.incrementAndGet()
                                     }
 
                                     // mark as remotely present, so that this resource won't be deleted at the end
@@ -654,7 +642,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                                 SyncException.wrapWithLocalResource(local) {
                                     logger.info("$name has been deleted on server, deleting locally")
                                     local.delete()
-                                    nDeleted.incrementAndGet()
                                 }
                             }
                         }
@@ -664,14 +651,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
             // download remaining resources
             download(null)
-        }
-
-        // update sync stats
-        with(syncResult.stats) {
-            numInserts += nInserted.get()
-            numUpdates += nUpdated.get()
-            numDeletes += nDeleted.get()
-            numSkippedEntries += nSkipped.get()
         }
     }
 
@@ -703,7 +682,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         if (syncToken == null)
             throw DavException("Received sync-collection response without sync-token")
 
-        return Pair(syncToken!!, furtherResults)
+        return Pair(syncToken, furtherResults)
     }
 
     /**
@@ -737,7 +716,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     protected open fun deleteNotPresentRemotely() {
         val removed = localCollection.removeNotDirtyMarked(0)
         logger.info("Removed $removed local resources which are not present on the server anymore")
-        syncResult.stats.numDeletes += removed
     }
 
     /**
@@ -776,19 +754,19 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 is IOException -> {
                     logger.log(Level.WARNING, "I/O error", e)
                     message = context.getString(R.string.sync_error_io, e.localizedMessage)
-                    syncResult.stats.numIoExceptions++
+                    syncResult.numIoExceptions++
                 }
 
                 is UnauthorizedException -> {
                     logger.log(Level.SEVERE, "Not authorized anymore", e)
                     message = context.getString(R.string.sync_error_authentication_failed)
-                    syncResult.stats.numAuthExceptions++
+                    syncResult.numAuthExceptions++
                 }
 
                 is HttpException, is DavException -> {
                     logger.log(Level.SEVERE, "HTTP/DAV exception", e)
                     message = context.getString(R.string.sync_error_http_dav, e.localizedMessage)
-                    syncResult.stats.numHttpExceptions++
+                    syncResult.numHttpExceptions++
                 }
 
                 is CalendarStorageException, is ContactsStorageException, is RemoteException -> {
@@ -800,7 +778,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 else -> {
                     logger.log(Level.SEVERE, "Unclassified sync error", e)
                     message = e.localizedMessage ?: e::class.java.simpleName
-                    syncResult.stats.numUnclassifiedErrors++
+                    syncResult.numUnclassifiedErrors++
                 }
             }
 

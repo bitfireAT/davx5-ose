@@ -185,7 +185,7 @@
   <string name="app_settings_tasks_provider">Tasks 应用</string>
   <string name="app_settings_tasks_provider_none">未找到兼容的任务应用</string>
   <string name="app_settings_unifiedpush">UnifiedPush (实验性)</string>
-  <string name="app_settings_unifiedpush_endpoint_domain">准备好接收推送通知(%s)</string>
+  <string name="app_settings_unifiedpush_ready">准备好接收推送通知(%s)</string>
   <string name="app_settings_unifiedpush_no_endpoint">未配置端点</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>

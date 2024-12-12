@@ -16,7 +16,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.WorkQuery
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
@@ -33,11 +32,10 @@ import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import java.util.Collections
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -46,81 +44,6 @@ abstract class BaseSyncWorker(
     private val workerParams: WorkerParameters,
     private val syncDispatcher: CoroutineDispatcher
 ) : CoroutineWorker(context, workerParams) {
-
-    companion object {
-
-        // common worker input parameters
-        const val INPUT_ACCOUNT_NAME = "accountName"
-        const val INPUT_ACCOUNT_TYPE = "accountType"
-        const val INPUT_AUTHORITY = "authority"
-
-        /** set to `true` for user-initiated sync that skips network checks */
-        const val INPUT_MANUAL = "manual"
-
-        /** set to `true` for syncs that are caused by local changes */
-        const val INPUT_UPLOAD = "upload"
-
-        /** Whether re-synchronization is requested. One of [NO_RESYNC] (default), [RESYNC] or [FULL_RESYNC]. */
-        const val INPUT_RESYNC = "resync"
-        @IntDef(NO_RESYNC, RESYNC, FULL_RESYNC)
-        annotation class InputResync
-        const val NO_RESYNC = 0
-        /** Re-synchronization is requested. See [Syncer.SYNC_EXTRAS_RESYNC] for details. */
-        const val RESYNC = 1
-        /** Full re-synchronization is requested. See [Syncer.SYNC_EXTRAS_FULL_RESYNC] for details. */
-        const val FULL_RESYNC = 2
-
-        /**
-         * How often this work will be retried to run after soft (network) errors.
-         *
-         * Retry strategy is defined in work request ([enqueue]).
-         */
-        internal const val MAX_RUN_ATTEMPTS = 5
-
-        /**
-         * Set of currently running syncs, identified by their [commonTag].
-         */
-        private val runningSyncs = Collections.synchronizedSet(HashSet<String>())
-
-        /**
-         * This tag shall be added to every worker that is enqueued by a subclass.
-         */
-        fun commonTag(account: Account, authority: String): String =
-            "sync-$authority ${account.type}/${account.name}"
-
-        /**
-         * Observes whether >0 sync workers (both [PeriodicSyncWorker] and [OneTimeSyncWorker])
-         * exist, belonging to given account and authorities, and which are/is in the given worker state.
-         *
-         * @param workStates   list of states of workers to match
-         * @param account      the account which the workers belong to
-         * @param authorities  type of sync work, ie [CalendarContract.AUTHORITY]
-         * @param whichTag     function to generate tag that should be observed for given account and authority
-         *
-         * @return flow that emits `true` if at least one worker with matching query was found; `false` otherwise
-         */
-        fun exists(
-            context: Context,
-            workStates: List<WorkInfo.State>,
-            account: Account? = null,
-            authorities: List<String>? = null,
-            whichTag: (account: Account, authority: String) -> String = { account, authority ->
-                commonTag(account, authority)
-            }
-        ): Flow<Boolean> {
-            val workQuery = WorkQuery.Builder.fromStates(workStates)
-            if (account != null && authorities != null)
-                workQuery.addTags(
-                    authorities.map { authority -> whichTag(account, authority) }
-                )
-            return WorkManager.getInstance(context)
-                .getWorkInfosFlow(workQuery.build())
-                .map { workInfoList ->
-                    workInfoList.isNotEmpty()
-                }
-        }
-
-    }
 
     @Inject
     lateinit var accountSettingsFactory: AccountSettings.Factory
@@ -172,7 +95,7 @@ abstract class BaseSyncWorker(
         try {
             val accountSettings = try {
                 accountSettingsFactory.create(account)
-            } catch (e: InvalidAccountException) {
+            } catch (_: InvalidAccountException) {
                 val workId = workerParams.id
                 logger.warning("Account $account doesn't exist anymore, cancelling worker $workId")
 
@@ -230,19 +153,19 @@ abstract class BaseSyncWorker(
 
         // We still use the sync adapter framework's SyncResult to pass the sync results, but this
         // is only for legacy reasons and can be replaced by our own result class in the future.
-        val result = SyncResult()
+        val syncResult = SyncResult()
 
         // What are we going to sync? Select syncer based on authority
         val syncer = when (authority) {
             applicationContext.getString(R.string.address_books_authority) ->
-                addressBookSyncer.create(account, extras, result)
+                addressBookSyncer.create(account, extras, syncResult)
             CalendarContract.AUTHORITY ->
-                calendarSyncer.create(account, extras, result)
+                calendarSyncer.create(account, extras, syncResult)
             TaskProvider.ProviderName.JtxBoard.authority ->
-                jtxSyncer.create(account, extras, result)
+                jtxSyncer.create(account, extras, syncResult)
             TaskProvider.ProviderName.OpenTasks.authority,
             TaskProvider.ProviderName.TasksOrg.authority ->
-                taskSyncer.create(account, authority, extras, result)
+                taskSyncer.create(account, authority, extras, syncResult)
             else ->
                 throw IllegalArgumentException("Invalid authority $authority")
         }
@@ -252,20 +175,19 @@ abstract class BaseSyncWorker(
             syncer()
         }
 
-        // Check for errors
-        if (result.hasError()) {
-            val syncResult = Data.Builder()
-                .putString("syncresult", result.toString())
-                .putString("syncResultStats", result.stats.toString())
-                .build()
+        // convert SyncResult from Syncers to worker Data
+        val output = Data.Builder()
+            .putString("syncresult", syncResult.toString())
 
+        // Check for errors
+        if (syncResult.hasError()) {
             val softErrorNotificationTag = account.type + "-" + account.name + "-" + authority
 
             // On soft errors the sync is retried a few times before considered failed
-            if (result.hasSoftError()) {
-                logger.warning("Soft error while syncing: result=$result, stats=${result.stats}")
+            if (syncResult.hasSoftError()) {
+                logger.log(Level.WARNING, "Soft error while syncing", syncResult)
                 if (runAttemptCount < MAX_RUN_ATTEMPTS) {
-                    val blockDuration = result.delayUntil - System.currentTimeMillis() / 1000
+                    val blockDuration = syncResult.delayUntil - System.currentTimeMillis() / 1000
                     logger.warning("Waiting for $blockDuration seconds, before retrying ...")
 
                     // We block the SyncWorker here so that it won't be started by the sync framework immediately again.
@@ -278,7 +200,6 @@ abstract class BaseSyncWorker(
                 }
 
                 logger.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
-
                 notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = softErrorNotificationTag) {
                     NotificationCompat.Builder(applicationContext, notificationRegistry.CHANNEL_SYNC_IO_ERRORS)
                         .setSmallIcon(R.drawable.ic_sync_problem_notify)
@@ -291,7 +212,8 @@ abstract class BaseSyncWorker(
                         .build()
                 }
 
-                return@withContext Result.failure(syncResult)
+                output.putBoolean(OUTPUT_TOO_MANY_RETRIES, true)
+                return@withContext Result.failure(output.build())
             }
 
             // If no soft error found, dismiss sync error notification
@@ -303,13 +225,60 @@ abstract class BaseSyncWorker(
 
             // On a hard error - fail with an error message
             // Note: SyncManager should have notified the user
-            if (result.hasHardError()) {
-                logger.warning("Hard error while syncing: result=$result, stats=${result.stats}")
-                return@withContext Result.failure(syncResult)
+            if (syncResult.hasHardError()) {
+                logger.log(Level.WARNING, "Hard error while syncing", syncResult)
+                return@withContext Result.failure(output.build())
             }
         }
 
-        return@withContext Result.success()
+        logger.log(Level.INFO, "Sync worker succeeded", syncResult)
+        return@withContext Result.success(output.build())
+    }
+
+
+    companion object {
+
+        // common worker input parameters
+        const val INPUT_ACCOUNT_NAME = "accountName"
+        const val INPUT_ACCOUNT_TYPE = "accountType"
+        const val INPUT_AUTHORITY = "authority"
+
+        /** set to `true` for user-initiated sync that skips network checks */
+        const val INPUT_MANUAL = "manual"
+
+        /** set to `true` for syncs that are caused by local changes */
+        const val INPUT_UPLOAD = "upload"
+
+        /** Whether re-synchronization is requested. One of [NO_RESYNC] (default), [RESYNC] or [FULL_RESYNC]. */
+        const val INPUT_RESYNC = "resync"
+        @IntDef(NO_RESYNC, RESYNC, FULL_RESYNC)
+        annotation class InputResync
+        const val NO_RESYNC = 0
+        /** Re-synchronization is requested. See [Syncer.SYNC_EXTRAS_RESYNC] for details. */
+        const val RESYNC = 1
+        /** Full re-synchronization is requested. See [Syncer.SYNC_EXTRAS_FULL_RESYNC] for details. */
+        const val FULL_RESYNC = 2
+
+        const val OUTPUT_TOO_MANY_RETRIES = "tooManyRetries"
+
+        /**
+         * How often this work will be retried to run after soft (network) errors.
+         *
+         * Retry strategy is defined in work request ([enqueue]).
+         */
+        internal const val MAX_RUN_ATTEMPTS = 5
+
+        /**
+         * Set of currently running syncs, identified by their [commonTag].
+         */
+        private val runningSyncs = Collections.synchronizedSet(HashSet<String>())
+
+        /**
+         * This tag shall be added to every worker that is enqueued by a subclass.
+         */
+        fun commonTag(account: Account, authority: String): String =
+            "sync-$authority ${account.type}/${account.name}"
+
     }
 
 }

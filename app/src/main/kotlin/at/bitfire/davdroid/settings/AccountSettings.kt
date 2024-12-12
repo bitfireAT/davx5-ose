@@ -13,6 +13,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
@@ -41,7 +42,8 @@ import java.util.logging.Logger
 @WorkerThread   
 class AccountSettings @AssistedInject constructor(
     @Assisted val account: Account,
-    @ApplicationContext val context: Context,
+    private val automaticSyncManager: AutomaticSyncManager,
+    @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val migrationsFactory: AccountSettingsMigrations.Factory,
     private val settingsManager: SettingsManager,
@@ -185,14 +187,7 @@ class AccountSettings @AssistedInject constructor(
         }
         accountManager.setAndVerifyUserData(account, key, seconds.toString())
 
-        // update sync workers (needs already updated sync interval in AccountSettings)
-        updatePeriodicSyncWorker(authority, seconds, getSyncWifiOnly())
-
-        // Also enable/disable content change triggered syncs
-        if (seconds != SYNC_INTERVAL_MANUALLY)
-            syncFramework.enableSyncOnContentChange(account, authority)
-        else
-            syncFramework.disableSyncOnContentChange(account, authority)
+        automaticSyncManager.setSyncInterval(account, authority, seconds, getSyncWifiOnly())
     }
 
     fun getSyncWifiOnly() =
@@ -204,9 +199,9 @@ class AccountSettings @AssistedInject constructor(
     fun setSyncWiFiOnly(wiFiOnly: Boolean) {
         accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
-        // update sync workers (needs already updated wifi-only flag in AccountSettings)
+        // update automatic sync (needs already updated wifi-only flag in AccountSettings)
         for (authority in syncWorkerManager.syncAuthorities())
-            updatePeriodicSyncWorker(authority, getSyncInterval(authority), wiFiOnly)
+            automaticSyncManager.setSyncInterval(account, authority, getSyncInterval(authority), wiFiOnly)
     }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =
@@ -230,30 +225,6 @@ class AccountSettings @AssistedInject constructor(
 
     fun setIgnoreVpns(ignoreVpns: Boolean) =
         accountManager.setAndVerifyUserData(account, KEY_IGNORE_VPNS, if (ignoreVpns) "1" else "0")
-
-    /**
-     * Updates the periodic sync worker of an authority according to
-     *
-     * - the sync interval and
-     * - the _Sync WiFi only_ flag.
-     *
-     * @param authority   periodic sync workers for this authority will be updated
-     * @param seconds     sync interval in seconds (`null` or [SYNC_INTERVAL_MANUALLY] disables periodic sync)
-     * @param wiFiOnly    sync Wifi only flag
-     */
-    fun updatePeriodicSyncWorker(authority: String, seconds: Long?, wiFiOnly: Boolean) {
-        try {
-            if (seconds == null || seconds == SYNC_INTERVAL_MANUALLY) {
-                logger.fine("Disabling periodic sync of $account/$authority")
-                syncWorkerManager.disablePeriodic(account, authority)
-            } else {
-                logger.fine("Setting periodic sync of $account/$authority to $seconds seconds (wifiOnly=$wiFiOnly)")
-                syncWorkerManager.enablePeriodic(account, authority, seconds, wiFiOnly)
-            }.result.get() // On operation (enable/disable) failure exception is thrown
-        } catch (e: Exception) {
-            logger.log(Level.SEVERE, "Failed to set sync interval of $account/$authority to $seconds seconds", e)
-        }
-    }
 
 
     // CalDAV settings
