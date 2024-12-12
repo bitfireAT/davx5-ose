@@ -25,7 +25,8 @@ interface LocalDataStore<T: LocalCollection<*>> {
     fun create(provider: ContentProviderClient, fromCollection: Collection): T?
 
     /**
-     * Returns all local collections of the data store.
+     * Returns all local collections of the data store, including those which don't have a corresponding remote
+     * [Collection] entry.
      *
      * @param account  the account that the data store is associated with
      * @param provider the content provider client
