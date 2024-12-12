@@ -1,29 +1,41 @@
 package at.bitfire.davdroid.resource
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.Context
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.impl.annotations.SpyK
-import io.mockk.junit4.MockKRule
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.runs
+import io.mockk.unmockkAll
 import io.mockk.verify
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.logging.Logger
+import javax.inject.Inject
 
 @HiltAndroidTest
 class LocalAddressBookStoreTest {
@@ -31,17 +43,12 @@ class LocalAddressBookStoreTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
-    val mockkRule = MockKRule(this)
+    @Inject
+    @ApplicationContext
+    @SpyK
+    lateinit var context: Context
 
-    val context: Context = mockk(relaxed = true) {
-        every { getString(R.string.account_type_address_book) } returns "com.bitfire.davdroid.addressbook"
-    }
-//    val account = Account("MrRobert@example.com", "com.bitfire.davdroid.addressbook")
-    val account: Account = mockk(relaxed = true) {
-//        every { name } returns "MrRobert@example.com"
-//        every { type } returns "com.bitfire.davdroid.addressbook"
-    }
+    val account: Account = mockk(relaxed = true)
     val provider = mockk<ContentProviderClient>(relaxed = true)
     val addressBook: LocalAddressBook = mockk(relaxed = true) {
         every { updateSyncFrameworkSettings() } just runs
@@ -49,23 +56,45 @@ class LocalAddressBookStoreTest {
         every { settings } returns LocalAddressBookStore.contactsProviderSettings
     }
 
-    @SpyK
+    @MockK
+    lateinit var collectionRepository: DavCollectionRepository
+
+    @MockK
+    lateinit var localAddressBookFactory: LocalAddressBook.Factory
+
+    @RelaxedMockK
+    lateinit var logger: Logger
+
+    @RelaxedMockK
+    lateinit var settingsManager: SettingsManager
+
+    @MockK
+    lateinit var serviceRepository: DavServiceRepository
+
     @InjectMockKs
-    var localAddressBookStore = LocalAddressBookStore(
-        collectionRepository = mockk(relaxed = true),
-        context = context,
-        localAddressBookFactory = mockk(relaxed = true) {
-            every { create(account, provider) } returns addressBook
-        },
-        logger = mockk(relaxed = true),
-        serviceRepository = mockk(relaxed = true) {
-            every { get(any<Long>()) } returns null
-            every { get(200) } returns mockk<Service> {
-                every { accountName } returns "MrRobert@example.com"
-            }
-        },
-        settings = mockk(relaxed = true)
-    )
+    @SpyK
+    lateinit var localAddressBookStore: LocalAddressBookStore
+
+
+    @Before
+    fun setUp() {
+        hiltRule.inject()
+
+        // initialize global mocks
+        MockKAnnotations.init(this)
+        every { localAddressBookFactory.create(account, provider) } returns addressBook
+
+        every { serviceRepository.get(any<Long>()) } returns null
+        every { serviceRepository.get(200) } returns mockk<Service> {
+            every { accountName } returns "MrRobert@example.com"
+        }
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
+
 
     @Test
     fun test_accountName_missingService() {
@@ -136,12 +165,24 @@ class LocalAddressBookStoreTest {
     fun test_createAccount_succeeds() {
         mockkObject(SystemAccountUtils)
         every { SystemAccountUtils.createAccount(any(), any(), any()) } returns true
-        val account = Account("MrRobert@example.com", "com.bitfire.davdroid.addressbook")
-        val createdAccount: Account = localAddressBookStore.createAccount(
+        val result: Account = localAddressBookStore.createAccount(
             "MrRobert@example.com", 42, "https://example.com/addressbook/funnyfriends"
         )!!
-        verify(exactly = 1) { SystemAccountUtils.createAccount(context, account, any()) }
-        assertEquals(account, createdAccount)
+        verify(exactly = 1) { SystemAccountUtils.createAccount(any(), any(), any()) }
+        assertEquals("MrRobert@example.com", result.name)
+        assertEquals(context.getString(R.string.account_type_address_book), result.type)
+    }
+
+
+    @Test
+    fun test_getAll_noCorrespondingCollection() {
+        // account doesn't have an associated Collection in the database
+        val accountManager = AccountManager.get(context)
+        mockkObject(accountManager)
+        every { accountManager.getAccountsByType(any()) } returns arrayOf(account)
+        val result = localAddressBookStore.getAll(account, provider)
+        assertEquals(1, result.size)
+        assertEquals(account, result.first().addressBookAccount)
     }
 
 

@@ -11,6 +11,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.provider.ContactsContract
+import androidx.annotation.OpenForTesting
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
@@ -89,7 +90,8 @@ class LocalAddressBookStore @Inject constructor(
         return addressBook
     }
 
-    fun createAccount(name: String, id: Long, url: String): Account? {
+    @OpenForTesting
+    internal fun createAccount(name: String, id: Long, url: String): Account? {
         // create account with collection ID and URL
         val account = Account(name, context.getString(R.string.account_type_address_book))
         val userData = Bundle(2).apply {
