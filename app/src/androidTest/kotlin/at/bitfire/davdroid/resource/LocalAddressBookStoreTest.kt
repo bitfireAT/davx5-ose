@@ -17,7 +17,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.impl.annotations.SpyK
 import io.mockk.just
@@ -48,7 +47,7 @@ class LocalAddressBookStoreTest {
     @SpyK
     lateinit var context: Context
 
-    val account: Account = mockk(relaxed = true)
+    val account: Account = Account("MrRobert@example.com", "Mock Account Type")
     val provider = mockk<ContentProviderClient>(relaxed = true)
     val addressBook: LocalAddressBook = mockk(relaxed = true) {
         every { updateSyncFrameworkSettings() } just runs
@@ -56,20 +55,26 @@ class LocalAddressBookStoreTest {
         every { settings } returns LocalAddressBookStore.contactsProviderSettings
     }
 
-    @MockK
+    @RelaxedMockK
     lateinit var collectionRepository: DavCollectionRepository
 
-    @MockK
-    lateinit var localAddressBookFactory: LocalAddressBook.Factory
+    val localAddressBookFactory = mockk<LocalAddressBook.Factory> {
+        every { create(account, provider) } returns addressBook
+    }
 
-    @RelaxedMockK
+    @Inject
+    @SpyK
     lateinit var logger: Logger
 
     @RelaxedMockK
     lateinit var settingsManager: SettingsManager
 
-    @MockK
-    lateinit var serviceRepository: DavServiceRepository
+    val serviceRepository = mockk<DavServiceRepository>(relaxed = true) {
+        every { get(any<Long>()) } returns null
+        every { get(200) } returns mockk<Service> {
+            every { accountName } returns "MrRobert@example.com"
+        }
+    }
 
     @InjectMockKs
     @SpyK
@@ -82,12 +87,6 @@ class LocalAddressBookStoreTest {
 
         // initialize global mocks
         MockKAnnotations.init(this)
-        every { localAddressBookFactory.create(account, provider) } returns addressBook
-
-        every { serviceRepository.get(any<Long>()) } returns null
-        every { serviceRepository.get(200) } returns mockk<Service> {
-            every { accountName } returns "MrRobert@example.com"
-        }
     }
 
     @After
