@@ -109,7 +109,7 @@ fun LoginScreenContent(
             Box(
                 Modifier
                     .fillMaxSize()
-                    .padding(padding)
+                    .padding(top = padding.calculateTopPadding())
             ) {
 
                 when (page) {
