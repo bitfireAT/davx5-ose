@@ -25,7 +25,7 @@ interface LocalDataStore<T: LocalCollection<*>> {
     fun create(provider: ContentProviderClient, fromCollection: Collection): T?
 
     /**
-     * Returns all local collections of the data store.
+     * Retrieves all local collections of the data store.
      *
      * @param account  the account that the data store is associated with
      * @param provider the content provider client
@@ -33,6 +33,15 @@ interface LocalDataStore<T: LocalCollection<*>> {
      * @return a list of all local collections
      */
     fun getAll(account: Account, provider: ContentProviderClient): List<T>
+
+    /**
+     * Retrieves the local collection with the given local (database) ID.
+     *
+     * @param id    the local (database) ID of the collection ([Collection.id])
+     *
+     * @return the local collection, or `null` if none was found
+     */
+    fun getByLocalId(id: Long): T?
 
     /**
      * Updates the local collection with the data from the given (remote) collection info.

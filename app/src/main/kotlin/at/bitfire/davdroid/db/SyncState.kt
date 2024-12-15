@@ -9,15 +9,26 @@ import org.json.JSONException
 import org.json.JSONObject
 
 data class SyncState(
-        val type: Type,
-        val value: String,
+    val type: Type,
+    val value: String,
 
-        /**
-         * Whether this sync state occurred during an initial sync as described
-         * in RFC 6578, which means the initial sync is not complete yet.
-         */
-        var initialSync: Boolean? = null
+    /**
+     * Whether this sync state occurred during an initial sync as described
+     * in RFC 6578, which means the initial sync is not complete yet.
+     */
+    var initialSync: Boolean? = null
 ) {
+
+    enum class Type { CTAG, SYNC_TOKEN }
+
+    override fun toString(): String {
+        val json = JSONObject()
+        json.put(KEY_TYPE, type.name)
+        json.put(KEY_VALUE, value)
+        initialSync?.let { json.put(KEY_INITIAL_SYNC, it) }
+        return json.toString()
+    }
+
 
     companion object {
 
@@ -32,28 +43,18 @@ data class SyncState(
             return try {
                 val json = JSONObject(s)
                 SyncState(
-                        Type.valueOf(json.getString(KEY_TYPE)),
-                        json.getString(KEY_VALUE),
-                        try { json.getBoolean(KEY_INITIAL_SYNC) } catch(e: JSONException) { null }
+                    Type.valueOf(json.getString(KEY_TYPE)),
+                    json.getString(KEY_VALUE),
+                    try { json.getBoolean(KEY_INITIAL_SYNC) } catch(e: JSONException) { null }
                 )
-            } catch (e: JSONException) {
+            } catch (_: JSONException) {
                 null
             }
         }
 
         fun fromSyncToken(token: SyncToken, initialSync: Boolean? = null) =
-                SyncState(Type.SYNC_TOKEN, requireNotNull(token.token), initialSync)
+            SyncState(Type.SYNC_TOKEN, requireNotNull(token.token), initialSync)
 
-    }
-
-    enum class Type { CTAG, SYNC_TOKEN }
-
-    override fun toString(): String {
-        val json = JSONObject()
-        json.put(KEY_TYPE, type.name)
-        json.put(KEY_VALUE, value)
-        initialSync?.let { json.put(KEY_INITIAL_SYNC, it) }
-        return json.toString()
     }
 
 }

@@ -8,6 +8,7 @@ import at.bitfire.dav4jvm.XmlReader
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.property.push.PushMessage
 import at.bitfire.dav4jvm.property.push.Topic
+import at.bitfire.dav4jvm.property.webdav.SyncToken
 import org.xmlpull.v1.XmlPullParserException
 import java.io.StringReader
 import java.util.logging.Level
@@ -18,13 +19,19 @@ class PushMessageParser @Inject constructor(
     private val logger: Logger
 ) {
 
+    data class PushMessageBody(
+        val topic: String?,
+        val syncToken: String?
+    )
+
     /**
      * Parses a WebDAV-Push message and returns the `topic` that the message is about.
      *
      * @return topic of the modified collection, or `null` if the topic couldn't be determined
      */
-    operator fun invoke(message: String): String? {
+    operator fun invoke(message: String): PushMessageBody {
         var topic: String? = null
+        var syncToken: String? = null
 
         val parser = XmlUtils.newPullParser()
         try {
@@ -33,14 +40,17 @@ class PushMessageParser @Inject constructor(
             XmlReader(parser).processTag(PushMessage.NAME) {
                 val pushMessage = PushMessage.Factory.create(parser)
                 val properties = pushMessage.propStat?.properties ?: return@processTag
-                val pushTopic = properties.filterIsInstance<Topic>().firstOrNull()
-                topic = pushTopic?.topic
+                topic = properties.filterIsInstance<Topic>().firstOrNull()?.topic
+                syncToken = properties.filterIsInstance<SyncToken>().firstOrNull()?.token
             }
         } catch (e: XmlPullParserException) {
             logger.log(Level.WARNING, "Couldn't parse push message", e)
         }
 
-        return topic
+        return PushMessageBody(
+            topic = topic,
+            syncToken = syncToken
+        )
     }
 
 }
