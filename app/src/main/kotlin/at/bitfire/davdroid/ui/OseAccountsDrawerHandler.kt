@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpCenter
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.CorporateFare
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
@@ -99,6 +100,18 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
                 uriHandler.openUri(
                     Constants.HOMEPAGE_URL.buildUpon()
                         .appendPath(Constants.HOMEPAGE_PATH_FAQ)
+                        .withStatParams(WEB_CONTEXT)
+                        .build().toString()
+                )
+            }
+        )
+        MenuEntry(
+            icon = Icons.Default.CorporateFare,
+            title = stringResource(R.string.navigation_drawer_managed),
+            onClick = {
+                uriHandler.openUri(
+                    Constants.HOMEPAGE_URL.buildUpon()
+                        .appendPath(Constants.MANAGED_PATH)
                         .withStatParams(WEB_CONTEXT)
                         .build().toString()
                 )

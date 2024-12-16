@@ -137,6 +137,7 @@
     <string name="navigation_drawer_website">Web site</string>
     <string name="navigation_drawer_manual">Manual</string>
     <string name="navigation_drawer_faq">FAQ</string>
+    <string name="navigation_drawer_managed">For organizations</string>
     <string name="navigation_drawer_community">Community</string>
     <string name="navigation_drawer_support_project">Support the project</string>
     <string name="navigation_drawer_contribute">How to contribute</string>
