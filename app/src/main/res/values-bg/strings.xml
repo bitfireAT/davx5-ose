@@ -45,12 +45,14 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Изглежда не се разработва вече, не се препоръчва.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Някои възможности <a href="https://www.davx5.com/faq/tasks/advanced-task-features">не се поддържат</a>.]]></string>
   <string name="intro_tasks_no_app_store">Няма достъпен магазин за приложения</string>
   <string name="intro_tasks_dont_show">Не се нуждая от поддръжка на задачи.*</string>
   <string name="intro_open_source_title">Приложение с отворен код</string>
   <string name="intro_open_source_text">Радваме се, че използвате %s. Това е приложение с отворен код. Разработката, издръжката и поддръжката му са тежка работа. Молим да допринесете (има много начини) или да дарите. Вашият жест ще бъде високо оценен.</string>
   <string name="intro_open_source_details">Как да допринеса или даря</string>
   <string name="intro_open_source_dont_show">Без повторно показване в близко бъдеще</string>
+  <string name="intro_next">Напред</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Разрешения</string>
   <string name="permissions_text">За да работи нормално %s се нуждае от разрешения.</string>
@@ -87,6 +89,8 @@
   <string name="wifi_permissions_background_location_permission_label">Разрешаване във всички случаи</string>
   <string name="wifi_permissions_background_location_permission_on">Разрешението за местоположението е зададено на: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Разрешението за местоположението не е зададено на: %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s използва разрешението за местоположение (само идентификатора на безжичната мрежа) единствено, за да ограничи синхронизирането само до безжична мрежа с определен идентификатор. Това се случва дори и когато приложението се изпълнява във фонов режим.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Данните за местоположението (само идентификатора на безжичната мрежа) се използват само на устройството без да бъдат изпращани никъде.</string>
   <string name="wifi_permissions_location_enabled">Винаги включено местоположение</string>
   <string name="wifi_permissions_location_enabled_on">Услугата за местоположението е включена</string>
   <string name="wifi_permissions_location_enabled_off">Услугата за местоположението е изключена</string>
@@ -126,6 +130,8 @@
   <string name="account_list_manage_battery_saver">Икономия на батерия</string>
   <string name="account_list_low_storage">Пространството за съхранение е малко. Андроид няма да синхронизира местните промени веднага, а по време на следващата редовна синхронизация.</string>
   <string name="account_list_manage_storage">Управление на хранилището</string>
+  <string name="account_list_welcome">Добре дошли при DAVx⁵!</string>
+  <string name="account_list_empty">Свържете се със сървър и поддържайте календарите и контактите си синхронизирани.</string>
   <string name="accounts_sync_all">Синхронизиране на всички профили</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Грешка при откриване на услугите</string>
@@ -137,7 +143,9 @@
   <string name="app_settings">Настройки</string>
   <string name="app_settings_debug">Отстраняване на дефекти</string>
   <string name="app_settings_show_debug_info">Информация за отстраняване на дефекти</string>
+  <string name="app_settings_show_debug_info_details">Преглед/споделяне на настройките и дневника</string>
   <string name="app_settings_logging">Подробен дневник</string>
+  <string name="app_settings_logging_on">Дневникът е включен. Можете да го прегледате като част от информацията за отстраняване на дефекти.</string>
   <string name="app_settings_logging_off">Дневникът е изключен</string>
   <string name="app_settings_battery_optimization">Оптимизиране на батерията</string>
   <string name="app_settings_battery_optimization_exempted">Приложението е в белия списък (препоръчително)</string>
@@ -176,6 +184,12 @@
   <string name="app_settings_integration">Интеграция</string>
   <string name="app_settings_tasks_provider">Приложението Tasks</string>
   <string name="app_settings_tasks_provider_none">Не е инсталирана съвместимо приложение за задачи.</string>
+  <string name="app_settings_unifiedpush">UnifiedPush (експериментално)</string>
+  <string name="app_settings_unifiedpush_disable">Липсва (изключено)</string>
+  <string name="app_settings_unifiedpush_choose_distributor">Изберете дистрибутор</string>
+  <string name="app_settings_unifiedpush_no_distributor">Не е инсталиран дистрибутор</string>
+  <string name="app_settings_unifiedpush_no_endpoint">Не е настроен сървър</string>
+  <string name="app_settings_unifiedpush_ready">В готовност за получаване на съобщения през %s</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -206,6 +220,7 @@
   <string name="account_install_icsx5">Инсталиране на ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Нова регистрация</string>
+  <string name="login_privacy_hint"><![CDATA[Всички данни ще бъдат прехвърлени само между сървъра и устройството. %1$s няма да ги изпраща никъде другаде. Вижте <a href="%2$s">политиката за поверителност</a>.]]></string>
   <string name="login_generic_login">Вход, независим от доставчик</string>
   <string name="login_provider_login">Вход, специфичен за доставчика</string>
   <string name="login_continue">Напред</string>
@@ -231,6 +246,8 @@
   <string name="login_account_contact_group_method">Метод за съхранение на групи от контакти:</string>
   <string name="login_account_name_required">Изисква се име на регистрацията</string>
   <string name="login_account_name_already_taken">Това име на регистрация вече се използва</string>
+  <string name="login_account_not_added">Профилът не може да бъде добавен</string>
+  <string name="login_finish">Готово</string>
   <string name="login_type_advanced">Вход за напреднали</string>
   <string name="login_no_client_certificate_optional">Липсва клиентски сертификат*</string>
   <string name="login_client_certificate_selected">Клиентски сертификат: %s</string>
@@ -348,6 +365,7 @@
   <string name="collection_synchronization_off">Синхронизирането е изключено</string>
   <string name="collection_read_only">Само за четене</string>
   <string name="collection_read_only_by_server">Само за четене (според сървъра)</string>
+  <string name="collection_read_only_by_setting">Само за четене (според политиката)</string>
   <string name="collection_read_only_forced">Само за четене (на устройството)</string>
   <string name="collection_read_write">Четене/писане</string>
   <string name="collection_title">Заглавие</string>
@@ -355,6 +373,7 @@
   <string name="collection_owner">Собственик</string>
   <string name="collection_push_support">Поддържане на Push</string>
   <string name="collection_push_web_push">Сървърът обявява поддръжка на Push</string>
+  <string name="collection_push_subscribed_at">Начало на абонамента %1$s, изтича на %2$s</string>
   <string name="collection_last_sync">Последно синхронизиране (%s)</string>
   <string name="collection_url">Адрес (URL)</string>
   <!--debugging and DebugInfoActivity-->
@@ -423,6 +442,8 @@
   <string name="sync_invalid_event">Получено е недействително събитие от сървъра</string>
   <string name="sync_invalid_task">Получен е недействителен файл от сървъра</string>
   <string name="sync_invalid_resources_ignoring">Пренебрегване на сбъркани данни</string>
+  <string name="sync_notification_pending_push_title">Чакаща синхронизация</string>
+  <string name="sync_notification_pending_push_message">Отдалечените данни са променени</string>
   <!--widgets-->
   <string name="widget_sync_all">Синхронизирането всичко</string>
   <string name="widget_sync_all_accounts">Синхронизиране на всички профили</string>

@@ -16,13 +16,13 @@
   <string name="share">Teilen</string>
   <string name="sync_started">Synchronisierung gestartet/angehalten</string>
   <string name="database_destructive_migration_title">Datenbank beschädigt</string>
-  <string name="database_destructive_migration_text">Alle Accounts wurden lokal entfernt.</string>
+  <string name="database_destructive_migration_text">Alle Konten wurden lokal entfernt.</string>
   <string name="notification_channel_debugging">Fehlersuche</string>
   <string name="notification_channel_general">Andere wichtige Mitteilungen</string>
   <string name="notification_channel_status">Weniger wichtige Statusmitteilungen</string>
   <string name="notification_channel_sync">Synchronisierung</string>
   <string name="notification_channel_sync_errors">Synchronisierungsfehler</string>
-  <string name="notification_channel_sync_errors_desc">Fehler, die zum Abbruch der Synchronisation führen, wie z.B. unerwartete Serverantworten</string>
+  <string name="notification_channel_sync_errors_desc">Fehler, die zum Abbruch der Synchronisierung führen, wie z.B. unerwartete Serverantworten</string>
   <string name="notification_channel_sync_warnings">Synchronisierungswarnungen</string>
   <string name="notification_channel_sync_warnings_desc">Nicht fatale Synchronisierungsprobleme wie bestimmte ungültige Dateien</string>
   <string name="notification_channel_sync_io_errors">Netzwerk- und E/A-Fehler</string>
@@ -43,8 +43,9 @@
   <string name="intro_tasks_title">Unterstützung für Aufgaben</string>
   <string name="intro_tasks_text1">Falls der Server Aufgaben unterstützt, können sie mit einer unterstützten App synchronisiert werden:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info">Wird anscheinend nicht weiterentwickelt - nicht empfehlenswert.</string>
+  <string name="intro_tasks_opentasks_info">Wird anscheinend nicht weiterentwickelt – nicht empfohlen.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Einige Funktionen <a href="https://www.davx5.com/faq/tasks/advanced-task-features">werden nicht unterstützt</a>.]]></string>
   <string name="intro_tasks_no_app_store">Kein App-Store verfügbar</string>
   <string name="intro_tasks_dont_show">Ich brauche keine Unterstützung für Aufgaben.*</string>
   <string name="intro_open_source_title">Open-Source-Software</string>
@@ -53,7 +54,7 @@
   <string name="intro_open_source_dont_show">In nächster Zeit nicht anzeigen</string>
   <string name="intro_next">Weiter</string>
   <!--PermissionsActivity-->
-  <string name="permissions_title">Rechteverwaltung</string>
+  <string name="permissions_title">Berechtigungsverwaltung</string>
   <string name="permissions_text">%s benötigt Berechtigungen, um ordnungsgemäß zu funktionieren.</string>
   <string name="permissions_all_title">Alles darunter</string>
   <string name="permissions_all_status_off">Hiermit können alle Funktionen aktiviert werden (empfohlen)</string>
@@ -88,6 +89,8 @@
   <string name="wifi_permissions_background_location_permission_label">Immer zulassen</string>
   <string name="wifi_permissions_background_location_permission_on">Standort-Zugriff eingestellt auf: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Standort-Zugriff nicht eingestellt auf: %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s benutzt die Positionsdaten (nur WLAN SSID) nur, um die Synchronisierung auf ein bestimmtes WLAN zu beschränken. Das passiert auch, wenn die Synchronisierung im Hintergrund läuft.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Alle Positionsdaten (nur W-LAN SSID) werden nur lokal genutzt und nirgendwo hin gesendet.</string>
   <string name="wifi_permissions_location_enabled">Standort-Dienst immer aktiviert</string>
   <string name="wifi_permissions_location_enabled_on">Standort-Dienst aktiv</string>
   <string name="wifi_permissions_location_enabled_off">Standort-Dienst inaktiv</string>
@@ -118,15 +121,17 @@
   <string name="navigation_drawer_support_project">Projekt unterstützen</string>
   <string name="navigation_drawer_contribute">Einen Beitrag leisten</string>
   <string name="navigation_drawer_privacy_policy">Datenschutzerklärung</string>
-  <string name="account_list_no_notification_permission">Benachrichtigungen deaktiviert. Sie werden nicht über Fehler bei der Synchronisation informiert.</string>
+  <string name="account_list_no_notification_permission">Benachrichtigungen deaktiviert. Sie werden nicht über Fehler bei der Synchronisierung informiert.</string>
   <string name="account_list_no_internet">Keine überprüfte Internetverbindung. Synchronisierung funktioniert eventuell nicht.</string>
   <string name="account_list_manage_connections">Verbindungen steuern</string>
-  <string name="account_list_datasaver_enabled">Datensparen aktiviert. Die Hintergrundsynchronisierung ist eingeschränkt.</string>
+  <string name="account_list_datasaver_enabled">Datensparen aktiviert. Hintergrundsynchronisierung ist eingeschränkt.</string>
   <string name="account_list_manage_datasaver">Datensparen verwalten</string>
-  <string name="account_list_battery_saver_enabled">Akkusparen aktiviert. Die Synchronisierung kann eingeschränkt sein.</string>
+  <string name="account_list_battery_saver_enabled">Akkusparen aktiviert. Synchronisierung kann eingeschränkt sein.</string>
   <string name="account_list_manage_battery_saver">Akkusparen verwalten</string>
   <string name="account_list_low_storage">Wenig Speicherplatz. Android wird lokale Änderungen nicht sofort synchronisieren, sondern bei der nächsten regulären Synchronisierung.</string>
   <string name="account_list_manage_storage">Speicherplatz verwalten</string>
+  <string name="account_list_welcome">Willkommen bei DAVx⁵!</string>
+  <string name="account_list_empty">Verbinden Sie sich mit Ihrem Server und synchronisieren Ihre Kalender und Kontakte .</string>
   <string name="accounts_sync_all">Alle Konten synchronisieren</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Diensterkennung fehlgeschlagen</string>
@@ -138,7 +143,9 @@
   <string name="app_settings">Einstellungen</string>
   <string name="app_settings_debug">Fehlersuche</string>
   <string name="app_settings_show_debug_info">Informationen zur Fehlersuche</string>
+  <string name="app_settings_show_debug_info_details">Einstellungsdetails und Logs anzeigen/teilen</string>
   <string name="app_settings_logging">Ausführliche Protokollierung</string>
+  <string name="app_settings_logging_on">Logging ist aktiv. Sie können die Logs in den Debuginformationen anzeigen.</string>
   <string name="app_settings_logging_off">Keine Protokollierung</string>
   <string name="app_settings_battery_optimization">Akku-Optimierung</string>
   <string name="app_settings_battery_optimization_exempted">App ist ausgenommen (empfohlen)</string>
@@ -177,6 +184,12 @@
   <string name="app_settings_integration">Integration</string>
   <string name="app_settings_tasks_provider">Aufgaben-App</string>
   <string name="app_settings_tasks_provider_none">Keine kompatible Aufgaben-App gefunden</string>
+  <string name="app_settings_unifiedpush">UnifiedPush (experimentell)</string>
+  <string name="app_settings_unifiedpush_disable">Keiner (Push deaktivieren)</string>
+  <string name="app_settings_unifiedpush_choose_distributor">Anbieter auswählen</string>
+  <string name="app_settings_unifiedpush_no_distributor">Kein Push-Anbieter installiert</string>
+  <string name="app_settings_unifiedpush_no_endpoint">Kein Endpunkt konfiguriert</string>
+  <string name="app_settings_unifiedpush_ready">Bereit, Push-Mitteilungen über %s zu empfangen</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -207,6 +220,7 @@
   <string name="account_install_icsx5">ICSx⁵ installieren</string>
   <!--AddAccountActivity-->
   <string name="login_title">Konto hinzufügen</string>
+  <string name="login_privacy_hint"><![CDATA[Alle Daten werden nur zwischen ihrem Server und ihrem Gerät übertragen. %1$s wird sie nirgendwohin sonst schicken. Siehe die <a href="%2$s">Datenschutzbestimmungen</a>.]]></string>
   <string name="login_generic_login">Allgemeine Anmeldung</string>
   <string name="login_provider_login">Provider-spezifische Anmeldung</string>
   <string name="login_continue">Fortfahren</string>
@@ -214,7 +228,7 @@
   <string name="login_type_email">Mit E-Mail-Adresse anmelden</string>
   <string name="login_email_address">E-Mail-Adresse</string>
   <string name="login_email_address_error">Gültige E-Mail-Adresse benötigt</string>
-  <string name="login_email_address_info"><![CDATA[Die E-Mail-Domäne wird als Basis-URL verwendet. <a href="%s">Die Dienste werden ermittelt</a>, anhand von DNS-Einträgen und bekannten URLs.]]></string>
+  <string name="login_email_address_info"><![CDATA[Die E-Mail-Domäne wird als Basis-URL verwendet. <a href="%s">Dienst-Erkennung</a> erfolgt über DNS-Einträge und well-known-URLs.]]></string>
   <string name="login_password">Passwort</string>
   <string name="login_password_hide">Passwort ausblenden</string>
   <string name="login_password_show">Passwort anzeigen</string>
@@ -223,7 +237,7 @@
   <string name="login_user_name">Benutzername</string>
   <string name="login_user_name_optional">Benutzername*</string>
   <string name="login_base_url">Basis-URL</string>
-  <string name="login_base_url_info"><![CDATA[Die Basis-URL wird direkt geprüft, aber <a href="%s">Dienste werden auch ermittelt</a>, anhand von DNS-Einträgen und bekannten URLs.]]></string>
+  <string name="login_base_url_info"><![CDATA[Basis-URL wird direkt geprüft, aber es erfolgt auch <a href="%s">Dienst-Erkennung</a> über DNS-Einträge und well-known-URLs.]]></string>
   <string name="login_select_certificate">Zertifikat auswählen</string>
   <string name="login_add_account">Konto hinzufügen</string>
   <string name="login_account_name">Kontoname</string>
@@ -232,6 +246,8 @@
   <string name="login_account_contact_group_method">Kontaktgruppen-Methode:</string>
   <string name="login_account_name_required">Kontoname wird benötigt</string>
   <string name="login_account_name_already_taken">Kontoname bereits verwendet</string>
+  <string name="login_account_not_added">Konto konnte nicht hinzugefügt werden</string>
+  <string name="login_finish">Abschließen</string>
   <string name="login_type_advanced">Erweiterte Anmeldung</string>
   <string name="login_no_client_certificate_optional">Kein Client-Zertifikat*</string>
   <string name="login_client_certificate_selected">Client-Zertifikat: %s</string>
@@ -259,7 +275,7 @@
   <string name="login_no_service_info">Die Basis-URL scheint keine erreichbare CalDAV/CardDAV-URL zu sein und die Diensterkennung war nicht erfolgreich.</string>
   <string name="login_see_tested_services"><![CDATA[Bitte beachten Sie das Handbuch Ihres Dienstanbieters und <a href="%s">unsere Liste der getesteten Dienste</a> und deren Basis-URLs.]]></string>
   <string name="login_check_credentials">Bitte überprüfen Sie auch die Authentifizierung (normalerweise Benutzername und Passwort).</string>
-  <string name="login_logs_available">Weitere technische Informationen sind den Protokollen zu entnehmen.</string>
+  <string name="login_logs_available">Weitere technische Informationen sind in den Protokollen verfügbar.</string>
   <string name="login_view_logs">Logs anzeigen</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronisierung</string>
@@ -349,6 +365,7 @@
   <string name="collection_synchronization_off">Synchronisierung deaktiviert</string>
   <string name="collection_read_only">Schreibgeschützt</string>
   <string name="collection_read_only_by_server">Schreibgeschützt (durch Server)</string>
+  <string name="collection_read_only_by_setting">Schreibgeschützt (laut Richtlinie)</string>
   <string name="collection_read_only_forced">Schreibgeschützt (nur lokal)</string>
   <string name="collection_read_write">Lesen/Schreiben</string>
   <string name="collection_title">Titel</string>
@@ -356,6 +373,7 @@
   <string name="collection_owner">Besitzer</string>
   <string name="collection_push_support">Push-Unterstützung</string>
   <string name="collection_push_web_push">Server wirbt mit Push-Unterstützung</string>
+  <string name="collection_push_subscribed_at">Um %1$s angemeldet, läuft aus um %2$s</string>
   <string name="collection_last_sync">Letzte Synchronisierung (%s)</string>
   <string name="collection_url">Adresse (URL)</string>
   <!--debugging and DebugInfoActivity-->
@@ -424,6 +442,8 @@
   <string name="sync_invalid_event">Ungültigen Termin vom Server erhalten</string>
   <string name="sync_invalid_task">Ungültige Aufgabe vom Server erhalten</string>
   <string name="sync_invalid_resources_ignoring">Eine/mehrere ungültige Ressourcen ignoriert</string>
+  <string name="sync_notification_pending_push_title">Synchronisierung ausstehend</string>
+  <string name="sync_notification_pending_push_message">Daten auf dem Server haben sich geändert</string>
   <!--widgets-->
   <string name="widget_sync_all">Alles synchronisieren</string>
   <string name="widget_sync_all_accounts">Alle Konten synchronisieren</string>

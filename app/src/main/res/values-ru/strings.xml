@@ -45,6 +45,7 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">По всей видимости, больше не разрабатывается (не рекомендуется)</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Некоторые функции <a href="https://www.davx5.com/faq/tasks/advanced-task-features">не поддерживаются</a>.]]></string>
   <string name="intro_tasks_no_app_store">Магазин приложений недоступен</string>
   <string name="intro_tasks_dont_show">Мне не нужна поддержка задач.*</string>
   <string name="intro_open_source_title">ПО с открытым исходным кодом</string>
@@ -88,6 +89,8 @@
   <string name="wifi_permissions_background_location_permission_label">Разрешать всегда</string>
   <string name="wifi_permissions_background_location_permission_on">Геолокация задана: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Геолокация не задана: %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s использует данные о местоположении (только WiFi SSID) только для того, чтобы ограничить синхронизацию только определенным WiFi SSID. Это будет происходить, даже если синхронизация выполняется в фоновом режиме.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Все данные о местоположении (только WiFi SSID) используются только локально и никуда не передаются.</string>
   <string name="wifi_permissions_location_enabled">Определение местоположения всегда включено</string>
   <string name="wifi_permissions_location_enabled_on">Служба определения местоположения включена</string>
   <string name="wifi_permissions_location_enabled_off">Служба определения местоположения отключена</string>
@@ -127,6 +130,8 @@
   <string name="account_list_manage_battery_saver">Управлять экономией заряда батареи</string>
   <string name="account_list_low_storage">Недостаточно памяти для хранения данных. Android будет синхронизировать локальные изменения не сразу, а во время следующей регулярной синхронизации.</string>
   <string name="account_list_manage_storage">Управление хранилищем</string>
+  <string name="account_list_welcome">Добро пожаловать в DAVx⁵!</string>
+  <string name="account_list_empty">Подключитесь к вашему серверу и синхронизируйте календари и контакты.</string>
   <string name="accounts_sync_all">Синхронизировать все аккаунты</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Не удалось обнаружить службу</string>
@@ -138,7 +143,9 @@
   <string name="app_settings">Настройки</string>
   <string name="app_settings_debug">Отладка</string>
   <string name="app_settings_show_debug_info">Показать отладочную информацию</string>
+  <string name="app_settings_show_debug_info_details">Просмотр/обмен информацией о конфигурации и логами</string>
   <string name="app_settings_logging">Подробное логирование</string>
+  <string name="app_settings_logging_on">Логирование активно. Вы можете просматривать журналы как часть отладочной информации.</string>
   <string name="app_settings_logging_off">Логирование отключено</string>
   <string name="app_settings_battery_optimization">Оптимизация батареи</string>
   <string name="app_settings_battery_optimization_exempted">Приложение исключено (рекомендуется)</string>
@@ -177,6 +184,8 @@
   <string name="app_settings_integration">Интеграция</string>
   <string name="app_settings_tasks_provider">Приложение Tasks</string>
   <string name="app_settings_tasks_provider_none">Не найдено совместимое приложение для задач</string>
+  <string name="app_settings_unifiedpush">UnifiedPush (экспериментально)</string>
+  <string name="app_settings_unifiedpush_no_endpoint">Конечная точка не сконфигурирована</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -207,6 +216,7 @@
   <string name="account_install_icsx5">Установить ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Добавить аккаунт</string>
+  <string name="login_privacy_hint"><![CDATA[Все данные будут передаваться только между вашим сервером и вашим устройством. %1$s больше никуда их не отправляет. См. <a href="%2$s">Политику конфиденциальности</a>.]]></string>
   <string name="login_generic_login">Общий логин</string>
   <string name="login_provider_login">Авторизация для специфического поставщика</string>
   <string name="login_continue">Продолжить</string>
@@ -232,6 +242,8 @@
   <string name="login_account_contact_group_method">Метод группировки контактов:</string>
   <string name="login_account_name_required">Название аккаунта обязательно</string>
   <string name="login_account_name_already_taken">Название аккаунта уже используется</string>
+  <string name="login_account_not_added">Не удалось добавить аккаунт</string>
+  <string name="login_finish">Завершить</string>
   <string name="login_type_advanced">Расширенный вход</string>
   <string name="login_no_client_certificate_optional">Нет клиентского сертификата*</string>
   <string name="login_client_certificate_selected">Сертификат клиента: %s</string>
@@ -353,6 +365,7 @@
   <string name="collection_synchronization_off">Синхронизация отключена</string>
   <string name="collection_read_only">Только для чтения</string>
   <string name="collection_read_only_by_server">Только для чтения (со стороны сервера)</string>
+  <string name="collection_read_only_by_setting">Только для чтения (в соответствии с политикой)</string>
   <string name="collection_read_only_forced">Только для чтения (локально)</string>
   <string name="collection_read_write">Чтение/запись</string>
   <string name="collection_title">Название</string>
@@ -360,6 +373,7 @@
   <string name="collection_owner">Владелец</string>
   <string name="collection_push_support">Поддержка push</string>
   <string name="collection_push_web_push">Сервер анонсирует поддержку push</string>
+  <string name="collection_push_subscribed_at">Подписан на %1$s, истекает %2$s</string>
   <string name="collection_last_sync">Последняя синхронизация (%s)</string>
   <string name="collection_url">Адрес (URL)</string>
   <!--debugging and DebugInfoActivity-->
@@ -428,6 +442,8 @@
   <string name="sync_invalid_event">Получено недействительное событие от сервера</string>
   <string name="sync_invalid_task">Получена недействительная задача от сервера</string>
   <string name="sync_invalid_resources_ignoring">Игнорирование одного или нескольких недействительных ресурсов</string>
+  <string name="sync_notification_pending_push_title">Ожидается синхронизация</string>
+  <string name="sync_notification_pending_push_message">Удаленные данные изменились</string>
   <!--widgets-->
   <string name="widget_sync_all">Синхронизировать все</string>
   <string name="widget_sync_all_accounts">Синхронизировать все аккаунты</string>

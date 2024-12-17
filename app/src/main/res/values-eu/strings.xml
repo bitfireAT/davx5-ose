@@ -45,12 +45,14 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Badirudi ez dela garatzen – ez da gomendatzen.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Ezaugarri batzuk <a href="https://www.davx5.com/faq/tasks/advanced-task-features">ez dira onartzen</a>.]]></string>
   <string name="intro_tasks_no_app_store">Ez dago denda aplikaziorik eskuragarri </string>
   <string name="intro_tasks_dont_show">Ez dut zereginen funtzionalitatea behar.*</string>
   <string name="intro_open_source_title">Kode irekiko softwarea</string>
   <string name="intro_open_source_text">%s erabiltzen duzula pozik gaude, software irekia delako. Garapen, mantentze eta laguntza lan gogorrak dira. Mesedez pentsatu kolaboratzen (modu asko daude) edo dohaintza bat. Asko eskertuko genuke!</string>
   <string name="intro_open_source_details">Nola lagundu/dirua eman</string>
   <string name="intro_open_source_dont_show">Ez erakutsi etorkizunean</string>
+  <string name="intro_next">Hurrengoa</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Baimenak</string>
   <string name="permissions_text">%s baimenak behar ditu ondo funtzionatzeko.</string>
@@ -88,6 +90,8 @@
   <string name="wifi_permissions_background_location_permission_on">Kokapen-baimena honela ezarri da: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Kokapen-baimena ez da honela ezarri:
 %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s kokapen-datuak (WiFi SSID soilik) erabiltzen ditu sinkronizazioa WiFi SSID zehatz batera mugatzeko soilik. Hori sinkronizazioa atzeko planoan exekutatzen denean ere gertatuko da.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Kokapen-datu guztiak (WiFi SSID soilik) lokalean bakarrik erabiltzen dira eta ez dira inora bidaltzen.</string>
   <string name="wifi_permissions_location_enabled">Kokapena beti gaituta</string>
   <string name="wifi_permissions_location_enabled_on">Kokapen zerbitzua gaituta dago</string>
   <string name="wifi_permissions_location_enabled_off">Kokapen zerbitzua desgaituta dago</string>
@@ -127,6 +131,8 @@
   <string name="account_list_manage_battery_saver">Kudeatu bateria-arrezpena</string>
   <string name="account_list_low_storage">Biltegiratze lekua baxua. Android-ek ez ditu tokiko aldaketak berehala sinkronizatuko, hurrengo sinkronizazio arruntean baizik.</string>
   <string name="account_list_manage_storage">Kudeatu biltegia</string>
+  <string name="account_list_welcome">Ongi etorri DAVx⁵-ra!</string>
+  <string name="account_list_empty">Konektatu zure zerbitzarira eta mantendu zure egutegi eta kontaktuak sinkronizatuta.</string>
   <string name="accounts_sync_all">Sinkronizatu kontu guztiak</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Zerbitzuaren detekzioak huts egin du</string>
@@ -138,7 +144,9 @@
   <string name="app_settings">Ezarpenak</string>
   <string name="app_settings_debug">Arazketa</string>
   <string name="app_settings_show_debug_info">Erakutsi arazte informazioa</string>
+  <string name="app_settings_show_debug_info_details">Ikusi/partekatu konfigurazio xehetasun eta egunkariak</string>
   <string name="app_settings_logging">Erregistro xehatuak</string>
+  <string name="app_settings_logging_on">Erregistratzea aktibo dago. Erregistroak arazketa-informazioaren zati gisa ikus ditzakezu.</string>
   <string name="app_settings_logging_off">Erregistratzea desgaituta dago</string>
   <string name="app_settings_battery_optimization">Bateria optimizazioa</string>
   <string name="app_settings_battery_optimization_exempted">Aplikazioa salbuetsita dago (gomendatua)</string>
@@ -177,6 +185,8 @@
   <string name="app_settings_integration">Integrazioa</string>
   <string name="app_settings_tasks_provider">Tasks aplikazioa</string>
   <string name="app_settings_tasks_provider_none">Ez da zeregin aplikazio bategarririk aurkitu</string>
+  <string name="app_settings_unifiedpush">UnifiedPush (esperimentala)</string>
+  <string name="app_settings_unifiedpush_no_endpoint">Ez da amaiera punturik konfiguratu</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -207,6 +217,7 @@
   <string name="account_install_icsx5">Instalatu ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Gehitu kontua</string>
+  <string name="login_privacy_hint"><![CDATA[Datu guztiak zure zerbitzariaren eta zure gailuaren artean soilik transferituko dira. %1$s ez ditu beste inora bidaliko. Ikusi <a href="%2$s">pribatutasun politika</a>.]]></string>
   <string name="login_generic_login">Saio-hasiera orokorra</string>
   <string name="login_provider_login">Hornitzailearen berariazko saio-hasiera</string>
   <string name="login_continue">Jarraitu</string>
@@ -232,6 +243,8 @@
   <string name="login_account_contact_group_method">Kontaktuen taldekatze metodoa:</string>
   <string name="login_account_name_required">Kontuaren izena beharrezkoa</string>
   <string name="login_account_name_already_taken">Kontuaren izena hartuta dago</string>
+  <string name="login_account_not_added">Ezin izan da kontua gehitu</string>
+  <string name="login_finish">Bukatu</string>
   <string name="login_type_advanced">Saio-hasiera aurreratua</string>
   <string name="login_no_client_certificate_optional">Ez dago bezeroaren ziurtagiririk*</string>
   <string name="login_client_certificate_selected">Bezeroaren ziurtagiria: %s</string>
@@ -349,6 +362,7 @@
   <string name="collection_synchronization_off">Sinkronizazioa desgaitua dago</string>
   <string name="collection_read_only">Irakurtzeko soilik</string>
   <string name="collection_read_only_by_server">Irakurtzeko soilik (zerbitzarian)</string>
+  <string name="collection_read_only_by_setting">Irakurtzeko soilik (politikengatik)</string>
   <string name="collection_read_only_forced">Irakurtzeko soilik (lokala soilik)</string>
   <string name="collection_read_write">Irakurri/idatzi</string>
   <string name="collection_title">Izenburua</string>
@@ -356,6 +370,7 @@
   <string name="collection_owner">Jabea</string>
   <string name="collection_push_support">Bultzaden onarpena</string>
   <string name="collection_push_web_push">Zerbitzariak bultzaden laguntza iragartzen du</string>
+  <string name="collection_push_subscribed_at">%1$s-(e)n harpidetuta, %2$s iraungitzen da</string>
   <string name="collection_last_sync">Azken sinkronizazioa (%s)</string>
   <string name="collection_url">Helbidea (URL)</string>
   <!--debugging and DebugInfoActivity-->
@@ -424,6 +439,8 @@
   <string name="sync_invalid_event">Gertaera baliogabea jaso da zerbitzaritik</string>
   <string name="sync_invalid_task">Zeregin baliogabea jaso da zerbitzaritik</string>
   <string name="sync_invalid_resources_ignoring">Baliabide baliogabe bat edo gehiago ezikusten</string>
+  <string name="sync_notification_pending_push_title">Sinkronizazioa zain</string>
+  <string name="sync_notification_pending_push_message">Urruneko datuak aldatu egin dria</string>
   <!--widgets-->
   <string name="widget_sync_all">Sinkronizatu guztiak</string>
   <string name="widget_sync_all_accounts">Sinkronizatu kontu guztiak</string>

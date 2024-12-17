@@ -45,6 +45,7 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Sembla que ja no es desenvolupa, no es recomana.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[<a href="https://www.davx5.com/faq/tasks/advanced-task-features">No s\'admeten</a> algunes funcionalitats.]]></string>
   <string name="intro_tasks_no_app_store">No hi ha cap mercat d\'aplicacions disponible</string>
   <string name="intro_tasks_dont_show">No necessito suport per les tasques.*</string>
   <string name="intro_open_source_title">Programari de codi obert</string>
@@ -88,6 +89,8 @@
   <string name="wifi_permissions_background_location_permission_label">Permetre tota l\'estona</string>
   <string name="wifi_permissions_background_location_permission_on">El permís d\'ubicació s\'ha definit a: %s</string>
   <string name="wifi_permissions_background_location_permission_off">El permís d\'ubicació no s\'ha definit a: %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s utilitza dades d\'ubicació (només SSID de WiFi) únicament per a restringir la sincronització a un SSID de WiFi específic. Això passarà fins i tot quan la sincronització s\'executi en segon pla.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Totes les dades d\'ubicació (només SSID de WiFi) només s\'utilitzen localment i no s\'envien enlloc.</string>
   <string name="wifi_permissions_location_enabled">Localització sempre habilitada</string>
   <string name="wifi_permissions_location_enabled_on">El servei de localització està habilitat</string>
   <string name="wifi_permissions_location_enabled_off">Servei de localització deshabilitat</string>
@@ -127,6 +130,8 @@
   <string name="account_list_manage_battery_saver">Gestiona l\'estalvi de bateria</string>
   <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no sincronitzarà els canvis locals immediatament, sinó durant la pròxima sincronització normal.</string>
   <string name="account_list_manage_storage">Gestiona l\'emmagatzematge</string>
+  <string name="account_list_welcome">Us donem la benvinguda al DAVx⁵!</string>
+  <string name="account_list_empty">Connecteu-vos al vostre servidor i mantingueu els calendaris i contactes sincronitzats.</string>
   <string name="accounts_sync_all">Sincronitza tots els comptes</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Ha fallat la detecció del servei</string>
@@ -138,7 +143,9 @@
   <string name="app_settings">Configuració</string>
   <string name="app_settings_debug">Depurador</string>
   <string name="app_settings_show_debug_info">Informació de depuració</string>
+  <string name="app_settings_show_debug_info_details">Visualitza/comparteix els detalls de la configuració i els registres</string>
   <string name="app_settings_logging">Registre detallat</string>
+  <string name="app_settings_logging_on">El registre està actiu. Podeu veure els registres com a part de la informació de depuració.</string>
   <string name="app_settings_logging_off">Registre inactiu</string>
   <string name="app_settings_battery_optimization">Optimització de la bateria</string>
   <string name="app_settings_battery_optimization_exempted">L\'aplicació està exempta (recomanat)</string>
@@ -177,6 +184,12 @@
   <string name="app_settings_integration">Integració</string>
   <string name="app_settings_tasks_provider">Aplicació de tasques</string>
   <string name="app_settings_tasks_provider_none">No s\'ha trobat cap aplicació de tasques compatible</string>
+  <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
+  <string name="app_settings_unifiedpush_disable">Sense (desactiva «push»)</string>
+  <string name="app_settings_unifiedpush_choose_distributor">Trieu un distribuïdor</string>
+  <string name="app_settings_unifiedpush_no_distributor">No s\'ha instal·lat cap distribuïdor de «push» </string>
+  <string name="app_settings_unifiedpush_no_endpoint">No s\'ha configurat cap punt final</string>
+  <string name="app_settings_unifiedpush_ready">Preparat per a rebre missatges «push» sobre %s</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -207,6 +220,7 @@
   <string name="account_install_icsx5">Instal·la ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Afegeix un compte</string>
+  <string name="login_privacy_hint"><![CDATA[Totes les dades només es transferiran entre el servidor i el vostre dispositiu. %1$s no les enviarà enlloc més. Vegeu la <a href="%2$s">política de privadesa</a>.]]></string>
   <string name="login_generic_login">Inici de sessió genèric</string>
   <string name="login_provider_login">Inici de sessió específic de proveïdor</string>
   <string name="login_continue">Continua</string>
@@ -232,6 +246,8 @@
   <string name="login_account_contact_group_method">Mètode dels grups de contactes:</string>
   <string name="login_account_name_required">Nom del compte obligatori</string>
   <string name="login_account_name_already_taken">Nom de compte existent</string>
+  <string name="login_account_not_added">No s\'ha pogut afegir el compte</string>
+  <string name="login_finish">Finalitza</string>
   <string name="login_type_advanced">Inici de sessió avançat</string>
   <string name="login_no_client_certificate_optional">Sense certificat del client*</string>
   <string name="login_client_certificate_selected">Certificat del client: %s</string>
@@ -349,6 +365,7 @@
   <string name="collection_synchronization_off">Sincronització deshabilitada</string>
   <string name="collection_read_only">Només lectura</string>
   <string name="collection_read_only_by_server">Només lectura (pel servidor)</string>
+  <string name="collection_read_only_by_setting">Només de lectura (per política)</string>
   <string name="collection_read_only_forced">Només lectura (localment)</string>
   <string name="collection_read_write">Lectura/escriptura</string>
   <string name="collection_title">Títol</string>
@@ -356,6 +373,7 @@
   <string name="collection_owner">Propietari</string>
   <string name="collection_push_support">Suport de Push</string>
   <string name="collection_push_web_push">El servidor té suport per a Push</string>
+  <string name="collection_push_subscribed_at">Subscrit el %1$s, venç el %2$s</string>
   <string name="collection_last_sync">Última sincronització (%s)</string>
   <string name="collection_url">Adreça (URL)</string>
   <!--debugging and DebugInfoActivity-->
@@ -424,6 +442,8 @@
   <string name="sync_invalid_event">S\'ha rebut un esdeveniment no vàlid del servidor</string>
   <string name="sync_invalid_task">S\'ha rebut una tasca no vàlida del servidor</string>
   <string name="sync_invalid_resources_ignoring">S\'ha ignorat un o més recursos no vàlids</string>
+  <string name="sync_notification_pending_push_title">Sincronització pendent</string>
+  <string name="sync_notification_pending_push_message">Les dades remotes han canviat</string>
   <!--widgets-->
   <string name="widget_sync_all">Sincronitza-ho tot</string>
   <string name="widget_sync_all_accounts">Sincronitza tots els comptes</string>

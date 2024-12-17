@@ -45,6 +45,7 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">開発を停止している可能性があります – 非推奨</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[いくつかの機能には<a href="https://www.davx5.com/faq/tasks/advanced-task-features">対応していません</a>]]></string>
   <string name="intro_tasks_no_app_store">アプリストアが利用できません</string>
   <string name="intro_tasks_dont_show">ToDo リスト対応は不要です*</string>
   <string name="intro_open_source_title">オープンソースソフトウェア</string>
@@ -88,6 +89,8 @@
   <string name="wifi_permissions_background_location_permission_label">常に許可</string>
   <string name="wifi_permissions_background_location_permission_on">位置情報の権限は %s に設定されています</string>
   <string name="wifi_permissions_background_location_permission_off">位置情報の権限は %s に設定されていません</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s は位置情報 (WiFi の SSID のみ) を、特定の WiFi SSID で同期する目的に限定して使用します。同期がバックグラウンドで実行中の場合にも発生します。</string>
+  <string name="wifi_permissions_background_location_disclaimer2">すべての位置情報 (WiFi SSID のみ) はローカルのみで使用され、送信されることはありません。</string>
   <string name="wifi_permissions_location_enabled">位置情報は常に有効です</string>
   <string name="wifi_permissions_location_enabled_on">位置情報サービスは有効です</string>
   <string name="wifi_permissions_location_enabled_off">位置情報サービスは無効です</string>
@@ -127,6 +130,8 @@
   <string name="account_list_manage_battery_saver">バッテリー最適化機能を管理</string>
   <string name="account_list_low_storage">ストレージの容量が残りわずかです。Android はローカルの変更を即座に同期しませんが、次の通常サイクルで同期します。</string>
   <string name="account_list_manage_storage">ストレージを管理</string>
+  <string name="account_list_welcome">DAVx⁵ にようこそ！</string>
+  <string name="account_list_empty">サーバーに接続して、カレンダーと連絡先を同期しましょう。</string>
   <string name="accounts_sync_all">すべてのアカウントを同期</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">サービスの検出に失敗しました</string>
@@ -138,7 +143,9 @@
   <string name="app_settings">設定</string>
   <string name="app_settings_debug">デバッグ</string>
   <string name="app_settings_show_debug_info">デバッグ情報を表示</string>
+  <string name="app_settings_show_debug_info_details">設定の詳細とログを表示/共有します</string>
   <string name="app_settings_logging">詳細ログ</string>
+  <string name="app_settings_logging_on">ログを取得します。デバッグ情報の一部としてログを確認できます。</string>
   <string name="app_settings_logging_off">ログを取得しません</string>
   <string name="app_settings_battery_optimization">バッテリー最適化</string>
   <string name="app_settings_battery_optimization_exempted">アプリは除外されています (推奨)</string>
@@ -177,6 +184,8 @@
   <string name="app_settings_integration">統合</string>
   <string name="app_settings_tasks_provider">ToDo リストアプリ</string>
   <string name="app_settings_tasks_provider_none">連携できるアプリがありません</string>
+  <string name="app_settings_unifiedpush">UnifiedPush (試験的)</string>
+  <string name="app_settings_unifiedpush_no_endpoint">エンドポイントが設定されていません</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -207,6 +216,7 @@
   <string name="account_install_icsx5">ICSx⁵ をインストール</string>
   <!--AddAccountActivity-->
   <string name="login_title">アカウントを追加</string>
+  <string name="login_privacy_hint"><![CDATA[すべての情報はサーバーと端末間のみ転送されます。%1$s が情報をどこかに送信することはありません。<a href="%2$s">プライバシーポリシー</a> をご確認ください。]]></string>
   <string name="login_generic_login">共通のログイン方法</string>
   <string name="login_provider_login">プロバイダー固有のログイン方法</string>
   <string name="login_continue">続行</string>
@@ -228,10 +238,12 @@
   <string name="login_add_account">アカウントを追加</string>
   <string name="login_account_name">アカウント名</string>
   <string name="login_account_avoid_apostrophe">アポストロフィー「\'」を使用すると一部のデバイスで問題が発生します。</string>
-  <string name="login_account_name_info">Android はあなたが作成した予定の ORGANIZER フィールドにアカウント名を使用するので、アカウント名としてメールアドレスを使用してください。同じ名前のアカウントを 2 つ持つことはできません。</string>
+  <string name="login_account_name_info">Android はあなたが作成した予定の ORGANIZER フィールドにアカウント名を使用するので、アカウント名としてメールアドレスを使用してください。同じ名前のアカウントを 2 つ保持することはできません。</string>
   <string name="login_account_contact_group_method">連絡先グループ方法:</string>
   <string name="login_account_name_required">アカウント名が必要です</string>
   <string name="login_account_name_already_taken">アカウント名はすでに取得されています</string>
+  <string name="login_account_not_added">アカウントを追加できませんでした</string>
+  <string name="login_finish">完了</string>
   <string name="login_type_advanced">高度なログイン</string>
   <string name="login_no_client_certificate_optional">クライアント証明書なし*</string>
   <string name="login_client_certificate_selected">クライアント証明書: %s</string>
@@ -347,6 +359,7 @@
   <string name="collection_synchronization_off">同期が無効です</string>
   <string name="collection_read_only">読み取り専用</string>
   <string name="collection_read_only_by_server">読み取り専用 (サーバー設定)</string>
+  <string name="collection_read_only_by_setting">読み取り専用 (ポリシーによる)</string>
   <string name="collection_read_only_forced">読み取り専用 (ローカル設定)</string>
   <string name="collection_read_write">読み取り/書き込み</string>
   <string name="collection_title">タイトル</string>
@@ -354,6 +367,7 @@
   <string name="collection_owner">所有者</string>
   <string name="collection_push_support">プッシュ対応</string>
   <string name="collection_push_web_push">サーバーがプッシュへの対応を通知しています</string>
+  <string name="collection_push_subscribed_at">購読開始 %1$s、期限 %2$s</string>
   <string name="collection_last_sync">最終同期 (%s)</string>
   <string name="collection_url">アドレス (URL)</string>
   <!--debugging and DebugInfoActivity-->
@@ -422,6 +436,8 @@
   <string name="sync_invalid_event">サーバーから無効な予定を受信しました</string>
   <string name="sync_invalid_task">サーバーから無効な ToDo リストを受信しました</string>
   <string name="sync_invalid_resources_ignoring">1 件または複数の無効なリソースを無視します</string>
+  <string name="sync_notification_pending_push_title">同期が中断されました</string>
+  <string name="sync_notification_pending_push_message">リモートの情報が変更されました</string>
   <!--widgets-->
   <string name="widget_sync_all">すべて同期</string>
   <string name="widget_sync_all_accounts">すべてのアカウントを同期</string>

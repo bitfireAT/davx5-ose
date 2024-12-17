@@ -185,8 +185,11 @@
   <string name="app_settings_tasks_provider">Tasks 应用</string>
   <string name="app_settings_tasks_provider_none">未找到兼容的任务应用</string>
   <string name="app_settings_unifiedpush">UnifiedPush (实验性)</string>
-  <string name="app_settings_unifiedpush_ready">准备好接收推送通知(%s)</string>
+  <string name="app_settings_unifiedpush_disable">无（停用推送）</string>
+  <string name="app_settings_unifiedpush_choose_distributor">选择分发程序</string>
+  <string name="app_settings_unifiedpush_no_distributor">未安装推送分发程序</string>
   <string name="app_settings_unifiedpush_no_endpoint">未配置端点</string>
+  <string name="app_settings_unifiedpush_ready">准备好通过 %s 接收推送消息</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
