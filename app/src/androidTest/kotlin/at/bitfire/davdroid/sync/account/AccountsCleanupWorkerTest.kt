@@ -69,6 +69,7 @@ class AccountsCleanupWorkerTest {
             "Fancy address book account",
             addressBookAccountType
         )
+        assertTrue("No address books must be presents before tests", accountManager.getAccountsByType(addressBookAccountType).isEmpty())
 
         // Initialize WorkManager for instrumentation tests.
         val config = Configuration.Builder()

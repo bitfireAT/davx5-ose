@@ -161,16 +161,6 @@ class SyncWorkerManager @Inject constructor(
         return name
     }
 
-    @Deprecated("Use enqueueOneTime(account, dataType, manual, resync, upload) instead")
-    fun enqueueOneTime(
-        account: Account,
-        authority: String,
-        manual: Boolean = false,
-        @InputResync resync: Int = NO_RESYNC,
-        upload: Boolean = false,
-        fromPush: Boolean = false
-    ): String = enqueueOneTime(account, SyncDataType.fromAuthority(context, authority), manual, resync, upload, fromPush)
-
     /**
      * Requests immediate synchronization of an account with all applicable
      * authorities (contacts, calendars, …).
@@ -184,10 +174,10 @@ class SyncWorkerManager @Inject constructor(
         upload: Boolean = false,
         fromPush: Boolean = false
     ) {
-        for (authority in syncAuthorities())
+        for (dataType in SyncDataType.entries)
             enqueueOneTime(
                 account = account,
-                authority = authority,
+                dataType = dataType,
                 manual = manual,
                 resync = resync,
                 upload = upload,

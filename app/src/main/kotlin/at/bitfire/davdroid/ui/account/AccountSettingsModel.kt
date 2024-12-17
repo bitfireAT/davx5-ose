@@ -11,10 +11,10 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -207,10 +207,7 @@ class AccountSettingsModel @AssistedInject constructor(
         accountSettings.setGroupMethod(groupMethod)
         reload()
 
-        resync(
-            authority = context.getString(R.string.address_books_authority),
-            fullResync = true
-        )
+        resync(SyncDataType.CONTACTS, fullResync = true)
     }
 
     /**
@@ -222,26 +219,26 @@ class AccountSettingsModel @AssistedInject constructor(
      * @param tasks whether tasks shall be synchronized, too (false: only events, true: events and tasks)
      */
     private fun resyncCalendars(fullResync: Boolean, tasks: Boolean) {
-        resync(CalendarContract.AUTHORITY, fullResync)
+        resync(SyncDataType.EVENTS, fullResync)
         if (tasks)
-            resync(TaskProvider.ProviderName.OpenTasks.authority, fullResync)
+            resync(SyncDataType.TASKS, fullResync)
     }
 
     /**
      * Initiates re-synchronization for given authority.
      *
-     * @param authority authority to re-sync
+     * @param dataType   type of
      * @param fullResync whether sync shall download all events again
      * (_true_: sets [at.bitfire.davdroid.sync.worker.BaseSyncWorker.FULL_RESYNC],
      * _false_: sets [BaseSyncWorker.RESYNC])
      */
-    private fun resync(authority: String, fullResync: Boolean) {
-        val resync =
+    private fun resync(dataType: SyncDataType, fullResync: Boolean) {
+        val resync: Int =
             if (fullResync)
                 BaseSyncWorker.FULL_RESYNC
             else
                 BaseSyncWorker.RESYNC
-        syncWorkerManager.enqueueOneTime(account, authority = authority, resync = resync)
+        syncWorkerManager.enqueueOneTime(account, dataType, resync = resync)
     }
 
 }

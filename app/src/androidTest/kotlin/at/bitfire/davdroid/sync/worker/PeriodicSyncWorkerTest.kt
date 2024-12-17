@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
 import android.content.Context
-import android.provider.CalendarContract
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
@@ -17,6 +16,7 @@ import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.testing.WorkManagerTestInitHelper
 import androidx.work.workDataOf
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
 import at.bitfire.davdroid.test.R
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -73,7 +73,7 @@ class PeriodicSyncWorkerTest {
 
         // Run PeriodicSyncWorker as TestWorker
         val inputData = workDataOf(
-            BaseSyncWorker.INPUT_AUTHORITY to CalendarContract.AUTHORITY,
+            BaseSyncWorker.INPUT_DATA_TYPE to SyncDataType.EVENTS.toString(),
             BaseSyncWorker.INPUT_ACCOUNT_NAME to invalidAccount.name,
             BaseSyncWorker.INPUT_ACCOUNT_TYPE to invalidAccount.type
         )
