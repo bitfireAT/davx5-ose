@@ -150,7 +150,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             val dbCollection = dbCollections[localCollection.collectionUrl?.toHttpUrlOrNull()]
             if (dbCollection == null) {
                 // Collection not available in db = on server (anymore), delete and remove from the updated list
-                logger.fine("Deleting local collection ${localCollection.title}")
+                logger.info("Deleting local collection ${localCollection.title} without matching remote collection")
                 dataStore.delete(localCollection)
                 updatedLocalCollections -= localCollection
             } else {
@@ -164,7 +164,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         // Create local collections which are in DB, but don't exist locally yet
         if (newDbCollections.isNotEmpty()) {
             val toBeCreated = newDbCollections.values.toList()
-            logger.log(Level.FINE, "Creating new local collections", toBeCreated.toTypedArray())
+            logger.log(Level.INFO, "Creating new local collections", toBeCreated.toTypedArray())
             val newLocalCollections = createLocalCollections(provider, toBeCreated)
             // Add the newly created collections to the updated list
             updatedLocalCollections.addAll(newLocalCollections)

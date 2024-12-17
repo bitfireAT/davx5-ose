@@ -9,30 +9,26 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import dagger.multibindings.Multibinds
 
-interface TestModules {
+// remove PushRegistrationWorkerModule from Android tests
+@Module
+@TestInstallIn(
+    components = [SingletonComponent::class],
+    replaces = [PushRegistrationWorkerManager.PushRegistrationWorkerModule::class]
+)
+abstract class TestPushRegistrationWorkerModule {
+    // provides empty set of listeners
+    @Multibinds
+    abstract fun empty(): Set<DavCollectionRepository.OnChangeListener>
+}
 
-    // remove PushRegistrationWorkerModule from Android tests
-    @Module
-    @TestInstallIn(
-        components = [SingletonComponent::class],
-        replaces = [PushRegistrationWorkerManager.PushRegistrationWorkerModule::class]
-    )
-    abstract class TestPushRegistrationWorkerModule {
-        // provides empty set of listeners
-        @Multibinds
-        abstract fun empty(): Set<DavCollectionRepository.OnChangeListener>
-    }
-
-    // remove TasksAppWatcherModule from Android tests
-    @Module
-    @TestInstallIn(
-        components = [SingletonComponent::class],
-        replaces = [TasksAppWatcher.TasksAppWatcherModule::class]
-    )
-    abstract class TestTasksAppWatcherModuleModule {
-        // provides empty set of plugins
-        @Multibinds
-        abstract fun empty(): Set<StartupPlugin>
-    }
-
+// remove TasksAppWatcherModule from Android tests
+@Module
+@TestInstallIn(
+    components = [SingletonComponent::class],
+    replaces = [TasksAppWatcher.TasksAppWatcherModule::class]
+)
+abstract class TestTasksAppWatcherModuleModule {
+    // provides empty set of plugins
+    @Multibinds
+    abstract fun empty(): Set<StartupPlugin>
 }

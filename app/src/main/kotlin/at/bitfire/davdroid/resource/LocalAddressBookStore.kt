@@ -11,10 +11,10 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.provider.ContactsContract
+import androidx.annotation.OpenForTesting
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
@@ -28,7 +28,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import kotlin.collections.orEmpty
 
 class LocalAddressBookStore @Inject constructor(
     val collectionRepository: DavCollectionRepository,
@@ -91,7 +90,8 @@ class LocalAddressBookStore @Inject constructor(
         return addressBook
     }
 
-    fun createAccount(name: String, id: Long, url: String): Account? {
+    @OpenForTesting
+    internal fun createAccount(name: String, id: Long, url: String): Account? {
         // create account with collection ID and URL
         val account = Account(name, context.getString(R.string.account_type_address_book))
         val userData = Bundle(2).apply {
@@ -108,31 +108,9 @@ class LocalAddressBookStore @Inject constructor(
 
 
     override fun getAll(account: Account, provider: ContentProviderClient): List<LocalAddressBook> =
-        serviceRepository.getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
-            // get all collections for the CardDAV service
-            collectionRepository.getByService(service.id).mapNotNull { collection ->
-                // and map to a LocalAddressBook, if applicable
-                findByCollection(provider, collection.id)
-            }
-        }.orEmpty()
-
-    /**
-     * Finds a [LocalAddressBook] based on its corresponding collection.
-     *
-     * @param id    collection ID to look for
-     *
-     * @return The [LocalAddressBook] for the given collection or *null* if not found
-     */
-    private fun findByCollection(provider: ContentProviderClient, id: Long): LocalAddressBook? {
-        val accountManager = AccountManager.get(context)
-        return accountManager
+        AccountManager.get(context)
             .getAccountsByType(context.getString(R.string.account_type_address_book))
-            .filter { account ->
-                accountManager.getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull() == id
-            }
             .map { account -> localAddressBookFactory.create(account, provider) }
-            .firstOrNull()
-    }
 
 
     override fun update(provider: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
