@@ -25,6 +25,7 @@ import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
 import at.bitfire.davdroid.sync.JtxSyncer
 import at.bitfire.davdroid.sync.SyncConditions
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncResult
 import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TaskSyncer
@@ -40,7 +41,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 abstract class BaseSyncWorker(
-    context: Context,
+    private val context: Context,
     private val workerParams: WorkerParameters,
     private val syncDispatcher: CoroutineDispatcher
 ) : CoroutineWorker(context, workerParams) {
@@ -76,12 +77,12 @@ abstract class BaseSyncWorker(
     override suspend fun doWork(): Result {
         // ensure we got the required arguments
         val account = Account(
-            inputData.getString(INPUT_ACCOUNT_NAME) ?: throw IllegalArgumentException("$INPUT_ACCOUNT_NAME required"),
-            inputData.getString(INPUT_ACCOUNT_TYPE) ?: throw IllegalArgumentException("$INPUT_ACCOUNT_TYPE required")
+            inputData.getString(INPUT_ACCOUNT_NAME) ?: throw IllegalArgumentException("INPUT_ACCOUNT_NAME required"),
+            inputData.getString(INPUT_ACCOUNT_TYPE) ?: throw IllegalArgumentException("INPUT_ACCOUNT_TYPE required")
         )
-        val authority = inputData.getString(INPUT_AUTHORITY) ?: throw IllegalArgumentException("$INPUT_AUTHORITY required")
+        val dataType = SyncDataType.valueOf(inputData.getString(INPUT_DATA_TYPE) ?: throw IllegalArgumentException("INPUT_SYNC_DATA_TYPE required"))
 
-        val syncTag = commonTag(account, authority)
+        val syncTag = commonTag(account, dataType)
         logger.info("${javaClass.simpleName} called for $syncTag")
 
         if (!runningSyncs.add(syncTag)) {
@@ -90,7 +91,7 @@ abstract class BaseSyncWorker(
         }
 
         // Dismiss any pending push notification
-        pushNotificationManager.dismiss(account, authority)
+        pushNotificationManager.dismiss(account, dataType)
 
         try {
             val accountSettings = try {
@@ -123,7 +124,12 @@ abstract class BaseSyncWorker(
                 }
             }
 
-            return doSyncWork(account, authority, accountSettings)
+            val authority = dataType.toContentAuthority(context)
+            return if (authority == null) {
+                logger.warning("No content authority found for sync data type $dataType")
+                Result.failure()
+            } else
+                doSyncWork(account, authority, accountSettings)
         } finally {
             logger.info("${javaClass.simpleName} finished for $syncTag")
             runningSyncs -= syncTag
@@ -241,7 +247,7 @@ abstract class BaseSyncWorker(
         // common worker input parameters
         const val INPUT_ACCOUNT_NAME = "accountName"
         const val INPUT_ACCOUNT_TYPE = "accountType"
-        const val INPUT_AUTHORITY = "authority"
+        const val INPUT_DATA_TYPE = "dataType"
 
         /** set to `true` for user-initiated sync that skips network checks */
         const val INPUT_MANUAL = "manual"
@@ -263,8 +269,6 @@ abstract class BaseSyncWorker(
 
         /**
          * How often this work will be retried to run after soft (network) errors.
-         *
-         * Retry strategy is defined in work request ([enqueue]).
          */
         internal const val MAX_RUN_ATTEMPTS = 5
 
@@ -276,8 +280,8 @@ abstract class BaseSyncWorker(
         /**
          * This tag shall be added to every worker that is enqueued by a subclass.
          */
-        fun commonTag(account: Account, authority: String): String =
-            "sync-$authority ${account.type}/${account.name}"
+        fun commonTag(account: Account, dataType: SyncDataType): String =
+            "sync-$dataType ${account.type}/${account.name}"
 
     }
 

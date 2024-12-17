@@ -22,6 +22,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.AutomaticSyncManager
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
@@ -241,9 +242,8 @@ class AccountRepository @Inject constructor(
             syncWorkerManager.cancelAllWork(oldAccount)
 
             // disable periodic syncs for old account
-            syncIntervals.forEach { (authority, _) ->
-                syncWorkerManager.disablePeriodic(oldAccount, authority)
-            }
+            for (dataType in SyncDataType.entries)
+                syncWorkerManager.disablePeriodic(oldAccount, dataType)
 
             // update account name references in database
             serviceRepository.renameAccount(oldName, newName)
