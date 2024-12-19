@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -36,6 +37,7 @@ class AccountSettingsTest {
     @Before
     fun setUp() {
         hiltRule.inject()
+
         testAccount = TestAccountAuthenticator.create()
     }
 
@@ -45,14 +47,24 @@ class AccountSettingsTest {
     }
 
 
+    @Test(expected = IllegalArgumentException::class)
+    fun testUpdate_MissingMigrations() {
+        val accountManager = AccountManager.get(context)
+        val fromVersion = 1
+        accountManager.setAndVerifyUserData(testAccount, AccountSettings.KEY_SETTINGS_VERSION, fromVersion.toString())
+
+        // will run AccountSettings.update
+        accountSettingsFactory.create(testAccount, abortOnMissingMigration = true)
+    }
+
     @Test
     fun testUpdate_RunAllMigrations() {
         val accountManager = AccountManager.get(context)
-        val fromVersion = 6
-        accountManager.setUserData(testAccount, AccountSettings.KEY_SETTINGS_VERSION, fromVersion.toString())
+        val fromVersion = 16
+        accountManager.setAndVerifyUserData(testAccount, AccountSettings.KEY_SETTINGS_VERSION, fromVersion.toString())
 
         // will run AccountSettings.update
-        accountSettingsFactory.create(testAccount)
+        accountSettingsFactory.create(testAccount, abortOnMissingMigration = true)
 
         val version = accountManager.getUserData(testAccount, AccountSettings.KEY_SETTINGS_VERSION).toIntOrNull()
         assertEquals(AccountSettings.CURRENT_VERSION, version)

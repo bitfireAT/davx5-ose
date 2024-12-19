@@ -15,6 +15,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.test.R
 import org.junit.Assert.assertTrue
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Handles the test account type, which has no sync adapters and side effects that run unintentionally.
@@ -42,6 +43,7 @@ class TestAccountAuthenticator: Service() {
     companion object {
 
         val context by lazy { InstrumentationRegistry.getInstrumentation().context }
+        val counter = AtomicInteger(0)
 
         /**
          * Creates a test account, usually in the `Before` setUp of a test.
@@ -50,7 +52,7 @@ class TestAccountAuthenticator: Service() {
          */
         fun create(): Account {
             val accountType = context.getString(R.string.account_type_test)
-            val account = Account("Test Account", accountType)
+            val account = Account("Test Account No. ${counter.incrementAndGet()}", accountType)
 
             assertTrue(SystemAccountUtils.createAccount(context, account, AccountSettings.initialUserData(null)))
 
@@ -62,7 +64,7 @@ class TestAccountAuthenticator: Service() {
          */
         fun remove(account: Account) {
             val am = AccountManager.get(context)
-            am.removeAccountExplicitly(account)
+            assertTrue(am.removeAccountExplicitly(account))
         }
 
     }

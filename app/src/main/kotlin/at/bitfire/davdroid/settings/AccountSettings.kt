@@ -44,11 +44,11 @@ import javax.inject.Provider
 @WorkerThread   
 class AccountSettings @AssistedInject constructor(
     @Assisted val account: Account,
+    @Assisted val abortOnMissingMigration: Boolean,
     private val automaticSyncManager: AutomaticSyncManager,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val migrations: Map<Int, @JvmSuppressWildcards Provider<AccountSettingsMigration>>,
-    //private val migrationsFactory: AccountSettingsMigrations.Factory,
     private val settingsManager: SettingsManager,
     private val syncFramework: SyncFrameworkIntegration,
     private val syncWorkerManager: SyncWorkerManager
@@ -61,7 +61,7 @@ class AccountSettings @AssistedInject constructor(
          * migrations.
          */
         @WorkerThread
-        fun create(account: Account): AccountSettings
+        fun create(account: Account, abortOnMissingMigration: Boolean = false): AccountSettings
     }
 
     init {
@@ -95,7 +95,7 @@ class AccountSettings @AssistedInject constructor(
                     throw IllegalStateException("Redundant call: migration created AccountSettings()")
                 } else {
                     currentlyUpdating = true
-                    update(version)
+                    update(version, abortOnMissingMigration)
                     currentlyUpdating = false
                 }
             }
@@ -347,29 +347,25 @@ class AccountSettings @AssistedInject constructor(
 
     // update from previous account settings
 
-    private fun update(baseVersion: Int) {
+    private fun update(baseVersion: Int, abortOnMissingMigration: Boolean) {
         for (toVersion in baseVersion+1 ..CURRENT_VERSION) {
-            val fromVersion = toVersion-1
+            val fromVersion = toVersion - 1
             logger.info("Updating account ${account.name} settings version $fromVersion → $toVersion")
-            try {
-                val migration = migrations[toVersion]
-                if (migration == null)
-                    logger.severe("No AccountSettings migration found from version $fromVersion to $toVersion")
-                else {
-                    /*val migrations = migrationsFactory.create(
-                        account = account,
-                        accountSettings = this
-                    )
-                    val updateProc = AccountSettingsMigrations::class.java.getDeclaredMethod("update_${fromVersion}_$toVersion")
-                    updateProc.invoke(migrations)*/
 
+            val migration = migrations[toVersion]
+            if (migration == null) {
+                logger.severe("No AccountSettings migration $fromVersion → $toVersion")
+                if (abortOnMissingMigration)
+                    throw IllegalArgumentException("Missing AccountSettings migration $fromVersion → $toVersion")
+            } else {
+                try {
                     migration.get().migrate(account, this)
 
                     logger.info("Account settings version update to $toVersion successful")
                     accountManager.setAndVerifyUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
+                } catch (e: Exception) {
+                    logger.log(Level.SEVERE, "Couldn't run AccountSettings migration $fromVersion → $toVersion", e)
                 }
-            } catch (e: Exception) {
-                logger.log(Level.SEVERE, "Couldn't update account settings", e)
             }
         }
     }
