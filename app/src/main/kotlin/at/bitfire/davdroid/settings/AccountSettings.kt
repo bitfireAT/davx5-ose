@@ -13,6 +13,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -27,6 +28,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import net.openid.appauth.AuthState
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.inject.Provider
 
 /**
  * Manages settings of an account.
@@ -45,7 +47,8 @@ class AccountSettings @AssistedInject constructor(
     private val automaticSyncManager: AutomaticSyncManager,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
-    private val migrationsFactory: AccountSettingsMigrations.Factory,
+    private val migrations: Map<Int, @JvmSuppressWildcards Provider<AccountSettingsMigration>>,
+    //private val migrationsFactory: AccountSettingsMigrations.Factory,
     private val settingsManager: SettingsManager,
     private val syncFramework: SyncFrameworkIntegration,
     private val syncWorkerManager: SyncWorkerManager
@@ -347,17 +350,24 @@ class AccountSettings @AssistedInject constructor(
     private fun update(baseVersion: Int) {
         for (toVersion in baseVersion+1 ..CURRENT_VERSION) {
             val fromVersion = toVersion-1
-            logger.info("Updating account ${account.name} from version $fromVersion to $toVersion")
+            logger.info("Updating account ${account.name} settings version $fromVersion → $toVersion")
             try {
-                val migrations = migrationsFactory.create(
-                    account = account,
-                    accountSettings = this
-                )
-                val updateProc = AccountSettingsMigrations::class.java.getDeclaredMethod("update_${fromVersion}_$toVersion")
-                updateProc.invoke(migrations)
+                val migration = migrations[toVersion]
+                if (migration == null)
+                    logger.severe("No AccountSettings migration found from version $fromVersion to $toVersion")
+                else {
+                    /*val migrations = migrationsFactory.create(
+                        account = account,
+                        accountSettings = this
+                    )
+                    val updateProc = AccountSettingsMigrations::class.java.getDeclaredMethod("update_${fromVersion}_$toVersion")
+                    updateProc.invoke(migrations)*/
 
-                logger.info("Account version update successful")
-                accountManager.setAndVerifyUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
+                    migration.get().migrate(account, this)
+
+                    logger.info("Account settings version update to $toVersion successful")
+                    accountManager.setAndVerifyUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
+                }
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't update account settings", e)
             }

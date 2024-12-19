@@ -72,10 +72,6 @@ class AccountSettingsMigrations @AssistedInject constructor(
     is done before adding new migrations. Then that PR should establish a way to define migration tests. Otherwise,
     the next migration must add a test and therefore defines the method how run migration tests. */
 
-    /**
-     * With DAVx5 4.4.3 address book account names now contain the collection ID as a unique
-     * identifier. We need to update the address book account names.
-     */
     @Suppress("unused","FunctionName")
     fun update_16_17() {
         val addressBookAccountType = context.getString(R.string.account_type_address_book)

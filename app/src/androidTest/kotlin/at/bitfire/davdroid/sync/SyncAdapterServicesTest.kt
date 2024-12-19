@@ -42,7 +42,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.Timeout
-import java.util.concurrent.Executors
 import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
