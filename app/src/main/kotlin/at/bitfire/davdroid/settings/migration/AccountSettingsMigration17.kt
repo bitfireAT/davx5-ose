@@ -75,7 +75,7 @@ class AccountSettingsMigration17 @Inject constructor(
 
     @Module
     @InstallIn(SingletonComponent::class)
-    abstract class AccountSettingsMigration17Module {
+    abstract class AccountSettingsMigrationModule {
         @Binds @IntoMap
         @IntKey(17)
         abstract fun provide(impl: AccountSettingsMigration17): AccountSettingsMigration

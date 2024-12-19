@@ -46,7 +46,7 @@ class AccountSettingsTest {
 
     @Test
     fun testUpdate_RunAllMigrations() {
-        provideAccount(version = 16) { account ->
+        provideAccount(version = 6) { account ->
             // will run AccountSettings.update
             accountSettingsFactory.create(account, abortOnMissingMigration = true)
 
