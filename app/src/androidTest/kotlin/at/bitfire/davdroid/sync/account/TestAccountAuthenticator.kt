@@ -50,11 +50,13 @@ class TestAccountAuthenticator: Service() {
          *
          * Remove it with [remove].
          */
-        fun create(): Account {
+        fun create(version: Int = AccountSettings.CURRENT_VERSION): Account {
             val accountType = context.getString(R.string.account_type_test)
             val account = Account("Test Account No. ${counter.incrementAndGet()}", accountType)
 
-            assertTrue(SystemAccountUtils.createAccount(context, account, AccountSettings.initialUserData(null)))
+            val initialData = AccountSettings.initialUserData(null)
+            initialData.putString(AccountSettings.KEY_SETTINGS_VERSION, version.toString())
+            assertTrue(SystemAccountUtils.createAccount(context, account, initialData))
 
             return account
         }

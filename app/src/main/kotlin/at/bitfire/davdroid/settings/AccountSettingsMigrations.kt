@@ -27,8 +27,8 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.TaskProvider

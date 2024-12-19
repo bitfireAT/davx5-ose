@@ -8,11 +8,9 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
-import at.bitfire.davdroid.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -31,43 +29,41 @@ class AccountSettingsTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    lateinit var testAccount: Account
-
 
     @Before
     fun setUp() {
         hiltRule.inject()
-
-        testAccount = TestAccountAuthenticator.create()
-    }
-
-    @After
-    fun tearDown() {
-        TestAccountAuthenticator.remove(testAccount)
     }
 
 
     @Test(expected = IllegalArgumentException::class)
     fun testUpdate_MissingMigrations() {
-        val accountManager = AccountManager.get(context)
-        val fromVersion = 1
-        accountManager.setAndVerifyUserData(testAccount, AccountSettings.KEY_SETTINGS_VERSION, fromVersion.toString())
-
-        // will run AccountSettings.update
-        accountSettingsFactory.create(testAccount, abortOnMissingMigration = true)
+        provideAccount(version = 1) { account ->
+            // will run AccountSettings.update
+            accountSettingsFactory.create(account, abortOnMissingMigration = true)
+        }
     }
 
     @Test
     fun testUpdate_RunAllMigrations() {
-        val accountManager = AccountManager.get(context)
-        val fromVersion = 16
-        accountManager.setAndVerifyUserData(testAccount, AccountSettings.KEY_SETTINGS_VERSION, fromVersion.toString())
+        provideAccount(version = 16) { account ->
+            // will run AccountSettings.update
+            accountSettingsFactory.create(account, abortOnMissingMigration = true)
 
-        // will run AccountSettings.update
-        accountSettingsFactory.create(testAccount, abortOnMissingMigration = true)
+            val accountManager = AccountManager.get(context)
+            val version = accountManager.getUserData(account, AccountSettings.KEY_SETTINGS_VERSION).toIntOrNull()
+            assertEquals(AccountSettings.CURRENT_VERSION, version)
+        }
+    }
 
-        val version = accountManager.getUserData(testAccount, AccountSettings.KEY_SETTINGS_VERSION).toIntOrNull()
-        assertEquals(AccountSettings.CURRENT_VERSION, version)
+
+    private fun provideAccount(version: Int, block: (Account) -> Unit) {
+        val account = TestAccountAuthenticator.create(version = version)
+        try {
+            block(account)
+        } finally {
+            TestAccountAuthenticator.remove(account)
+        }
     }
 
 }

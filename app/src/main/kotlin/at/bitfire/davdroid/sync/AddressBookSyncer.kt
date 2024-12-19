@@ -12,7 +12,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
-import at.bitfire.davdroid.util.setAndVerifyUserData
+import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

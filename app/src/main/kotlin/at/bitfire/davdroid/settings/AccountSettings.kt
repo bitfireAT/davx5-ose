@@ -16,8 +16,8 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
+import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
@@ -90,13 +90,17 @@ class AccountSettings @AssistedInject constructor(
             logger.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
 
             if (version < CURRENT_VERSION) {
+                System.err.println("MÄH AccountSettings $version/$CURRENT_VERSION, updating=$currentlyUpdating")
                 if (currentlyUpdating) {
                     logger.severe("Redundant call: migration created AccountSettings(). This must never happen.")
                     throw IllegalStateException("Redundant call: migration created AccountSettings()")
                 } else {
                     currentlyUpdating = true
-                    update(version, abortOnMissingMigration)
-                    currentlyUpdating = false
+                    try {
+                        update(version, abortOnMissingMigration)
+                    } finally {
+                        currentlyUpdating = false
+                    }
                 }
             }
         }
