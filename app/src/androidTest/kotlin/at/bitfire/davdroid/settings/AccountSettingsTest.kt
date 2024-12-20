@@ -20,8 +20,8 @@ import javax.inject.Inject
 @HiltAndroidTest
 class AccountSettingsTest {
 
-    @Inject
-    @ApplicationContext lateinit var context: Context
+    @Inject @ApplicationContext
+    lateinit var context: Context
 
     @Inject
     lateinit var accountSettingsFactory: AccountSettings.Factory

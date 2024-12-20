@@ -31,7 +31,7 @@ import kotlin.use
  * Setting task ETags to null will cause them to be downloaded (and parsed) again.
  *
  * Also update the allowed reminder types for calendars.
- **/
+ */
 class AccountSettingsMigration10 @Inject constructor(
     @ApplicationContext private val context: Context
 ): AccountSettingsMigration {
