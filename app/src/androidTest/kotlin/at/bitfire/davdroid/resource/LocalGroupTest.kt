@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.resource
 
 import android.Manifest
+import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
@@ -69,7 +70,7 @@ class LocalGroupTest {
     @Inject
     lateinit var addressbookFactory: LocalTestAddressBook.Factory
 
-
+    val account = Account("Test Account", "Test Account Type")
     private lateinit var addressBookGroupsAsCategories: LocalTestAddressBook
     private lateinit var addressBookGroupsAsVCards: LocalTestAddressBook
 
@@ -77,8 +78,8 @@ class LocalGroupTest {
     fun setup() {
         hiltRule.inject()
 
-        addressBookGroupsAsCategories = addressbookFactory.create(provider, GroupMethod.CATEGORIES)
-        addressBookGroupsAsVCards = addressbookFactory.create(provider, GroupMethod.GROUP_VCARDS)
+        addressBookGroupsAsCategories = addressbookFactory.create(account, provider, GroupMethod.CATEGORIES)
+        addressBookGroupsAsVCards = addressbookFactory.create(account, provider, GroupMethod.GROUP_VCARDS)
 
         // clear contacts
         addressBookGroupsAsCategories.clear()

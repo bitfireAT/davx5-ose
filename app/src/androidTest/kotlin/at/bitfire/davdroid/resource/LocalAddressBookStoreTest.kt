@@ -47,7 +47,8 @@ class LocalAddressBookStoreTest {
     @SpyK
     lateinit var context: Context
 
-    val account: Account = Account("MrRobert@example.com", "Mock Address Book Type")
+    val account = Account("Test Account", "Test Account Type")
+    val addressBookAccount = Account("MrRobert@example.com", "Mock Address Book Type")
     val provider = mockk<ContentProviderClient>(relaxed = true)
     val addressBook: LocalAddressBook = mockk(relaxed = true) {
         every { updateSyncFrameworkSettings() } just runs
@@ -55,11 +56,13 @@ class LocalAddressBookStoreTest {
         every { settings } returns LocalAddressBookStore.contactsProviderSettings
     }
 
+    @Suppress("unused")     // used by @InjectMockKs LocalAddressBookStore
     @RelaxedMockK
     lateinit var collectionRepository: DavCollectionRepository
 
+    @Suppress("unused")     // used by @InjectMockKs LocalAddressBookStore
     val localAddressBookFactory = mockk<LocalAddressBook.Factory> {
-        every { create(any(), account, provider) } returns addressBook
+        every { create(account, addressBookAccount, provider) } returns addressBook
     }
 
     @Inject
@@ -69,6 +72,7 @@ class LocalAddressBookStoreTest {
     @RelaxedMockK
     lateinit var settingsManager: SettingsManager
 
+    @Suppress("unused")     // used by @InjectMockKs LocalAddressBookStore
     val serviceRepository = mockk<DavServiceRepository>(relaxed = true) {
         every { get(any<Long>()) } returns null
         every { get(200) } returns mockk<Service> {
@@ -146,12 +150,12 @@ class LocalAddressBookStoreTest {
             every { id } returns 1
             every { url } returns "https://example.com/addressbook/funnyfriends".toHttpUrl()
         }
-        every { localAddressBookStore.createAddressBookAccount(any(), any(), any(), any()) } returns account
+        every { localAddressBookStore.createAddressBookAccount(any(), any(), any(), any()) } returns addressBookAccount
         every { addressBook.readOnly } returns true
         val addrBook = localAddressBookStore.create(provider, collection)!!
 
         verify(exactly = 1) { addressBook.updateSyncFrameworkSettings() }
-        assertEquals(account, addrBook.addressBookAccount)
+        assertEquals(addressBookAccount, addrBook.addressBookAccount)
         assertEquals(LocalAddressBookStore.contactsProviderSettings, addrBook.settings)
         assertEquals(true, addrBook.readOnly)
 
@@ -165,7 +169,7 @@ class LocalAddressBookStoreTest {
         mockkObject(SystemAccountUtils)
         every { SystemAccountUtils.createAccount(any(), any(), any()) } returns true
         val result: Account = localAddressBookStore.createAddressBookAccount(
-            "MrRobert@example.com", 42, "https://example.com/addressbook/funnyfriends"
+            account, "MrRobert@example.com", 42, "https://example.com/addressbook/funnyfriends"
         )!!
         verify(exactly = 1) { SystemAccountUtils.createAccount(any(), any(), any()) }
         assertEquals("MrRobert@example.com", result.name)
@@ -178,10 +182,10 @@ class LocalAddressBookStoreTest {
         // account doesn't have an associated Collection in the database
         val accountManager = AccountManager.get(context)
         mockkObject(accountManager)
-        every { accountManager.getAccountsByType(any()) } returns arrayOf(account)
-        val result = localAddressBookStore.getAll(account, provider)
+        every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
+        val result = localAddressBookStore.getAll(addressBookAccount, provider)
         assertEquals(1, result.size)
-        assertEquals(account, result.first().addressBookAccount)
+        assertEquals(addressBookAccount, result.first().addressBookAccount)
     }
 
 

@@ -25,6 +25,7 @@ import java.util.Optional
 import java.util.logging.Logger
 
 class LocalTestAddressBook @AssistedInject constructor(
+    @Assisted account: Account,
     @Assisted provider: ContentProviderClient,
     @Assisted override val groupMethod: GroupMethod,
     accountSettingsFactory: AccountSettings.Factory,
@@ -34,6 +35,7 @@ class LocalTestAddressBook @AssistedInject constructor(
     serviceRepository: DavServiceRepository,
     syncFramework: SyncFrameworkIntegration
 ): LocalAddressBook(
+    account = account,
     _addressBookAccount = ACCOUNT,
     provider = provider,
     accountSettingsFactory = accountSettingsFactory,
@@ -47,7 +49,7 @@ class LocalTestAddressBook @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(provider: ContentProviderClient, groupMethod: GroupMethod): LocalTestAddressBook
+        fun create(account: Account, provider: ContentProviderClient, groupMethod: GroupMethod): LocalTestAddressBook
     }
 
     override var readOnly: Boolean

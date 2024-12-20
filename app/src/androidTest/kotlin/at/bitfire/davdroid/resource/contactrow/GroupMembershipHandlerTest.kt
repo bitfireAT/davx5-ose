@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.resource.contactrow
 
 import android.Manifest
+import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.content.Context
@@ -66,6 +67,8 @@ class GroupMembershipHandlerTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
+    val account = Account("Test Account", "Test Account Type")
+
     @Before
     fun inject() {
         hiltRule.inject()
@@ -74,7 +77,7 @@ class GroupMembershipHandlerTest {
 
     @Test
     fun testMembership_GroupsAsCategories() {
-        val addressBookGroupsAsCategories = addressbookFactory.create(provider, GroupMethod.CATEGORIES)
+        val addressBookGroupsAsCategories = addressbookFactory.create(account, provider, GroupMethod.CATEGORIES)
         val addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
 
         val contact = Contact()
@@ -90,7 +93,7 @@ class GroupMembershipHandlerTest {
 
     @Test
     fun testMembership_GroupsAsVCards() {
-        val addressBookGroupsAsVCards = addressbookFactory.create(provider, GroupMethod.GROUP_VCARDS)
+        val addressBookGroupsAsVCards = addressbookFactory.create(account, provider, GroupMethod.GROUP_VCARDS)
 
         val contact = Contact()
         val localContact = LocalContact(addressBookGroupsAsVCards, contact, null, null, 0)
