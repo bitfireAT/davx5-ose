@@ -44,20 +44,21 @@ import java.util.logging.Logger
  * account and there is no such thing as "address books". So, DAVx5 creates a "DAVx5
  * address book" account for every CardDAV address book.
  *
+ * @param account             TODO
  * @param _addressBookAccount Address book account (not: DAVx5 account) storing the actual Android
  * contacts. This is the initial value of [addressBookAccount]. However when the address book is renamed,
  * the new name will only be available in [addressBookAccount], so usually that one should be used.
- *
- * @param provider Content provider needed to access and modify the address book
+ * @param provider            Content provider needed to access and modify the address book
  */
 @OpenForTesting
 open class LocalAddressBook @AssistedInject constructor(
-    @Assisted _addressBookAccount: Account,
+    @Assisted("account") val account: Account,
+    @Assisted("addressBookAccount") _addressBookAccount: Account,
     @Assisted provider: ContentProviderClient,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
-    @ApplicationContext val context: Context,
-    val dirtyVerifier: Optional<ContactDirtyVerifier>,
+    @ApplicationContext private val context: Context,
+    internal val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
     private val syncFramework: SyncFrameworkIntegration
@@ -65,7 +66,11 @@ open class LocalAddressBook @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(addressBookAccount: Account, provider: ContentProviderClient): LocalAddressBook
+        fun create(
+            @Assisted("account") account: Account,
+            @Assisted("addressBookAccount") addressBookAccount: Account,
+            provider: ContentProviderClient
+        ): LocalAddressBook
     }
 
     override val tag: String
@@ -337,6 +342,9 @@ open class LocalAddressBook @AssistedInject constructor(
 
 
     companion object {
+
+        const val USER_DATA_ACCOUNT_NAME = "account_name"
+        const val USER_DATA_ACCOUNT_TYPE = "account_type"
 
         /**
          * URL of the corresponding CardDAV address book.

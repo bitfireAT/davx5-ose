@@ -47,7 +47,7 @@ class LocalAddressBookStoreTest {
     @SpyK
     lateinit var context: Context
 
-    val account: Account = Account("MrRobert@example.com", "Mock Account Type")
+    val account: Account = Account("MrRobert@example.com", "Mock Address Book Type")
     val provider = mockk<ContentProviderClient>(relaxed = true)
     val addressBook: LocalAddressBook = mockk(relaxed = true) {
         every { updateSyncFrameworkSettings() } just runs
@@ -59,7 +59,7 @@ class LocalAddressBookStoreTest {
     lateinit var collectionRepository: DavCollectionRepository
 
     val localAddressBookFactory = mockk<LocalAddressBook.Factory> {
-        every { create(account, provider) } returns addressBook
+        every { create(any(), account, provider) } returns addressBook
     }
 
     @Inject
@@ -136,7 +136,7 @@ class LocalAddressBookStoreTest {
             every { id } returns 1
             every { url } returns "https://example.com/addressbook/funnyfriends".toHttpUrl()
         }
-        every { localAddressBookStore.createAccount(any(), any(), any()) } returns null
+        every { localAddressBookStore.createAddressBookAccount(any(), any(), any(), any()) } returns null
         assertEquals(null, localAddressBookStore.create(provider, collection))
     }
 
@@ -146,7 +146,7 @@ class LocalAddressBookStoreTest {
             every { id } returns 1
             every { url } returns "https://example.com/addressbook/funnyfriends".toHttpUrl()
         }
-        every { localAddressBookStore.createAccount(any(), any(), any()) } returns account
+        every { localAddressBookStore.createAddressBookAccount(any(), any(), any(), any()) } returns account
         every { addressBook.readOnly } returns true
         val addrBook = localAddressBookStore.create(provider, collection)!!
 
@@ -164,7 +164,7 @@ class LocalAddressBookStoreTest {
     fun test_createAccount_succeeds() {
         mockkObject(SystemAccountUtils)
         every { SystemAccountUtils.createAccount(any(), any(), any()) } returns true
-        val result: Account = localAddressBookStore.createAccount(
+        val result: Account = localAddressBookStore.createAddressBookAccount(
             "MrRobert@example.com", 42, "https://example.com/addressbook/funnyfriends"
         )!!
         verify(exactly = 1) { SystemAccountUtils.createAccount(any(), any(), any()) }
