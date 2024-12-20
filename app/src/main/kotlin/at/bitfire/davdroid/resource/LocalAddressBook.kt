@@ -24,7 +24,7 @@ import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
-import at.bitfire.davdroid.util.setAndVerifyUserData
+import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidGroup

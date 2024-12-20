@@ -22,8 +22,8 @@ import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_URL
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
+import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.davdroid.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -122,7 +122,7 @@ class LocalAddressBookStore @Inject constructor(
         if (currentAccount.name != newAccountName) {
             // rename, move contacts/groups and update [AndroidAddressBook.]account
             localCollection.renameAccount(newAccountName)
-            currentAccount.name = newAccountName
+            currentAccount = Account(newAccountName, currentAccount.type)
         }
 
         // Update the account user data
