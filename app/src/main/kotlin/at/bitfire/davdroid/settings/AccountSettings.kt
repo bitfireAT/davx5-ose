@@ -90,7 +90,6 @@ class AccountSettings @AssistedInject constructor(
             logger.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
 
             if (version < CURRENT_VERSION) {
-                System.err.println("MÄH AccountSettings $version/$CURRENT_VERSION, updating=$currentlyUpdating")
                 if (currentlyUpdating) {
                     logger.severe("Redundant call: migration created AccountSettings(). This must never happen.")
                     throw IllegalStateException("Redundant call: migration created AccountSettings()")

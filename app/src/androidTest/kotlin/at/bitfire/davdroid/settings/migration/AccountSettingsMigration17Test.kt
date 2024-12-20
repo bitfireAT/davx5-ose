@@ -79,7 +79,7 @@ class AccountSettingsMigration17Test {
                 id = 1, accountName = account.name, type = Service.TYPE_CARDDAV, principal = null
             ))
             db.collectionDao().insert(Collection(
-                id = 100, serviceId = 1, url = url.toHttpUrl(), type = Collection.TYPE_ADDRESSBOOK
+                id = 100, serviceId = 1, url = url.toHttpUrl(), type = Collection.TYPE_ADDRESSBOOK, displayName = "Some Address Book"
             ))
 
             // run migration
@@ -89,6 +89,7 @@ class AccountSettingsMigration17Test {
             addressBookAccount = accountManager.getAccountsByType(addressBookAccountType).filter {
                 accountManager.getUserData(it, LocalAddressBook.USER_DATA_URL) == url
             }.first()
+            assertEquals("Some Address Book (${account.name}) #100", addressBookAccount.name)
 
             // ID is now assigned
             assertEquals(100L, accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID)?.toLong())
