@@ -47,12 +47,14 @@ class LocalAddressBookStoreTest {
     @SpyK
     lateinit var context: Context
 
-    val account = Account("Test Account", "Test Account Type")
-    val addressBookAccount = Account("MrRobert@example.com", "Mock Address Book Type")
+    val account by lazy { Account("Test Account", context.getString(R.string.account_type)) }
+    val addressBookAccount by lazy { Account("MrRobert@example.com", context.getString(R.string.account_type_address_book)) }
+
     val provider = mockk<ContentProviderClient>(relaxed = true)
     val addressBook: LocalAddressBook = mockk(relaxed = true) {
+        every { account } answers { this@LocalAddressBookStoreTest.account }
         every { updateSyncFrameworkSettings() } just runs
-        every { addressBookAccount } returns account
+        every { addressBookAccount } answers { this@LocalAddressBookStoreTest.addressBookAccount }
         every { settings } returns LocalAddressBookStore.contactsProviderSettings
     }
 
@@ -62,7 +64,7 @@ class LocalAddressBookStoreTest {
 
     @Suppress("unused")     // used by @InjectMockKs LocalAddressBookStore
     val localAddressBookFactory = mockk<LocalAddressBook.Factory> {
-        every { create(account, addressBookAccount, provider) } returns addressBook
+        every { create(any(), any(), provider) } returns addressBook
     }
 
     @Inject
@@ -136,7 +138,8 @@ class LocalAddressBookStoreTest {
 
     @Test
     fun test_create_createAccountReturnsNull() {
-        val collection = mockk<Collection>(relaxed = true)  {
+        val collection = mockk<Collection>(relaxed = true) {
+            every { serviceId } returns 200
             every { id } returns 1
             every { url } returns "https://example.com/addressbook/funnyfriends".toHttpUrl()
         }
@@ -146,7 +149,8 @@ class LocalAddressBookStoreTest {
 
     @Test
     fun test_create_createAccountReturnsAccount() {
-        val collection = mockk<Collection>(relaxed = true)  {
+        val collection = mockk<Collection>(relaxed = true) {
+            every { serviceId } returns 200
             every { id } returns 1
             every { url } returns "https://example.com/addressbook/funnyfriends".toHttpUrl()
         }
@@ -178,12 +182,24 @@ class LocalAddressBookStoreTest {
 
 
     @Test
-    fun test_getAll_noCorrespondingCollection() {
-        // account doesn't have an associated Collection in the database
+    fun test_getAll_differentAccount() {
         val accountManager = AccountManager.get(context)
         mockkObject(accountManager)
         every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
-        val result = localAddressBookStore.getAll(addressBookAccount, provider)
+        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME) } returns "Another Unrelated Account"
+        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) } returns account.type
+        val result = localAddressBookStore.getAll(account, provider)
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun test_getAll_sameAccount() {
+        val accountManager = AccountManager.get(context)
+        mockkObject(accountManager)
+        every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
+        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME) } returns account.name
+        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) } returns account.type
+        val result = localAddressBookStore.getAll(account, provider)
         assertEquals(1, result.size)
         assertEquals(addressBookAccount, result.first().addressBookAccount)
     }
