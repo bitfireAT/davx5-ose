@@ -76,7 +76,7 @@ class AccountSettings @AssistedInject constructor(
             "at.bitfire.davdroid.test"      // R.strings.account_type_test in androidTest
         )
         if (!allowedAccountTypes.contains(account.type))
-            throw IllegalArgumentException("Invalid account type: ${account.type}")
+            throw IllegalArgumentException("Invalid account type for AccountSettings(): ${account.type}")
 
         // synchronize because account migration must only be run one time
         synchronized(AccountSettings::class.java) {

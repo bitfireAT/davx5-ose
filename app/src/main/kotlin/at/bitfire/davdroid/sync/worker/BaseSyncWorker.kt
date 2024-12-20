@@ -76,10 +76,10 @@ abstract class BaseSyncWorker(
     override suspend fun doWork(): Result {
         // ensure we got the required arguments
         val account = Account(
-            inputData.getString(INPUT_ACCOUNT_NAME) ?: throw IllegalArgumentException("$INPUT_ACCOUNT_NAME required"),
-            inputData.getString(INPUT_ACCOUNT_TYPE) ?: throw IllegalArgumentException("$INPUT_ACCOUNT_TYPE required")
+            inputData.getString(INPUT_ACCOUNT_NAME) ?: throw IllegalArgumentException("INPUT_ACCOUNT_NAME required"),
+            inputData.getString(INPUT_ACCOUNT_TYPE) ?: throw IllegalArgumentException("INPUT_ACCOUNT_TYPE required")
         )
-        val authority = inputData.getString(INPUT_AUTHORITY) ?: throw IllegalArgumentException("$INPUT_AUTHORITY required")
+        val authority = inputData.getString(INPUT_AUTHORITY) ?: throw IllegalArgumentException("INPUT_AUTHORITY required")
 
         val syncTag = commonTag(account, authority)
         logger.info("${javaClass.simpleName} called for $syncTag")

@@ -155,6 +155,25 @@ class LocalAddressBookStore @Inject constructor(
         localCollection.updateSyncFrameworkSettings()
     }
 
+    /**
+     * Updates address books which are assigned to [oldAccount] so that they're assigned to [newAccount] instead.
+     *
+     * @param oldAccount    The old account
+     * @param newAccount    The new account
+     */
+    fun updateAccount(oldAccount: Account, newAccount: Account) {
+        val accountManager = AccountManager.get(context)
+        accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
+            .filter { addressBookAccount ->
+                accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME) == oldAccount.name &&
+                accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) == oldAccount.type
+            }
+            .forEach { addressBookAccount ->
+                accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, newAccount.name)
+                accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, newAccount.type)
+            }
+    }
+
 
     override fun delete(localCollection: LocalAddressBook) {
         val accountManager = AccountManager.get(context)
