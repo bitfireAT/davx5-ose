@@ -22,7 +22,7 @@ import org.junit.Test
 import javax.inject.Inject
 
 @HiltAndroidTest
-class AccountUtilsTest {
+class SystemAccountUtilsTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)

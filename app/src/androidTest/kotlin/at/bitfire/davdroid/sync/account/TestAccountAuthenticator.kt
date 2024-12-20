@@ -69,6 +69,18 @@ class TestAccountAuthenticator: Service() {
             assertTrue(am.removeAccountExplicitly(account))
         }
 
+        /**
+         * Convenience method to create a test account and remove it after executing the block.
+         */
+        fun provide(version: Int = AccountSettings.CURRENT_VERSION, block: (Account) -> Unit) {
+            val account = create(version)
+            try {
+                block(account)
+            } finally {
+                remove(account)
+            }
+        }
+
     }
 
 

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync.account
 
-import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import androidx.annotation.VisibleForTesting
@@ -18,8 +17,7 @@ import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
+import at.bitfire.davdroid.resource.LocalAddressBook
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -33,7 +31,6 @@ class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted val context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val accountRepository: AccountRepository,
-    private val collectionRepository: DavCollectionRepository,
     private val db: AppDatabase,
     private val logger: Logger
 ): Worker(context, workerParameters) {
@@ -49,14 +46,19 @@ class AccountsCleanupWorker @AssistedInject constructor(
     override fun doWork(): Result {
         lockAccountsCleanup()
         try {
-            cleanupAccounts()
+            cleanUpServices()
+            cleanUpAddressBooks()
         } finally {
             unlockAccountsCleanup()
         }
         return Result.success()
     }
 
-    private fun cleanupAccounts() {
+    /**
+     * Deletes services in the database which are not associated to a valid account.
+     */
+    @VisibleForTesting
+    internal fun cleanUpServices() {
         // Later, accounts which are not in the DB should be deleted here
 
         // Delete orphaned services in DB – only necessary as long as accounts are implemented as system accounts (not in DB)
@@ -67,28 +69,20 @@ class AccountsCleanupWorker @AssistedInject constructor(
             serviceDao.deleteAll()
         else
             serviceDao.deleteExceptAccounts(accounts.map { it.name }.toTypedArray())
-
-        // Delete orphaned address book accounts (where db collection is missing)
-        val addressBookAccountType = context.getString(R.string.account_type_address_book)
-        deleteOrphanedAddressBookAccounts(accountManager.getAccountsByType(addressBookAccountType))
     }
 
     /**
-     * Deletes address book accounts if they do not have a corresponding collection
-     *
-     * @param addressBookAccounts Address book accounts to check
+     * Deletes address book accounts which are not assigned to a valid account.
      */
     @VisibleForTesting
-    internal fun deleteOrphanedAddressBookAccounts(addressBookAccounts: Array<Account>) {
-        addressBookAccounts.forEach { addressBookAccount ->
-            val collection = accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)
-                ?.toLongOrNull()
-                ?.let { collectionId ->
-                    collectionRepository.get(collectionId)
-                }
-            if (collection == null) {
-                // If no collection for this address book exists, we can delete it
-                logger.info("Deleting address book account without collection: $addressBookAccount")
+    internal fun cleanUpAddressBooks() {
+        val accounts = accountRepository.getAll()
+        for (addressBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
+            val accountName = accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME)
+            val accountType = accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE)
+            if (!accounts.any { it.name == accountName && it.type == accountType }) {
+                // If no valid account exists for this address book, we can delete it
+                logger.info("Deleting address book account without valid account: $addressBookAccount")
                 accountManager.removeAccountExplicitly(addressBookAccount)
             }
         }
