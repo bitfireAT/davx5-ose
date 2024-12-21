@@ -46,6 +46,7 @@ class LocalAddressBookTest {
     @ApplicationContext
     lateinit var context: Context
 
+    val account = Account("Test Account", "Test Account Type")
     lateinit var addressBook: LocalTestAddressBook
 
 
@@ -53,7 +54,7 @@ class LocalAddressBookTest {
     fun setUp() {
         hiltRule.inject()
 
-        addressBook = addressbookFactory.create(provider, GroupMethod.CATEGORIES)
+        addressBook = addressbookFactory.create(account, provider, GroupMethod.CATEGORIES)
         LocalTestAddressBook.createAccount(context)
     }
 

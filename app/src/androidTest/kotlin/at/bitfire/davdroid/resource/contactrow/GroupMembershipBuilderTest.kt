@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.resource.contactrow
 
 import android.Manifest
+import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
 import android.net.Uri
@@ -63,6 +64,8 @@ class GroupMembershipBuilderTest {
     @ApplicationContext
     lateinit var context: Context
 
+    val account = Account("Test Account", "Test Account Type")
+
     @Before
     fun inject() {
         hiltRule.inject()
@@ -74,7 +77,7 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
-        val addressBookGroupsAsCategories = addressbookFactory.create(provider, GroupMethod.CATEGORIES)
+        val addressBookGroupsAsCategories = addressbookFactory.create(account, provider, GroupMethod.CATEGORIES)
         GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories, false).build().also { result ->
             assertEquals(1, result.size)
             assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
@@ -87,7 +90,7 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
-        val addressBookGroupsAsVCards = addressbookFactory.create(provider, GroupMethod.GROUP_VCARDS)
+        val addressBookGroupsAsVCards = addressbookFactory.create(account, provider, GroupMethod.GROUP_VCARDS)
         GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards, false).build().also { result ->
             // group membership is constructed during post-processing
             assertEquals(0, result.size)
