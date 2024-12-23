@@ -8,8 +8,9 @@ import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Password
@@ -63,7 +64,6 @@ object EmailLogin : LoginType {
             email = uiState.email,
             onSetEmail = model::setEmail,
             password = uiState.password,
-            onSetPassword = model::setPassword,
             canContinue = uiState.canContinue,
             onLogin = { onLogin(uiState.asLoginInfo()) }
         )
@@ -76,8 +76,7 @@ object EmailLogin : LoginType {
 fun EmailLoginScreen(
     email: String,
     onSetEmail: (String) -> Unit = {},
-    password: String,
-    onSetPassword: (String) -> Unit = {},
+    password: TextFieldState,
     canContinue: Boolean,
     onLogin: () -> Unit = {}
 ) {
@@ -131,7 +130,6 @@ fun EmailLoginScreen(
 
             PasswordTextField(
                 password = password,
-                onPasswordChange = onSetPassword,
                 labelText = stringResource(R.string.login_password),
                 leadingIcon = {
                     Icon(Icons.Default.Password, null)
@@ -140,9 +138,7 @@ fun EmailLoginScreen(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-                keyboardActions = KeyboardActions(
-                    onDone = { onLogin() }
-                ),
+                onKeyboardAction = { onLogin() },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -155,7 +151,7 @@ fun EmailLoginScreen(
 fun EmailLoginScreen_Preview() {
     EmailLoginScreen(
         email = "test@example.com",
-        password = "",
+        password = rememberTextFieldState(""),
         canContinue = false
     )
 }

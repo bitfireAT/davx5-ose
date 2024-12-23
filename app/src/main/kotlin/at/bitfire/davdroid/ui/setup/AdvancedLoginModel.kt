@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -29,7 +30,7 @@ class AdvancedLoginModel @AssistedInject constructor(
     data class UiState(
         val url: String = "",
         val username: String = "",
-        val password: String = "",
+        val password: TextFieldState = TextFieldState(),
         val certAlias: String = ""
     ) {
 
@@ -46,7 +47,7 @@ class AdvancedLoginModel @AssistedInject constructor(
             baseUri = uri,
             credentials = Credentials(
                 username = username.trimToNull(),
-                password = password.trimToNull(),
+                password = password.text.toString().trimToNull(),
                 certificateAlias = certAlias.trimToNull()
             )
         )
@@ -60,7 +61,7 @@ class AdvancedLoginModel @AssistedInject constructor(
         uiState = uiState.copy(
             url = initialLoginInfo.baseUri?.toString()?.removePrefix("https://") ?: "",
             username = initialLoginInfo.credentials?.username ?: "",
-            password = initialLoginInfo.credentials?.password ?: "",
+            password = TextFieldState(initialLoginInfo.credentials?.password ?: ""),
             certAlias = initialLoginInfo.credentials?.certificateAlias ?: ""
         )
     }
@@ -71,10 +72,6 @@ class AdvancedLoginModel @AssistedInject constructor(
 
     fun setUsername(username: String) {
         uiState = uiState.copy(username = username)
-    }
-
-    fun setPassword(password: String) {
-        uiState = uiState.copy(password = password)
     }
 
     fun setCertAlias(certAlias: String) {

@@ -8,8 +8,9 @@ import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Folder
@@ -65,7 +66,6 @@ object UrlLogin : LoginType {
             username = uiState.username,
             onSetUsername = model::setUsername,
             password = uiState.password,
-            onSetPassword = model::setPassword,
             canContinue = uiState.canContinue,
             onLogin = {
                 if (uiState.canContinue)
@@ -82,8 +82,7 @@ fun UrlLoginScreen(
     onSetUrl: (String) -> Unit = {},
     username: String,
     onSetUsername: (String) -> Unit = {},
-    password: String,
-    onSetPassword: (String) -> Unit = {},
+    password: TextFieldState,
     canContinue: Boolean,
     onLogin: () -> Unit = {}
 ) {
@@ -150,7 +149,6 @@ fun UrlLoginScreen(
 
             PasswordTextField(
                 password = password,
-                onPasswordChange = onSetPassword,
                 labelText = stringResource(R.string.login_password),
                 leadingIcon = {
                     Icon(Icons.Default.Password, null)
@@ -159,9 +157,7 @@ fun UrlLoginScreen(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-                keyboardActions = KeyboardActions(
-                    onDone = { onLogin() }
-                ),
+                onKeyboardAction = { onLogin() },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -178,7 +174,7 @@ fun UrlLoginScreen_Preview() {
     UrlLoginScreen(
         url = "https://example.com",
         username = "user",
-        password = "",
+        password = rememberTextFieldState(""),
         canContinue = false
     )
 }

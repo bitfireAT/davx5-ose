@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Folder
@@ -69,7 +71,6 @@ object AdvancedLogin : LoginType {
             username = uiState.username,
             onSetUsername = model::setUsername,
             password = uiState.password,
-            onSetPassword = model::setPassword,
             certAlias = uiState.certAlias,
             onSetCertAlias = model::setCertAlias,
             canContinue = uiState.canContinue,
@@ -88,8 +89,7 @@ fun AdvancedLoginScreen(
     onSetUrl: (String) -> Unit = {},
     username: String,
     onSetUsername: (String) -> Unit = {},
-    password: String,
-    onSetPassword: (String) -> Unit = {},
+    password: TextFieldState,
     certAlias: String,
     onSetCertAlias: (String) -> Unit = {},
     canContinue: Boolean,
@@ -158,7 +158,6 @@ fun AdvancedLoginScreen(
 
             PasswordTextField(
                 password = password,
-                onPasswordChange = onSetPassword,
                 labelText = stringResource(R.string.login_password_optional),
                 leadingIcon = {
                     Icon(Icons.Default.Password, null)
@@ -199,7 +198,7 @@ fun AdvancedLoginScreen_Preview_Empty() {
         snackbarHostState = SnackbarHostState(),
         url = "",
         username = "",
-        password = "",
+        password = rememberTextFieldState(""),
         certAlias = "",
         canContinue = false
     )
@@ -212,7 +211,7 @@ fun AdvancedLoginScreen_Preview_AllFilled() {
         snackbarHostState = SnackbarHostState(),
         url = "dav.example.com",
         username = "someuser",
-        password = "password",
+        password = rememberTextFieldState("password"),
         certAlias = "someCert",
         canContinue = true
     )
