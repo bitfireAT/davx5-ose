@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Da soporte al proyecto</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Danos soporte con medallas</string>
     <string name="nav_rate_us">Valora en Google Play</string>
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Has ganado una medalla, gracias!</item>
         <item quantity="many">Has ganado %d medallas, gracias!</item>
@@ -18,6 +19,4 @@
     <string name="button_buy_badge_free">GRATIS</string>
     <string name="button_buy_badge_bought">Gracias!</string>
     <string name="earn_badges">Obtén medallas para darnos soporte!</string>
-    <string name="billing_unavailable">El API de Compras no está disponible, está el Play Store actualizado y has iniciado sesión con tu cuenta de Google?</string>
-    <string name="network_problems">Han habido problemas en la red, por favor, inténtalo de nuevo más tarde.</string>
-</resources>
+    </resources>

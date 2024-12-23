@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Podpořte projekt</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Podpořte nás odznáčky</string>
     <string name="nav_rate_us">Napsat recenzi v Google Play</string>
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Získali jste odznáček, děkujeme!</item>
         <item quantity="few">Získali jste %d odznáčky, děkujeme!</item>
@@ -19,6 +20,4 @@
     <string name="button_buy_badge_free">ZDARMA</string>
     <string name="button_buy_badge_bought">Děkujeme!</string>
     <string name="earn_badges">Získejte odznáčky pro naši podporu!</string>
-    <string name="billing_unavailable">API plateb není dostupné, je obchod Play aktualizovaný a jste přihlášeni do vašeho Google účtu?</string>
-    <string name="network_problems">Byly problémy se sítí, prosíme, zkuste znovu později.</string>
-</resources>
+    </resources>

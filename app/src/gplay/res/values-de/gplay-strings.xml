@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Projekt unterstützen</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Unterstütze uns mit Badges</string>
     <string name="nav_rate_us">In Google Play bewerten</string>
+    <string name="nav_feedback_inapp_didnt_appear">Rezension innerhalb der App erschien nicht?</string>
+    <string name="nav_feedback_google_play">In Google Play senden</string>
+    <string name="nav_feedback_scroll_to_reviews">Zum Rezensionsabschnitt blättern, um Feedback zu übermitteln</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">Diese Version ist nur für den Vertrieb über Google Play geeignet.</string>
+
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Du hast dir Abzeichen verdient, danke!</item>
         <item quantity="other">Du hast dir %d Abzeichen verdient, danke!</item>
@@ -17,6 +25,7 @@
     <string name="button_buy_badge_free">GRATIS</string>
     <string name="button_buy_badge_bought">Danke!</string>
     <string name="earn_badges">Sammle Abzeichen, um uns zu unterstützen!</string>
-    <string name="billing_unavailable">Billing API nicht verfügbar, ist der Play Store auf dem neuesten Stand und bist du in deinem Google-Konto eingeloggt?</string>
-    <string name="network_problems">Es gab Netzwerkprobleme, bitte versuche es später noch einmal.</string>
+    <string name="billing_unavailable">Keine API zur Abrechnung vorhanden</string>
+    <string name="network_problems">Netzwerkprobleme, bitte später nochmal probieren.</string>
+
 </resources>

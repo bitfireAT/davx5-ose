@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Ondersteun het project</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Steun ons met badges</string>
     <string name="nav_rate_us">Beoordeel in Google Play</string>
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Je hebt badges verdiend, bedankt!</item>
         <item quantity="other">Je hebt %d badges verdiend, bedankt!</item>
@@ -17,6 +18,4 @@
     <string name="button_buy_badge_free">Gratis</string>
     <string name="button_buy_badge_bought">Dank U!</string>
     <string name="earn_badges">Verdien badges om ons te steunen!</string>
-    <string name="billing_unavailable">Facturatie API niet beschikbaar, is de Play Store up-to-date en bent u ingelogd op uw Google-account?</string>
-    <string name="network_problems">Er waren netwerkproblemen, probeer het later nog eens.</string>
-</resources>
+    </resources>

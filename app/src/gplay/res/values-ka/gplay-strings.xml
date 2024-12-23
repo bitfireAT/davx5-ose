@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">პროექტის მხარდაჭერა</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">დაგვიჭირეთ მხარი ბეიჯებით</string>
     <string name="nav_rate_us">Google Play-ში შეფასება</string>
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">თქვენ მიიღეთ ბეიჯი, გმადლობთ!</item>
         <item quantity="other">თქვენ მიიღეთ %d ბეიჯი, გმადლობთ!</item>
@@ -17,6 +18,4 @@
     <string name="button_buy_badge_free">უფასო</string>
     <string name="button_buy_badge_bought">გმადლობთ!</string>
     <string name="earn_badges">მიიღეთ ბეიჯები ჩვენს მხარდასაჭერად!</string>
-    <string name="billing_unavailable">გადახდის API ხელმიუწვდომია, Play მაღაზიას ბოლო ვერსია გაქვთ და ხართ შესული თქვენი Google-ის ანგარიშით?</string>
-    <string name="network_problems">მოხდა ქსელური პრობკემა, გთხოვთ, სცადოთ მოგვიანებით.</string>
-</resources>
+    </resources>

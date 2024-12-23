@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Susține proiectul</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Sprijină-ne cu insigne</string>
     <string name="nav_rate_us">Recenzie în Google Play</string>
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Ai câștigat o insignă, îți mulțumim!</item>
         <item quantity="few">Ai câștigat %d insigne, îți mulțumim!</item>
@@ -18,6 +19,4 @@
     <string name="button_buy_badge_free">GRATUIT</string>
     <string name="button_buy_badge_bought">Mulțumesc!</string>
     <string name="earn_badges">Câștigă insigne pentru a ne susține!</string>
-    <string name="billing_unavailable">API-ul de facturare nu este disponibil, Magazinul Play este actualizat și ești conectat la contul tău Google?</string>
-    <string name="network_problems">Au apărut probleme de rețea, încearcă din nou mai târziu.</string>
-</resources>
+    </resources>

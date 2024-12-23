@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Подкрепи проекта</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Подкрепете ни със значки</string>
     <string name="nav_rate_us">Оценки в Google Play</string>
+    <string name="nav_feedback_inapp_didnt_appear">Оценката не се вижда в приложението?</string>
+    <string name="nav_feedback_google_play">Изпращане към Google Play</string>
+    <string name="nav_feedback_scroll_to_reviews">Прелистете до оценките, за да изпратите своя</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">Тази версия може да се разпространява само чрез Google Play.</string>
+
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Получили сте значка, благодарим ви!</item>
         <item quantity="other">Получили сте %d значки, благодарим ви!</item>
@@ -17,6 +25,7 @@
     <string name="button_buy_badge_free">БЕЗПЛАТНО</string>
     <string name="button_buy_badge_bought">Благодаря!</string>
     <string name="earn_badges">Печелете значки, за да ни подкрепите!</string>
-    <string name="billing_unavailable">ППИ за фактуриране не е наличен, Play Store последно издание ли е и влезли ли сте в профила си в Google?</string>
-    <string name="network_problems">Проблеми с мрежата, моля опитайте по-късно.</string>
+    <string name="billing_unavailable">Billing API е недостъпно</string>
+    <string name="network_problems">Проблеми с мрежата, опитайте по-късно.</string>
+
 </resources>

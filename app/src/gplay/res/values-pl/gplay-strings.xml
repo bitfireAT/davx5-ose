@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Wspieraj projekt</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Wspieraj nas z odznakami</string>
     <string name="nav_rate_us">Oceń w Google Play</string>
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Zdobyłeś odznakę, dziękujemy!</item>
         <item quantity="few">Zdobyłeś %d odznaki, dziękujemy</item>
@@ -19,6 +20,4 @@
     <string name="button_buy_badge_free">DARMOWY</string>
     <string name="button_buy_badge_bought">Dziękujemy!</string>
     <string name="earn_badges">Zdobądź odznaki aby nas wspierać!</string>
-    <string name="billing_unavailable">Rozliczeniowe API jest niedostępne, czy Play Store jest w aktualnej wersji i czy jesteś zalogowany do Twojego konta Google?</string>
-    <string name="network_problems">Wystąpiły problemy z siecią, spróbuj ponownie później.</string>
-</resources>
+    </resources>

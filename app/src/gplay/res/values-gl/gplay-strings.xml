@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Axuda ao proxecto</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Axúdanos con insignias</string>
     <string name="nav_rate_us">Recensión en Google Play</string>
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Gañaches unha insignia, grazas!</item>
         <item quantity="other">Gañaches %d insignias, grazas!</item>
@@ -17,6 +18,4 @@
     <string name="button_buy_badge_free">DE BALDE</string>
     <string name="button_buy_badge_bought">Grazas!</string>
     <string name="earn_badges">Consigue insignias para axudarnos!</string>
-    <string name="billing_unavailable">A API de cobros non está dispoñible, tes a Play Store actualizada e accedeches coa túa conta?</string>
-    <string name="network_problems">Hai problemas na rede, inténtao máis tarde por favor.</string>
-</resources>
+    </resources>

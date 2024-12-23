@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Support the project</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Support us with badges</string>
     <string name="nav_rate_us">Review in Google Play</string>
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">You\'ve earned a badge, thank you!</item>
         <item quantity="other">You have earned %d badges, thank you!</item>
@@ -17,6 +18,4 @@
     <string name="button_buy_badge_free">FREE</string>
     <string name="button_buy_badge_bought">Thank you!</string>
     <string name="earn_badges">Earn badges to support us!</string>
-    <string name="billing_unavailable">Billing API unavailable, is the Play Store up-to-date and are you logged in to your Google account?</string>
-    <string name="network_problems">There were network problems, please try again later.</string>
-</resources>
+    </resources>

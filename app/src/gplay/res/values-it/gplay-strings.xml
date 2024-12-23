@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Supporta il progetto</string>
     <string name="nav_rate_us">Recensisci su Google Play</string>
     <string name="what_are_badges">Cosa sono i badge?</string>
     <string name="what_are_badges_title">Cosa sono i badge?</string>

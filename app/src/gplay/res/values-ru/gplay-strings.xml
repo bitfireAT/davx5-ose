@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Поддержать проект</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Поддержать нас значками</string>
     <string name="nav_rate_us">Отзыв в Google Play</string>
+    <string name="nav_feedback_inapp_didnt_appear">Не появился отзыв о приложении?</string>
+    <string name="nav_feedback_google_play">Отправить в Google Play</string>
+    <string name="nav_feedback_scroll_to_reviews">Перейдите к разделу отзывов, чтобы оставить свой</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">Эта версия может распространяться только через Google Play.</string>
+
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Вы заработали значок, спасибо!</item>
         <item quantity="few">Вы заработали %d значка, спасибо!</item>
@@ -19,6 +27,7 @@
     <string name="button_buy_badge_free">БЕСПЛАТНО</string>
     <string name="button_buy_badge_bought">Спасибо!</string>
     <string name="earn_badges">Зарабатывайте значки, поддерживая нас!</string>
-    <string name="billing_unavailable">API биллинга недоступен. Проверьте, пожалуйста, обновлен ли Play Store и авторизованы ли вы в вашем аккаунте Google?</string>
-    <string name="network_problems">Возникли проблемы с сетью, повторите попытку позже.</string>
+    <string name="billing_unavailable">API биллинга недоступен</string>
+    <string name="network_problems">Проблемы с сетью, попробуйте позже.</string>
+
 </resources>

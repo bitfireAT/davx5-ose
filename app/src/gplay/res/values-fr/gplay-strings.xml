@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Soutenir le projet</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Soutenez-nous avec des badges</string>
     <string name="nav_rate_us">Avis sur Google Play</string>
     <string name="available_badges">Badges disponibles</string>
@@ -13,6 +13,4 @@
     <string name="button_buy_badge_free">GRATUIT</string>
     <string name="button_buy_badge_bought">Merci !</string>
     <string name="earn_badges">Acheter des badges pour nous soutenir !</string>
-    <string name="billing_unavailable">Le service de paiement est indisponible. Est-ce que le Google Play Store est à jour et êtes-vous connecté avec votre compte Google ?</string>
-    <string name="network_problems">Problème réseau, réessayer plus tard.</string>
-</resources>
+    </resources>

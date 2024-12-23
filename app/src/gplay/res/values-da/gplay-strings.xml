@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">Støt projektet</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Støt os med emblemer</string>
     <string name="nav_rate_us">Bedøm i Google Play</string>
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Du har fortjent et emblem, tak!</item>
         <item quantity="other">Du har optjent %d emblemer, tak!</item>
@@ -17,6 +18,4 @@
     <string name="button_buy_badge_free">GRATIS</string>
     <string name="button_buy_badge_bought">Tak!</string>
     <string name="earn_badges">Optjen emblemer for at støtte os!</string>
-    <string name="billing_unavailable">Betalings API er ikke tilgængelig, er Play Store opdateret, og er du logget ind på din Google-konto?</string>
-    <string name="network_problems">Der opstod netværksproblemer, prøv venligst igen senere.</string>
-</resources>
+    </resources>

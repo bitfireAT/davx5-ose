@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">A projekt támogatása</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Támogatás jelvényekkel</string>
     <string name="nav_rate_us">Értékelés a Play Áruházban</string>
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">A jelvényt beszerzése sikerült, köszönjük!</item>
         <item quantity="other">%d jelvényt szerezett be, köszönjük!</item>
@@ -17,6 +18,4 @@
     <string name="button_buy_badge_free">INGYENES</string>
     <string name="button_buy_badge_bought">Köszönjük!</string>
     <string name="earn_badges">Szerezz be jelvényeket és támogass minket!</string>
-    <string name="billing_unavailable">A számlázási API nem elérhető, a Play Áruház naprakész és be van jelentkezve a Google-fiókodba?</string>
-    <string name="network_problems">Hálózati problémák, kérjük, próbálja meg később újra.</string>
-</resources>
+    </resources>

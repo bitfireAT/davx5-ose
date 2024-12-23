@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_support_project">支持本项目</string>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">用徽章支持我们</string>
     <string name="nav_rate_us">在 Google Play 中打分</string>
+    <string name="nav_feedback_inapp_didnt_appear">应用内预览没有出现？</string>
+    <string name="nav_feedback_google_play">在 Google Play 中发送</string>
+    <string name="nav_feedback_scroll_to_reviews">滚动到评价部分来提交反馈</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">此版本只允许在 Google Play 上发行。</string>
+
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="other">你已赚得 %d 枚徽章，谢谢！</item>
     </plurals>
@@ -16,6 +24,7 @@
     <string name="button_buy_badge_free">免费</string>
     <string name="button_buy_badge_bought">谢谢！</string>
     <string name="earn_badges">用徽章表示支持！</string>
-    <string name="billing_unavailable">账单 API 不可用，请确保 Play Store 是最新版，且您已登录到 Google 账户。</string>
-    <string name="network_problems">有网络问题，请稍后再试。</string>
+    <string name="billing_unavailable">账单 API 不可用</string>
+    <string name="network_problems">网络问题，请稍后再试</string>
+
 </resources>
