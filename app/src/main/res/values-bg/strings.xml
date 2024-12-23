@@ -328,7 +328,7 @@
   </plurals>
   <string name="settings_default_alarm_off">Няма създадени подразбирани напомняния</string>
   <string name="settings_default_alarm_message">Към събитията без напомняне ще бъде добавяно подразбирано напомняне: желания брой минути преди събитието. Оставете празно, за да изключите подразбираните напомняния.</string>
-  <string name="settings_manage_calendar_colors">Управление на цвета на календари</string>
+  <string name="settings_manage_calendar_colors">Управление на цветовете на календара</string>
   <string name="settings_manage_calendar_colors_on">Цветовете на календарите се нулират при всяко синхронизиране.</string>
   <string name="settings_manage_calendar_colors_off">Цветовете на календарите могат да бъдат зададени от други приложения.</string>
   <string name="settings_event_colors">Поддръжка на цветове за събития</string>

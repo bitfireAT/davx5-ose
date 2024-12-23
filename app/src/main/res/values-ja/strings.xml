@@ -185,7 +185,11 @@
   <string name="app_settings_tasks_provider">ToDo リストアプリ</string>
   <string name="app_settings_tasks_provider_none">連携できるアプリがありません</string>
   <string name="app_settings_unifiedpush">UnifiedPush (試験的)</string>
+  <string name="app_settings_unifiedpush_disable">なし (プッシュを無効にする)</string>
+  <string name="app_settings_unifiedpush_choose_distributor">ディストリビューターを選択</string>
+  <string name="app_settings_unifiedpush_no_distributor">プッシュのディストリビューターがインストールされていません</string>
   <string name="app_settings_unifiedpush_no_endpoint">エンドポイントが設定されていません</string>
+  <string name="app_settings_unifiedpush_ready">%s 経由でプッシュメッセージを受信できます</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>

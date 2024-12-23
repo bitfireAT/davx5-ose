@@ -4,7 +4,7 @@
   <string name="account_invalid">Kontot finns inte (längre)</string>
   <string name="account_title_address_book">DAVx⁵ Adressbok</string>
   <string name="address_books_authority_title">Adressböcker</string>
-  <string name="dialog_delete">Ta bort</string>
+  <string name="dialog_delete">Radera</string>
   <string name="dialog_remove">Ta bort</string>
   <string name="dialog_deny">Avbryt</string>
   <string name="field_required">Detta fält är obligatoriskt</string>
@@ -14,7 +14,7 @@
   <string name="optional_label">* valfritt</string>
   <string name="options_menu">Inställningsmeny</string>
   <string name="share">Dela</string>
-  <string name="sync_started">Synkronisering startad/kölagd</string>
+  <string name="sync_started">Synkronisering startad/köad</string>
   <string name="database_destructive_migration_title">Databasen är korrupt</string>
   <string name="database_destructive_migration_text">Alla konton har blivit borttagna lokalt.</string>
   <string name="notification_channel_debugging">Felsökning</string>
@@ -35,8 +35,8 @@
   <string name="intro_battery_dont_show">Jag behöver inte regelbunden synkronisering.*</string>
   <string name="intro_autostart_title">%s kompatibilitet</string>
   <string name="intro_autostart_text">Den här enheten blockerar troligen synkronisering. Om du är drabbad måste det lösas manuellt.</string>
-  <string name="intro_autostart_dont_show">Jag har gjort de nödvändiga inställningarna. Påminn mig inte längre.*</string>
-  <string name="intro_leave_unchecked">* Lämna det omarkerat för att bli påmind senare.. Kan återställas i appens inställningar / %s.</string>
+  <string name="intro_autostart_dont_show">Jag har gjort de nödvändiga inställningarna. Påminn mig inte igen.*</string>
+  <string name="intro_leave_unchecked">* Lämna omarkerat för att bli påmind senare.. Kan återställas i appens inställningar / %s.</string>
   <string name="intro_more_info">Mer information</string>
   <string name="intro_tasks_jtx">jtx Bord</string>
   <string name="intro_tasks_jtx_info"><![CDATA[Stödjer avstämning av uppgifter, journaler och anteckningar.]]></string>
@@ -68,11 +68,11 @@
   <string name="permissions_notification_title">Notifieringsbehörigheter</string>
   <string name="permissions_notification_status_off">Notifieringar avaktiverade (ej rekommenderat)</string>
   <string name="permissions_notification_status_on">Notifieringar aktiva</string>
-  <string name="permissions_jtx_title">jtx Bordsbehörigheter</string>
+  <string name="permissions_jtx_title">jtx Board-behörigheter</string>
   <string name="permissions_opentasks_title">OpenTasks-behörigheter</string>
   <string name="permissions_tasksorg_title">Tasks behörighet</string>
   <string name="permissions_tasks_status_off">Ingen synkronisering av uppgifter</string>
-  <string name="permissions_tasks_status_on">Uppgiftssynronisering möjlig</string>
+  <string name="permissions_tasks_status_on">Uppgiftssynkronisering möjlig</string>
   <string name="permissions_autoreset_title">Behåll behörigheter</string>
   <string name="permissions_autoreset_status_off">Behörigheter kan återställas automatiskt (rekommenderas inte)</string>
   <string name="permissions_autoreset_status_on">Behörigheterna återställs inte automatiskt</string>
