@@ -26,11 +26,8 @@ import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -51,7 +48,7 @@ class TasksAppManager @Inject constructor(
     /**
      * Gets the currently selected tasks app.
      *
-     * @return currently selected tasks app, or `null` if no tasks app is selected or the selected app is not installed
+     * @return currently selected tasks app (when installed), or `null` if no tasks app is selected or the selected app is not installed
      */
     fun currentProvider(): ProviderName? {
         val preferredAuthority = settingsManager.getString(Settings.SELECTED_TASKS_PROVIDER) ?: return null
@@ -59,15 +56,15 @@ class TasksAppManager @Inject constructor(
     }
 
     /**
-     * Like [currentProvider, but as a [StateFlow].
+     * Like [currentProvider], but as a [Flow].
      */
-    fun currentProviderFlow(externalScope: CoroutineScope): StateFlow<ProviderName?> {
+    fun currentProviderFlow(): Flow<ProviderName?> {
         return settingsManager.getStringFlow(Settings.SELECTED_TASKS_PROVIDER).map { preferred ->
             if (preferred != null)
                 preferredAuthorityToProviderName(preferred)
             else
                 null
-        }.stateIn(scope = externalScope, started = SharingStarted.WhileSubscribed(), initialValue = null)
+        }
     }
 
     private fun preferredAuthorityToProviderName(preferredAuthority: String): ProviderName? {
@@ -92,7 +89,7 @@ class TasksAppManager @Inject constructor(
      * Called
      *
      * - when a user explicitly selects another task app, or
-     * - when there previously was no (usable) tasks app and [at.bitfire.davdroid.TasksAppWatcher] detected a new one.
+     * - when there previously was no (usable) tasks app and [at.bitfire.davdroid.startup.TasksAppWatcher] detected a new one.
      */
     fun selectProvider(selectedProvider: ProviderName?) {
         logger.info("Selecting tasks app: $selectedProvider")

@@ -105,7 +105,7 @@ class AccountScreenModel @AssistedInject constructor(
     val canCreateCalendar = bindableCalendarHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
-    val tasksProvider = tasksAppManager.currentProviderFlow(viewModelScope)
+    val tasksProvider = tasksAppManager.currentProviderFlow()
     val calDavProgress = accountProgressUseCase(
         account = account,
         serviceFlow = calDavSvc,
