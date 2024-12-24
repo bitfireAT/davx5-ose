@@ -46,13 +46,13 @@ class TasksAppManager @Inject constructor(
 ) {
 
     /**
-     * Gets the currently selected tasks app.
+     * Gets the currently selected tasks app, if installed.
      *
      * @return currently selected tasks app (when installed), or `null` if no tasks app is selected or the selected app is not installed
      */
     fun currentProvider(): ProviderName? {
-        val preferredAuthority = settingsManager.getString(Settings.SELECTED_TASKS_PROVIDER) ?: return null
-        return preferredAuthorityToProviderName(preferredAuthority)
+        val authority = settingsManager.getString(Settings.SELECTED_TASKS_PROVIDER) ?: return null
+        return authorityToProviderName(authority)
     }
 
     /**
@@ -61,22 +61,19 @@ class TasksAppManager @Inject constructor(
     fun currentProviderFlow(): Flow<ProviderName?> {
         return settingsManager.getStringFlow(Settings.SELECTED_TASKS_PROVIDER).map { preferred ->
             if (preferred != null)
-                preferredAuthorityToProviderName(preferred)
+                authorityToProviderName(preferred)
             else
                 null
         }
     }
 
-    private fun preferredAuthorityToProviderName(preferredAuthority: String): ProviderName? {
-        val packageManager = context.packageManager
-        ProviderName.entries.toTypedArray()
-            .sortedByDescending { it.authority == preferredAuthority }
-            .forEach { providerName ->
-                if (packageManager.resolveContentProvider(providerName.authority, 0) != null)
-                    return providerName
-            }
-        return null
-    }
+    /**
+     * Converts an authority to a [ProviderName], if the authority is known and the provider is installed.
+     */
+    private fun authorityToProviderName(authority: String): ProviderName? =
+        ProviderName.entries
+            .firstOrNull { it.authority == authority }
+            .takeIf { context.packageManager.resolveContentProvider(authority, 0) != null }
 
 
     /**
