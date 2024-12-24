@@ -49,13 +49,13 @@ class TasksAppManager @Inject constructor(
 ) {
 
     /**
-     * Gets the currently selected tasks app.
+     * Gets the currently selected tasks app, if installed.
      *
      * @return currently selected tasks app, or `null` if no tasks app is selected or the selected app is not installed
      */
     fun currentProvider(): ProviderName? {
-        val preferredAuthority = settingsManager.getString(Settings.SELECTED_TASKS_PROVIDER) ?: return null
-        return preferredAuthorityToProviderName(preferredAuthority)
+        val authority = settingsManager.getString(Settings.SELECTED_TASKS_PROVIDER) ?: return null
+        return authorityToProviderName(authority)
     }
 
     /**
@@ -64,22 +64,19 @@ class TasksAppManager @Inject constructor(
     fun currentProviderFlow(externalScope: CoroutineScope): StateFlow<ProviderName?> {
         return settingsManager.getStringFlow(Settings.SELECTED_TASKS_PROVIDER).map { preferred ->
             if (preferred != null)
-                preferredAuthorityToProviderName(preferred)
+                authorityToProviderName(preferred)
             else
                 null
         }.stateIn(scope = externalScope, started = SharingStarted.WhileSubscribed(), initialValue = null)
     }
 
-    private fun preferredAuthorityToProviderName(preferredAuthority: String): ProviderName? {
-        val packageManager = context.packageManager
-        ProviderName.entries.toTypedArray()
-            .sortedByDescending { it.authority == preferredAuthority }
-            .forEach { providerName ->
-                if (packageManager.resolveContentProvider(providerName.authority, 0) != null)
-                    return providerName
-            }
-        return null
-    }
+    /**
+     * Converts an authority to a [ProviderName], if the authority is known and the provider is installed.
+     */
+    private fun authorityToProviderName(authority: String): ProviderName? =
+        ProviderName.entries
+            .firstOrNull { it.authority == authority }
+            .takeIf { context.packageManager.resolveContentProvider(authority, 0) != null }
 
 
     /**
@@ -104,7 +101,7 @@ class TasksAppManager @Inject constructor(
         // check all accounts and (de)activate task provider(s) if a CalDAV service is defined
         for (account in accountRepository.get().getAll()) {
             val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
-            for (providerName in TaskProvider.ProviderName.entries) {
+            for (providerName in ProviderName.entries) {
                 val syncable = hasCalDAV && providerName == selectedProvider
 
                 // enable/disable sync for the given account and authority
@@ -118,7 +115,7 @@ class TasksAppManager @Inject constructor(
 
         if (permissionsRequired) {
             logger.warning("Tasks synchronization is now enabled for at least one account, but permissions are not granted")
-                notificationRegistry.get().notifyPermissions()
+            notificationRegistry.get().notifyPermissions()
         }
     }
 
@@ -133,11 +130,11 @@ class TasksAppManager @Inject constructor(
                 settings.setSyncInterval(authority, interval)
             } else {
                 logger.info("Disabling $authority sync for $account")
-                automaticSyncManager.disable(account, authority)
+                automaticSyncManager.disableAutomaticSync(account, authority)
             }
         } catch (_: InvalidAccountException) {
             // account has already been removed, make sure periodic sync is disabled, too
-            automaticSyncManager.disable(account, authority)
+            automaticSyncManager.disableAutomaticSync(account, authority)
         }
     }
 

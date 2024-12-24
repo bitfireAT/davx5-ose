@@ -101,7 +101,7 @@ class AccountRepository @Inject constructor(
                 // start CardDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
             } else
-                automaticSyncManager.disable(account, addrBookAuthority)
+                automaticSyncManager.disableAutomaticSync(account, addrBookAuthority)
 
             // Configure CalDAV service
             if (config.calDAV != null) {
@@ -123,9 +123,9 @@ class AccountRepository @Inject constructor(
                 // start CalDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
             } else {
-                automaticSyncManager.disable(account, CalendarContract.AUTHORITY)
+                automaticSyncManager.disableAutomaticSync(account, CalendarContract.AUTHORITY)
                 for (provider in TaskProvider.ProviderName.entries)
-                    automaticSyncManager.disable(account, provider.authority)
+                    automaticSyncManager.disableAutomaticSync(account, provider.authority)
             }
 
         } catch(e: InvalidAccountException) {
@@ -266,7 +266,7 @@ class AccountRepository @Inject constructor(
             val newSettings = accountSettingsFactory.create(newAccount)
             for ((authority, interval) in syncIntervals) {
                 if (interval == null)
-                    automaticSyncManager.disable(newAccount, authority)
+                    automaticSyncManager.disableAutomaticSync(newAccount, authority)
                 else
                     newSettings.setSyncInterval(authority, interval)
             }
