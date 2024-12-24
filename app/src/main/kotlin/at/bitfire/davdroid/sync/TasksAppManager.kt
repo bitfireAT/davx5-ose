@@ -130,11 +130,11 @@ class TasksAppManager @Inject constructor(
                 settings.setSyncInterval(authority, interval)
             } else {
                 logger.info("Disabling $authority sync for $account")
-                automaticSyncManager.disable(account, authority)
+                automaticSyncManager.disableAutomaticSync(account, authority)
             }
         } catch (_: InvalidAccountException) {
             // account has already been removed, make sure periodic sync is disabled, too
-            automaticSyncManager.disable(account, authority)
+            automaticSyncManager.disableAutomaticSync(account, authority)
         }
     }
 

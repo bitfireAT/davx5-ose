@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import javax.inject.Inject
 
@@ -15,6 +16,7 @@ import javax.inject.Inject
  * - synchronization on local data changes.
  */
 class AutomaticSyncManager @Inject constructor(
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val syncFramework: SyncFrameworkIntegration,
     private val workerManager: SyncWorkerManager
 ) {
@@ -22,7 +24,7 @@ class AutomaticSyncManager @Inject constructor(
     /**
      * Disable automatic synchronization for the given account and data type.
      */
-    fun disable(account: Account, authority: String) {
+    fun disableAutomaticSync(account: Account, authority: String) {
         workerManager.disablePeriodic(account, authority)
         syncFramework.disableSyncAbility(account, authority)
     }
@@ -35,10 +37,15 @@ class AutomaticSyncManager @Inject constructor(
      *
      * @param account   the account to synchronize
      * @param authority the authority to synchronize
-     * @param wifiOnly  whether to synchronize only on Wi-Fi
+     * @param wifiOnly  whether to synchronize only on Wi-Fi (default takes the account setting)
      * @param seconds   interval in seconds, or `null` to disable periodic sync (only sync on local data changes)
      */
-    fun setSyncInterval(account: Account, authority: String, seconds: Long?, wifiOnly: Boolean) {
+    fun enableAutomaticSync(
+        account: Account,
+        authority: String,
+        seconds: Long?,
+        wifiOnly: Boolean = accountSettingsFactory.create(account).getSyncWifiOnly()
+    ) {
         if (seconds != null) {
             // update sync workers (needs already updated sync interval in AccountSettings)
             workerManager.enablePeriodic(account, authority, seconds, wifiOnly)

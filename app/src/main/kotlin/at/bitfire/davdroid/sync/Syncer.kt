@@ -257,8 +257,8 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             if (provider == null) {
                 /* Can happen if
                  - we're not allowed to access the content provider, or
-                 - the content provider is not available at all, for instance because the respective
-                   system app, like "calendar storage" is disabled */
+                 - the content provider is not available at all, for instance because the tasks app has been uninstalled
+                   or the respective system app (like "calendar storage") is disabled */
                 logger.warning("Couldn't connect to content provider of authority $authority")
                 syncResult.contentProviderError = true
 

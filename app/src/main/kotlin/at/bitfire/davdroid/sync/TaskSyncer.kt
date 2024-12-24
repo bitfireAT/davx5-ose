@@ -25,7 +25,7 @@ class TaskSyncer @AssistedInject constructor(
     @Assisted override val authority: String,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
-    private val localTaskListStoreFactory: LocalTaskListStore.Factory,
+    localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
 ): Syncer<LocalTaskListStore, LocalTaskList>(account, extras, syncResult) {
