@@ -159,7 +159,7 @@ class AccountScreenModel @AssistedInject constructor(
                 accountRepository.rename(account.name, newName)
 
                 // synchronize again
-                val newAccount = Account(context.getString(R.string.account_type), newName)
+                val newAccount = Account(newName, context.getString(R.string.account_type))
                 syncWorkerManager.enqueueOneTimeAllAuthorities(newAccount, manual = true)
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't rename account", e)

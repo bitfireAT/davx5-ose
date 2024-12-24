@@ -31,6 +31,7 @@
   <string name="intro_slogan1">Sinu andmed. Sinu valik.</string>
   <string name="intro_slogan2">Sina otsustad.</string>
   <string name="intro_battery_title">Regulaarne sünkroniseerimisvälp</string>
+  <string name="intro_autostart_text">Ilmselt see nutiseade blokeerib sünkroniseerimist. Kui see sinu tegevust mõjutab, siis saad olukorra lahendada käsitsi.</string>
   <string name="intro_more_info">Lisateave</string>
   <string name="intro_tasks_jtx">jtx Board</string>
   <string name="intro_tasks_jtx_info"><![CDATA[Toetab ülesannete, märkmete ja päevikute sünkroniseerimist.]]></string>
@@ -47,12 +48,17 @@
   <!--PermissionsActivity-->
   <string name="permissions_title">Õigused</string>
   <string name="permissions_text">%s vajab korralikuks toimimiseks õigusi.</string>
+  <string name="permissions_calendar_status_off">Kalendri sünkroniseerimine puudub (pole soovitatud)</string>
+  <string name="permissions_calendar_status_on">Kalendri sünkroniseerimine on võimalik</string>
   <string name="permissions_notification_title">Teavituste õigused</string>
   <string name="permissions_notification_status_off">Teavitused pole kasutusel (pole soovitatav)</string>
   <string name="permissions_notification_status_on">Teavitused on kasutusel</string>
   <string name="permissions_jtx_title">Õigused - jtx Board</string>
   <string name="permissions_opentasks_title">Õigused - OpenTasks</string>
   <string name="permissions_tasksorg_title">Ülesannete õigused</string>
+  <string name="permissions_tasks_status_off">Ülesannete sünkroniseerimine puudub</string>
+  <string name="permissions_tasks_status_on">Ülesannete sünkroniseerimine on võimalik</string>
+  <string name="permissions_autoreset_title">Säilita õigused</string>
   <string name="permissions_app_settings">Rakenduse seadistused</string>
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_location_enabled">Asukohateenus on alati kasutusel</string>
@@ -63,10 +69,14 @@
   <string name="about_libraries">Teegid</string>
   <string name="about_version">Versioon %1$s (%2$d)</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) ja kaasautorid</string>
+  <string name="about_license_info_no_warranty">Selle rakenduse kasutamisega EI KAASNE MITTE ÜHTEGI GARANTIID. Tegemist on vaba ja avatud tarkvaraga ning sa võid seda levitada kindlate tingimuste alusel.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Logifaili loomine ei õnnestunud</string>
+  <string name="logging_notification_text">Nüüd logime kõiki %s rakenduse tegevusi</string>
   <string name="logging_notification_view_share">Vaata/jaga</string>
+  <string name="logging_notification_disable">Lülita välja</string>
   <!--AccountsScreen-->
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV sünkroniseerimise sobitaja</string>
   <string name="navigation_drawer_about">Teave / litsents</string>
   <string name="navigation_drawer_beta_feedback">Beetaversiooni tagasiside</string>
   <string name="install_browser">Palun paigalda veebibrauser</string>
@@ -123,6 +133,12 @@
   <string name="app_settings_security">Turvalisus</string>
   <string name="app_settings_security_app_permissions">Rakenduse õigused</string>
   <string name="app_settings_security_app_permissions_summary">Täpsusta sünkroniseerimiseks vajalike õigusi</string>
+  <string name="app_settings_distrust_system_certs">Ära usalda nutiseadme süsteemseid sertifikaate</string>
+  <string name="app_settings_distrust_system_certs_on">Süsteemsed ja kasutaja lisatud sertifitseerimiskeskused ei ole usaldatud</string>
+  <string name="app_settings_distrust_system_certs_off">Süsteemsed ja kasutaja lisatud sertifitseerimiskeskused on usaldatud (soovitatav valik)</string>
+  <string name="app_settings_reset_certificates">Lähtesta (mitte)usaldatud sertifikaatide loend</string>
+  <string name="app_settings_reset_certificates_summary">Selle valikuga eemaldatakse kõik sinu lisatud sertifikaatide usaldusmärked</string>
+  <string name="app_settings_reset_certificates_success">Kõik sinu lisatud sertifikaatide usaldusmärked on eemaldatud</string>
   <string name="app_settings_user_interface">Kasutajaliides</string>
   <string name="app_settings_notification_settings">Teavituste seadistused</string>
   <string name="app_settings_notification_settings_summary">Halda teavituskanaleid ja nende seadistusi</string>
@@ -195,7 +211,9 @@
   <string name="login_select_certificate">Vali sertifikaat</string>
   <string name="login_add_account">Lisa kasutajakonto</string>
   <string name="login_account_name">Kasutajakonto nimi</string>
-  <string name="login_account_avoid_apostrophe">Ülakomdes (\') tundub mõnedes seadmetes tekitama probleeme.</string>
+  <string name="login_account_avoid_apostrophe">Ülakomade (\') kasutamine tundub mõnedes seadmetes tekitama probleeme.</string>
+  <string name="login_account_name_info">Kuna Android pruugib kasutajakonto nime sinu loodavate ürituste Korraldaja ehk ORGANIZER välja väärtustamiseks, siis soovitame, et sinu kasutajakonto nimi on sinu e-posti aadress. Palun arvesta, et sul ei saa olla kahte samanimelist kasutajakontot.</string>
+  <string name="login_account_contact_group_method">Kontaktgrupi meetod:</string>
   <string name="login_account_name_required">Kasutajakonto nimi on nõutav</string>
   <string name="login_account_name_already_taken">Selline nimi on juba kasutusel</string>
   <string name="login_account_not_added">Kasutajakonto lisamine ei õnnestunud</string>
@@ -211,6 +229,9 @@
   <string name="login_google_account">Google\'i kasutajakonto</string>
   <string name="login_google">Logi sisse Google\'i kasutajakontoga</string>
   <string name="login_google_client_id">Klienditunnus (kui soovid lisada)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s teisaldab sinu Google\'i kontaktide ja kalendri andmeid vaid sünkroniseerimiseks selles seadmes. Lisateavet leiad meie <a href="%2$s">Privaatsuspoliitikast</a>.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s järgib <a href="%2$s">Google\'i API teenuste kasutajaandmete poliitikat</a>, sealhulgas piiratud kasutuse nõudeid.]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Autoriseerimiskoodi saamine polnud võimalik</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Logi sisse Nextcloudi kontoga</string>
   <string name="login_nextcloud_login_flow_text">Selle eelistusega käivitad Nextcloudi sisselogimise veebibrauseris.</string>
@@ -252,6 +273,8 @@
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID piirang vajab täiendavat saedistamist</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Halda</string>
   <string name="settings_ignore_vpns">VPNi kasutamine eeldab, et võrguühendus toimib</string>
+  <string name="settings_ignore_vpns_on">VPN ilma toimiva ja kontrollitud internetiühenduseta pole piisav sünkroniseerimiseks (soovitatud)</string>
+  <string name="settings_ignore_vpns_off">VPN ilma toimiva ja kontrollitud internetiühenduseta on sünkroniseerimiseks piisav</string>
   <string name="settings_authentication">Autentimine</string>
   <string name="settings_username">Kasutajanimi</string>
   <string name="settings_password">Salasõna</string>
@@ -291,6 +314,11 @@
   <string name="collection_synchronization">Sünkroniseerimine</string>
   <string name="collection_synchronization_on">Sünkroniseerimine on kasutusel</string>
   <string name="collection_synchronization_off">Sünkroniseerimine pole kasutusel</string>
+  <string name="collection_read_only">Ainult lugemisõigus</string>
+  <string name="collection_read_only_by_server">Ainult lugemisõigus (serveri poolt)</string>
+  <string name="collection_read_only_by_setting">Ainult lugemisõigus (reeglite alusel)</string>
+  <string name="collection_read_only_forced">Ainult lugemisõigus (ainult kohalikus nutiseadmes)</string>
+  <string name="collection_read_write">Lugemis- ja kirjutamisõigus</string>
   <string name="collection_title">Pealkiri</string>
   <string name="collection_description">Kirjeldus</string>
   <string name="collection_owner">Omanik</string>
@@ -305,8 +333,15 @@
   <string name="debug_info_server_error">Serveri viga</string>
   <string name="debug_info_webdav_error">WebDAVi viga</string>
   <string name="debug_info_io_error">Sisend-/väljundviga</string>
+  <string name="debug_info_http_403_description">Osapool keeldus päringule vastamast. Kontrolli asjaomaseid teenuseid ja tarvikuid ning üksikasjalikku teavet võid leida silumislogidest.</string>
+  <string name="debug_info_http_404_description">Soovitud teenust või tarvikud pole (enam) olemas. Kontrolli asjaomaseid teenuseid ja tarvikuid ning üksikasjalikku teavet võid leida silumislogidest.</string>
+  <string name="debug_info_http_5xx_description">Tekkis serveripoolne viga. Palun võta ühendust serveri haldajaga.</string>
+  <string name="debug_info_unexpected_error">Tekkis ootamatu viga. Lisainfot leiad silumisteabest.</string>
   <string name="debug_info_view_details">Vaata üksikasju</string>
   <string name="debug_info_subtitle">Silumisteave on kogutud</string>
+  <string name="debug_info_involved_caption">Seotud teenused ja tarvikud</string>
+  <string name="debug_info_involved_remote">Serveris asuvad teenused ja tarvikud:</string>
+  <string name="debug_info_involved_local">Kohalikus nutiseadmes teenused ja tarvikud:</string>
   <string name="debug_info_logs_caption">Logid</string>
   <string name="debug_info_logs_subtitle">Saadaval on üksikasjalikud logid</string>
   <string name="debug_info_logs_view">Vaata logisid</string>
@@ -342,6 +377,14 @@
   <string name="sync_error_permissions_text">Vajalikud on täiendavad õigused</string>
   <string name="sync_error_tasks_too_old">%s on liiga vana</string>
   <string name="sync_error_tasks_required_version">Väikseim nõutav versioon: %1$s</string>
+  <string name="sync_error_io">Võrgu- või sisend/väljundviga – %s</string>
+  <string name="sync_error_http_dav">HTTP serveri viga – %s</string>
+  <string name="sync_error_local_storage">Kohaliku salvestusruumi viga – %s</string>
+  <string name="sync_error_retry_limit_reached">Pehme viga (korduspäringute arvu ülempiir on käes)</string>
+  <string name="sync_invalid_contact">Saime serverist vigase kontaktikirje</string>
+  <string name="sync_invalid_event">Saime serverist vigase sündmusekirje</string>
+  <string name="sync_invalid_task">Saime serverist vigase ülesandekirje</string>
+  <string name="sync_invalid_resources_ignoring">Eirame ühte või enamat teenust või tarvikut</string>
   <string name="sync_notification_pending_push_title">Sünkroniseerimine on ootel</string>
   <string name="sync_notification_pending_push_message">Serveris olevad andmed on muutunud</string>
   <!--widgets-->

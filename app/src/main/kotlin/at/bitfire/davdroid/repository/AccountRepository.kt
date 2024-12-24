@@ -248,6 +248,9 @@ class AccountRepository @Inject constructor(
             // update account name references in database
             serviceRepository.renameAccount(oldName, newName)
 
+            // update address books
+            localAddressBookStore.get().updateAccount(oldAccount, newAccount)
+
             // calendar provider doesn't allow changing account_name of Events
             // (all events will have to be downloaded again at next sync)
 

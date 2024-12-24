@@ -12,8 +12,8 @@ import android.content.Context
 import android.provider.CalendarContract.Calendars
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.AndroidCalendar
@@ -25,17 +25,14 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class LocalCalendarStore @Inject constructor(
-    @ApplicationContext val context: Context,
-    val accountSettingsFactory: AccountSettings.Factory,
-    db: AppDatabase,
-    val logger: Logger
+    @ApplicationContext private val context: Context,
+    private val accountSettingsFactory: AccountSettings.Factory,
+    private val logger: Logger,
+    private val serviceRepository: DavServiceRepository
 ): LocalDataStore<LocalCalendar> {
 
-    private val serviceDao = db.serviceDao()
-
-
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalCalendar? {
-        val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
+        val service = serviceRepository.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
         // If the collection doesn't have a color, use a default color.
