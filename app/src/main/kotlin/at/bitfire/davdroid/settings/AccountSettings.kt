@@ -15,6 +15,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -179,13 +180,21 @@ class AccountSettings @AssistedInject constructor(
                 _seconds
 
         // Store (user defined) sync interval in account settings
-        val key = when {
-            authority == context.getString(R.string.address_books_authority) ->
-                KEY_SYNC_INTERVAL_ADDRESSBOOKS
-            authority == CalendarContract.AUTHORITY ->
-                KEY_SYNC_INTERVAL_CALENDARS
-            TaskProvider.ProviderName.entries.any { it.authority == authority } ->
-                KEY_SYNC_INTERVAL_TASKS
+        val key: String
+        val dataType: SyncDataType
+        when {
+            authority == context.getString(R.string.address_books_authority) -> {
+                key = KEY_SYNC_INTERVAL_ADDRESSBOOKS
+                dataType = SyncDataType.CONTACTS
+            }
+            authority == CalendarContract.AUTHORITY -> {
+                key = KEY_SYNC_INTERVAL_CALENDARS
+                dataType = SyncDataType.EVENTS
+            }
+            TaskProvider.ProviderName.entries.any { it.authority == authority } -> {
+                key = KEY_SYNC_INTERVAL_TASKS
+                dataType = SyncDataType.TASKS
+            }
             else -> {
                 logger.warning("Sync interval not applicable to authority $authority")
                 return
@@ -193,7 +202,7 @@ class AccountSettings @AssistedInject constructor(
         }
         accountManager.setAndVerifyUserData(account, key, seconds.toString())
 
-        automaticSyncManager.setSyncInterval(account, authority, seconds, getSyncWifiOnly())
+        automaticSyncManager.enableOrUpdate(account, dataType, seconds, getSyncWifiOnly())
     }
 
     fun getSyncWifiOnly() =
@@ -207,7 +216,7 @@ class AccountSettings @AssistedInject constructor(
 
         // update automatic sync (needs already updated wifi-only flag in AccountSettings)
         for (authority in syncWorkerManager.syncAuthorities())
-            automaticSyncManager.setSyncInterval(account, authority, getSyncInterval(authority), wiFiOnly)
+            automaticSyncManager.enableOrUpdate(account, authority, getSyncInterval(authority), wiFiOnly)
     }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =

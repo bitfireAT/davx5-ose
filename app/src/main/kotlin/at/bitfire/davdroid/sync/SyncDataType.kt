@@ -27,6 +27,19 @@ enum class SyncDataType {
     }
 
 
+    fun possibleAuthorities(context: Context): List<String> =
+        when (this) {
+            CONTACTS -> listOf(
+                ContactsContract.AUTHORITY,
+                context.getString(R.string.address_books_authority)
+            )
+            EVENTS -> listOf(
+                CalendarContract.AUTHORITY
+            )
+            TASKS ->
+                TaskProvider.ProviderName.entries.map { it.authority }
+        }
+
     fun toContentAuthority(context: Context): String? {
         when (this) {
             CONTACTS ->

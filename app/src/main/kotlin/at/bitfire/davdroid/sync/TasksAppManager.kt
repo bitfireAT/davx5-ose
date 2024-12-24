@@ -35,14 +35,14 @@ import javax.inject.Inject
  * Responsible for setting/getting the currently used tasks app, and for communicating with it.
  */
 class TasksAppManager @Inject constructor(
-    private val automaticSyncManager: AutomaticSyncManager,
     @ApplicationContext private val context: Context,
     private val accountRepository: Lazy<AccountRepository>,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val db: AppDatabase,
     private val logger: Logger,
     private val notificationRegistry: Lazy<NotificationRegistry>,
-    private val settingsManager: SettingsManager
+    private val settingsManager: SettingsManager,
+    private val syncFramework: SyncFrameworkIntegration
 ) {
 
     /**
@@ -98,7 +98,10 @@ class TasksAppManager @Inject constructor(
         // check all accounts and (de)activate task provider(s) if a CalDAV service is defined
         for (account in accountRepository.get().getAll()) {
             val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
-            for (providerName in TaskProvider.ProviderName.entries) {
+
+            // TODO check everything
+
+            for (providerName in ProviderName.entries) {
                 val syncable = hasCalDAV && providerName == selectedProvider
 
                 // enable/disable sync for the given account and authority
@@ -127,11 +130,10 @@ class TasksAppManager @Inject constructor(
                 settings.setSyncInterval(authority, interval)
             } else {
                 logger.info("Disabling $authority sync for $account")
-                automaticSyncManager.disable(account, authority)
+                syncFramework.disableSyncAbility(account, authority)
             }
         } catch (_: InvalidAccountException) {
-            // account has already been removed, make sure periodic sync is disabled, too
-            automaticSyncManager.disable(account, authority)
+            // account has been removed in the meanwhile
         }
     }
 
