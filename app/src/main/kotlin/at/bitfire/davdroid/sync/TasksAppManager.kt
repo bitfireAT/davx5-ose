@@ -115,7 +115,7 @@ class TasksAppManager @Inject constructor(
 
         if (permissionsRequired) {
             logger.warning("Tasks synchronization is now enabled for at least one account, but permissions are not granted")
-                notificationRegistry.get().notifyPermissions()
+            notificationRegistry.get().notifyPermissions()
         }
     }
 

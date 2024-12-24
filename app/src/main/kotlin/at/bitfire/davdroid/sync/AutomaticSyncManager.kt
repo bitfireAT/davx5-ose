@@ -14,6 +14,8 @@ import javax.inject.Inject
  *
  * - synchronization in given intervals, and
  * - synchronization on local data changes.
+ *
+ * Automatic synchronization stands in contrast to manual synchronization, which is only triggered by the user.
  */
 class AutomaticSyncManager @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
