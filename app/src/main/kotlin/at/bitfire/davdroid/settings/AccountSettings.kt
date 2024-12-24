@@ -51,8 +51,7 @@ class AccountSettings @AssistedInject constructor(
     private val logger: Logger,
     private val migrations: Map<Int, @JvmSuppressWildcards Provider<AccountSettingsMigration>>,
     private val settingsManager: SettingsManager,
-    private val syncFramework: SyncFrameworkIntegration,
-    private val syncWorkerManager: SyncWorkerManager
+    private val syncFramework: SyncFrameworkIntegration
 ) {
 
     @AssistedFactory
@@ -202,7 +201,7 @@ class AccountSettings @AssistedInject constructor(
         }
         accountManager.setAndVerifyUserData(account, key, seconds.toString())
 
-        automaticSyncManager.enableOrUpdate(account, dataType, seconds, getSyncWifiOnly())
+        automaticSyncManager.enableAutomaticSync(account, dataType, seconds, getSyncWifiOnly())
     }
 
     fun getSyncWifiOnly() =
@@ -215,8 +214,10 @@ class AccountSettings @AssistedInject constructor(
         accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
         // update automatic sync (needs already updated wifi-only flag in AccountSettings)
-        for (authority in syncWorkerManager.syncAuthorities())
-            automaticSyncManager.enableOrUpdate(account, authority, getSyncInterval(authority), wiFiOnly)
+        for (dataType in SyncDataType.entries)
+            dataType.toSyncAuthority(context)?.let { syncAuthority ->
+                automaticSyncManager.enableAutomaticSync(account, dataType, getSyncInterval(syncAuthority), wiFiOnly)
+            }
     }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =

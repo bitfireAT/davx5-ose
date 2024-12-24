@@ -27,7 +27,6 @@ import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -102,7 +101,7 @@ class AccountRepository @Inject constructor(
                 // start CardDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
             } else
-                automaticSyncManager.disable(account, SyncDataType.CONTACTS)
+                automaticSyncManager.disableAutomaticSync(account, SyncDataType.CONTACTS)
 
             // Configure CalDAV service
             if (config.calDAV != null) {
@@ -124,8 +123,8 @@ class AccountRepository @Inject constructor(
                 // start CalDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
             } else {
-                automaticSyncManager.disable(account, SyncDataType.EVENTS)
-                automaticSyncManager.disable(account, SyncDataType.TASKS)
+                automaticSyncManager.disableAutomaticSync(account, SyncDataType.EVENTS)
+                automaticSyncManager.disableAutomaticSync(account, SyncDataType.TASKS)
             }
 
         } catch(e: InvalidAccountException) {
@@ -265,7 +264,7 @@ class AccountRepository @Inject constructor(
             val newSettings = accountSettingsFactory.create(newAccount)
             for ((authority, interval) in syncIntervals) {
                 if (interval == null)
-                    automaticSyncManager.disable(newAccount, SyncDataType.fromAuthority(context, authority))
+                    automaticSyncManager.disableAutomaticSync(newAccount, SyncDataType.fromAuthority(context, authority))
                 else
                     newSettings.setSyncInterval(authority, interval)
             }

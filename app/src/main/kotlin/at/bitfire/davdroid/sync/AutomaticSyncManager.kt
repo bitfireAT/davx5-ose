@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.Manifest.permission_group.CONTACTS
 import android.accounts.Account
 import android.content.Context
 import android.provider.CalendarContract
@@ -22,6 +21,8 @@ import javax.inject.Inject
  *
  * Integrates with both the periodic sync workers and the sync framework. So this class should be used when
  * the caller just wants to update the automatic sync, without needing to know about the underlying details.
+ *
+ * Automatic synchronization stands in contrast to manual synchronization, which is only triggered by the user.
  */
 class AutomaticSyncManager @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
@@ -34,7 +35,7 @@ class AutomaticSyncManager @Inject constructor(
     /**
      * Disable automatic synchronization for the given account and data type.
      */
-    fun disable(account: Account, dataType: SyncDataType) {
+    fun disableAutomaticSync(account: Account, dataType: SyncDataType) {
         workerManager.disablePeriodic(account, dataType)
 
         for (authority in dataType.possibleAuthorities(context))
@@ -52,7 +53,7 @@ class AutomaticSyncManager @Inject constructor(
      * @param wifiOnly  whether to synchronize only on Wi-Fi (default value takes the account setting)
      * @param seconds   interval in seconds, or `null` to disable periodic sync (only sync on local data changes)
      */
-    fun enableOrUpdate(
+    fun enableAutomaticSync(
         account: Account,
         dataType: SyncDataType,
         seconds: Long?,
@@ -64,7 +65,7 @@ class AutomaticSyncManager @Inject constructor(
         } else
             workerManager.disablePeriodic(account, dataType)
 
-        // Also enable/disable content change triggered syncs
+        // also enable/disable content-triggered syncs
         val authority: String? = when (dataType) {
             SyncDataType.CONTACTS -> context.getString(R.string.address_books_authority)
             SyncDataType.EVENTS -> CalendarContract.AUTHORITY

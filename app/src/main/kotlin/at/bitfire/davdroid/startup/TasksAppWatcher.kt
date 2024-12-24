@@ -67,7 +67,7 @@ class TasksAppWatcher @Inject constructor(
 
             // Select provider or clear setting and sync if now provider available
             logger.info("Selecting new tasks provider: $newProvider")
-            manager.selectProvider(null)
+            manager.selectProvider(newProvider)
         }
     }
 

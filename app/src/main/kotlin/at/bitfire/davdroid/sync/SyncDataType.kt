@@ -40,17 +40,37 @@ enum class SyncDataType {
                 TaskProvider.ProviderName.entries.map { it.authority }
         }
 
-    fun toContentAuthority(context: Context): String? {
+    /**
+     * Gets the authority of the content provider that actually stores the entries for this data type.
+     */
+    fun toContentAuthority(context: Context): String? =
         when (this) {
             CONTACTS ->
-                return ContactsContract.AUTHORITY
+                ContactsContract.AUTHORITY
             EVENTS ->
-                return CalendarContract.AUTHORITY
+                CalendarContract.AUTHORITY
             TASKS -> {
                 val entryPoint = EntryPointAccessors.fromApplication<SyncDataTypeEntryPoint>(context)
                 val tasksAppManager = entryPoint.tasksAppManager()
-                return tasksAppManager.currentProvider()?.authority
+                tasksAppManager.currentProvider()?.authority
             }
+        }
+
+    /**
+     * Gets the authority that should be used for managing sync adapters for this account and data type.
+     *
+     * Similar to [toContentAuthority], but in case of contacts, it will return the address books authority
+     * rather than the contacts authority.
+     */
+    fun toSyncAuthority(context: Context): String? = when(this) {
+        CONTACTS ->
+            context.getString(R.string.address_books_authority)
+        EVENTS ->
+            CalendarContract.AUTHORITY
+        TASKS -> {
+            val entryPoint = EntryPointAccessors.fromApplication<SyncDataTypeEntryPoint>(context)
+            val tasksAppManager = entryPoint.tasksAppManager()
+            tasksAppManager.currentProvider()?.authority
         }
     }
 
