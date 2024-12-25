@@ -26,11 +26,8 @@ import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -59,16 +56,15 @@ class TasksAppManager @Inject constructor(
     }
 
     /**
-     * Like [currentProvider, but as a [StateFlow].
+     * Like [currentProvider, but as a [Flow].
      */
-    fun currentProviderFlow(externalScope: CoroutineScope): StateFlow<ProviderName?> {
-        return settingsManager.getStringFlow(Settings.SELECTED_TASKS_PROVIDER).map { preferred ->
+    fun currentProviderFlow(): Flow<ProviderName?> =
+        settingsManager.getStringFlow(Settings.SELECTED_TASKS_PROVIDER).map { preferred ->
             if (preferred != null)
                 authorityToProviderName(preferred)
             else
                 null
-        }.stateIn(scope = externalScope, started = SharingStarted.WhileSubscribed(), initialValue = null)
-    }
+        }
 
     /**
      * Converts an authority to a [ProviderName], if the authority is known and the provider is installed.
