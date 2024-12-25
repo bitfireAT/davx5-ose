@@ -107,15 +107,6 @@ class SyncWorkerManager @Inject constructor(
             .build()
     }
 
-    @Deprecated("Use buildOneTime(account, dataType, manual, resync, upload) instead")
-    fun buildOneTime(
-        account: Account,
-        authority: String,
-        manual: Boolean = false,
-        @InputResync resync: Int = NO_RESYNC,
-        upload: Boolean = false
-    ) = buildOneTime(account, SyncDataType.fromAuthority(context, authority), manual, resync, upload)
-
     /**
      * Requests immediate synchronization of an account with a specific authority.
      *
@@ -215,10 +206,6 @@ class SyncWorkerManager @Inject constructor(
             .setConstraints(constraints)
             .build()
     }
-
-    @Deprecated("Use buildPeriodic(account, dataType, interval, syncWifiOnly) instead")
-    fun buildPeriodic(account: Account, authority: String, interval: Long, syncWifiOnly: Boolean): PeriodicWorkRequest =
-        buildPeriodic(account, SyncDataType.fromAuthority(context, authority), interval, syncWifiOnly)
 
     /**
      * Activate periodic synchronization of an account with a specific authority.
