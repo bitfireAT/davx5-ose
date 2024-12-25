@@ -114,11 +114,12 @@ class AccountRepository @Inject constructor(
                 // if task provider present, set task sync interval and enable sync
                 val taskProvider = tasksAppManager.get().currentProvider()
                 if (taskProvider != null) {
-                    accountSettings.setSyncInterval(taskProvider.authority, defaultSyncInterval)
-                    // further changes will be handled by TasksWatcher on app start or when tasks app is (un)installed
                     logger.info("Tasks provider ${taskProvider.authority} found. Tasks sync enabled.")
-                } else
+                    accountSettings.setSyncInterval(taskProvider.authority, defaultSyncInterval)
+                } else {
                     logger.info("No tasks provider found. Did not enable tasks sync.")
+                    automaticSyncManager.disableAutomaticSync(account, SyncDataType.TASKS)
+                }
 
                 // start CalDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)

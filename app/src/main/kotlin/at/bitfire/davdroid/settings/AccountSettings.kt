@@ -151,16 +151,15 @@ class AccountSettings @AssistedInject constructor(
     }
 
     /**
-     * Sets the sync interval and en- or disables periodic sync for the given account and authority.
+     * Sets the sync interval and updates the periodic sync for the given account and authority.
      *
-     * This method blocks until a worker as been created and enqueued (sync active) or removed
-     * (sync disabled), so it should not be called from the UI thread.
+     * Setting the sync interval (regardless of manual or not) implies that automatic synchronization will be
+     * enabled using [AutomaticSyncManager.enableAutomaticSync].
      *
      * @param authority sync authority (like [CalendarContract.AUTHORITY])
      * @param _seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled;
      * otherwise (must be ≥ 15 min): automatic sync will be enabled and set to the given number of seconds
      */
-    @WorkerThread
     fun setSyncInterval(authority: String, _seconds: Long) {
         val seconds =
             if (_seconds != SYNC_INTERVAL_MANUALLY && _seconds < 60*15)
@@ -203,11 +202,8 @@ class AccountSettings @AssistedInject constructor(
     fun setSyncWiFiOnly(wiFiOnly: Boolean) {
         accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
-        // update automatic sync (needs already updated wifi-only flag in AccountSettings)
         for (dataType in SyncDataType.entries)
-            dataType.toSyncAuthority(context)?.let { syncAuthority ->
-                automaticSyncManager.enableAutomaticSync(account, dataType, getSyncInterval(syncAuthority), wiFiOnly)
-            }
+            automaticSyncManager.updateAutomaticSync(account, dataType)
     }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =
@@ -248,7 +244,7 @@ class AccountSettings @AssistedInject constructor(
     }
 
     fun setTimeRangePastDays(days: Int?) =
-            accountManager.setAndVerifyUserData(account, KEY_TIME_RANGE_PAST_DAYS, (days ?: -1).toString())
+        accountManager.setAndVerifyUserData(account, KEY_TIME_RANGE_PAST_DAYS, (days ?: -1).toString())
 
     /**
      * Takes the default alarm setting (in this order) from
@@ -260,8 +256,8 @@ class AccountSettings @AssistedInject constructor(
      * non-full-day event without reminder. *null*: No default reminders shall be created.
      */
     fun getDefaultAlarm() =
-            accountManager.getUserData(account, KEY_DEFAULT_ALARM)?.toInt() ?:
-            settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 }
+        accountManager.getUserData(account, KEY_DEFAULT_ALARM)?.toInt() ?:
+        settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 }
 
     /**
      * Sets the default alarm value in the local account settings, if the new value differs
@@ -273,11 +269,11 @@ class AccountSettings @AssistedInject constructor(
      * start of every non-full-day event without reminder. *null*: No default reminders shall be created.
      */
     fun setDefaultAlarm(minBefore: Int?) =
-            accountManager.setAndVerifyUserData(account, KEY_DEFAULT_ALARM,
-                    if (minBefore == settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 })
-                        null
-                    else
-                        minBefore?.toString())
+        accountManager.setAndVerifyUserData(account, KEY_DEFAULT_ALARM,
+                if (minBefore == settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 })
+                    null
+                else
+                    minBefore?.toString())
 
     fun getManageCalendarColors() =
         if (settingsManager.containsKey(KEY_MANAGE_CALENDAR_COLORS))
@@ -372,6 +368,7 @@ class AccountSettings @AssistedInject constructor(
             }
         }
     }
+
 
     companion object {
 
