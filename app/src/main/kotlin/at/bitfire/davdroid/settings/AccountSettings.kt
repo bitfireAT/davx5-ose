@@ -77,19 +77,19 @@ class AccountSettings @AssistedInject constructor(
 
         // synchronize because account migration must only be run one time
         synchronized(currentlyUpdating) {
-            val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
-            var version = 0
-            try {
-                version = Integer.parseInt(versionStr)
-            } catch (e: NumberFormatException) {
-                logger.log(Level.SEVERE, "Invalid account version: $versionStr", e)
-            }
-            logger.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
+            if (currentlyUpdating.contains(account))
+                logger.warning("AccountSettings created during migration of $account – not running update()")
+            else {
+                val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
+                var version = 0
+                try {
+                    version = Integer.parseInt(versionStr)
+                } catch (e: NumberFormatException) {
+                    logger.log(Level.SEVERE, "Invalid account version: $versionStr", e)
+                }
+                logger.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
 
-            if (version < CURRENT_VERSION) {
-                if (currentlyUpdating.contains(account))
-                    logger.fine("AccountSettings created during migration – not running update()")
-                else {
+                if (version < CURRENT_VERSION) {
                     currentlyUpdating += account
                     try {
                         update(version, abortOnMissingMigration)
@@ -403,7 +403,7 @@ class AccountSettings @AssistedInject constructor(
         @Deprecated("Use null value instead")
         const val SYNC_INTERVAL_MANUALLY = -1L
 
-        /** Static property to remember which AccountSettings updates/migrations are currently running. */
+        /** Static property to remember which AccountSettings updates/migrations are currently running */
         val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<Account>())
 
         fun initialUserData(credentials: Credentials?): Bundle {

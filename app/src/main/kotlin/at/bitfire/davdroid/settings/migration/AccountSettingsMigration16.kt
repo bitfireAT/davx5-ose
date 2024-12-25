@@ -35,7 +35,6 @@ class AccountSettingsMigration16 @Inject constructor(
     override fun migrate(account: Account) {
         for (dataType in SyncDataType.entries) {
             logger.info("Re-enqueuing periodic sync workers for $account/$dataType, if necessary")
-            //val dataType = SyncDataType.fromAuthority(context, authority)
 
             /* A maybe existing periodic worker references the old class name (even if it failed and/or is not active). So
             we need to explicitly disable and prune all workers. Just updating the worker is not enough – WorkManager will update
