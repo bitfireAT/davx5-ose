@@ -26,11 +26,12 @@ import javax.inject.Inject
  * corresponding PeriodicSyncWorkers
  */
 class AccountSettingsMigration14 @Inject constructor(
+    private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     private val logger: Logger
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account, accountSettings: AccountSettings) {
+    override fun migrate(account: Account) {
         // Cancel any potentially running syncs for this account (sync framework)
         ContentResolver.cancelSync(account, null)
 
@@ -42,6 +43,7 @@ class AccountSettingsMigration14 @Inject constructor(
             TaskProvider.ProviderName.TasksOrg.authority
         )
 
+        val accountSettings = accountSettingsFactory.create(account)
         for (authority in authorities) {
             // Enable PeriodicSyncWorker (WorkManager), with known intervals
             enableWorkManager(account, authority, accountSettings)

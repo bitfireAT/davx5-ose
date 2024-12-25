@@ -22,11 +22,13 @@ import javax.inject.Inject
  * the new [BaseSyncWorker.exists] and [at.bitfire.davdroid.ui.AccountsActivity.Model].
  */
 class AccountSettingsMigration15 @Inject constructor(
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val syncWorkerManager: SyncWorkerManager
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account, accountSettings: AccountSettings) {
+    override fun migrate(account: Account) {
         for (authority in syncWorkerManager.syncAuthorities()) {
+            val accountSettings = accountSettingsFactory.create(account)
             val interval = accountSettings.getSyncInterval(authority)
             accountSettings.setSyncInterval(authority, interval ?: AccountSettings.SYNC_INTERVAL_MANUALLY)
         }

@@ -25,12 +25,14 @@ import javax.inject.Inject
  * name and no new workers were enqueued). Here we enqueue all periodic sync workers again with the correct class name.
  */
 class AccountSettingsMigration16 @Inject constructor(
+    private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val syncWorkerManager: SyncWorkerManager
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account, accountSettings: AccountSettings) {
+    override fun migrate(account: Account) {
+        val accountSettings = accountSettingsFactory.create(account)
         for (authority in syncWorkerManager.syncAuthorities()) {
             logger.info("Re-enqueuing periodic sync workers for $account/$authority, if necessary")
 

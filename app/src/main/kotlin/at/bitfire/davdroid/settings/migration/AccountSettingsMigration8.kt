@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.Binds
@@ -33,7 +32,7 @@ class AccountSettingsMigration8 @Inject constructor(
      * There is a mistake in this method. [TaskContract.Tasks.SYNC_VERSION] is used to store the
      * SEQUENCE and should not be used for the eTag.
      */
-    override fun migrate(account: Account, accountSettings: AccountSettings) {
+    override fun migrate(account: Account) {
         TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.use { provider ->
             // ETag is now in sync_version instead of sync1
             // UID  is now in _uid         instead of sync2

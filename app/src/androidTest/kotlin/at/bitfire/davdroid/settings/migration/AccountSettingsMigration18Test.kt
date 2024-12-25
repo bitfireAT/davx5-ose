@@ -66,7 +66,7 @@ class AccountSettingsMigration18Test {
         every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID) } returns "123"
 
         val account = Account("test", "test")
-        migration.migrate(account, mockk())
+        migration.migrate(account)
 
         verify(exactly = 0) {
             accountManager.setUserData(addressBookAccount, any(), any())
@@ -88,7 +88,7 @@ class AccountSettingsMigration18Test {
         every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID) } returns "123"
 
         val account = Account("test", "test")
-        migration.migrate(account, mockk())
+        migration.migrate(account)
 
         verify(exactly = 0) {
             accountManager.setUserData(addressBookAccount, any(), any())
@@ -124,7 +124,7 @@ class AccountSettingsMigration18Test {
         every { accountManager.getAccountsByType(addressBookAccountType) } returns arrayOf(addressBookAccount)
         every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID) } returns "100"
 
-        migration.migrate(account, mockk())
+        migration.migrate(account)
 
         verify {
             accountManager.setUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)

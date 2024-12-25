@@ -11,7 +11,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.Binds
 import dagger.Module
@@ -38,7 +37,7 @@ class AccountSettingsMigration18 @Inject constructor(
     private val db: AppDatabase
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account, accountSettings: AccountSettings) {
+    override fun migrate(account: Account) {
         val accountManager = AccountManager.get(context)
         db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
             db.collectionDao().getByService(service.id).forEach { collection ->
