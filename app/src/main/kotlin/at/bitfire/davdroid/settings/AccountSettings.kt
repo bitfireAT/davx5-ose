@@ -16,7 +16,6 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.ical4android.TaskProvider
@@ -49,8 +48,7 @@ class AccountSettings @AssistedInject constructor(
     @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val migrations: Map<Int, @JvmSuppressWildcards Provider<AccountSettingsMigration>>,
-    private val settingsManager: SettingsManager,
-    private val syncFramework: SyncFrameworkIntegration
+    private val settingsManager: SettingsManager
 ) {
 
     @AssistedFactory
