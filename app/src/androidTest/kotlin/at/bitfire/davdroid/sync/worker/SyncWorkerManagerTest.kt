@@ -7,10 +7,7 @@ package at.bitfire.davdroid.sync.worker
 import android.accounts.Account
 import android.content.Context
 import android.provider.CalendarContract
-import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.Configuration
-import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
 import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
@@ -47,13 +44,7 @@ class SyncWorkerManagerTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-
-        // Initialize WorkManager for instrumentation tests.
-        val config = Configuration.Builder()
-            .setMinimumLoggingLevel(Log.DEBUG)
-            .setWorkerFactory(workerFactory)
-            .build()
-        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
+        TestUtils.setUpWorkManager(context, workerFactory)
 
         account = TestAccountAuthenticator.create()
     }
