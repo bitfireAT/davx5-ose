@@ -173,9 +173,7 @@ class AccountSettings @AssistedInject constructor(
 
     fun setSyncWiFiOnly(wiFiOnly: Boolean) {
         accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
-
-        for (dataType in SyncDataType.entries)
-            automaticSyncManager.updateAutomaticSync(account, dataType)
+        automaticSyncManager.updateAutomaticSync(account)
     }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =
@@ -344,7 +342,7 @@ class AccountSettings @AssistedInject constructor(
 
     companion object {
 
-        const val CURRENT_VERSION = 18
+        const val CURRENT_VERSION = 19
         const val KEY_SETTINGS_VERSION = "version"
 
         const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"
