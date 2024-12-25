@@ -48,16 +48,15 @@ class TasksAppManager @Inject constructor(
     }
 
     /**
-     * Like [currentProvider], but as a [Flow].
+     * Like [currentProvider, but as a [Flow].
      */
-    fun currentProviderFlow(): Flow<ProviderName?> {
-        return settingsManager.getStringFlow(Settings.SELECTED_TASKS_PROVIDER).map { preferred ->
+    fun currentProviderFlow(): Flow<ProviderName?> =
+        settingsManager.getStringFlow(Settings.SELECTED_TASKS_PROVIDER).map { preferred ->
             if (preferred != null)
                 authorityToProviderName(preferred)
             else
                 null
         }
-    }
 
     /**
      * Converts an authority to a [ProviderName], if the authority is known and the provider is installed.
@@ -107,7 +106,7 @@ class TasksAppManager @Inject constructor(
                 val icon = pm.getApplicationIcon(e.provider.packageName)
                 if (icon is BitmapDrawable)
                     notify.setLargeIcon(icon.bitmap)
-            } catch (ignored: PackageManager.NameNotFoundException) {
+            } catch (_: PackageManager.NameNotFoundException) {
                 // couldn't get provider app icon
             }
 

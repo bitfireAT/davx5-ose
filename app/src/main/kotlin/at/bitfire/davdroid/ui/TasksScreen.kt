@@ -77,7 +77,6 @@ fun TasksCard(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-
     val snackbarHostState = remember { SnackbarHostState() }
 
     val currentProvider by model.currentProvider.collectAsStateWithLifecycle(null)
