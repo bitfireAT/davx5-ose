@@ -11,7 +11,6 @@ import android.content.pm.PackageManager
 import android.provider.CalendarContract
 import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.resource.LocalTask
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract.asSyncAdapter
@@ -36,7 +35,7 @@ class AccountSettingsMigration10 @Inject constructor(
     @ApplicationContext private val context: Context
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account, accountSettings: AccountSettings) {
+    override fun migrate(account: Account) {
         TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.use { provider ->
             val tasksUri = provider.tasksUri().asSyncAdapter(account)
             val emptyETag = ContentValues(1)

@@ -18,7 +18,6 @@ import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.mockk.mockk
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -83,7 +82,7 @@ class AccountSettingsMigration17Test {
                 )
 
                 // run migration
-                migration.migrate(account, mockk())
+                migration.migrate(account)
 
                 // migration renames address book, update account
                 addressBookAccount = accountManager.getAccountsByType(addressBookAccountType).filter {

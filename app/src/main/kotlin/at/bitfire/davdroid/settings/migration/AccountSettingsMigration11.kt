@@ -24,17 +24,17 @@ import javax.inject.Inject
  * again when the tasks provider is switched.
  */
 class AccountSettingsMigration11 @Inject constructor(
+    private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     private val tasksAppManager: TasksAppManager
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account, accountSettings: AccountSettings) {
+    override fun migrate(account: Account) {
         val accountManager: AccountManager = AccountManager.get(context)
         tasksAppManager.currentProvider()?.let { provider ->
-            val interval = accountSettings.getSyncInterval(provider.authority)
+            val interval = accountSettingsFactory.create(account).getSyncInterval(provider.authority)
             if (interval != null)
-                accountManager.setAndVerifyUserData(account,
-                    AccountSettings.KEY_SYNC_INTERVAL_TASKS, interval.toString())
+                accountManager.setAndVerifyUserData(account, AccountSettings.KEY_SYNC_INTERVAL_TASKS, interval.toString())
         }
     }
 

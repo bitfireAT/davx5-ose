@@ -26,6 +26,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import net.openid.appauth.AuthState
+import java.util.Collections
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Provider
@@ -79,26 +80,25 @@ class AccountSettings @AssistedInject constructor(
             throw IllegalArgumentException("Invalid account type for AccountSettings(): ${account.type}")
 
         // synchronize because account migration must only be run one time
-        synchronized(AccountSettings::class.java) {
-            val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
-            var version = 0
-            try {
-                version = Integer.parseInt(versionStr)
-            } catch (e: NumberFormatException) {
-                logger.log(Level.SEVERE, "Invalid account version: $versionStr", e)
-            }
-            logger.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
+        synchronized(currentlyUpdating) {
+            if (currentlyUpdating.contains(account))
+                logger.warning("AccountSettings created during migration of $account – not running update()")
+            else {
+                val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
+                var version = 0
+                try {
+                    version = Integer.parseInt(versionStr)
+                } catch (e: NumberFormatException) {
+                    logger.log(Level.SEVERE, "Invalid account version: $versionStr", e)
+                }
+                logger.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
 
-            if (version < CURRENT_VERSION) {
-                if (currentlyUpdating) {
-                    logger.severe("Redundant call: migration created AccountSettings(). This must never happen.")
-                    throw IllegalStateException("Redundant call: migration created AccountSettings()")
-                } else {
-                    currentlyUpdating = true
+                if (version < CURRENT_VERSION) {
+                    currentlyUpdating += account
                     try {
                         update(version, abortOnMissingMigration)
                     } finally {
-                        currentlyUpdating = false
+                        currentlyUpdating -= account
                     }
                 }
             }
@@ -362,7 +362,7 @@ class AccountSettings @AssistedInject constructor(
                     throw IllegalArgumentException("Missing AccountSettings migration $fromVersion → $toVersion")
             } else {
                 try {
-                    migration.get().migrate(account, this)
+                    migration.get().migrate(account)
 
                     logger.info("Account settings version update to $toVersion successful")
                     accountManager.setAndVerifyUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
@@ -372,6 +372,7 @@ class AccountSettings @AssistedInject constructor(
             }
         }
     }
+
 
     companion object {
 
@@ -433,10 +434,8 @@ class AccountSettings @AssistedInject constructor(
 
         const val SYNC_INTERVAL_MANUALLY = -1L
 
-        /** Static property to indicate whether AccountSettings migration is currently running.
-         * **Access must be `synchronized` with `AccountSettings::class.java`.** */
-        @Volatile
-        var currentlyUpdating = false
+        /** Static property to remember which AccountSettings updates/migrations are currently running */
+        val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<Account>())
 
         fun initialUserData(credentials: Credentials?): Bundle {
             val bundle = Bundle()
