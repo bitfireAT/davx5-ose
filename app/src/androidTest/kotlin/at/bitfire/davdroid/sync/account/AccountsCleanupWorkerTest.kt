@@ -4,14 +4,10 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.Configuration
-import androidx.work.WorkerFactory
-import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
-import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -61,6 +57,7 @@ class AccountsCleanupWorkerTest {
     @Before
     fun setUp() {
         hiltRule.inject()
+        TestUtils.setUpWorkManager(context, workerFactory)
 
         service = createTestService(Service.TYPE_CARDDAV)
 
@@ -71,14 +68,6 @@ class AccountsCleanupWorkerTest {
             "Fancy address book account",
             addressBookAccountType
         )
-        assertTrue("No address books must be presents before tests", accountManager.getAccountsByType(addressBookAccountType).isEmpty())
-
-        // Initialize WorkManager for instrumentation tests.
-        val config = Configuration.Builder()
-            .setMinimumLoggingLevel(Log.DEBUG)
-            .setWorkerFactory(workerFactory)
-            .build()
-        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
 
     @After
@@ -150,7 +139,7 @@ class AccountsCleanupWorkerTest {
 
     @Test
     fun testCleanUpAddressBooks_keepsAddressBookWithAccount() {
-        TestAccountAuthenticator.provide() { account ->
+        TestAccountAuthenticator.provide { account ->
             // Create address book account _with_ corresponding account and verify
             val userData = Bundle(2).apply {
                 putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
@@ -179,11 +168,6 @@ class AccountsCleanupWorkerTest {
         val service = Service(id=0, accountName="test", type=serviceType, principal = null)
         val serviceId = db.serviceDao().insertOrReplace(service)
         return db.serviceDao().get(serviceId)!!
-    }
-
-    private fun workerFactory() = object : WorkerFactory() {
-        override fun createWorker(appContext: Context, workerClassName: String, workerParameters: WorkerParameters) =
-            accountsCleanupWorkerFactory.create(appContext, workerParameters)
     }
 
 }
