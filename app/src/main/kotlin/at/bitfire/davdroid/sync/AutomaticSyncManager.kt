@@ -89,12 +89,22 @@ class AutomaticSyncManager @Inject constructor(
     }
 
     /**
-     * Updates automatic synchronization of the given account and data type according to the account settings.
+     * Updates automatic synchronization of the given account and all data types according to the account settings.
+     *
+     * @param account   account for which automatic synchronization shall be updated
      */
-    fun updateAutomaticSync(
-        account: Account,
-        dataType: SyncDataType
-    ) {
+    fun updateAutomaticSync(account: Account) {
+        for (dataType in SyncDataType.entries)
+            updateAutomaticSync(account, dataType)
+    }
+
+    /**
+     * Updates automatic synchronization of the given account and data type according to the account settings.
+     *
+     * @param account   account for which automatic synchronization shall be updated
+     * @param dataType  sync data type for which automatic synchronization shall be updated
+     */
+    fun updateAutomaticSync(account: Account, dataType: SyncDataType) {
         val serviceType = when (dataType) {
             SyncDataType.CONTACTS -> Service.TYPE_CARDDAV
             SyncDataType.EVENTS,

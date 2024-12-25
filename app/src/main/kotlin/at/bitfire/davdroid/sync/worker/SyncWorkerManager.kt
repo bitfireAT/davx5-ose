@@ -292,6 +292,7 @@ class SyncWorkerManager @Inject constructor(
      *
      * @return list of available sync authorities for DAVx5 accounts
      */
+    @Deprecated("Use SyncDataType.entries instead")
     fun syncAuthorities(): List<String> {
         val result = mutableListOf(
             CalendarContract.AUTHORITY,

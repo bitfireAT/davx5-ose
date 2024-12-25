@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
 import android.os.Build
-import android.provider.CalendarContract
 import androidx.annotation.IntDef
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -29,8 +28,10 @@ import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncResult
 import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TaskSyncer
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
+import dagger.Lazy
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runInterruptible
@@ -71,6 +72,9 @@ abstract class BaseSyncWorker(
     lateinit var syncConditionsFactory: SyncConditions.Factory
 
     @Inject
+    lateinit var tasksAppManager: Lazy<TasksAppManager>
+
+    @Inject
     lateinit var taskSyncer: TaskSyncer.Factory
 
 
@@ -98,7 +102,7 @@ abstract class BaseSyncWorker(
                 accountSettingsFactory.create(account)
             } catch (_: InvalidAccountException) {
                 val workId = workerParams.id
-                logger.warning("Account $account doesn't exist anymore, cancelling worker $workId")
+                logger.warning("No valid account settings for account $account, cancelling worker $workId")
 
                 val workManager = WorkManager.getInstance(applicationContext)
                 workManager.cancelWorkById(workId)
@@ -124,12 +128,7 @@ abstract class BaseSyncWorker(
                 }
             }
 
-            val authority = dataType.toContentAuthority(context)
-            return if (authority == null) {
-                logger.warning("No content authority found for sync data type $dataType")
-                Result.failure()
-            } else
-                doSyncWork(account, authority, accountSettings)
+            return doSyncWork(account, dataType)
         } finally {
             logger.info("${javaClass.simpleName} finished for $syncTag")
             runningSyncs -= syncTag
@@ -139,12 +138,8 @@ abstract class BaseSyncWorker(
         }
     }
 
-    open suspend fun doSyncWork(
-        account: Account,
-        authority: String,
-        accountSettings: AccountSettings
-    ): Result = withContext(syncDispatcher) {
-        logger.info("Running ${javaClass.name}: account=$account, authority=$authority")
+    suspend fun doSyncWork(account: Account, dataType: SyncDataType): Result = withContext(syncDispatcher) {
+        logger.info("Running ${javaClass.name}: account=$account, dataType=$dataType")
 
         // pass possibly supplied flags to the selected syncer
         val extrasList = mutableListOf<String>()
@@ -162,18 +157,25 @@ abstract class BaseSyncWorker(
         val syncResult = SyncResult()
 
         // What are we going to sync? Select syncer based on authority
-        val syncer = when (authority) {
-            applicationContext.getString(R.string.address_books_authority) ->
+        val syncer = when (dataType) {
+            SyncDataType.CONTACTS ->
                 addressBookSyncer.create(account, extras, syncResult)
-            CalendarContract.AUTHORITY ->
+            SyncDataType.EVENTS ->
                 calendarSyncer.create(account, extras, syncResult)
-            TaskProvider.ProviderName.JtxBoard.authority ->
-                jtxSyncer.create(account, extras, syncResult)
-            TaskProvider.ProviderName.OpenTasks.authority,
-            TaskProvider.ProviderName.TasksOrg.authority ->
-                taskSyncer.create(account, authority, extras, syncResult)
-            else ->
-                throw IllegalArgumentException("Invalid authority $authority")
+            SyncDataType.TASKS -> {
+                val currentProvider = tasksAppManager.get().currentProvider()
+                when (currentProvider) {
+                    TaskProvider.ProviderName.JtxBoard ->
+                        jtxSyncer.create(account, extras, syncResult)
+                    TaskProvider.ProviderName.OpenTasks,
+                    TaskProvider.ProviderName.TasksOrg ->
+                        taskSyncer.create(account, currentProvider.authority, extras, syncResult)
+                    else -> {
+                        logger.warning("No valid tasks provider found, aborting sync")
+                        return@withContext Result.failure()
+                    }
+                }
+            }
         }
 
         // Start syncing
@@ -187,7 +189,7 @@ abstract class BaseSyncWorker(
 
         // Check for errors
         if (syncResult.hasError()) {
-            val softErrorNotificationTag = account.type + "-" + account.name + "-" + authority
+            val softErrorNotificationTag = "${account.type}-${account.name}-$dataType"
 
             // On soft errors the sync is retried a few times before considered failed
             if (syncResult.hasSoftError()) {
