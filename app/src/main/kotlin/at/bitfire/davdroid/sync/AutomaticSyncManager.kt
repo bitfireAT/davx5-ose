@@ -70,14 +70,18 @@ class AutomaticSyncManager @Inject constructor(
             workerManager.disablePeriodic(account, dataType)
 
         // also enable/disable content-triggered syncs
+        val possibleAuthorities = dataType.possibleAuthorities(context)
         val authority: String? = when (dataType) {
             SyncDataType.CONTACTS -> context.getString(R.string.address_books_authority)
             SyncDataType.EVENTS -> CalendarContract.AUTHORITY
             SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
         }
-        if (authority != null && seconds != null)
+        if (authority != null && seconds != null) {
+            // enable authority, but completely disable all other possible authorities (for instance, tasks apps which are not the current task app)
             syncFramework.enableSyncOnContentChange(account, authority)
-        else
+            for (disableAuthority in possibleAuthorities - authority)
+                syncFramework.disableSyncAbility(account, disableAuthority)
+        } else
             for (authority in dataType.possibleAuthorities(context))
                 syncFramework.disableSyncOnContentChange(account, authority)
 
