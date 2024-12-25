@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -12,16 +11,11 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.core.app.NotificationCompat
-import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationRegistry
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import dagger.Lazy
@@ -37,12 +31,10 @@ import javax.inject.Inject
 class TasksAppManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val accountRepository: Lazy<AccountRepository>,
-    private val accountSettingsFactory: AccountSettings.Factory,
-    private val db: AppDatabase,
+    private val automaticSyncManager: AutomaticSyncManager,
     private val logger: Logger,
     private val notificationRegistry: Lazy<NotificationRegistry>,
-    private val settingsManager: SettingsManager,
-    private val syncFramework: SyncFrameworkIntegration
+    private val settingsManager: SettingsManager
 ) {
 
     /**
@@ -77,64 +69,16 @@ class TasksAppManager @Inject constructor(
 
 
     /**
-     * Sets up sync for the current TaskProvider (and disables sync for unavailable task providers):
-     *
-     * 1. Makes selected tasks authority _syncable_ in the sync framework, all other authorities _not syncable_.
-     * 2. Creates periodic sync worker for selected authority, disables periodic sync workers for all other authorities.
-     * 3. If the permissions don't allow synchronizing with the selected tasks app, a notification is shown.
-     *
-     * Called
-     *
-     * - when a user explicitly selects another task app, or
-     * - when there previously was no (usable) tasks app and [at.bitfire.davdroid.startup.TasksAppWatcher] detected a new one.
+     * Sets up sync for the selected TaskProvider.
      */
     fun selectProvider(selectedProvider: ProviderName?) {
         logger.info("Selecting tasks app: $selectedProvider")
 
         settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, selectedProvider?.authority)
 
-        var permissionsRequired = false     // whether additional permissions are required
-
-        // check all accounts and (de)activate task provider(s) if a CalDAV service is defined
-        for (account in accountRepository.get().getAll()) {
-            val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
-
-            // TODO check everything
-
-            for (providerName in ProviderName.entries) {
-                val syncable = hasCalDAV && providerName == selectedProvider
-
-                // enable/disable sync for the given account and authority
-                setSyncable(account, providerName.authority, syncable)
-
-                // if sync has just been enabled: check whether additional permissions are required
-                if (syncable && !PermissionUtils.havePermissions(context, providerName.permissions))
-                    permissionsRequired = true
-            }
-        }
-
-        if (permissionsRequired) {
-            logger.warning("Tasks synchronization is now enabled for at least one account, but permissions are not granted")
-            notificationRegistry.get().notifyPermissions()
-        }
-    }
-
-    private fun setSyncable(account: Account, authority: String, syncable: Boolean) {
-        try {
-            val settings = accountSettingsFactory.create(account)
-            if (syncable) {
-                logger.info("Enabling $authority sync for $account")
-
-                // set sync interval according to settings; also updates periodic sync workers and sync framework on-content-change
-                val interval = settings.getTasksSyncInterval() ?: settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
-                settings.setSyncInterval(authority, interval)
-            } else {
-                logger.info("Disabling $authority sync for $account")
-                syncFramework.disableSyncAbility(account, authority)
-            }
-        } catch (_: InvalidAccountException) {
-            // account has been removed in the meanwhile
-        }
+        // check all accounts and update task sync
+        for (account in accountRepository.get().getAll())
+            automaticSyncManager.updateAutomaticSync(account, SyncDataType.TASKS)
     }
 
 

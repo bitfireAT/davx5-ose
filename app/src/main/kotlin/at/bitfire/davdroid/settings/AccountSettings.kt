@@ -18,7 +18,6 @@ import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
-import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
@@ -141,13 +140,8 @@ class AccountSettings @AssistedInject constructor(
      * @return sync interval in seconds; *[SYNC_INTERVAL_MANUALLY]* if manual sync; *null* if not set
      */
     fun getSyncInterval(authority: String): Long? {
-        val addrBookAuthority = context.getString(R.string.address_books_authority)
-
-        if (!syncFramework.isSyncable(account, authority) && authority != addrBookAuthority)
-            return null
-
         val key = when {
-            authority == addrBookAuthority ->
+            authority == context.getString(R.string.address_books_authority) ->
                 KEY_SYNC_INTERVAL_ADDRESSBOOKS
             authority == CalendarContract.AUTHORITY ->
                 KEY_SYNC_INTERVAL_CALENDARS
@@ -157,8 +151,6 @@ class AccountSettings @AssistedInject constructor(
         }
         return accountManager.getUserData(account, key)?.toLong()
     }
-
-    fun getTasksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_TASKS)?.toLong()
 
     /**
      * Sets the sync interval and en- or disables periodic sync for the given account and authority.

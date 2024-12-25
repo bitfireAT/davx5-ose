@@ -8,10 +8,13 @@ import android.accounts.Account
 import android.content.Context
 import android.provider.CalendarContract
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import javax.inject.Provider
 
 /**
  * Manages automatic synchronization, that is:
@@ -27,8 +30,9 @@ import javax.inject.Inject
 class AutomaticSyncManager @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
+    private val serviceRepository: DavServiceRepository,
     private val syncFramework: SyncFrameworkIntegration,
-    private val tasksAppManager: TasksAppManager,
+    private val tasksAppManager: Provider<TasksAppManager>,
     private val workerManager: SyncWorkerManager
 ) {
 
@@ -59,24 +63,48 @@ class AutomaticSyncManager @Inject constructor(
         seconds: Long?,
         wifiOnly: Boolean = accountSettingsFactory.create(account).getSyncWifiOnly()
     ) {
-        if (seconds != null) {
+        if (seconds != null)
             // update sync workers (needs already updated sync interval in AccountSettings)
             workerManager.enablePeriodic(account, dataType, seconds, wifiOnly)
-        } else
+        else
             workerManager.disablePeriodic(account, dataType)
 
         // also enable/disable content-triggered syncs
         val authority: String? = when (dataType) {
             SyncDataType.CONTACTS -> context.getString(R.string.address_books_authority)
             SyncDataType.EVENTS -> CalendarContract.AUTHORITY
-            SyncDataType.TASKS -> tasksAppManager.currentProvider()?.authority
+            SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
         }
         if (authority != null && seconds != null)
             syncFramework.enableSyncOnContentChange(account, authority)
-        else {
+        else
             for (authority in dataType.possibleAuthorities(context))
                 syncFramework.disableSyncOnContentChange(account, authority)
+
+        // FIXME check permission, if applicable (was: check tasks permission)
+    }
+
+    /**
+     * Updates automatic synchronization of the given account and data type according to the account settings.
+     */
+    fun updateAutomaticSync(
+        account: Account,
+        dataType: SyncDataType
+    ) {
+        val serviceType = when (dataType) {
+            SyncDataType.CONTACTS -> Service.TYPE_CARDDAV
+            SyncDataType.EVENTS,
+            SyncDataType.TASKS -> Service.TYPE_CALDAV
         }
+        val hasService = serviceRepository.getByAccountAndType(account.name, serviceType) != null
+
+        val syncAuthority = dataType.toSyncAuthority(context)
+        if (hasService && syncAuthority != null) {
+            val accountSettings = accountSettingsFactory.create(account)
+            val syncInterval = accountSettings.getSyncInterval(syncAuthority).takeUnless { it == AccountSettings.SYNC_INTERVAL_MANUALLY }
+            enableAutomaticSync(account, dataType, syncInterval)
+        } else
+            disableAutomaticSync(account, dataType)
     }
 
 }
