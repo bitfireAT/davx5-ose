@@ -84,8 +84,6 @@ class AutomaticSyncManager @Inject constructor(
         } else
             for (authority in dataType.possibleAuthorities(context))
                 syncFramework.disableSyncOnContentChange(account, authority)
-
-        // FIXME check permission, if applicable (was: check tasks permission)
     }
 
     /**

@@ -13,6 +13,7 @@ import android.net.Uri
 import androidx.core.app.NotificationCompat
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.AccountRepository
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationRegistry
@@ -31,6 +32,7 @@ import javax.inject.Inject
 class TasksAppManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val accountRepository: Lazy<AccountRepository>,
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val automaticSyncManager: AutomaticSyncManager,
     private val logger: Logger,
     private val notificationRegistry: Lazy<NotificationRegistry>,
@@ -73,11 +75,24 @@ class TasksAppManager @Inject constructor(
     fun selectProvider(selectedProvider: ProviderName?) {
         logger.info("Selecting tasks app: $selectedProvider")
 
-        settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, selectedProvider?.authority)
+        val authority = selectedProvider?.authority
+        settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, authority)
 
         // check all accounts and update task sync
-        for (account in accountRepository.get().getAll())
-            automaticSyncManager.updateAutomaticSync(account, SyncDataType.TASKS)
+        for (account in accountRepository.get().getAll()) {
+            if (authority != null) {
+                val accountSettings = accountSettingsFactory.create(account)
+                val syncInterval = accountSettings.getSyncInterval(authority)
+                if (syncInterval != null && syncInterval != AccountSettings.SYNC_INTERVAL_MANUALLY)
+                    // we already have a sync interval, only update automatic sync
+                    automaticSyncManager.updateAutomaticSync(account, SyncDataType.TASKS)
+                else {
+                    // no sync interval yet, set it to default
+                    val syncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
+                    accountSettings.setSyncInterval(authority, syncInterval)
+                }
+            }
+        }
     }
 
 

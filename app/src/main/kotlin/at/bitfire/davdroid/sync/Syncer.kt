@@ -17,6 +17,7 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -73,6 +74,9 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
     @Inject
     lateinit var logger: Logger
+
+    @Inject
+    lateinit var notificationRegistry: NotificationRegistry
 
     @Inject
     lateinit var serviceRepository: DavServiceRepository
@@ -252,6 +256,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             context.contentResolver.acquireContentProviderClient(authority)
         } catch (e: SecurityException) {
             logger.log(Level.WARNING, "Missing permissions for authority $authority", e)
+            notificationRegistry.notifyPermissions()
             null
         }.use { provider ->
             if (provider == null) {
