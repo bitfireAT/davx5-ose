@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
-import android.provider.CalendarContract
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
@@ -96,7 +95,7 @@ class AccountRepository @Inject constructor(
 
                 // set initial CardDAV account settings and set sync intervals (enables automatic sync)
                 accountSettings.setGroupMethod(groupMethod)
-                accountSettings.setSyncInterval(addrBookAuthority, defaultSyncInterval)
+                accountSettings.setSyncInterval(SyncDataType.CONTACTS, defaultSyncInterval)
 
                 // start CardDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
@@ -109,13 +108,13 @@ class AccountRepository @Inject constructor(
                 val id = insertService(accountName, Service.TYPE_CALDAV, config.calDAV)
 
                 // set default sync interval and enable sync regardless of permissions
-                accountSettings.setSyncInterval(CalendarContract.AUTHORITY, defaultSyncInterval)
+                accountSettings.setSyncInterval(SyncDataType.EVENTS, defaultSyncInterval)
 
                 // if task provider present, set task sync interval and enable sync
                 val taskProvider = tasksAppManager.get().currentProvider()
                 if (taskProvider != null) {
                     logger.info("Tasks provider ${taskProvider.authority} found. Tasks sync enabled.")
-                    accountSettings.setSyncInterval(taskProvider.authority, defaultSyncInterval)
+                    accountSettings.setSyncInterval(SyncDataType.TASKS, defaultSyncInterval)
                 } else {
                     logger.info("No tasks provider found. Did not enable tasks sync.")
                     automaticSyncManager.disableAutomaticSync(account, SyncDataType.TASKS)
@@ -207,13 +206,7 @@ class AccountRepository @Inject constructor(
 
         // remember sync intervals
         val oldSettings = accountSettingsFactory.create(oldAccount)
-        val authorities = mutableListOf(
-            context.getString(R.string.address_books_authority),
-            CalendarContract.AUTHORITY
-        )
-        val tasksProvider = tasksAppManager.get().currentProvider()
-        tasksProvider?.authority?.let { authorities.add(it) }
-        val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
+        val syncIntervals = SyncDataType.entries.map { Pair(it, oldSettings.getSyncInterval(it)) }
 
         // rename account
         try {
@@ -263,11 +256,9 @@ class AccountRepository @Inject constructor(
 
             // restore sync intervals
             val newSettings = accountSettingsFactory.create(newAccount)
-            for ((authority, interval) in syncIntervals) {
-                if (interval == null)
-                    automaticSyncManager.disableAutomaticSync(newAccount, SyncDataType.fromAuthority(context, authority))
-                else
-                    newSettings.setSyncInterval(authority, interval)
+            for ((dataType, interval) in syncIntervals) {
+                newSettings.setSyncInterval(dataType, interval, enableAutomaticSync = false)
+                automaticSyncManager.updateAutomaticSync(newAccount, dataType)
             }
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine

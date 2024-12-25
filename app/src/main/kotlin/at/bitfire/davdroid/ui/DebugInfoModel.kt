@@ -529,7 +529,7 @@ class DebugInfoModel @AssistedInject constructor(
      * @return the requested information
      */
     private fun dumpAccount(account: Account, accountSettings: AccountSettings?, infos: Iterable<AccountDumpInfo>): String {
-        val table = TextTable("Authority", "isSyncable", "syncsOnContentChange", "Interval", "Entries")
+        val table = TextTable("Authority", "isSyncable", "syncsOnContentChange", "Entries")
         for (info in infos) {
             var nrEntries = "—"
             if (info.countUri != null)
@@ -546,7 +546,6 @@ class DebugInfoModel @AssistedInject constructor(
                 info.authority,
                 syncFramework.isSyncable(account, info.authority),
                 syncFramework.syncsOnContentChange(account, info.authority),
-                accountSettings?.getSyncInterval(info.authority)?.takeIf { it >= 0 }?.let {"${it/60} min"},
                 nrEntries
             )
         }

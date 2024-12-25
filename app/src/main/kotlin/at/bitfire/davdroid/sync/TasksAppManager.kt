@@ -75,24 +75,23 @@ class TasksAppManager @Inject constructor(
     fun selectProvider(selectedProvider: ProviderName?) {
         logger.info("Selecting tasks app: $selectedProvider")
 
-        val authority = selectedProvider?.authority
-        settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, authority)
+        val selectedAuthority = selectedProvider?.authority
+        settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, selectedAuthority)
 
         // check all accounts and update task sync
-        for (account in accountRepository.get().getAll()) {
-            if (authority != null) {
+        if (selectedAuthority != null)
+            for (account in accountRepository.get().getAll()) {
                 val accountSettings = accountSettingsFactory.create(account)
-                val syncInterval = accountSettings.getSyncInterval(authority)
-                if (syncInterval != null && syncInterval != AccountSettings.SYNC_INTERVAL_MANUALLY)
-                    // we already have a sync interval, only update automatic sync
+                val syncInterval = accountSettings.getSyncInterval(SyncDataType.TASKS)
+                if (syncInterval != null)
+                    // we already have a tasks sync interval, only update automatic sync
                     automaticSyncManager.updateAutomaticSync(account, SyncDataType.TASKS)
                 else {
                     // no sync interval yet, set it to default
                     val syncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
-                    accountSettings.setSyncInterval(authority, syncInterval)
+                    accountSettings.setSyncInterval(SyncDataType.TASKS, syncInterval)
                 }
             }
-        }
     }
 
 

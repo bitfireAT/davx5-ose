@@ -8,7 +8,6 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
 import android.os.Looper
-import android.provider.CalendarContract
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
@@ -18,16 +17,17 @@ import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.util.trimToNull
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import net.openid.appauth.AuthState
+import java.util.Collections
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Provider
+import kotlin.collections.mutableSetOf
 
 /**
  * Manages settings of an account.
@@ -76,7 +76,7 @@ class AccountSettings @AssistedInject constructor(
             throw IllegalArgumentException("Invalid account type for AccountSettings(): ${account.type}")
 
         // synchronize because account migration must only be run one time
-        synchronized(AccountSettings::class.java) {
+        synchronized(currentlyUpdating) {
             val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
             var version = 0
             try {
@@ -87,15 +87,14 @@ class AccountSettings @AssistedInject constructor(
             logger.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
 
             if (version < CURRENT_VERSION) {
-                if (currentlyUpdating) {
-                    logger.severe("Redundant call: migration created AccountSettings(). This must never happen.")
-                    throw IllegalStateException("Redundant call: migration created AccountSettings()")
-                } else {
-                    currentlyUpdating = true
+                if (currentlyUpdating.contains(account))
+                    logger.fine("AccountSettings created during migration – not running update()")
+                else {
+                    currentlyUpdating += account
                     try {
                         update(version, abortOnMissingMigration)
                     } finally {
-                        currentlyUpdating = false
+                        currentlyUpdating -= account
                     }
                 }
             }
@@ -132,65 +131,38 @@ class AccountSettings @AssistedInject constructor(
     // sync. settings
 
     /**
-     * Gets the currently set sync interval for this account in seconds.
+     * Gets the currently set sync interval for this account and data type in seconds.
      *
-     * @param authority authority to check (for instance: [CalendarContract.AUTHORITY]])
-     * @return sync interval in seconds; *[SYNC_INTERVAL_MANUALLY]* if manual sync; *null* if not set
+     * @param dataType  data type of desired sync interval
+     * @return sync interval in seconds, or `null` if not set (not applicable or only manual sync)
      */
-    fun getSyncInterval(authority: String): Long? {
-        val key = when {
-            authority == context.getString(R.string.address_books_authority) ->
-                KEY_SYNC_INTERVAL_ADDRESSBOOKS
-            authority == CalendarContract.AUTHORITY ->
-                KEY_SYNC_INTERVAL_CALENDARS
-            TaskProvider.ProviderName.entries.any { it.authority == authority } ->
-                KEY_SYNC_INTERVAL_TASKS
-            else -> return null
+    fun getSyncInterval(dataType: SyncDataType): Long? {
+        val key = when (dataType) {
+            SyncDataType.CONTACTS -> KEY_SYNC_INTERVAL_ADDRESSBOOKS
+            SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
+            SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
-        return accountManager.getUserData(account, key)?.toLong()
+        return accountManager.getUserData(account, key)?.toLong().takeUnless { it == SYNC_INTERVAL_MANUALLY }
     }
 
     /**
-     * Sets the sync interval and updates the periodic sync for the given account and authority.
+     * Sets the sync interval for the given data type and updates the automatic sync.
      *
-     * Setting the sync interval (regardless of manual or not) implies that automatic synchronization will be
-     * enabled using [AutomaticSyncManager.enableAutomaticSync].
-     *
-     * @param authority sync authority (like [CalendarContract.AUTHORITY])
-     * @param _seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled;
-     * otherwise (must be ≥ 15 min): automatic sync will be enabled and set to the given number of seconds
+     * @param dataType              data type of the sync interval to set
+     * @param secondsOrManually     sync interval in seconds; _null_ (or [SYNC_INTERVAL_MANUALLY]) for no periodic sync
+     * @param enableAutomaticSync   whether to enable automatic sync using [AutomaticSyncManager.enableAutomaticSync]
      */
-    fun setSyncInterval(authority: String, _seconds: Long) {
-        val seconds =
-            if (_seconds != SYNC_INTERVAL_MANUALLY && _seconds < 60*15)
-                60*15
-            else
-                _seconds
-
-        // Store (user defined) sync interval in account settings
-        val key: String
-        val dataType: SyncDataType
-        when {
-            authority == context.getString(R.string.address_books_authority) -> {
-                key = KEY_SYNC_INTERVAL_ADDRESSBOOKS
-                dataType = SyncDataType.CONTACTS
-            }
-            authority == CalendarContract.AUTHORITY -> {
-                key = KEY_SYNC_INTERVAL_CALENDARS
-                dataType = SyncDataType.EVENTS
-            }
-            TaskProvider.ProviderName.entries.any { it.authority == authority } -> {
-                key = KEY_SYNC_INTERVAL_TASKS
-                dataType = SyncDataType.TASKS
-            }
-            else -> {
-                logger.warning("Sync interval not applicable to authority $authority")
-                return
-            }
+    fun setSyncInterval(dataType: SyncDataType, secondsOrManually: Long?, enableAutomaticSync: Boolean = true) {
+        val seconds = secondsOrManually.takeUnless { it == SYNC_INTERVAL_MANUALLY }
+        val key = when (dataType) {
+            SyncDataType.CONTACTS -> KEY_SYNC_INTERVAL_ADDRESSBOOKS
+            SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
+            SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
-        accountManager.setAndVerifyUserData(account, key, seconds.toString())
+        accountManager.setAndVerifyUserData(account, key, seconds?.toString())
 
-        automaticSyncManager.enableAutomaticSync(account, dataType, seconds, getSyncWifiOnly())
+        if (enableAutomaticSync)
+            automaticSyncManager.enableAutomaticSync(account, dataType, seconds, getSyncWifiOnly())
     }
 
     fun getSyncWifiOnly() =
@@ -358,7 +330,7 @@ class AccountSettings @AssistedInject constructor(
                     throw IllegalArgumentException("Missing AccountSettings migration $fromVersion → $toVersion")
             } else {
                 try {
-                    migration.get().migrate(account, this)
+                    migration.get().migrate(account)
 
                     logger.info("Account settings version update to $toVersion successful")
                     accountManager.setAndVerifyUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
@@ -428,12 +400,11 @@ class AccountSettings @AssistedInject constructor(
         "1"                             show only personal collections */
         const val KEY_SHOW_ONLY_PERSONAL = "show_only_personal"
 
+        @Deprecated("Use null value instead")
         const val SYNC_INTERVAL_MANUALLY = -1L
 
-        /** Static property to indicate whether AccountSettings migration is currently running.
-         * **Access must be `synchronized` with `AccountSettings::class.java`.** */
-        @Volatile
-        var currentlyUpdating = false
+        /** Static property to remember which AccountSettings updates/migrations are currently running. */
+        val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<Account>())
 
         fun initialUserData(credentials: Credentials?): Bundle {
             val bundle = Bundle()

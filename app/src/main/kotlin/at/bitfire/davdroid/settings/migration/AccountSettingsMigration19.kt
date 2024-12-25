@@ -9,7 +9,6 @@ import android.content.Context
 import android.provider.CalendarContract
 import androidx.work.WorkManager
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.ical4android.TaskProvider
 import dagger.Binds
@@ -32,7 +31,7 @@ class AccountSettingsMigration19 @Inject constructor(
     private val automaticSyncManager: AutomaticSyncManager
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account, accountSettings: AccountSettings) {
+    override fun migrate(account: Account) {
         // cancel old workers
         val workManager = WorkManager.getInstance(context)
         val authorities = listOf(

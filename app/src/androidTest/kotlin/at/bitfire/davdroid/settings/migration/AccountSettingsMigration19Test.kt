@@ -20,7 +20,6 @@ import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.SpyK
-import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
@@ -76,7 +75,7 @@ class AccountSettingsMigration19Test {
         mockkObject(workManager)
 
         val account = Account("Some", "Test")
-        migration.migrate(account, mockk())
+        migration.migrate(account)
 
         val addressBookAuthority = context.getString(R.string.address_books_authority)
         verify {

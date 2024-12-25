@@ -2,10 +2,8 @@ package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.content.Context
-import android.provider.CalendarContract
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.Service
@@ -106,11 +104,11 @@ class AccountSettingsModel @AssistedInject constructor(
 
         _uiState.value = UiState(
             hasContactsSync = hasContactsSync,
-            syncIntervalContacts = accountSettings.getSyncInterval(context.getString(R.string.address_books_authority)),
+            syncIntervalContacts = accountSettings.getSyncInterval(SyncDataType.CONTACTS),
             hasCalendarsSync = hasCalendarSync,
-            syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY),
+            syncIntervalCalendars = accountSettings.getSyncInterval(SyncDataType.EVENTS),
             hasTasksSync = hasTasksSync,
-            syncIntervalTasks = tasksProvider?.let { accountSettings.getSyncInterval(it.authority) },
+            syncIntervalTasks = accountSettings.getSyncInterval(SyncDataType.TASKS),
 
             syncWifiOnly = accountSettings.getSyncWifiOnly(),
             syncWifiOnlySSIDs = accountSettings.getSyncWifiOnlySSIDs(),
@@ -129,24 +127,22 @@ class AccountSettingsModel @AssistedInject constructor(
 
     fun updateContactsSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountSettings.setSyncInterval(context.getString(R.string.address_books_authority), syncInterval)
+            accountSettings.setSyncInterval(SyncDataType.CONTACTS, syncInterval)
             reload()
         }
     }
 
     fun updateCalendarSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountSettings.setSyncInterval(CalendarContract.AUTHORITY, syncInterval)
+            accountSettings.setSyncInterval(SyncDataType.EVENTS, syncInterval)
             reload()
         }
     }
 
     fun updateTasksSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
-            tasksProvider?.authority?.let { tasksAuthority ->
-                accountSettings.setSyncInterval(tasksAuthority, syncInterval)
-                reload()
-            }
+            accountSettings.setSyncInterval(SyncDataType.TASKS, syncInterval)
+            reload()
         }
     }
 

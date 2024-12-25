@@ -97,7 +97,7 @@ class AutomaticSyncManager @Inject constructor(
     }
 
     /**
-     * Updates automatic synchronization of the given account and data type according to the account settings.
+     * Updates automatic synchronization of the given account and data type according to the account services and settings.
      *
      * @param account   account for which automatic synchronization shall be updated
      * @param dataType  sync data type for which automatic synchronization shall be updated
@@ -110,10 +110,9 @@ class AutomaticSyncManager @Inject constructor(
         }
         val hasService = serviceRepository.getByAccountAndType(account.name, serviceType) != null
 
-        val syncAuthority = dataType.toSyncAuthority(context)
-        if (hasService && syncAuthority != null) {
+        if (hasService) {
             val accountSettings = accountSettingsFactory.create(account)
-            val syncInterval = accountSettings.getSyncInterval(syncAuthority).takeUnless { it == AccountSettings.SYNC_INTERVAL_MANUALLY }
+            val syncInterval = accountSettings.getSyncInterval(dataType)
             enableAutomaticSync(account, dataType, syncInterval)
         } else
             disableAutomaticSync(account, dataType)
