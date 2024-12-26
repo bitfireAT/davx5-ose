@@ -54,8 +54,8 @@ class AutomaticSyncManager @Inject constructor(
      *
      * @param account   the account to synchronize
      * @param dataType  the data type to synchronize
-     * @param wifiOnly  whether to synchronize only on Wi-Fi (default value takes the account setting)
      * @param seconds   interval in seconds, or `null` to disable periodic sync (only sync on local data changes)
+     * @param wifiOnly  whether to synchronize only on Wi-Fi (default value takes the account setting)
      */
     fun enableAutomaticSync(
         account: Account,
@@ -98,6 +98,9 @@ class AutomaticSyncManager @Inject constructor(
 
     /**
      * Updates automatic synchronization of the given account and data type according to the account services and settings.
+     *
+     * If there's a [Service] for the given account and data type, automatic sync is enabled (with details from [AccountSettings]).
+     * Otherwise, automatic synchronization is disabled.
      *
      * @param account   account for which automatic synchronization shall be updated
      * @param dataType  sync data type for which automatic synchronization shall be updated

@@ -142,7 +142,13 @@ class AccountSettings @AssistedInject constructor(
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
             SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
-        return accountManager.getUserData(account, key)?.toLong().takeUnless { it == SYNC_INTERVAL_MANUALLY }
+        val seconds = accountManager.getUserData(account, key)?.toLong()
+
+        // when there's no setting, return default value
+        if (seconds == null)
+            return settingsManager.getLongOrNull(Settings.DEFAULT_SYNC_INTERVAL)
+
+        return seconds.takeUnless { it == SYNC_INTERVAL_MANUALLY }
     }
 
     /**
@@ -159,7 +165,8 @@ class AccountSettings @AssistedInject constructor(
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
             SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
-        accountManager.setAndVerifyUserData(account, key, seconds?.toString())
+        val newValue = if (seconds == null) SYNC_INTERVAL_MANUALLY else seconds
+        accountManager.setAndVerifyUserData(account, key, newValue.toString())
 
         if (enableAutomaticSync)
             automaticSyncManager.enableAutomaticSync(account, dataType, seconds, getSyncWifiOnly())
@@ -398,7 +405,6 @@ class AccountSettings @AssistedInject constructor(
         "1"                             show only personal collections */
         const val KEY_SHOW_ONLY_PERSONAL = "show_only_personal"
 
-        @Deprecated("Use null value instead")
         const val SYNC_INTERVAL_MANUALLY = -1L
 
         /** Static property to remember which AccountSettings updates/migrations are currently running */

@@ -127,6 +127,8 @@ class SyncWorkerManager @Inject constructor(
         upload: Boolean = false,
         fromPush: Boolean = false
     ): String {
+        logger.info("Enqueueing unique worker for account=$account, dataType=$dataType, manual=$manual, resync=$resync, upload=$upload, fromPush=$fromPush")
+
         // enqueue and start syncing
         val name = OneTimeSyncWorker.workerName(account, dataType)
         val request = buildOneTime(
@@ -140,7 +142,6 @@ class SyncWorkerManager @Inject constructor(
             logger.fine("Showing push sync pending notification for $name")
             pushNotificationManager.notify(account, dataType)
         }
-        logger.info("Enqueueing unique worker: $name, tags = ${request.tags}")
         WorkManager.getInstance(context).enqueueUniqueWork(
             name,
             /* If sync is already running, just continue.
@@ -216,6 +217,7 @@ class SyncWorkerManager @Inject constructor(
      * @return operation object to check when and whether activation was successful
      */
     fun enablePeriodic(account: Account, dataType: SyncDataType, interval: Long, syncWifiOnly: Boolean): Operation {
+        logger.fine("Updating periodic worker for account=$account, dataType=$dataType, interval=$interval, syncWifiOnly=$syncWifiOnly")
         val workRequest = buildPeriodic(account, dataType, interval, syncWifiOnly)
         return WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             PeriodicSyncWorker.workerName(account, dataType),
@@ -233,9 +235,11 @@ class SyncWorkerManager @Inject constructor(
      * @param dataType    type of data to synchronize
      * @return operation object to check process state of work cancellation
      */
-    fun disablePeriodic(account: Account, dataType: SyncDataType): Operation =
-        WorkManager.getInstance(context)
+    fun disablePeriodic(account: Account, dataType: SyncDataType): Operation {
+        logger.fine("Disabling periodic worker for account=$account, dataType=$dataType")
+        return WorkManager.getInstance(context)
             .cancelUniqueWork(PeriodicSyncWorker.workerName(account, dataType))
+    }
 
 
     // common / helpers

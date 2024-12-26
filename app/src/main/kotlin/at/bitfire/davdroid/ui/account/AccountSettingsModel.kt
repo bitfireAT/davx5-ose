@@ -127,21 +127,21 @@ class AccountSettingsModel @AssistedInject constructor(
 
     fun updateContactsSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountSettings.setSyncInterval(SyncDataType.CONTACTS, syncInterval)
+            accountSettings.setSyncInterval(SyncDataType.CONTACTS, syncInterval.takeUnless { it == -1L })
             reload()
         }
     }
 
     fun updateCalendarSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountSettings.setSyncInterval(SyncDataType.EVENTS, syncInterval)
+            accountSettings.setSyncInterval(SyncDataType.EVENTS, syncInterval.takeUnless { it == -1L })
             reload()
         }
     }
 
     fun updateTasksSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountSettings.setSyncInterval(SyncDataType.TASKS, syncInterval)
+            accountSettings.setSyncInterval(SyncDataType.TASKS, syncInterval.takeUnless { it == -1L })
             reload()
         }
     }

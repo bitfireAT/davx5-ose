@@ -13,7 +13,6 @@ import android.net.Uri
 import androidx.core.app.NotificationCompat
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationRegistry
@@ -32,7 +31,6 @@ import javax.inject.Inject
 class TasksAppManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val accountRepository: Lazy<AccountRepository>,
-    private val accountSettingsFactory: AccountSettings.Factory,
     private val automaticSyncManager: AutomaticSyncManager,
     private val logger: Logger,
     private val notificationRegistry: Lazy<NotificationRegistry>,
@@ -80,18 +78,8 @@ class TasksAppManager @Inject constructor(
 
         // check all accounts and update task sync
         if (selectedAuthority != null)
-            for (account in accountRepository.get().getAll()) {
-                val accountSettings = accountSettingsFactory.create(account)
-                val syncInterval = accountSettings.getSyncInterval(SyncDataType.TASKS)
-                if (syncInterval != null)
-                    // we already have a tasks sync interval, only update automatic sync
-                    automaticSyncManager.updateAutomaticSync(account, SyncDataType.TASKS)
-                else {
-                    // no sync interval yet, set it to default
-                    val syncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
-                    accountSettings.setSyncInterval(SyncDataType.TASKS, syncInterval)
-                }
-            }
+            for (account in accountRepository.get().getAll())
+                automaticSyncManager.updateAutomaticSync(account, SyncDataType.TASKS)
     }
 
 

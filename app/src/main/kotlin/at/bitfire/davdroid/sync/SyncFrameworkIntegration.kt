@@ -35,6 +35,7 @@ class SyncFrameworkIntegration @Inject constructor(
      * Enable this account/provider to be syncable.
      */
     fun enableSyncAbility(account: Account, authority: String) {
+        logger.fine("Enabling sync framework for account=$account, authority=$authority")
         if (ContentResolver.getIsSyncable(account, authority) != 1)
             ContentResolver.setIsSyncable(account, authority, 1)
     }
@@ -43,6 +44,7 @@ class SyncFrameworkIntegration @Inject constructor(
      * Disable this account/provider to be syncable.
      */
     fun disableSyncAbility(account: Account, authority: String) {
+        logger.fine("Disabling sync framework for account=$account, authority=$authority")
         if (ContentResolver.getIsSyncable(account, authority) != 0)
             ContentResolver.setIsSyncable(account, authority, 0)
     }
@@ -90,6 +92,7 @@ class SyncFrameworkIntegration @Inject constructor(
      */
     @WorkerThread
     private fun setSyncOnContentChange(account: Account, authority: String, enable: Boolean): Boolean {
+        logger.fine("Setting content-triggered syncs (sync framework) for account=$account, authority=$authority to enable=$enable")
         // Try up to 10 times with 100 ms pause
         repeat(10) {
             if (setContentTrigger(account, authority, enable)) {
@@ -120,11 +123,9 @@ class SyncFrameworkIntegration @Inject constructor(
      */
     private fun setContentTrigger(account: Account, authority: String, enable: Boolean): Boolean =
         if (enable) {
-            logger.fine("Enabling content-triggered sync of $account/$authority")
             ContentResolver.setSyncAutomatically(account, authority, true)
             /* return */ ContentResolver.getSyncAutomatically(account, authority)
         } else {
-            logger.fine("Disabling content-triggered sync of $account/$authority")
             ContentResolver.setSyncAutomatically(account, authority, false)
             /* return */ !ContentResolver.getSyncAutomatically(account, authority)
         }

@@ -18,7 +18,6 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -81,51 +80,31 @@ class AccountRepository @Inject constructor(
         if (!SystemAccountUtils.createAccount(context, account, userData, credentials?.password))
             return null
 
-        // add entries for account to service DB
+        // add entries for account to database
         logger.log(Level.INFO, "Writing account configuration to database", config)
         try {
-            val accountSettings = accountSettingsFactory.create(account)
-            val defaultSyncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
-
-            // Configure CardDAV service
-            val addrBookAuthority = context.getString(R.string.address_books_authority)
             if (config.cardDAV != null) {
                 // insert CardDAV service
                 val id = insertService(accountName, Service.TYPE_CARDDAV, config.cardDAV)
 
                 // set initial CardDAV account settings and set sync intervals (enables automatic sync)
+                val accountSettings = accountSettingsFactory.create(account)
                 accountSettings.setGroupMethod(groupMethod)
-                accountSettings.setSyncInterval(SyncDataType.CONTACTS, defaultSyncInterval)
 
                 // start CardDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
-            } else
-                automaticSyncManager.disableAutomaticSync(account, SyncDataType.CONTACTS)
+            }
 
-            // Configure CalDAV service
             if (config.calDAV != null) {
                 // insert CalDAV service
                 val id = insertService(accountName, Service.TYPE_CALDAV, config.calDAV)
 
-                // set default sync interval and enable sync regardless of permissions
-                accountSettings.setSyncInterval(SyncDataType.EVENTS, defaultSyncInterval)
-
-                // if task provider present, set task sync interval and enable sync
-                val taskProvider = tasksAppManager.get().currentProvider()
-                if (taskProvider != null) {
-                    logger.info("Tasks provider ${taskProvider.authority} found. Tasks sync enabled.")
-                    accountSettings.setSyncInterval(SyncDataType.TASKS, defaultSyncInterval)
-                } else {
-                    logger.info("No tasks provider found. Did not enable tasks sync.")
-                    automaticSyncManager.disableAutomaticSync(account, SyncDataType.TASKS)
-                }
-
                 // start CalDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
-            } else {
-                automaticSyncManager.disableAutomaticSync(account, SyncDataType.EVENTS)
-                automaticSyncManager.disableAutomaticSync(account, SyncDataType.TASKS)
             }
+
+            // set up automatic sync (processes inserted services)
+            automaticSyncManager.updateAutomaticSync(account)
 
         } catch(e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Couldn't access account settings", e)
@@ -204,10 +183,6 @@ class AccountRepository @Inject constructor(
         if (accountManager.getAccountsByType(context.getString(R.string.account_type)).contains(newAccount))
             throw IllegalArgumentException("Account with name \"$newName\" already exists")
 
-        // remember sync intervals
-        val oldSettings = accountSettingsFactory.create(oldAccount)
-        val syncIntervals = SyncDataType.entries.map { Pair(it, oldSettings.getSyncInterval(it)) }
-
         // rename account
         try {
             /* https://github.com/bitfireAT/davx5/issues/135
@@ -219,7 +194,7 @@ class AccountRepository @Inject constructor(
             3. Now the services would be renamed, but they're not here anymore. */
             AccountsCleanupWorker.lockAccountsCleanup()
 
-            // rename account
+            // rename account (also moves AccountSettings)
             val future = accountManager.renameAccount(oldAccount, newName, null, null)
 
             // wait for operation to complete
@@ -254,12 +229,8 @@ class AccountRepository @Inject constructor(
                 // Couldn't update task lists, but this is not a fatal error (will be fixed at next sync)
             }
 
-            // restore sync intervals
-            val newSettings = accountSettingsFactory.create(newAccount)
-            for ((dataType, interval) in syncIntervals) {
-                newSettings.setSyncInterval(dataType, interval, enableAutomaticSync = false)
-                automaticSyncManager.updateAutomaticSync(newAccount, dataType)
-            }
+            // update automatic sync
+            automaticSyncManager.updateAutomaticSync(newAccount)
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()
