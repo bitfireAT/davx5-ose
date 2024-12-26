@@ -16,6 +16,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import dagger.Lazy
@@ -76,10 +77,13 @@ class TasksAppManager @Inject constructor(
         val selectedAuthority = selectedProvider?.authority
         settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, selectedAuthority)
 
+        // check permission
+        if (selectedProvider != null && !PermissionUtils.havePermissions(context, selectedProvider.permissions))
+            notificationRegistry.get().notifyPermissions()
+
         // check all accounts and update task sync
-        if (selectedAuthority != null)
-            for (account in accountRepository.get().getAll())
-                automaticSyncManager.updateAutomaticSync(account, SyncDataType.TASKS)
+        for (account in accountRepository.get().getAll())
+            automaticSyncManager.updateAutomaticSync(account, SyncDataType.TASKS)
     }
 
 
