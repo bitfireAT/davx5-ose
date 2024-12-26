@@ -143,23 +143,21 @@ class AccountSettings @AssistedInject constructor(
             SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
         val seconds = accountManager.getUserData(account, key)?.toLong()
-
-        // when there's no setting, return default value
-        if (seconds == null)
-            return settingsManager.getLongOrNull(Settings.DEFAULT_SYNC_INTERVAL)
-
-        return seconds.takeUnless { it == SYNC_INTERVAL_MANUALLY }
+        return when (seconds) {
+            null -> settingsManager.getLongOrNull(Settings.DEFAULT_SYNC_INTERVAL)   // no setting → default value
+            SYNC_INTERVAL_MANUALLY -> null      // manual sync
+            else -> seconds
+        }
     }
 
     /**
      * Sets the sync interval for the given data type and updates the automatic sync.
      *
      * @param dataType              data type of the sync interval to set
-     * @param secondsOrManually     sync interval in seconds; _null_ (or [SYNC_INTERVAL_MANUALLY]) for no periodic sync
+     * @param seconds               sync interval in seconds; _null_ for no periodic sync
      * @param enableAutomaticSync   whether to enable automatic sync using [AutomaticSyncManager.enableAutomaticSync]
      */
-    fun setSyncInterval(dataType: SyncDataType, secondsOrManually: Long?, enableAutomaticSync: Boolean = true) {
-        val seconds = secondsOrManually.takeUnless { it == SYNC_INTERVAL_MANUALLY }
+    fun setSyncInterval(dataType: SyncDataType, seconds: Long?, enableAutomaticSync: Boolean = true) {
         val key = when (dataType) {
             SyncDataType.CONTACTS -> KEY_SYNC_INTERVAL_ADDRESSBOOKS
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
@@ -405,7 +403,7 @@ class AccountSettings @AssistedInject constructor(
         "1"                             show only personal collections */
         const val KEY_SHOW_ONLY_PERSONAL = "show_only_personal"
 
-        const val SYNC_INTERVAL_MANUALLY = -1L
+        internal const val SYNC_INTERVAL_MANUALLY = -1L
 
         /** Static property to remember which AccountSettings updates/migrations are currently running */
         val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<Account>())
