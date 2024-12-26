@@ -67,7 +67,7 @@ class TasksModel @Inject constructor(
         try {
             context.packageManager.getPackageInfo(packageName, 0)
             true
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
             false
         }
 

@@ -10,6 +10,7 @@ import android.content.Context
 import android.provider.CalendarContract
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.ical4android.TaskProvider
 import dagger.Binds
 import dagger.Module
@@ -22,8 +23,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 /**
- * Disables all sync adapter periodic syncs for every authority. Then enables
- * corresponding PeriodicSyncWorkers
+ * Disables all sync adapter periodic syncs for every authority. Then enables corresponding periodic sync workers.
  */
 class AccountSettingsMigration14 @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
@@ -43,20 +43,22 @@ class AccountSettingsMigration14 @Inject constructor(
             TaskProvider.ProviderName.TasksOrg.authority
         )
 
-        val accountSettings = accountSettingsFactory.create(account)
-        for (authority in authorities) {
-            // Enable PeriodicSyncWorker (WorkManager), with known intervals
-            enableWorkManager(account, authority, accountSettings)
-            // Disable periodic syncs (sync adapter framework)
+        // Disable periodic syncs (sync adapter framework)
+        for (authority in authorities)
             disableSyncFramework(account, authority)
-        }
+
+        // Enable PeriodicSyncWorker (WorkManager), with known intervals
+        for (dataType in SyncDataType.entries)
+            enableWorkManager(account, dataType)
     }
 
-    private fun enableWorkManager(account: Account, authority: String, accountSettings: AccountSettings) {
-        val enabled = accountSettings.getSyncInterval(authority)?.let { syncInterval ->
-            accountSettings.setSyncInterval(authority, syncInterval)
-        } ?: false
-        logger.info("PeriodicSyncWorker for $account/$authority enabled=$enabled")
+    private fun enableWorkManager(account: Account, dataType: SyncDataType) {
+        val accountSettings = accountSettingsFactory.create(account)
+        val enabled: Boolean = accountSettings.getSyncInterval(dataType)?.let { syncInterval ->
+            accountSettings.setSyncInterval(dataType, syncInterval)
+            true
+        } == true
+        logger.info("PeriodicSyncWorker for $account/$dataType enabled=$enabled")
     }
 
     private fun disableSyncFramework(account: Account, authority: String) {

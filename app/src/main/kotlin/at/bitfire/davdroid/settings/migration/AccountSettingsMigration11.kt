@@ -6,8 +6,10 @@ package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.ContentResolver
 import android.content.Context
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettings.Companion.SYNC_INTERVAL_MANUALLY
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.Binds
@@ -24,7 +26,6 @@ import javax.inject.Inject
  * again when the tasks provider is switched.
  */
 class AccountSettingsMigration11 @Inject constructor(
-    private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     private val tasksAppManager: TasksAppManager
 ): AccountSettingsMigration {
@@ -32,10 +33,20 @@ class AccountSettingsMigration11 @Inject constructor(
     override fun migrate(account: Account) {
         val accountManager: AccountManager = AccountManager.get(context)
         tasksAppManager.currentProvider()?.let { provider ->
-            val interval = accountSettingsFactory.create(account).getSyncInterval(provider.authority)
+            val interval = getSyncFrameworkInterval(account, provider.authority)
             if (interval != null)
                 accountManager.setAndVerifyUserData(account, AccountSettings.KEY_SYNC_INTERVAL_TASKS, interval.toString())
         }
+    }
+
+    private fun getSyncFrameworkInterval(account: Account, authority: String): Long? {
+        if (ContentResolver.getIsSyncable(account, authority) <= 0)
+            return null
+
+        return if (ContentResolver.getSyncAutomatically(account, authority))
+            ContentResolver.getPeriodicSyncs(account, authority).firstOrNull()?.period ?: SYNC_INTERVAL_MANUALLY
+        else
+            SYNC_INTERVAL_MANUALLY
     }
 
 

@@ -6,6 +6,7 @@ package at.bitfire.davdroid.settings
 
 import android.accounts.AccountManager
 import android.content.Context
+import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -32,6 +33,7 @@ class AccountSettingsTest {
     @Before
     fun setUp() {
         hiltRule.inject()
+        TestUtils.setUpWorkManager(context)
     }
 
 
@@ -50,7 +52,7 @@ class AccountSettingsTest {
             accountSettingsFactory.create(account, abortOnMissingMigration = true)
 
             val accountManager = AccountManager.get(context)
-            val version = accountManager.getUserData(account, AccountSettings.KEY_SETTINGS_VERSION).toIntOrNull()
+            val version = accountManager.getUserData(account, AccountSettings.KEY_SETTINGS_VERSION).toInt()
             assertEquals(AccountSettings.CURRENT_VERSION, version)
         }
     }

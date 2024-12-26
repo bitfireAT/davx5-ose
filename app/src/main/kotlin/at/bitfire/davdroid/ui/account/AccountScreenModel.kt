@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.content.Context
-import android.provider.CalendarContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -23,6 +22,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.assisted.Assisted
@@ -35,7 +35,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -95,7 +94,7 @@ class AccountScreenModel @AssistedInject constructor(
     val cardDavProgress: Flow<AccountProgress> = accountProgressUseCase(
         account = account,
         serviceFlow = cardDavSvc,
-        authoritiesFlow = flowOf(listOf(context.getString(R.string.address_books_authority)))
+        dataTypes = listOf(SyncDataType.CONTACTS)
     )
     val addressBooks = getServiceCollectionPager(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
 
@@ -107,13 +106,10 @@ class AccountScreenModel @AssistedInject constructor(
         homeSets.isNotEmpty()
     }
     val tasksProvider = tasksAppManager.currentProviderFlow()
-    private val calDavAuthorities = tasksProvider.map { tasks ->
-        listOfNotNull(CalendarContract.AUTHORITY, tasks?.authority)
-    }
     val calDavProgress = accountProgressUseCase(
         account = account,
         serviceFlow = calDavSvc,
-        authoritiesFlow = calDavAuthorities
+        dataTypes = listOf(SyncDataType.EVENTS, SyncDataType.TASKS)
     )
     val calendars = getServiceCollectionPager(calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal)
     val subscriptions = getServiceCollectionPager(calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal)

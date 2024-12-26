@@ -6,10 +6,10 @@ package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
 import android.content.Context
-import android.provider.CalendarContract
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -59,10 +59,10 @@ class SyncWorkerManagerTest {
 
     @Test
     fun testEnqueueOneTime() {
-        val workerName = OneTimeSyncWorker.workerName(account, CalendarContract.AUTHORITY)
+        val workerName = OneTimeSyncWorker.workerName(account, SyncDataType.EVENTS)
         assertFalse(TestUtils.workScheduledOrRunningOrSuccessful(context, workerName))
 
-        val returnedName = syncWorkerManager.enqueueOneTime(account, CalendarContract.AUTHORITY)
+        val returnedName = syncWorkerManager.enqueueOneTime(account, SyncDataType.EVENTS)
         assertEquals(workerName, returnedName)
         assertTrue(TestUtils.workScheduledOrRunningOrSuccessful(context, workerName))
     }
@@ -72,18 +72,18 @@ class SyncWorkerManagerTest {
 
     @Test
     fun enablePeriodic() {
-        syncWorkerManager.enablePeriodic(account, CalendarContract.AUTHORITY, 60, false).result.get()
+        syncWorkerManager.enablePeriodic(account, SyncDataType.EVENTS, 60, false).result.get()
 
-        val workerName = PeriodicSyncWorker.workerName(account, CalendarContract.AUTHORITY)
+        val workerName = PeriodicSyncWorker.workerName(account, SyncDataType.EVENTS)
         assertTrue(workScheduledOrRunning(context, workerName))
     }
 
     @Test
     fun disablePeriodic() {
-        syncWorkerManager.enablePeriodic(account, CalendarContract.AUTHORITY, 60, false).result.get()
-        syncWorkerManager.disablePeriodic(account, CalendarContract.AUTHORITY).result.get()
+        syncWorkerManager.enablePeriodic(account, SyncDataType.EVENTS, 60, false).result.get()
+        syncWorkerManager.disablePeriodic(account, SyncDataType.EVENTS).result.get()
 
-        val workerName = PeriodicSyncWorker.workerName(account, CalendarContract.AUTHORITY)
+        val workerName = PeriodicSyncWorker.workerName(account, SyncDataType.EVENTS)
         assertFalse(workScheduledOrRunning(context, workerName))
     }
 

@@ -46,6 +46,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.ical4android.TaskProvider
@@ -528,7 +529,7 @@ class DebugInfoModel @AssistedInject constructor(
      * @return the requested information
      */
     private fun dumpAccount(account: Account, accountSettings: AccountSettings?, infos: Iterable<AccountDumpInfo>): String {
-        val table = TextTable("Authority", "isSyncable", "syncsOnContentChange", "Interval", "Entries")
+        val table = TextTable("Authority", "isSyncable", "syncsOnContentChange", "Entries")
         for (info in infos) {
             var nrEntries = "—"
             if (info.countUri != null)
@@ -545,7 +546,6 @@ class DebugInfoModel @AssistedInject constructor(
                 info.authority,
                 syncFramework.isSyncable(account, info.authority),
                 syncFramework.syncsOnContentChange(account, info.authority),
-                accountSettings?.getSyncInterval(info.authority)?.takeIf { it >= 0 }?.let {"${it/60} min"},
                 nrEntries
             )
         }
@@ -559,20 +559,14 @@ class DebugInfoModel @AssistedInject constructor(
      */
     private fun dumpSyncWorkersInfo(account: Account): String {
         val table = TextTable("Tags", "Authority", "State", "Next run", "Retries", "Generation", "Periodicity")
-        listOf(
-            context.getString(R.string.address_books_authority),
-            CalendarContract.AUTHORITY,
-            TaskProvider.ProviderName.JtxBoard.authority,
-            TaskProvider.ProviderName.OpenTasks.authority,
-            TaskProvider.ProviderName.TasksOrg.authority
-        ).forEach { authority ->
-            val tag = BaseSyncWorker.commonTag(account, authority)
+        for (dataType in SyncDataType.entries) {
+            val tag = BaseSyncWorker.commonTag(account, dataType)
             WorkManager.getInstance(context).getWorkInfos(
                 WorkQuery.Builder.fromTags(listOf(tag)).build()
             ).get().forEach { workInfo ->
                 table.addLine(
                     workInfo.tags.map { it.replace("\\bat\\.bitfire\\.davdroid\\.".toRegex(), ".") },
-                    authority,
+                    dataType,
                     "${workInfo.state} (${workInfo.stopReason})",
                     workInfo.nextScheduleTimeMillis.let { nextRun ->
                         when (nextRun) {
