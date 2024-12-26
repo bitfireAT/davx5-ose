@@ -210,8 +210,8 @@ class AccountSettingsModel @AssistedInject constructor(
      * Initiates calendar re-synchronization.
      *
      * @param fullResync whether sync shall download all events again
-     * (_true_: sets [at.bitfire.davdroid.sync.Syncer.SYNC_EXTRAS_FULL_RESYNC],
-     * _false_: sets [at.bitfire.davdroid.sync.Syncer.SYNC_EXTRAS_RESYNC])
+     * (_true_: sets [BaseSyncWorker.FULL_RESYNC],
+     * _false_: sets [BaseSyncWorker.RESYNC])
      * @param tasks whether tasks shall be synchronized, too (false: only events, true: events and tasks)
      */
     private fun resyncCalendars(fullResync: Boolean, tasks: Boolean) {
@@ -223,9 +223,9 @@ class AccountSettingsModel @AssistedInject constructor(
     /**
      * Initiates re-synchronization for given authority.
      *
-     * @param dataType   type of
-     * @param fullResync whether sync shall download all events again
-     * (_true_: sets [at.bitfire.davdroid.sync.worker.BaseSyncWorker.FULL_RESYNC],
+     * @param dataType      type of data to synchronize
+     * @param fullResync    whether sync shall download all events again
+     * (_true_: sets [BaseSyncWorker.FULL_RESYNC],
      * _false_: sets [BaseSyncWorker.RESYNC])
      */
     private fun resync(dataType: SyncDataType, fullResync: Boolean) {
