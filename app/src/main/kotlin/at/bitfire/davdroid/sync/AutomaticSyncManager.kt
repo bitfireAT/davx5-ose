@@ -39,7 +39,7 @@ class AutomaticSyncManager @Inject constructor(
     /**
      * Disable automatic synchronization for the given account and data type.
      */
-    fun disableAutomaticSync(account: Account, dataType: SyncDataType) {
+    private fun disableAutomaticSync(account: Account, dataType: SyncDataType) {
         workerManager.disablePeriodic(account, dataType)
 
         for (authority in dataType.possibleAuthorities(context))
@@ -54,19 +54,18 @@ class AutomaticSyncManager @Inject constructor(
      *
      * @param account   the account to synchronize
      * @param dataType  the data type to synchronize
-     * @param seconds   interval in seconds, or `null` to disable periodic sync (only sync on local data changes)
-     * @param wifiOnly  whether to synchronize only on Wi-Fi (default value takes the account setting)
      */
-    fun enableAutomaticSync(
+    private fun enableAutomaticSync(
         account: Account,
-        dataType: SyncDataType,
-        seconds: Long?,
-        wifiOnly: Boolean = accountSettingsFactory.create(account).getSyncWifiOnly()
+        dataType: SyncDataType
     ) {
-        if (seconds != null)
+        val accountSettings = accountSettingsFactory.create(account)
+        val syncInterval = accountSettings.getSyncInterval(dataType)
+        if (syncInterval != null) {
             // update sync workers (needs already updated sync interval in AccountSettings)
-            workerManager.enablePeriodic(account, dataType, seconds, wifiOnly)
-        else
+            val wifiOnly = accountSettings.getSyncWifiOnly()
+            workerManager.enablePeriodic(account, dataType, syncInterval, wifiOnly)
+        } else
             workerManager.disablePeriodic(account, dataType)
 
         // also enable/disable content-triggered syncs
@@ -76,7 +75,7 @@ class AutomaticSyncManager @Inject constructor(
             SyncDataType.EVENTS -> CalendarContract.AUTHORITY
             SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
         }
-        if (authority != null && seconds != null) {
+        if (authority != null && syncInterval != null) {
             // enable authority, but completely disable all other possible authorities (for instance, tasks apps which are not the current task app)
             syncFramework.enableSyncOnContentChange(account, authority)
             for (disableAuthority in possibleAuthorities - authority)
@@ -113,11 +112,9 @@ class AutomaticSyncManager @Inject constructor(
         }
         val hasService = serviceRepository.getByAccountAndType(account.name, serviceType) != null
 
-        if (hasService) {
-            val accountSettings = accountSettingsFactory.create(account)
-            val syncInterval = accountSettings.getSyncInterval(dataType)
-            enableAutomaticSync(account, dataType, syncInterval)
-        } else
+        if (hasService)
+            enableAutomaticSync(account, dataType)
+        else
             disableAutomaticSync(account, dataType)
     }
 

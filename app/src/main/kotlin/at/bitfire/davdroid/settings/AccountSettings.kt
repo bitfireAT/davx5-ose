@@ -155,9 +155,9 @@ class AccountSettings @AssistedInject constructor(
      *
      * @param dataType              data type of the sync interval to set
      * @param seconds               sync interval in seconds; _null_ for no periodic sync
-     * @param enableAutomaticSync   whether to enable automatic sync using [AutomaticSyncManager.enableAutomaticSync]
+     * @param updateAutomaticSync   whether to update automatic synchronization afterwards
      */
-    fun setSyncInterval(dataType: SyncDataType, seconds: Long?, enableAutomaticSync: Boolean = true) {
+    fun setSyncInterval(dataType: SyncDataType, seconds: Long?, updateAutomaticSync: Boolean = true) {
         val key = when (dataType) {
             SyncDataType.CONTACTS -> KEY_SYNC_INTERVAL_ADDRESSBOOKS
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
@@ -166,8 +166,8 @@ class AccountSettings @AssistedInject constructor(
         val newValue = if (seconds == null) SYNC_INTERVAL_MANUALLY else seconds
         accountManager.setAndVerifyUserData(account, key, newValue.toString())
 
-        if (enableAutomaticSync)
-            automaticSyncManager.enableAutomaticSync(account, dataType, seconds, getSyncWifiOnly())
+        if (updateAutomaticSync)
+            automaticSyncManager.updateAutomaticSync(account, dataType)
     }
 
     fun getSyncWifiOnly() =
