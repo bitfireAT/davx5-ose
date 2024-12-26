@@ -24,7 +24,6 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import androidx.work.WorkRequest
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -249,8 +248,10 @@ class SyncWorkerManager @Inject constructor(
      */
     fun cancelAllWork(account: Account) {
         val workManager = WorkManager.getInstance(context)
-        for (dataType in SyncDataType.entries)
+        for (dataType in SyncDataType.entries) {
+            workManager.cancelUniqueWork(OneTimeSyncWorker.workerName(account, dataType))
             workManager.cancelUniqueWork(PeriodicSyncWorker.workerName(account, dataType))
+        }
     }
 
     /**
@@ -282,32 +283,6 @@ class SyncWorkerManager @Inject constructor(
             .map { workInfoList ->
                 workInfoList.isNotEmpty()
             }
-    }
-
-    /**
-     * Returns a list of all available sync authorities:
-     *
-     *   1. calendar authority
-     *   2. address books authority
-     *   3. current tasks authority (if available)
-     *
-     * Checking the availability of authorities may be relatively expensive, so the
-     * result should be cached for the current operation.
-     *
-     * @return list of available sync authorities for DAVx5 accounts
-     */
-    @Deprecated("Use SyncDataType.entries instead")
-    fun syncAuthorities(): List<String> {
-        val result = mutableListOf(
-            CalendarContract.AUTHORITY,
-            context.getString(R.string.address_books_authority)
-        )
-
-        tasksAppManager.get().currentProvider()?.let { taskProvider ->
-            result += taskProvider.authority
-        }
-
-        return result
     }
 
 }
