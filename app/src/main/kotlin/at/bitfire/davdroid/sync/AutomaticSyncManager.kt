@@ -81,12 +81,15 @@ class AutomaticSyncManager @Inject constructor(
             for (disableAuthority in possibleAuthorities - authority)
                 syncFramework.disableSyncAbility(account, disableAuthority)
         } else
-            for (authority in dataType.possibleAuthorities(context))
+            for (authority in possibleAuthorities)
                 syncFramework.disableSyncOnContentChange(account, authority)
     }
 
     /**
      * Updates automatic synchronization of the given account and all data types according to the account settings.
+     *
+     * If there's a [Service] for the given account and data type, automatic sync is enabled (with details from [AccountSettings]).
+     * Otherwise, automatic synchronization is disabled.
      *
      * @param account   account for which automatic synchronization shall be updated
      */
@@ -112,7 +115,12 @@ class AutomaticSyncManager @Inject constructor(
         }
         val hasService = serviceRepository.getByAccountAndType(account.name, serviceType) != null
 
-        if (hasService)
+        val hasProvider = if (dataType == SyncDataType.TASKS)
+            tasksAppManager.get().currentProvider() != null
+        else
+            true
+
+        if (hasService && hasProvider)
             enableAutomaticSync(account, dataType)
         else
             disableAutomaticSync(account, dataType)
