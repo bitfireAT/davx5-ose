@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncDispatcher
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -51,12 +52,13 @@ class PeriodicSyncWorker @AssistedInject constructor(
          *
          * Mainly used to query [WorkManager] for work state (by unique work name or tag).
          *
-         * @param account the account this worker is running for
-         * @param authority the authority this worker is running for
+         * @param account   the account this worker is running for
+         * @param dataType  data type to be synchronized
+         *
          * @return Name of this worker composed as "periodic-sync $authority ${account.type}/${account.name}"
          */
-        fun workerName(account: Account, authority: String): String =
-            "periodic-sync $authority ${account.type}/${account.name}"
+        fun workerName(account: Account, dataType: SyncDataType): String =
+            "periodic-sync $dataType ${account.type}/${account.name}"
 
     }
 

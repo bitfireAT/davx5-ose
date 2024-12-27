@@ -133,7 +133,7 @@ object PermissionUtils {
      * @return whether at least one of [permissions] is granted
      */
     fun haveAnyPermission(context: Context, permissions: Array<String>) =
-            permissions.any { ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED }
+        permissions.any { ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED }
 
     /**
      * Checks whether all given permissions are granted.
@@ -144,7 +144,7 @@ object PermissionUtils {
      * @return whether all [permissions] are granted
      */
     fun havePermissions(context: Context, permissions: Array<String>) =
-            permissions.all { ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED }
+        permissions.all { ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED }
 
     fun showAppSettings(context: Context) {
         val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,

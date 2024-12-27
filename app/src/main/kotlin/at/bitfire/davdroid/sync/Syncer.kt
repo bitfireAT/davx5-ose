@@ -17,6 +17,7 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -73,6 +74,9 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
     @Inject
     lateinit var logger: Logger
+
+    @Inject
+    lateinit var notificationRegistry: NotificationRegistry
 
     @Inject
     lateinit var serviceRepository: DavServiceRepository
@@ -252,13 +256,14 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             context.contentResolver.acquireContentProviderClient(authority)
         } catch (e: SecurityException) {
             logger.log(Level.WARNING, "Missing permissions for authority $authority", e)
+            notificationRegistry.notifyPermissions()
             null
         }.use { provider ->
             if (provider == null) {
                 /* Can happen if
                  - we're not allowed to access the content provider, or
-                 - the content provider is not available at all, for instance because the respective
-                   system app, like "calendar storage" is disabled */
+                 - the content provider is not available at all, for instance because the tasks app has been uninstalled
+                   or the respective system app (like "calendar storage") is disabled */
                 logger.warning("Couldn't connect to content provider of authority $authority")
                 syncResult.contentProviderError = true
 

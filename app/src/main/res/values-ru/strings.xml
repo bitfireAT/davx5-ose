@@ -185,7 +185,11 @@
   <string name="app_settings_tasks_provider">Приложение Tasks</string>
   <string name="app_settings_tasks_provider_none">Не найдено совместимое приложение для задач</string>
   <string name="app_settings_unifiedpush">UnifiedPush (экспериментально)</string>
+  <string name="app_settings_unifiedpush_disable">Нет (отключить push)</string>
+  <string name="app_settings_unifiedpush_choose_distributor">Выберите дистрибьютора</string>
+  <string name="app_settings_unifiedpush_no_distributor">Push-дистрибьютор не установлен</string>
   <string name="app_settings_unifiedpush_no_endpoint">Конечная точка не сконфигурирована</string>
+  <string name="app_settings_unifiedpush_ready">Готов получать push-сообщения %s</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>

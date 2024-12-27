@@ -52,7 +52,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.EditTextInputDialog
@@ -457,7 +456,7 @@ fun SyncIntervalSetting(
         icon = icon,
         name = stringResource(name),
         summary =
-        if (syncInterval == null || syncInterval == AccountSettings.SYNC_INTERVAL_MANUALLY)
+        if (syncInterval == null)
             stringResource(R.string.settings_sync_summary_manually)
         else
             stringResource(R.string.settings_sync_summary_periodically, syncInterval / 60),

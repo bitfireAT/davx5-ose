@@ -9,12 +9,10 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import android.provider.CalendarContract
-import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.Configuration
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.testing.WorkManagerTestInitHelper
+import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
@@ -31,6 +29,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -44,7 +43,6 @@ import org.junit.Test
 import org.junit.rules.Timeout
 import java.util.logging.Logger
 import javax.inject.Inject
-import kotlin.coroutines.cancellation.CancellationException
 
 @HiltAndroidTest
 class SyncAdapterServicesTest {
@@ -84,15 +82,9 @@ class SyncAdapterServicesTest {
     @Before
     fun setUp() {
         hiltRule.inject()
+        TestUtils.setUpWorkManager(context, workerFactory)
 
         account = TestAccountAuthenticator.create()
-
-        // Initialize WorkManager for instrumentation tests.
-        val config = Configuration.Builder()
-            .setMinimumLoggingLevel(Log.DEBUG)
-            .setWorkerFactory(workerFactory)
-            .build()
-        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
 
     @After

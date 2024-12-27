@@ -60,20 +60,14 @@ class TasksAppWatcher @Inject constructor(
 
         if (currentProvider == null) {
             // Iterate through all supported providers and select one, if available.
-            var providerSelected = false
-            for (provider in TaskProvider.ProviderName.entries) {
-                val available = context.packageManager.resolveContentProvider(provider.authority, 0) != null
-                if (available) {
-                    logger.info("Selecting new tasks provider: $provider")
-                    manager.selectProvider(provider)
-                    providerSelected = true
-                    break
+            var newProvider = TaskProvider.ProviderName.entries
+                .firstOrNull { provider ->
+                    context.packageManager.resolveContentProvider(provider.authority, 0) != null
                 }
-            }
 
-            if (!providerSelected)
-                // no provider available (anymore), also clear setting and sync
-                manager.selectProvider(null)
+            // Select provider or clear setting and sync if now provider available
+            logger.info("Selecting new tasks provider: $newProvider")
+            manager.selectProvider(newProvider)
         }
     }
 

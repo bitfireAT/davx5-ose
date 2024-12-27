@@ -12,7 +12,6 @@ import android.content.pm.PackageManager
 import android.provider.CalendarContract
 import android.util.Base64
 import androidx.core.content.ContextCompat
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.UnknownProperty
 import at.techbee.jtx.JtxContract.asSyncAdapter
@@ -41,7 +40,7 @@ class AccountSettingsMigration12 @Inject constructor(
     private val logger: Logger
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account, accountSettings: AccountSettings) {
+    override fun migrate(account: Account) {
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
             context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
                 // Attention: CalendarProvider does NOT limit the results of the ExtendedProperties query

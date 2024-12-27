@@ -101,7 +101,7 @@ fun AccountScreen(
 
     val calDavService by model.calDavSvc.collectAsStateWithLifecycle()
     val calendars = model.calendars.collectAsLazyPagingItems()
-    val currentTasksApp by model.tasksProvider.collectAsStateWithLifecycle()
+    val currentTasksApp by model.tasksProvider.collectAsStateWithLifecycle(null)
     val subscriptions = model.subscriptions.collectAsLazyPagingItems()
 
     val context = LocalContext.current

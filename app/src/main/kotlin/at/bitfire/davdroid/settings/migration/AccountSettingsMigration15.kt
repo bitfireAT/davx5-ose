@@ -5,8 +5,7 @@
 package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
-import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import at.bitfire.davdroid.sync.AutomaticSyncManager
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -18,18 +17,15 @@ import javax.inject.Inject
 /**
  * Updates the periodic sync workers by re-setting the same sync interval.
  *
- * The goal is to add the [BaseSyncWorker.commonTag] to all existing periodic sync workers so that they can be detected by
- * the new [BaseSyncWorker.exists] and [at.bitfire.davdroid.ui.AccountsActivity.Model].
+ * The goal is to add the [at.bitfire.davdroid.sync.worker.BaseSyncWorker.commonTag] to all existing periodic sync workers so that they
+ * can be detected correctly.
  */
 class AccountSettingsMigration15 @Inject constructor(
-    private val syncWorkerManager: SyncWorkerManager
+    private val automaticSyncManager: AutomaticSyncManager
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account, accountSettings: AccountSettings) {
-        for (authority in syncWorkerManager.syncAuthorities()) {
-            val interval = accountSettings.getSyncInterval(authority)
-            accountSettings.setSyncInterval(authority, interval ?: AccountSettings.SYNC_INTERVAL_MANUALLY)
-        }
+    override fun migrate(account: Account) {
+        automaticSyncManager.updateAutomaticSync(account)
     }
 
 
