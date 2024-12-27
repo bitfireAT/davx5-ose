@@ -10,6 +10,7 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -18,6 +19,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
+import at.techbee.jtx.JtxContract.JtxCollection
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -102,18 +104,29 @@ class LocalTaskListStore @AssistedInject constructor(
 
     @Throws(Exception::class)
     fun renameAccount(provider: ContentProviderClient, oldName: String, newName: String) {
-        val values = ContentValues(1)
-        values.put(Tasks.ACCOUNT_NAME, newName)
-        val uri = if (providerName == TaskProvider.ProviderName.JtxBoard) {
-            Uri.parse("content://${providerName.authority}/collection")
-        } else {
-            Tasks.getContentUri(providerName.authority)
+        when (providerName) {
+            TaskProvider.ProviderName.JtxBoard -> {
+                val values = contentValuesOf(JtxCollection.ACCOUNT_NAME to newName)
+                val uri = JtxCollection.CONTENT_URI
+
+                provider.update(
+                    uri,
+                    values,
+                    "${JtxCollection.ACCOUNT_NAME}=?", arrayOf(oldName)
+                )
+            }
+            TaskProvider.ProviderName.OpenTasks, TaskProvider.ProviderName.TasksOrg -> {
+                val values = contentValuesOf(Tasks.ACCOUNT_NAME to newName)
+                val uri = Tasks.getContentUri(providerName.authority)
+
+                provider.update(
+                    uri,
+                    values,
+                    "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldName)
+                )
+            }
+            else -> error("Got an unknown provider: $providerName")
         }
-        provider.update(
-            uri,
-            values,
-            "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldName)
-        )
     }
 
 }
