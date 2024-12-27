@@ -559,7 +559,26 @@ class DebugInfoModel @AssistedInject constructor(
         return table.toString()
     }
 
-    private fun syncWorkersInfoTable(
+    /**
+     * Generates a table to display worker statuses.
+     *
+     * By default, the table provides the following columns:
+     * Tags, State, Next run, Retries, Generation, Periodicity
+     *
+     * If more tables are desired, they can be added using [extraColumns].
+     *
+     * The key of the map is the position of the column relative to the default ones, so for example,
+     * if a column is going to be added between "State" and "Next run", the index should be `2`.
+     *
+     * The value the map is a pair whose first element is the column name, and the second one is
+     * the generator of the value.
+     * The generator will be called on every worker info found after running the query, and should
+     * return a String that will be placed in the cell.
+     *
+     * @param query The query to use for fetching the workers.
+     * @param extraColumns Defaults to an empty map, pass extra columns to be added to the table.
+     */
+    private fun workersInfoTable(
         query: WorkQuery,
         extraColumns: Map<Int, Pair<String, (WorkInfo) -> String>> = emptyMap()
     ): String {
@@ -605,7 +624,7 @@ class DebugInfoModel @AssistedInject constructor(
      * whether they exist one by one
      */
     private fun dumpSyncWorkersInfo(account: Account): String =
-        syncWorkersInfoTable(
+        workersInfoTable(
             WorkQuery.Builder.fromTags(
                 SyncDataType.entries.map { BaseSyncWorker.commonTag(account, it) }
             ).build(),
@@ -630,7 +649,7 @@ class DebugInfoModel @AssistedInject constructor(
      * whether they exist one by one
      */
     private fun dumpSyncWorkersInfo(): String =
-        syncWorkersInfoTable(
+        workersInfoTable(
             WorkQuery.Builder.fromUniqueWorkNames(
                 listOf(AccountsCleanupWorker.NAME)
             ).build()
