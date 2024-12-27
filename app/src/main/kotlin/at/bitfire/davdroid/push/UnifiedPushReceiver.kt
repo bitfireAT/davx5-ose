@@ -84,19 +84,19 @@ class UnifiedPushReceiver: MessagingReceiver() {
                 collectionRepository.getSyncableByTopic(topic)?.let { collection ->
                     serviceRepository.get(collection.serviceId)?.let { service ->
                         val syncDataTypes = mutableSetOf<SyncDataType>()
+                        // If the type is an address book, add the contacts type
                         if (collection.type == TYPE_ADDRESSBOOK) {
-                            // If the type is an address book, sync contacts
                             syncDataTypes.add(SyncDataType.CONTACTS)
-                        } else {
-                            // If not an address book, must be a calendar, add events
+                        }
+                        // If the collection supports events, add the events type
+                        if (collection.supportsVEVENT != false) {
                             syncDataTypes.add(SyncDataType.EVENTS)
-
-                            // If the collection supports tasks, also add the tasks type
-                            if (collection.supportsVJOURNAL != false || collection.supportsVTODO != false) {
-                                // Make sure there's a tasks provider installed
-                                if (tasksAppManager.get().currentProvider() != null) {
-                                    syncDataTypes.add(SyncDataType.TASKS)
-                                }
+                        }
+                        // If the collection supports tasks, add the tasks type
+                        if (collection.supportsVJOURNAL != false || collection.supportsVTODO != false) {
+                            // Make sure there's a tasks provider installed
+                            if (tasksAppManager.get().currentProvider() != null) {
+                                syncDataTypes.add(SyncDataType.TASKS)
                             }
                         }
 
