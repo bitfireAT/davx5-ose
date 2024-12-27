@@ -33,6 +33,7 @@ import androidx.core.content.getSystemService
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.dav4jvm.exception.DavException
@@ -48,6 +49,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
+import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract
@@ -395,6 +397,11 @@ class DebugInfoModel @AssistedInject constructor(
                     dumpAddressBookAccount(account, accountManager, writer)
             }
 
+            // general-purpose sync workers
+            writer.append("\nSync workers:\n")
+                .append(dumpSyncWorkersInfo())
+                .append("\n")
+
             // database dump
             writer.append("\n\nDATABASE DUMP\n\n")
             db.dump(writer, arrayOf("webdav_document"))
@@ -552,38 +559,82 @@ class DebugInfoModel @AssistedInject constructor(
         return table.toString()
     }
 
+    private fun syncWorkersInfoTable(
+        query: WorkQuery,
+        extraColumns: Map<Int, Pair<String, (WorkInfo) -> String>> = emptyMap()
+    ): String {
+        val columnNames = mutableListOf("Tags", "State", "Next run", "Retries", "Generation", "Periodicity")
+        for ((index, column) in extraColumns) {
+            val (columnName) = column
+            columnNames.add(index, columnName)
+        }
+
+        val table = TextTable(columnNames)
+        val workInfos = WorkManager.getInstance(context).getWorkInfos(query).get()
+        for (workInfo in workInfos) {
+            val line = mutableListOf(
+                workInfo.tags.map { it.replace("\\bat\\.bitfire\\.davdroid\\.".toRegex(), ".") },
+                "${workInfo.state} (${workInfo.stopReason})",
+                workInfo.nextScheduleTimeMillis.let { nextRun ->
+                    when (nextRun) {
+                        Long.MAX_VALUE -> "—"
+                        else -> DateUtils.getRelativeTimeSpanString(nextRun)
+                    }
+                },
+                workInfo.runAttemptCount,
+                workInfo.generation,
+                workInfo.periodicityInfo?.let { periodicity ->
+                    "every ${periodicity.repeatIntervalMillis/60000} min"
+                } ?: "not periodic"
+            )
+
+            for ((index, column) in extraColumns) {
+                val (_, transformer) = column
+                val value = transformer(workInfo)
+                line.add(index, value)
+            }
+
+            table.addLine(line)
+        }
+        return table.toString()
+    }
+
     /**
      * Gets sync workers info
      * Note: WorkManager does not return worker names when queried, so we create them and ask
      * whether they exist one by one
      */
-    private fun dumpSyncWorkersInfo(account: Account): String {
-        val table = TextTable("Tags", "Authority", "State", "Next run", "Retries", "Generation", "Periodicity")
-        for (dataType in SyncDataType.entries) {
-            val tag = BaseSyncWorker.commonTag(account, dataType)
-            WorkManager.getInstance(context).getWorkInfos(
-                WorkQuery.Builder.fromTags(listOf(tag)).build()
-            ).get().forEach { workInfo ->
-                table.addLine(
-                    workInfo.tags.map { it.replace("\\bat\\.bitfire\\.davdroid\\.".toRegex(), ".") },
-                    dataType,
-                    "${workInfo.state} (${workInfo.stopReason})",
-                    workInfo.nextScheduleTimeMillis.let { nextRun ->
-                        when (nextRun) {
-                            Long.MAX_VALUE -> "—"
-                            else -> DateUtils.getRelativeTimeSpanString(nextRun)
-                        }
-                    },
-                    workInfo.runAttemptCount,
-                    workInfo.generation,
-                    workInfo.periodicityInfo?.let { periodicity ->
-                        "every ${periodicity.repeatIntervalMillis/60000} min"
-                    } ?: "not periodic"
-                )
-            }
-        }
-        return table.toString()
-    }
+    private fun dumpSyncWorkersInfo(account: Account): String =
+        syncWorkersInfoTable(
+            WorkQuery.Builder.fromTags(
+                SyncDataType.entries.map { BaseSyncWorker.commonTag(account, it) }
+            ).build(),
+            mapOf(
+                1 to ("Data Type" to { workInfo: WorkInfo ->
+                    // See: BaseSyncWorker.commonTag
+                    // "sync-$dataType ${account.type}/${account.name}"
+                    workInfo.tags
+                        // Search for the first tag that starts with sync-
+                        .first { it.startsWith("sync-") }
+                        // Get everything before the space (get rid of the account)
+                        .substringBefore(' ')
+                        // Remove the "sync-" prefix
+                        .removePrefix("sync-")
+                })
+            )
+        )
+
+    /**
+     * Gets account-independent sync workers info
+     * Note: WorkManager does not return worker names when queried, so we create them and ask
+     * whether they exist one by one
+     */
+    private fun dumpSyncWorkersInfo(): String =
+        syncWorkersInfoTable(
+            WorkQuery.Builder.fromUniqueWorkNames(
+                listOf(AccountsCleanupWorker.NAME)
+            ).build()
+        )
 
 }
 
