@@ -24,6 +24,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.TaskLists
+import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -97,6 +98,22 @@ class LocalTaskListStore @AssistedInject constructor(
 
     override fun delete(localCollection: LocalTaskList) {
         localCollection.delete()
+    }
+
+    @Throws(Exception::class)
+    fun renameAccount(provider: ContentProviderClient, oldName: String, newName: String) {
+        val values = ContentValues(1)
+        values.put(Tasks.ACCOUNT_NAME, newName)
+        val uri = if (providerName == TaskProvider.ProviderName.JtxBoard) {
+            Uri.parse("content://${providerName.authority}/collection")
+        } else {
+            Tasks.getContentUri(providerName.authority)
+        }
+        provider.update(
+            uri,
+            values,
+            "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldName)
+        )
     }
 
 }
