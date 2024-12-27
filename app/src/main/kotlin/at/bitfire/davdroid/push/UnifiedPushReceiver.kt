@@ -83,20 +83,27 @@ class UnifiedPushReceiver: MessagingReceiver() {
                 // Later: only sync affected collection and authorities
                 collectionRepository.getSyncableByTopic(topic)?.let { collection ->
                     serviceRepository.get(collection.serviceId)?.let { service ->
-                        val account = accountRepository.fromName(service.accountName)
-                        val syncDataType = if (collection.type == TYPE_ADDRESSBOOK) {
-                            SyncDataType.CONTACTS
+                        val syncDataTypes = mutableSetOf<SyncDataType>()
+                        if (collection.type == TYPE_ADDRESSBOOK) {
+                            // If the type is an address book, sync contacts
+                            syncDataTypes.add(SyncDataType.CONTACTS)
                         } else {
-                            SyncDataType.EVENTS
-                        }
-                        syncWorkerManager.enqueueOneTime(account, syncDataType, fromPush = true)
+                            // If not an address book, must be a calendar, add events
+                            syncDataTypes.add(SyncDataType.EVENTS)
 
-                        // If the collection supports tasks, also schedule the tasks type
-                        if (collection.supportsVJOURNAL != false || collection.supportsVTODO != false) {
-                            // Make sure there's a tasks provider installed
-                            if (tasksAppManager.get().currentProvider() != null) {
-                                syncWorkerManager.enqueueOneTime(account, SyncDataType.TASKS, fromPush = true)
+                            // If the collection supports tasks, also add the tasks type
+                            if (collection.supportsVJOURNAL != false || collection.supportsVTODO != false) {
+                                // Make sure there's a tasks provider installed
+                                if (tasksAppManager.get().currentProvider() != null) {
+                                    syncDataTypes.add(SyncDataType.TASKS)
+                                }
                             }
+                        }
+
+                        // Schedule sync for all the types identified
+                        val account = accountRepository.fromName(service.accountName)
+                        for (syncDataType in syncDataTypes) {
+                            syncWorkerManager.enqueueOneTime(account, syncDataType, fromPush = true)
                         }
                     }
                 }
