@@ -227,7 +227,7 @@ class AccountRepository @Inject constructor(
             try {
                 TaskProvider.acquire(context)?.use { provider ->
                     val dataStore = localTaskListStoreFactory.create(provider.name.authority)
-                    dataStore.renameAccount(provider.client, oldAccount.name, newName)
+                    dataStore.renameAccount(provider.client, oldAccount, newName)
                 }
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't propagate new account name to tasks provider", e)
