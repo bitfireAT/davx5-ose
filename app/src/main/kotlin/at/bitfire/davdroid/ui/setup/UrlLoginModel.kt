@@ -37,7 +37,7 @@ class UrlLoginModel @AssistedInject constructor(
                 url
             else
                 "https://$url"
-        val uri = urlWithPrefix.toURIorNull()
+        val uri = urlWithPrefix.trim().toURIorNull()
 
         val canContinue = uri != null && username.isNotEmpty() && password.isNotEmpty()
 
