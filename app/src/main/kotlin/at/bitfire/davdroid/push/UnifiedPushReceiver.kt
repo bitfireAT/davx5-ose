@@ -5,15 +5,12 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
-import android.provider.CalendarContract
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection.Companion.TYPE_ADDRESSBOOK
-import at.bitfire.davdroid.db.Collection.Companion.TYPE_CALENDAR
-import at.bitfire.davdroid.db.Collection.Companion.TYPE_WEBCAL
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.Lazy
@@ -87,22 +84,18 @@ class UnifiedPushReceiver: MessagingReceiver() {
                 collectionRepository.getSyncableByTopic(topic)?.let { collection ->
                     serviceRepository.get(collection.serviceId)?.let { service ->
                         val account = accountRepository.fromName(service.accountName)
-                        val authority = when (collection.type) {
-                            TYPE_ADDRESSBOOK -> context.getString(R.string.address_books_authority)
-                            TYPE_CALENDAR -> CalendarContract.AUTHORITY
-                            TYPE_WEBCAL -> CalendarContract.AUTHORITY
-                            else -> null
+                        val syncDataType = if (collection.type == TYPE_ADDRESSBOOK) {
+                            SyncDataType.CONTACTS
+                        } else {
+                            SyncDataType.EVENTS
                         }
-                        if (authority == null) {
-                            logger.warning("Tried to sync collection ${collection.id} with an unknown type: ${collection.type}")
-                            return@let
-                        }
-                        syncWorkerManager.enqueueOneTime(account, authority, fromPush = true)
+                        syncWorkerManager.enqueueOneTime(account, syncDataType, fromPush = true)
 
-                        // If the collection supports tasks, also schedule the tasks authority if any
+                        // If the collection supports tasks, also schedule the tasks type
                         if (collection.supportsVJOURNAL != false || collection.supportsVTODO != false) {
-                            tasksAppManager.get().currentProvider()?.let { taskProvider ->
-                                syncWorkerManager.enqueueOneTime(account, taskProvider.authority, fromPush = true)
+                            // Make sure there's a tasks provider installed
+                            if (tasksAppManager.get().currentProvider() != null) {
+                                syncWorkerManager.enqueueOneTime(account, SyncDataType.TASKS, fromPush = true)
                             }
                         }
                     }
