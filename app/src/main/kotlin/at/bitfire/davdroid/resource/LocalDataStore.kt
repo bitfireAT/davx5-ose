@@ -51,4 +51,12 @@ interface LocalDataStore<T: LocalCollection<*>> {
      */
     fun delete(localCollection: T)
 
+    /**
+     * Changes the account name to another one.
+     *
+     * @param oldAccount The account that should be renamed.
+     * @param newName The name of the new account.
+     */
+    fun updateAccountName(provider: ContentProviderClient, oldAccount: Account, newName: String)
+
 }

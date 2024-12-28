@@ -9,6 +9,7 @@ import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -18,6 +19,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.JtxCollection
 import at.techbee.jtx.JtxContract
+import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -84,6 +86,21 @@ class LocalJtxCollectionStore @Inject constructor(
 
     override fun delete(localCollection: LocalJtxCollection) {
         localCollection.delete()
+    }
+
+    override fun updateAccountName(
+        provider: ContentProviderClient,
+        oldAccount: Account,
+        newName: String
+    ) {
+        val values = contentValuesOf(JtxContract.JtxCollection.ACCOUNT_NAME to newName)
+        val uri = JtxContract.JtxCollection.CONTENT_URI.asSyncAdapter(oldAccount)
+
+        provider.update(
+            uri,
+            values,
+            "${JtxContract.JtxCollection.ACCOUNT_NAME}=?", arrayOf(oldAccount.name)
+        )
     }
 
 }

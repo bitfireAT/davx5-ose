@@ -19,8 +19,6 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
-import at.techbee.jtx.JtxContract.JtxCollection
-import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -104,30 +102,15 @@ class LocalTaskListStore @AssistedInject constructor(
     }
 
     @Throws(Exception::class)
-    fun renameAccount(provider: ContentProviderClient, oldAccount: Account, newName: String) {
-        when (providerName) {
-            TaskProvider.ProviderName.JtxBoard -> {
-                val values = contentValuesOf(JtxCollection.ACCOUNT_NAME to newName)
-                val uri = JtxCollection.CONTENT_URI.asSyncAdapter(oldAccount)
+    override fun updateAccountName(provider: ContentProviderClient, oldAccount: Account, newName: String) {
+        val values = contentValuesOf(Tasks.ACCOUNT_NAME to newName)
+        val uri = Tasks.getContentUri(providerName.authority)
 
-                provider.update(
-                    uri,
-                    values,
-                    "${JtxCollection.ACCOUNT_NAME}=?", arrayOf(oldAccount.name)
-                )
-            }
-            TaskProvider.ProviderName.OpenTasks, TaskProvider.ProviderName.TasksOrg -> {
-                val values = contentValuesOf(Tasks.ACCOUNT_NAME to newName)
-                val uri = Tasks.getContentUri(providerName.authority)
-
-                provider.update(
-                    uri,
-                    values,
-                    "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name)
-                )
-            }
-            else -> error("Got an unknown provider: $providerName")
-        }
+        provider.update(
+            uri,
+            values,
+            "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name)
+        )
     }
 
 }

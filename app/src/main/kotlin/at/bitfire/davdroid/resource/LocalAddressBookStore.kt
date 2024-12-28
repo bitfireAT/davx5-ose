@@ -194,6 +194,14 @@ class LocalAddressBookStore @Inject constructor(
             accountManager.removeAccountExplicitly(addressBookAccount)
     }
 
+    override fun updateAccountName(
+        provider: ContentProviderClient,
+        oldAccount: Account,
+        newName: String
+    ) {
+        throw NotImplementedError()
+    }
+
 
     companion object {
 

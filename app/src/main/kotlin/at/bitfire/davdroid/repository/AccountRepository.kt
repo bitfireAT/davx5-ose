@@ -14,7 +14,6 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBookStore
-import at.bitfire.davdroid.resource.LocalTaskListStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
@@ -50,7 +49,6 @@ class AccountRepository @Inject constructor(
     private val collectionRepository: DavCollectionRepository,
     private val homeSetRepository: DavHomeSetRepository,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
-    private val localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val logger: Logger,
     private val settingsManager: SettingsManager,
     private val serviceRepository: DavServiceRepository,
@@ -226,8 +224,8 @@ class AccountRepository @Inject constructor(
             // update account_name of local tasks
             try {
                 TaskProvider.acquire(context)?.use { provider ->
-                    val dataStore = localTaskListStoreFactory.create(provider.name.authority)
-                    dataStore.renameAccount(provider.client, oldAccount, newName)
+                    val dataStore = tasksAppManager.get().getDataStore()
+                    dataStore?.updateAccountName(provider.client, oldAccount, newName)
                 }
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't propagate new account name to tasks provider", e)

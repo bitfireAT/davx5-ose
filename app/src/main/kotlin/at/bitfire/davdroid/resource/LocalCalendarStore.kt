@@ -97,6 +97,14 @@ class LocalCalendarStore @Inject constructor(
         return values
     }
 
+    override fun updateAccountName(
+        provider: ContentProviderClient,
+        oldAccount: Account,
+        newName: String
+    ) {
+        throw NotImplementedError()
+    }
+
 
     override fun delete(localCollection: LocalCalendar) {
         logger.log(Level.INFO, "Deleting local calendar", localCollection)

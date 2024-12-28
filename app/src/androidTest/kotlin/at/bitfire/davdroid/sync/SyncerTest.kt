@@ -213,6 +213,14 @@ class SyncerTest {
             throw NotImplementedError()
         }
 
+        override fun updateAccountName(
+            provider: ContentProviderClient,
+            oldAccount: Account,
+            newName: String
+        ) {
+            throw NotImplementedError()
+        }
+
     }
 
 }
