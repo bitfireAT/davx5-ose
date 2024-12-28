@@ -88,12 +88,12 @@ class LocalJtxCollectionStore @Inject constructor(
         localCollection.delete()
     }
 
-    override fun updateAccountName(
+    override fun updateAccount(
         provider: ContentProviderClient,
         oldAccount: Account,
-        newName: String
+        newAccount: Account
     ) {
-        val values = contentValuesOf(JtxContract.JtxCollection.ACCOUNT_NAME to newName)
+        val values = contentValuesOf(JtxContract.JtxCollection.ACCOUNT_NAME to newAccount.name)
         val uri = JtxContract.JtxCollection.CONTENT_URI.asSyncAdapter(oldAccount)
 
         provider.update(

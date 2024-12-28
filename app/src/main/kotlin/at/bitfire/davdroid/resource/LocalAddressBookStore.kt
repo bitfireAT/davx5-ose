@@ -161,7 +161,7 @@ class LocalAddressBookStore @Inject constructor(
      * @param oldAccount    The old account
      * @param newAccount    The new account
      */
-    fun updateAccount(oldAccount: Account, newAccount: Account) {
+    override fun updateAccount(provider: ContentProviderClient, oldAccount: Account, newAccount: Account) {
         val accountManager = AccountManager.get(context)
         accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
@@ -192,14 +192,6 @@ class LocalAddressBookStore @Inject constructor(
         }
         if (addressBookAccount != null)
             accountManager.removeAccountExplicitly(addressBookAccount)
-    }
-
-    override fun updateAccountName(
-        provider: ContentProviderClient,
-        oldAccount: Account,
-        newName: String
-    ) {
-        throw NotImplementedError()
     }
 
 

@@ -97,10 +97,10 @@ class LocalCalendarStore @Inject constructor(
         return values
     }
 
-    override fun updateAccountName(
+    override fun updateAccount(
         provider: ContentProviderClient,
         oldAccount: Account,
-        newName: String
+        newAccount: Account
     ) {
         throw NotImplementedError()
     }

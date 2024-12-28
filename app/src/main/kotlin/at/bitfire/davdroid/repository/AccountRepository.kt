@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
+import android.provider.ContactsContract
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
@@ -216,7 +217,8 @@ class AccountRepository @Inject constructor(
             serviceRepository.renameAccount(oldName, newName)
 
             // update address books
-            localAddressBookStore.get().updateAccount(oldAccount, newAccount)
+            val contactsProvider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
+            localAddressBookStore.get().updateAccount(contactsProvider!!, oldAccount, newAccount)
 
             // calendar provider doesn't allow changing account_name of Events
             // (all events will have to be downloaded again at next sync)
@@ -225,7 +227,7 @@ class AccountRepository @Inject constructor(
             try {
                 TaskProvider.acquire(context)?.use { provider ->
                     val dataStore = tasksAppManager.get().getDataStore()
-                    dataStore?.updateAccountName(provider.client, oldAccount, newName)
+                    dataStore?.updateAccount(provider.client, oldAccount, newAccount)
                 }
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't propagate new account name to tasks provider", e)
