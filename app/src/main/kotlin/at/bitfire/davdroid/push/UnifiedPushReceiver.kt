@@ -85,26 +85,23 @@ class UnifiedPushReceiver: MessagingReceiver() {
                     serviceRepository.get(collection.serviceId)?.let { service ->
                         val syncDataTypes = mutableSetOf<SyncDataType>()
                         // If the type is an address book, add the contacts type
-                        if (collection.type == TYPE_ADDRESSBOOK) {
-                            syncDataTypes.add(SyncDataType.CONTACTS)
-                        }
+                        if (collection.type == TYPE_ADDRESSBOOK)
+                            syncDataTypes += SyncDataType.CONTACTS
+
                         // If the collection supports events, add the events type
-                        if (collection.supportsVEVENT != false) {
-                            syncDataTypes.add(SyncDataType.EVENTS)
-                        }
-                        // If the collection supports tasks, add the tasks type
-                        if (collection.supportsVJOURNAL != false || collection.supportsVTODO != false) {
-                            // Make sure there's a tasks provider installed
-                            if (tasksAppManager.get().currentProvider() != null) {
-                                syncDataTypes.add(SyncDataType.TASKS)
-                            }
-                        }
+                        if (collection.supportsVEVENT != false)
+                            syncDataTypes += SyncDataType.EVENTS
+
+                        // If the collection supports tasks, make sure there's a provider installed,
+                        // and add the tasks type
+                        if (collection.supportsVJOURNAL != false || collection.supportsVTODO != false)
+                            if (tasksAppManager.get().currentProvider() != null)
+                                syncDataTypes += SyncDataType.TASKS
 
                         // Schedule sync for all the types identified
                         val account = accountRepository.fromName(service.accountName)
-                        for (syncDataType in syncDataTypes) {
+                        for (syncDataType in syncDataTypes)
                             syncWorkerManager.enqueueOneTime(account, syncDataType, fromPush = true)
-                        }
                     }
                 }
 
