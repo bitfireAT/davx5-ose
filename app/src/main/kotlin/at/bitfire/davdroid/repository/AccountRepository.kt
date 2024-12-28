@@ -18,7 +18,6 @@ import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -51,7 +50,6 @@ class AccountRepository @Inject constructor(
     private val homeSetRepository: DavHomeSetRepository,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger,
-    private val settingsManager: SettingsManager,
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: SyncWorkerManager,
     private val tasksAppManager: Lazy<TasksAppManager>
