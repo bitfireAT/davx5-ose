@@ -7,13 +7,13 @@ package at.bitfire.davdroid.resource
 import android.content.ContentUris
 import android.content.ContentValues
 import android.net.Uri
-import android.os.Build
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
@@ -148,8 +148,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
             // generate new UID
             uid = UUID.randomUUID().toString()
 
-            val values = ContentValues(1)
-            values.put(AndroidContact.COLUMN_UID, uid)
+            val values = contentValuesOf(AndroidContact.COLUMN_UID to uid)
             addressBook.provider!!.update(groupSyncUri(), values, null, null)
 
             _contact?.uid = uid
@@ -211,14 +210,12 @@ class LocalGroup: AndroidGroup, LocalAddress {
     }
 
     override fun resetDeleted() {
-        val values = ContentValues(1)
-        values.put(Groups.DELETED, 0)
+        val values = contentValuesOf(Groups.DELETED to 0)
         addressBook.provider!!.update(groupSyncUri(), values, null, null)
     }
 
     override fun updateFlags(flags: Int) {
-        val values = ContentValues(1)
-        values.put(COLUMN_FLAGS, flags)
+        val values = contentValuesOf(COLUMN_FLAGS to flags)
         addressBook.provider!!.update(groupSyncUri(), values, null, null)
 
         this.flags = flags

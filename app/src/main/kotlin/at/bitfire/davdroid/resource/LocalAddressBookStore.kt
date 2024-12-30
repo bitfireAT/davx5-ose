@@ -7,12 +7,12 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.content.ContentValues
 import android.content.Context
-import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.annotation.OpenForTesting
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.contentValuesOf
+import androidx.core.os.bundleOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -94,12 +94,12 @@ class LocalAddressBookStore @Inject constructor(
     internal fun createAddressBookAccount(account: Account, name: String, id: Long, url: String): Account? {
         // create address book account with reference to account, collection ID and URL
         val addressBookAccount = Account(name, context.getString(R.string.account_type_address_book))
-        val userData = Bundle(4).apply {
-            putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
-            putString(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
-            putString(LocalAddressBook.USER_DATA_COLLECTION_ID, id.toString())
-            putString(LocalAddressBook.USER_DATA_URL, url)
-        }
+        val userData = bundleOf(
+            LocalAddressBook.USER_DATA_ACCOUNT_NAME to account.name,
+            LocalAddressBook.USER_DATA_ACCOUNT_TYPE to account.type,
+            LocalAddressBook.USER_DATA_COLLECTION_ID to id.toString(),
+            LocalAddressBook.USER_DATA_URL to url
+        )
         if (!SystemAccountUtils.createAccount(context, addressBookAccount, userData)) {
             logger.warning("Couldn't create address book account: $addressBookAccount")
             return null
@@ -201,13 +201,13 @@ class LocalAddressBookStore @Inject constructor(
          * Contacts Provider Settings (equal for every address book)
          */
         val contactsProviderSettings
-            get() = ContentValues(2).apply {
+            get() = contentValuesOf(
                 // SHOULD_SYNC is just a hint that an account's contacts (the contacts of this local address book) are syncable.
-                put(ContactsContract.Settings.SHOULD_SYNC, 1)
+                ContactsContract.Settings.SHOULD_SYNC to 1,
 
                 // UNGROUPED_VISIBLE is required for making contacts work over Bluetooth (especially with some car systems).
-                put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
-            }
+                ContactsContract.Settings.UNGROUPED_VISIBLE to 1
+            )
 
         /**
          * Determines whether the address book should be set to read-only.
