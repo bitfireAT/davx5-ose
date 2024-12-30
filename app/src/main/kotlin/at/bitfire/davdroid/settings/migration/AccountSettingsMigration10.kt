@@ -5,11 +5,11 @@
 package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
-import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.CalendarContract
 import androidx.core.content.ContextCompat
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.TaskProvider
@@ -38,8 +38,7 @@ class AccountSettingsMigration10 @Inject constructor(
     override fun migrate(account: Account) {
         TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.use { provider ->
             val tasksUri = provider.tasksUri().asSyncAdapter(account)
-            val emptyETag = ContentValues(1)
-            emptyETag.putNull(LocalTask.COLUMN_ETAG)
+            val emptyETag = contentValuesOf(LocalTask.COLUMN_ETAG to null)
             provider.client.update(tasksUri, emptyETag, "${TaskContract.Tasks._DIRTY}=0 AND ${TaskContract.Tasks._DELETED}=0", null)
         }
 

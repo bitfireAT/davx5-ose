@@ -7,7 +7,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.ContentUris
-import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.os.RemoteException
@@ -16,6 +15,7 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import androidx.annotation.OpenForTesting
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -128,21 +128,15 @@ open class LocalAddressBook @AssistedInject constructor(
             AccountManager.get(context).setAndVerifyUserData(addressBookAccount, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
 
             // update raw contacts
-            val rawContactValues = ContentValues(1).apply {
-                put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (readOnly) 1 else 0)
-            }
+            val rawContactValues = contentValuesOf(RawContacts.RAW_CONTACT_IS_READ_ONLY to if (readOnly) 1 else 0)
             provider!!.update(rawContactsSyncUri(), rawContactValues, null, null)
 
             // update data rows
-            val dataValues = ContentValues(1).apply {
-                put(ContactsContract.Data.IS_READ_ONLY, if (readOnly) 1 else 0)
-            }
+            val dataValues = contentValuesOf(ContactsContract.Data.IS_READ_ONLY to if (readOnly) 1 else 0)
             provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
 
             // update group rows
-            val groupValues = ContentValues(1).apply {
-                put(Groups.GROUP_IS_READ_ONLY, if (readOnly) 1 else 0)
-            }
+            val groupValues = contentValuesOf(Groups.GROUP_IS_READ_ONLY to if (readOnly) 1 else 0)
             provider!!.update(groupsSyncUri(), groupValues, null, null)
         }
 
@@ -156,8 +150,7 @@ open class LocalAddressBook @AssistedInject constructor(
     /* operations on the collection (address book) itself */
 
     override fun markNotDirty(flags: Int): Int {
-        val values = ContentValues(1)
-        values.put(LocalContact.COLUMN_FLAGS, flags)
+        val values = contentValuesOf(LocalContact.COLUMN_FLAGS to flags)
         var number = provider!!.update(rawContactsSyncUri(), values, "${RawContacts.DIRTY}=0", null)
 
         if (includeGroups) {
@@ -278,12 +271,10 @@ open class LocalAddressBook @AssistedInject constructor(
 
     override fun forgetETags() {
         if (includeGroups) {
-            val values = ContentValues(1)
-            values.putNull(AndroidGroup.COLUMN_ETAG)
+            val values = contentValuesOf(AndroidGroup.COLUMN_ETAG to null)
             provider!!.update(groupsSyncUri(), values, null, null)
         }
-        val values = ContentValues(1)
-        values.putNull(AndroidContact.COLUMN_ETAG)
+        val values = contentValuesOf(AndroidContact.COLUMN_ETAG to null)
         provider!!.update(rawContactsSyncUri(), values, null, null)
     }
 
@@ -325,8 +316,7 @@ open class LocalAddressBook @AssistedInject constructor(
                 return cursor.getLong(0)
         }
 
-        val values = ContentValues(1)
-        values.put(Groups.TITLE, title)
+        val values = contentValuesOf(Groups.TITLE to title)
         val uri = provider!!.insert(syncAdapterURI(Groups.CONTENT_URI), values) ?: throw RemoteException("Couldn't create contact group")
         return ContentUris.parseId(uri)
     }

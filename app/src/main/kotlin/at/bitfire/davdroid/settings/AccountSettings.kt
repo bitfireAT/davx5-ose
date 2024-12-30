@@ -9,6 +9,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Looper
 import androidx.annotation.WorkerThread
+import androidx.core.os.bundleOf
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
@@ -407,8 +408,7 @@ class AccountSettings @AssistedInject constructor(
         val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<Account>())
 
         fun initialUserData(credentials: Credentials?): Bundle {
-            val bundle = Bundle()
-            bundle.putString(KEY_SETTINGS_VERSION, CURRENT_VERSION.toString())
+            val bundle = bundleOf(KEY_SETTINGS_VERSION to CURRENT_VERSION.toString())
 
             if (credentials != null) {
                 if (credentials.username != null)
