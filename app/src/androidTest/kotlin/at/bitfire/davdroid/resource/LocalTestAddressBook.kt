@@ -10,6 +10,7 @@ import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.Context
 import android.provider.ContactsContract
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
@@ -28,6 +29,7 @@ class LocalTestAddressBook @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted provider: ContentProviderClient,
     @Assisted override val groupMethod: GroupMethod,
+    accountRepository: AccountRepository,
     accountSettingsFactory: AccountSettings.Factory,
     collectionRepository: DavCollectionRepository,
     @ApplicationContext context: Context,
@@ -38,6 +40,7 @@ class LocalTestAddressBook @AssistedInject constructor(
     account = account,
     _addressBookAccount = ACCOUNT,
     provider = provider,
+    accountRepository = accountRepository,
     accountSettingsFactory = accountSettingsFactory,
     collectionRepository = collectionRepository,
     context = context,

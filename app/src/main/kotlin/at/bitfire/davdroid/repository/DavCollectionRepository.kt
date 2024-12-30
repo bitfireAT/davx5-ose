@@ -20,7 +20,6 @@ import at.bitfire.dav4jvm.property.carddav.NS_CARDDAV
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.NS_WEBDAV
 import at.bitfire.dav4jvm.property.webdav.ResourceType
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
@@ -54,6 +53,7 @@ import javax.inject.Inject
  * Implements an observer pattern that can be used to listen for changes of collections.
  */
 class DavCollectionRepository @Inject constructor(
+    private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
     db: AppDatabase,
@@ -175,7 +175,7 @@ class DavCollectionRepository @Inject constructor(
     /** Deletes the given collection from the server and the database. */
     suspend fun deleteRemote(collection: Collection) {
         val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
-        val account = Account(service.accountName, context.getString(R.string.account_type))
+        val account = accountRepository.fromName(service.accountName)
 
         HttpClient.Builder(context, accountSettingsFactory.create(account))
             .setForeground(true)

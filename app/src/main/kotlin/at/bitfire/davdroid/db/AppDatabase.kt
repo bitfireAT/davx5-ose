@@ -39,6 +39,7 @@ import javax.inject.Singleton
 
 @Suppress("ClassName")
 @Database(entities = [
+    Account::class,
     Service::class,
     HomeSet::class,
     Collection::class,
@@ -46,14 +47,15 @@ import javax.inject.Singleton
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 16, autoMigrations = [
+], exportSchema = true, version = 17, autoMigrations = [
     AutoMigration(from = 9, to = 10),
     AutoMigration(from = 10, to = 11),
     AutoMigration(from = 11, to = 12, spec = AppDatabase.AutoMigration11_12::class),
     AutoMigration(from = 12, to = 13),
     AutoMigration(from = 13, to = 14),
     AutoMigration(from = 14, to = 15),
-    AutoMigration(from = 15, to = 16, spec = AppDatabase.AutoMigration15_16::class)
+    AutoMigration(from = 15, to = 16, spec = AppDatabase.AutoMigration15_16::class),
+    AutoMigration(from = 16, to = 17)
 ])
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
@@ -257,6 +259,7 @@ abstract class AppDatabase: RoomDatabase() {
 
     // DAOs
 
+    abstract fun accountDao(): AccountDao
     abstract fun serviceDao(): ServiceDao
     abstract fun homeSetDao(): HomeSetDao
     abstract fun collectionDao(): CollectionDao

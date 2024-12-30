@@ -11,9 +11,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.DmfsTaskList
@@ -29,6 +29,7 @@ import java.util.logging.Logger
 
 class LocalTaskListStore @AssistedInject constructor(
     @Assisted authority: String,
+    val accountRepository: AccountRepository,
     val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
     val db: AppDatabase,
@@ -40,14 +41,11 @@ class LocalTaskListStore @AssistedInject constructor(
         fun create(authority: String): LocalTaskListStore
     }
 
-    private val serviceDao = db.serviceDao()
-
     private val providerName = TaskProvider.ProviderName.fromAuthority(authority)
 
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalTaskList? {
-        val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
-        val account = Account(service.accountName, context.getString(R.string.account_type))
+        val account = accountRepository.fromCollection(fromCollection)
 
         logger.log(Level.INFO, "Adding local task list", fromCollection)
         val uri = create(account, provider, providerName, fromCollection)

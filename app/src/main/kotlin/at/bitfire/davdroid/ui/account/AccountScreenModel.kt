@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -156,10 +155,9 @@ class AccountScreenModel @AssistedInject constructor(
     fun renameAccount(newName: String) {
         notInterruptibleScope.launch {
             try {
-                accountRepository.rename(account.name, newName)
+                val newAccount = accountRepository.rename(account.name, newName)
 
                 // synchronize again
-                val newAccount = Account(newName, context.getString(R.string.account_type))
                 syncWorkerManager.enqueueOneTimeAllAuthorities(newAccount, manual = true)
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't rename account", e)

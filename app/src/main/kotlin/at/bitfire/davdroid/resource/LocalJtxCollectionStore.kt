@@ -10,9 +10,8 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -24,20 +23,17 @@ import javax.inject.Inject
 
 class LocalJtxCollectionStore @Inject constructor(
     @ApplicationContext val context: Context,
-    val accountSettingsFactory: AccountSettings.Factory,
-    db: AppDatabase,
-    val principalRepository: PrincipalRepository
+    private val accountRepository: AccountRepository,
+    private val accountSettingsFactory: AccountSettings.Factory,
+    private val principalRepository: PrincipalRepository
 ): LocalDataStore<LocalJtxCollection> {
-
-    private val serviceDao = db.serviceDao()
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalJtxCollection? {
         // If the collection doesn't have a color, use a default color.
         if (fromCollection.color != null)
             fromCollection.color = Constants.DAVDROID_GREEN_RGBA
 
-        val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
-        val account = Account(service.accountName, context.getString(R.string.account_type))
+        val account = accountRepository.fromCollection(fromCollection)
         val values = valuesFromCollection(fromCollection, account = account, withColor = true)
 
         val uri = JtxCollection.create(account, provider, values)

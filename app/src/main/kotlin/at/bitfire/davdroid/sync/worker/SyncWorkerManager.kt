@@ -28,7 +28,6 @@ import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_NAME
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_TYPE
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_DATA_TYPE
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_MANUAL
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_RESYNC
@@ -76,7 +75,6 @@ class SyncWorkerManager @Inject constructor(
         val argumentsBuilder = Data.Builder()
             .putString(INPUT_DATA_TYPE, dataType.toString())
             .putString(INPUT_ACCOUNT_NAME, account.name)
-            .putString(INPUT_ACCOUNT_TYPE, account.type)
         if (manual)
             argumentsBuilder.putBoolean(INPUT_MANUAL, true)
         if (resync != NO_RESYNC)
@@ -190,7 +188,6 @@ class SyncWorkerManager @Inject constructor(
         val arguments = Data.Builder()
             .putString(INPUT_DATA_TYPE, dataType.toString())
             .putString(INPUT_ACCOUNT_NAME, account.name)
-            .putString(INPUT_ACCOUNT_TYPE, account.type)
             .build()
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(

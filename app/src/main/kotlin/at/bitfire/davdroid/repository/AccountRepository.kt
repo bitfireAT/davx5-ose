@@ -10,6 +10,8 @@ import android.accounts.OnAccountsUpdateListener
 import android.content.Context
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
@@ -18,10 +20,8 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -31,37 +31,48 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import at.bitfire.davdroid.db.Account as DbAccount
 
 /**
  * Repository for managing CalDAV/CardDAV accounts.
  *
- * *Note:* This class is not related to address book accounts, which are managed by
+ * Currently the authoritative data source is the Android account manager. The accounts will however be mirrored into the database.
+ * In future, the authoritative data source should be the database, and the Android account manager should be updated accordingly.
+ *
+ * To map an account name to a system [Account], other classes should use [fromName] and not instantiate [Account] themselves.
+ *
+ * *Note:* This class is in no way related to local address books (address book accounts), which are managed by
  * [at.bitfire.davdroid.resource.LocalAddressBook].
  */
 class AccountRepository @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val automaticSyncManager: AutomaticSyncManager,
     @ApplicationContext private val context: Context,
-    private val collectionRepository: DavCollectionRepository,
-    private val homeSetRepository: DavHomeSetRepository,
+    private val collectionRepository: Lazy<DavCollectionRepository>,
+    db: AppDatabase,
+    private val homeSetRepository: Lazy<DavHomeSetRepository>,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger,
-    private val settingsManager: SettingsManager,
-    private val serviceRepository: DavServiceRepository,
-    private val syncWorkerManager: SyncWorkerManager,
-    private val tasksAppManager: Lazy<TasksAppManager>
+    private val serviceRepository: Lazy<DavServiceRepository>,
+    private val syncWorkerManager: SyncWorkerManager
 ) {
 
     private val accountType = context.getString(R.string.account_type)
     private val accountManager = AccountManager.get(context)
 
+    private val dao = db.accountDao()
+
     /**
      * Creates a new account with discovered services and enables periodic syncs with
      * default sync interval times.
+     *
+     * Creates both the system account and a corresponding entry in the database.
      *
      * @param accountName   name of the account
      * @param credentials   server credentials
@@ -79,6 +90,9 @@ class AccountRepository @Inject constructor(
 
         if (!SystemAccountUtils.createAccount(context, account, userData, credentials?.password))
             return null
+
+        // create account in database
+        mirrorToDb(account)
 
         // add entries for account to database
         logger.log(Level.INFO, "Writing account configuration to database", config)
@@ -113,6 +127,9 @@ class AccountRepository @Inject constructor(
         return account
     }
 
+    /**
+     * Deletes an account from both the system accounts and the database.
+     */
     suspend fun delete(accountName: String): Boolean {
         val account = fromName(accountName)
         // remove account directly (bypassing the authenticator, which is our own)
@@ -120,14 +137,15 @@ class AccountRepository @Inject constructor(
             accountManager.removeAccountExplicitly(account)
 
             // delete address books (= address book accounts)
-            serviceRepository.getByAccountAndType(accountName, Service.TYPE_CARDDAV)?.let { service ->
-                collectionRepository.getByService(service.id).forEach { collection ->
+            serviceRepository.get().getByAccountAndType(accountName, Service.TYPE_CARDDAV)?.let { service ->
+                collectionRepository.get().getByService(service.id).forEach { collection ->
                     localAddressBookStore.get().deleteByCollectionId(collection.id)
                 }
             }
 
             // delete from database
-            serviceRepository.deleteByAccount(accountName)
+            dao.deleteByName(accountName)
+            serviceRepository.get().deleteByAccount(accountName)
 
             true
         } catch (e: Exception) {
@@ -144,23 +162,48 @@ class AccountRepository @Inject constructor(
                 .getAccountsByType(accountType)
                 .any { it.name == accountName }
 
+    /**
+     * Gets the account for the given collection.
+     *
+     * @param collection        the collection to get the account for
+     *
+     * @throws kotlin.IllegalArgumentException  if the collection, the service or the account can't be found
+     */
+    fun fromCollection(collection: Collection): Account =
+        serviceRepository.get().get(collection.serviceId)?.let { service ->
+            fromName(service.accountName)
+        } ?: throw IllegalArgumentException("Couldn't fetch DB service or account from collection")
+
+    /**
+     * Returns the system account for the given account name.
+     *
+     * Also makes sure that the account is present in the database.
+     */
     fun fromName(accountName: String) =
-        Account(accountName, accountType)
+        mirrorToDb(Account(accountName, accountType))
 
-    fun getAll(): Array<Account> = accountManager.getAccountsByType(accountType)
+    fun getAll(): Set<Account> = accountManager
+        .getAccountsByType(accountType)
+        .map { mirrorToDb(it) }
+        .toSet()
 
-    fun getAllFlow() = callbackFlow<Set<Account>> {
-        val listener = OnAccountsUpdateListener { accounts ->
-            trySend(accounts.filter { it.type == accountType }.toSet())
-        }
-        withContext(Dispatchers.Default) {  // causes disk I/O
+    fun getAllFlow() =
+        callbackFlow<List<Account>> {
+            val listener = OnAccountsUpdateListener { accounts ->
+                trySend(accounts.filter { it.type == accountType })
+            }
+
             accountManager.addOnAccountsUpdatedListener(listener, null, true)
-        }
 
-        awaitClose {
-            accountManager.removeOnAccountsUpdatedListener(listener)
-        }
-    }
+            awaitClose {
+                accountManager.removeOnAccountsUpdatedListener(listener)
+            }
+        }.map { list ->
+            // mirror accounts to DB
+            for (account in list)
+                mirrorToDb(account)
+            list
+        }.flowOn(Dispatchers.IO)
 
     /**
      * Renames an account.
@@ -170,17 +213,18 @@ class AccountRepository @Inject constructor(
      *
      * @param oldName current name of the account
      * @param newName new name the account shall be re named to
+     * @return the renamed account
      *
      * @throws InvalidAccountException if the account does not exist
      * @throws IllegalArgumentException if the new account name already exists
      * @throws Exception (or sub-classes) on other errors
      */
-    suspend fun rename(oldName: String, newName: String) {
+    suspend fun rename(oldName: String, newName: String): Account {
         val oldAccount = fromName(oldName)
-        val newAccount = fromName(newName)
+        val newAccount = Account(newName, accountType)
 
         // check whether new account name already exists
-        if (accountManager.getAccountsByType(context.getString(R.string.account_type)).contains(newAccount))
+        if (accountManager.getAccountsByType(accountType).contains(newAccount))
             throw IllegalArgumentException("Account with name \"$newName\" already exists")
 
         // rename account
@@ -212,8 +256,8 @@ class AccountRepository @Inject constructor(
             for (dataType in SyncDataType.entries)
                 syncWorkerManager.disablePeriodic(oldAccount, dataType)
 
-            // update account name references in database
-            serviceRepository.renameAccount(oldName, newName)
+            // update account in DB (propagates account name to services over foreign key)
+            dao.rename(oldName, newName)
 
             // update address books
             localAddressBookStore.get().updateAccount(oldAccount, newAccount)
@@ -235,6 +279,8 @@ class AccountRepository @Inject constructor(
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()
         }
+
+        return newAccount
     }
 
 
@@ -243,19 +289,24 @@ class AccountRepository @Inject constructor(
     private fun insertService(accountName: String, type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
         // insert service
         val service = Service(0, accountName, type, info.principal)
-        val serviceId = serviceRepository.insertOrReplace(service)
+        val serviceId = serviceRepository.get().insertOrReplace(service)
 
         // insert home sets
         for (homeSet in info.homeSets)
-            homeSetRepository.insertOrUpdateByUrl(HomeSet(0, serviceId, true, homeSet))
+            homeSetRepository.get().insertOrUpdateByUrl(HomeSet(0, serviceId, true, homeSet))
 
         // insert collections
         for (collection in info.collections.values) {
             collection.serviceId = serviceId
-            collectionRepository.insertOrUpdateByUrl(collection)
+            collectionRepository.get().insertOrUpdateByUrl(collection)
         }
 
         return serviceId
+    }
+
+    private fun mirrorToDb(account: Account): Account {
+        dao.insertOrIgnore(DbAccount(name = account.name))
+        return account
     }
 
 }

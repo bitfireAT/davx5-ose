@@ -17,9 +17,9 @@ import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.property.push.NS_WEBDAV_PUSH
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
@@ -47,6 +47,7 @@ import java.util.logging.Logger
 class PushRegistrationWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
+    private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     private val logger: Logger,
@@ -136,7 +137,7 @@ class PushRegistrationWorker @AssistedInject constructor(
                 // no existing subscription or expiring soon
                 logger.info("Registering push for ${collection.url}")
                 serviceRepository.get(collection.serviceId)?.let { service ->
-                    val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
+                    val account = accountRepository.fromName(service.accountName)
                     try {
                         registerPushSubscription(collection, account, endpoint)
                     } catch (e: DavException) {
@@ -182,7 +183,7 @@ class PushRegistrationWorker @AssistedInject constructor(
             logger.info("Unregistering push for ${collection.url}")
             collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
                 serviceRepository.get(collection.serviceId)?.let { service ->
-                    val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
+                    val account = accountRepository.fromName(service.accountName)
                     unregisterPushSubscription(collection, account, url)
                 }
             }

@@ -26,6 +26,9 @@ class DavCollectionRepositoryTest {
     var hiltRule = HiltAndroidRule(this)
 
     @Inject
+    lateinit var accountRepository: AccountRepository
+
+    @Inject
     lateinit var accountSettingsFactory: AccountSettings.Factory
 
     @Inject
@@ -65,6 +68,7 @@ class DavCollectionRepositoryTest {
         )
         val testObserver = mockk<DavCollectionRepository.OnChangeListener>(relaxed = true)
         val collectionRepository = DavCollectionRepository(
+            accountRepository,
             accountSettingsFactory,
             context,
             db,

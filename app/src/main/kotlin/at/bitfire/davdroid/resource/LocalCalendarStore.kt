@@ -8,32 +8,27 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
-import android.content.Context
 import android.provider.CalendarContract.Calendars
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendar.Companion.calendarBaseValues
 import at.bitfire.ical4android.util.DateUtils
-import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
 class LocalCalendarStore @Inject constructor(
-    @ApplicationContext private val context: Context,
+    private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
-    private val logger: Logger,
-    private val serviceRepository: DavServiceRepository
+    private val logger: Logger
 ): LocalDataStore<LocalCalendar> {
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalCalendar? {
-        val service = serviceRepository.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
-        val account = Account(service.accountName, context.getString(R.string.account_type))
+        val account = accountRepository.fromCollection(fromCollection)
 
         // If the collection doesn't have a color, use a default color.
         if (fromCollection.color != null)

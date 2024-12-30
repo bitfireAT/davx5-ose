@@ -19,6 +19,7 @@ import androidx.work.WorkerParameters
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.push.PushNotificationManager
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
@@ -42,10 +43,13 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 abstract class BaseSyncWorker(
-    private val context: Context,
+    context: Context,
     private val workerParams: WorkerParameters,
     private val syncDispatcher: CoroutineDispatcher
 ) : CoroutineWorker(context, workerParams) {
+
+    @Inject
+    lateinit var accountRepository: AccountRepository
 
     @Inject
     lateinit var accountSettingsFactory: AccountSettings.Factory
@@ -80,9 +84,8 @@ abstract class BaseSyncWorker(
 
     override suspend fun doWork(): Result {
         // ensure we got the required arguments
-        val account = Account(
-            inputData.getString(INPUT_ACCOUNT_NAME) ?: throw IllegalArgumentException("INPUT_ACCOUNT_NAME required"),
-            inputData.getString(INPUT_ACCOUNT_TYPE) ?: throw IllegalArgumentException("INPUT_ACCOUNT_TYPE required")
+        val account = accountRepository.fromName(
+            inputData.getString(INPUT_ACCOUNT_NAME) ?: throw IllegalArgumentException("INPUT_ACCOUNT_NAME required")
         )
         val dataType = SyncDataType.valueOf(inputData.getString(INPUT_DATA_TYPE) ?: throw IllegalArgumentException("INPUT_SYNC_DATA_TYPE required"))
 
@@ -248,7 +251,6 @@ abstract class BaseSyncWorker(
 
         // common worker input parameters
         const val INPUT_ACCOUNT_NAME = "accountName"
-        const val INPUT_ACCOUNT_TYPE = "accountType"
         const val INPUT_DATA_TYPE = "dataType"
 
         /** set to `true` for user-initiated sync that skips network checks */

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import android.accounts.Account
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -39,8 +38,8 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
@@ -75,6 +74,7 @@ import java.util.logging.Logger
 class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
+    private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionListRefresherFactory: CollectionListRefresher.Factory,
     private val logger: Logger,
@@ -165,7 +165,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
     val service = serviceRepository.get(serviceId)
     val account = service?.let { service ->
-        Account(service.accountName, applicationContext.getString(R.string.account_type))
+        accountRepository.fromName(service.accountName)
     }
 
     override suspend fun doWork(): Result {

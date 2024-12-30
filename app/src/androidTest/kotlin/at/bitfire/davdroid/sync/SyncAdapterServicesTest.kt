@@ -13,6 +13,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import at.bitfire.davdroid.TestUtils
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
@@ -48,6 +49,9 @@ import javax.inject.Inject
 class SyncAdapterServicesTest {
 
     lateinit var account: Account
+
+    @Inject
+    lateinit var accountRepository: AccountRepository
 
     @Inject
     lateinit var accountSettingsFactory: AccountSettings.Factory
@@ -98,6 +102,7 @@ class SyncAdapterServicesTest {
         syncWorkerManager: SyncWorkerManager
     ): SyncAdapterService.SyncAdapter =
         SyncAdapterService.SyncAdapter(
+            accountRepository = accountRepository,
             accountSettingsFactory = accountSettingsFactory,
             collectionRepository = collectionRepository,
             serviceRepository = serviceRepository,

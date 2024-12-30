@@ -20,6 +20,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
@@ -61,6 +62,7 @@ abstract class SyncAdapterService: Service() {
      * All Sync Adapter Framework related interaction should happen inside [SyncFrameworkIntegration].
      */
     class SyncAdapter @Inject constructor(
+        private val accountRepository: AccountRepository,
         private val accountSettingsFactory: AccountSettings.Factory,
         private val collectionRepository: DavCollectionRepository,
         private val serviceRepository: DavServiceRepository,
@@ -93,7 +95,7 @@ abstract class SyncAdapterService: Service() {
                     ?.let { collectionId ->
                     collectionRepository.get(collectionId)?.let { collection ->
                         serviceRepository.get(collection.serviceId)?.let { service ->
-                            Account(service.accountName, context.getString(R.string.account_type))
+                            accountRepository.fromName(service.accountName)
                         }
                     }
                 }
