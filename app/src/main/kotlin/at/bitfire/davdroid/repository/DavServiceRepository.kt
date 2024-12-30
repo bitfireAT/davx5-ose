@@ -34,9 +34,6 @@ class DavServiceRepository @Inject constructor(
     fun insertOrReplace(service: Service) =
         dao.insertOrReplace(service)
 
-    suspend fun renameAccount(oldName: String, newName: String) =
-        dao.renameAccount(oldName, newName)
-
 
     // Delete
 

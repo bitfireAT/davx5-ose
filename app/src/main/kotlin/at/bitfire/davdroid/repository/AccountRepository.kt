@@ -206,6 +206,14 @@ class AccountRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
 
     /**
+     * Deletes accounts in the database which don't have a corresponding system account.
+     */
+    fun removeOrphanedInDb() {
+        val accounts = accountManager.getAccountsByType(accountType)
+        dao.deleteExceptNames(accounts.map { it.name })
+    }
+
+    /**
      * Renames an account.
      *
      * **Not**: It is highly advised to re-sync the account after renaming in order to restore

@@ -50,8 +50,7 @@ class TestAccountAuthenticator: Service() {
          *
          * Remove it with [remove].
          */
-        fun create(version: Int = AccountSettings.CURRENT_VERSION): Account {
-            val accountType = context.getString(R.string.account_type_test)
+        fun create(version: Int = AccountSettings.CURRENT_VERSION, accountType: String = context.getString(R.string.account_type_test)): Account {
             val account = Account("Test Account No. ${counter.incrementAndGet()}", accountType)
 
             val initialData = AccountSettings.initialUserData(null)
@@ -72,8 +71,8 @@ class TestAccountAuthenticator: Service() {
         /**
          * Convenience method to create a test account and remove it after executing the block.
          */
-        fun provide(version: Int = AccountSettings.CURRENT_VERSION, block: (Account) -> Unit) {
-            val account = create(version)
+        fun provide(version: Int = AccountSettings.CURRENT_VERSION, accountType: String = context.getString(R.string.account_type_test), block: (Account) -> Unit) {
+            val account = create(version, accountType)
             try {
                 block(account)
             } finally {

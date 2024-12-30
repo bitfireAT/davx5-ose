@@ -23,7 +23,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import java.time.Duration
 import java.util.concurrent.Semaphore
-import java.util.logging.Level
 import java.util.logging.Logger
 
 @HiltWorker
@@ -46,29 +45,12 @@ class AccountsCleanupWorker @AssistedInject constructor(
     override fun doWork(): Result {
         lockAccountsCleanup()
         try {
-            cleanUpServices()
+            accountRepository.removeOrphanedInDb()
             cleanUpAddressBooks()
         } finally {
             unlockAccountsCleanup()
         }
         return Result.success()
-    }
-
-    /**
-     * Deletes services in the database which are not associated to a valid account.
-     */
-    @VisibleForTesting
-    internal fun cleanUpServices() {
-        // Later, accounts which are not in the DB should be deleted here
-
-        // Delete orphaned services in DB – only necessary as long as accounts are implemented as system accounts (not in DB)
-        val accounts = accountRepository.getAll()
-        logger.log(Level.INFO, "Cleaning up accounts. Currently existing accounts:", accounts)
-        val serviceDao = db.serviceDao()
-        if (accounts.isEmpty())
-            serviceDao.deleteAll()
-        else
-            serviceDao.deleteExceptAccounts(accounts.map { it.name }.toTypedArray())
     }
 
     /**

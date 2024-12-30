@@ -25,6 +25,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
+import at.bitfire.davdroid.db.Account as DbAccount
 
 @HiltAndroidTest
 class AccountSettingsMigration17Test {
@@ -66,6 +67,7 @@ class AccountSettingsMigration17Test {
                 accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_URL, url)
 
                 // and is known in database
+                db.accountDao().insertOrIgnore(DbAccount(name = account.name))
                 db.serviceDao().insertOrReplace(
                     Service(
                         id = 1, accountName = account.name, type = Service.TYPE_CARDDAV, principal = null

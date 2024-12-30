@@ -1,10 +1,12 @@
 package at.bitfire.davdroid.repository
 
+import android.accounts.Account
 import android.content.Context
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -18,6 +20,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
+import at.bitfire.davdroid.db.Account as DbAccount
 
 @HiltAndroidTest
 class DavCollectionRepositoryTest {
@@ -41,18 +44,26 @@ class DavCollectionRepositoryTest {
     @Inject
     lateinit var serviceRepository: DavServiceRepository
 
-    var service: Service? = null
+    lateinit var account: Account
+    var serviceId: Long = 0L
 
     @Before
     fun setUp() {
         hiltRule.inject()
-        service = createTestService(Service.TYPE_CARDDAV)!!
+
+        account = TestAccountAuthenticator.create()
+        db.accountDao().insertOrIgnore(DbAccount(name = account.name))
+
+        val service = Service(id=0, accountName=account.name, type= Service.TYPE_CALDAV, principal = null)
+        serviceId = serviceRepository.insertOrReplace(service)
     }
 
     @After
     fun cleanUp() {
         db.close()
+
         serviceRepository.deleteAll()
+        TestAccountAuthenticator.remove(account)
     }
 
 
@@ -60,7 +71,7 @@ class DavCollectionRepositoryTest {
     fun testOnChangeListener_setForceReadOnly() = runBlocking {
         val collectionId = db.collectionDao().insertOrUpdateByUrl(
             Collection(
-                serviceId = service!!.id,
+                serviceId = serviceId,
                 type = Collection.TYPE_ADDRESSBOOK,
                 url = "https://example.com".toHttpUrl(),
                 forceReadOnly = false,
@@ -93,11 +104,5 @@ class DavCollectionRepositoryTest {
 
 
     // Test helpers and dependencies
-
-    private fun createTestService(serviceType: String) : Service? {
-        val service = Service(id=0, accountName="test", type=serviceType, principal = null)
-        val serviceId = serviceRepository.insertOrReplace(service)
-        return serviceRepository.get(serviceId)
-    }
 
 }
