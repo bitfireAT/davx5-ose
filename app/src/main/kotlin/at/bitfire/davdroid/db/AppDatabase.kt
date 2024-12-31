@@ -16,6 +16,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import at.bitfire.davdroid.R
@@ -58,13 +59,14 @@ abstract class AppDatabase: RoomDatabase() {
         @Provides
         @Singleton
         fun appDatabase(
+            autoMigrations: Set<@JvmSuppressWildcards AutoMigrationSpec>,
             @ApplicationContext context: Context,
             notificationRegistry: NotificationRegistry
         ): AppDatabase = Room
             .databaseBuilder(context, AppDatabase::class.java, "services.db")
             .addMigrations(*manualMigrations)
             .apply {
-                for (spec in getAutoMigrationSpecs(context))
+                for (spec in autoMigrations)
                     addAutoMigrationSpec(spec)
             }
             .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
@@ -94,11 +96,6 @@ abstract class AppDatabase: RoomDatabase() {
 
 
     companion object {
-
-        fun getAutoMigrationSpecs(context: Context) = listOf(
-            AutoMigration16(),
-            AutoMigration12(context)
-        )
 
         val manualMigrations: Array<Migration> = arrayOf(
             Migration9,

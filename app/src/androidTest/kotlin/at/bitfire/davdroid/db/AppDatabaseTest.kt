@@ -6,6 +6,7 @@ package at.bitfire.davdroid.db
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.AutoMigrationSpec
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.platform.app.InstrumentationRegistry
@@ -24,9 +25,11 @@ class AppDatabaseTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
+
+    @Inject
+    lateinit var autoMigrations: Set<@JvmSuppressWildcards AutoMigrationSpec>
 
     @Inject
     lateinit var logger: Logger
@@ -56,7 +59,7 @@ class AppDatabaseTest {
             .addMigrations(*AppDatabase.manualMigrations)
             // auto-migrations that need to be specified explicitly
             .apply {
-                for (spec in AppDatabase.getAutoMigrationSpecs(context))
+                for (spec in autoMigrations)
                     addAutoMigrationSpec(spec)
             }
             .build()

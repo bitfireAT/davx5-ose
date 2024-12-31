@@ -9,6 +9,12 @@ import androidx.room.RenameColumn
 import androidx.room.migration.AutoMigrationSpec
 import androidx.sqlite.db.SupportSQLiteDatabase
 import at.bitfire.ical4android.util.DateUtils
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
+import javax.inject.Inject
 
 /**
  * The timezone column has been renamed to timezoneId, but still contains the VTIMEZONE.
@@ -16,7 +22,7 @@ import at.bitfire.ical4android.util.DateUtils
  */
 @ProvidedAutoMigrationSpec
 @RenameColumn(tableName = "collection", fromColumnName = "timezone", toColumnName = "timezoneId")
-class AutoMigration16: AutoMigrationSpec {
+class AutoMigration16 @Inject constructor(): AutoMigrationSpec {
 
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
         db.query("SELECT id, timezoneId FROM collection").use { cursor ->
@@ -28,6 +34,14 @@ class AutoMigration16: AutoMigrationSpec {
                 db.execSQL("UPDATE collection SET timezoneId=? WHERE id=?", arrayOf(timezoneId, id))
             }
         }
+    }
+
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    abstract class SettingsMigrationModule {
+        @Binds @IntoSet
+        abstract fun provide(impl: AutoMigration16): AutoMigrationSpec
     }
 
 }

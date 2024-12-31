@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.db
 
 import android.content.Context
+import androidx.room.migration.AutoMigrationSpec
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
@@ -27,9 +28,11 @@ class AppDatabaseMigrationsTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
+
+    @Inject
+    lateinit var autoMigrations: Set<@JvmSuppressWildcards AutoMigrationSpec>
 
     @Before
     fun setup() {
@@ -54,7 +57,7 @@ class AppDatabaseMigrationsTest {
         val helper = MigrationTestHelper(
             InstrumentationRegistry.getInstrumentation(),
             AppDatabase::class.java,
-            AppDatabase.getAutoMigrationSpecs(context),
+            autoMigrations.toList(),
             FrameworkSQLiteOpenHelperFactory()
         )
 
