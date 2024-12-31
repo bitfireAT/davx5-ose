@@ -26,6 +26,7 @@ import kotlin.jvm.optionals.getOrNull
  * Sets up the uncaught exception (crash) handler and enables StrictMode in debug builds.
  */
 class CrashHandlerSetup @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val crashHandler: Optional<Thread.UncaughtExceptionHandler>
 ): StartupPlugin {

@@ -5,6 +5,11 @@
 package at.bitfire.davdroid.db.migration
 
 import androidx.room.migration.Migration
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
 
 val Migration6 = Migration(5, 6) { db ->
     val sql = arrayOf(
@@ -56,4 +61,11 @@ val Migration6 = Migration(5, 6) { db ->
         "DROP TABLE collections"
     )
     sql.forEach { db.execSQL(it) }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal object Migration6Module {
+    @Provides @IntoSet
+    fun provide(): Migration = Migration6
 }

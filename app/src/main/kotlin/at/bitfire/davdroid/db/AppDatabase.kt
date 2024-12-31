@@ -61,10 +61,11 @@ abstract class AppDatabase: RoomDatabase() {
         fun appDatabase(
             autoMigrations: Set<@JvmSuppressWildcards AutoMigrationSpec>,
             @ApplicationContext context: Context,
+            manualMigrations: Set<@JvmSuppressWildcards Migration>,
             notificationRegistry: NotificationRegistry
         ): AppDatabase = Room
             .databaseBuilder(context, AppDatabase::class.java, "services.db")
-            .addMigrations(*manualMigrations)
+            .addMigrations(*manualMigrations.toTypedArray())
             .apply {
                 for (spec in autoMigrations)
                     addAutoMigrationSpec(spec)
@@ -91,22 +92,6 @@ abstract class AppDatabase: RoomDatabase() {
                 }
             })
             .build()
-
-    }
-
-
-    companion object {
-
-        val manualMigrations: Array<Migration> = arrayOf(
-            Migration9,
-            Migration8,
-            Migration7,
-            Migration6,
-            Migration5,
-            Migration4,
-            Migration3,
-            Migration2
-        )
 
     }
 

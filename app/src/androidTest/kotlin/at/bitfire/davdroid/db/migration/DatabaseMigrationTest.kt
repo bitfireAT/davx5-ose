@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.db.migration
 
 import androidx.room.migration.AutoMigrationSpec
+import androidx.room.migration.Migration
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
@@ -15,12 +16,20 @@ import org.junit.Before
 import org.junit.Rule
 import javax.inject.Inject
 
+/**
+ * Helper for testing the database migration from [toVersion] - 1 to [toVersion].
+ *
+ * @param toVersion     The target version to migrate to.
+ */
 abstract class DatabaseMigrationTest(
     private val toVersion: Int
 ) {
 
     @Inject
     lateinit var autoMigrations: Set<@JvmSuppressWildcards AutoMigrationSpec>
+
+    @Inject
+    lateinit var manualMigrations: Set<@JvmSuppressWildcards Migration>
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -35,7 +44,7 @@ abstract class DatabaseMigrationTest(
     /**
      * Used for testing the migration process from [toVersion]-1 to [toVersion].
      *
-     * @param prepare      Callback to prepare the database. Will be run with database schema in version [fromVersion].
+     * @param prepare      Callback to prepare the database. Will be run with database schema in version [toVersion] - 1.
      * @param validate     Callback to validate the migration result. Will be run with database schema in version [toVersion].
      */
     protected fun testMigration(
@@ -61,7 +70,7 @@ abstract class DatabaseMigrationTest(
             name = dbName,
             version = toVersion,
             validateDroppedTables = true,
-            migrations = AppDatabase.manualMigrations
+            migrations = manualMigrations.toTypedArray()
         )
 
         validate(db)

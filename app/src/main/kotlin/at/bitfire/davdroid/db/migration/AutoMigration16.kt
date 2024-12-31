@@ -39,7 +39,7 @@ class AutoMigration16 @Inject constructor(): AutoMigrationSpec {
 
     @Module
     @InstallIn(SingletonComponent::class)
-    abstract class SettingsMigrationModule {
+    abstract class AutoMigrationModule {
         @Binds @IntoSet
         abstract fun provide(impl: AutoMigration16): AutoMigrationSpec
     }
