@@ -93,12 +93,7 @@ class LocalJtxCollectionStore @Inject constructor(
         TaskProvider.acquire(context, TaskProvider.ProviderName.JtxBoard)?.use { provider ->
             val values = contentValuesOf(JtxContract.JtxCollection.ACCOUNT_NAME to newAccount.name)
             val uri = JtxContract.JtxCollection.CONTENT_URI.asSyncAdapter(oldAccount)
-
-            provider.client.update(
-                uri,
-                values,
-                "${JtxContract.JtxCollection.ACCOUNT_NAME}=?", arrayOf(oldAccount.name)
-            )
+            provider.client.update(uri, values, "${JtxContract.JtxCollection.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
         }
     }
 

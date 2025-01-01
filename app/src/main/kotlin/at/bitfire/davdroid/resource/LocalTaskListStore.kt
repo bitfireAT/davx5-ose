@@ -103,12 +103,7 @@ class LocalTaskListStore @AssistedInject constructor(
         TaskProvider.acquire(context, providerName)?.use { provider ->
             val values = contentValuesOf(Tasks.ACCOUNT_NAME to newAccount.name)
             val uri = Tasks.getContentUri(providerName.authority)
-
-            provider.client.update(
-                uri,
-                values,
-                "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name)
-            )
+            provider.client.update(uri, values, "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
         }
     }
 
