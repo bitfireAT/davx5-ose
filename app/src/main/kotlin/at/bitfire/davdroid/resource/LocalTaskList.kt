@@ -7,11 +7,14 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentValues
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.DmfsTaskListFactory
 import at.bitfire.ical4android.TaskProvider
-import org.dmfs.tasks.contract.TaskContract.*
+import org.dmfs.tasks.contract.TaskContract.TaskListColumns
+import org.dmfs.tasks.contract.TaskContract.TaskLists
+import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
 import java.util.logging.Logger
 
