@@ -103,7 +103,7 @@ class LocalTaskListStore @AssistedInject constructor(
 
     @Throws(Exception::class)
     override fun updateAccount(oldAccount: Account, newAccount: Account) {
-        TaskProvider.acquire(context)?.use { provider ->
+        TaskProvider.acquire(context, providerName)?.use { provider ->
             val values = contentValuesOf(Tasks.ACCOUNT_NAME to newAccount.name)
             val uri = Tasks.getContentUri(providerName.authority)
 

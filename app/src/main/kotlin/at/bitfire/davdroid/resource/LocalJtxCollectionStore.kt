@@ -90,7 +90,7 @@ class LocalJtxCollectionStore @Inject constructor(
     }
 
     override fun updateAccount(oldAccount: Account, newAccount: Account) {
-        TaskProvider.acquire(context)?.use { provider ->
+        TaskProvider.acquire(context, TaskProvider.ProviderName.JtxBoard)?.use { provider ->
             val values = contentValuesOf(JtxContract.JtxCollection.ACCOUNT_NAME to newAccount.name)
             val uri = JtxContract.JtxCollection.CONTENT_URI.asSyncAdapter(oldAccount)
 
