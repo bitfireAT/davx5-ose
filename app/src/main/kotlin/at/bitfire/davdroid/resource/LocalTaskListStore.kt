@@ -30,7 +30,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 class LocalTaskListStore @AssistedInject constructor(
-    @Assisted authority: String,
+    @Assisted private val providerName: TaskProvider.ProviderName,
     val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
     val db: AppDatabase,
@@ -39,12 +39,10 @@ class LocalTaskListStore @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(authority: String): LocalTaskListStore
+        fun create(providerName: TaskProvider.ProviderName): LocalTaskListStore
     }
 
     private val serviceDao = db.serviceDao()
-
-    private val providerName = TaskProvider.ProviderName.fromAuthority(authority)
 
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalTaskList? {
