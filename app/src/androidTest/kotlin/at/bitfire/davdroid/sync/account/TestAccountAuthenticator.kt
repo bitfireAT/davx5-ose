@@ -42,7 +42,7 @@ class TestAccountAuthenticator: Service() {
 
     companion object {
 
-        val context by lazy { InstrumentationRegistry.getInstrumentation().context }
+        private val context by lazy { InstrumentationRegistry.getInstrumentation().context }
         val counter = AtomicInteger(0)
 
         /**
