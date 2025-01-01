@@ -98,6 +98,8 @@ class LocalCalendarStore @Inject constructor(
     }
 
     override fun updateAccount(oldAccount: Account, newAccount: Account) {
+        // calendar provider doesn't allow changing account_name of Events
+        // (all events will have to be downloaded again at next sync)
         throw NotImplementedError()
     }
 
