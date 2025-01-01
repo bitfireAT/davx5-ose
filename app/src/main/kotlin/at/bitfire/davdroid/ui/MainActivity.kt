@@ -33,7 +33,7 @@ class MainActivity: AppCompatActivity() {
 
             CompositionLocalProvider(LocalNavController provides navController) {
                 NavHost(
-                    navController = rememberNavController(),
+                    navController = navController,
                     startDestination = accountsFromIntent()
                 ) {
                     composable<Routes.Accounts> { AccountsScreen(it, accountsDrawerHandler) }
