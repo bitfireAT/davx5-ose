@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class AccountsActivity: AppCompatActivity() {
+class MainActivity: AppCompatActivity() {
 
     @Inject
     lateinit var accountsDrawerHandler: AccountsDrawerHandler

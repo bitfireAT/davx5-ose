@@ -62,7 +62,7 @@
 
         <activity android:name=".ui.intro.IntroActivity" />
         <activity
-            android:name=".ui.AccountsActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -73,12 +73,12 @@
         <activity
             android:name=".ui.AboutActivity"
             android:label="@string/navigation_drawer_about"
-            android:parentActivityName=".ui.AccountsActivity"/>
+            android:parentActivityName=".ui.MainActivity"/>
 
         <activity
             android:name=".ui.AppSettingsActivity"
             android:label="@string/app_settings"
-            android:parentActivityName=".ui.AccountsActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES"/>
@@ -106,7 +106,7 @@
 
         <activity
             android:name=".ui.setup.LoginActivity"
-            android:parentActivityName=".ui.AccountsActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
@@ -134,7 +134,7 @@
 
         <activity
             android:name=".ui.account.AccountActivity"
-            android:parentActivityName=".ui.AccountsActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:exported="true">
         </activity>
         <activity
@@ -156,7 +156,7 @@
         <activity
             android:name=".ui.webdav.WebdavMountsActivity"
             android:exported="true"
-            android:parentActivityName=".ui.AccountsActivity" />
+            android:parentActivityName=".ui.MainActivity" />
         <activity
             android:name=".ui.webdav.AddWebdavMountActivity"
             android:parentActivityName=".ui.webdav.WebdavMountsActivity"

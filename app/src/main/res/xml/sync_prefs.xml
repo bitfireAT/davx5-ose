@@ -12,7 +12,7 @@
     <PreferenceScreen android:title="@string/manage_accounts">
         <intent
             android:targetPackage="at.bitfire.davdroid"
-            android:targetClass="at.bitfire.davdroid.ui.AccountsActivity"
+            android:targetClass="at.bitfire.davdroid.ui.MainActivity"
             android:action="ACTION_VIEW" />
     </PreferenceScreen>
 

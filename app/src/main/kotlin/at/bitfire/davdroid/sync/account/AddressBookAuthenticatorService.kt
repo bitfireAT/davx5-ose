@@ -12,7 +12,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.os.bundleOf
-import at.bitfire.davdroid.ui.AccountsActivity
+import at.bitfire.davdroid.ui.MainActivity
 
 class AddressBookAuthenticatorService: Service() {
 
@@ -31,7 +31,7 @@ class AddressBookAuthenticatorService: Service() {
     ): AbstractAccountAuthenticator(context) {
 
         override fun addAccount(response: AccountAuthenticatorResponse?, accountType: String?, authTokenType: String?, requiredFeatures: Array<String>?, options: Bundle?): Bundle {
-            val intent = Intent(context, AccountsActivity::class.java)
+            val intent = Intent(context, MainActivity::class.java)
             intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
             return bundleOf(AccountManager.KEY_INTENT to intent)
         }

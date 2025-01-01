@@ -21,8 +21,9 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TextTable
-import at.bitfire.davdroid.db.migration.*
-import at.bitfire.davdroid.ui.AccountsActivity
+import at.bitfire.davdroid.db.migration.AutoMigration12
+import at.bitfire.davdroid.db.migration.AutoMigration16
+import at.bitfire.davdroid.ui.MainActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.Module
 import dagger.Provides
@@ -74,7 +75,7 @@ abstract class AppDatabase: RoomDatabase() {
             .addCallback(object: Callback() {
                 override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
                     notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_DATABASE_CORRUPTED) {
-                        val launcherIntent = Intent(context, AccountsActivity::class.java)
+                        val launcherIntent = Intent(context, MainActivity::class.java)
                         NotificationCompat.Builder(context, notificationRegistry.CHANNEL_GENERAL)
                             .setSmallIcon(R.drawable.ic_warning_notify)
                             .setContentTitle(context.getString(R.string.database_destructive_migration_title))
