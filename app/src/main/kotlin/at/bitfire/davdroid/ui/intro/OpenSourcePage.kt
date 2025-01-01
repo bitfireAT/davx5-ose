@@ -26,9 +26,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
@@ -54,7 +54,7 @@ class OpenSourcePage @Inject constructor(
     }
 
     @Composable
-    private fun Page(model: Model = viewModel()) {
+    private fun Page(model: Model = hiltViewModel()) {
         val dontShow by model.dontShow.collectAsStateWithLifecycle(false)
         OpenSourcePage(
             dontShow = dontShow,

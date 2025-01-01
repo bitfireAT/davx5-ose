@@ -26,8 +26,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
@@ -37,7 +37,7 @@ import java.util.Locale
 
 @Composable
 fun BatteryOptimizationsPageContent(
-    model: BatteryOptimizationsPageModel = viewModel()
+    model: BatteryOptimizationsPageModel = hiltViewModel()
 ) {
     val ignoreBatteryOptimizationsResultLauncher = rememberLauncherForActivityResult(
         BatteryOptimizationsPage.IgnoreBatteryOptimizationsContract

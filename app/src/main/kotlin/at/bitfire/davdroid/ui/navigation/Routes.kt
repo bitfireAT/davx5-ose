@@ -5,4 +5,7 @@ import kotlinx.serialization.Serializable
 object Routes {
     @Serializable
     data class Accounts(val syncAccounts: Boolean)
+
+    @Serializable
+    data object Intro
 }

@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -77,7 +76,8 @@ import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import at.bitfire.davdroid.ui.intro.IntroActivity
+import at.bitfire.davdroid.ui.composition.LocalNavController
+import at.bitfire.davdroid.ui.intro.INTRO_CANCELLED
 import at.bitfire.davdroid.ui.navigation.Routes
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -89,18 +89,22 @@ import kotlinx.coroutines.launch
 @Composable
 fun AccountsScreen(backStackEntry: NavBackStackEntry, accountsDrawerHandler: AccountsDrawerHandler) {
     val route = backStackEntry.toRoute<Routes.Accounts>()
+    val navController = LocalNavController.current
     val context = LocalContext.current
     val activity = context as? Activity
 
-    val introActivityLauncher = rememberLauncherForActivityResult(IntroActivity.Contract) { cancelled ->
-        if (cancelled) activity?.finish()
+    LaunchedEffect(Unit) {
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getStateFlow(INTRO_CANCELLED, false)
+            ?.collect { cancelled ->
+                if (cancelled) activity?.finish()
+            }
     }
 
     AccountsScreen(
         initialSyncAccounts = route.syncAccounts,
-        onShowAppIntro = {
-            introActivityLauncher.launch(null)
-        },
+        onShowAppIntro = { navController.navigate(Routes.Intro) },
         accountsDrawerHandler = accountsDrawerHandler,
         onAddAccount = {
             // eventually this will become a navigation

@@ -1,5 +1,6 @@
 package at.bitfire.davdroid.ui.intro
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
@@ -49,10 +50,41 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.M3ColorScheme
+import at.bitfire.davdroid.ui.composition.LocalNavController
 import kotlinx.coroutines.launch
+
+const val INTRO_CANCELLED = "cancelled"
+
+@Composable
+fun IntroScreen(
+    model: IntroModel = hiltViewModel()
+) {
+    val navController = LocalNavController.current
+
+    val scope = rememberCoroutineScope()
+    val pagerState = rememberPagerState { model.pages.size }
+
+    BackHandler {
+        if (pagerState.settledPage == 0) {
+            navController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.set(INTRO_CANCELLED, true)
+            navController.popBackStack()
+        } else scope.launch {
+            pagerState.animateScrollToPage(pagerState.settledPage - 1)
+        }
+    }
+
+    IntroScreen(
+        pages = model.pages,
+        pagerState = pagerState,
+        onDonePressed = { navController.popBackStack() }
+    )
+}
 
 @Composable
 fun IntroScreen(
