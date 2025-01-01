@@ -50,7 +50,8 @@ class AccountsModel @AssistedInject constructor(
     private val db: AppDatabase,
     introPageFactory: IntroPageFactory,
     private val logger: Logger,
-    private val syncWorkerManager: SyncWorkerManager
+    private val syncWorkerManager: SyncWorkerManager,
+    val accountsDrawerHandler: AccountsDrawerHandler
 ): ViewModel() {
 
     @AssistedFactory
