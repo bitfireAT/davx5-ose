@@ -41,7 +41,7 @@ class AccountRepositoryTest {
 
     @Test
     fun testRemoveOrphanedInDb() {
-        TestAccountAuthenticator.provide(accountType = context.getString(R.string.account_type)) { systemAccount ->
+        TestAccountAuthenticator.provide { systemAccount ->
             val dao = db.accountDao()
             dao.insertOrIgnore(DbAccount(id = 1, name = systemAccount.name))
             dao.insertOrIgnore(DbAccount(id = 2, name = "no-corresponding-system-account"))

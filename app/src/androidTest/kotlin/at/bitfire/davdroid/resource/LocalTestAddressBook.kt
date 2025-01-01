@@ -10,6 +10,8 @@ import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.Context
 import android.provider.ContactsContract
+import androidx.test.platform.app.InstrumentationRegistry
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -103,7 +105,8 @@ class LocalTestAddressBook @AssistedInject constructor(
 
     companion object {
 
-        val ACCOUNT = Account("LocalTestAddressBook", "at.bitfire.davdroid.test")
+        val targetContext by lazy { InstrumentationRegistry.getInstrumentation().targetContext }
+        val ACCOUNT = Account("LocalTestAddressBook", targetContext.getString(R.string.account_type_address_book))
 
         fun createAccount(context: Context) {
             val am = AccountManager.get(context)

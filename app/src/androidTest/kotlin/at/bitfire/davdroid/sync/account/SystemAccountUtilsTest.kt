@@ -8,9 +8,8 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
-import androidx.test.platform.app.InstrumentationRegistry
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.test.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -27,18 +26,11 @@ class SystemAccountUtilsTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
-    val testContext = InstrumentationRegistry.getInstrumentation().context
 
     @Inject
     lateinit var settingsManager: SettingsManager
-
-    val account = Account(
-        "AccountUtilsTest",
-        testContext.getString(R.string.account_type_test)
-    )
 
     @Before
     fun setUp() {
@@ -52,6 +44,10 @@ class SystemAccountUtilsTest {
         userData.putString("int", "1")
         userData.putString("string", "abc/\"-")
 
+        val account = Account(
+            "AccountUtilsTest",
+            context.getString(R.string.account_type)
+        )
         val manager = AccountManager.get(context)
         try {
             assertTrue(SystemAccountUtils.createAccount(context, account, userData))

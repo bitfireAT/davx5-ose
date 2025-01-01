@@ -13,6 +13,7 @@ import android.content.Context
 import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import at.bitfire.davdroid.R
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import at.bitfire.vcard4android.LabeledProperty
@@ -42,11 +43,11 @@ class LocalAddressBookTest {
     @Inject
     lateinit var addressbookFactory: LocalTestAddressBook.Factory
 
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
+    val targetContext by lazy { InstrumentationRegistry.getInstrumentation().targetContext }
 
-    val account = Account("Test Account", "Test Account Type")
+    val account by lazy { Account("Test Account", targetContext.getString(R.string.account_type)) }
     lateinit var addressBook: LocalTestAddressBook
 
 

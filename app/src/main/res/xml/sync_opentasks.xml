@@ -2,4 +2,5 @@
     android:accountType="@string/account_type"
     android:contentAuthority="org.dmfs.tasks"
     android:allowParallelSyncs="true"
-    android:supportsUploading="true" />
+    android:supportsUploading="true"
+    android:isAlwaysSyncable="false" />

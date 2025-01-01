@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
 import android.content.Context
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.ListenableWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerFactory
@@ -16,7 +15,6 @@ import androidx.work.workDataOf
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
-import at.bitfire.davdroid.test.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -33,10 +31,8 @@ import javax.inject.Inject
 @HiltAndroidTest
 class PeriodicSyncWorkerTest {
 
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
-    val testContext = InstrumentationRegistry.getInstrumentation().context
 
     @Inject
     lateinit var syncWorkerFactory: PeriodicSyncWorker.Factory
@@ -62,7 +58,7 @@ class PeriodicSyncWorkerTest {
 
     @Test
     fun doWork_cancelsItselfOnInvalidAccount() {
-        val invalidAccount = Account("invalid", testContext.getString(R.string.account_type_test))
+        val invalidAccount = Account("invalid", "test")
 
         // Run PeriodicSyncWorker as TestWorker
         val inputData = workDataOf(
