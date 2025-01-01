@@ -8,9 +8,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import at.bitfire.davdroid.ui.composition.LocalNavController
 import at.bitfire.davdroid.ui.navigation.Routes
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -27,11 +29,15 @@ class MainActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            NavHost(
-                navController = rememberNavController(),
-                startDestination = accountsFromIntent()
-            ) {
-                composable<Routes.Accounts> { AccountsScreen(it, accountsDrawerHandler) }
+            val navController = rememberNavController()
+
+            CompositionLocalProvider(LocalNavController provides navController) {
+                NavHost(
+                    navController = rememberNavController(),
+                    startDestination = accountsFromIntent()
+                ) {
+                    composable<Routes.Accounts> { AccountsScreen(it, accountsDrawerHandler) }
+                }
             }
         }
     }
