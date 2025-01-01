@@ -97,11 +97,7 @@ class LocalCalendarStore @Inject constructor(
         return values
     }
 
-    override fun updateAccount(
-        provider: ContentProviderClient,
-        oldAccount: Account,
-        newAccount: Account
-    ) {
+    override fun updateAccount(oldAccount: Account, newAccount: Account) {
         throw NotImplementedError()
     }
 

@@ -215,18 +215,15 @@ class AccountRepository @Inject constructor(
             serviceRepository.renameAccount(oldName, newName)
 
             // update address books
-            val contactsProvider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
-            localAddressBookStore.get().updateAccount(contactsProvider!!, oldAccount, newAccount)
+            localAddressBookStore.get().updateAccount(oldAccount, newAccount)
 
             // calendar provider doesn't allow changing account_name of Events
             // (all events will have to be downloaded again at next sync)
 
             // update account_name of local tasks
             try {
-                TaskProvider.acquire(context)?.use { provider ->
-                    val dataStore = tasksAppManager.get().getDataStore()
-                    dataStore?.updateAccount(provider.client, oldAccount, newAccount)
-                }
+                val dataStore = tasksAppManager.get().getDataStore()
+                dataStore?.updateAccount(oldAccount, newAccount)
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't propagate new account name to tasks provider", e)
                 // Couldn't update task lists, but this is not a fatal error (will be fixed at next sync)

@@ -102,19 +102,17 @@ class LocalTaskListStore @AssistedInject constructor(
     }
 
     @Throws(Exception::class)
-    override fun updateAccount(
-        provider: ContentProviderClient,
-        oldAccount: Account,
-        newAccount: Account
-    ) {
-        val values = contentValuesOf(Tasks.ACCOUNT_NAME to newAccount.name)
-        val uri = Tasks.getContentUri(providerName.authority)
+    override fun updateAccount(oldAccount: Account, newAccount: Account) {
+        TaskProvider.acquire(context)?.use { provider ->
+            val values = contentValuesOf(Tasks.ACCOUNT_NAME to newAccount.name)
+            val uri = Tasks.getContentUri(providerName.authority)
 
-        provider.update(
-            uri,
-            values,
-            "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name)
-        )
+            provider.client.update(
+                uri,
+                values,
+                "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name)
+            )
+        }
     }
 
 }
