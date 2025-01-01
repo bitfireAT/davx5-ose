@@ -12,6 +12,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import at.bitfire.davdroid.ui.about.AboutScreen
 import at.bitfire.davdroid.ui.composition.LocalNavController
 import at.bitfire.davdroid.ui.intro.IntroScreen
 import at.bitfire.davdroid.ui.navigation.Routes
@@ -39,6 +40,7 @@ class MainActivity: AppCompatActivity() {
                 ) {
                     composable<Routes.Accounts> { AccountsScreen(it, accountsDrawerHandler) }
                     composable<Routes.Intro> { IntroScreen() }
+                    composable<Routes.About> { AboutScreen() }
                 }
             }
         }

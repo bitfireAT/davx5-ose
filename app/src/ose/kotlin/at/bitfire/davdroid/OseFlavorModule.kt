@@ -4,10 +4,10 @@
 
 package at.bitfire.davdroid
 
-import at.bitfire.davdroid.ui.AboutActivity
 import at.bitfire.davdroid.ui.AccountsDrawerHandler
 import at.bitfire.davdroid.ui.OpenSourceLicenseInfoProvider
 import at.bitfire.davdroid.ui.OseAccountsDrawerHandler
+import at.bitfire.davdroid.ui.about.AppLicenseInfoProvider
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
 import at.bitfire.davdroid.ui.setup.LoginTypesProvider
 import at.bitfire.davdroid.ui.setup.StandardLoginTypesProvider
@@ -34,7 +34,7 @@ interface OseFlavorModules {
     @InstallIn(ViewModelComponent::class)
     interface ForViewModels {
         @Binds
-        fun appLicenseInfoProvider(impl: OpenSourceLicenseInfoProvider): AboutActivity.AppLicenseInfoProvider
+        fun appLicenseInfoProvider(impl: OpenSourceLicenseInfoProvider): AppLicenseInfoProvider
 
         @Binds
         fun loginTypesProvider(impl: StandardLoginTypesProvider): LoginTypesProvider

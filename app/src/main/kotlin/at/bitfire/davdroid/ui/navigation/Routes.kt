@@ -8,4 +8,7 @@ object Routes {
 
     @Serializable
     data object Intro
+
+    @Serializable
+    data object About
 }
