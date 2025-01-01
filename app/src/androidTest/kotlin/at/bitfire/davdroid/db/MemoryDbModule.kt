@@ -6,6 +6,7 @@ package at.bitfire.davdroid.db
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.AutoMigrationSpec
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,11 +25,14 @@ class MemoryDbModule {
 
     @Provides
     @Singleton
-    fun inMemoryDatabase(@ApplicationContext context: Context): AppDatabase =
+    fun inMemoryDatabase(
+        autoMigrations: Set<@JvmSuppressWildcards AutoMigrationSpec>,
+        @ApplicationContext context: Context
+    ): AppDatabase =
         Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
             // auto-migration specs that need to be specified explicitly
             .apply {
-                for (spec in AppDatabase.getAutoMigrationSpecs(context)) {
+                for (spec in autoMigrations) {
                     addAutoMigrationSpec(spec)
                 }
             }

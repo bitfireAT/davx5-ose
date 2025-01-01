@@ -8,17 +8,18 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.provider.DocumentsContract.Document
 import android.webkit.MimeTypeMap
+import androidx.core.os.bundleOf
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import at.bitfire.davdroid.util.DavUtils.MEDIA_TYPE_OCTET_STREAM
 import at.bitfire.davdroid.webdav.DocumentState
-import java.io.FileNotFoundException
-import java.time.Instant
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import java.io.FileNotFoundException
+import java.time.Instant
 
 @Entity(
     tableName = "webdav_document",
@@ -72,9 +73,10 @@ data class WebDavDocument(
         if (parent?.isDirectory == false)
             throw IllegalArgumentException("Parent must be a directory")
 
-        val bundle = Bundle()
-        bundle.putString(Document.COLUMN_DOCUMENT_ID, id.toString())
-        bundle.putString(Document.COLUMN_DISPLAY_NAME, name)
+        val bundle = bundleOf(
+            Document.COLUMN_DOCUMENT_ID to id.toString(),
+            Document.COLUMN_DISPLAY_NAME to name
+        )
 
         displayName?.let { bundle.putString(Document.COLUMN_SUMMARY, it) }
         size?.let { bundle.putLong(Document.COLUMN_SIZE, it) }

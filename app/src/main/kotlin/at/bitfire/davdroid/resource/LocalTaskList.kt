@@ -60,8 +60,7 @@ class LocalTaskList private constructor(
             return null
         }
         set(state) {
-            val values = ContentValues(1)
-            values.put(TaskLists.SYNC_VERSION, state?.toString())
+            val values = contentValuesOf(TaskLists.SYNC_VERSION to state?.toString())
             provider.update(taskListSyncUri(), values, null, null)
         }
 
@@ -96,8 +95,7 @@ class LocalTaskList private constructor(
 
 
     override fun markNotDirty(flags: Int): Int {
-        val values = ContentValues(1)
-        values.put(LocalTask.COLUMN_FLAGS, flags)
+        val values = contentValuesOf(LocalTask.COLUMN_FLAGS to flags)
         return provider.update(tasksSyncUri(), values,
                 "${Tasks.LIST_ID}=? AND ${Tasks._DIRTY}=0",
                 arrayOf(id.toString()))
@@ -109,8 +107,7 @@ class LocalTaskList private constructor(
                     arrayOf(id.toString(), flags.toString()))
 
     override fun forgetETags() {
-        val values = ContentValues(1)
-        values.putNull(LocalEvent.COLUMN_ETAG)
+        val values = contentValuesOf(LocalEvent.COLUMN_ETAG to null)
         provider.update(tasksSyncUri(), values, "${Tasks.LIST_ID}=?",
                 arrayOf(id.toString()))
     }

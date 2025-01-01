@@ -6,12 +6,12 @@ package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
 import android.content.ContentUris
-import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.CalendarContract
 import android.util.Base64
 import androidx.core.content.ContextCompat
+import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.UnknownProperty
 import at.techbee.jtx.JtxContract.asSyncAdapter
@@ -68,9 +68,10 @@ class AccountSettingsMigration12 @Inject constructor(
                                 try {
                                     val property = UnknownProperty.fromJsonString(rawValue)
                                     if (property is Url) {  // rewrite to MIMETYPE_URL
-                                        val newValues = ContentValues(2)
-                                        newValues.put(CalendarContract.ExtendedProperties.NAME, AndroidEvent.EXTNAME_URL)
-                                        newValues.put(CalendarContract.ExtendedProperties.VALUE, property.value)
+                                        val newValues = contentValuesOf(
+                                            CalendarContract.ExtendedProperties.NAME to AndroidEvent.EXTNAME_URL,
+                                            CalendarContract.ExtendedProperties.VALUE to property.value
+                                        )
                                         provider.update(uri, newValues, null, null)
                                     }
                                 } catch (e: Exception) {
@@ -89,9 +90,10 @@ class AccountSettingsMigration12 @Inject constructor(
                                     ObjectInputStream(stream).use {
                                         (it.readObject() as? Property)?.let { property ->
                                             // rewrite to current format
-                                            val newValues = ContentValues(2)
-                                            newValues.put(CalendarContract.ExtendedProperties.NAME, UnknownProperty.CONTENT_ITEM_TYPE)
-                                            newValues.put(CalendarContract.ExtendedProperties.VALUE, UnknownProperty.toJsonString(property))
+                                            val newValues = contentValuesOf(
+                                                CalendarContract.ExtendedProperties.NAME to UnknownProperty.CONTENT_ITEM_TYPE,
+                                                CalendarContract.ExtendedProperties.VALUE to UnknownProperty.toJsonString(property)
+                                            )
                                             provider.update(uri, newValues, null, null)
                                         }
                                     }
@@ -102,8 +104,7 @@ class AccountSettingsMigration12 @Inject constructor(
 
                             "unknown-property.v2" -> {
                                 // unknown property (deprecated MIME type); rewrite to current MIME type
-                                val newValues = ContentValues(1)
-                                newValues.put(CalendarContract.ExtendedProperties.NAME, UnknownProperty.CONTENT_ITEM_TYPE)
+                                val newValues = contentValuesOf(CalendarContract.ExtendedProperties.NAME to UnknownProperty.CONTENT_ITEM_TYPE)
                                 provider.update(uri, newValues, null, null)
                             }
                         }
