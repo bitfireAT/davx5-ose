@@ -14,7 +14,7 @@ import okhttp3.HttpUrl
 /**
  * A service entity.
  *
- * Services represent accounts and are unique. They are of type CardDAV or CalDAV and may have an associated principal.
+ * Services are unique per account. They are of type CardDAV or CalDAV and may have an associated principal.
  */
 @Entity(
     tableName = "service",
@@ -22,25 +22,24 @@ import okhttp3.HttpUrl
         ForeignKey(entity = Account::class, parentColumns = ["name"], childColumns = ["accountName"], onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)
     ],
     indices = [
-        // only one service per type and account
+        // only one service per account and (service) type
         Index("accountName", "type", unique = true)
     ]
 )
 data class Service(
     @PrimaryKey(autoGenerate = true)
     var id: Long,
-
     var accountName: String,
-    @ServiceTypeDef var type: String,
+
+    @ServiceTypeDef
+    var type: String,
 
     var principal: HttpUrl?
 ) {
 
     companion object {
-
         @StringDef(TYPE_CALDAV, TYPE_CARDDAV)
         annotation class ServiceTypeDef
-
         const val TYPE_CALDAV = "caldav"
         const val TYPE_CARDDAV = "carddav"
     }

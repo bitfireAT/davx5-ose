@@ -11,7 +11,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 
-val Migration9 = Migration(8, 9) { db ->
+internal val Migration9 = Migration(8, 9) { db ->
     db.execSQL("CREATE TABLE syncstats (" +
             "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
             "collectionId INTEGER NOT NULL REFERENCES collection(id) ON DELETE CASCADE," +

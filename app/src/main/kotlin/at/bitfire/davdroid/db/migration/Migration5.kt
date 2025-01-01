@@ -11,7 +11,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 
-val Migration5 = Migration(4, 5) { db ->
+internal val Migration5 = Migration(4, 5) { db ->
     db.execSQL("ALTER TABLE collections ADD COLUMN privWriteContent INTEGER DEFAULT 0 NOT NULL")
     db.execSQL("UPDATE collections SET privWriteContent=NOT readOnly")
 

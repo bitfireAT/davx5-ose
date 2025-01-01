@@ -11,7 +11,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 
-val Migration2 = Migration(1, 2) { db ->
+internal val Migration2 = Migration(1, 2) { db ->
     db.execSQL("ALTER TABLE collections ADD COLUMN type TEXT NOT NULL DEFAULT ''")
     db.execSQL("ALTER TABLE collections ADD COLUMN source TEXT DEFAULT NULL")
     db.execSQL("UPDATE collections SET type=(" +

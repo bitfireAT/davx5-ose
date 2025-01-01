@@ -11,7 +11,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 
-val Migration8 = Migration(7, 8) { db ->
+internal val Migration8 = Migration(7, 8) { db ->
     db.execSQL("ALTER TABLE homeset ADD COLUMN personal INTEGER NOT NULL DEFAULT 1")
     db.execSQL("ALTER TABLE collection ADD COLUMN homeSetId INTEGER DEFAULT NULL REFERENCES homeset(id) ON DELETE SET NULL")
     db.execSQL("ALTER TABLE collection ADD COLUMN owner TEXT DEFAULT NULL")

@@ -12,7 +12,7 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 @HiltAndroidTest
-class AutoMigration16Test: DatabaseMigrationTest(toVersion = 16) {
+class AutoMigration16Test: DatabaseMigrationTest(fromVersion = 15, toVersion = 16) {
 
     @Test
     fun testMigrate_WithTimeZone() = testMigration(

@@ -11,7 +11,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 
-val Migration6 = Migration(5, 6) { db ->
+internal val Migration6 = Migration(5, 6) { db ->
     val sql = arrayOf(
         // migrate "services" to "service": rename columns, make id NOT NULL
         "CREATE TABLE service(" +

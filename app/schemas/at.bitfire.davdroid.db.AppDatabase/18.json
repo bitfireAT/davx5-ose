@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 17,
-    "identityHash": "3e8ce358d26c057ba1dfc24de3ac5ba5",
+    "version": 18,
+    "identityHash": "047898fb582f45636ade0f1d092e3260",
     "entities": [
       {
         "tableName": "account",
@@ -42,7 +42,7 @@
       },
       {
         "tableName": "service",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `accountName` TEXT NOT NULL, `type` TEXT NOT NULL, `principal` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `accountName` TEXT NOT NULL, `type` TEXT NOT NULL, `principal` TEXT, FOREIGN KEY(`accountName`) REFERENCES `account`(`name`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -87,7 +87,19 @@
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_service_accountName_type` ON `${TABLE_NAME}` (`accountName`, `type`)"
           }
         ],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "account",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "accountName"
+            ],
+            "referencedColumns": [
+              "name"
+            ]
+          }
+        ]
       },
       {
         "tableName": "homeset",
@@ -705,7 +717,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3e8ce358d26c057ba1dfc24de3ac5ba5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '047898fb582f45636ade0f1d092e3260')"
     ]
   }
 }

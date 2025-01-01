@@ -17,11 +17,13 @@ import org.junit.Rule
 import javax.inject.Inject
 
 /**
- * Helper for testing the database migration from [toVersion] - 1 to [toVersion].
+ * Helper for testing the database migration from [fromVersion] to [toVersion].
  *
+ * @param fromVersion   The source version to migrate from (usually `toVersion - 1`).
  * @param toVersion     The target version to migrate to.
  */
 abstract class DatabaseMigrationTest(
+    private val fromVersion: Int,
     private val toVersion: Int
 ) {
 
@@ -42,14 +44,14 @@ abstract class DatabaseMigrationTest(
 
 
     /**
-     * Used for testing the migration process from [toVersion]-1 to [toVersion].
+     * Used for testing the migration process from [fromVersion] to [toVersion].
      *
-     * @param prepare      Callback to prepare the database. Will be run with database schema in version [toVersion] - 1.
-     * @param validate     Callback to validate the migration result. Will be run with database schema in version [toVersion].
+     * @param prepare    Callback to prepare the database. Will be run with database schema in version [fromVersion].
+     * @param verify     Callback to verify the migration result. Will be run with database schema in version [toVersion].
      */
     protected fun testMigration(
         prepare: (SupportSQLiteDatabase) -> Unit,
-        validate: (SupportSQLiteDatabase) -> Unit
+        verify: (SupportSQLiteDatabase) -> Unit
     ) {
         val helper = MigrationTestHelper(
             InstrumentationRegistry.getInstrumentation(),
@@ -60,7 +62,7 @@ abstract class DatabaseMigrationTest(
 
         // Prepare the database with the initial version.
         val dbName = "test"
-        helper.createDatabase(dbName, version = toVersion - 1).apply {
+        helper.createDatabase(dbName, version = fromVersion).apply {
             prepare(this)
             close()
         }
@@ -73,7 +75,7 @@ abstract class DatabaseMigrationTest(
             migrations = manualMigrations.toTypedArray()
         )
 
-        validate(db)
+        verify(db)
     }
 
 }
