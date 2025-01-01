@@ -8,9 +8,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import at.bitfire.davdroid.ui.account.AccountActivity
-import at.bitfire.davdroid.ui.intro.IntroActivity
-import at.bitfire.davdroid.ui.setup.LoginActivity
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import at.bitfire.davdroid.ui.navigation.Routes
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -21,38 +22,27 @@ class MainActivity: AppCompatActivity() {
     @Inject
     lateinit var accountsDrawerHandler: AccountsDrawerHandler
 
-    private val introActivityLauncher = registerForActivityResult(IntroActivity.Contract) { cancelled ->
-        if (cancelled)
-            finish()
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // handle "Sync all" intent from launcher shortcut
-        val syncAccounts = intent.action == Intent.ACTION_SYNC
-
         setContent {
-            AccountsScreen(
-                initialSyncAccounts = syncAccounts,
-                onShowAppIntro = {
-                    introActivityLauncher.launch(null)
-                },
-                accountsDrawerHandler = accountsDrawerHandler,
-                onAddAccount = {
-                    startActivity(Intent(this, LoginActivity::class.java))
-                },
-                onShowAccount = { account ->
-                    val intent = Intent(this, AccountActivity::class.java)
-                    intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
-                    startActivity(intent)
-                },
-                onManagePermissions = {
-                    startActivity(Intent(this, PermissionsActivity::class.java))
-                }
-            )
+            NavHost(
+                navController = rememberNavController(),
+                startDestination = accountsFromIntent()
+            ) {
+                composable<Routes.Accounts> { AccountsScreen(it, accountsDrawerHandler) }
+            }
         }
     }
+
+    /**
+     * Initializes the accounts route from the current intent data.
+     * Checks whether the action is [Intent.ACTION_SYNC].
+     */
+    private fun accountsFromIntent() = Routes.Accounts(
+        // handle "Sync all" intent from launcher shortcut
+        syncAccounts = intent.action == Intent.ACTION_SYNC
+    )
 
 }

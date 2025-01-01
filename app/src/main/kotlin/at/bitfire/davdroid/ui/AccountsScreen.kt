@@ -2,11 +2,13 @@ package at.bitfire.davdroid.ui
 
 import android.Manifest
 import android.accounts.Account
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -67,16 +69,55 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.toRoute
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
+import at.bitfire.davdroid.ui.intro.IntroActivity
+import at.bitfire.davdroid.ui.navigation.Routes
+import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+@Composable
+fun AccountsScreen(backStackEntry: NavBackStackEntry, accountsDrawerHandler: AccountsDrawerHandler) {
+    val route = backStackEntry.toRoute<Routes.Accounts>()
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    val introActivityLauncher = rememberLauncherForActivityResult(IntroActivity.Contract) { cancelled ->
+        if (cancelled) activity?.finish()
+    }
+
+    AccountsScreen(
+        initialSyncAccounts = route.syncAccounts,
+        onShowAppIntro = {
+            introActivityLauncher.launch(null)
+        },
+        accountsDrawerHandler = accountsDrawerHandler,
+        onAddAccount = {
+            // eventually this will become a navigation
+            context.startActivity(Intent(context, LoginActivity::class.java))
+        },
+        onShowAccount = { account ->
+            // eventually this will become a navigation
+            val intent = Intent(context, AccountActivity::class.java)
+            intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+            context.startActivity(intent)
+        },
+        onManagePermissions = {
+            // eventually this will become a navigation
+            context.startActivity(Intent(context, PermissionsActivity::class.java))
+        }
+    )
+}
 
 @Composable
 fun AccountsScreen(
