@@ -126,7 +126,7 @@ fun AboutScreen(model: AboutModel = hiltViewModel()) {
                 verticalAlignment = Alignment.Top
             ) { index ->
                 when (index) {
-                    0 -> AboutApp(licenseInfoProvider = model.licenseInfoProvider.value)
+                    0 -> AboutApp(licenseInfoProvider = model.licenseInfoProvider)
                     1 -> {
                         val translations = model.translations.observeAsState(emptyList())
                         TranslatorsGallery(translations.value)

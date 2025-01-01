@@ -20,7 +20,7 @@ import javax.inject.Inject
 class AboutModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val logger: Logger,
-    val licenseInfoProvider: Lazy<AppLicenseInfoProvider?>
+    val licenseInfoProvider: AppLicenseInfoProvider?
 ): ViewModel() {
 
     data class Translation(

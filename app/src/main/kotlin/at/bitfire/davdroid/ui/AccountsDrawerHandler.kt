@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.composition.LocalNavController
+import at.bitfire.davdroid.ui.navigation.Routes
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import kotlinx.coroutines.launch
 import java.net.URI
@@ -104,6 +106,7 @@ abstract class AccountsDrawerHandler {
     open fun ImportantEntries(
         snackbarHostState: SnackbarHostState
     ) {
+        val navController = LocalNavController.current
         val context = LocalContext.current
         val isBeta =
             LocalInspectionMode.current ||
@@ -116,7 +119,7 @@ abstract class AccountsDrawerHandler {
             icon = Icons.Default.Info,
             title = stringResource(R.string.navigation_drawer_about),
             onClick = {
-                context.startActivity(Intent(context, AboutActivity::class.java))
+                navController.navigate(Routes.About)
             }
         )
 
