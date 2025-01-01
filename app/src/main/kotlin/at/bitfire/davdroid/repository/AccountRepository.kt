@@ -8,13 +8,13 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
-import android.provider.ContactsContract
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
@@ -24,7 +24,6 @@ import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -48,6 +47,7 @@ class AccountRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val collectionRepository: DavCollectionRepository,
     private val homeSetRepository: DavHomeSetRepository,
+    private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
@@ -217,8 +217,8 @@ class AccountRepository @Inject constructor(
             // update address books
             localAddressBookStore.get().updateAccount(oldAccount, newAccount)
 
-            // calendar provider doesn't allow changing account_name of Events
-            // (all events will have to be downloaded again at next sync)
+            // update calendar events
+            localCalendarStore.get().updateAccount(oldAccount, newAccount)
 
             // update account_name of local tasks
             try {
