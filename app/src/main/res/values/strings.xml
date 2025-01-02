@@ -7,6 +7,7 @@
     <string name="account_type" translatable="false">bitfire.at.davdroid</string>
     <string name="account_type_address_book" translatable="false">at.bitfire.davdroid.address_book</string>
     <string name="account_title_address_book">DAVx⁵ Address book</string>
+    <string name="account_prefs_use_app">Don\'t change the account here! Directly use the app to manage accounts instead.</string>
     <string name="address_books_authority" translatable="false">at.bitfire.davdroid.addressbooks</string>
     <string name="address_books_authority_title">Address books</string>
     <string name="dialog_delete">Delete</string>
@@ -14,7 +15,6 @@
     <string name="dialog_deny">Cancel</string>
     <string name="field_required">This field is required</string>
     <string name="help">Help</string>
-    <string name="manage_accounts">Manage accounts</string>
     <string name="navigate_up">Navigate up</string>
     <string name="optional_label">* optional</string>
     <string name="options_menu">Options menu</string>
