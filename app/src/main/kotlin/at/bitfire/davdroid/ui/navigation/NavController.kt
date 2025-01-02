@@ -1,4 +1,4 @@
-package at.bitfire.davdroid.ui.composition
+package at.bitfire.davdroid.ui.navigation
 
 import androidx.compose.runtime.compositionLocalOf
 import androidx.navigation.NavController
