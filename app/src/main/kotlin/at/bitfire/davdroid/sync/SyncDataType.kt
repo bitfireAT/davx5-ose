@@ -4,10 +4,8 @@
 
 package at.bitfire.davdroid.sync
 
-import android.content.Context
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import at.bitfire.davdroid.R
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -26,11 +24,10 @@ enum class SyncDataType {
     }
 
 
-    fun possibleAuthorities(context: Context): List<String> =
+    fun possibleAuthorities(): List<String> =
         when (this) {
             CONTACTS -> listOf(
-                ContactsContract.AUTHORITY,
-                context.getString(R.string.address_books_authority)
+                ContactsContract.AUTHORITY
             )
             EVENTS -> listOf(
                 CalendarContract.AUTHORITY
@@ -41,9 +38,8 @@ enum class SyncDataType {
 
     companion object {
 
-        fun fromAuthority(context: Context, authority: String): SyncDataType {
+        fun fromAuthority(authority: String): SyncDataType {
             return when (authority) {
-                context.getString(R.string.address_books_authority),
                 ContactsContract.AUTHORITY ->
                     CONTACTS
                 CalendarContract.AUTHORITY ->

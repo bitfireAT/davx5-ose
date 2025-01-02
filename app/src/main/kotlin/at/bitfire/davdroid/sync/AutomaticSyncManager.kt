@@ -5,14 +5,12 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.content.Context
 import android.provider.CalendarContract
-import at.bitfire.davdroid.R
+import android.provider.ContactsContract
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -29,7 +27,6 @@ import javax.inject.Provider
  */
 class AutomaticSyncManager @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext private val context: Context,
     private val serviceRepository: DavServiceRepository,
     private val syncFramework: SyncFrameworkIntegration,
     private val tasksAppManager: Provider<TasksAppManager>,
@@ -42,7 +39,7 @@ class AutomaticSyncManager @Inject constructor(
     private fun disableAutomaticSync(account: Account, dataType: SyncDataType) {
         workerManager.disablePeriodic(account, dataType)
 
-        for (authority in dataType.possibleAuthorities(context))
+        for (authority in dataType.possibleAuthorities())
             syncFramework.disableSyncAbility(account, authority)
     }
 
@@ -69,9 +66,9 @@ class AutomaticSyncManager @Inject constructor(
             workerManager.disablePeriodic(account, dataType)
 
         // also enable/disable content-triggered syncs
-        val possibleAuthorities = dataType.possibleAuthorities(context)
+        val possibleAuthorities = dataType.possibleAuthorities()
         val authority: String? = when (dataType) {
-            SyncDataType.CONTACTS -> context.getString(R.string.address_books_authority)
+            SyncDataType.CONTACTS -> ContactsContract.AUTHORITY
             SyncDataType.EVENTS -> CalendarContract.AUTHORITY
             SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
         }
