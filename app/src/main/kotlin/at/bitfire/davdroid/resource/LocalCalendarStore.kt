@@ -23,7 +23,6 @@ import at.bitfire.ical4android.AndroidCalendar.Companion.calendarBaseValues
 import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
-import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -102,10 +101,10 @@ class LocalCalendarStore @Inject constructor(
     }
 
     override fun updateAccount(oldAccount: Account, newAccount: Account) {
-        val values = contentValuesOf(Tasks.ACCOUNT_NAME to newAccount.name)
+        val values = contentValuesOf(Calendars.ACCOUNT_NAME to newAccount.name)
         val uri = Calendars.CONTENT_URI.asSyncAdapter(oldAccount)
         context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use {
-            it.update(uri, values, "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
+            it.update(uri, values, "${Calendars.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
         }
     }
 
