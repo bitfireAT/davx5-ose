@@ -24,14 +24,14 @@ data class HomeSet(
     @PrimaryKey(autoGenerate = true)
     var id: Long,
 
-    var serviceId: Long,
+    val serviceId: Long,
 
     /**
      * Whether this homeset belongs to the [Service.principal] given by [serviceId].
      */
-    var personal: Boolean,
+    val personal: Boolean,
 
-    var url: HttpUrl,
+    val url: HttpUrl,
 
     var privBind: Boolean = true,
 

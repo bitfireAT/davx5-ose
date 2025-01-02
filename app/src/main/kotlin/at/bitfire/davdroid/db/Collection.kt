@@ -45,7 +45,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 )
 data class Collection(
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
+    val id: Long = 0,
 
     /**
      * Service, which this collection belongs to. Services are unique, so a [Collection] is uniquely
@@ -67,22 +67,22 @@ data class Collection(
     /**
      * Type of service. CalDAV or CardDAV
      */
-    var type: String,
+    val type: String,
 
     /**
      * Address where this collection lives - with trailing slash
      */
-    var url: HttpUrl,
+    val url: HttpUrl,
 
     /**
      * Whether we have the permission to change contents of the collection on the server.
      * Even if this flag is set, there may still be other reasons why a collection is effectively read-only.
      */
-    var privWriteContent: Boolean = true,
+    val privWriteContent: Boolean = true,
     /**
      * Whether we have the permission to delete the collection on the server
      */
-    var privUnbind: Boolean = true,
+    val privUnbind: Boolean = true,
     /**
      * Whether the user has manually set the "force read-only" flag.
      * Even if this flag is not set, there may still be other reasons why a collection is effectively read-only.
@@ -92,48 +92,48 @@ data class Collection(
     /**
      * Human-readable name of the collection
      */
-    var displayName: String? = null,
+    val displayName: String? = null,
     /**
      * Human-readable description of the collection
      */
-    var description: String? = null,
+    val description: String? = null,
 
     // CalDAV only
     var color: Int? = null,
 
     /** default timezone (only timezone ID, like `Europe/Vienna`) */
-    var timezoneId: String? = null,
+    val timezoneId: String? = null,
 
     /** whether the collection supports VEVENT; in case of calendars: null means true */
-    var supportsVEVENT: Boolean? = null,
+    val supportsVEVENT: Boolean? = null,
 
     /** whether the collection supports VTODO; in case of calendars: null means true */
-    var supportsVTODO: Boolean? = null,
+    val supportsVTODO: Boolean? = null,
 
     /** whether the collection supports VJOURNAL; in case of calendars: null means true */
-    var supportsVJOURNAL: Boolean? = null,
+    val supportsVJOURNAL: Boolean? = null,
 
     /** Webcal subscription source URL */
-    var source: HttpUrl? = null,
+    val source: HttpUrl? = null,
 
     /** whether this collection has been selected for synchronization */
     var sync: Boolean = false,
 
     /** WebDAV-Push topic */
-    var pushTopic: String? = null,
+    val pushTopic: String? = null,
 
     /** WebDAV-Push: whether this collection supports the Web Push Transport */
     @ColumnInfo(defaultValue = "0")
-    var supportsWebPush: Boolean = false,
+    val supportsWebPush: Boolean = false,
 
     /** WebDAV-Push subscription URL */
-    var pushSubscription: String? = null,
+    val pushSubscription: String? = null,
 
     /** when the [pushSubscription] expires (timestamp, used to determine whether we need to re-subscribe) */
-    var pushSubscriptionExpires: Long? = null,
+    val pushSubscriptionExpires: Long? = null,
 
     /** when the [pushSubscription] was created/updated (timestamp) */
-    var pushSubscriptionCreated: Long? = null
+    val pushSubscriptionCreated: Long? = null
 
 ) {
 

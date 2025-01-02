@@ -21,12 +21,12 @@ import okhttp3.HttpUrl
         ])
 data class Service(
     @PrimaryKey(autoGenerate = true)
-    var id: Long,
+    val id: Long,
 
-    var accountName: String,
-    var type: String,
+    val accountName: String,
+    val type: String,
 
-    var principal: HttpUrl?
+    val principal: HttpUrl?
 ) {
 
     companion object {
