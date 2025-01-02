@@ -8,12 +8,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    
-    <PreferenceScreen android:title="@string/manage_accounts">
-        <intent
-            android:targetPackage="at.bitfire.davdroid"
-            android:targetClass="at.bitfire.davdroid.ui.MainActivity"
-            android:action="ACTION_VIEW" />
-    </PreferenceScreen>
+
+    <PreferenceCategory android:title="@string/account_prefs_use_app"/>
 
 </PreferenceScreen>
