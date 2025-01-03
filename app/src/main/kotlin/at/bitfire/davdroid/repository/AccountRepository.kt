@@ -217,16 +217,23 @@ class AccountRepository @Inject constructor(
             try {
                 // update address books
                 localAddressBookStore.get().updateAccount(oldAccount, newAccount)
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Couldn't change address books to renamed account", e)
+            }
 
+            try {
                 // update calendar events
                 localCalendarStore.get().updateAccount(oldAccount, newAccount)
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Couldn't change calendars to renamed account", e)
+            }
 
+            try {
                 // update account_name of local tasks
                 val dataStore = tasksAppManager.get().getDataStore()
                 dataStore?.updateAccount(oldAccount, newAccount)
             } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't propagate new account name to provider", e)
-                // Couldn't update one of the providers, but this is not a fatal error (will be fixed at next sync)
+                logger.log(Level.WARNING, "Couldn't change task lists to renamed account", e)
             }
 
             // update automatic sync
