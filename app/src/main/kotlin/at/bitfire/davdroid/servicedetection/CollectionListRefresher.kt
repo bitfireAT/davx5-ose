@@ -56,6 +56,14 @@ class CollectionListRefresher @AssistedInject constructor(
     }
 
 
+    /**
+     * The HttpUrls which have been fetched already during a single refresh.
+     */
+    private val alreadyFetched = mutableSetOf<HttpUrl>()
+
+    /**
+     * The HttpUrls which have been queried already during a single refresh.
+     */
     private val alreadyQueried = mutableSetOf<HttpUrl>()
 
     /**
@@ -110,13 +118,16 @@ class CollectionListRefresher @AssistedInject constructor(
                     for (homeSetHref in homeSets.hrefs)
                         principal.location.resolve(homeSetHref)?.let { homesetUrl ->
                             val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
-                            // Homeset is considered personal if this is the outer recursion call,
-                            // This is because we assume the first call to query the current-user-principal
-                            // Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by
-                            // other principals and still be considered "personal" (belonging to the current-user-principal).
-                            homeSetRepository.insertOrUpdateByUrl(
-                                HomeSet(0, service.id, personal, resolvedHomeSetUrl)
-                            )
+                            if (!alreadyFetched.contains(resolvedHomeSetUrl)) {
+                                homeSetRepository.insertOrUpdateByUrl(
+                                    // Homeset is considered personal if this is the outer recursion call,
+                                    // This is because we assume the first call to query the current-user-principal
+                                    // Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by
+                                    // other principals and still be considered "personal" (belonging to the current-user-principal).
+                                    HomeSet(0, service.id, personal, resolvedHomeSetUrl)
+                                )
+                                alreadyFetched += resolvedHomeSetUrl
+                            }
                         }
                 }
 
