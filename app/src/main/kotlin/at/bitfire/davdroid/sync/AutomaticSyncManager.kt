@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.provider.CalendarContract
-import android.provider.ContactsContract
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
@@ -68,12 +67,15 @@ class AutomaticSyncManager @Inject constructor(
         // also enable/disable content-triggered syncs
         val possibleAuthorities = dataType.possibleAuthorities()
         val authority: String? = when (dataType) {
-            SyncDataType.CONTACTS -> ContactsContract.AUTHORITY
+            // Content triggered sync of contacts is handled per address book account in
+            // [LocalAddressBook.updateSyncFrameworkSettings()]
+            SyncDataType.CONTACTS -> null
             SyncDataType.EVENTS -> CalendarContract.AUTHORITY
             SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
         }
         if (authority != null && syncInterval != null) {
-            // enable authority, but completely disable all other possible authorities (for instance, tasks apps which are not the current task app)
+            // enable given authority, but completely disable all other possible authorities
+            // (for instance, tasks apps which are not the current task app)
             syncFramework.enableSyncOnContentChange(account, authority)
             for (disableAuthority in possibleAuthorities - authority)
                 syncFramework.disableSyncAbility(account, disableAuthority)
