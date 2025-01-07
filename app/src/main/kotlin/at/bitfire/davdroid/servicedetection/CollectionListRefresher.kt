@@ -120,10 +120,11 @@ class CollectionListRefresher @AssistedInject constructor(
                             val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
                             if (!alreadyFetched.contains(resolvedHomeSetUrl)) {
                                 homeSetRepository.insertOrUpdateByUrl(
-                                    // Homeset is considered personal if this is the outer recursion call,
+                                    // HomeSet is considered personal if this is the outer recursion call,
                                     // This is because we assume the first call to query the current-user-principal
                                     // Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by
-                                    // other principals and still be considered "personal" (belonging to the current-user-principal).
+                                    // other principals while still being considered "personal" (belonging to the current-user-principal)
+                                    // and an owned home set need not always be personal either.
                                     HomeSet(0, service.id, personal, resolvedHomeSetUrl)
                                 )
                                 alreadyFetched += resolvedHomeSetUrl
