@@ -16,12 +16,13 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBookStore
-import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -58,9 +59,11 @@ class AccountRepository @Inject constructor(
     db: AppDatabase,
     private val homeSetRepository: Lazy<DavHomeSetRepository>,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
+    private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val logger: Logger,
     private val serviceRepository: Lazy<DavServiceRepository>,
-    private val syncWorkerManager: SyncWorkerManager
+    private val syncWorkerManager: SyncWorkerManager,
+    private val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
     private val accountType = context.getString(R.string.account_type)
@@ -267,18 +270,26 @@ class AccountRepository @Inject constructor(
             // update account in DB (propagates account name to services over foreign key)
             dao.rename(oldName, newName)
 
-            // update address books
-            localAddressBookStore.get().updateAccount(oldAccount, newAccount)
-
-            // calendar provider doesn't allow changing account_name of Events
-            // (all events will have to be downloaded again at next sync)
-
-            // update account_name of local tasks
             try {
-                LocalTaskList.onRenameAccount(context, oldAccount.name, newName)
+                // update address books
+                localAddressBookStore.get().updateAccount(oldAccount, newAccount)
             } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't propagate new account name to tasks provider", e)
-                // Couldn't update task lists, but this is not a fatal error (will be fixed at next sync)
+                logger.log(Level.WARNING, "Couldn't change address books to renamed account", e)
+            }
+
+            try {
+                // update calendar events
+                localCalendarStore.get().updateAccount(oldAccount, newAccount)
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Couldn't change calendars to renamed account", e)
+            }
+
+            try {
+                // update account_name of local tasks
+                val dataStore = tasksAppManager.get().getDataStore()
+                dataStore?.updateAccount(oldAccount, newAccount)
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Couldn't change task lists to renamed account", e)
             }
 
             // update automatic sync

@@ -1,6 +1,7 @@
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
     android:accountType="@string/account_type"
     android:contentAuthority="org.tasks.opentasks"
+    android:userVisible="false"
     android:allowParallelSyncs="true"
     android:supportsUploading="true"
     android:isAlwaysSyncable="false" />

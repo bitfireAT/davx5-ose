@@ -51,4 +51,12 @@ interface LocalDataStore<T: LocalCollection<*>> {
      */
     fun delete(localCollection: T)
 
+    /**
+     * Changes the account assigned to the containing data to another one.
+     *
+     * @param oldAccount The old account.
+     * @param newAccount The new account.
+     */
+    fun updateAccount(oldAccount: Account, newAccount: Account)
+
 }

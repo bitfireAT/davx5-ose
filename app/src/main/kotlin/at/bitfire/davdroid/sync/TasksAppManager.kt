@@ -13,6 +13,9 @@ import android.net.Uri
 import androidx.core.app.NotificationCompat
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.AccountRepository
+import at.bitfire.davdroid.resource.LocalDataStore
+import at.bitfire.davdroid.resource.LocalJtxCollectionStore
+import at.bitfire.davdroid.resource.LocalTaskListStore
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationRegistry
@@ -35,7 +38,9 @@ class TasksAppManager @Inject constructor(
     private val automaticSyncManager: AutomaticSyncManager,
     private val logger: Logger,
     private val notificationRegistry: Lazy<NotificationRegistry>,
-    private val settingsManager: SettingsManager
+    private val settingsManager: SettingsManager,
+    private val localTaskListStoreFactory: LocalTaskListStore.Factory,
+    private val localJtxCollectionStore: Lazy<LocalJtxCollectionStore>,
 ) {
 
     /**
@@ -123,6 +128,14 @@ class TasksAppManager @Inject constructor(
                 notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, flags))
 
             notify.build()
+        }
+    }
+
+    fun getDataStore(): LocalDataStore<*>? {
+        val provider = currentProvider() ?: return null
+        return when (provider) {
+            ProviderName.TasksOrg, ProviderName.OpenTasks -> localTaskListStoreFactory.create(provider)
+            ProviderName.JtxBoard -> localJtxCollectionStore.get()
         }
     }
 
