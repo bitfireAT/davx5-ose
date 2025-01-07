@@ -57,9 +57,10 @@ class CollectionListRefresher @AssistedInject constructor(
 
 
     /**
-     * The HttpUrls which have been fetched already during a single refresh.
+     * The HttpUrls which have been saved to database already during a single refresh and will be
+     * queried later.
      */
-    private val alreadyFetched = mutableSetOf<HttpUrl>()
+    private val alreadySaved = mutableSetOf<HttpUrl>()
 
     /**
      * The HttpUrls which have been queried already during a single refresh.
@@ -118,7 +119,7 @@ class CollectionListRefresher @AssistedInject constructor(
                     for (homeSetHref in homeSets.hrefs)
                         principal.location.resolve(homeSetHref)?.let { homesetUrl ->
                             val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
-                            if (!alreadyFetched.contains(resolvedHomeSetUrl)) {
+                            if (!alreadySaved.contains(resolvedHomeSetUrl)) {
                                 homeSetRepository.insertOrUpdateByUrl(
                                     // HomeSet is considered personal if this is the outer recursion call,
                                     // This is because we assume the first call to query the current-user-principal
@@ -127,7 +128,7 @@ class CollectionListRefresher @AssistedInject constructor(
                                     // and an owned home set need not always be personal either.
                                     HomeSet(0, service.id, personal, resolvedHomeSetUrl)
                                 )
-                                alreadyFetched += resolvedHomeSetUrl
+                                alreadySaved += resolvedHomeSetUrl
                             }
                         }
                 }
