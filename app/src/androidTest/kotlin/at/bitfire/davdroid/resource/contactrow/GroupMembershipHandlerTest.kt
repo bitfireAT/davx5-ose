@@ -58,9 +58,6 @@ class GroupMembershipHandlerTest {
 
     }
 
-    @Inject
-    lateinit var addressbookFactory: LocalTestAddressBook.Factory
-
     @Inject @ApplicationContext
     lateinit var context: Context
 
@@ -77,32 +74,39 @@ class GroupMembershipHandlerTest {
 
     @Test
     fun testMembership_GroupsAsCategories() {
-        val addressBookGroupsAsCategories = addressbookFactory.create(account, provider, GroupMethod.CATEGORIES)
-        val addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
+        val addressBookGroupsAsCategories = LocalTestAddressBook.create(context, account, provider, GroupMethod.CATEGORIES)
+        try {
+            val addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
 
-        val contact = Contact()
-        val localContact = LocalContact(addressBookGroupsAsCategories, contact, null, null, 0)
-        GroupMembershipHandler(localContact).handle(ContentValues().apply {
-            put(CachedGroupMembership.GROUP_ID, addressBookGroupsAsCategoriesGroup)
-            put(CachedGroupMembership.RAW_CONTACT_ID, -1)
-        }, contact)
-        assertArrayEquals(arrayOf(addressBookGroupsAsCategoriesGroup), localContact.groupMemberships.toArray())
-        assertArrayEquals(arrayOf("TEST GROUP"), contact.categories.toArray())
+            val contact = Contact()
+            val localContact = LocalContact(addressBookGroupsAsCategories, contact, null, null, 0)
+            GroupMembershipHandler(localContact).handle(ContentValues().apply {
+                put(CachedGroupMembership.GROUP_ID, addressBookGroupsAsCategoriesGroup)
+                put(CachedGroupMembership.RAW_CONTACT_ID, -1)
+            }, contact)
+            assertArrayEquals(arrayOf(addressBookGroupsAsCategoriesGroup), localContact.groupMemberships.toArray())
+            assertArrayEquals(arrayOf("TEST GROUP"), contact.categories.toArray())
+        } finally {
+            addressBookGroupsAsCategories.remove()
+        }
     }
 
 
     @Test
     fun testMembership_GroupsAsVCards() {
-        val addressBookGroupsAsVCards = addressbookFactory.create(account, provider, GroupMethod.GROUP_VCARDS)
-
-        val contact = Contact()
-        val localContact = LocalContact(addressBookGroupsAsVCards, contact, null, null, 0)
-        GroupMembershipHandler(localContact).handle(ContentValues().apply {
-            put(CachedGroupMembership.GROUP_ID, 12345)    // because the group name is not queried and put into CATEGORIES, the group doesn't have to really exist
-            put(CachedGroupMembership.RAW_CONTACT_ID, -1)
-        }, contact)
-        assertArrayEquals(arrayOf(12345L), localContact.groupMemberships.toArray())
-        assertTrue(contact.categories.isEmpty())
+        val addressBookGroupsAsVCards = LocalTestAddressBook.create(context, account, provider, GroupMethod.GROUP_VCARDS)
+        try {
+            val contact = Contact()
+            val localContact = LocalContact(addressBookGroupsAsVCards, contact, null, null, 0)
+            GroupMembershipHandler(localContact).handle(ContentValues().apply {
+                put(CachedGroupMembership.GROUP_ID, 12345)    // because the group name is not queried and put into CATEGORIES, the group doesn't have to really exist
+                put(CachedGroupMembership.RAW_CONTACT_ID, -1)
+            }, contact)
+            assertArrayEquals(arrayOf(12345L), localContact.groupMemberships.toArray())
+            assertTrue(contact.categories.isEmpty())
+        } finally {
+            addressBookGroupsAsVCards.remove()
+        }
     }
 
 }

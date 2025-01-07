@@ -21,6 +21,7 @@ import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -37,38 +38,11 @@ import javax.inject.Inject
 @HiltAndroidTest
 class LocalGroupTest {
 
-    companion object {
-
-        @JvmField
-        @ClassRule
-        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
-
-        private lateinit var provider: ContentProviderClient
-
-        @BeforeClass
-        @JvmStatic
-        fun connect() {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
-            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-            assertNotNull(provider)
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun disconnect() {
-            provider.close()
-        }
-    }
+    @Inject @ApplicationContext
+    lateinit var context: Context
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    @ApplicationContext
-    lateinit var context: Context
-
-    @Inject
-    lateinit var addressbookFactory: LocalTestAddressBook.Factory
 
     val account = Account("Test Account", "Test Account Type")
     private lateinit var addressBookGroupsAsCategories: LocalTestAddressBook
@@ -78,12 +52,17 @@ class LocalGroupTest {
     fun setup() {
         hiltRule.inject()
 
-        addressBookGroupsAsCategories = addressbookFactory.create(account, provider, GroupMethod.CATEGORIES)
-        addressBookGroupsAsVCards = addressbookFactory.create(account, provider, GroupMethod.GROUP_VCARDS)
+        addressBookGroupsAsCategories = LocalTestAddressBook.create(context, account, provider, GroupMethod.CATEGORIES)
+        addressBookGroupsAsVCards = LocalTestAddressBook.create(context, account, provider, GroupMethod.GROUP_VCARDS)
 
         // clear contacts
         addressBookGroupsAsCategories.clear()
         addressBookGroupsAsVCards.clear()
+    }
+
+    @After
+    fun tearDown() {
+
     }
 
 
@@ -278,5 +257,29 @@ class LocalGroupTest {
         ).apply {
             add()
         }
+
+
+    companion object {
+
+        @JvmField
+        @ClassRule
+        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
+
+        private lateinit var provider: ContentProviderClient
+
+        @BeforeClass
+        @JvmStatic
+        fun connect() {
+            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            assertNotNull(provider)
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun disconnect() {
+            provider.close()
+        }
+    }
 
 }

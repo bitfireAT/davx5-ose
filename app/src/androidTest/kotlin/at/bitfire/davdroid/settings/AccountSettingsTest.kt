@@ -7,7 +7,7 @@ package at.bitfire.davdroid.settings
 import android.accounts.AccountManager
 import android.content.Context
 import at.bitfire.davdroid.TestUtils
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -39,7 +39,7 @@ class AccountSettingsTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun testUpdate_MissingMigrations() {
-        TestAccountAuthenticator.provide(version = 1) { account ->
+        TestAccount.provide(version = 1) { account ->
             // will run AccountSettings.update
             accountSettingsFactory.create(account, abortOnMissingMigration = true)
         }
@@ -47,7 +47,7 @@ class AccountSettingsTest {
 
     @Test
     fun testUpdate_RunAllMigrations() {
-        TestAccountAuthenticator.provide(version = 6) { account ->
+        TestAccount.provide(version = 6) { account ->
             // will run AccountSettings.update
             accountSettingsFactory.create(account, abortOnMissingMigration = true)
 

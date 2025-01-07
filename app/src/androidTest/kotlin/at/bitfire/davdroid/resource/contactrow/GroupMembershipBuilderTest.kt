@@ -31,6 +31,47 @@ import javax.inject.Inject
 @HiltAndroidTest
 class GroupMembershipBuilderTest {
 
+    @Inject @ApplicationContext
+    lateinit var context: Context
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    val account = Account("Test Account", "Test Account Type")
+
+
+    @Before
+    fun inject() {
+        hiltRule.inject()
+    }
+
+
+    @Test
+    fun testCategories_GroupsAsCategories() {
+        val contact = Contact().apply {
+            categories += "TEST GROUP"
+        }
+        val addressBookGroupsAsCategories = LocalTestAddressBook.create(context, account, provider, GroupMethod.CATEGORIES)
+        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories, false).build().also { result ->
+            assertEquals(1, result.size)
+            assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
+            assertEquals(addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP"), result[0].values[GroupMembership.GROUP_ROW_ID])
+        }
+    }
+
+    @Test
+    fun testCategories_GroupsAsVCards() {
+        val contact = Contact().apply {
+            categories += "TEST GROUP"
+        }
+        val addressBookGroupsAsVCards = LocalTestAddressBook.create(context, account, provider, GroupMethod.GROUP_VCARDS)
+        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards, false).build().also { result ->
+            // group membership is constructed during post-processing
+            assertEquals(0, result.size)
+        }
+    }
+
+
     companion object {
 
         @JvmField
@@ -52,49 +93,6 @@ class GroupMembershipBuilderTest {
             provider.close()
         }
 
-    }
-
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    lateinit var addressbookFactory: LocalTestAddressBook.Factory
-
-    @Inject
-    @ApplicationContext
-    lateinit var context: Context
-
-    val account = Account("Test Account", "Test Account Type")
-
-    @Before
-    fun inject() {
-        hiltRule.inject()
-    }
-
-
-    @Test
-    fun testCategories_GroupsAsCategories() {
-        val contact = Contact().apply {
-            categories += "TEST GROUP"
-        }
-        val addressBookGroupsAsCategories = addressbookFactory.create(account, provider, GroupMethod.CATEGORIES)
-        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories, false).build().also { result ->
-            assertEquals(1, result.size)
-            assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
-            assertEquals(addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP"), result[0].values[GroupMembership.GROUP_ROW_ID])
-        }
-    }
-
-    @Test
-    fun testCategories_GroupsAsVCards() {
-        val contact = Contact().apply {
-            categories += "TEST GROUP"
-        }
-        val addressBookGroupsAsVCards = addressbookFactory.create(account, provider, GroupMethod.GROUP_VCARDS)
-        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards, false).build().also { result ->
-            // group membership is constructed during post-processing
-            assertEquals(0, result.size)
-        }
     }
 
 }

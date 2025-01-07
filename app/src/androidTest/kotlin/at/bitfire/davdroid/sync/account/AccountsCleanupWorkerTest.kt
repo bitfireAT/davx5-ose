@@ -139,7 +139,7 @@ class AccountsCleanupWorkerTest {
 
     @Test
     fun testCleanUpAddressBooks_keepsAddressBookWithAccount() {
-        TestAccountAuthenticator.provide { account ->
+        TestAccount.provide { account ->
             // Create address book account _with_ corresponding account and verify
             val userData = Bundle(2).apply {
                 putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
