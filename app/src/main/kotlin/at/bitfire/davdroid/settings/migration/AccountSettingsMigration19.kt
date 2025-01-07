@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.content.Context
 import android.provider.CalendarContract
 import androidx.work.WorkManager
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.ical4android.TaskProvider
 import dagger.Binds
@@ -35,7 +34,7 @@ class AccountSettingsMigration19 @Inject constructor(
         // cancel old workers
         val workManager = WorkManager.getInstance(context)
         val authorities = listOf(
-            context.getString(R.string.address_books_authority),
+            "at.bitfire.davdroid.addressbooks",
             CalendarContract.AUTHORITY,
             *TaskProvider.TASK_PROVIDERS.map { it.authority }.toTypedArray()
         )
