@@ -62,7 +62,8 @@ class LocalGroupTest {
 
     @After
     fun tearDown() {
-
+        addressBookGroupsAsCategories.remove()
+        addressBookGroupsAsVCards.remove()
     }
 
 
@@ -270,9 +271,8 @@ class LocalGroupTest {
         @BeforeClass
         @JvmStatic
         fun connect() {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            val context = InstrumentationRegistry.getInstrumentation().context
             provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-            assertNotNull(provider)
         }
 
         @AfterClass

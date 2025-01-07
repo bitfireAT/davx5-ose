@@ -52,10 +52,14 @@ class GroupMembershipBuilderTest {
             categories += "TEST GROUP"
         }
         val addressBookGroupsAsCategories = LocalTestAddressBook.create(context, account, provider, GroupMethod.CATEGORIES)
-        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories, false).build().also { result ->
-            assertEquals(1, result.size)
-            assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
-            assertEquals(addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP"), result[0].values[GroupMembership.GROUP_ROW_ID])
+        try {
+            GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories, false).build().also { result ->
+                assertEquals(1, result.size)
+                assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
+                assertEquals(addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP"), result[0].values[GroupMembership.GROUP_ROW_ID])
+            }
+        } finally {
+            addressBookGroupsAsCategories.remove()
         }
     }
 
@@ -65,9 +69,13 @@ class GroupMembershipBuilderTest {
             categories += "TEST GROUP"
         }
         val addressBookGroupsAsVCards = LocalTestAddressBook.create(context, account, provider, GroupMethod.GROUP_VCARDS)
-        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards, false).build().also { result ->
-            // group membership is constructed during post-processing
-            assertEquals(0, result.size)
+        try {
+            GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards, false).build().also { result ->
+                // group membership is constructed during post-processing
+                assertEquals(0, result.size)
+            }
+        } finally {
+            addressBookGroupsAsVCards.remove()
         }
     }
 
@@ -83,7 +91,7 @@ class GroupMembershipBuilderTest {
         @BeforeClass
         @JvmStatic
         fun connect() {
-            val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+            val context: Context = InstrumentationRegistry.getInstrumentation().context
             provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
         }
 

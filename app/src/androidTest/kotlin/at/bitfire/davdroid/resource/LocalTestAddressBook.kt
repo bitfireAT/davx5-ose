@@ -119,6 +119,11 @@ class LocalTestAddressBook @AssistedInject constructor(
 
         val counter = AtomicInteger()
 
+        /**
+         * Creates a [at.bitfire.davdroid.resource.LocalTestAddressBook].
+         *
+         * Make sure to delete it with [at.bitfire.davdroid.resource.LocalTestAddressBook.remove] or [removeAll] after use.
+         */
         fun create(context: Context, account: Account, provider: ContentProviderClient, groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS): LocalTestAddressBook {
             // create new address book account
             val addressBookAccount = Account("Test Address Book ${counter.incrementAndGet()}", context.getString(R.string.account_type_address_book))
@@ -129,6 +134,12 @@ class LocalTestAddressBook @AssistedInject constructor(
             val entryPoint = EntryPointAccessors.fromApplication<EntryPoint>(context)
             val factory = entryPoint.localTestAddressBookFactory()
             return factory.create(account, addressBookAccount, provider, groupMethod)
+        }
+
+        fun removeAll(context: Context) {
+            val accountManager = AccountManager.get(context)
+            for (account in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
+                accountManager.removeAccountExplicitly(account)
         }
 
     }

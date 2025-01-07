@@ -34,30 +34,6 @@ import javax.inject.Inject
 @HiltAndroidTest
 class GroupMembershipHandlerTest {
 
-    companion object {
-
-        @JvmField
-        @ClassRule
-        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
-
-        private lateinit var provider: ContentProviderClient
-
-        @BeforeClass
-        @JvmStatic
-        fun connect() {
-            val context: Context = InstrumentationRegistry.getInstrumentation().context
-            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-            Assert.assertNotNull(provider)
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun disconnect() {
-            provider.close()
-        }
-
-    }
-
     @Inject @ApplicationContext
     lateinit var context: Context
 
@@ -107,6 +83,31 @@ class GroupMembershipHandlerTest {
         } finally {
             addressBookGroupsAsVCards.remove()
         }
+    }
+
+
+    companion object {
+
+        @JvmField
+        @ClassRule
+        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
+
+        private lateinit var provider: ContentProviderClient
+
+        @BeforeClass
+        @JvmStatic
+        fun connect() {
+            val context: Context = InstrumentationRegistry.getInstrumentation().context
+            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            Assert.assertNotNull(provider)
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun disconnect() {
+            provider.close()
+        }
+
     }
 
 }

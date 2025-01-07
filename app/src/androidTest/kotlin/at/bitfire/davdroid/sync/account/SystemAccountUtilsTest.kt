@@ -32,11 +32,6 @@ class SystemAccountUtilsTest {
     @Inject
     lateinit var settingsManager: SettingsManager
 
-    val account = Account(
-        "AccountUtilsTest",
-        context.getString(R.string.account_type)
-    )
-
     @Before
     fun setUp() {
         hiltRule.inject()
@@ -49,6 +44,7 @@ class SystemAccountUtilsTest {
         userData.putString("int", "1")
         userData.putString("string", "abc/\"-")
 
+        val account = Account("AccountUtilsTest", context.getString(R.string.account_type))
         val manager = AccountManager.get(context)
         try {
             assertTrue(SystemAccountUtils.createAccount(context, account, userData))
