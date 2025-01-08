@@ -191,13 +191,12 @@ class CollectionListRefresher @AssistedInject constructor(
                     if (!response.isSuccess())
                         return@propfind
 
-                    if (relation == Response.HrefRelation.SELF) {
+                    if (relation == Response.HrefRelation.SELF)
                         // this response is about the home set itself
                         homeSetRepository.insertOrUpdateByUrl(localHomeset.copy(
                             displayName = response[DisplayName::class.java]?.displayName,
                             privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind ?: true
                         ))
-                    }
 
                     // in any case, check whether the response is about a usable collection
                     var collection = Collection.fromDavResponse(response)?: return@propfind
@@ -228,11 +227,10 @@ class CollectionListRefresher @AssistedInject constructor(
             }
 
             // Mark leftover (not rediscovered) collections from queue as homeless (remove association)
-            for ((_, homelessCollection) in localHomesetCollections) {
+            for ((_, homelessCollection) in localHomesetCollections)
                 collectionRepository.insertOrUpdateByUrlAndRememberFlags(
                     homelessCollection.copy(homeSetId = null)
                 )
-            }
 
         }
     }
