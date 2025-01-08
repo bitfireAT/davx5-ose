@@ -1,5 +1,0 @@
-<account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accountType="@string/account_type_test"
-    android:icon="@android:drawable/star_on"
-    android:smallIcon="@android:drawable/star_on"
-    android:label="Test Account" />

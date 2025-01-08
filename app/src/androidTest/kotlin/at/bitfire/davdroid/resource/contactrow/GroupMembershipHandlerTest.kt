@@ -34,6 +34,58 @@ import javax.inject.Inject
 @HiltAndroidTest
 class GroupMembershipHandlerTest {
 
+    @Inject @ApplicationContext
+    lateinit var context: Context
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    val account = Account("Test Account", "Test Account Type")
+
+    @Before
+    fun inject() {
+        hiltRule.inject()
+    }
+
+
+    @Test
+    fun testMembership_GroupsAsCategories() {
+        val addressBookGroupsAsCategories = LocalTestAddressBook.create(context, account, provider, GroupMethod.CATEGORIES)
+        try {
+            val addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
+
+            val contact = Contact()
+            val localContact = LocalContact(addressBookGroupsAsCategories, contact, null, null, 0)
+            GroupMembershipHandler(localContact).handle(ContentValues().apply {
+                put(CachedGroupMembership.GROUP_ID, addressBookGroupsAsCategoriesGroup)
+                put(CachedGroupMembership.RAW_CONTACT_ID, -1)
+            }, contact)
+            assertArrayEquals(arrayOf(addressBookGroupsAsCategoriesGroup), localContact.groupMemberships.toArray())
+            assertArrayEquals(arrayOf("TEST GROUP"), contact.categories.toArray())
+        } finally {
+            addressBookGroupsAsCategories.remove()
+        }
+    }
+
+
+    @Test
+    fun testMembership_GroupsAsVCards() {
+        val addressBookGroupsAsVCards = LocalTestAddressBook.create(context, account, provider, GroupMethod.GROUP_VCARDS)
+        try {
+            val contact = Contact()
+            val localContact = LocalContact(addressBookGroupsAsVCards, contact, null, null, 0)
+            GroupMembershipHandler(localContact).handle(ContentValues().apply {
+                put(CachedGroupMembership.GROUP_ID, 12345)    // because the group name is not queried and put into CATEGORIES, the group doesn't have to really exist
+                put(CachedGroupMembership.RAW_CONTACT_ID, -1)
+            }, contact)
+            assertArrayEquals(arrayOf(12345L), localContact.groupMemberships.toArray())
+            assertTrue(contact.categories.isEmpty())
+        } finally {
+            addressBookGroupsAsVCards.remove()
+        }
+    }
+
+
     companion object {
 
         @JvmField
@@ -56,53 +108,6 @@ class GroupMembershipHandlerTest {
             provider.close()
         }
 
-    }
-
-    @Inject
-    lateinit var addressbookFactory: LocalTestAddressBook.Factory
-
-    @Inject @ApplicationContext
-    lateinit var context: Context
-
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    val account = Account("Test Account", "Test Account Type")
-
-    @Before
-    fun inject() {
-        hiltRule.inject()
-    }
-
-
-    @Test
-    fun testMembership_GroupsAsCategories() {
-        val addressBookGroupsAsCategories = addressbookFactory.create(account, provider, GroupMethod.CATEGORIES)
-        val addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
-
-        val contact = Contact()
-        val localContact = LocalContact(addressBookGroupsAsCategories, contact, null, null, 0)
-        GroupMembershipHandler(localContact).handle(ContentValues().apply {
-            put(CachedGroupMembership.GROUP_ID, addressBookGroupsAsCategoriesGroup)
-            put(CachedGroupMembership.RAW_CONTACT_ID, -1)
-        }, contact)
-        assertArrayEquals(arrayOf(addressBookGroupsAsCategoriesGroup), localContact.groupMemberships.toArray())
-        assertArrayEquals(arrayOf("TEST GROUP"), contact.categories.toArray())
-    }
-
-
-    @Test
-    fun testMembership_GroupsAsVCards() {
-        val addressBookGroupsAsVCards = addressbookFactory.create(account, provider, GroupMethod.GROUP_VCARDS)
-
-        val contact = Contact()
-        val localContact = LocalContact(addressBookGroupsAsVCards, contact, null, null, 0)
-        GroupMembershipHandler(localContact).handle(ContentValues().apply {
-            put(CachedGroupMembership.GROUP_ID, 12345)    // because the group name is not queried and put into CATEGORIES, the group doesn't have to really exist
-            put(CachedGroupMembership.RAW_CONTACT_ID, -1)
-        }, contact)
-        assertArrayEquals(arrayOf(12345L), localContact.groupMemberships.toArray())
-        assertTrue(contact.categories.isEmpty())
     }
 
 }
