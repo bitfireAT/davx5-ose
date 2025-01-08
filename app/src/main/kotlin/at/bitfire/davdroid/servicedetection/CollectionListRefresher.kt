@@ -193,9 +193,10 @@ class CollectionListRefresher @AssistedInject constructor(
 
                     if (relation == Response.HrefRelation.SELF) {
                         // this response is about the homeset itself
-                        localHomeset.displayName = response[DisplayName::class.java]?.displayName
-                        localHomeset.privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind ?: true
-                        homeSetRepository.insertOrUpdateByUrl(localHomeset)
+                        homeSetRepository.insertOrUpdateByUrl(localHomeset.copy(
+                            displayName = response[DisplayName::class.java]?.displayName,
+                            privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind ?: true
+                        ))
                     }
 
                     // in any case, check whether the response is about a usable collection

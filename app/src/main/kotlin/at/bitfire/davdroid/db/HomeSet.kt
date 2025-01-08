@@ -22,7 +22,7 @@ import okhttp3.HttpUrl
 )
 data class HomeSet(
     @PrimaryKey(autoGenerate = true)
-    var id: Long,
+    val id: Long,
 
     val serviceId: Long,
 
@@ -33,9 +33,9 @@ data class HomeSet(
 
     val url: HttpUrl,
 
-    var privBind: Boolean = true,
+    val privBind: Boolean = true,
 
-    var displayName: String? = null
+    val displayName: String? = null
 ) {
 
     fun title() = displayName ?: url.lastSegment
