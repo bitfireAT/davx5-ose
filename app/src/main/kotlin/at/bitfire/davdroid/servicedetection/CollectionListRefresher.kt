@@ -57,31 +57,25 @@ class CollectionListRefresher @AssistedInject constructor(
 
 
     /**
-     * The HttpUrls which have been saved to database already during a single refresh and will be
-     * queried later.
-     */
-    private val alreadySaved = mutableSetOf<HttpUrl>()
-
-    /**
-     * The HttpUrls which have been queried already during a single refresh.
-     */
-    private val alreadyQueried = mutableSetOf<HttpUrl>()
-
-    /**
      * Starting at current-user-principal URL, tries to recursively find and save all user relevant home sets.
-     *
      *
      * @param principalUrl  URL of principal to query (user-provided principal or current-user-principal)
      * @param level         Current recursion level (limited to 0, 1 or 2):
-     *
-     * - 0: We assume found home sets belong to the current-user-principal
-     * - 1 or 2: We assume found home sets don't directly belong to the current-user-principal
+     *   - 0: We assume found home sets belong to the current-user-principal
+     *   - 1 or 2: We assume found home sets don't directly belong to the current-user-principal
+     * @param alreadyQueriedPrincipals The HttpUrls of principals which have been queried already.
+     * @param alreadySavedHomeSets  The HttpUrls of home sets which have been saved to database already.
      *
      * @throws java.io.IOException
      * @throws HttpException
      * @throws at.bitfire.dav4jvm.exception.DavException
      */
-    internal fun discoverHomesets(principalUrl: HttpUrl, level: Int = 0) {
+    internal fun discoverHomesets(
+        principalUrl: HttpUrl,
+        level: Int = 0,
+        alreadyQueriedPrincipals: MutableSet<HttpUrl> = mutableSetOf(),
+        alreadySavedHomeSets: MutableSet<HttpUrl> = mutableSetOf()
+    ) {
         logger.fine("Discovering homesets of $principalUrl")
         val relatedResources = mutableSetOf<HttpUrl>()
 
@@ -112,14 +106,14 @@ class CollectionListRefresher @AssistedInject constructor(
         val personal = level == 0
         try {
             principal.propfind(0, *properties) { davResponse, _ ->
-                alreadyQueried += davResponse.href
+                alreadyQueriedPrincipals += davResponse.href
 
                 // If response holds home sets, save them
                 davResponse[homeSetClass]?.let { homeSets ->
                     for (homeSetHref in homeSets.hrefs)
                         principal.location.resolve(homeSetHref)?.let { homesetUrl ->
                             val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
-                            if (!alreadySaved.contains(resolvedHomeSetUrl)) {
+                            if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
                                 homeSetRepository.insertOrUpdateByUrl(
                                     // HomeSet is considered personal if this is the outer recursion call,
                                     // This is because we assume the first call to query the current-user-principal
@@ -128,7 +122,7 @@ class CollectionListRefresher @AssistedInject constructor(
                                     // and an owned home set need not always be personal either.
                                     HomeSet(0, service.id, personal, resolvedHomeSetUrl)
                                 )
-                                alreadySaved += resolvedHomeSetUrl
+                                alreadySavedHomeSets += resolvedHomeSetUrl
                             }
                         }
                 }
@@ -171,10 +165,10 @@ class CollectionListRefresher @AssistedInject constructor(
         // query related resources
         if (level <= 1)
             for (resource in relatedResources)
-                if (alreadyQueried.contains(resource))
+                if (alreadyQueriedPrincipals.contains(resource))
                     logger.warning("$resource already queried, skipping")
                 else
-                    discoverHomesets(resource, level + 1)
+                    discoverHomesets(resource, level + 1, alreadyQueriedPrincipals, alreadySavedHomeSets)
     }
 
     /**
