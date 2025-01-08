@@ -55,11 +55,11 @@ class LocalTaskListStore @AssistedInject constructor(
     }
 
     private fun create(account: Account, provider: ContentProviderClient, providerName: TaskProvider.ProviderName, info: Collection): Uri {
-        // If the collection doesn't have a color, use a default color.
-        if (info.color != null)
-            info.color = Constants.DAVDROID_GREEN_RGBA
-
-        val values = valuesFromCollectionInfo(info, withColor = true)
+        val values = valuesFromCollectionInfo(
+            // If the collection doesn't have a color, use a default color.
+            info = info.copy(color = info.color ?: Constants.DAVDROID_GREEN_RGBA),
+            withColor = true
+        )
         values.put(TaskLists.OWNER, account.name)
         values.put(TaskLists.SYNC_ENABLED, 1)
         values.put(TaskLists.VISIBLE, 1)

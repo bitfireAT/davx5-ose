@@ -35,11 +35,11 @@ class LocalCalendarStore @Inject constructor(
         val service = serviceRepository.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        // If the collection doesn't have a color, use a default color.
-        if (fromCollection.color != null)
-            fromCollection.color = Constants.DAVDROID_GREEN_RGBA
-
-        val values = valuesFromCollectionInfo(fromCollection, withColor = true)
+        val values = valuesFromCollectionInfo(
+            // If the collection doesn't have a color, use a default color.
+            info = fromCollection.copy(color = fromCollection.color ?: Constants.DAVDROID_GREEN_RGBA),
+            withColor = true
+        )
 
         // ACCOUNT_NAME and ACCOUNT_TYPE are required (see docs)! If it's missing, other apps will crash.
         values.put(Calendars.ACCOUNT_NAME, account.name)

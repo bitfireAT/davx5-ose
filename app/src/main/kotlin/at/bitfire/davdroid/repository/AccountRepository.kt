@@ -251,8 +251,7 @@ class AccountRepository @Inject constructor(
 
         // insert collections
         for (collection in info.collections.values) {
-            collection.serviceId = serviceId
-            collectionRepository.insertOrUpdateByUrl(collection)
+            collectionRepository.insertOrUpdateByUrl(collection.copy(serviceId = serviceId))
         }
 
         return serviceId

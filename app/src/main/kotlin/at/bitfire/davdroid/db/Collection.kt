@@ -51,18 +51,18 @@ data class Collection(
      * Service, which this collection belongs to. Services are unique, so a [Collection] is uniquely
      * identifiable via its [serviceId] and [url].
      */
-    var serviceId: Long = 0,
+    val serviceId: Long = 0,
 
     /**
      * A home set this collection belongs to. Multiple homesets are not supported.
      * If *null* the collection is considered homeless.
      */
-    var homeSetId: Long? = null,
+    val homeSetId: Long? = null,
 
     /**
      * Principal who is owner of this collection.
      */
-    var ownerId: Long? = null,
+    val ownerId: Long? = null,
 
     /**
      * Type of service. CalDAV or CardDAV
@@ -87,7 +87,7 @@ data class Collection(
      * Whether the user has manually set the "force read-only" flag.
      * Even if this flag is not set, there may still be other reasons why a collection is effectively read-only.
      */
-    var forceReadOnly: Boolean = false,
+    val forceReadOnly: Boolean = false,
 
     /**
      * Human-readable name of the collection
@@ -99,7 +99,7 @@ data class Collection(
     val description: String? = null,
 
     // CalDAV only
-    var color: Int? = null,
+    val color: Int? = null,
 
     /** default timezone (only timezone ID, like `Europe/Vienna`) */
     val timezoneId: String? = null,
@@ -117,7 +117,7 @@ data class Collection(
     val source: HttpUrl? = null,
 
     /** whether this collection has been selected for synchronization */
-    var sync: Boolean = false,
+    val sync: Boolean = false,
 
     /** WebDAV-Push topic */
     val pushTopic: String? = null,

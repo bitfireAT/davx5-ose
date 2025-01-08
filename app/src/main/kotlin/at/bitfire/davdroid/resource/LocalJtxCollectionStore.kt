@@ -32,13 +32,14 @@ class LocalJtxCollectionStore @Inject constructor(
     private val serviceDao = db.serviceDao()
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalJtxCollection? {
-        // If the collection doesn't have a color, use a default color.
-        if (fromCollection.color != null)
-            fromCollection.color = Constants.DAVDROID_GREEN_RGBA
-
         val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
-        val values = valuesFromCollection(fromCollection, account = account, withColor = true)
+        val values = valuesFromCollection(
+            // If the collection doesn't have a color, use a default color.
+            info = fromCollection.copy(color = fromCollection.color ?: Constants.DAVDROID_GREEN_RGBA),
+            account = account,
+            withColor = true
+        )
 
         val uri = JtxCollection.create(account, provider, values)
         return LocalJtxCollection(account, provider, ContentUris.parseId(uri))

@@ -224,13 +224,13 @@ class DavCollectionRepository @Inject constructor(
      */
     fun insertOrUpdateByUrlAndRememberFlags(newCollection: Collection) {
         // remember locally set flags
-        dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())?.let { oldCollection ->
-            newCollection.sync = oldCollection.sync
-            newCollection.forceReadOnly = oldCollection.forceReadOnly
+        val oldCollection = dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())
+        val newCollectionWithOldFlags = oldCollection?.let {
+            newCollection.copy(sync = it.sync, forceReadOnly = it.forceReadOnly)
         }
 
-        // commit to database
-        insertOrUpdateByUrl(newCollection)
+        // commit new collection to database
+        insertOrUpdateByUrl(newCollectionWithOldFlags ?: newCollection)
     }
 
     /**
