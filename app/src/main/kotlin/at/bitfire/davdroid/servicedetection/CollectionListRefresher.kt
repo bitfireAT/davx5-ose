@@ -55,30 +55,16 @@ class CollectionListRefresher @AssistedInject constructor(
         fun create(service: Service, httpClient: OkHttpClient): CollectionListRefresher
     }
 
-
     /**
-     * Starting at current-user-principal URL, tries to recursively find and save all user relevant home sets.
+     * Given the current-user-principal address, tries to find and save all user relevant home sets.
      *
-     * @param principalUrl  URL of principal to query (user-provided principal or current-user-principal)
-     * @param level         Current recursion level (limited to 0, 1 or 2):
-     *   - 0: We assume found home sets belong to the current-user-principal
-     *   - 1 or 2: We assume found home sets don't directly belong to the current-user-principal
-     * @param alreadyQueriedPrincipals The HttpUrls of principals which have been queried already.
-     * @param alreadySavedHomeSets  The HttpUrls of home sets which have been saved to database already.
+     * @param principalUrl See [Principal]
      *
      * @throws java.io.IOException
      * @throws HttpException
      * @throws at.bitfire.dav4jvm.exception.DavException
      */
-    internal fun discoverHomesets(
-        principalUrl: HttpUrl,
-        level: Int = 0,
-        alreadyQueriedPrincipals: MutableSet<HttpUrl> = mutableSetOf(),
-        alreadySavedHomeSets: MutableSet<HttpUrl> = mutableSetOf()
-    ) {
-        logger.fine("Discovering homesets of $principalUrl")
-        val relatedResources = mutableSetOf<HttpUrl>()
-
+    internal fun discoverHomesets(principalUrl: HttpUrl) {
         // Define homeset class and properties to look for
         val homeSetClass: Class<out HrefListProperty>
         val properties: Array<Property.Name>
@@ -100,6 +86,37 @@ class CollectionListRefresher @AssistedInject constructor(
             }
             else -> throw IllegalArgumentException()
         }
+
+        // Discover homesets
+        discoverHomesets(principalUrl, homeSetClass, properties)
+    }
+
+    /**
+     * Starting at given principal URL, tries to recursively find and save all user relevant home sets.
+     *
+     * @param principalUrl  URL of principal to query (user-provided principal or current-user-principal)
+     * @param homeSetClass  CalDAV or CardDAV home set class
+     * @param properties    Properties to be requested about principal and home sets
+     * @param level         Current recursion level (limited to 0, 1 or 2):
+     *   - 0: We assume found home sets belong to the current-user-principal
+     *   - 1 or 2: We assume found home sets don't directly belong to the current-user-principal
+     * @param alreadyQueriedPrincipals The HttpUrls of principals which have been queried already.
+     * @param alreadySavedHomeSets  The HttpUrls of home sets which have been saved to database already.
+     *
+     * @throws java.io.IOException
+     * @throws HttpException
+     * @throws at.bitfire.dav4jvm.exception.DavException
+     */
+    internal fun discoverHomesets(
+        principalUrl: HttpUrl,
+        homeSetClass: Class<out HrefListProperty>,
+        properties: Array<Property.Name>,
+        level: Int = 0,
+        alreadyQueriedPrincipals: MutableSet<HttpUrl> = mutableSetOf(),
+        alreadySavedHomeSets: MutableSet<HttpUrl> = mutableSetOf()
+    ) {
+        logger.fine("Discovering homesets of $principalUrl")
+        val relatedResources = mutableSetOf<HttpUrl>()
 
         // Query the URL
         val principal = DavResource(httpClient, principalUrl)
@@ -168,7 +185,14 @@ class CollectionListRefresher @AssistedInject constructor(
                 if (alreadyQueriedPrincipals.contains(resource))
                     logger.warning("$resource already queried, skipping")
                 else
-                    discoverHomesets(resource, level + 1, alreadyQueriedPrincipals, alreadySavedHomeSets)
+                    discoverHomesets(
+                        principalUrl = resource,
+                        homeSetClass = homeSetClass,
+                        properties = properties,
+                        level = level + 1,
+                        alreadyQueriedPrincipals = alreadyQueriedPrincipals,
+                        alreadySavedHomeSets = alreadySavedHomeSets
+                    )
     }
 
     /**
