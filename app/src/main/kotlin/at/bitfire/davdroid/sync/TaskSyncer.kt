@@ -37,7 +37,7 @@ class TaskSyncer @AssistedInject constructor(
 
     private val providerName = TaskProvider.ProviderName.fromAuthority(authority)
 
-    override val dataStore = localTaskListStoreFactory.create(authority)
+    override val dataStore = localTaskListStoreFactory.create(providerName)
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV

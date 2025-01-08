@@ -5,16 +5,16 @@
 package at.bitfire.davdroid.resource
 
 import android.accounts.Account
-import android.annotation.SuppressLint
 import android.content.ContentProviderClient
 import android.content.ContentValues
-import android.content.Context
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.DmfsTaskListFactory
 import at.bitfire.ical4android.TaskProvider
-import org.dmfs.tasks.contract.TaskContract.*
+import org.dmfs.tasks.contract.TaskContract.TaskListColumns
+import org.dmfs.tasks.contract.TaskContract.TaskLists
+import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -30,23 +30,6 @@ class LocalTaskList private constructor(
         id: Long
 ): DmfsTaskList<LocalTask>(account, provider, providerName, LocalTask.Factory, id), LocalCollection<LocalTask> {
 
-    companion object {
-
-        @SuppressLint("Recycle")
-        @Throws(Exception::class)
-        fun onRenameAccount(context: Context, oldName: String, newName: String) {
-            TaskProvider.acquire(context)?.use { provider ->
-                val values = contentValuesOf(Tasks.ACCOUNT_NAME to newName)
-                provider.client.update(
-                        Tasks.getContentUri(provider.name.authority),
-                        values,
-                        "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldName)
-                )
-            }
-        }
-
-    }
-    
     private val logger = Logger.getGlobal()
 
     private var accessLevel: Int = TaskListColumns.ACCESS_LEVEL_UNDEFINED

@@ -32,6 +32,38 @@ import javax.inject.Inject
 @HiltAndroidTest
 class CachedGroupMembershipHandlerTest {
 
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    val account = Account("Test Account", "Test Account Type")
+
+    @Before
+    fun inject() {
+        hiltRule.inject()
+    }
+
+
+    @Test
+    fun testMembership() {
+        val addressBook = LocalTestAddressBook.create(context, account, provider, GroupMethod.GROUP_VCARDS)
+        try {
+            val contact = Contact()
+            val localContact = LocalContact(addressBook, contact, null, null, 0)
+            CachedGroupMembershipHandler(localContact).handle(ContentValues().apply {
+                put(CachedGroupMembership.GROUP_ID, 123456)
+                put(CachedGroupMembership.RAW_CONTACT_ID, 789)
+            }, contact)
+            assertArrayEquals(arrayOf(123456L), localContact.cachedGroupMemberships.toArray())
+        } finally {
+            addressBook.remove()
+        }
+    }
+
+
     companion object {
 
         @JvmField
@@ -53,38 +85,6 @@ class CachedGroupMembershipHandlerTest {
             provider.close()
         }
 
-    }
-
-
-    @Inject
-    lateinit var addressbookFactory: LocalTestAddressBook.Factory
-
-    @Inject
-    @ApplicationContext
-    lateinit var context: Context
-
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    val account = Account("Test Account", "Test Account Type")
-
-    @Before
-    fun inject() {
-        hiltRule.inject()
-    }
-
-
-    @Test
-    fun testMembership() {
-        val addressBook = addressbookFactory.create(account, provider, GroupMethod.GROUP_VCARDS)
-
-        val contact = Contact()
-        val localContact = LocalContact(addressBook, contact, null, null, 0)
-        CachedGroupMembershipHandler(localContact).handle(ContentValues().apply {
-            put(CachedGroupMembership.GROUP_ID, 123456)
-            put(CachedGroupMembership.RAW_CONTACT_ID, 789)
-        }, contact)
-        assertArrayEquals(arrayOf(123456L), localContact.cachedGroupMemberships.toArray())
     }
 
 }

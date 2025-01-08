@@ -19,7 +19,7 @@ import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -78,14 +78,14 @@ class SyncManagerTest {
         hiltRule.inject()
         TestUtils.setUpWorkManager(context, workerFactory)
 
-        account = TestAccountAuthenticator.create()
+        account = TestAccount.create()
 
         server.start()
     }
 
     @After
     fun tearDown() {
-        TestAccountAuthenticator.remove(account)
+        TestAccount.remove(account)
 
         // clear annoying syncError notifications
         NotificationManagerCompat.from(context).cancelAll()
