@@ -66,9 +66,17 @@ class CollectionListRefresher @AssistedInject constructor(
     }
 
     /**
+     * Principal properties to ask the server for.
+     */
+    private val principalProperties = arrayOf(
+        DisplayName.NAME,
+        ResourceType.NAME
+    )
+
+    /**
      * Home Set class to use depending on the given service type.
      */
-    val homeSetClass: Class<out HrefListProperty> =
+    private val homeSetClass: Class<out HrefListProperty> =
         when (service.type) {
             Service.TYPE_CARDDAV -> AddressbookHomeSet::class.java
             Service.TYPE_CALDAV -> CalendarHomeSet::class.java
@@ -79,7 +87,7 @@ class CollectionListRefresher @AssistedInject constructor(
      * Home Set properties to ask for in a propfind request to the CalDAV/CardDAV server,
      * depending on the given service type.
      */
-    val homeSetPropertyNames: Array<Property.Name> =
+    private val homeSetProperties: Array<Property.Name> =
         when (service.type) {
             Service.TYPE_CARDDAV -> arrayOf(
                 DisplayName.NAME,
@@ -101,7 +109,7 @@ class CollectionListRefresher @AssistedInject constructor(
     /**
      * Collection properties to ask for in a propfind request to the CalDAV/CardDAV server
      */
-    val DAV_COLLECTION_PROPERTIES = arrayOf(
+    private val collectionProperties = arrayOf(
         ResourceType.NAME,
         CurrentUserPrivilegeSet.NAME,
         DisplayName.NAME,
@@ -114,11 +122,6 @@ class CollectionListRefresher @AssistedInject constructor(
         Topic.NAME
     )
 
-    // Principal properties to ask the server
-    val DAV_PRINCIPAL_PROPERTIES = arrayOf(
-        DisplayName.NAME,
-        ResourceType.NAME
-    )
 
     /**
      * Starting at given principal URL, tries to recursively find and save all user relevant home sets.
@@ -148,7 +151,7 @@ class CollectionListRefresher @AssistedInject constructor(
         val principal = DavResource(httpClient, principalUrl)
         val personal = level == 0
         try {
-            principal.propfind(0, *homeSetPropertyNames) { davResponse, _ ->
+            principal.propfind(0, *homeSetProperties) { davResponse, _ ->
                 alreadyQueriedPrincipals += davResponse.href
 
                 // If response holds home sets, save them
@@ -241,7 +244,7 @@ class CollectionListRefresher @AssistedInject constructor(
                 .toMutableMap()
 
             try {
-                DavResource(httpClient, homeSetUrl).propfind(1, *DAV_COLLECTION_PROPERTIES) { response, relation ->
+                DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties) { response, relation ->
                     // Note: This callback may be called multiple times ([MultiResponseCallback])
                     if (!response.isSuccess())
                         return@propfind
@@ -301,7 +304,7 @@ class CollectionListRefresher @AssistedInject constructor(
     internal fun refreshHomelessCollections() {
         val homelessCollections = db.collectionDao().getByServiceAndHomeset(service.id, null).associateBy { it.url }.toMutableMap()
         for((url, localCollection) in homelessCollections) try {
-            DavResource(httpClient, url).propfind(0, *DAV_COLLECTION_PROPERTIES) { response, _ ->
+            DavResource(httpClient, url).propfind(0, *collectionProperties) { response, _ ->
                 if (!response.isSuccess()) {
                     collectionRepository.delete(localCollection)
                     return@propfind
@@ -346,7 +349,7 @@ class CollectionListRefresher @AssistedInject constructor(
             val principalUrl = oldPrincipal.url
             logger.fine("Querying principal $principalUrl")
             try {
-                DavResource(httpClient, principalUrl).propfind(0, *DAV_PRINCIPAL_PROPERTIES) { response, _ ->
+                DavResource(httpClient, principalUrl).propfind(0, *principalProperties) { response, _ ->
                     if (!response.isSuccess())
                         return@propfind
                     Principal.fromDavResponse(service.id, response)?.let { principal ->
