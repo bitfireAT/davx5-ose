@@ -84,12 +84,13 @@ class CollectionListRefresher @AssistedInject constructor(
     /**
      * Starting at given principal URL, tries to recursively find and save all user relevant home sets.
      *
-     * @param principalUrl  URL of principal to query (user-provided principal or current-user-principal)
-     * @param level         Current recursion level (limited to 0, 1 or 2):
+     * @param principalUrl              URL of principal to query (user-provided principal or current-user-principal)
+     * @param level                     Current recursion level (limited to 0, 1 or 2):
      *   - 0: We assume found home sets belong to the current-user-principal
      *   - 1 or 2: We assume found home sets don't directly belong to the current-user-principal
-     * @param alreadyQueriedPrincipals The HttpUrls of principals which have been queried already.
-     * @param alreadySavedHomeSets  The HttpUrls of home sets which have been saved to database already.
+     * @param alreadyQueriedPrincipals  The HttpUrls of principals which have been queried already, to avoid querying principals more than once.
+     * @param alreadySavedHomeSets      The HttpUrls of home sets which have been saved to database already, to avoid saving home sets
+     * more than once, which could overwrite the already set "personal" flag with `false`.
      *
      * @throws java.io.IOException                          on I/O errors
      * @throws HttpException                                on HTTP errors
@@ -346,10 +347,10 @@ class CollectionListRefresher @AssistedInject constructor(
      * [Settings.PRESELECT_COLLECTIONS_EXCLUDED], in which case *false* is returned.
      *
      * @param collection the collection to check
-     * @param homesets list of home-sets (to check whether collection is in a personal home-set)
+     * @param homeSets list of home-sets (to check whether collection is in a personal home-set)
      * @return *true* if the collection should be preselected for synchronization; *false* otherwise
      */
-    internal fun shouldPreselect(collection: Collection, homesets: Iterable<HomeSet>): Boolean {
+    internal fun shouldPreselect(collection: Collection, homeSets: Iterable<HomeSet>): Boolean {
         val shouldPreselect = settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS)
 
         val excluded by lazy {
@@ -367,7 +368,7 @@ class CollectionListRefresher @AssistedInject constructor(
 
             Settings.PRESELECT_COLLECTIONS_PERSONAL ->
                 // preselect if is personal (in a personal home-set), but not excluded
-                homesets
+                homeSets
                     .filter { homeset -> homeset.personal }
                     .map { homeset -> homeset.id }
                     .contains(collection.homeSetId)
