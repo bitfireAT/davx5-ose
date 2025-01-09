@@ -9,10 +9,20 @@ import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.property.caldav.CalendarColor
+import at.bitfire.dav4jvm.property.caldav.CalendarDescription
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
 import at.bitfire.dav4jvm.property.caldav.CalendarProxyReadFor
 import at.bitfire.dav4jvm.property.caldav.CalendarProxyWriteFor
+import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
+import at.bitfire.dav4jvm.property.caldav.CalendarTimezoneId
+import at.bitfire.dav4jvm.property.caldav.Source
+import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
+import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
 import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
+import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
+import at.bitfire.dav4jvm.property.push.PushTransports
+import at.bitfire.dav4jvm.property.push.Topic
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.GroupMembership
@@ -55,6 +65,9 @@ class CollectionListRefresher @AssistedInject constructor(
         fun create(service: Service, httpClient: OkHttpClient): CollectionListRefresher
     }
 
+    /**
+     * Home Set class to use depending on the given service type.
+     */
     val homeSetClass: Class<out HrefListProperty> =
         when (service.type) {
             Service.TYPE_CARDDAV -> AddressbookHomeSet::class.java
@@ -62,6 +75,10 @@ class CollectionListRefresher @AssistedInject constructor(
             else -> throw IllegalArgumentException()
         }
 
+    /**
+     * Home Set properties to ask for in a propfind request to the CalDAV/CardDAV server,
+     * depending on the given service type.
+     */
     val homeSetPropertyNames: Array<Property.Name> =
         when (service.type) {
             Service.TYPE_CARDDAV -> arrayOf(
@@ -80,6 +97,28 @@ class CollectionListRefresher @AssistedInject constructor(
             )
             else -> throw IllegalArgumentException()
         }
+
+    /**
+     * Collection properties to ask for in a propfind request to the CalDAV/CardDAV server
+     */
+    val DAV_COLLECTION_PROPERTIES = arrayOf(
+        ResourceType.NAME,
+        CurrentUserPrivilegeSet.NAME,
+        DisplayName.NAME,
+        Owner.NAME,
+        AddressbookDescription.NAME, SupportedAddressData.NAME,
+        CalendarDescription.NAME, CalendarColor.NAME, CalendarTimezone.NAME, CalendarTimezoneId.NAME, SupportedCalendarComponentSet.NAME,
+        Source.NAME,
+        // WebDAV Push
+        PushTransports.NAME,
+        Topic.NAME
+    )
+
+    // Principal properties to ask the server
+    val DAV_PRINCIPAL_PROPERTIES = arrayOf(
+        DisplayName.NAME,
+        ResourceType.NAME
+    )
 
     /**
      * Starting at given principal URL, tries to recursively find and save all user relevant home sets.
@@ -202,7 +241,7 @@ class CollectionListRefresher @AssistedInject constructor(
                 .toMutableMap()
 
             try {
-                DavResource(httpClient, homeSetUrl).propfind(1, *RefreshCollectionsWorker.DAV_COLLECTION_PROPERTIES) { response, relation ->
+                DavResource(httpClient, homeSetUrl).propfind(1, *DAV_COLLECTION_PROPERTIES) { response, relation ->
                     // Note: This callback may be called multiple times ([MultiResponseCallback])
                     if (!response.isSuccess())
                         return@propfind
@@ -262,7 +301,7 @@ class CollectionListRefresher @AssistedInject constructor(
     internal fun refreshHomelessCollections() {
         val homelessCollections = db.collectionDao().getByServiceAndHomeset(service.id, null).associateBy { it.url }.toMutableMap()
         for((url, localCollection) in homelessCollections) try {
-            DavResource(httpClient, url).propfind(0, *RefreshCollectionsWorker.DAV_COLLECTION_PROPERTIES) { response, _ ->
+            DavResource(httpClient, url).propfind(0, *DAV_COLLECTION_PROPERTIES) { response, _ ->
                 if (!response.isSuccess()) {
                     collectionRepository.delete(localCollection)
                     return@propfind
@@ -307,7 +346,7 @@ class CollectionListRefresher @AssistedInject constructor(
             val principalUrl = oldPrincipal.url
             logger.fine("Querying principal $principalUrl")
             try {
-                DavResource(httpClient, principalUrl).propfind(0, *RefreshCollectionsWorker.DAV_PRINCIPAL_PROPERTIES) { response, _ ->
+                DavResource(httpClient, principalUrl).propfind(0, *DAV_PRINCIPAL_PROPERTIES) { response, _ ->
                     if (!response.isSuccess())
                         return@propfind
                     Principal.fromDavResponse(service.id, response)?.let { principal ->

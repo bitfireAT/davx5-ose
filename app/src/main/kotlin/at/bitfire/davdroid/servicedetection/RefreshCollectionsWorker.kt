@@ -87,26 +87,6 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         const val ARG_SERVICE_ID = "serviceId"
         const val WORKER_TAG = "refreshCollectionsWorker"
 
-        // Collection properties to ask for in a propfind request to the CalDAV/CardDAV server
-        val DAV_COLLECTION_PROPERTIES = arrayOf(
-            ResourceType.NAME,
-            CurrentUserPrivilegeSet.NAME,
-            DisplayName.NAME,
-            Owner.NAME,
-            AddressbookDescription.NAME, SupportedAddressData.NAME,
-            CalendarDescription.NAME, CalendarColor.NAME, CalendarTimezone.NAME, CalendarTimezoneId.NAME, SupportedCalendarComponentSet.NAME,
-            Source.NAME,
-            // WebDAV Push
-            PushTransports.NAME,
-            Topic.NAME
-        )
-
-        // Principal properties to ask the server
-        val DAV_PRINCIPAL_PROPERTIES = arrayOf(
-            DisplayName.NAME,
-            ResourceType.NAME
-        )
-
         /**
          * Uniquely identifies a refresh worker. Useful for stopping work, or querying its state.
          *
