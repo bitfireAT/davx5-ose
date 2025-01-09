@@ -4,10 +4,15 @@
 
 package at.bitfire.davdroid.db
 
+import androidx.annotation.StringDef
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import okhttp3.HttpUrl
+
+@Retention(AnnotationRetention.SOURCE)
+@StringDef(Service.TYPE_CALDAV, Service.TYPE_CARDDAV)
+annotation class ServiceType
 
 /**
  * A service entity.
@@ -24,6 +29,8 @@ data class Service(
     val id: Long,
 
     val accountName: String,
+
+    @ServiceType
     val type: String,
 
     val principal: HttpUrl?

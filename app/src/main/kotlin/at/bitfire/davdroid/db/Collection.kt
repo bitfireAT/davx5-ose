@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.db
 
+import androidx.annotation.StringDef
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -28,6 +29,14 @@ import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.ical4android.util.DateUtils
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+
+@Retention(AnnotationRetention.SOURCE)
+@StringDef(
+    Collection.TYPE_ADDRESSBOOK,
+    Collection.TYPE_CALENDAR,
+    Collection.TYPE_WEBCAL
+)
+annotation class CollectionType
 
 @Entity(tableName = "collection",
     foreignKeys = [
@@ -67,6 +76,7 @@ data class Collection(
     /**
      * Type of service. CalDAV or CardDAV
      */
+    @CollectionType
     val type: String,
 
     /**
