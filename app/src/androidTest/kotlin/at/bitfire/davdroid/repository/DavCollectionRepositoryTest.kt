@@ -6,7 +6,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -51,7 +51,7 @@ class DavCollectionRepositoryTest {
     fun setUp() {
         hiltRule.inject()
 
-        account = TestAccountAuthenticator.create()
+        account = TestAccount.create()
         db.accountDao().insertOrIgnore(DbAccount(name = account.name))
 
         val service = Service(id=0, accountName=account.name, type= Service.TYPE_CALDAV, principal = null)
@@ -59,11 +59,9 @@ class DavCollectionRepositoryTest {
     }
 
     @After
-    fun cleanUp() {
-        db.close()
-
+    fun tearDown() {
         serviceRepository.deleteAll()
-        TestAccountAuthenticator.remove(account)
+        TestAccount.remove(account)
     }
 
 
@@ -101,8 +99,5 @@ class DavCollectionRepositoryTest {
             testObserver.onCollectionsChanged()
         }
     }
-
-
-    // Test helpers and dependencies
 
 }

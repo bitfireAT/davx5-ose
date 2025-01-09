@@ -15,7 +15,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -81,7 +81,7 @@ class CollectionListRefresherTest {
     fun setup() {
         hiltRule.inject()
 
-        account = TestAccountAuthenticator.create()
+        account = TestAccount.create()
         db.accountDao().insertOrIgnore(DbAccount(name = account.name))
 
         // Start mock web server
@@ -96,7 +96,7 @@ class CollectionListRefresherTest {
     @After
     fun teardown() {
         mockServer.shutdown()
-        TestAccountAuthenticator.remove(account)
+        TestAccount.remove(account)
     }
 
 

@@ -12,7 +12,10 @@ import org.junit.Assert.assertTrue
 
 object TestAccount {
 
+    private val context by lazy { InstrumentationRegistry.getInstrumentation().context }
     private val targetContext by lazy { InstrumentationRegistry.getInstrumentation().targetContext }
+
+    val accountManager by lazy { AccountManager.get(context) }
 
     /**
      * Creates a test account, usually in the `Before` setUp of a test.
@@ -23,9 +26,10 @@ object TestAccount {
         val accountType = targetContext.getString(R.string.account_type)
         val account = Account("Test Account", accountType)
 
-        val initialData = AccountSettings.initialUserData(null)
-        initialData.putString(AccountSettings.KEY_SETTINGS_VERSION, version.toString())
-        assertTrue(SystemAccountUtils.createAccount(targetContext, account, initialData))
+        val initialData = AccountSettings.initialUserData(null).apply {
+            putString(AccountSettings.KEY_SETTINGS_VERSION, version.toString())
+        }
+        assertTrue(SystemAccountUtils.createAccount(context, account, initialData))
 
         return account
     }
@@ -34,8 +38,7 @@ object TestAccount {
      * Removes a test account, usually in the `@After` tearDown of a test.
      */
     fun remove(account: Account) {
-        val am = AccountManager.get(targetContext)
-        assertTrue(am.removeAccountExplicitly(account))
+        assertTrue(accountManager.removeAccountExplicitly(account))
     }
 
     /**

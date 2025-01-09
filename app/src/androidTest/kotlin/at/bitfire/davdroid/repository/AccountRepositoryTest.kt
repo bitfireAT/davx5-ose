@@ -5,9 +5,8 @@
 package at.bitfire.davdroid.repository
 
 import android.content.Context
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -41,7 +40,7 @@ class AccountRepositoryTest {
 
     @Test
     fun testRemoveOrphanedInDb() {
-        TestAccountAuthenticator.provide { systemAccount ->
+        TestAccount.provide { systemAccount ->
             val dao = db.accountDao()
             dao.insertOrIgnore(DbAccount(id = 1, name = systemAccount.name))
             dao.insertOrIgnore(DbAccount(id = 2, name = "no-corresponding-system-account"))

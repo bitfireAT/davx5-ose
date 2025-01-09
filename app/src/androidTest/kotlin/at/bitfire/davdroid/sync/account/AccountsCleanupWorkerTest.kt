@@ -58,7 +58,7 @@ class AccountsCleanupWorkerTest {
         hiltRule.inject()
         TestUtils.setUpWorkManager(context, workerFactory)
 
-        account = TestAccountAuthenticator.create()
+        account = TestAccount.create()
         db.accountDao().insertOrIgnore(DbAccount(name = account.name))
 
         // Prepare test account
@@ -74,7 +74,7 @@ class AccountsCleanupWorkerTest {
         // Remove the account here in any case; Nice to have when the test fails
         accountManager.removeAccountExplicitly(addressBookAccount)
 
-        TestAccountAuthenticator.remove(account)
+        TestAccount.remove(account)
     }
 
 
@@ -98,26 +98,24 @@ class AccountsCleanupWorkerTest {
 
     @Test
     fun testCleanUpAddressBooks_keepsAddressBookWithAccount() {
-        TestAccountAuthenticator.provide { account ->
-            // Create address book account _with_ corresponding account and verify
-            val userData = Bundle(2).apply {
-                putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
-                putString(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
-            }
-            assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, userData))
-
-            val addressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)
-            assertEquals(addressBookAccount, addressBookAccounts.firstOrNull())
-
-            // Create worker and run the method
-            val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
-                .setWorkerFactory(workerFactory)
-                .build()
-            worker.cleanUpAddressBooks()
-
-            // Verify account was _not_ deleted
-            assertEquals(addressBookAccount, addressBookAccounts.firstOrNull())
+        // Create address book account _with_ corresponding account and verify
+        val userData = Bundle(2).apply {
+            putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
+            putString(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
         }
+        assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, userData))
+
+        val addressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)
+        assertEquals(addressBookAccount, addressBookAccounts.firstOrNull())
+
+        // Create worker and run the method
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.cleanUpAddressBooks()
+
+        // Verify account was _not_ deleted
+        assertEquals(addressBookAccount, addressBookAccounts.firstOrNull())
     }
 
 }

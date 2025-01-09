@@ -8,7 +8,7 @@ import android.accounts.Account
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -43,7 +43,7 @@ class DavHomeSetRepositoryTest {
     fun setUp() {
         hiltRule.inject()
 
-        account = TestAccountAuthenticator.create()
+        account = TestAccount.create()
         db.accountDao().insertOrIgnore(DbAccount(name = account.name))
 
         val service = Service(id=0, accountName=account.name, type= Service.TYPE_CALDAV, principal = null)
@@ -52,7 +52,7 @@ class DavHomeSetRepositoryTest {
 
     @After
     fun tearDown() {
-        TestAccountAuthenticator.remove(account)
+        TestAccount.remove(account)
     }
 
 
