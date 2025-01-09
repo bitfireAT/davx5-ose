@@ -17,7 +17,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -30,7 +30,6 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -44,6 +43,7 @@ import org.junit.Test
 import org.junit.rules.Timeout
 import java.util.logging.Logger
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltAndroidTest
 class SyncAdapterServicesTest {
@@ -88,12 +88,12 @@ class SyncAdapterServicesTest {
         hiltRule.inject()
         TestUtils.setUpWorkManager(context, workerFactory)
 
-        account = TestAccountAuthenticator.create()
+        account = TestAccount.create()
     }
 
     @After
     fun tearDown() {
-        TestAccountAuthenticator.remove(account)
+        TestAccount.remove(account)
         unmockkAll()
     }
 

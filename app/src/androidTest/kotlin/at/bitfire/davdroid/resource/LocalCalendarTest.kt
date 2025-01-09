@@ -119,7 +119,7 @@ class LocalCalendarTest {
     }
 
     @Test
-    // Flaky, Needs single or rec init of CalendarProvider (InitCalendarProviderRule)
+    // Needs InitCalendarProviderRule
     fun testDeleteDirtyEventsWithoutInstances_Recurring_Instances() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")

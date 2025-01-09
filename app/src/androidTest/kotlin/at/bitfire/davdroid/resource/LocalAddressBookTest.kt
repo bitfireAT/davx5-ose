@@ -6,16 +6,13 @@ package at.bitfire.davdroid.resource
 
 import android.Manifest
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.Context
 import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.davdroid.R
 import at.bitfire.vcard4android.Contact
-import at.bitfire.vcard4android.GroupMethod
 import at.bitfire.vcard4android.LabeledProperty
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -25,7 +22,7 @@ import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.ClassRule
@@ -37,17 +34,13 @@ import javax.inject.Inject
 @HiltAndroidTest
 class LocalAddressBookTest {
 
+    @Inject @ApplicationContext
+    lateinit var context: Context
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    @Inject
-    lateinit var addressbookFactory: LocalTestAddressBook.Factory
-
-    @Inject @ApplicationContext
-    lateinit var context: Context
-    val targetContext by lazy { InstrumentationRegistry.getInstrumentation().targetContext }
-
-    val account by lazy { Account("Test Account", targetContext.getString(R.string.account_type)) }
+    val account = Account("Test Account", "Test Account Type")
     lateinit var addressBook: LocalTestAddressBook
 
 
@@ -55,15 +48,13 @@ class LocalAddressBookTest {
     fun setUp() {
         hiltRule.inject()
 
-        addressBook = addressbookFactory.create(account, provider, GroupMethod.CATEGORIES)
-        LocalTestAddressBook.createAccount(context)
+        addressBook = LocalTestAddressBook.create(context, account, provider)
     }
 
     @After
     fun tearDown() {
         // remove address book
-        val accountManager = AccountManager.get(context)
-        accountManager.removeAccountExplicitly(addressBook.addressBookAccount)
+        addressBook.remove()
     }
 
 
@@ -88,7 +79,7 @@ class LocalAddressBookTest {
         // rename address book
         val newName = "New Name"
         addressBook.renameAccount(newName)
-        assertEquals(Account(newName, LocalTestAddressBook.ACCOUNT.type), addressBook.addressBookAccount)
+        assertEquals(newName, addressBook.addressBookAccount.name)
 
         // check whether contact is still here (including data rows) and not dirty
         val result = addressBook.findContactById(id)
@@ -116,8 +107,8 @@ class LocalAddressBookTest {
 
         // rename address book
         val newName = "New Name"
-        addressBook.renameAccount(newName)
-        assertEquals(Account(newName, LocalTestAddressBook.ACCOUNT.type), addressBook.addressBookAccount)
+        assertTrue(addressBook.renameAccount(newName))
+        assertEquals(newName, addressBook.addressBookAccount.name)
 
         // check whether group is still here and not dirty
         val result = addressBook.findGroupById(id)
@@ -126,6 +117,7 @@ class LocalAddressBookTest {
         val group = result.getContact()
         assertEquals("Test Group", group.displayName)
     }
+
 
     companion object {
 
@@ -138,9 +130,8 @@ class LocalAddressBookTest {
         @BeforeClass
         @JvmStatic
         fun connect() {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            val context = InstrumentationRegistry.getInstrumentation().context
             provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-            assertNotNull(provider)
         }
 
         @AfterClass

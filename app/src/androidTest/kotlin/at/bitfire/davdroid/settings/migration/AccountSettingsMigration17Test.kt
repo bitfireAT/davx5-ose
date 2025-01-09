@@ -13,7 +13,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -54,7 +54,7 @@ class AccountSettingsMigration17Test {
 
     @Test
     fun testMigrate_OldAddressBook_CollectionInDB() {
-        TestAccountAuthenticator.provide(version = 16) { account ->
+        TestAccount.provide(version = 16) { account ->
             val accountManager = AccountManager.get(context)
             val addressBookAccountType = context.getString(R.string.account_type_address_book)
             var addressBookAccount = Account("Address Book", addressBookAccountType)
