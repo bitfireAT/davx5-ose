@@ -55,62 +55,48 @@ class CollectionListRefresher @AssistedInject constructor(
         fun create(service: Service, httpClient: OkHttpClient): CollectionListRefresher
     }
 
-    /**
-     * Given the current-user-principal address, tries to find and save all user relevant home sets.
-     *
-     * @param principalUrl See [Principal]
-     *
-     * @throws java.io.IOException
-     * @throws HttpException
-     * @throws at.bitfire.dav4jvm.exception.DavException
-     */
-    internal fun discoverHomesets(principalUrl: HttpUrl) {
-        // Define homeset class and properties to look for
-        val homeSetClass: Class<out HrefListProperty>
-        val properties: Array<Property.Name>
+    val homeSetClass: Class<out HrefListProperty> =
         when (service.type) {
-            Service.TYPE_CARDDAV -> {
-                homeSetClass = AddressbookHomeSet::class.java
-                properties = arrayOf(DisplayName.NAME, AddressbookHomeSet.NAME, GroupMembership.NAME, ResourceType.NAME)
-            }
-            Service.TYPE_CALDAV -> {
-                homeSetClass = CalendarHomeSet::class.java
-                properties = arrayOf(
-                    DisplayName.NAME,
-                    CalendarHomeSet.NAME,
-                    CalendarProxyReadFor.NAME,
-                    CalendarProxyWriteFor.NAME,
-                    GroupMembership.NAME,
-                    ResourceType.NAME
-                )
-            }
+            Service.TYPE_CARDDAV -> AddressbookHomeSet::class.java
+            Service.TYPE_CALDAV -> CalendarHomeSet::class.java
             else -> throw IllegalArgumentException()
         }
 
-        // Discover homesets
-        discoverHomesets(principalUrl, homeSetClass, properties)
-    }
+    val homeSetPropertyNames: Array<Property.Name> =
+        when (service.type) {
+            Service.TYPE_CARDDAV -> arrayOf(
+                DisplayName.NAME,
+                AddressbookHomeSet.NAME,
+                GroupMembership.NAME,
+                ResourceType.NAME
+            )
+            Service.TYPE_CALDAV -> arrayOf(
+                DisplayName.NAME,
+                CalendarHomeSet.NAME,
+                CalendarProxyReadFor.NAME,
+                CalendarProxyWriteFor.NAME,
+                GroupMembership.NAME,
+                ResourceType.NAME
+            )
+            else -> throw IllegalArgumentException()
+        }
 
     /**
      * Starting at given principal URL, tries to recursively find and save all user relevant home sets.
      *
      * @param principalUrl  URL of principal to query (user-provided principal or current-user-principal)
-     * @param homeSetClass  CalDAV or CardDAV home set class
-     * @param properties    Properties to be requested about principal and home sets
      * @param level         Current recursion level (limited to 0, 1 or 2):
      *   - 0: We assume found home sets belong to the current-user-principal
      *   - 1 or 2: We assume found home sets don't directly belong to the current-user-principal
      * @param alreadyQueriedPrincipals The HttpUrls of principals which have been queried already.
      * @param alreadySavedHomeSets  The HttpUrls of home sets which have been saved to database already.
      *
-     * @throws java.io.IOException
-     * @throws HttpException
-     * @throws at.bitfire.dav4jvm.exception.DavException
+     * @throws java.io.IOException                          on I/O errors
+     * @throws HttpException                                on HTTP errors
+     * @throws at.bitfire.dav4jvm.exception.DavException    on application-level or logical errors
      */
     internal fun discoverHomesets(
         principalUrl: HttpUrl,
-        homeSetClass: Class<out HrefListProperty>,
-        properties: Array<Property.Name>,
         level: Int = 0,
         alreadyQueriedPrincipals: MutableSet<HttpUrl> = mutableSetOf(),
         alreadySavedHomeSets: MutableSet<HttpUrl> = mutableSetOf()
@@ -122,7 +108,7 @@ class CollectionListRefresher @AssistedInject constructor(
         val principal = DavResource(httpClient, principalUrl)
         val personal = level == 0
         try {
-            principal.propfind(0, *properties) { davResponse, _ ->
+            principal.propfind(0, *homeSetPropertyNames) { davResponse, _ ->
                 alreadyQueriedPrincipals += davResponse.href
 
                 // If response holds home sets, save them
@@ -187,8 +173,6 @@ class CollectionListRefresher @AssistedInject constructor(
                 else
                     discoverHomesets(
                         principalUrl = resource,
-                        homeSetClass = homeSetClass,
-                        properties = properties,
                         level = level + 1,
                         alreadyQueriedPrincipals = alreadyQueriedPrincipals,
                         alreadySavedHomeSets = alreadySavedHomeSets
@@ -225,7 +209,7 @@ class CollectionListRefresher @AssistedInject constructor(
                     if (relation == Response.HrefRelation.SELF) {
                         // this response is about the homeset itself
                         localHomeset.displayName = response[DisplayName::class.java]?.displayName
-                        localHomeset.privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind ?: true
+                        localHomeset.privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
                         homeSetRepository.insertOrUpdateByUrl(localHomeset)
                     }
 

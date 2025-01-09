@@ -37,11 +37,7 @@ import javax.inject.Inject
 @HiltAndroidTest
 class CollectionListRefresherTest {
 
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
 
     @Inject
@@ -55,6 +51,9 @@ class CollectionListRefresherTest {
 
     @Inject
     lateinit var settings: SettingsManager
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
 
     private val mockServer = MockWebServer()
     private lateinit var client: HttpClient
