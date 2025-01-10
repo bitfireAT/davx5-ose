@@ -22,25 +22,10 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.exception.UnauthorizedException
-import at.bitfire.dav4jvm.property.caldav.CalendarColor
-import at.bitfire.dav4jvm.property.caldav.CalendarDescription
-import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
-import at.bitfire.dav4jvm.property.caldav.CalendarTimezoneId
-import at.bitfire.dav4jvm.property.caldav.Source
-import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
-import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
-import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
-import at.bitfire.dav4jvm.property.push.PushTransports
-import at.bitfire.dav4jvm.property.push.Topic
-import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
-import at.bitfire.dav4jvm.property.webdav.DisplayName
-import at.bitfire.dav4jvm.property.webdav.Owner
-import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
@@ -86,26 +71,6 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
         const val ARG_SERVICE_ID = "serviceId"
         const val WORKER_TAG = "refreshCollectionsWorker"
-
-        // Collection properties to ask for in a propfind request to the CalDAV/CardDAV server
-        val DAV_COLLECTION_PROPERTIES = arrayOf(
-            ResourceType.NAME,
-            CurrentUserPrivilegeSet.NAME,
-            DisplayName.NAME,
-            Owner.NAME,
-            AddressbookDescription.NAME, SupportedAddressData.NAME,
-            CalendarDescription.NAME, CalendarColor.NAME, CalendarTimezone.NAME, CalendarTimezoneId.NAME, SupportedCalendarComponentSet.NAME,
-            Source.NAME,
-            // WebDAV Push
-            PushTransports.NAME,
-            Topic.NAME
-        )
-
-        // Principal properties to ask the server
-        val DAV_PRINCIPAL_PROPERTIES = arrayOf(
-            DisplayName.NAME,
-            ResourceType.NAME
-        )
 
         /**
          * Uniquely identifies a refresh worker. Useful for stopping work, or querying its state.

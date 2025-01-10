@@ -9,10 +9,19 @@ import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.property.caldav.CalendarColor
+import at.bitfire.dav4jvm.property.caldav.CalendarDescription
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
 import at.bitfire.dav4jvm.property.caldav.CalendarProxyReadFor
 import at.bitfire.dav4jvm.property.caldav.CalendarProxyWriteFor
+import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
+import at.bitfire.dav4jvm.property.caldav.CalendarTimezoneId
+import at.bitfire.dav4jvm.property.caldav.Source
+import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
+import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
 import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
+import at.bitfire.dav4jvm.property.push.PushTransports
+import at.bitfire.dav4jvm.property.push.Topic
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.GroupMembership
@@ -55,68 +64,120 @@ class CollectionListRefresher @AssistedInject constructor(
         fun create(service: Service, httpClient: OkHttpClient): CollectionListRefresher
     }
 
-
-    private val alreadyQueried = mutableSetOf<HttpUrl>()
+    /**
+     * Principal properties to ask the server for.
+     */
+    private val principalProperties = arrayOf(
+        DisplayName.NAME,
+        ResourceType.NAME
+    )
 
     /**
-     * Starting at current-user-principal URL, tries to recursively find and save all user relevant home sets.
-     *
-     *
-     * @param principalUrl  URL of principal to query (user-provided principal or current-user-principal)
-     * @param level         Current recursion level (limited to 0, 1 or 2):
-     *
-     * - 0: We assume found home sets belong to the current-user-principal
-     * - 1 or 2: We assume found home sets don't directly belong to the current-user-principal
-     *
-     * @throws java.io.IOException
-     * @throws HttpException
-     * @throws at.bitfire.dav4jvm.exception.DavException
+     * Home-set class to use depending on the given service type.
      */
-    internal fun discoverHomesets(principalUrl: HttpUrl, level: Int = 0) {
-        logger.fine("Discovering homesets of $principalUrl")
-        val relatedResources = mutableSetOf<HttpUrl>()
-
-        // Define homeset class and properties to look for
-        val homeSetClass: Class<out HrefListProperty>
-        val properties: Array<Property.Name>
+    private val homeSetClass: Class<out HrefListProperty> =
         when (service.type) {
-            Service.TYPE_CARDDAV -> {
-                homeSetClass = AddressbookHomeSet::class.java
-                properties = arrayOf(DisplayName.NAME, AddressbookHomeSet.NAME, GroupMembership.NAME, ResourceType.NAME)
-            }
-            Service.TYPE_CALDAV -> {
-                homeSetClass = CalendarHomeSet::class.java
-                properties = arrayOf(
-                    DisplayName.NAME,
-                    CalendarHomeSet.NAME,
-                    CalendarProxyReadFor.NAME,
-                    CalendarProxyWriteFor.NAME,
-                    GroupMembership.NAME,
-                    ResourceType.NAME
-                )
-            }
+            Service.TYPE_CARDDAV -> AddressbookHomeSet::class.java
+            Service.TYPE_CALDAV -> CalendarHomeSet::class.java
             else -> throw IllegalArgumentException()
         }
+
+    /**
+     * Home-set properties to ask for in a PROPFIND request to the principal URL,
+     * depending on the given service type.
+     */
+    private val homeSetProperties: Array<Property.Name> =
+        arrayOf(                        // generic WebDAV properties
+            DisplayName.NAME,
+            GroupMembership.NAME,
+            ResourceType.NAME
+        ) + when (service.type) {       // service-specific CalDAV/CardDAV properties
+                Service.TYPE_CARDDAV -> arrayOf(
+                    AddressbookHomeSet.NAME,
+                )
+                Service.TYPE_CALDAV -> arrayOf(
+                    CalendarHomeSet.NAME,
+                    CalendarProxyReadFor.NAME,
+                    CalendarProxyWriteFor.NAME
+                )
+                else -> throw IllegalArgumentException()
+            }
+
+    /**
+     * Collection properties to ask for in a PROPFIND request on a collection.
+     */
+    private val collectionProperties: Array<Property.Name> =
+        arrayOf(                        // generic WebDAV properties
+            CurrentUserPrivilegeSet.NAME,
+            DisplayName.NAME,
+            Owner.NAME,
+            ResourceType.NAME,
+            PushTransports.NAME,        // WebDAV-Push
+            Topic.NAME
+        ) + when (service.type) {       // service-specific CalDAV/CardDAV properties
+            Service.TYPE_CARDDAV -> arrayOf(
+                AddressbookDescription.NAME
+            )
+            Service.TYPE_CALDAV -> arrayOf(
+                CalendarColor.NAME,
+                CalendarDescription.NAME,
+                CalendarTimezone.NAME,
+                CalendarTimezoneId.NAME,
+                SupportedCalendarComponentSet.NAME,
+                Source.NAME
+            )
+            else -> throw IllegalArgumentException()
+        }
+
+
+
+    /**
+     * Starting at given principal URL, tries to recursively find and save all user relevant home sets.
+     *
+     * @param principalUrl              URL of principal to query (user-provided principal or current-user-principal)
+     * @param level                     Current recursion level (limited to 0, 1 or 2):
+     *   - 0: We assume found home sets belong to the current-user-principal
+     *   - 1 or 2: We assume found home sets don't directly belong to the current-user-principal
+     * @param alreadyQueriedPrincipals  The HttpUrls of principals which have been queried already, to avoid querying principals more than once.
+     * @param alreadySavedHomeSets      The HttpUrls of home sets which have been saved to database already, to avoid saving home sets
+     * more than once, which could overwrite the already set "personal" flag with `false`.
+     *
+     * @throws java.io.IOException                          on I/O errors
+     * @throws HttpException                                on HTTP errors
+     * @throws at.bitfire.dav4jvm.exception.DavException    on application-level or logical errors
+     */
+    internal fun discoverHomesets(
+        principalUrl: HttpUrl,
+        level: Int = 0,
+        alreadyQueriedPrincipals: MutableSet<HttpUrl> = mutableSetOf(),
+        alreadySavedHomeSets: MutableSet<HttpUrl> = mutableSetOf()
+    ) {
+        logger.fine("Discovering homesets of $principalUrl")
+        val relatedResources = mutableSetOf<HttpUrl>()
 
         // Query the URL
         val principal = DavResource(httpClient, principalUrl)
         val personal = level == 0
         try {
-            principal.propfind(0, *properties) { davResponse, _ ->
-                alreadyQueried += davResponse.href
+            principal.propfind(0, *homeSetProperties) { davResponse, _ ->
+                alreadyQueriedPrincipals += davResponse.href
 
                 // If response holds home sets, save them
                 davResponse[homeSetClass]?.let { homeSets ->
                     for (homeSetHref in homeSets.hrefs)
                         principal.location.resolve(homeSetHref)?.let { homesetUrl ->
                             val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
-                            // Homeset is considered personal if this is the outer recursion call,
-                            // This is because we assume the first call to query the current-user-principal
-                            // Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by
-                            // other principals and still be considered "personal" (belonging to the current-user-principal).
-                            homeSetRepository.insertOrUpdateByUrl(
-                                HomeSet(0, service.id, personal, resolvedHomeSetUrl)
-                            )
+                            if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
+                                homeSetRepository.insertOrUpdateByUrl(
+                                    // HomeSet is considered personal if this is the outer recursion call,
+                                    // This is because we assume the first call to query the current-user-principal
+                                    // Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by
+                                    // other principals while still being considered "personal" (belonging to the current-user-principal)
+                                    // and an owned home set need not always be personal either.
+                                    HomeSet(0, service.id, personal, resolvedHomeSetUrl)
+                                )
+                                alreadySavedHomeSets += resolvedHomeSetUrl
+                            }
                         }
                 }
 
@@ -158,10 +219,15 @@ class CollectionListRefresher @AssistedInject constructor(
         // query related resources
         if (level <= 1)
             for (resource in relatedResources)
-                if (alreadyQueried.contains(resource))
+                if (alreadyQueriedPrincipals.contains(resource))
                     logger.warning("$resource already queried, skipping")
                 else
-                    discoverHomesets(resource, level + 1)
+                    discoverHomesets(
+                        principalUrl = resource,
+                        level = level + 1,
+                        alreadyQueriedPrincipals = alreadyQueriedPrincipals,
+                        alreadySavedHomeSets = alreadySavedHomeSets
+                    )
     }
 
     /**
@@ -186,7 +252,7 @@ class CollectionListRefresher @AssistedInject constructor(
                 .toMutableMap()
 
             try {
-                DavResource(httpClient, homeSetUrl).propfind(1, *RefreshCollectionsWorker.DAV_COLLECTION_PROPERTIES) { response, relation ->
+                DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties) { response, relation ->
                     // Note: This callback may be called multiple times ([MultiResponseCallback])
                     if (!response.isSuccess())
                         return@propfind
@@ -241,7 +307,7 @@ class CollectionListRefresher @AssistedInject constructor(
     internal fun refreshHomelessCollections() {
         val homelessCollections = db.collectionDao().getByServiceAndHomeset(service.id, null).associateBy { it.url }.toMutableMap()
         for((url, localCollection) in homelessCollections) try {
-            DavResource(httpClient, url).propfind(0, *RefreshCollectionsWorker.DAV_COLLECTION_PROPERTIES) { response, _ ->
+            DavResource(httpClient, url).propfind(0, *collectionProperties) { response, _ ->
                 if (!response.isSuccess()) {
                     collectionRepository.delete(localCollection)
                     return@propfind
@@ -281,7 +347,7 @@ class CollectionListRefresher @AssistedInject constructor(
             val principalUrl = oldPrincipal.url
             logger.fine("Querying principal $principalUrl")
             try {
-                DavResource(httpClient, principalUrl).propfind(0, *RefreshCollectionsWorker.DAV_PRINCIPAL_PROPERTIES) { response, _ ->
+                DavResource(httpClient, principalUrl).propfind(0, *principalProperties) { response, _ ->
                     if (!response.isSuccess())
                         return@propfind
                     Principal.fromDavResponse(service.id, response)?.let { principal ->
@@ -321,10 +387,10 @@ class CollectionListRefresher @AssistedInject constructor(
      * [Settings.PRESELECT_COLLECTIONS_EXCLUDED], in which case *false* is returned.
      *
      * @param collection the collection to check
-     * @param homesets list of home-sets (to check whether collection is in a personal home-set)
+     * @param homeSets list of home-sets (to check whether collection is in a personal home-set)
      * @return *true* if the collection should be preselected for synchronization; *false* otherwise
      */
-    internal fun shouldPreselect(collection: Collection, homesets: Iterable<HomeSet>): Boolean {
+    internal fun shouldPreselect(collection: Collection, homeSets: Iterable<HomeSet>): Boolean {
         val shouldPreselect = settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS)
 
         val excluded by lazy {
@@ -342,7 +408,7 @@ class CollectionListRefresher @AssistedInject constructor(
 
             Settings.PRESELECT_COLLECTIONS_PERSONAL ->
                 // preselect if is personal (in a personal home-set), but not excluded
-                homesets
+                homeSets
                     .filter { homeset -> homeset.personal }
                     .map { homeset -> homeset.id }
                     .contains(collection.homeSetId)
