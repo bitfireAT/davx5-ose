@@ -10,7 +10,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -46,12 +46,12 @@ class SyncWorkerManagerTest {
         hiltRule.inject()
         TestUtils.setUpWorkManager(context, workerFactory)
 
-        account = TestAccountAuthenticator.create()
+        account = TestAccount.create()
     }
 
     @After
     fun tearDown() {
-        TestAccountAuthenticator.remove(account)
+        TestAccount.remove(account)
     }
 
 

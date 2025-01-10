@@ -37,24 +37,7 @@ import javax.inject.Inject
 @HiltAndroidTest
 class CollectionListRefresherTest {
 
-    companion object {
-        private const val PATH_CALDAV = "/caldav"
-        private const val PATH_CARDDAV = "/carddav"
-
-        private const val SUBPATH_PRINCIPAL = "/principal"
-        private const val SUBPATH_PRINCIPAL_INACCESSIBLE = "/inaccessible-principal"
-        private const val SUBPATH_PRINCIPAL_WITHOUT_COLLECTIONS = "/principal2"
-        private const val SUBPATH_ADDRESSBOOK_HOMESET = "/addressbooks-homeset"
-        private const val SUBPATH_ADDRESSBOOK_HOMESET_EMPTY = "/addressbooks-homeset-empty"
-        private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts"
-        private const val SUBPATH_ADDRESSBOOK_INACCESSIBLE = "/addressbooks/inaccessible-contacts"
-    }
-
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
 
     @Inject
@@ -68,6 +51,9 @@ class CollectionListRefresherTest {
 
     @Inject
     lateinit var settings: SettingsManager
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
 
     private val mockServer = MockWebServer()
     private lateinit var client: HttpClient
@@ -100,9 +86,23 @@ class CollectionListRefresherTest {
         // Query home sets
         refresherFactory.create(service, client.okHttpClient).discoverHomesets(baseUrl)
 
-        // Check home sets have been saved to database
-        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET/"), db.homeSetDao().getByService(service.id).first().url)
-        assertEquals(1, db.homeSetDao().getByService(service.id).size)
+        // Check home set has been saved correctly to database
+        val savedHomesets = db.homeSetDao().getByService(service.id)
+        assertEquals(2, savedHomesets.size)
+
+        // Home set from current-user-principal
+        val personalHomeset = savedHomesets[1]
+        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL/"), personalHomeset.url)
+        assertEquals(service.id, personalHomeset.serviceId)
+        // personal should be true for homesets detected at first query of current-user-principal (Even if they occur in a group principal as well!!!)
+        assertEquals(true, personalHomeset.personal)
+
+        // Home set found in a group principal
+        val groupHomeset = savedHomesets[0]
+        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_NON_PERSONAL/"), groupHomeset.url)
+        assertEquals(service.id, groupHomeset.serviceId)
+        // personal should be false for homesets not detected at the first query of current-user-principal (IE. in groups)
+        assertEquals(false, groupHomeset.personal)
     }
 
 
@@ -114,7 +114,7 @@ class CollectionListRefresherTest {
 
         // save homeset in DB
         val homesetId = db.homeSetDao().insert(
-            HomeSet(id=0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+            HomeSet(id=0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL"))
         )
 
         // Refresh
@@ -248,7 +248,7 @@ class CollectionListRefresherTest {
 
         // save a homeset in DB
         val homesetId = db.homeSetDao().insert(
-            HomeSet(id=0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+            HomeSet(id=0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL"))
         )
 
         // place collection in DB - as part of the homeset
@@ -482,7 +482,7 @@ class CollectionListRefresherTest {
                 url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
             )
             val homesets = listOf(
-                HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+                HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL"))
             )
 
             val refresher = refresherFactory.create(service, client.okHttpClient)
@@ -506,7 +506,7 @@ class CollectionListRefresherTest {
                 url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
             )
             val homesets = listOf(
-                HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+                HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL"))
             )
 
             val refresher = refresherFactory.create(service, client.okHttpClient)
@@ -531,7 +531,7 @@ class CollectionListRefresherTest {
                 url = url
             )
             val homesets = listOf(
-                HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+                HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL"))
             )
 
             val refresher = refresherFactory.create(service, client.okHttpClient)
@@ -555,7 +555,7 @@ class CollectionListRefresherTest {
                 url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
             )
             val homesets = listOf(
-                HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+                HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL"))
             )
 
             val refresher = refresherFactory.create(service, client.okHttpClient)
@@ -579,7 +579,7 @@ class CollectionListRefresherTest {
                 url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
             )
             val homesets = listOf(
-                HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+                HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL"))
             )
 
             val refresher = refresherFactory.create(service, client.okHttpClient)
@@ -604,7 +604,7 @@ class CollectionListRefresherTest {
                 url = collectionUrl
             )
             val homesets = listOf(
-                HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+                HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL"))
             )
 
             val refresher = refresherFactory.create(service, client.okHttpClient)
@@ -620,6 +620,20 @@ class CollectionListRefresherTest {
         return db.serviceDao().get(serviceId)
     }
 
+    companion object {
+        private const val PATH_CALDAV = "/caldav"
+        private const val PATH_CARDDAV = "/carddav"
+
+        private const val SUBPATH_PRINCIPAL = "/principal"
+        private const val SUBPATH_PRINCIPAL_INACCESSIBLE = "/inaccessible-principal"
+        private const val SUBPATH_PRINCIPAL_WITHOUT_COLLECTIONS = "/principal2"
+        private const val SUBPATH_GROUPPRINCIPAL_0 = "/groups/0"
+        private const val SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL = "/addressbooks-homeset"
+        private const val SUBPATH_ADDRESSBOOK_HOMESET_NON_PERSONAL = "/addressbooks-homeset-non-personal"
+        private const val SUBPATH_ADDRESSBOOK_HOMESET_EMPTY = "/addressbooks-homeset-empty"
+        private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts"
+        private const val SUBPATH_ADDRESSBOOK_INACCESSIBLE = "/addressbooks/inaccessible-contacts"
+    }
 
     class TestDispatcher(
         private val logger: Logger
@@ -640,8 +654,11 @@ class CollectionListRefresherTest {
                         "<resourcetype><principal/></resourcetype>" +
                         "<displayname>Mr. Wobbles</displayname>" +
                         "<CARD:addressbook-home-set>" +
-                        "   <href>${PATH_CARDDAV}${SUBPATH_ADDRESSBOOK_HOMESET}</href>" +
-                        "</CARD:addressbook-home-set>"
+                        "   <href>${PATH_CARDDAV}${SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL}</href>" +
+                        "</CARD:addressbook-home-set>" +
+                        "<group-membership>" +
+                        "   <href>${PATH_CARDDAV}${SUBPATH_GROUPPRINCIPAL_0}</href>" +
+                        "</group-membership>"
 
                     PATH_CARDDAV + SUBPATH_PRINCIPAL_WITHOUT_COLLECTIONS ->
                         "<CARD:addressbook-home-set>" +
@@ -649,8 +666,16 @@ class CollectionListRefresherTest {
                         "</CARD:addressbook-home-set>" +
                         "<displayname>Mr. Wobbles Jr.</displayname>"
 
+                    PATH_CARDDAV + SUBPATH_GROUPPRINCIPAL_0 ->
+                        "<resourcetype><principal/></resourcetype>" +
+                        "<displayname>All address books</displayname>" +
+                        "<CARD:addressbook-home-set>" +
+                        "   <href>${PATH_CARDDAV}${SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL}</href>" +
+                        "   <href>${PATH_CARDDAV}${SUBPATH_ADDRESSBOOK_HOMESET_NON_PERSONAL}</href>" +
+                        "</CARD:addressbook-home-set>"
+
                     PATH_CARDDAV + SUBPATH_ADDRESSBOOK,
-                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET ->
+                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL ->
                         "<resourcetype>" +
                         "   <collection/>" +
                         "   <CARD:addressbook/>" +
@@ -659,6 +684,17 @@ class CollectionListRefresherTest {
                         "<CARD:addressbook-description>My Contacts Description</CARD:addressbook-description>" +
                         "<owner>" +
                         "   <href>${PATH_CARDDAV + SUBPATH_PRINCIPAL}</href>" +
+                        "</owner>"
+
+                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET_NON_PERSONAL ->
+                        "<resourcetype>" +
+                        "   <collection/>" +
+                        "   <CARD:addressbook/>" +
+                        "</resourcetype>" +
+                        "<displayname>Freds Contacts (not mine)</displayname>" +
+                        "<CARD:addressbook-description>Not personal contacts</CARD:addressbook-description>" +
+                        "<owner>" +
+                        "   <href>${PATH_CARDDAV + SUBPATH_PRINCIPAL}</href>" + // OK, user is allowed to own non-personal contacts
                         "</owner>"
 
                     PATH_CALDAV + SUBPATH_PRINCIPAL ->
@@ -676,7 +712,7 @@ class CollectionListRefresherTest {
                 var responseBody = ""
                 var responseCode = 207
                 when (path) {
-                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET ->
+                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL ->
                         responseBody =
                             "<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav' xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +
                             "<response>" +

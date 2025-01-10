@@ -77,8 +77,7 @@ interface WebDavDocumentDao {
             displayName = mount.name
         )
         val id = insertOrReplace(newDoc)
-        newDoc.id = id
-        return newDoc
+        return newDoc.copy(id = id)
     }
 
 }

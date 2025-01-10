@@ -420,8 +420,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                     // successfully moved
                 }
 
-                doc.parentId = dstParent.id
-                documentDao.update(doc)
+                documentDao.update(doc.copy(parentId = dstParent.id))
 
                 actor.notifyFolderChanged(sourceParentDocumentId)
                 actor.notifyFolderChanged(targetParentDocumentId)
@@ -449,8 +448,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                     dav.move(newLocation, false) {
                         // successfully renamed
                     }
-                    doc.name = newName
-                    documentDao.update(doc)
+                    documentDao.update(doc.copy(name = newName))
 
                     actor.notifyFolderChanged(doc.parentId)
                     return doc.id.toString()
@@ -531,9 +529,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                 val now = System.currentTimeMillis()
                 if (!readAccess /* write access */) {
                     // write access, update file size
-                    doc.size = transferred
-                    doc.lastModified = now
-                    documentDao.update(doc)
+                    documentDao.update(doc.copy(size = transferred, lastModified = now))
                 }
 
                 actor.notifyFolderChanged(doc.parentId)
@@ -671,32 +667,25 @@ class DavDocumentsProvider: DocumentsProvider() {
                                 }
                             }
 
-                        response[ResourceType::class.java]?.types?.let { types ->
-                            resource.isDirectory = types.contains(ResourceType.COLLECTION)
-                        }
-
-                        resource.displayName = response[DisplayName::class.java]?.displayName
-                        resource.mimeType = response[GetContentType::class.java]?.type
-                        response[GetETag::class.java]?.let { getETag ->
-                            if (!getETag.weak)
-                                resource.eTag = resource.eTag
-                        }
-                        resource.lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli()
-                        resource.size = response[GetContentLength::class.java]?.contentLength
-
-                        val privs = response[CurrentUserPrivilegeSet::class.java]
-                        resource.mayBind = privs?.mayBind
-                        resource.mayUnbind = privs?.mayUnbind
-                        resource.mayWriteContent = privs?.mayWriteContent
-
-                        resource.quotaAvailable = response[QuotaAvailableBytes::class.java]?.quotaAvailableBytes
-                        resource.quotaUsed = response[QuotaUsedBytes::class.java]?.quotaUsedBytes
+                        val updatedResource = resource.copy(
+                            isDirectory = response[ResourceType::class.java]?.types?.contains(ResourceType.COLLECTION) ?: resource.isDirectory,
+                            displayName = response[DisplayName::class.java]?.displayName,
+                            mimeType = response[GetContentType::class.java]?.type,
+                            eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.let { resource.eTag },
+                            lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
+                            size = response[GetContentLength::class.java]?.contentLength,
+                            mayBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind,
+                            mayUnbind = response[CurrentUserPrivilegeSet::class.java]?.mayUnbind,
+                            mayWriteContent = response[CurrentUserPrivilegeSet::class.java]?.mayWriteContent,
+                            quotaAvailable = response[QuotaAvailableBytes::class.java]?.quotaAvailableBytes,
+                            quotaUsed = response[QuotaUsedBytes::class.java]?.quotaUsedBytes,
+                        )
 
                         if (resource == parent)
-                            documentDao.update(resource)
+                            documentDao.update(updatedResource)
                         else {
-                            documentDao.insertOrUpdate(resource)
-                            newChildrenList[resource.name] = resource
+                            documentDao.insertOrUpdate(updatedResource)
+                            newChildrenList[resource.name] = updatedResource
                         }
 
                         // remove resource from known child nodes, because not found on server

@@ -213,6 +213,10 @@ class SyncerTest {
             throw NotImplementedError()
         }
 
+        override fun updateAccount(oldAccount: Account, newAccount: Account) {
+            throw NotImplementedError()
+        }
+
     }
 
 }
