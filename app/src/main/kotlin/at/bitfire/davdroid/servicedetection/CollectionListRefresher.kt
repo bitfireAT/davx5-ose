@@ -20,7 +20,6 @@ import at.bitfire.dav4jvm.property.caldav.Source
 import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
 import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
 import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
-import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
 import at.bitfire.dav4jvm.property.push.PushTransports
 import at.bitfire.dav4jvm.property.push.Topic
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
@@ -74,7 +73,7 @@ class CollectionListRefresher @AssistedInject constructor(
     )
 
     /**
-     * Home Set class to use depending on the given service type.
+     * Home-set class to use depending on the given service type.
      */
     private val homeSetClass: Class<out HrefListProperty> =
         when (service.type) {
@@ -84,43 +83,52 @@ class CollectionListRefresher @AssistedInject constructor(
         }
 
     /**
-     * Home Set properties to ask for in a propfind request to the CalDAV/CardDAV server,
+     * Home-set properties to ask for in a PROPFIND request to the principal URL,
      * depending on the given service type.
      */
     private val homeSetProperties: Array<Property.Name> =
-        when (service.type) {
+        arrayOf(                        // generic WebDAV properties
+            DisplayName.NAME,
+            GroupMembership.NAME,
+            ResourceType.NAME
+        ) + when (service.type) {       // service-specific CalDAV/CardDAV properties
+                Service.TYPE_CARDDAV -> arrayOf(
+                    AddressbookHomeSet.NAME,
+                )
+                Service.TYPE_CALDAV -> arrayOf(
+                    CalendarHomeSet.NAME,
+                    CalendarProxyReadFor.NAME,
+                    CalendarProxyWriteFor.NAME
+                )
+                else -> throw IllegalArgumentException()
+            }
+
+    /**
+     * Collection properties to ask for in a PROPFIND request on a collection.
+     */
+    private val collectionProperties: Array<Property.Name> =
+        arrayOf(                        // generic WebDAV properties
+            CurrentUserPrivilegeSet.NAME,
+            DisplayName.NAME,
+            Owner.NAME,
+            ResourceType.NAME,
+            PushTransports.NAME,        // WebDAV-Push
+            Topic.NAME
+        ) + when (service.type) {       // service-specific CalDAV/CardDAV properties
             Service.TYPE_CARDDAV -> arrayOf(
-                DisplayName.NAME,
-                AddressbookHomeSet.NAME,
-                GroupMembership.NAME,
-                ResourceType.NAME
+                AddressbookDescription.NAME
             )
             Service.TYPE_CALDAV -> arrayOf(
-                DisplayName.NAME,
-                CalendarHomeSet.NAME,
-                CalendarProxyReadFor.NAME,
-                CalendarProxyWriteFor.NAME,
-                GroupMembership.NAME,
-                ResourceType.NAME
+                CalendarColor.NAME,
+                CalendarDescription.NAME,
+                CalendarTimezone.NAME,
+                CalendarTimezoneId.NAME,
+                SupportedCalendarComponentSet.NAME,
+                Source.NAME
             )
             else -> throw IllegalArgumentException()
         }
 
-    /**
-     * Collection properties to ask for in a propfind request to the CalDAV/CardDAV server
-     */
-    private val collectionProperties = arrayOf(
-        ResourceType.NAME,
-        CurrentUserPrivilegeSet.NAME,
-        DisplayName.NAME,
-        Owner.NAME,
-        AddressbookDescription.NAME, SupportedAddressData.NAME,
-        CalendarDescription.NAME, CalendarColor.NAME, CalendarTimezone.NAME, CalendarTimezoneId.NAME, SupportedCalendarComponentSet.NAME,
-        Source.NAME,
-        // WebDAV Push
-        PushTransports.NAME,
-        Topic.NAME
-    )
 
 
     /**
