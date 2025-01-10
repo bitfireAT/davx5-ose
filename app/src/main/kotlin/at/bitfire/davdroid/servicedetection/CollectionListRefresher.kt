@@ -41,8 +41,8 @@ import java.util.logging.Logger
  * Logic for refreshing the list of collections and home-sets and related information.
  */
 class CollectionListRefresher @AssistedInject constructor(
-    @Assisted val service: Service,
-    @Assisted val httpClient: OkHttpClient,
+    @Assisted private val service: Service,
+    @Assisted private val httpClient: OkHttpClient,
     private val db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
     private val homeSetRepository: DavHomeSetRepository,
@@ -195,12 +195,11 @@ class CollectionListRefresher @AssistedInject constructor(
                         // this response is about the home set itself
                         homeSetRepository.insertOrUpdateByUrl(localHomeset.copy(
                             displayName = response[DisplayName::class.java]?.displayName,
-                            privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind ?: true
+                            privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
                         ))
 
                     // in any case, check whether the response is about a usable collection
-                    var collection = Collection.fromDavResponse(response)?: return@propfind
-
+                    var collection = Collection.fromDavResponse(response) ?: return@propfind
                     collection = collection.copy(
                         serviceId = service.id,
                         homeSetId = localHomeset.id,
@@ -210,7 +209,6 @@ class CollectionListRefresher @AssistedInject constructor(
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
                             ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
                     )
-
                     logger.log(Level.FINE, "Found collection", collection)
 
                     // save or update collection if usable (ignore it otherwise)
