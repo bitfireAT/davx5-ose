@@ -39,22 +39,28 @@ class LocalCalendarStore @Inject constructor(
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
         // If the collection doesn't have a color, use a default color.
-        if (fromCollection.color != null)
-            fromCollection.color = Constants.DAVDROID_GREEN_RGBA
+        val collectionWithColor =
+            if (fromCollection.color != null)
+                fromCollection
+            else
+                fromCollection.copy(color = Constants.DAVDROID_GREEN_RGBA)
 
-        val values = valuesFromCollectionInfo(fromCollection, withColor = true)
+        val values = valuesFromCollectionInfo(
+            info = collectionWithColor,
+            withColor = true
+        ).apply {
+            // ACCOUNT_NAME and ACCOUNT_TYPE are required (see docs)! If it's missing, other apps will crash.
+            put(Calendars.ACCOUNT_NAME, account.name)
+            put(Calendars.ACCOUNT_TYPE, account.type)
 
-        // ACCOUNT_NAME and ACCOUNT_TYPE are required (see docs)! If it's missing, other apps will crash.
-        values.put(Calendars.ACCOUNT_NAME, account.name)
-        values.put(Calendars.ACCOUNT_TYPE, account.type)
+            // Email address for scheduling. Used by the calendar provider to determine whether the
+            // user is ORGANIZER/ATTENDEE for a certain event.
+            put(Calendars.OWNER_ACCOUNT, account.name)
 
-        // Email address for scheduling. Used by the calendar provider to determine whether the
-        // user is ORGANIZER/ATTENDEE for a certain event.
-        values.put(Calendars.OWNER_ACCOUNT, account.name)
-
-        // flag as visible & syncable at creation, might be changed by user at any time
-        values.put(Calendars.VISIBLE, 1)
-        values.put(Calendars.SYNC_EVENTS, 1)
+            // flag as visible & syncable at creation, might be changed by user at any time
+            put(Calendars.VISIBLE, 1)
+            put(Calendars.SYNC_EVENTS, 1)
+        }
 
         logger.log(Level.INFO, "Adding local calendar", values)
         val uri = AndroidCalendar.create(account, provider, values)

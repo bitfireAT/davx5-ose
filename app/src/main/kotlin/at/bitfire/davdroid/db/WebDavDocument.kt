@@ -35,30 +35,30 @@ import java.time.Instant
 data class WebDavDocument(
 
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
+    val id: Long = 0,
 
     /** refers to the [WebDavMount] the document belongs to */
     val mountId: Long,
 
     /** refers to parent document (*null* when this document is a root document) */
-    var parentId: Long?,
+    val parentId: Long?,
 
     /** file name (without any slashes) */
-    var name: String,
-    var isDirectory: Boolean = false,
+    val name: String,
+    val isDirectory: Boolean = false,
 
-    var displayName: String? = null,
-    var mimeType: MediaType? = null,
-    var eTag: String? = null,
-    var lastModified: Long? = null,
-    var size: Long? = null,
+    val displayName: String? = null,
+    val mimeType: MediaType? = null,
+    val eTag: String? = null,
+    val lastModified: Long? = null,
+    val size: Long? = null,
 
-    var mayBind: Boolean? = null,
-    var mayUnbind: Boolean? = null,
-    var mayWriteContent: Boolean? = null,
+    val mayBind: Boolean? = null,
+    val mayUnbind: Boolean? = null,
+    val mayWriteContent: Boolean? = null,
 
-    var quotaAvailable: Long? = null,
-    var quotaUsed: Long? = null
+    val quotaAvailable: Long? = null,
+    val quotaUsed: Long? = null
 
 ) {
 

@@ -54,15 +54,21 @@ class LocalTaskListStore @AssistedInject constructor(
         return DmfsTaskList.findByID(account, provider, providerName, LocalTaskList.Factory, ContentUris.parseId(uri))
     }
 
-    private fun create(account: Account, provider: ContentProviderClient, providerName: TaskProvider.ProviderName, info: Collection): Uri {
+    private fun create(account: Account, provider: ContentProviderClient, providerName: TaskProvider.ProviderName, fromCollection: Collection): Uri {
         // If the collection doesn't have a color, use a default color.
-        if (info.color != null)
-            info.color = Constants.DAVDROID_GREEN_RGBA
+        val collectionWithColor = if (fromCollection.color != null)
+            fromCollection
+        else
+            fromCollection.copy(color = Constants.DAVDROID_GREEN_RGBA)
 
-        val values = valuesFromCollectionInfo(info, withColor = true)
-        values.put(TaskLists.OWNER, account.name)
-        values.put(TaskLists.SYNC_ENABLED, 1)
-        values.put(TaskLists.VISIBLE, 1)
+        val values = valuesFromCollectionInfo(
+            info = collectionWithColor,
+            withColor = true
+        ).apply {
+            put(TaskLists.OWNER, account.name)
+            put(TaskLists.SYNC_ENABLED, 1)
+            put(TaskLists.VISIBLE, 1)
+        }
         return DmfsTaskList.Companion.create(account, provider, providerName, values)
     }
 

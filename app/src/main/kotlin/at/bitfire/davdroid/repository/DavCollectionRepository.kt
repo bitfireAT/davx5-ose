@@ -55,8 +55,8 @@ import javax.inject.Inject
  */
 class DavCollectionRepository @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext val context: Context,
-    db: AppDatabase,
+    @ApplicationContext private val context: Context,
+    private val db: AppDatabase,
     defaultListeners: Lazy<Set<@JvmSuppressWildcards OnChangeListener>>,
     private val serviceRepository: DavServiceRepository
 ) {
@@ -68,8 +68,7 @@ class DavCollectionRepository @Inject constructor(
     /**
      * Whether there are any collections that are registered for push.
      */
-    suspend fun anyPushCapable() =
-        dao.anyPushCapable()
+    suspend fun anyPushCapable() = dao.anyPushCapable()
 
     /**
      * Creates address book collection on server and locally
@@ -217,20 +216,28 @@ class DavCollectionRepository @Inject constructor(
         dao.getPushRegisteredAndNotSyncable()
 
     /**
-     * Inserts or updates the collection. On update it will not update flag values ([Collection.sync],
-     * [Collection.forceReadOnly]), but use the values of the already existing collection.
+     * Inserts or updates the collection.
+     *
+     * On update, it will _not_ update the flags
+     *  - [Collection.sync] and
+     *  - [Collection.forceReadOnly],
+     *  but use the values of the already existing collection.
      *
      * @param newCollection Collection to be inserted or updated
      */
     fun insertOrUpdateByUrlAndRememberFlags(newCollection: Collection) {
-        // remember locally set flags
-        dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())?.let { oldCollection ->
-            newCollection.sync = oldCollection.sync
-            newCollection.forceReadOnly = oldCollection.forceReadOnly
-        }
+        db.runInTransaction {
+            // remember locally set flags
+            val oldCollection = dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())
+            val newCollectionWithFlags =
+                if (oldCollection != null)
+                    newCollection.copy(sync = oldCollection.sync, forceReadOnly = oldCollection.forceReadOnly)
+                else
+                    newCollection
 
-        // commit to database
-        insertOrUpdateByUrl(newCollection)
+            // commit new collection to database
+            insertOrUpdateByUrl(newCollectionWithFlags)
+        }
     }
 
     /**

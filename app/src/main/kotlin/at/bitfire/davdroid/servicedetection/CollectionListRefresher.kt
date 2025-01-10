@@ -51,8 +51,8 @@ import java.util.logging.Logger
  * Logic for refreshing the list of collections and home-sets and related information.
  */
 class CollectionListRefresher @AssistedInject constructor(
-    @Assisted val service: Service,
-    @Assisted val httpClient: OkHttpClient,
+    @Assisted private val service: Service,
+    @Assisted private val httpClient: OkHttpClient,
     private val db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
     private val homeSetRepository: DavHomeSetRepository,
@@ -249,29 +249,24 @@ class CollectionListRefresher @AssistedInject constructor(
                     if (!response.isSuccess())
                         return@propfind
 
-                    if (relation == Response.HrefRelation.SELF) {
-                        // this response is about the homeset itself
-                        localHomeset.displayName = response[DisplayName::class.java]?.displayName
-                        localHomeset.privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
-                        homeSetRepository.insertOrUpdateByUrl(localHomeset)
-                    }
+                    if (relation == Response.HrefRelation.SELF)
+                        // this response is about the home set itself
+                        homeSetRepository.insertOrUpdateByUrl(localHomeset.copy(
+                            displayName = response[DisplayName::class.java]?.displayName,
+                            privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
+                        ))
 
                     // in any case, check whether the response is about a usable collection
-                    val collection = Collection.fromDavResponse(response) ?: return@propfind
-
-                    collection.serviceId = service.id
-                    collection.homeSetId = localHomeset.id
-                    collection.sync = shouldPreselect(collection, homesets.values)
-
-                    // .. and save the principal url (collection owner)
-                    response[Owner::class.java]?.href
-                        ?.let { response.href.resolve(it) }
-                        ?.let { principalUrl ->
-                            val principal = Principal.fromServiceAndUrl(service, principalUrl)
-                            val id = db.principalDao().insertOrUpdate(service.id, principal)
-                            collection.ownerId = id
-                        }
-
+                    var collection = Collection.fromDavResponse(response) ?: return@propfind
+                    collection = collection.copy(
+                        serviceId = service.id,
+                        homeSetId = localHomeset.id,
+                        sync = shouldPreselect(collection, homesets.values),
+                        ownerId = response[Owner::class.java]?.href  // save the principal id (collection owner)
+                            ?.let { response.href.resolve(it) }
+                            ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
+                            ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
+                    )
                     logger.log(Level.FINE, "Found collection", collection)
 
                     // save or update collection if usable (ignore it otherwise)
@@ -288,10 +283,10 @@ class CollectionListRefresher @AssistedInject constructor(
             }
 
             // Mark leftover (not rediscovered) collections from queue as homeless (remove association)
-            for ((_, homelessCollection) in localHomesetCollections) {
-                homelessCollection.homeSetId = null
-                collectionRepository.insertOrUpdateByUrlAndRememberFlags(homelessCollection)
-            }
+            for ((_, homelessCollection) in localHomesetCollections)
+                collectionRepository.insertOrUpdateByUrlAndRememberFlags(
+                    homelessCollection.copy(homeSetId = null)
+                )
 
         }
     }
@@ -314,18 +309,13 @@ class CollectionListRefresher @AssistedInject constructor(
                 Collection.fromDavResponse(response)?.let { collection ->
                     if (!isUsableCollection(collection))
                         return@let
-                    collection.serviceId = localCollection.serviceId       // use same service ID as previous entry
-
-                    // .. and save the principal url (collection owner)
-                    response[Owner::class.java]?.href
-                        ?.let { response.href.resolve(it) }
-                        ?.let { principalUrl ->
-                            val principal = Principal.fromServiceAndUrl(service, principalUrl)
-                            val principalId = db.principalDao().insertOrUpdate(service.id, principal)
-                            collection.ownerId = principalId
-                        }
-
-                    collectionRepository.insertOrUpdateByUrlAndRememberFlags(collection)
+                    collectionRepository.insertOrUpdateByUrlAndRememberFlags(collection.copy(
+                        serviceId = localCollection.serviceId,          // use same service ID as previous entry
+                        ownerId = response[Owner::class.java]?.href     // save the principal id (collection owner)
+                            ?.let { response.href.resolve(it) }
+                            ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
+                            ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
+                    ))
                 } ?: collectionRepository.delete(localCollection)
             }
         } catch (e: HttpException) {

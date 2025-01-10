@@ -41,17 +41,17 @@ class DavHomeSetRepositoryTest {
         val entry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toHttpUrl())
         val insertId1 = repository.insertOrUpdateByUrl(entry1)
         assertEquals(1L, insertId1)
-        assertEquals(entry1.apply { id = 1L }, repository.getById(1L))
+        assertEquals(entry1.copy(id = 1L), repository.getById(1L))
 
         val updatedEntry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toHttpUrl(), displayName="Updated Entry")
         val updateId1 = repository.insertOrUpdateByUrl(updatedEntry1)
         assertEquals(1L, updateId1)
-        assertEquals(updatedEntry1.apply { id = 1L }, repository.getById(1L))
+        assertEquals(updatedEntry1.copy(id = 1L), repository.getById(1L))
 
         val entry2 = HomeSet(id=0, serviceId=serviceId, personal=true, url= "https://example.com/2".toHttpUrl())
         val insertId2 = repository.insertOrUpdateByUrl(entry2)
         assertEquals(2L, insertId2)
-        assertEquals(entry2.apply { id = 2L }, repository.getById(2L))
+        assertEquals(entry2.copy(id = 2L), repository.getById(2L))
     }
 
     @Test

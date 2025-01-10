@@ -26,14 +26,14 @@ annotation class ServiceType
         ])
 data class Service(
     @PrimaryKey(autoGenerate = true)
-    var id: Long,
+    val id: Long,
 
-    var accountName: String,
+    val accountName: String,
 
     @ServiceType
-    var type: String,
+    val type: String,
 
-    var principal: HttpUrl?
+    val principal: HttpUrl?
 ) {
 
     companion object {
