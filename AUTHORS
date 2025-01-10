@@ -1,11 +1,7 @@
-# This is the list of significant contributors to DAVx5.
-#
-# This does not necessarily list everyone who has contributed work.
-# To see the full list of contributors, see the revision history in
-# source control.
+You can view the list of people who have contributed to the code base in the version control history:
+https://github.com/bitfireAT/davx5-ose/graphs/contributors
 
-Ricki Hirner (bitfire.at)
-Bernhard Stockmann (bitfire.at)
+Translators are not mentioned in the history explicitly.
+The list of translators can be found in the About screen.
 
-Sunik Kupfer (bitfire.at)
-Patrick Lang (techbee.at)
+Every contribution is welcome. There are many other forms of contributing besides writing code!
