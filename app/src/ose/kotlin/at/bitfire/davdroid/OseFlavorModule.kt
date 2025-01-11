@@ -24,15 +24,15 @@ interface OseFlavorModules {
     @InstallIn(ActivityComponent::class)
     interface ForActivities {
         @Binds
+        fun accountsDrawerHandler(impl: OseAccountsDrawerHandler): AccountsDrawerHandler
+
+        @Binds
         fun loginTypesProvider(impl: StandardLoginTypesProvider): LoginTypesProvider
     }
 
     @Module
     @InstallIn(ViewModelComponent::class)
     interface ForViewModels {
-        @Binds
-        fun accountsDrawerHandler(impl: OseAccountsDrawerHandler): AccountsDrawerHandler
-
         @Binds
         fun appLicenseInfoProvider(impl: OpenSourceLicenseInfoProvider): AboutActivity.AppLicenseInfoProvider
 
