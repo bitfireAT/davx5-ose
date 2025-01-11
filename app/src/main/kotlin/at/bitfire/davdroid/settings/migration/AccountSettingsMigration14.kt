@@ -6,16 +6,13 @@ package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
 import android.content.ContentResolver
-import android.content.Context
 import android.provider.CalendarContract
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.ical4android.TaskProvider
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
@@ -27,7 +24,6 @@ import javax.inject.Inject
  */
 class AccountSettingsMigration14 @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext private val context: Context,
     private val logger: Logger
 ): AccountSettingsMigration {
 
@@ -36,7 +32,7 @@ class AccountSettingsMigration14 @Inject constructor(
         ContentResolver.cancelSync(account, null)
 
         val authorities = listOf(
-            context.getString(R.string.address_books_authority),
+            "at.bitfire.davdroid.addressbooks",
             CalendarContract.AUTHORITY,
             TaskProvider.ProviderName.JtxBoard.authority,
             TaskProvider.ProviderName.OpenTasks.authority,

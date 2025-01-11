@@ -4,10 +4,15 @@
 
 package at.bitfire.davdroid.db
 
+import androidx.annotation.StringDef
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import okhttp3.HttpUrl
+
+@Retention(AnnotationRetention.SOURCE)
+@StringDef(Service.TYPE_CALDAV, Service.TYPE_CARDDAV)
+annotation class ServiceType
 
 /**
  * A service entity.
@@ -21,12 +26,14 @@ import okhttp3.HttpUrl
         ])
 data class Service(
     @PrimaryKey(autoGenerate = true)
-    var id: Long,
+    val id: Long,
 
-    var accountName: String,
-    var type: String,
+    val accountName: String,
 
-    var principal: HttpUrl?
+    @ServiceType
+    val type: String,
+
+    val principal: HttpUrl?
 ) {
 
     companion object {

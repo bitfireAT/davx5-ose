@@ -11,7 +11,6 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -77,9 +76,8 @@ class AccountSettingsMigration19Test {
         val account = Account("Some", "Test")
         migration.migrate(account)
 
-        val addressBookAuthority = context.getString(R.string.address_books_authority)
         verify {
-            workManager.cancelUniqueWork("periodic-sync $addressBookAuthority Test/Some")
+            workManager.cancelUniqueWork("periodic-sync at.bitfire.davdroid.addressbooks Test/Some")
             workManager.cancelUniqueWork("periodic-sync com.android.calendar Test/Some")
             workManager.cancelUniqueWork("periodic-sync at.techbee.jtx.provider Test/Some")
             workManager.cancelUniqueWork("periodic-sync org.dmfs.tasks Test/Some")

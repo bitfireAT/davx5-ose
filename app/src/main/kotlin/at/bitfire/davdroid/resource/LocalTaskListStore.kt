@@ -10,6 +10,7 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -24,11 +25,12 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.TaskLists
+import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
 import java.util.logging.Logger
 
 class LocalTaskListStore @AssistedInject constructor(
-    @Assisted authority: String,
+    @Assisted private val providerName: TaskProvider.ProviderName,
     val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
     val db: AppDatabase,
@@ -37,12 +39,10 @@ class LocalTaskListStore @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(authority: String): LocalTaskListStore
+        fun create(providerName: TaskProvider.ProviderName): LocalTaskListStore
     }
 
     private val serviceDao = db.serviceDao()
-
-    private val providerName = TaskProvider.ProviderName.fromAuthority(authority)
 
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalTaskList? {
@@ -54,15 +54,21 @@ class LocalTaskListStore @AssistedInject constructor(
         return DmfsTaskList.findByID(account, provider, providerName, LocalTaskList.Factory, ContentUris.parseId(uri))
     }
 
-    private fun create(account: Account, provider: ContentProviderClient, providerName: TaskProvider.ProviderName, info: Collection): Uri {
+    private fun create(account: Account, provider: ContentProviderClient, providerName: TaskProvider.ProviderName, fromCollection: Collection): Uri {
         // If the collection doesn't have a color, use a default color.
-        if (info.color != null)
-            info.color = Constants.DAVDROID_GREEN_RGBA
+        val collectionWithColor = if (fromCollection.color != null)
+            fromCollection
+        else
+            fromCollection.copy(color = Constants.DAVDROID_GREEN_RGBA)
 
-        val values = valuesFromCollectionInfo(info, withColor = true)
-        values.put(TaskLists.OWNER, account.name)
-        values.put(TaskLists.SYNC_ENABLED, 1)
-        values.put(TaskLists.VISIBLE, 1)
+        val values = valuesFromCollectionInfo(
+            info = collectionWithColor,
+            withColor = true
+        ).apply {
+            put(TaskLists.OWNER, account.name)
+            put(TaskLists.SYNC_ENABLED, 1)
+            put(TaskLists.VISIBLE, 1)
+        }
         return DmfsTaskList.Companion.create(account, provider, providerName, values)
     }
 
@@ -97,6 +103,14 @@ class LocalTaskListStore @AssistedInject constructor(
 
     override fun delete(localCollection: LocalTaskList) {
         localCollection.delete()
+    }
+
+    override fun updateAccount(oldAccount: Account, newAccount: Account) {
+        TaskProvider.acquire(context, providerName)?.use { provider ->
+            val values = contentValuesOf(Tasks.ACCOUNT_NAME to newAccount.name)
+            val uri = Tasks.getContentUri(providerName.authority)
+            provider.client.update(uri, values, "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
+        }
     }
 
 }

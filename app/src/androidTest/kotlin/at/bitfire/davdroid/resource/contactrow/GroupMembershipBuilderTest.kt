@@ -31,40 +31,14 @@ import javax.inject.Inject
 @HiltAndroidTest
 class GroupMembershipBuilderTest {
 
-    companion object {
-
-        @JvmField
-        @ClassRule
-        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
-
-        private lateinit var provider: ContentProviderClient
-
-        @BeforeClass
-        @JvmStatic
-        fun connect() {
-            val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
-            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun disconnect() {
-            provider.close()
-        }
-
-    }
+    @Inject @ApplicationContext
+    lateinit var context: Context
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    @Inject
-    lateinit var addressbookFactory: LocalTestAddressBook.Factory
-
-    @Inject
-    @ApplicationContext
-    lateinit var context: Context
-
     val account = Account("Test Account", "Test Account Type")
+
 
     @Before
     fun inject() {
@@ -77,11 +51,15 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
-        val addressBookGroupsAsCategories = addressbookFactory.create(account, provider, GroupMethod.CATEGORIES)
-        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories, false).build().also { result ->
-            assertEquals(1, result.size)
-            assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
-            assertEquals(addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP"), result[0].values[GroupMembership.GROUP_ROW_ID])
+        val addressBookGroupsAsCategories = LocalTestAddressBook.create(context, account, provider, GroupMethod.CATEGORIES)
+        try {
+            GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories, false).build().also { result ->
+                assertEquals(1, result.size)
+                assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
+                assertEquals(addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP"), result[0].values[GroupMembership.GROUP_ROW_ID])
+            }
+        } finally {
+            addressBookGroupsAsCategories.remove()
         }
     }
 
@@ -90,11 +68,39 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
-        val addressBookGroupsAsVCards = addressbookFactory.create(account, provider, GroupMethod.GROUP_VCARDS)
-        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards, false).build().also { result ->
-            // group membership is constructed during post-processing
-            assertEquals(0, result.size)
+        val addressBookGroupsAsVCards = LocalTestAddressBook.create(context, account, provider, GroupMethod.GROUP_VCARDS)
+        try {
+            GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards, false).build().also { result ->
+                // group membership is constructed during post-processing
+                assertEquals(0, result.size)
+            }
+        } finally {
+            addressBookGroupsAsVCards.remove()
         }
+    }
+
+
+    companion object {
+
+        @JvmField
+        @ClassRule
+        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
+
+        private lateinit var provider: ContentProviderClient
+
+        @BeforeClass
+        @JvmStatic
+        fun connect() {
+            val context: Context = InstrumentationRegistry.getInstrumentation().context
+            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun disconnect() {
+            provider.close()
+        }
+
     }
 
 }
