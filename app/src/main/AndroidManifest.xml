@@ -69,6 +69,14 @@
             </intent-filter>
         </activity>
 
+        <!--
+        Left here for external apps.
+        Automatically redirects to MainActivity.
+        Should be removed in the future.
+        -->
+        <!--suppress DeprecatedClassUsageInspection -->
+        <activity android:name=".ui.AccountsActivity" android:exported="true" />
+
         <activity
             android:name=".ui.AppSettingsActivity"
             android:label="@string/app_settings"

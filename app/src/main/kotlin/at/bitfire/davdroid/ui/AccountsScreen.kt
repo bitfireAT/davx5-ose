@@ -91,7 +91,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun AccountsScreen(backStackEntry: NavBackStackEntry) {
+fun AccountsScreen(
+    backStackEntry: NavBackStackEntry,
+    accountsDrawerHandler: AccountsDrawerHandler
+) {
     val route = backStackEntry.toRoute<Routes.Accounts>()
     val navController = LocalNavController.current
     val context = LocalContext.current
@@ -107,6 +110,7 @@ fun AccountsScreen(backStackEntry: NavBackStackEntry) {
     }
 
     AccountsScreen(
+        accountsDrawerHandler = accountsDrawerHandler,
         initialSyncAccounts = route.syncAccounts,
         onShowAppIntro = { navController.navigate(Routes.Intro) },
         onAddAccount = {
@@ -128,6 +132,7 @@ fun AccountsScreen(backStackEntry: NavBackStackEntry) {
 
 @Composable
 fun AccountsScreen(
+    accountsDrawerHandler: AccountsDrawerHandler,
     initialSyncAccounts: Boolean,
     onShowAppIntro: () -> Unit,
     onAddAccount: () -> Unit,
@@ -154,7 +159,7 @@ fun AccountsScreen(
     }
 
     AccountsScreen(
-        accountsDrawerHandler = model.accountsDrawerHandler,
+        accountsDrawerHandler = accountsDrawerHandler,
         accounts = accounts,
         showSyncAll = showSyncAll,
         onSyncAll = { model.syncAllAccounts() },

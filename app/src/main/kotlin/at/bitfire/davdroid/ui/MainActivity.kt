@@ -17,10 +17,14 @@ import at.bitfire.davdroid.ui.intro.IntroScreen
 import at.bitfire.davdroid.ui.navigation.LocalNavController
 import at.bitfire.davdroid.ui.navigation.Routes
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity: AppCompatActivity() {
+
+    @Inject
+    lateinit var accountsDrawerHandler: AccountsDrawerHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +37,7 @@ class MainActivity: AppCompatActivity() {
                     navController = navController,
                     startDestination = accountsFromIntent()
                 ) {
-                    composable<Routes.Accounts> { AccountsScreen(it) }
+                    composable<Routes.Accounts> { AccountsScreen(it, accountsDrawerHandler) }
                     composable<Routes.Intro> { IntroScreen() }
                     composable<Routes.About> { AboutScreen() }
                 }
