@@ -86,7 +86,11 @@ object UiUtils {
                         ShortcutInfo.Builder(context, SHORTCUT_SYNC_ALL)
                             .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
                             .setShortLabel(context.getString(R.string.accounts_sync_all))
-                            .setIntent(Intent(Intent.ACTION_SYNC, null, context, MainActivity::class.java))
+                            .setIntent(
+                                Intent(Intent.ACTION_SYNC, null, context, MainActivity::class.java).apply {
+                                    putExtra(MainActivity.EXTRA_SYNC_ACCOUNTS, true)
+                                }
+                            )
                             .build()
                     )
                 } catch(e: Exception) {
