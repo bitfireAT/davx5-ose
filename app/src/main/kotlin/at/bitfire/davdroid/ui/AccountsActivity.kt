@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import at.bitfire.davdroid.ui.navigation.Destination
 
 /**
  * Legacy activity, previously used to host [AccountsScreen].
@@ -17,9 +18,10 @@ class AccountsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        MainActivity.legacyRedirect(this) {
-            putExtra(MainActivity.EXTRA_SYNC_ACCOUNTS, action == Intent.ACTION_SYNC)
-        }
+        MainActivity.legacyRedirect(
+            activity = this,
+            uri = Destination.Accounts.PATH + "?syncAccounts=${intent.action == Intent.ACTION_SYNC}"
+        )
     }
 
 }

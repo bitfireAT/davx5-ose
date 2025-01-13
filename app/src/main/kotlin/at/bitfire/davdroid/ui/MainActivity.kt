@@ -5,12 +5,15 @@
 package at.bitfire.davdroid.ui
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.core.net.toUri
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -31,12 +34,16 @@ class MainActivity: AppCompatActivity() {
         setContent {
             val navController = rememberNavController()
 
+            LaunchedEffect(Unit) { intent.data?.let(navController::navigate) }
+
             CompositionLocalProvider(LocalNavController provides navController) {
                 NavHost(
                     navController = navController,
-                    startDestination = accountsFromIntent()
+                    startDestination = Destination.Accounts()
                 ) {
-                    composable<Destination.Accounts> {
+                    composable<Destination.Accounts>(
+                        deepLinks = Destination.Accounts.deepLinks
+                    ) {
                         AccountsScreen(it, accountsDrawerHandler)
                     }
                 }
@@ -44,51 +51,35 @@ class MainActivity: AppCompatActivity() {
         }
     }
 
-    /**
-     * Initializes the accounts route from the current intent data.
-     * Checks whether the action is [Intent.ACTION_SYNC].
-     */
-    private fun accountsFromIntent() = Destination.Accounts(
-        // handle "Sync all" intent from launcher shortcut
-        syncAccounts = intent.getBooleanExtra(EXTRA_SYNC_ACCOUNTS, false)
-    )
-
 
     companion object {
-        /**
-         * Used by the "Sync all" intent from launcher shortcut.
-         */
-        const val EXTRA_SYNC_ACCOUNTS = "sync-accounts"
+
+        fun legacyIntent(context: Context, uri: String): Intent {
+            return Intent(
+                Intent.ACTION_VIEW,
+                uri.toUri(),
+                context,
+                MainActivity::class.java
+            ).apply {
+                // Create a new activity, do not allow going back.
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+        }
 
         /**
          * Starts [MainActivity] as a redirection of a legacy activity.
-         * By default, copies all the intent data from [activity].
          * This is used for migrating all multi-activity logic, to single-activity.
          *
          * @param activity The activity that is requesting the redirection.
-         * @param builder Any modifications or extras that you want to add to the intent should be
-         * placed here.
+         * @param uri The URI to launch. Should have schema `davx5://`
          */
         @UiThread
-        fun legacyRedirect(activity: Activity, builder: Intent.() -> Unit = {}) {
-            val intent = activity.intent
-
+        fun legacyRedirect(activity: Activity, uri: String) {
             activity.startActivity(
-                Intent(activity, MainActivity::class.java).apply {
-                    // Create a new activity, do not allow going back.
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    // Copy the action called.
-                    action = intent.action
-                    // Copy any intent data.
-                    data = intent.data
-                    // Copy all extras.
-                    putExtras(intent)
-
-                    // Perform any extra modifications required
-                    builder()
-                }
+                legacyIntent(activity, uri)
             )
         }
+
     }
 
 }

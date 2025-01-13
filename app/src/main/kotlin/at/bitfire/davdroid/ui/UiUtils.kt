@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui
 
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.Typeface
@@ -38,6 +37,7 @@ import androidx.core.text.getSpans
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.navigation.Destination
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -87,9 +87,10 @@ object UiUtils {
                             .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
                             .setShortLabel(context.getString(R.string.accounts_sync_all))
                             .setIntent(
-                                Intent(Intent.ACTION_SYNC, null, context, MainActivity::class.java).apply {
-                                    putExtra(MainActivity.EXTRA_SYNC_ACCOUNTS, true)
-                                }
+                                MainActivity.legacyIntent(
+                                    context,
+                                    uri = Destination.Accounts.PATH + "?syncAccounts=true"
+                                )
                             )
                             .build()
                     )
