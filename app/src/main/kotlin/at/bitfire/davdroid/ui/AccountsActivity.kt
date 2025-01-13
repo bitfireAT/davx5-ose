@@ -8,9 +8,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 
-// Automatically redirects to MainActivity. Should be removed in the future.
-// Needed for backwards compatibility with external apps.
+/**
+ * Legacy activity, previously used to host [AccountsScreen].
+ * Needed for backwards compatibility with external apps / shortcuts that call the activity directly.
+ */
 class AccountsActivity: AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -18,4 +21,5 @@ class AccountsActivity: AppCompatActivity() {
             putExtra(MainActivity.EXTRA_SYNC_ACCOUNTS, action == Intent.ACTION_SYNC)
         }
     }
+
 }

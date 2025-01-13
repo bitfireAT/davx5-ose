@@ -82,7 +82,7 @@ import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.intro.IntroActivity
-import at.bitfire.davdroid.ui.navigation.Routes
+import at.bitfire.davdroid.ui.navigation.Destination
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -95,7 +95,7 @@ fun AccountsScreen(
     backStackEntry: NavBackStackEntry,
     accountsDrawerHandler: AccountsDrawerHandler
 ) {
-    val route = backStackEntry.toRoute<Routes.Accounts>()
+    val route = backStackEntry.toRoute<Destination.Accounts>()
     val context = LocalContext.current
     val activity = context as? Activity
 

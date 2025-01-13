@@ -71,11 +71,9 @@
         </activity>
 
         <!--
-        Left here for external apps.
+        Left here for external apps / legacy shortcuts. Should be removed in the future.
         Automatically redirects to MainActivity.
-        Should be removed in the future.
         -->
-        <!--suppress DeprecatedClassUsageInspection -->
         <activity android:name=".ui.AccountsActivity" android:exported="true" />
 
         <activity

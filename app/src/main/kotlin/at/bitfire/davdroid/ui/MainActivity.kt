@@ -14,11 +14,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import at.bitfire.davdroid.ui.navigation.Destination
 import at.bitfire.davdroid.ui.navigation.LocalNavController
-import at.bitfire.davdroid.ui.navigation.Routes
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class MainActivity: AppCompatActivity() {
@@ -37,7 +36,9 @@ class MainActivity: AppCompatActivity() {
                     navController = navController,
                     startDestination = accountsFromIntent()
                 ) {
-                    composable<Routes.Accounts> { AccountsScreen(it, accountsDrawerHandler) }
+                    composable<Destination.Accounts> {
+                        AccountsScreen(it, accountsDrawerHandler)
+                    }
                 }
             }
         }
@@ -47,10 +48,11 @@ class MainActivity: AppCompatActivity() {
      * Initializes the accounts route from the current intent data.
      * Checks whether the action is [Intent.ACTION_SYNC].
      */
-    private fun accountsFromIntent() = Routes.Accounts(
+    private fun accountsFromIntent() = Destination.Accounts(
         // handle "Sync all" intent from launcher shortcut
         syncAccounts = intent.getBooleanExtra(EXTRA_SYNC_ACCOUNTS, false)
     )
+
 
     companion object {
         /**
