@@ -286,15 +286,15 @@ class AccountSettings @AssistedInject constructor(
 
     // UI settings
 
-    data class ShowOnlyPersonal(
-        val onlyPersonal: Boolean,
-        val locked: Boolean
-    )
-
-    fun getShowOnlyPersonal(): ShowOnlyPersonal {
+    fun getShowOnlyPersonal(): Boolean {
         @Suppress("DEPRECATION")
         val pair = getShowOnlyPersonalPair()
-        return ShowOnlyPersonal(onlyPersonal = pair.first, locked = !pair.second)
+        return pair.first
+    }
+    fun getShowOnlyPersonalLocked(): Boolean {
+        @Suppress("DEPRECATION")
+        val pair = getShowOnlyPersonalPair()
+        return !pair.second
     }
 
     /**
