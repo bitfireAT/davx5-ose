@@ -25,6 +25,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import androidx.work.WorkRequest
 import at.bitfire.davdroid.push.PushNotificationManager
+import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_NAME
@@ -36,8 +37,13 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_UPLOAD
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.InputResync
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.NO_RESYNC
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
+import dagger.Binds
 import dagger.Lazy
+import dagger.Module
+import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.concurrent.TimeUnit
@@ -260,7 +266,7 @@ class SyncWorkerManager @Inject constructor(
      *
      * @param workStates   list of states of workers to match
      * @param account      the account which the workers belong to
-     * @param authorities  type of sync work, ie [CalendarContract.AUTHORITY]
+     * @param dataTypes    type of sync work, ie [CalendarContract.AUTHORITY]
      * @param whichTag     function to generate tag that should be observed for given account and authority
      *
      * @return flow that emits `true` if at least one worker with matching query was found; `false` otherwise
@@ -283,6 +289,30 @@ class SyncWorkerManager @Inject constructor(
             .map { workInfoList ->
                 workInfoList.isNotEmpty()
             }
+    }
+
+    /**
+     * Listener that enqueues a push registration worker when the collection list changes.
+     */
+    class CollectionsListener @Inject constructor(
+        private val workerManager: SyncWorkerManager
+    ): DavCollectionRepository.OnChangeListener {
+
+        override fun onCollectionsChanged(account: Account?) {
+            account?.let { workerManager.enqueueOneTimeAllAuthorities(it) }
+        }
+
+    }
+
+    /**
+     * Hilt module that registers [CollectionsListener] in [DavCollectionRepository].
+     */
+    @Module
+    @InstallIn(SingletonComponent::class)
+    interface SyncWorkerManagerModule {
+        @Binds
+        @IntoSet
+        fun listener(impl: CollectionsListener): DavCollectionRepository.OnChangeListener
     }
 
 }
