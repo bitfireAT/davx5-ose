@@ -30,6 +30,9 @@ class DavCollectionRepositoryTest {
     var hiltRule = HiltAndroidRule(this)
 
     @Inject
+    lateinit var accountRepository: Lazy<AccountRepository>
+
+    @Inject
     lateinit var accountSettingsFactory: AccountSettings.Factory
 
     @Inject
@@ -69,6 +72,7 @@ class DavCollectionRepositoryTest {
         )
         val testObserver = mockk<DavCollectionRepository.OnChangeListener>(relaxed = true)
         val collectionRepository = DavCollectionRepository(
+            accountRepository,
             accountSettingsFactory,
             context,
             db,
@@ -82,12 +86,12 @@ class DavCollectionRepositoryTest {
 
         assert(db.collectionDao().get(collectionId)?.forceReadOnly == false)
         verify(exactly = 0) {
-            testObserver.onCollectionsChanged()
+            testObserver.onCollectionsChanged(any())
         }
         collectionRepository.setForceReadOnly(collectionId, true)
         assert(db.collectionDao().get(collectionId)?.forceReadOnly == true)
         verify(exactly = 1) {
-            testObserver.onCollectionsChanged()
+            testObserver.onCollectionsChanged(any())
         }
     }
 
