@@ -9,11 +9,7 @@ import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
@@ -34,10 +30,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -62,26 +61,32 @@ class AccountScreenModel @AssistedInject constructor(
         fun create(account: Account): AccountScreenModel
     }
 
+    private val _showOnlyPersonal = MutableStateFlow(false)
+    val showOnlyPersonal = _showOnlyPersonal.asStateFlow()
+
+    private var _showOnlyPersonalLocked = MutableStateFlow(false)
+    val showOnlyPersonalLocked = _showOnlyPersonalLocked.asStateFlow()
+
+    /**
+     * Only acquire account settings on a worker thread!
+     */
+    private val accountSettings by lazy { accountSettingsFactory.create(account) }
+
+    private suspend fun reload() = withContext(Dispatchers.Default) {
+        _showOnlyPersonal.value = accountSettings.getShowOnlyPersonal()
+        _showOnlyPersonalLocked.value = accountSettings.getShowOnlyPersonalLocked()
+    }
+
     /** whether the account is invalid and the screen shall be closed */
     val invalidAccount = accountRepository.getAllFlow().map { accounts ->
         !accounts.contains(account)
     }
 
-    private val refreshSettingsSignal = MutableLiveData(Unit)
-    val showOnlyPersonal = refreshSettingsSignal.switchMap<Unit, AccountSettings.ShowOnlyPersonal> {
-        object : LiveData<AccountSettings.ShowOnlyPersonal>() {
-            init {
-                viewModelScope.launch(Dispatchers.IO) {
-                    val settings = accountSettingsFactory.create(account)
-                    postValue(settings.getShowOnlyPersonal())
-                }
-            }
+    fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
+        CoroutineScope(Dispatchers.Default).launch {
+            accountSettings.setShowOnlyPersonal(showOnlyPersonal)
+            reload()
         }
-    }.asFlow()
-    fun setShowOnlyPersonal(showOnlyPersonal: Boolean) = viewModelScope.launch(Dispatchers.IO) {
-        val settings = accountSettingsFactory.create(account)
-        settings.setShowOnlyPersonal(showOnlyPersonal)
-        refreshSettingsSignal.postValue(Unit)
     }
 
     val cardDavSvc = serviceRepository

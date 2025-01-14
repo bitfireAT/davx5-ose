@@ -11,7 +11,6 @@ import androidx.paging.map
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,7 +42,7 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
     operator fun invoke(
         serviceFlow: Flow<Service?>,
         collectionType: String,
-        showOnlyPersonalFlow: Flow<AccountSettings.ShowOnlyPersonal?>
+        showOnlyPersonalFlow: Flow<Boolean>
     ): Flow<PagingData<Collection>> =
         combine(serviceFlow, showOnlyPersonalFlow, forceReadOnlyAddressBooksFlow) { service, onlyPersonal, forceReadOnlyAddressBooks ->
             if (service == null)
@@ -52,7 +51,7 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
                 val dataFlow = Pager(
                     config = PagingConfig(PAGER_SIZE),
                     pagingSourceFactory = {
-                        if (onlyPersonal?.onlyPersonal == true)
+                        if (onlyPersonal == true)
                             collectionRepository.pagePersonalByServiceAndType(service.id, collectionType)
                         else
                             collectionRepository.pageByServiceAndType(service.id, collectionType)
