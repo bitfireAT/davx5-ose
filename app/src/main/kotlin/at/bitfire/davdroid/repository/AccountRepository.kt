@@ -10,6 +10,7 @@ import android.accounts.OnAccountsUpdateListener
 import android.content.Context
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
@@ -159,6 +160,13 @@ class AccountRepository @Inject constructor(
         awaitClose {
             accountManager.removeOnAccountsUpdatedListener(listener)
         }
+    }
+
+    /**
+     * Returns the account for a given collection.
+     */
+    fun getByCollection(collection: Collection) = serviceRepository.get(collection.serviceId)?.let {
+        fromName(it.accountName)
     }
 
     /**

@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.push
 
+import android.accounts.Account
 import android.content.Context
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -79,7 +80,7 @@ class PushRegistrationWorkerManager @Inject constructor(
         val workerManager: PushRegistrationWorkerManager
     ): DavCollectionRepository.OnChangeListener {
 
-        override fun onCollectionsChanged() {
+        override fun onCollectionsChanged(account: Account?) {
             workerManager.updatePeriodicWorker()
         }
 

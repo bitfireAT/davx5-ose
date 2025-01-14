@@ -21,6 +21,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -124,13 +125,13 @@ class CollectionScreenModel @AssistedInject constructor(
     }
 
     fun setForceReadOnly(forceReadOnly: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             collectionRepository.setForceReadOnly(collectionId, forceReadOnly)
         }
     }
 
     fun setSync(sync: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             collectionRepository.setSync(collectionId, sync)
         }
     }

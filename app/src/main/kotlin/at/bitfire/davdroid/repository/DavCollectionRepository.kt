@@ -54,6 +54,7 @@ import javax.inject.Inject
  * Implements an observer pattern that can be used to listen for changes of collections.
  */
 class DavCollectionRepository @Inject constructor(
+    private val accountRepository: Lazy<AccountRepository>,
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
@@ -108,7 +109,7 @@ class DavCollectionRepository @Inject constructor(
         )
         dao.insertAsync(collection)
 
-        notifyOnChangeListeners()
+        notifyOnChangeListeners(account)
     }
 
     /**
@@ -168,7 +169,7 @@ class DavCollectionRepository @Inject constructor(
         // Some servers are known to change the supported components (VEVENT, …) after creation.
         RefreshCollectionsWorker.enqueue(context, homeSet.serviceId)
 
-        notifyOnChangeListeners()
+        notifyOnChangeListeners(account)
     }
 
     /** Deletes the given collection from the server and the database. */
@@ -245,7 +246,7 @@ class DavCollectionRepository @Inject constructor(
      */
     fun insertOrUpdateByUrl(collection: Collection) {
         dao.insertOrUpdateByUrl(collection)
-        notifyOnChangeListeners()
+        notifyOnChangeListeners(getAccount(collection.id))
     }
 
     fun pageByServiceAndType(serviceId: Long, type: String) =
@@ -259,7 +260,7 @@ class DavCollectionRepository @Inject constructor(
      */
     suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
         dao.updateForceReadOnly(id, forceReadOnly)
-        notifyOnChangeListeners()
+        notifyOnChangeListeners(getAccount(id))
     }
 
     /**
@@ -267,7 +268,7 @@ class DavCollectionRepository @Inject constructor(
      */
     suspend fun setSync(id: Long, forceReadOnly: Boolean) {
         dao.updateSync(id, forceReadOnly)
-        notifyOnChangeListeners()
+        notifyOnChangeListeners(getAccount(id))
     }
 
     fun updatePushSubscription(id: Long, subscriptionUrl: String?, expires: Long?) {
@@ -283,11 +284,18 @@ class DavCollectionRepository @Inject constructor(
      */
     fun delete(collection: Collection) {
         dao.delete(collection)
-        notifyOnChangeListeners()
+        notifyOnChangeListeners(getAccount(collection.id))
     }
 
 
     // helpers
+
+    /**
+     * Returns the account the given collection belongs to.
+     */
+    fun getAccount(collectionId: Long) = dao.get(collectionId)?.let {
+        accountRepository.get().getByCollection(it)
+    }
 
     private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
         HttpClient.Builder(context, accountSettingsFactory.create(account))
@@ -419,9 +427,9 @@ class DavCollectionRepository @Inject constructor(
     /**
      * Notifies registered listeners about changes in the collections.
      */
-    private fun notifyOnChangeListeners() = synchronized(listeners) {
+    private fun notifyOnChangeListeners(account: Account?) = synchronized(listeners) {
         listeners.forEach { listener ->
-            listener.onCollectionsChanged()
+            listener.onCollectionsChanged(account)
         }
     }
 
@@ -431,7 +439,7 @@ class DavCollectionRepository @Inject constructor(
          * of the data-modifying method. For instance, if [delete] is called, [onCollectionsChanged]
          * will be called in the context/thread that called [delete].
          */
-        fun onCollectionsChanged()
+        fun onCollectionsChanged(account: Account?)
     }
 
     @Module

@@ -169,7 +169,7 @@ class AccountScreenModel @AssistedInject constructor(
     }
 
     fun setCollectionSync(id: Long, sync: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             collectionRepository.setSync(id, sync)
         }
     }
