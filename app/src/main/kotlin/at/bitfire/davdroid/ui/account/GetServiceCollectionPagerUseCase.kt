@@ -16,7 +16,7 @@ import at.bitfire.davdroid.settings.SettingsManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flattenConcat
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -71,6 +71,6 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
                 else
                     dataFlow
             }
-        }.flattenConcat()
+        }.flatMapLatest { it }
 
 }
