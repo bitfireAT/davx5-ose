@@ -435,36 +435,42 @@ fun AccountList(
 @Composable
 @Preview
 fun AccountList_Preview_Idle() {
-    AccountList(
-        listOf(
-            AccountsModel.AccountInfo(
-                Account("Account Name", "test"),
-                AccountProgress.Idle
+    AppTheme {
+        AccountList(
+            listOf(
+                AccountsModel.AccountInfo(
+                    Account("Account Name", "test"),
+                    AccountProgress.Idle
+                )
             )
         )
-    )
+    }
 }
 
 @Composable
 @Preview
 fun AccountList_Preview_SyncPending() {
-    AccountList(listOf(
-        AccountsModel.AccountInfo(
-            Account("Account Name", "test"),
-            AccountProgress.Pending
-        )
-    ))
+    AppTheme {
+        AccountList(listOf(
+            AccountsModel.AccountInfo(
+                Account("Account Name", "test"),
+                AccountProgress.Pending
+            )
+        ))
+    }
 }
 
 @Composable
 @Preview
 fun AccountList_Preview_Syncing() {
-    AccountList(listOf(
-        AccountsModel.AccountInfo(
-            Account("Account Name", "test"),
-            AccountProgress.Active
-        )
-    ))
+    AppTheme {
+        AccountList(listOf(
+            AccountsModel.AccountInfo(
+                Account("Account Name", "test"),
+                AccountProgress.Active
+            )
+        ))
+    }
 }
 
 
@@ -537,11 +543,13 @@ fun SyncWarnings(
 @Composable
 @Preview
 fun SyncWarnings_Preview() {
-    SyncWarnings(
-        notificationsWarning = true,
-        internetWarning = true,
-        batterySaverActive = true,
-        dataSaverActive = true,
-        lowStorageWarning = true
-    )
+    AppTheme {
+        SyncWarnings(
+            notificationsWarning = true,
+            internetWarning = true,
+            batterySaverActive = true,
+            dataSaverActive = true,
+            lowStorageWarning = true
+        )
+    }
 }
