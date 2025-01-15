@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import at.bitfire.davdroid.ui.navigation.Destination
 
 /**
@@ -18,9 +19,14 @@ class AccountsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val uri = Destination.Accounts.PATH.toUri().buildUpon()
+        val syncOnLaunch = intent.action == Intent.ACTION_SYNC
+        if (syncOnLaunch)
+            uri.appendQueryParameter("syncAccounts", "true")
+
         MainActivity.legacyRedirect(
             activity = this,
-            uri = Destination.Accounts.PATH + "?syncAccounts=${intent.action == Intent.ACTION_SYNC}"
+            uri = uri.build()
         )
     }
 

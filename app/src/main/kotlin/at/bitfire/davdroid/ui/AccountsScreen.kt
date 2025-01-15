@@ -73,8 +73,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.toRoute
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountActivity
@@ -82,7 +80,6 @@ import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.intro.IntroActivity
-import at.bitfire.davdroid.ui.navigation.Destination
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -92,10 +89,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AccountsScreen(
-    backStackEntry: NavBackStackEntry,
+    initialSyncAccounts: Boolean,
     accountsDrawerHandler: AccountsDrawerHandler
 ) {
-    val route = backStackEntry.toRoute<Destination.Accounts>()
     val context = LocalContext.current
     val activity = context as? Activity
 
@@ -105,7 +101,7 @@ fun AccountsScreen(
 
     AccountsScreen(
         accountsDrawerHandler = accountsDrawerHandler,
-        initialSyncAccounts = route.syncAccounts,
+        initialSyncAccounts = initialSyncAccounts,
         onShowAppIntro = {
             introActivityLauncher.launch(null)
         },

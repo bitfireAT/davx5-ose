@@ -5,12 +5,15 @@ import kotlinx.serialization.Serializable
 
 object Destination {
 
-    private const val BASE_URI = "davx5://destination"
+    /**
+     * Base URI for internal (non-exposed) deep links (used for navigation).
+     */
+    private const val APP_BASE_URI = "nav:"
 
     @Serializable
     data class Accounts(val syncAccounts: Boolean = false) {
         companion object {
-            const val PATH = "$BASE_URI/accounts"
+            const val PATH = "$APP_BASE_URI/accounts"
 
             val deepLinks = listOf(
                 navDeepLink<Accounts>(basePath = PATH)

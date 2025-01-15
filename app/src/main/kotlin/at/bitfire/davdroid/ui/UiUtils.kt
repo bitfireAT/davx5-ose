@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.net.toUri
 import androidx.core.text.getSpans
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
@@ -87,9 +88,9 @@ object UiUtils {
                             .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
                             .setShortLabel(context.getString(R.string.accounts_sync_all))
                             .setIntent(
-                                MainActivity.legacyIntent(
+                                MainActivity.intentWithDestination(
                                     context,
-                                    uri = Destination.Accounts.PATH + "?syncAccounts=true"
+                                    Destination.Accounts.PATH.toUri().buildUpon().appendQueryParameter("syncAccounts", "true").build()
                                 )
                             )
                             .build()
