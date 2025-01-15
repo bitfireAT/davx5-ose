@@ -15,16 +15,22 @@ import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.ui.navigation.Destination
 import at.bitfire.davdroid.ui.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.logging.Logger
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity: AppCompatActivity() {
+
+    @Inject
+    lateinit var logger: Logger
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             Navigation(
-                deepLinkUri = intent.data
+                deepLinkUri = intent.data,
+                logger = logger
             )
         }
     }

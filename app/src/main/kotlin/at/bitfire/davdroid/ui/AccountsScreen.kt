@@ -89,8 +89,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AccountsScreen(
-    initialSyncAccounts: Boolean,
-    accountsDrawerHandler: AccountsDrawerHandler
+    initialSyncAccounts: Boolean
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
@@ -100,7 +99,6 @@ fun AccountsScreen(
     }
 
     AccountsScreen(
-        accountsDrawerHandler = accountsDrawerHandler,
         initialSyncAccounts = initialSyncAccounts,
         onShowAppIntro = {
             introActivityLauncher.launch(null)
@@ -124,7 +122,6 @@ fun AccountsScreen(
 
 @Composable
 fun AccountsScreen(
-    accountsDrawerHandler: AccountsDrawerHandler,
     initialSyncAccounts: Boolean,
     onShowAppIntro: () -> Unit,
     onAddAccount: () -> Unit,
@@ -151,7 +148,7 @@ fun AccountsScreen(
     }
 
     AccountsScreen(
-        accountsDrawerHandler = accountsDrawerHandler,
+        accountsDrawerHandler = model.accountsDrawerHandler,
         accounts = accounts,
         showSyncAll = showSyncAll,
         onSyncAll = { model.syncAllAccounts() },
