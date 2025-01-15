@@ -71,7 +71,7 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
                 if (realScheme != null) {
                     val realUri = Uri.Builder()
                         .scheme(realScheme)
-                        .authority(uri.host)
+                        .encodedAuthority(uri.host+":"+uri.port)
                         .path(uri.path)
                         .query(uri.query)
                     givenUri = realUri.build().toString()
