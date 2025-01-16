@@ -25,7 +25,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.BatterySaver
 import androidx.compose.material.icons.filled.DataSaverOn
 import androidx.compose.material.icons.filled.Menu
@@ -63,11 +62,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -564,7 +565,7 @@ fun SyncWarnings(
 
         if (calendarProviderDisabled)
             ActionCard(
-                icon = Icons.Default.Android,
+                icon = ImageVector.vectorResource(R.drawable.ic_database_off),
                 actionText = stringResource(R.string.account_list_learn_more),
                 onAction = onManageCalendarProvider,
                 modifier = Modifier.padding(vertical = 4.dp)
@@ -574,7 +575,7 @@ fun SyncWarnings(
 
         if (contactsProviderDisabled)
             ActionCard(
-                icon = Icons.Default.Android,
+                icon = ImageVector.vectorResource(R.drawable.ic_database_off),
                 actionText = stringResource(R.string.account_list_learn_more),
                 onAction = onManageContactsProvider,
                 modifier = Modifier.padding(vertical = 4.dp)
