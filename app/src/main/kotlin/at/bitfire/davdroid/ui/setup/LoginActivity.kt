@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +12,8 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.ui.account.AccountActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.net.URI
+import java.net.URISyntaxException
+import java.util.logging.Logger
 import javax.inject.Inject
 
 /**
@@ -59,28 +60,33 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
             var givenPassword: String? = null
 
             // extract URI and optionally username/password from Intent data
+            val logger = Logger.getGlobal()
             intent.data?.normalizeScheme()?.let { uri ->
-                // We've got initial login data from the Intent.
-                // We can't use uri.buildUpon() because this keeps the user info (it's readable, but not writable).
-                val realScheme = when (uri.scheme) {
-                    "caldav", "carddav" -> "http"
-                    "caldavs", "carddavs", "davx5" -> "https"
-                    "http", "https" -> uri.scheme
-                    else -> null
-                }
-                if (realScheme != null) {
-                    val realUri = Uri.Builder()
-                        .scheme(realScheme)
-                        .encodedAuthority(uri.host + if (uri.port > -1) ":"+uri.port else "")
-                        .path(uri.path)
-                        .query(uri.query)
-                    givenUri = realUri.build().toString()
-
-                    // extract user info
-                    uri.userInfo?.split(':')?.let { userInfo ->
-                        givenUsername = userInfo.getOrNull(0)
-                        givenPassword = userInfo.getOrNull(1)
+                try {
+                    // replace caldav[s]:// and carddav[s]:// with http[s]://
+                    val realScheme = when (uri.scheme) {
+                        "caldav", "carddav" -> "http"
+                        "caldavs", "carddavs", "davx5" -> "https"
+                        "http", "https" -> uri.scheme
+                        else -> null
                     }
+                    if (realScheme != null) {
+                        // extract user info
+                        uri.userInfo?.split(':')?.let { userInfo ->
+                            givenUsername = userInfo.getOrNull(0)
+                            givenPassword = userInfo.getOrNull(1)
+                        }
+
+                        // use real scheme, drop user info and fragment
+                        givenUri = try {
+                            URI(realScheme, null, uri.host, uri.port, uri.path, uri.query, null).toString()
+                        } catch (_: URISyntaxException) {
+                            logger.warning("Couldn't construct URI from login Intent data: $uri")
+                            null
+                        }
+                    }
+                } catch (_: URISyntaxException) {
+                    logger.warning("Got invalid URI from login Intent: $uri")
                 }
             }
 
