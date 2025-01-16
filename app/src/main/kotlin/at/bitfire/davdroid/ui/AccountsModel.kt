@@ -205,18 +205,10 @@ class AccountsModel @AssistedInject constructor(
         }
 
     /** whether the calendar provider is missing or disabled */
-    val calendarProviderInaccessible = try {
-        !context.packageManager.getApplicationInfo("com.android.providers.calendar", 0).enabled
-    } catch (_: NameNotFoundException) {
-        true
-    }
+    val calendarProviderInaccessible = !appInstalledAndEnabled("com.android.providers.calendar")
 
     /** whether the calendar provider is missing or disabled */
-    val contactsProviderInaccessible = try {
-        !context.packageManager.getApplicationInfo("com.android.providers.contacts", 0).enabled
-    } catch (_: NameNotFoundException) {
-        true
-    }
+    val contactsProviderInaccessible = !appInstalledAndEnabled("com.android.providers.contacts")
 
 
     init {
@@ -234,6 +226,16 @@ class AccountsModel @AssistedInject constructor(
         // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
         for (account in accountRepository.getAll())
             syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+    }
+
+
+    // helpers
+
+    /** Check if an app is installed and enabled */
+    fun appInstalledAndEnabled(packageName: String): Boolean = try {
+        context.packageManager.getApplicationInfo(packageName, 0).enabled
+    } catch (_: NameNotFoundException) {
+        false
     }
 
 }
