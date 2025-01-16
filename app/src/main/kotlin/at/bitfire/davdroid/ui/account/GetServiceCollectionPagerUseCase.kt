@@ -45,10 +45,8 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
         showOnlyPersonalFlow: Flow<Boolean>
     ): Flow<PagingData<Collection>> =
         combine(serviceFlow, showOnlyPersonalFlow, forceReadOnlyAddressBooksFlow) { service, onlyPersonal, forceReadOnlyAddressBooks ->
-            if (service == null)
-                flowOf(PagingData.empty<Collection>())
-            else {
-                val dataFlow = Pager(
+            service?.let { service ->
+                Pager(
                     config = PagingConfig(PAGER_SIZE),
                     pagingSourceFactory = {
                         if (onlyPersonal == true)
@@ -56,21 +54,16 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
                         else
                             collectionRepository.pageByServiceAndType(service.id, collectionType)
                     }
-                ).flow
-
-                // generate resulting flow; set "forceReadOnly" for every address book if requested
-                if (forceReadOnlyAddressBooks)
-                    dataFlow.map { pagingData ->
-                        pagingData.map { collection ->
-                            if (collectionType == Collection.TYPE_ADDRESSBOOK)
-                                collection.copy(forceReadOnly = true)
-                            else
-                                collection
-                        }
+                ).flow.map { pagingData ->
+                    pagingData.map { collection ->
+                        // set "forceReadOnly" for every address book if requested
+                        if (forceReadOnlyAddressBooks && collectionType == Collection.TYPE_ADDRESSBOOK)
+                            collection.copy(forceReadOnly = true)
+                        else
+                            collection
                     }
-                else
-                    dataFlow
-            }
+                }
+            } ?: flowOf(PagingData.empty())
         }.flatMapLatest { it }
 
 }
