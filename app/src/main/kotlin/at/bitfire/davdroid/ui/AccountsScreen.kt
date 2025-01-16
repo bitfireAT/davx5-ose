@@ -25,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.BatterySaver
 import androidx.compose.material.icons.filled.DataSaverOn
 import androidx.compose.material.icons.filled.Menu
@@ -64,6 +65,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -72,6 +74,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
@@ -122,7 +125,9 @@ fun AccountsScreen(
         internetUnavailable = !model.networkAvailable.collectAsStateWithLifecycle(false).value,
         batterySaverActive = model.batterySaverActive.collectAsStateWithLifecycle(false).value,
         dataSaverActive = model.dataSaverEnabled.collectAsStateWithLifecycle(false).value,
-        storageLow = model.storageLow.collectAsStateWithLifecycle(false).value
+        storageLow = model.storageLow.collectAsStateWithLifecycle(false).value,
+        calendarProviderDisabled = model.calendarProviderInaccessible,
+        contactsProviderDisabled = model.contactsProviderInaccessible
     )
 }
 
@@ -140,7 +145,9 @@ fun AccountsScreen(
     internetUnavailable: Boolean = false,
     batterySaverActive: Boolean = false,
     dataSaverActive: Boolean = false,
-    storageLow: Boolean = false
+    storageLow: Boolean = false,
+    calendarProviderDisabled: Boolean = false,
+    contactsProviderDisabled: Boolean = false
 ) {
     val scope = rememberCoroutineScope()
 
@@ -158,6 +165,11 @@ fun AccountsScreen(
             isRefreshing = false
         }
     }
+
+    val uriHandler = LocalUriHandler.current
+    val manualIntroductionUri = Constants.MANUAL_URL.buildUpon()
+        .appendPath(Constants.MANUAL_PATH_INTRODUCTION)
+        .build()
 
     val snackbarHostState = remember { SnackbarHostState() }
     AppTheme {
@@ -293,6 +305,14 @@ fun AccountsScreen(
                                     val intent = Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
                                     if (intent.resolveActivity(context.packageManager) != null)
                                         context.startActivity(intent)
+                                },
+                                calendarProviderDisabled = calendarProviderDisabled,
+                                onManageCalendarProvider = {
+                                    uriHandler.openUri(manualIntroductionUri.toString())
+                                },
+                                contactsProviderDisabled = contactsProviderDisabled,
+                                onManageContactsProvider = {
+                                    uriHandler.openUri(manualIntroductionUri.toString())
                                 }
                             )
 
@@ -485,7 +505,11 @@ fun SyncWarnings(
     dataSaverActive: Boolean = true,
     onManageDataSaver: () -> Unit = {},
     lowStorageWarning: Boolean = true,
-    onManageStorage: () -> Unit = {}
+    onManageStorage: () -> Unit = {},
+    calendarProviderDisabled: Boolean = true,
+    onManageCalendarProvider: () -> Unit = {},
+    contactsProviderDisabled: Boolean = true,
+    onManageContactsProvider: () -> Unit = {}
 ) {
     Column(Modifier.padding(horizontal = 8.dp)) {
         if (notificationsWarning)
@@ -537,6 +561,26 @@ fun SyncWarnings(
             ) {
                 Text(stringResource(R.string.account_list_low_storage))
             }
+
+        if (calendarProviderDisabled)
+            ActionCard(
+                icon = Icons.Default.Android,
+                actionText = stringResource(R.string.account_list_learn_more),
+                onAction = onManageCalendarProvider,
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
+                Text(stringResource(R.string.account_list_calendar_storage_inaccessible))
+            }
+
+        if (contactsProviderDisabled)
+            ActionCard(
+                icon = Icons.Default.Android,
+                actionText = stringResource(R.string.account_list_learn_more),
+                onAction = onManageContactsProvider,
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
+                Text(stringResource(R.string.account_list_contacts_storage_inaccessible))
+            }
     }
 }
 
@@ -549,7 +593,9 @@ fun SyncWarnings_Preview() {
             internetWarning = true,
             batterySaverActive = true,
             dataSaverActive = true,
-            lowStorageWarning = true
+            lowStorageWarning = true,
+            calendarProviderDisabled = true,
+            contactsProviderDisabled = true
         )
     }
 }

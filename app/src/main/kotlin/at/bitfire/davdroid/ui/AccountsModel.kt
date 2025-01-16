@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager.NameNotFoundException
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -202,6 +203,20 @@ class AccountsModel @AssistedInject constructor(
                 else -> false
             }
         }
+
+    /** whether the calendar provider is missing or disabled */
+    val calendarProviderInaccessible = try {
+        !context.packageManager.getApplicationInfo("com.android.providers.calendar", 0).enabled
+    } catch (_: NameNotFoundException) {
+        true
+    }
+
+    /** whether the calendar provider is missing or disabled */
+    val contactsProviderInaccessible = try {
+        !context.packageManager.getApplicationInfo("com.android.providers.contacts", 0).enabled
+    } catch (_: NameNotFoundException) {
+        true
+    }
 
 
     init {

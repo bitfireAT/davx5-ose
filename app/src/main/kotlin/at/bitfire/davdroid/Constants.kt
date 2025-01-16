@@ -23,6 +23,7 @@ object Constants {
 
     val MANUAL_URL = "https://manual.davx5.com".toUri()
     const val MANUAL_PATH_ACCOUNTS_COLLECTIONS = "accounts_collections.html"
+    const val MANUAL_PATH_INTRODUCTION = "introduction.html"
     const val MANUAL_FRAGMENT_SERVICE_DISCOVERY = "how-does-service-discovery-work"
     const val MANUAL_PATH_SETTINGS = "settings.html"
     const val MANUAL_FRAGMENT_APP_SETTINGS = "app-wide-settings"
