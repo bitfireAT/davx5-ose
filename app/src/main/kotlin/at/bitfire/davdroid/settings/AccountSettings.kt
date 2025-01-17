@@ -307,11 +307,11 @@ class AccountSettings @AssistedInject constructor(
      */
     @Deprecated("Use getShowOnlyPersonal() instead", replaceWith = ReplaceWith("getShowOnlyPersonal()"))
     fun getShowOnlyPersonalPair(): Pair<Boolean, Boolean> =
-            when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
-                0 -> Pair(false, false)
-                1 -> Pair(true, false)
-                else /* including -1 */ -> Pair(accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null, true)
-            }
+        when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+            0 -> Pair(false, false)
+            1 -> Pair(true, false)
+            else /* including -1 */ -> Pair(accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null, true)
+        }
 
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
         accountManager.setAndVerifyUserData(account, KEY_SHOW_ONLY_PERSONAL, if (showOnlyPersonal) "1" else null)
