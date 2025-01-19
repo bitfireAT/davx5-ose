@@ -50,9 +50,12 @@ class HttpClient(
     // builder
 
     /**
-     * Builder for the [HttpClient]. Note that if you inject the builder, it's only suitable for single use.
-     * Don't inject a builder and use it from multiple locations. For use in different locations, inject
-     * `Provider<HttpClient.Builder>` instead.
+     * Builder for the [HttpClient].
+     *
+     * **Attention:** If the builder is injected, it shouldn't be used from multiple locations to generate different clients because then
+     * there's only one [Builder] object and setting properties from one location would influence the others.
+     *
+     * To generate multiple clients, inject and use `Provider<HttpClient.Builder>` instead.
      */
     class Builder @Inject constructor(
         private val accountSettingsFactory: AccountSettings.Factory,
@@ -180,7 +183,7 @@ class HttpClient(
                 // allow cleartext and TLS 1.2+
                 .connectionSpecs(listOf(
                     ConnectionSpec.CLEARTEXT,
-                    ConnectionSpec.MODERN_TLS
+                    ConnectionSpec.COMPATIBLE_TLS
                 ))
 
                 // offer Brotli and gzip compression (can be disabled per request with `Accept-Encoding: identity`)

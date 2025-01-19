@@ -20,14 +20,13 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.TestAccount
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.components.SingletonComponent
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import okhttp3.Protocol
 import okhttp3.internal.http.StatusLine
@@ -46,32 +45,33 @@ import javax.inject.Inject
 @HiltAndroidTest
 class SyncManagerTest {
 
-    @Module
-    @InstallIn(SingletonComponent::class)
-    object SyncManagerTestModule {
-        @Provides
-        fun davSyncStatsRepository(): DavSyncStatsRepository = mockk<DavSyncStatsRepository>(relaxed = true)
-    }
-
-
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
     @Inject
     lateinit var accountSettingsFactory: AccountSettings.Factory
 
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
+
+    @Inject
+    lateinit var httpClientBuilder: HttpClient.Builder
 
     @Inject
     lateinit var syncManagerFactory: TestSyncManager.Factory
 
+    @BindValue
+    @MockK(relaxed = true)
+    lateinit var syncStatsRepository: DavSyncStatsRepository
+
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    lateinit var account: Account
-    private val server = MockWebServer()
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val mockKRule = MockKRule(this)
+
+    private lateinit var account: Account
+    private lateinit var server: MockWebServer
 
     @Before
     fun setUp() {
@@ -80,7 +80,9 @@ class SyncManagerTest {
 
         account = TestAccount.create()
 
-        server.start()
+        server = MockWebServer().apply {
+            start()
+        }
     }
 
     @After
@@ -513,10 +515,9 @@ class SyncManagerTest {
         }
     ) = syncManagerFactory.create(
         account,
-        accountSettingsFactory.create(account),
         arrayOf(),
         "TestAuthority",
-        HttpClient.Builder(context).build(),
+        httpClientBuilder.build(),
         syncResult,
         localCollection,
         collection

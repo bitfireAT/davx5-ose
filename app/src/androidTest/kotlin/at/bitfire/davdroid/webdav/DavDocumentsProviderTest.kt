@@ -6,7 +6,6 @@ package at.bitfire.davdroid.webdav
 
 import android.content.Context
 import android.security.NetworkSecurityPolicy
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
@@ -64,7 +63,7 @@ class DavDocumentsProviderTest {
         mockServer.dispatcher = TestDispatcher(logger)
         mockServer.start()
 
-        client = HttpClient.Builder(context).build()
+        client = TODO()     //HttpClient.Builder(context).build()
 
         // mock server delivers HTTP without encryption
         assertTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
@@ -86,8 +85,9 @@ class DavDocumentsProviderTest {
         val cookieStore = mutableMapOf<Long, CookieJar>()
 
         // Query
-        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
-            .queryChildren(parent)
+        TODO()
+        /*DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+            .queryChildren(parent)*/
 
         // Assert new children were inserted into db
         assertEquals(3, db.webDavDocumentDao().getChildren(parent.id).size)
@@ -120,8 +120,9 @@ class DavDocumentsProviderTest {
         assertEquals("My Books", db.webDavDocumentDao().get(folderId)!!.displayName)
 
         // Query - should update the parent displayname and folder name
-        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
-            .queryChildren(parent)
+        TODO()
+        /*DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+            .queryChildren(parent)*/
 
         // Assert parent and children were updated in database
         assertEquals("Cats WebDAV", db.webDavDocumentDao().get(parent.id)!!.displayName)
@@ -145,8 +146,9 @@ class DavDocumentsProviderTest {
         assertEquals("deleteme", db.webDavDocumentDao().get(folderId)!!.name)
 
         // Query - discovers serverside deletion
-        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
-            .queryChildren(parent)
+        TODO()
+        /*DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+            .queryChildren(parent)*/
 
         // Assert folder got deleted
         assertEquals(null, db.webDavDocumentDao().get(folderId))
@@ -169,10 +171,11 @@ class DavDocumentsProviderTest {
         assertEquals("parent2", parent2.name)
 
         // Query - find children of two nodes simultaneously
-        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+        TODO()
+        /*DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
             .queryChildren(parent1)
         DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
-            .queryChildren(parent2)
+            .queryChildren(parent2)*/
 
         // Assert the two folders names have changed
         assertEquals("childOne.txt", db.webDavDocumentDao().getChildren(parent1Id)[0].name)
