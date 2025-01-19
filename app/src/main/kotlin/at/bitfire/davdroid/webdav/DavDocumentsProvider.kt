@@ -77,6 +77,7 @@ import java.net.HttpURLConnection
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.inject.Provider
 
 /**
  * Provides functionality on WebDav documents.
@@ -633,7 +634,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         @Assisted private val credentialsStore: CredentialsStore,
         @ApplicationContext private val context: Context,
         private val db: AppDatabase,
-        private val httpClientBuilder: HttpClient.Builder,
+        private val httpClientBuilder: Provider<HttpClient.Builder>,
         private val logger: Logger
     ) {
 
@@ -723,7 +724,7 @@ class DavDocumentsProvider: DocumentsProvider() {
          * @param logBody    whether to log the body of HTTP requests (disable for potentially large files)
          */
         internal fun httpClient(mountId: Long, logBody: Boolean = true): HttpClient {
-            val builder = httpClientBuilder
+            val builder = httpClientBuilder.get()
                 .setLoggerLevel(if (logBody) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.HEADERS)
                 .setCookieStore(
                     cookieStores.getOrPut(mountId) { MemoryCookieStore() }

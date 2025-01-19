@@ -35,6 +35,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.inject.Provider
 
 /**
  * Worker that registers push for all collections that support it.
@@ -47,7 +48,7 @@ class PushRegistrationWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val collectionRepository: DavCollectionRepository,
-    private val httpClientBuilder: HttpClient.Builder,
+    private val httpClientBuilder: Provider<HttpClient.Builder>,
     private val logger: Logger,
     private val preferenceRepository: PreferenceRepository,
     private val serviceRepository: DavServiceRepository
@@ -67,7 +68,7 @@ class PushRegistrationWorker @AssistedInject constructor(
     }
 
     private suspend fun registerPushSubscription(collection: Collection, account: Account, endpoint: String) {
-        val httpClient = httpClientBuilder
+        val httpClient = httpClientBuilder.get()
             .fromAccount(account)
             .inForeground(true)
             .build()
@@ -148,7 +149,7 @@ class PushRegistrationWorker @AssistedInject constructor(
     }
 
     private suspend fun unregisterPushSubscription(collection: Collection, account: Account, url: HttpUrl) {
-        val httpClient = httpClientBuilder
+        val httpClient = httpClientBuilder.get()
             .fromAccount(account)
             .inForeground(true)
             .build()

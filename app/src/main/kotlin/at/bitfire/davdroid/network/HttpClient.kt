@@ -47,6 +47,11 @@ class HttpClient(
 
     // builder
 
+    /**
+     * Builder for the [HttpClient]. Note that if you inject the builder, it's only suitable for single use.
+     * Don't inject a builder and use it from multiple locations. For use in different locations, inject
+     * `Provider<HttpClient.Builder>` instead.
+     */
     class Builder @Inject constructor(
         private val accountSettingsFactory: AccountSettings.Factory,
         private val authorizationServiceProvider: Provider<AuthorizationService>,

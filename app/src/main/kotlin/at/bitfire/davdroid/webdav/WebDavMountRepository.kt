@@ -20,11 +20,12 @@ import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import javax.inject.Inject
+import javax.inject.Provider
 
 class WebDavMountRepository @Inject constructor(
     @ApplicationContext val context: Context,
     val db: AppDatabase,
-    private val httpClientBuilder: HttpClient.Builder
+    private val httpClientBuilder: Provider<HttpClient.Builder>
 ) {
 
     private val mountDao = db.webDavMountDao()
@@ -112,26 +113,27 @@ class WebDavMountRepository @Inject constructor(
         url: HttpUrl,
         credentials: Credentials?
     ): Boolean = withContext(Dispatchers.IO) {
-        var supported = false
-
         val validVersions = arrayOf("1", "2", "3")
 
+        val builder = httpClientBuilder.get()
+            .inForeground(true)
+
         if (credentials != null)
-            httpClientBuilder.authenticate(
+            builder.authenticate(
                 host = null,
                 credentials = credentials
             )
-            .inForeground(true)
-            .build()
-            .use { httpClient ->
-                val dav = DavResource(httpClient.okHttpClient, url)
-                runInterruptible {
-                    dav.options { davCapabilities, _ ->
-                        if (davCapabilities.any { it in validVersions })
-                            supported = true
-                    }
+
+        var supported = false
+        builder.build().use { httpClient ->
+            val dav = DavResource(httpClient.okHttpClient, url)
+            runInterruptible {
+                dav.options { davCapabilities, _ ->
+                    if (davCapabilities.any { it in validVersions })
+                        supported = true
                 }
             }
+        }
 
         supported
     }

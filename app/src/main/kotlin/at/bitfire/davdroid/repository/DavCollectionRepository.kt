@@ -47,6 +47,7 @@ import java.io.StringWriter
 import java.util.Collections
 import java.util.UUID
 import javax.inject.Inject
+import javax.inject.Provider
 
 /**
  * Repository for managing collections.
@@ -57,7 +58,7 @@ class DavCollectionRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     defaultListeners: Lazy<Set<@JvmSuppressWildcards OnChangeListener>>,
-    private val httpClientBuilder: HttpClient.Builder,
+    private val httpClientBuilder: Provider<HttpClient.Builder>,
     private val serviceRepository: DavServiceRepository
 ) {
 
@@ -176,7 +177,7 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        httpClientBuilder
+        httpClientBuilder.get()
             .fromAccount(account)
             .inForeground(true)
             .build()
@@ -292,7 +293,7 @@ class DavCollectionRepository @Inject constructor(
     // helpers
 
     private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
-        httpClientBuilder
+        httpClientBuilder.get()
             .fromAccount(account)
             .inForeground(true)
             .build()
