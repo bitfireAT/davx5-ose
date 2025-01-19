@@ -37,7 +37,7 @@ class OkhttpClientTest {
 
     @Test
     fun testIcloudWithSettings() {
-        val client = HttpClient.Builder(context).build()
+        val client = HttpClient.Builder(qgit qcontext).build()
         client.okHttpClient.newCall(Request.Builder()
                 .get()
                 .url("https://icloud.com")

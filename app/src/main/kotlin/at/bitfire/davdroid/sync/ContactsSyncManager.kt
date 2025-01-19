@@ -447,10 +447,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
             // authenticate only against a certain host, and only upon request
             httpClientBuilder
-                .authenticate(
-                    host = baseUrl.host,
-                    credentials = accountSettings.credentials()
-                )
+                .fromAccount(account, onlyHost = baseUrl.host)
                 .followRedirects(true)      // allow redirects
                 .build()
                 .use { httpClient ->

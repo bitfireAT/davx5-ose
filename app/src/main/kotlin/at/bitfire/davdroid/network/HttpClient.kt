@@ -26,6 +26,8 @@ import okhttp3.Protocol
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
+import java.net.InetSocketAddress
+import java.net.Proxy
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -82,39 +84,6 @@ class HttpClient(
             return this
         }
 
-        init {
-            // custom proxy support
-            /*try {
-                val proxyTypeValue = settings.getInt(Settings.PROXY_TYPE)
-                if (proxyTypeValue != Settings.PROXY_TYPE_SYSTEM) {
-                    // we set our own proxy
-                    val address by lazy {           // lazy because not required for PROXY_TYPE_NONE
-                        InetSocketAddress(
-                            settings.getString(Settings.PROXY_HOST),
-                            settings.getInt(Settings.PROXY_PORT)
-                        )
-                    }
-                    val proxy =
-                        when (proxyTypeValue) {
-                            Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
-                            Settings.PROXY_TYPE_HTTP -> Proxy(Proxy.Type.HTTP, address)
-                            Settings.PROXY_TYPE_SOCKS -> Proxy(Proxy.Type.SOCKS, address)
-                            else -> throw IllegalArgumentException("Invalid proxy type")
-                        }
-                    orig.proxy(proxy)
-                    logger.log(Level.INFO, "Using proxy setting", proxy)
-                }
-            } catch (e: Exception) {
-                logger.log(Level.SEVERE, "Can't set proxy, ignoring", e)
-            }*/
-
-            // use account settings for authentication and cookies
-            /*if (accountSettings != null)
-                addAuthentication(null, accountSettings.credentials(), authStateCallback = { authState: AuthState ->
-                    accountSettings.credentials(Credentials(authState = authState))
-                })*/
-        }
-
         private var authenticationInterceptor: Interceptor? = null
         private var authenticator: Authenticator? = null
         private var authorizationService: AuthorizationService? = null
@@ -169,10 +138,16 @@ class HttpClient(
 
         // convenience builders from other classes
 
-        fun fromAccount(account: Account): Builder {
+        /**
+         * Takes authentication (basic/digest or OAuth and client certificate) from a given account.
+         *
+         * @param account   the account to take authentication from
+         * @param onlyHost  if set: only authenticate for this host name
+         */
+        fun fromAccount(account: Account, onlyHost: String? = null): Builder {
             val accountSettings = accountSettingsFactory.create(account)
             authenticate(
-                host = null,
+                host = onlyHost,
                 credentials = accountSettings.credentials(),
                 authStateCallback = { authState: AuthState ->
                     accountSettings.credentials(Credentials(authState = authState))
@@ -210,6 +185,9 @@ class HttpClient(
 
                 // offer Brotli and gzip compression (can be disabled per request with `Accept-Encoding: identity`)
                 .addInterceptor(BrotliInterceptor)
+
+            // app-wide custom proxy support
+            buildProxy(okBuilder)
 
             // add authentication
             buildAuthentication(okBuilder)
@@ -266,6 +244,33 @@ class HttpClient(
             okBuilder.sslSocketFactory(sslContext.socketFactory, certManager)
             okBuilder.hostnameVerifier(hostnameVerifier)
         }
+
+        private fun buildProxy(okBuilder: OkHttpClient.Builder) {
+            try {
+                val proxyTypeValue = settingsManager.getInt(Settings.PROXY_TYPE)
+                if (proxyTypeValue != Settings.PROXY_TYPE_SYSTEM) {
+                    // we set our own proxy
+                    val address by lazy {           // lazy because not required for PROXY_TYPE_NONE
+                        InetSocketAddress(
+                            settingsManager.getString(Settings.PROXY_HOST),
+                            settingsManager.getInt(Settings.PROXY_PORT)
+                        )
+                    }
+                    val proxy =
+                        when (proxyTypeValue) {
+                            Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
+                            Settings.PROXY_TYPE_HTTP -> Proxy(Proxy.Type.HTTP, address)
+                            Settings.PROXY_TYPE_SOCKS -> Proxy(Proxy.Type.SOCKS, address)
+                            else -> throw IllegalArgumentException("Invalid proxy type")
+                        }
+                    okBuilder.proxy(proxy)
+                    logger.log(Level.INFO, "Using proxy setting", proxy)
+                }
+            } catch (e: Exception) {
+                logger.log(Level.SEVERE, "Can't set proxy, ignoring", e)
+            }
+        }
+
 
         companion object {
 
