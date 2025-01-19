@@ -68,54 +68,54 @@ class PushRegistrationWorker @AssistedInject constructor(
     }
 
     private suspend fun registerPushSubscription(collection: Collection, account: Account, endpoint: String) {
-        val httpClient = httpClientBuilder.get()
+        httpClientBuilder.get()
             .fromAccount(account)
             .inForeground(true)
             .build()
-        runInterruptible {
-            httpClient.use { client ->
-                val httpClient = client.okHttpClient
+            .use { client ->
+                runInterruptible {
+                    val httpClient = client.okHttpClient
 
-                // requested expiration time: 3 days
-                val requestedExpiration = Instant.now() + Duration.ofDays(3)
+                    // requested expiration time: 3 days
+                    val requestedExpiration = Instant.now() + Duration.ofDays(3)
 
-                val serializer = XmlUtils.newSerializer()
-                val writer = StringWriter()
-                serializer.setOutput(writer)
-                serializer.startDocument("UTF-8", true)
-                serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-register")) {
-                    serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "subscription")) {
-                        // subscription URL
-                        serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "web-push-subscription")) {
-                            serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-resource")) {
-                                text(endpoint)
+                    val serializer = XmlUtils.newSerializer()
+                    val writer = StringWriter()
+                    serializer.setOutput(writer)
+                    serializer.startDocument("UTF-8", true)
+                    serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-register")) {
+                        serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "subscription")) {
+                            // subscription URL
+                            serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "web-push-subscription")) {
+                                serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-resource")) {
+                                    text(endpoint)
+                                }
                             }
                         }
+                        // requested expiration
+                        serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "expires")) {
+                            text(HttpUtils.formatDate(requestedExpiration))
+                        }
                     }
-                    // requested expiration
-                    serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "expires")) {
-                        text(HttpUtils.formatDate(requestedExpiration))
-                    }
-                }
-                serializer.endDocument()
+                    serializer.endDocument()
 
-                val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
-                DavCollection(httpClient, collection.url).post(xml) { response ->
-                    if (response.isSuccessful) {
-                        val subscriptionUrl = response.header("Location")
-                        val expires = response.header("Expires")?.let { expiresDate ->
-                            HttpUtils.parseDate(expiresDate)
-                        } ?: requestedExpiration
-                        collectionRepository.updatePushSubscription(
-                            id = collection.id,
-                            subscriptionUrl = subscriptionUrl,
-                            expires = expires?.epochSecond
-                        )
-                    } else
-                        logger.warning("Couldn't register push for ${collection.url}: $response")
+                    val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
+                    DavCollection(httpClient, collection.url).post(xml) { response ->
+                        if (response.isSuccessful) {
+                            val subscriptionUrl = response.header("Location")
+                            val expires = response.header("Expires")?.let { expiresDate ->
+                                HttpUtils.parseDate(expiresDate)
+                            } ?: requestedExpiration
+                            collectionRepository.updatePushSubscription(
+                                id = collection.id,
+                                subscriptionUrl = subscriptionUrl,
+                                expires = expires?.epochSecond
+                            )
+                        } else
+                            logger.warning("Couldn't register push for ${collection.url}: $response")
+                    }
                 }
             }
-        }
     }
 
     private suspend fun registerSyncable() {
@@ -149,30 +149,30 @@ class PushRegistrationWorker @AssistedInject constructor(
     }
 
     private suspend fun unregisterPushSubscription(collection: Collection, account: Account, url: HttpUrl) {
-        val httpClient = httpClientBuilder.get()
+        httpClientBuilder.get()
             .fromAccount(account)
             .inForeground(true)
             .build()
-        runInterruptible {
-            httpClient.use { client ->
-                val httpClient = client.okHttpClient
+            .use { httpClient ->
+                runInterruptible {
+                    val httpClient = httpClient.okHttpClient
 
-                try {
-                    DavResource(httpClient, url).delete {
-                        // deleted
+                    try {
+                        DavResource(httpClient, url).delete {
+                            // deleted
+                        }
+                    } catch (e: DavException) {
+                        logger.log(Level.WARNING, "Couldn't unregister push for ${collection.url}", e)
                     }
-                } catch (e: DavException) {
-                    logger.log(Level.WARNING, "Couldn't unregister push for ${collection.url}", e)
-                }
 
-                // remove registration URL from DB in any case
-                collectionRepository.updatePushSubscription(
-                    id = collection.id,
-                    subscriptionUrl = null,
-                    expires = null
-                )
+                    // remove registration URL from DB in any case
+                    collectionRepository.updatePushSubscription(
+                        id = collection.id,
+                        subscriptionUrl = null,
+                        expires = null
+                    )
+                }
             }
-        }
     }
 
     private suspend fun unregisterNotSyncable() {

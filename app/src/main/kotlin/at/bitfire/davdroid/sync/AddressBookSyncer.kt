@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.provider.ContactsContract
 import at.bitfire.davdroid.db.Collection
@@ -80,11 +81,12 @@ class AddressBookSyncer @AssistedInject constructor(
         collection: Collection
     ) {
         try {
-            val accountSettings = accountSettingsFactory.create(account)
-
             // handle group method change
+            val accountSettings = accountSettingsFactory.create(account)
             val groupMethod = accountSettings.getGroupMethod().name
-            accountSettings.accountManager.getUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
+
+            val accountManager = AccountManager.get(context)
+            accountManager.getUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
                 if (previousGroupMethod != groupMethod) {
                     logger.info("Group method changed, deleting all local contacts/groups")
 
@@ -96,7 +98,7 @@ class AddressBookSyncer @AssistedInject constructor(
                     addressBook.syncState = null
                 }
             }
-            accountSettings.accountManager.setAndVerifyUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD, groupMethod)
+            accountManager.setAndVerifyUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD, groupMethod)
 
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
             syncManager.performSync()

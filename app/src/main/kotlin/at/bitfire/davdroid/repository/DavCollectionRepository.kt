@@ -37,7 +37,6 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.Multibinds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
-import kotlinx.coroutines.withContext
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.ComponentList
@@ -182,12 +181,10 @@ class DavCollectionRepository @Inject constructor(
             .inForeground(true)
             .build()
             .use { httpClient ->
-                withContext(Dispatchers.IO) {
-                    runInterruptible {
-                        DavResource(httpClient.okHttpClient, collection.url).delete {
-                            // success, otherwise an exception would have been thrown → delete locally, too
-                            delete(collection)
-                        }
+                runInterruptible(Dispatchers.IO) {
+                    DavResource(httpClient.okHttpClient, collection.url).delete {
+                        // success, otherwise an exception would have been thrown → delete locally, too
+                        delete(collection)
                     }
                 }
             }
@@ -298,14 +295,12 @@ class DavCollectionRepository @Inject constructor(
             .inForeground(true)
             .build()
             .use { httpClient ->
-                withContext(Dispatchers.IO) {
-                    runInterruptible {
-                        DavResource(httpClient.okHttpClient, url).mkCol(
-                            xmlBody = xmlBody,
-                            method = method
-                        ) {
-                            // success, otherwise an exception would have been thrown
-                        }
+                runInterruptible(Dispatchers.IO) {
+                    DavResource(httpClient.okHttpClient, url).mkCol(
+                        xmlBody = xmlBody,
+                        method = method
+                    ) {
+                        // success, otherwise an exception would have been thrown
                     }
                 }
             }

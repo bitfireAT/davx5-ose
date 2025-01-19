@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import okhttp3.Authenticator
+import okhttp3.Cache
 import okhttp3.ConnectionSpec
 import okhttp3.CookieJar
 import okhttp3.Interceptor
@@ -26,6 +27,7 @@ import okhttp3.Protocol
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
+import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.TimeUnit
@@ -38,7 +40,7 @@ import javax.net.ssl.SSLContext
 
 class HttpClient(
     val okHttpClient: OkHttpClient,
-    val authorizationService: AuthorizationService? = null
+    private val authorizationService: AuthorizationService? = null
 ): AutoCloseable {
 
     override fun close() {
@@ -74,9 +76,9 @@ class HttpClient(
             return this
         }
 
-        private var loggerLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
-        fun setLoggerLevel(level: HttpLoggingInterceptor.Level): Builder {
-            loggerLevel = level
+        private var loggerInterceptorLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
+        fun loggerInterceptorLevel(level: HttpLoggingInterceptor.Level): Builder {
+            loggerInterceptorLevel = level
             return this
         }
 
@@ -92,17 +94,17 @@ class HttpClient(
         private var authorizationService: AuthorizationService? = null
         private var certificateAlias: String? = null
         fun authenticate(host: String?, credentials: Credentials, authStateCallback: BearerAuthInterceptor.AuthStateUpdateCallback? = null): Builder {
-            if (credentials.username != null && credentials.password != null) {
-                // basic/digest auth
-                val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.username, credentials.password, insecurePreemptive = true)
-                authenticationInterceptor = authHandler
-                authenticator = authHandler
-
-            } else if (credentials.authState != null) {
+            if (credentials.authState != null) {
                 // OAuth
                 val authService = authorizationServiceProvider.get()
                 authenticationInterceptor = BearerAuthInterceptor.fromAuthState(authService, credentials.authState, authStateCallback)
                 authorizationService = authService
+
+            } else if (credentials.username != null && credentials.password != null) {
+                // basic/digest auth
+                val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.username, credentials.password, insecurePreemptive = true)
+                authenticationInterceptor = authHandler
+                authenticator = authHandler
             }
 
             // client certificate
@@ -124,17 +126,18 @@ class HttpClient(
             return this
         }
 
+        private var cache: Cache? = null
         @Suppress("unused")
-        fun withDiskCache(): Builder {
-            /*for (dir in arrayOf(context.externalCacheDir, context.cacheDir).filterNotNull()) {
+        fun withDiskCache(maxSize: Long = 10*1024*1024): Builder {
+            for (dir in arrayOf(context.externalCacheDir, context.cacheDir).filterNotNull()) {
                 if (dir.exists() && dir.canWrite()) {
                     val cacheDir = File(dir, "HttpClient")
                     cacheDir.mkdir()
                     logger.fine("Using disk cache: $cacheDir")
-                    orig.cache(Cache(cacheDir, DISK_CACHE_MAX_SIZE))
+                    cache = Cache(cacheDir, maxSize)
                     break
                 }
-            }*/
+            }
             return this
         }
 
@@ -171,7 +174,7 @@ class HttpClient(
                 .readTimeout(120, TimeUnit.SECONDS)
                 .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
 
-                // don't allow redirects by default, because it would break PROPFIND handling
+                // don't allow redirects by default because it would break PROPFIND handling
                 .followRedirects(false)
 
                 // add User-Agent to every request
@@ -189,6 +192,9 @@ class HttpClient(
                 // offer Brotli and gzip compression (can be disabled per request with `Accept-Encoding: identity`)
                 .addInterceptor(BrotliInterceptor)
 
+                // add cache, if requested
+                .cache(cache)
+
             // app-wide custom proxy support
             buildProxy(okBuilder)
 
@@ -198,7 +204,7 @@ class HttpClient(
             // add network logging, if requested
             if (logger.isLoggable(Level.FINEST)) {
                 val loggingInterceptor = HttpLoggingInterceptor { message -> logger.finest(message) }
-                loggingInterceptor.level = loggerLevel
+                loggingInterceptor.level = loggerInterceptorLevel
                 okBuilder.addNetworkInterceptor(loggingInterceptor)
             }
 
@@ -236,16 +242,16 @@ class HttpClient(
                 trustSystemCerts = !settingsManager.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES),
                 appInForeground = appInForeground
             )
-            val hostnameVerifier = certManager.HostnameVerifier(OkHostnameVerifier)
 
             val sslContext = SSLContext.getInstance("TLS")
             sslContext.init(
-                if (keyManager != null) arrayOf(keyManager) else null,
-                arrayOf(certManager),
-                null)
-
-            okBuilder.sslSocketFactory(sslContext.socketFactory, certManager)
-            okBuilder.hostnameVerifier(hostnameVerifier)
+                /* km = */ if (keyManager != null) arrayOf(keyManager) else null,
+                /* tm = */ arrayOf(certManager),
+                /* random = */ null
+            )
+            okBuilder
+                .sslSocketFactory(sslContext.socketFactory, certManager)
+                .hostnameVerifier(certManager.HostnameVerifier(OkHostnameVerifier))
         }
 
         private fun buildProxy(okBuilder: OkHttpClient.Builder) {
@@ -272,14 +278,6 @@ class HttpClient(
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Can't set proxy, ignoring", e)
             }
-        }
-
-
-        companion object {
-
-            /** max. size of disk cache (10 MB) */
-            const val DISK_CACHE_MAX_SIZE: Long = 10*1024*1024
-
         }
 
     }

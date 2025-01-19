@@ -725,7 +725,7 @@ class DavDocumentsProvider: DocumentsProvider() {
          */
         internal fun httpClient(mountId: Long, logBody: Boolean = true): HttpClient {
             val builder = httpClientBuilder.get()
-                .setLoggerLevel(if (logBody) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.HEADERS)
+                .loggerInterceptorLevel(if (logBody) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.HEADERS)
                 .setCookieStore(
                     cookieStores.getOrPut(mountId) { MemoryCookieStore() }
                 )
