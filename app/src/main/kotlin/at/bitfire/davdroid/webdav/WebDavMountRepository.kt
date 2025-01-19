@@ -23,7 +23,8 @@ import javax.inject.Inject
 
 class WebDavMountRepository @Inject constructor(
     @ApplicationContext val context: Context,
-    val db: AppDatabase
+    val db: AppDatabase,
+    private val httpClientBuilder: HttpClient.Builder
 ) {
 
     private val mountDao = db.webDavMountDao()
@@ -115,11 +116,15 @@ class WebDavMountRepository @Inject constructor(
 
         val validVersions = arrayOf("1", "2", "3")
 
-        HttpClient.Builder(context, null, credentials)
-            .setForeground(true)
+        if (credentials != null)
+            httpClientBuilder.authenticate(
+                host = null,
+                credentials = credentials
+            )
+            .inForeground(true)
             .build()
-            .use { client ->
-                val dav = DavResource(client.okHttpClient, url)
+            .use { httpClient ->
+                val dav = DavResource(httpClient.okHttpClient, url)
                 runInterruptible {
                     dav.options { davCapabilities, _ ->
                         if (davCapabilities.any { it in validVersions })

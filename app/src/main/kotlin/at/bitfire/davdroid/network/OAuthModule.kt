@@ -26,8 +26,9 @@ object OAuthModule {
                 .setConnectionBuilder { uri ->
                     val url = URL(uri.toString())
                     (url.openConnection() as HttpURLConnection).apply {
-                        setRequestProperty("User-Agent", HttpClient.UserAgentInterceptor.userAgent)
+                        setRequestProperty("User-Agent", UserAgentInterceptor.userAgent)
                     }
                 }.build()
         )
+
 }

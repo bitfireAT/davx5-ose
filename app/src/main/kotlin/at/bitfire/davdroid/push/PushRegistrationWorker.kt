@@ -23,7 +23,6 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
-import at.bitfire.davdroid.settings.AccountSettings
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.runInterruptible
@@ -47,8 +46,8 @@ import java.util.logging.Logger
 class PushRegistrationWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
+    private val httpClientBuilder: HttpClient.Builder,
     private val logger: Logger,
     private val preferenceRepository: PreferenceRepository,
     private val serviceRepository: DavServiceRepository
@@ -68,54 +67,53 @@ class PushRegistrationWorker @AssistedInject constructor(
     }
 
     private suspend fun registerPushSubscription(collection: Collection, account: Account, endpoint: String) {
-        val settings = accountSettingsFactory.create(account)
-
+        val httpClient = httpClientBuilder
+            .fromAccount(account)
+            .inForeground(true)
+            .build()
         runInterruptible {
-            HttpClient.Builder(applicationContext, settings)
-                .setForeground(true)
-                .build()
-                .use { client ->
-                    val httpClient = client.okHttpClient
+            httpClient.use { client ->
+                val httpClient = client.okHttpClient
 
-                    // requested expiration time: 3 days
-                    val requestedExpiration = Instant.now() + Duration.ofDays(3)
+                // requested expiration time: 3 days
+                val requestedExpiration = Instant.now() + Duration.ofDays(3)
 
-                    val serializer = XmlUtils.newSerializer()
-                    val writer = StringWriter()
-                    serializer.setOutput(writer)
-                    serializer.startDocument("UTF-8", true)
-                    serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-register")) {
-                        serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "subscription")) {
-                            // subscription URL
-                            serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "web-push-subscription")) {
-                                serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-resource")) {
-                                    text(endpoint)
-                                }
+                val serializer = XmlUtils.newSerializer()
+                val writer = StringWriter()
+                serializer.setOutput(writer)
+                serializer.startDocument("UTF-8", true)
+                serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-register")) {
+                    serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "subscription")) {
+                        // subscription URL
+                        serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "web-push-subscription")) {
+                            serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-resource")) {
+                                text(endpoint)
                             }
                         }
-                        // requested expiration
-                        serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "expires")) {
-                            text(HttpUtils.formatDate(requestedExpiration))
-                        }
                     }
-                    serializer.endDocument()
-
-                    val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
-                    DavCollection(httpClient, collection.url).post(xml) { response ->
-                        if (response.isSuccessful) {
-                            val subscriptionUrl = response.header("Location")
-                            val expires = response.header("Expires")?.let { expiresDate ->
-                                HttpUtils.parseDate(expiresDate)
-                            } ?: requestedExpiration
-                            collectionRepository.updatePushSubscription(
-                                id = collection.id,
-                                subscriptionUrl = subscriptionUrl,
-                                expires = expires?.epochSecond
-                            )
-                        } else
-                            logger.warning("Couldn't register push for ${collection.url}: $response")
+                    // requested expiration
+                    serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "expires")) {
+                        text(HttpUtils.formatDate(requestedExpiration))
                     }
                 }
+                serializer.endDocument()
+
+                val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
+                DavCollection(httpClient, collection.url).post(xml) { response ->
+                    if (response.isSuccessful) {
+                        val subscriptionUrl = response.header("Location")
+                        val expires = response.header("Expires")?.let { expiresDate ->
+                            HttpUtils.parseDate(expiresDate)
+                        } ?: requestedExpiration
+                        collectionRepository.updatePushSubscription(
+                            id = collection.id,
+                            subscriptionUrl = subscriptionUrl,
+                            expires = expires?.epochSecond
+                        )
+                    } else
+                        logger.warning("Couldn't register push for ${collection.url}: $response")
+                }
+            }
         }
     }
 
@@ -150,30 +148,29 @@ class PushRegistrationWorker @AssistedInject constructor(
     }
 
     private suspend fun unregisterPushSubscription(collection: Collection, account: Account, url: HttpUrl) {
-        val settings = accountSettingsFactory.create(account)
-
+        val httpClient = httpClientBuilder
+            .fromAccount(account)
+            .inForeground(true)
+            .build()
         runInterruptible {
-            HttpClient.Builder(applicationContext, settings)
-                .setForeground(true)
-                .build()
-                .use { client ->
-                    val httpClient = client.okHttpClient
+            httpClient.use { client ->
+                val httpClient = client.okHttpClient
 
-                    try {
-                        DavResource(httpClient, url).delete {
-                            // deleted
-                        }
-                    } catch (e: DavException) {
-                        logger.log(Level.WARNING, "Couldn't unregister push for ${collection.url}", e)
+                try {
+                    DavResource(httpClient, url).delete {
+                        // deleted
                     }
-
-                    // remove registration URL from DB in any case
-                    collectionRepository.updatePushSubscription(
-                        id = collection.id,
-                        subscriptionUrl = null,
-                        expires = null
-                    )
+                } catch (e: DavException) {
+                    logger.log(Level.WARNING, "Couldn't unregister push for ${collection.url}", e)
                 }
+
+                // remove registration URL from DB in any case
+                collectionRepository.updatePushSubscription(
+                    id = collection.id,
+                    subscriptionUrl = null,
+                    expires = null
+                )
+            }
         }
     }
 

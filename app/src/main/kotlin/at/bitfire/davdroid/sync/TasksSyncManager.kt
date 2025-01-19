@@ -22,7 +22,6 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.Task
@@ -42,7 +41,6 @@ import java.util.logging.Level
  */
 class TasksSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted accountSettings: AccountSettings,
     @Assisted httpClient: HttpClient,
     @Assisted extras: Array<String>,
     @Assisted authority: String,
@@ -51,7 +49,6 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted collection: Collection
 ): SyncManager<LocalTask, LocalTaskList, DavCalendar>(
     account,
-    accountSettings,
     httpClient,
     extras,
     authority,
@@ -64,7 +61,6 @@ class TasksSyncManager @AssistedInject constructor(
     interface Factory {
         fun tasksSyncManager(
             account: Account,
-            accountSettings: AccountSettings,
             httpClient: HttpClient,
             extras: Array<String>,
             authority: String,
