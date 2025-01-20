@@ -60,33 +60,34 @@ class AccountScreenModel @AssistedInject constructor(
     interface Factory {
         fun create(account: Account): AccountScreenModel
     }
-
-    private val _showOnlyPersonal = MutableStateFlow(false)
-    val showOnlyPersonal = _showOnlyPersonal.asStateFlow()
-
-    private var _showOnlyPersonalLocked = MutableStateFlow(false)
-    val showOnlyPersonalLocked = _showOnlyPersonalLocked.asStateFlow()
-
+    
     /**
      * Only acquire account settings on a worker thread!
      */
     private val accountSettings by lazy { accountSettingsFactory.create(account) }
-
-    private suspend fun reload() = withContext(Dispatchers.Default) {
-        _showOnlyPersonal.value = accountSettings.getShowOnlyPersonal()
-        _showOnlyPersonalLocked.value = accountSettings.getShowOnlyPersonalLocked()
-    }
 
     /** whether the account is invalid and the screen shall be closed */
     val invalidAccount = accountRepository.getAllFlow().map { accounts ->
         !accounts.contains(account)
     }
 
+
+    private val _showOnlyPersonal = MutableStateFlow(false)
+    val showOnlyPersonal = _showOnlyPersonal.asStateFlow()
+    private suspend fun reloadShowOnlyPersonal() = withContext(Dispatchers.Default) {
+        _showOnlyPersonal.value = accountSettings.getShowOnlyPersonal()
+    }
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
         CoroutineScope(Dispatchers.Default).launch {
             accountSettings.setShowOnlyPersonal(showOnlyPersonal)
-            reload()
+            reloadShowOnlyPersonal()
         }
+    }
+
+    private var _showOnlyPersonalLocked = MutableStateFlow(false)
+    val showOnlyPersonalLocked = _showOnlyPersonalLocked.asStateFlow()
+    private suspend fun reloadShowOnlyPersonalLocked() = withContext(Dispatchers.Default) {
+        _showOnlyPersonalLocked.value = accountSettings.getShowOnlyPersonalLocked()
     }
 
     val cardDavSvc = serviceRepository
