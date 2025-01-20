@@ -13,6 +13,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
@@ -247,7 +248,7 @@ class AccountRepository @Inject constructor(
 
     // helpers
 
-    private fun insertService(accountName: String, type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
+    private fun insertService(accountName: String, @ServiceType type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
         // insert service
         val service = Service(0, accountName, type, info.principal)
         val serviceId = serviceRepository.insertOrReplace(service)
