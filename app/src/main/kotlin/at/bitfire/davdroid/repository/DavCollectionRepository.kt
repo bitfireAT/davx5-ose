@@ -28,6 +28,7 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.ical4android.ICalendar
 import at.bitfire.ical4android.util.DateUtils
 import dagger.Lazy
 import dagger.Module
@@ -41,7 +42,10 @@ import kotlinx.coroutines.withContext
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.ComponentList
+import net.fortuna.ical4j.model.Property
+import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.component.VTimeZone
+import net.fortuna.ical4j.model.property.Version
 import okhttp3.HttpUrl
 import java.io.StringWriter
 import java.util.Collections
@@ -375,7 +379,15 @@ class DavCollectionRepository @Inject constructor(
                                 insertTag(CalendarTimezone.NAME) {
                                     text(
                                         // spec requires "an iCalendar object with exactly one VTIMEZONE component"
-                                        Calendar(ComponentList(listOf(vTimezone))).toString()
+                                        Calendar(
+                                            PropertyList<Property>().apply {
+                                                add(ICalendar.prodId)
+                                                add(Version.VERSION_2_0)
+                                            },
+                                            ComponentList(
+                                                listOf(vTimezone)
+                                            )
+                                        ).toString()
                                     )
                                 }
                             }
