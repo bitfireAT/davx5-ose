@@ -60,7 +60,14 @@ class AccountScreenModel @AssistedInject constructor(
     interface Factory {
         fun create(account: Account): AccountScreenModel
     }
-    
+
+    init {
+        viewModelScope.launch {
+            reloadShowOnlyPersonal()
+            reloadShowOnlyPersonalLocked()
+        }
+    }
+
     /**
      * Only acquire account settings on a worker thread!
      */
