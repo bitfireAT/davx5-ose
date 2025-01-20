@@ -59,13 +59,6 @@ class AccountScreenModel @AssistedInject constructor(
         fun create(account: Account): AccountScreenModel
     }
 
-    init {
-        viewModelScope.launch {
-            reloadShowOnlyPersonal()
-            reloadShowOnlyPersonalLocked()
-        }
-    }
-
     /**
      * Only acquire account settings on a worker thread!
      */
@@ -93,6 +86,13 @@ class AccountScreenModel @AssistedInject constructor(
     val showOnlyPersonalLocked = _showOnlyPersonalLocked.asStateFlow()
     private suspend fun reloadShowOnlyPersonalLocked() = withContext(Dispatchers.Default) {
         _showOnlyPersonalLocked.value = accountSettings.getShowOnlyPersonalLocked()
+    }
+
+    init {
+        viewModelScope.launch {
+            reloadShowOnlyPersonal()
+            reloadShowOnlyPersonalLocked()
+        }
     }
 
     val cardDavSvc = serviceRepository
