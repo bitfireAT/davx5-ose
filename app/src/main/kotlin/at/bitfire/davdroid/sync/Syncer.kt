@@ -11,6 +11,7 @@ import android.os.DeadObjectException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -82,6 +83,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     lateinit var serviceRepository: DavServiceRepository
 
     abstract val authority: String
+    @ServiceType
     abstract val serviceType: String
 
     val accountSettings by lazy { accountSettingsFactory.create(account) }
