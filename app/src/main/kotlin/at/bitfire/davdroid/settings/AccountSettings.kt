@@ -286,15 +286,25 @@ class AccountSettings @AssistedInject constructor(
 
     // UI settings
 
-    fun getShowOnlyPersonal(): Boolean {
-        @Suppress("DEPRECATION")
-        val pair = getShowOnlyPersonalPair()
-        return pair.first
+    /**
+     * Whether to show only personal collections in the UI
+     *
+     * @return *true* if only personal collections shall be shown; *false* otherwise
+     */
+    fun getShowOnlyPersonal(): Boolean = when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+        0 -> false
+        1 -> true
+        else /* including -1 */ -> accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null
     }
-    fun getShowOnlyPersonalLocked(): Boolean {
-        @Suppress("DEPRECATION")
-        val pair = getShowOnlyPersonalPair()
-        return !pair.second
+
+    /**
+     * Whether the user shall be able to change the setting (= setting not locked)
+     *
+     * @return *true* if the setting is locked; *false* otherwise
+     */
+    fun getShowOnlyPersonalLocked(): Boolean = when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+        0, 1 -> true
+        else /* including -1 */ -> false
     }
 
     /**
