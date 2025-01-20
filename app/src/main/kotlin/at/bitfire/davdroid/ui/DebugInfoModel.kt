@@ -665,7 +665,7 @@ class DebugInfoModel @AssistedInject constructor(
         return workersInfoTable(
             // Fetch all workers
             WorkQuery.Builder.fromStates(WorkInfo.State.entries).build(),
-            filter = { it.tags.all { !syncWorkersTags.contains(it) } }
+            filter = { it.tags.all { tag -> !syncWorkersTags.contains(tag) } }
         )
     }
 
