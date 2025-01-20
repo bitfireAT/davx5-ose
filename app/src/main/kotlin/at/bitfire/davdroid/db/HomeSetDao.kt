@@ -24,7 +24,7 @@ interface HomeSetDao {
     fun getByService(serviceId: Long): List<HomeSet>
 
     @Query("SELECT * FROM homeset WHERE serviceId=(SELECT id FROM service WHERE accountName=:accountName AND type=:serviceType) AND privBind ORDER BY displayName, url COLLATE NOCASE")
-    fun getBindableByAccountAndServiceTypeFlow(accountName: String, serviceType: String): Flow<List<HomeSet>>
+    fun getBindableByAccountAndServiceTypeFlow(accountName: String, @ServiceType serviceType: String): Flow<List<HomeSet>>
 
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND privBind")
     fun getBindableByServiceFlow(serviceId: Long): Flow<List<HomeSet>>
