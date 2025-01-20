@@ -26,9 +26,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -85,7 +83,7 @@ class AccountScreenModel @AssistedInject constructor(
         _showOnlyPersonal.value = accountSettings.getShowOnlyPersonal()
     }
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
-        CoroutineScope(Dispatchers.Default).launch {
+        viewModelScope.launch {
             accountSettings.setShowOnlyPersonal(showOnlyPersonal)
             reloadShowOnlyPersonal()
         }
@@ -143,11 +141,9 @@ class AccountScreenModel @AssistedInject constructor(
 
     // actions
 
-    private val notInterruptibleScope = CoroutineScope(SupervisorJob())
-
     /** Deletes the account from the system (won't touch collections on the server). */
     fun deleteAccount() {
-        notInterruptibleScope.launch {
+        viewModelScope.launch {
             accountRepository.delete(account.name)
         }
     }
@@ -167,7 +163,7 @@ class AccountScreenModel @AssistedInject constructor(
      * @param newName new account name
      */
     fun renameAccount(newName: String) {
-        notInterruptibleScope.launch {
+        viewModelScope.launch {
             try {
                 accountRepository.rename(account.name, newName)
 
