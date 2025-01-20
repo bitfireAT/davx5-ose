@@ -49,7 +49,6 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
-import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract
@@ -387,7 +386,8 @@ class DebugInfoModel @AssistedInject constructor(
             // accounts
             writer.append("\nACCOUNTS")
             val accountManager = AccountManager.get(context)
-            for (account in accountRepository.getAll())
+            val accounts = accountRepository.getAll()
+            for (account in accounts)
                 dumpAccount(account, writer)
 
             val addressBookAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).toMutableList()
@@ -397,9 +397,9 @@ class DebugInfoModel @AssistedInject constructor(
                     dumpAddressBookAccount(account, accountManager, writer)
             }
 
-            // general-purpose sync workers
-            writer.append("\nSync workers:\n")
-                .append(dumpSyncWorkersInfo())
+            // non-sync workers
+            writer.append("\nGeneric workers:\n")
+                .append(dumpWorkersInfo(accounts))
                 .append("\n")
 
             // database dump
@@ -577,10 +577,13 @@ class DebugInfoModel @AssistedInject constructor(
      *
      * @param query The query to use for fetching the workers.
      * @param extraColumns Defaults to an empty map, pass extra columns to be added to the table.
+     * @param filter Allows filtering the results given by the [query]. Will exclude all [WorkInfo]
+     * whose filter result is `false`. Defaults to all `true` (do not filter).
      */
     private fun workersInfoTable(
         query: WorkQuery,
-        extraColumns: Map<Int, Pair<String, (WorkInfo) -> String>> = emptyMap()
+        extraColumns: Map<Int, Pair<String, (WorkInfo) -> String>> = emptyMap(),
+        filter: (WorkInfo) -> Boolean = { true }
     ): String {
         val columnNames = mutableListOf("Tags", "State", "Next run", "Retries", "Generation", "Periodicity")
         for ((index, column) in extraColumns) {
@@ -589,7 +592,8 @@ class DebugInfoModel @AssistedInject constructor(
         }
 
         val table = TextTable(columnNames)
-        val workInfos = WorkManager.getInstance(context).getWorkInfos(query).get()
+        val wm = WorkManager.getInstance(context)
+        val workInfos = wm.getWorkInfos(query).get().filter(filter)
         for (workInfo in workInfos) {
             val line = mutableListOf(
                 workInfo.tags.map { it.replace("\\bat\\.bitfire\\.davdroid\\.".toRegex(), ".") },
@@ -644,16 +648,26 @@ class DebugInfoModel @AssistedInject constructor(
         )
 
     /**
-     * Gets account-independent sync workers info
+     * Gets account-independent sync workers info. This is done by querying all the workers, and
+     * filtering the ones that depend on an account (the opposite of [dumpSyncWorkersInfo]).
+     *
      * Note: WorkManager does not return worker names when queried, so we create them and ask
      * whether they exist one by one
+     *
+     * @param accounts The list of accounts in the system. This is used for filtering account-dependent
+     * workers.
      */
-    private fun dumpSyncWorkersInfo(): String =
-        workersInfoTable(
-            WorkQuery.Builder.fromUniqueWorkNames(
-                listOf(AccountsCleanupWorker.NAME)
-            ).build()
+    private fun dumpWorkersInfo(accounts: Array<Account>): String {
+        val syncWorkersTags = accounts.flatMap { account ->
+            SyncDataType.entries.map { BaseSyncWorker.commonTag(account, it) }
+        }
+
+        return workersInfoTable(
+            // Fetch all workers
+            WorkQuery.Builder.fromStates(WorkInfo.State.entries).build(),
+            filter = { it.tags.all { !syncWorkersTags.contains(it) } }
         )
+    }
 
 }
 
