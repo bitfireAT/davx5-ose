@@ -69,7 +69,9 @@ class AccountScreenModel @AssistedInject constructor(
         !accounts.contains(account)
     }
 
-
+    /**
+     * Whether to show only personal collections.
+     */
     private val _showOnlyPersonal = MutableStateFlow(false)
     val showOnlyPersonal = _showOnlyPersonal.asStateFlow()
     private suspend fun reloadShowOnlyPersonal() = withContext(Dispatchers.Default) {
@@ -82,6 +84,9 @@ class AccountScreenModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Whether the user setting to show only personal collections is locked.
+     */
     private var _showOnlyPersonalLocked = MutableStateFlow(false)
     val showOnlyPersonalLocked = _showOnlyPersonalLocked.asStateFlow()
     private suspend fun reloadShowOnlyPersonalLocked() = withContext(Dispatchers.Default) {
