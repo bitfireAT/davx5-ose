@@ -8,6 +8,7 @@ import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavDeepLinkRequest
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,7 +24,10 @@ fun Navigation(deepLinkUri: Uri?, logger: Logger) {
         if (deepLinkUri != null) {
             val deepLinkRq = NavDeepLinkRequest.Builder.fromUri(deepLinkUri).build()
             logger.info("Got deep link: $deepLinkUri → $deepLinkRq")
-            navController.navigate(deepLinkRq)
+            navController.navigate(
+                deepLinkRq,
+                NavOptions.Builder().setLaunchSingleTop(true).build()
+            )
         }
     }
 
