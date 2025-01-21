@@ -122,7 +122,7 @@
   <string name="navigation_drawer_contribute">Einen Beitrag leisten</string>
   <string name="navigation_drawer_privacy_policy">Datenschutzerklärung</string>
   <string name="account_list_no_notification_permission">Benachrichtigungen deaktiviert. Sie werden nicht über Fehler bei der Synchronisierung informiert.</string>
-  <string name="account_list_no_internet">Keine überprüfte Internetverbindung. Synchronisierung funktioniert eventuell nicht.</string>
+  <string name="account_list_no_internet">Automatische Synchronisierung nicht aktiv (keine überprüfte Internetverbindung).</string>
   <string name="account_list_manage_connections">Verbindungen steuern</string>
   <string name="account_list_datasaver_enabled">Datensparen aktiviert. Hintergrundsynchronisierung ist eingeschränkt.</string>
   <string name="account_list_manage_datasaver">Datensparen verwalten</string>
