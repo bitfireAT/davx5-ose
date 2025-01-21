@@ -6,6 +6,7 @@ package at.bitfire.davdroid
 
 import at.bitfire.davdroid.push.PushRegistrationWorkerManager
 import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.SyncOnCollectionsChangeListener.SyncOnCollectionsChangeListenerModule
 import at.bitfire.davdroid.startup.StartupPlugin
 import at.bitfire.davdroid.startup.TasksAppWatcher
 import dagger.Module
@@ -19,7 +20,7 @@ import dagger.multibindings.Multibinds
     components = [SingletonComponent::class],
     replaces = [SyncOnCollectionsChangeListenerModule::class]
 )
-abstract class SyncOnCollectionsChangeListenerModule {
+abstract class TestSyncOnCollectionsChangeListenerModule {
     // provides empty set of listeners
     @Multibinds
     abstract fun empty(): Set<DavCollectionRepository.OnChangeListener>
