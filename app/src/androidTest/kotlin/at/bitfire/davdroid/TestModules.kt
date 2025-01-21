@@ -8,19 +8,18 @@ import at.bitfire.davdroid.push.PushRegistrationWorkerManager
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.startup.StartupPlugin
 import at.bitfire.davdroid.startup.TasksAppWatcher
-import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.Module
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import dagger.multibindings.Multibinds
 
-// remove SyncWorkerModule from Android tests
+// remove SyncOnCollectionsChangeListenerModule from Android tests
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [SyncWorkerManager.SyncWorkerManagerModule::class]
+    replaces = [SyncOnCollectionsChangeListenerModule::class]
 )
-abstract class TestSyncWorkerManagerModule {
+abstract class SyncOnCollectionsChangeListenerModule {
     // provides empty set of listeners
     @Multibinds
     abstract fun empty(): Set<DavCollectionRepository.OnChangeListener>
