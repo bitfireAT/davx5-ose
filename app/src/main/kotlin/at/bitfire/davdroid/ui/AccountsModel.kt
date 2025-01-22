@@ -205,11 +205,11 @@ class AccountsModel @AssistedInject constructor(
             }
         }
 
-    /** whether the calendar storage is missing or disabled */
-    val calendarStorageMissingOrDisabled = appMissingOrDisabledFlow("com.android.providers.calendar")
+    /** whether the calendar storage is installed and enabled */
+    val calendarStorageEnabled = appInstalledAndEnabledFlow("com.android.providers.calendar")
 
-    /** whether the calendar storage is missing or disabled */
-    val contactsStorageMissingOrDisabled = appMissingOrDisabledFlow("com.android.providers.contacts")
+    /** whether the calendar storage is installed and enabled */
+    val contactsStorageEnabled = appInstalledAndEnabledFlow("com.android.providers.contacts")
 
 
     init {
@@ -232,14 +232,20 @@ class AccountsModel @AssistedInject constructor(
 
     // helpers
 
-    /** Check if an app is missing or disabled */
-    fun appMissingOrDisabledFlow(packageName: String) = packageChangedFlow(context).map { intent ->
+    /**
+     * Check if an app is installed and enabled
+     *
+     * @param packageName the package name of the app
+     * @return a flow that emits `true` if the app is installed and enabled,
+     * `false` if the app is installed but disabled, and `null` if the app is missing
+     * */
+    fun appInstalledAndEnabledFlow(packageName: String) = packageChangedFlow(context).map { intent ->
         try {
-            // Is app disabled?
-            !context.packageManager.getApplicationInfo(packageName, 0).enabled
+            // Is app enabled?
+            context.packageManager.getApplicationInfo(packageName, 0).enabled
         } catch (_: NameNotFoundException) {
             // App is missing
-            true
+            null
         }
     }
 

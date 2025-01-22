@@ -132,8 +132,10 @@
     <string name="navigation_drawer_support_project">Support the project</string>
     <string name="navigation_drawer_contribute">How to contribute</string>
     <string name="navigation_drawer_privacy_policy">Privacy policy</string>
-    <string name="account_list_calendar_storage_inaccessible">Calendar system storage not accessible. Did you disable or uninstall the calendar provider system app?</string>
-    <string name="account_list_contacts_storage_inaccessible">Contacts system storage not accessible. Did you disable or uninstall the contacts provider system app?</string>
+    <string name="account_list_calendar_storage_missing">Calendar system storage missing. Did you uninstall the calendar provider system app?</string>
+    <string name="account_list_contacts_storage_missing">Contacts system storage missing. Did you uninstall the contacts provider system app?</string>
+    <string name="account_list_calendar_storage_deactivated">Calendar system storage is deactivated. Did you disable the calendar provider system app?</string>
+    <string name="account_list_contacts_storage_deactivated">Contacts system storage is deactivated. Did you disable the contacts provider system app?</string>
     <string name="account_list_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>
     <string name="account_list_no_internet">Automatic synchronization not active (no verified Internet connection).</string>
     <string name="account_list_manage_connections">Manage connections</string>
@@ -143,6 +145,8 @@
     <string name="account_list_manage_battery_saver">Manage battery saver</string>
     <string name="account_list_low_storage">Storage space low. Android will not sync local changes immediately, but during the next regular sync.</string>
     <string name="account_list_manage_storage">Manage storage</string>
+    <string name="account_list_manage_calendar_storage">Manage calendar storage</string>
+    <string name="account_list_manage_contacts_storage">Manage contacts storage</string>
     <string name="account_list_learn_more">Learn more</string>
     <string name="account_list_welcome">Welcome to DAVx⁵!</string>
     <string name="account_list_empty">Connect to your server and keep your calendars and contacts synchronized.</string>
