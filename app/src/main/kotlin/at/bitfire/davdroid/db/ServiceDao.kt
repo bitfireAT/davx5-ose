@@ -14,10 +14,10 @@ import kotlinx.coroutines.flow.Flow
 interface ServiceDao {
 
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
-    fun getByAccountAndType(accountName: String, type: String): Service?
+    fun getByAccountAndType(accountName: String, @ServiceType type: String): Service?
 
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
-    fun getByAccountAndTypeFlow(accountName: String, type: String): Flow<Service?>
+    fun getByAccountAndTypeFlow(accountName: String, @ServiceType type: String): Flow<Service?>
 
     @Query("SELECT id FROM service WHERE accountName=:accountName")
     suspend fun getIdsByAccountAsync(accountName: String): List<Long>

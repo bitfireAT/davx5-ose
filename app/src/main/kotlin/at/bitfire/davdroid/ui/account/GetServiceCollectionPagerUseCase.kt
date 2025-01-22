@@ -9,6 +9,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.CollectionType
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.settings.Settings
@@ -41,7 +42,7 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(
         serviceFlow: Flow<Service?>,
-        collectionType: String,
+        @CollectionType collectionType: String,
         showOnlyPersonalFlow: Flow<Boolean>
     ): Flow<PagingData<Collection>> =
         combine(serviceFlow, showOnlyPersonalFlow, forceReadOnlyAddressBooksFlow) { service, onlyPersonal, forceReadOnlyAddressBooks ->

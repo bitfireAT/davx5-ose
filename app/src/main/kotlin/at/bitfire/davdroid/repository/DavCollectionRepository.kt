@@ -23,6 +23,7 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.CollectionType
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -248,10 +249,10 @@ class DavCollectionRepository @Inject constructor(
         notifyOnChangeListeners()
     }
 
-    fun pageByServiceAndType(serviceId: Long, type: String) =
+    fun pageByServiceAndType(serviceId: Long, @CollectionType type: String) =
         dao.pageByServiceAndType(serviceId, type)
 
-    fun pagePersonalByServiceAndType(serviceId: Long, type: String) =
+    fun pagePersonalByServiceAndType(serviceId: Long, @CollectionType type: String) =
         dao.pagePersonalByServiceAndType(serviceId, type)
 
     /**
