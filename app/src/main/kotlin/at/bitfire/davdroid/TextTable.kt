@@ -7,7 +7,7 @@ package at.bitfire.davdroid
 import java.util.Collections
 
 class TextTable(
-        vararg val headers: String
+    val headers: List<String>
 ) {
 
     companion object {
@@ -18,16 +18,20 @@ class TextTable(
 
     }
 
+    constructor(vararg headers: String): this(headers.toList())
+
 
     private val lines = mutableListOf<Array<String>>()
 
-    fun addLine(vararg values: Any?) {
+    fun addLine(values: List<Any?>) {
         if (values.size != headers.size)
             throw IllegalArgumentException("Table line must have ${headers.size} column(s)")
         lines += values.map {
             it?.toString() ?: "—"
         }.toTypedArray()
     }
+
+    fun addLine(vararg values: Any?) = addLine(values.toList())
 
     override fun toString(): String {
         val sb = StringBuilder()
