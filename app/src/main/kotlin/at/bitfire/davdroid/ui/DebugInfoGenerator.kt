@@ -161,7 +161,7 @@ class DebugInfoGenerator @Inject constructor(
                         info.packageName, info.versionName, PackageInfoCompat.getLongVersionCode(info),
                         pm.getInstallerPackageName(info.packageName) ?: '—', notes.joinToString(", ")
                     )
-                } catch (ignored: PackageManager.NameNotFoundException) {
+                } catch (_: PackageManager.NameNotFoundException) {
                 }
             writer.append(table.toString())
         } catch (e: Exception) {
@@ -308,12 +308,11 @@ class DebugInfoGenerator @Inject constructor(
         }
 
         // non-sync workers
-        writer.append("\nGeneric workers:\n")
-            .append(dumpWorkersInfo(accounts))
-            .append("\n")
+        writer.append("OTHER WORKERS\n")
+        dumpOtherWorkers(accounts, writer)
 
         // database dump
-        writer.append("\n\nDATABASE DUMP\n\n")
+        writer.append("\n\n\nDATABASE DUMP\n\n")
         db.dump(writer, arrayOf("webdav_document"))
 
         // app settings
@@ -361,8 +360,8 @@ class DebugInfoGenerator @Inject constructor(
             )
 
             writer.append("\nSync workers:\n")
-                .append(dumpSyncWorkersInfo(account))
-                .append("\n")
+            dumpSyncWorkers(account, writer)
+            writer.append("\n")
         } catch (e: InvalidAccountException) {
             writer.append("$e\n")
         }
@@ -472,12 +471,13 @@ class DebugInfoGenerator @Inject constructor(
     }
 
     /**
-     * Gets sync workers info
+     * Gets sync workers info.
+     *
      * Note: WorkManager does not return worker names when queried, so we create them and ask
-     * whether they exist one by one
+     * whether they exist one by one.
      */
-    private fun dumpSyncWorkersInfo(account: Account): String =
-        workersInfoTable(
+    private fun dumpSyncWorkers(account: Account, writer: Writer) {
+        writer.append(workersInfoTable(
             WorkQuery.Builder.fromTags(
                 SyncDataType.entries.map { BaseSyncWorker.commonTag(account, it) }
             ).build(),
@@ -494,28 +494,29 @@ class DebugInfoGenerator @Inject constructor(
                         .removePrefix("sync-")
                 })
             )
-        )
+        ))
+    }
 
     /**
-     * Gets account-independent sync workers info. This is done by querying all the workers, and
-     * filtering the ones that depend on an account (the opposite of [dumpSyncWorkersInfo]).
+     * Gets account-independent workers info. This is done by querying all the workers, and
+     * filtering the ones that depend on an account (the opposite of [dumpSyncWorkers]).
      *
      * Note: WorkManager does not return worker names when queried, so we create them and ask
-     * whether they exist one by one
+     * whether they exist one by one.
      *
      * @param accounts The list of accounts in the system. This is used for filtering account-dependent
      * workers.
      */
-    private fun dumpWorkersInfo(accounts: Array<Account>): String {
+    private fun dumpOtherWorkers(accounts: Array<Account>, writer: Writer) {
         val syncWorkersTags = accounts.flatMap { account ->
             SyncDataType.entries.map { BaseSyncWorker.commonTag(account, it) }
         }
 
-        return workersInfoTable(
+        writer.append(workersInfoTable(
             // Fetch all workers
             WorkQuery.Builder.fromStates(WorkInfo.State.entries).build(),
             filter = { it.tags.all { tag -> !syncWorkersTags.contains(tag) } }
-        )
+        ))
     }
 
 
