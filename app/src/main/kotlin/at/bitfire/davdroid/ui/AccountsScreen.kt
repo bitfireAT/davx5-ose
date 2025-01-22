@@ -127,8 +127,8 @@ fun AccountsScreen(
         batterySaverActive = model.batterySaverActive.collectAsStateWithLifecycle(false).value,
         dataSaverActive = model.dataSaverEnabled.collectAsStateWithLifecycle(false).value,
         storageLow = model.storageLow.collectAsStateWithLifecycle(false).value,
-        calendarProviderDisabled = model.calendarProviderInaccessible,
-        contactsProviderDisabled = model.contactsProviderInaccessible
+        calendarProviderDisabled = model.calendarStorageMissingOrDisabled.collectAsStateWithLifecycle(false).value,
+        contactsProviderDisabled = model.contactsStorageMissingOrDisabled.collectAsStateWithLifecycle(false).value
     )
 }
 

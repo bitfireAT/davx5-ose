@@ -31,6 +31,7 @@ import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.intro.IntroPage
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
 import at.bitfire.davdroid.util.broadcastReceiverFlow
+import at.bitfire.davdroid.util.packageChangedFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -204,11 +205,11 @@ class AccountsModel @AssistedInject constructor(
             }
         }
 
-    /** whether the calendar provider is missing or disabled */
-    val calendarProviderInaccessible = !appInstalledAndEnabled("com.android.providers.calendar")
+    /** whether the calendar storage is missing or disabled */
+    val calendarStorageMissingOrDisabled = appMissingOrDisabledFlow("com.android.providers.calendar")
 
-    /** whether the calendar provider is missing or disabled */
-    val contactsProviderInaccessible = !appInstalledAndEnabled("com.android.providers.contacts")
+    /** whether the calendar storage is missing or disabled */
+    val contactsStorageMissingOrDisabled = appMissingOrDisabledFlow("com.android.providers.contacts")
 
 
     init {
@@ -231,11 +232,15 @@ class AccountsModel @AssistedInject constructor(
 
     // helpers
 
-    /** Check if an app is installed and enabled */
-    fun appInstalledAndEnabled(packageName: String): Boolean = try {
-        context.packageManager.getApplicationInfo(packageName, 0).enabled
-    } catch (_: NameNotFoundException) {
-        false
+    /** Check if an app is missing or disabled */
+    fun appMissingOrDisabledFlow(packageName: String) = packageChangedFlow(context).map { intent ->
+        try {
+            // Is app disabled?
+            !context.packageManager.getApplicationInfo(packageName, 0).enabled
+        } catch (_: NameNotFoundException) {
+            // App is missing
+            true
+        }
     }
 
 }
