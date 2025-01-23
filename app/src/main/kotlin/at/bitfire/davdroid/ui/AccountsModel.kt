@@ -52,9 +52,9 @@ import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountsModel.Factory::class)
 class AccountsModel @AssistedInject constructor(
-    @Assisted val syncAccountsOnInit: Boolean,
+    @Assisted private val syncAccountsOnInit: Boolean,
     private val accountRepository: AccountRepository,
-    @ApplicationContext val context: Context,
+    @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     introPageFactory: IntroPageFactory,
     private val logger: Logger,
@@ -209,12 +209,12 @@ class AccountsModel @AssistedInject constructor(
 
     /** whether the calendar storage is missing or disabled */
     val calendarStorageDisabled = packageChangedFlow(context).map {
-        contentProviderDisabledFlow(CalendarContract.AUTHORITY)
+        !contentProviderAvailable(CalendarContract.AUTHORITY)
     }
 
     /** whether the calendar storage is missing or disabled */
     val contactsStorageDisabled = packageChangedFlow(context).map {
-        contentProviderDisabledFlow(ContactsContract.AUTHORITY)
+        !contentProviderAvailable(ContactsContract.AUTHORITY)
     }
 
 
@@ -238,16 +238,14 @@ class AccountsModel @AssistedInject constructor(
 
     // helpers
 
-
-    fun contentProviderDisabledFlow(authority: String): Boolean =
+    fun contentProviderAvailable(authority: String): Boolean =
         try {
-            // "resolveContentProvider" Returns null if the provider app is disabled or missing;
-            // So we can't check the "enabled" state to distinguish between disabled and not found
-            context.packageManager.resolveContentProvider(authority, 0) == null
+            // resolveContentProvider returns null if the provider app is disabled or missing;
+            // so we can't distinguish between "disabled" and "not found"
+            context.packageManager.resolveContentProvider(authority, 0) != null
         } catch (_: NameNotFoundException) {
             logger.fine("$authority provider app not found")
-            true
+            false
         }
-
 
 }

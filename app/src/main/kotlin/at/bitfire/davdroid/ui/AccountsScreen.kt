@@ -308,9 +308,11 @@ fun AccountsScreen(
                                         context.startActivity(intent)
                                 },
                                 calendarStorageDisabled = calendarStorageDisabled,
-                                onManageCalendarStorage = { uriHandler.openUri(manualUrl) },
                                 contactsStorageDisabled = contactsStorageDisabled,
-                                onManageContactsStorage = { uriHandler.openUri(manualUrl) }
+                                onManageApps = {
+                                    val intent = Intent(Settings.ACTION_APPLICATION_SETTINGS)
+                                    context.startActivity(intent)
+                                },
                             )
 
                             // account list
@@ -504,7 +506,7 @@ fun SyncWarnings(
     lowStorageWarning: Boolean = true,
     onManageStorage: () -> Unit = {},
     calendarStorageDisabled: Boolean = false,
-    onManageCalendarStorage: () -> Unit = {},
+    onManageApps: () -> Unit = {},
     contactsStorageDisabled: Boolean = false,
     onManageContactsStorage: () -> Unit = {}
 ) {
@@ -563,7 +565,7 @@ fun SyncWarnings(
             ActionCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_database_off),
                 actionText = stringResource(R.string.account_list_learn_more),
-                onAction = onManageCalendarStorage,
+                onAction = onManageApps,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Text(stringResource(R.string.account_list_calendar_storage_disabled))
