@@ -14,6 +14,8 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.PowerManager
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.lifecycle.ViewModel
@@ -205,11 +207,15 @@ class AccountsModel @AssistedInject constructor(
             }
         }
 
-    /** whether the calendar storage is installed and enabled */
-    val calendarStorageEnabled = appInstalledAndEnabledFlow("com.android.providers.calendar")
+    /** whether the calendar storage is missing or disabled */
+    val calendarStorageDisabled = packageChangedFlow(context).map {
+        contentProviderDisabledFlow(CalendarContract.AUTHORITY)
+    }
 
-    /** whether the calendar storage is installed and enabled */
-    val contactsStorageEnabled = appInstalledAndEnabledFlow("com.android.providers.contacts")
+    /** whether the calendar storage is missing or disabled */
+    val contactsStorageDisabled = packageChangedFlow(context).map {
+        contentProviderDisabledFlow(ContactsContract.AUTHORITY)
+    }
 
 
     init {
@@ -232,21 +238,16 @@ class AccountsModel @AssistedInject constructor(
 
     // helpers
 
-    /**
-     * Check if an app is installed and enabled
-     *
-     * @param packageName the package name of the app
-     * @return a flow that emits `true` if the app is installed and enabled,
-     * `false` if the app is installed but disabled, and `null` if the app is missing
-     * */
-    fun appInstalledAndEnabledFlow(packageName: String) = packageChangedFlow(context).map { intent ->
+
+    fun contentProviderDisabledFlow(authority: String): Boolean =
         try {
-            // Is app enabled?
-            context.packageManager.getApplicationInfo(packageName, 0).enabled
+            // "resolveContentProvider" Returns null if the provider app is disabled or missing;
+            // So we can't check the "enabled" state to distinguish between disabled and not found
+            context.packageManager.resolveContentProvider(authority, 0) == null
         } catch (_: NameNotFoundException) {
-            // App is missing
-            null
+            logger.fine("$authority provider app not found")
+            true
         }
-    }
+
 
 }

@@ -127,8 +127,8 @@ fun AccountsScreen(
         batterySaverActive = model.batterySaverActive.collectAsStateWithLifecycle(false).value,
         dataSaverActive = model.dataSaverEnabled.collectAsStateWithLifecycle(false).value,
         storageLow = model.storageLow.collectAsStateWithLifecycle(false).value,
-        calendarStorageEnabled = model.calendarStorageEnabled.collectAsStateWithLifecycle(false).value,
-        contactsStorageEnabled = model.contactsStorageEnabled.collectAsStateWithLifecycle(false).value,
+        calendarStorageDisabled = model.calendarStorageDisabled.collectAsStateWithLifecycle(false).value,
+        contactsStorageDisabled = model.contactsStorageDisabled.collectAsStateWithLifecycle(false).value
     )
 }
 
@@ -147,8 +147,8 @@ fun AccountsScreen(
     batterySaverActive: Boolean = false,
     dataSaverActive: Boolean = false,
     storageLow: Boolean = false,
-    calendarStorageEnabled: Boolean? = false,
-    contactsStorageEnabled: Boolean? = false
+    calendarStorageDisabled: Boolean = false,
+    contactsStorageDisabled: Boolean = false
 ) {
     val scope = rememberCoroutineScope()
 
@@ -166,11 +166,6 @@ fun AccountsScreen(
             isRefreshing = false
         }
     }
-
-    val uriHandler = LocalUriHandler.current
-    val manualIntroductionUri = Constants.MANUAL_URL.buildUpon()
-        .appendPath(Constants.MANUAL_PATH_INTRODUCTION)
-        .build()
 
     val snackbarHostState = remember { SnackbarHostState() }
     AppTheme {
@@ -277,6 +272,11 @@ fun AccountsScreen(
 
                             // Warnings show as action cards
                             val context = LocalContext.current
+                            val uriHandler = LocalUriHandler.current
+                            val manualUrl = Constants.MANUAL_URL.buildUpon()
+                                .appendPath(Constants.MANUAL_PATH_INTRODUCTION)
+                                .build()
+                                .toString()
                             SyncWarnings(
                                 notificationsWarning = notificationsPermissionState?.status?.isGranted == false,
                                 onManagePermissions = onManagePermissions,
@@ -307,34 +307,10 @@ fun AccountsScreen(
                                     if (intent.resolveActivity(context.packageManager) != null)
                                         context.startActivity(intent)
                                 },
-                                calendarStorageEnabled = calendarStorageEnabled,
-                                onManageCalendarStorage = {
-                                    if (calendarStorageEnabled == null)
-                                        uriHandler.openUri(manualIntroductionUri.toString())
-                                    if (calendarStorageEnabled == false) {
-                                        val intent = Intent(
-                                            /* action = */ Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                            /* uri = */
-                                            Uri.parse("package:com.android.providers.calendar")
-                                        )
-                                        if (intent.resolveActivity(context.packageManager) != null)
-                                            context.startActivity(intent)
-                                    }
-                                },
-                                contactsStorageEnabled = contactsStorageEnabled,
-                                onManageContactsStorage = {
-                                    if (contactsStorageEnabled == null)
-                                        uriHandler.openUri(manualIntroductionUri.toString())
-                                    if (calendarStorageEnabled == false) {
-                                        val intent = Intent(
-                                            /* action = */ Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                            /* uri = */
-                                            Uri.parse("package:com.android.providers.contacts")
-                                        )
-                                        if (intent.resolveActivity(context.packageManager) != null)
-                                            context.startActivity(intent)
-                                    }
-                                }
+                                calendarStorageDisabled = calendarStorageDisabled,
+                                onManageCalendarStorage = { uriHandler.openUri(manualUrl) },
+                                contactsStorageDisabled = contactsStorageDisabled,
+                                onManageContactsStorage = { uriHandler.openUri(manualUrl) }
                             )
 
                             // account list
@@ -527,9 +503,9 @@ fun SyncWarnings(
     onManageDataSaver: () -> Unit = {},
     lowStorageWarning: Boolean = true,
     onManageStorage: () -> Unit = {},
-    calendarStorageEnabled: Boolean? = true,
+    calendarStorageDisabled: Boolean = false,
     onManageCalendarStorage: () -> Unit = {},
-    contactsStorageEnabled: Boolean? = true,
+    contactsStorageDisabled: Boolean = false,
     onManageContactsStorage: () -> Unit = {}
 ) {
     Column(Modifier.padding(horizontal = 8.dp)) {
@@ -583,36 +559,24 @@ fun SyncWarnings(
                 Text(stringResource(R.string.account_list_low_storage))
             }
 
-        if (calendarStorageEnabled != true)
+        if (calendarStorageDisabled)
             ActionCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_database_off),
-                actionText = if (calendarStorageEnabled == false)
-                        stringResource(R.string.account_list_manage_calendar_storage)
-                    else
-                        stringResource(R.string.account_list_learn_more),
+                actionText = stringResource(R.string.account_list_learn_more),
                 onAction = onManageCalendarStorage,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
-                if (calendarStorageEnabled == false)
-                    Text(stringResource(R.string.account_list_calendar_storage_deactivated))
-                else
-                    Text(stringResource(R.string.account_list_calendar_storage_missing))
+                Text(stringResource(R.string.account_list_calendar_storage_disabled))
             }
 
-        if (contactsStorageEnabled != true)
+        if (contactsStorageDisabled)
             ActionCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_database_off),
-                actionText = if (contactsStorageEnabled == false)
-                        stringResource(R.string.account_list_manage_contacts_storage)
-                    else
-                        stringResource(R.string.account_list_learn_more),
+                actionText = stringResource(R.string.account_list_learn_more),
                 onAction = onManageContactsStorage,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
-                if (contactsStorageEnabled == false)
-                    Text(stringResource(R.string.account_list_contacts_storage_deactivated))
-                else
-                    Text(stringResource(R.string.account_list_contacts_storage_missing))
+                Text(stringResource(R.string.account_list_contacts_storage_disabled))
             }
     }
 }
@@ -627,8 +591,8 @@ fun SyncWarnings_Preview() {
             batterySaverActive = true,
             dataSaverActive = true,
             lowStorageWarning = true,
-            calendarStorageEnabled = false,
-            contactsStorageEnabled = false
+            calendarStorageDisabled = true,
+            contactsStorageDisabled = true
         )
     }
 }
