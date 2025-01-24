@@ -65,7 +65,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -75,7 +74,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
@@ -272,11 +270,6 @@ fun AccountsScreen(
 
                             // Warnings show as action cards
                             val context = LocalContext.current
-                            val uriHandler = LocalUriHandler.current
-                            val manualUrl = Constants.MANUAL_URL.buildUpon()
-                                .appendPath(Constants.MANUAL_PATH_INTRODUCTION)
-                                .build()
-                                .toString()
                             SyncWarnings(
                                 notificationsWarning = notificationsPermissionState?.status?.isGranted == false,
                                 onManagePermissions = onManagePermissions,
@@ -311,7 +304,8 @@ fun AccountsScreen(
                                 contactsStorageDisabled = contactsStorageDisabled,
                                 onManageApps = {
                                     val intent = Intent(Settings.ACTION_APPLICATION_SETTINGS)
-                                    context.startActivity(intent)
+                                    if (intent.resolveActivity(context.packageManager) != null)
+                                        context.startActivity(intent)
                                 },
                             )
 
@@ -506,9 +500,8 @@ fun SyncWarnings(
     lowStorageWarning: Boolean = true,
     onManageStorage: () -> Unit = {},
     calendarStorageDisabled: Boolean = false,
-    onManageApps: () -> Unit = {},
     contactsStorageDisabled: Boolean = false,
-    onManageContactsStorage: () -> Unit = {}
+    onManageApps: () -> Unit = {}
 ) {
     Column(Modifier.padding(horizontal = 8.dp)) {
         if (notificationsWarning)
@@ -564,7 +557,7 @@ fun SyncWarnings(
         if (calendarStorageDisabled)
             ActionCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_database_off),
-                actionText = stringResource(R.string.account_list_learn_more),
+                actionText = stringResource(R.string.account_list_manage_apps),
                 onAction = onManageApps,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
@@ -574,8 +567,8 @@ fun SyncWarnings(
         if (contactsStorageDisabled)
             ActionCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_database_off),
-                actionText = stringResource(R.string.account_list_learn_more),
-                onAction = onManageContactsStorage,
+                actionText = stringResource(R.string.account_list_manage_apps),
+                onAction = onManageApps,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Text(stringResource(R.string.account_list_contacts_storage_disabled))
