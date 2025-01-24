@@ -141,6 +141,9 @@
     <string name="account_list_manage_battery_saver">Manage battery saver</string>
     <string name="account_list_low_storage">Storage space low. Android will not sync local changes immediately, but during the next regular sync.</string>
     <string name="account_list_manage_storage">Manage storage</string>
+    <string name="account_list_calendar_storage_disabled">Calendar provider missing. Did you disable the \"Calendar storage\" system app?</string>
+    <string name="account_list_contacts_storage_disabled">Contacts provider missing. Did you disable the \"Contacts storage\" system app?</string>
+    <string name="account_list_manage_apps">Manage apps</string>
     <string name="account_list_welcome">Welcome to DAVx⁵!</string>
     <string name="account_list_empty">Connect to your server and keep your calendars and contacts synchronized.</string>
     <string name="accounts_sync_all">Sync all accounts</string>
