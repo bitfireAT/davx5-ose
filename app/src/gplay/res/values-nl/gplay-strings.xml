@@ -3,6 +3,13 @@
     <!-- Navigation drawer -->
     <string name="nav_earn_badges">Steun ons met badges</string>
     <string name="nav_rate_us">Beoordeel in Google Play</string>
+    <string name="nav_feedback_inapp_didnt_appear">Is de in-app-recensie niet verschenen?</string>
+    <string name="nav_feedback_google_play">Verzenden in Google Play</string>
+    <string name="nav_feedback_scroll_to_reviews">Scroll naar het beoordelingsgedeelte om feedback te geven</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">Deze versie is alleen geschikt voor distributie via Google Play.</string>
+
     <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Je hebt badges verdiend, bedankt!</item>
@@ -18,4 +25,7 @@
     <string name="button_buy_badge_free">Gratis</string>
     <string name="button_buy_badge_bought">Dank U!</string>
     <string name="earn_badges">Verdien badges om ons te steunen!</string>
-    </resources>
+    <string name="billing_unavailable">Facturerings-API niet beschikbaar</string>
+    <string name="network_problems">Er zijn netwerkproblemen. Probeer het later opnieuw.</string>
+
+</resources>

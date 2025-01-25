@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation drawer -->
+    <string name="nav_earn_badges">Toeta meid reklaamsiltidega</string>
+    <string name="nav_rate_us">Koosta arvustus Google Plays</string>
+    <string name="nav_feedback_inapp_didnt_appear">Rakenduse-sisest arvustust pole näha?</string>
+    <string name="nav_feedback_google_play">Saada Google Plays</string>
+    <string name="nav_feedback_scroll_to_reviews">Tagasiside koostamiseks keri arvustuste lõiguni</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">Seda versiooni on võimalik levitada Google Play kaudu.</string>
+
+    <!-- EarnBadgesActivity -->
+    <plurals name="you_earned_badges">
+        <item quantity="one">Suur tänu, sa oled teeninud ühe reklaamsildi!</item>
+        <item quantity="other">Suur tänu, sa oled teeninud %d reklaamsilti!</item>
+    </plurals>
+    <string name="available_badges">Saadavalolevad reklaamsildid</string>
+    <string name="available_badges_empty">Vabandust, reklaamsiltide laadimine ei õnnestunud. Kas sa ikka oled Play Store\'i sisse loginud?</string>
+    <string name="what_are_badges">Mis on reklaamsildid?</string>
+    <string name="what_are_badges_title">Mis on reklaamsildid?</string>
+    <string name="what_are_badges_body">Reklaamsildid on lihtsad ühekordsed rakendusesisesed maksed. Sa teenid lihtsa ja toreda reklaamsildi ja sellega saad meid rahaliselt toetada.</string>
+    <string name="why_badges_title">Miks pakub DAVx⁵ funktsionaalsuseta reklaamsilte?</string>
+    <string name="why_badges_body">DAVx⁵ on aastate jooksul tõesti kasvanud! Me oleme seda jätkuvalt arendamas, tagame kasutajatoe ning alati kohandate teda järgmise uue Androidi versiooni jaoks. Need reklaamsildid on ühekordsed maksed, millega saad meid toetada, ostes ühe kohvi või kaks või kasvõi 10 :-) Me soovime olla võimalikult avatud ja rakendusesisestes maksetes ei saa kunagi olema midagi muud.</string>
+    <string name="button_buy_badge_free">TASUTA</string>
+    <string name="button_buy_badge_bought">Suur tänu!</string>
+    <string name="earn_badges">Meie toetamiseks teeni reklaamsilte!</string>
+    <string name="billing_unavailable">Billing API pole saadaval</string>
+    <string name="network_problems">Probleem võrguühendusega, palun proovi hiljem uuesti.</string>
+
+</resources>

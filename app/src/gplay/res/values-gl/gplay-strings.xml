@@ -3,6 +3,13 @@
     <!-- Navigation drawer -->
     <string name="nav_earn_badges">Axúdanos con insignias</string>
     <string name="nav_rate_us">Recensión en Google Play</string>
+    <string name="nav_feedback_inapp_didnt_appear">Non aparece a recensión na propia app?</string>
+    <string name="nav_feedback_google_play">Enviar en Google Play</string>
+    <string name="nav_feedback_scroll_to_reviews">Ir á sección de recensións para enviar a túa experiencia</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">Esta versión só se pode distribuír en Google Play.</string>
+
     <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Gañaches unha insignia, grazas!</item>
@@ -18,4 +25,7 @@
     <string name="button_buy_badge_free">DE BALDE</string>
     <string name="button_buy_badge_bought">Grazas!</string>
     <string name="earn_badges">Consigue insignias para axudarnos!</string>
-    </resources>
+    <string name="billing_unavailable">API de pagos non dispoñible</string>
+    <string name="network_problems">Problemas coa rede, inténtao máis tarede.</string>
+
+</resources>
