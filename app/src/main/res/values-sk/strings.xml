@@ -2,9 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_title_address_book">DAVx⁵ adresár</string>
-  <string name="address_books_authority_title">Adresáre</string>
   <string name="help">Pomoc</string>
-  <string name="manage_accounts">Spravovať používateľské účty</string>
   <string name="notification_channel_debugging">Ladenie</string>
   <string name="notification_channel_general">Ďalšie dôležité správy</string>
   <string name="notification_channel_sync">Synchronizácia</string>

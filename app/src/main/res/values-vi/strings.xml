@@ -3,12 +3,10 @@
   <!--common strings-->
   <string name="account_invalid">Tài khoản không tồn tại (nữa)</string>
   <string name="account_title_address_book">Sổ địa chỉ của DAVx⁵</string>
-  <string name="address_books_authority_title">Sổ địa chỉ</string>
   <string name="dialog_remove">Xóa</string>
   <string name="dialog_deny">Hủy</string>
   <string name="field_required">Trường này là bắt buộc</string>
   <string name="help">Trợ giúp</string>
-  <string name="manage_accounts">Quản lý các tài khoản</string>
   <string name="share">Chia sẻ</string>
   <string name="database_destructive_migration_title">Cơ sở dữ liệu đã bị lỗi</string>
   <string name="database_destructive_migration_text">Tất cả tài khoản đã bị xóa ở cục bộ.</string>

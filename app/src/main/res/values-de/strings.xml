@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">Konto nicht (mehr) vorhanden</string>
   <string name="account_title_address_book">DAVx⁵-Adressbuch</string>
-  <string name="address_books_authority_title">Adressbücher</string>
+  <string name="account_prefs_use_app">Konto nicht hier ändern! Um Konten zu verwalten, stattdessen direkt die App nutzen.</string>
   <string name="dialog_delete">Löschen</string>
   <string name="dialog_remove">Entfernen</string>
   <string name="dialog_deny">Abbrechen</string>
   <string name="field_required">Feld wird benötigt</string>
   <string name="help">Hilfe</string>
-  <string name="manage_accounts">Konten verwalten</string>
   <string name="navigate_up">Aufwärts navigieren</string>
   <string name="optional_label">* optional</string>
   <string name="options_menu">Auswahlmenü</string>
@@ -122,7 +121,7 @@
   <string name="navigation_drawer_contribute">Einen Beitrag leisten</string>
   <string name="navigation_drawer_privacy_policy">Datenschutzerklärung</string>
   <string name="account_list_no_notification_permission">Benachrichtigungen deaktiviert. Sie werden nicht über Fehler bei der Synchronisierung informiert.</string>
-  <string name="account_list_no_internet">Automatische Synchronisierung nicht aktiv (keine überprüfte Internetverbindung).</string>
+  <string name="account_list_no_internet">Automatische Synchronisation nicht aktiv (keine überprüfte Internetverbindung).</string>
   <string name="account_list_manage_connections">Verbindungen steuern</string>
   <string name="account_list_datasaver_enabled">Datensparen aktiviert. Hintergrundsynchronisierung ist eingeschränkt.</string>
   <string name="account_list_manage_datasaver">Datensparen verwalten</string>

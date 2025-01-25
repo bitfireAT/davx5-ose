@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">Регистрацията (вече) не съществува</string>
   <string name="account_title_address_book">Адресник на DAVx⁵</string>
-  <string name="address_books_authority_title">Адресници</string>
+  <string name="account_prefs_use_app">Не променяйте профила оттук! Вместо това използвайте приложението, за да управлявате профили.</string>
   <string name="dialog_delete">Премахване</string>
   <string name="dialog_remove">Премахване</string>
   <string name="dialog_deny">Отказ</string>
   <string name="field_required">Задължително поле</string>
   <string name="help">Помощ</string>
-  <string name="manage_accounts">Управление на регистрации</string>
   <string name="navigate_up">Придвижване нагоре</string>
   <string name="optional_label">* по желание</string>
   <string name="options_menu">Меню настройки</string>
@@ -31,7 +30,7 @@
   <string name="intro_slogan1">Вашите данни. Вашият избор</string>
   <string name="intro_slogan2">Поемете контрол</string>
   <string name="intro_battery_title">Периодично синхронизиране</string>
-  <string name="intro_battery_text">За да синхронизира периодично, %s се нуждае от разрешение да работи на заден план. В противен случай Android може да спре синхронизацията по всяко време.</string>
+  <string name="intro_battery_text">За да синхронизира периодично, %s се нуждае от разрешение да работи във фонов режим. В противен случай Android може да спре синхронизацията по всяко време.</string>
   <string name="intro_battery_dont_show">Не желая периодично синхронизиране.*</string>
   <string name="intro_autostart_title">%s съвместимост</string>
   <string name="intro_autostart_text">Устройството вероятно прекъсва синхронизацията. Единственият начин да резрешите проблема е ръчната промяна на настройките.</string>
@@ -49,7 +48,7 @@
   <string name="intro_tasks_no_app_store">Няма достъпен магазин за приложения</string>
   <string name="intro_tasks_dont_show">Не се нуждая от поддръжка на задачи.*</string>
   <string name="intro_open_source_title">Приложение с отворен код</string>
-  <string name="intro_open_source_text">Радваме се, че използвате %s. Това е приложение с отворен код. Разработката, издръжката и поддръжката му са тежка работа. Молим да допринесете (има много начини) или да дарите. Вашият жест ще бъде високо оценен.</string>
+  <string name="intro_open_source_text">Радваме се, че използвате %s – приложение с отворен код. Разработката, издръжката и поддръжката му са тежка работа. Молим ви да допринесете (има много начини) или да дарите. Вашият жест ще бъде високо оценен.</string>
   <string name="intro_open_source_details">Как да допринеса или даря</string>
   <string name="intro_open_source_dont_show">Без повторно показване в близко бъдеще</string>
   <string name="intro_next">Напред</string>
@@ -122,7 +121,7 @@
   <string name="navigation_drawer_contribute">Как да допринеса</string>
   <string name="navigation_drawer_privacy_policy">Лични данни</string>
   <string name="account_list_no_notification_permission">Известията са изключени. Няма да бъдете известявани за грешки при синхронизиране.</string>
-  <string name="account_list_no_internet">Няма потвърдена връзка с интернет. Синхронизацията може да не се изпълни.</string>
+  <string name="account_list_no_internet">Автоматичното синхронизиране е изключено (липсва потвърдена връзка с интернет)</string>
   <string name="account_list_manage_connections">Управление на връзките</string>
   <string name="account_list_datasaver_enabled">Включена е икономия на данни. Синхронизацията във фонов режим е ограничена.</string>
   <string name="account_list_manage_datasaver">Икономия на трафик</string>
@@ -130,6 +129,9 @@
   <string name="account_list_manage_battery_saver">Икономия на батерия</string>
   <string name="account_list_low_storage">Пространството за съхранение е малко. Андроид няма да синхронизира местните промени веднага, а по време на следващата редовна синхронизация.</string>
   <string name="account_list_manage_storage">Управление на хранилището</string>
+  <string name="account_list_calendar_storage_disabled">Липсва доставчик на календар. Да не би системното приложение „Съхранение в Календар“ да е изключено?</string>
+  <string name="account_list_contacts_storage_disabled">Липсва доставчик на контакти. Да не би системното приложение „Хранилище на Контакти“ да е изключено?</string>
+  <string name="account_list_manage_apps">Управление на приложения</string>
   <string name="account_list_welcome">Добре дошли при DAVx⁵!</string>
   <string name="account_list_empty">Свържете се със сървър и поддържайте календарите и контактите си синхронизирани.</string>
   <string name="accounts_sync_all">Синхронизиране на всички профили</string>
@@ -228,7 +230,7 @@
   <string name="login_type_email">Вход с електронна поща</string>
   <string name="login_email_address">Електронна поща</string>
   <string name="login_email_address_error">Необходим е действителен електронен адрес</string>
-  <string name="login_email_address_info"><![CDATA[Домейнът на имейла се използва като основа за адреса. <a href="%s">Откриването на услугите</a> става чрез записи в DNS и добре познати адреси.]]></string>
+  <string name="login_email_address_info"><![CDATA[Домейнът на имейла се използва като основен адрес. <a href="%s">Откриването на услугите</a> става чрез записи в DNS и добре познати адреси.]]></string>
   <string name="login_password">Парола</string>
   <string name="login_password_hide">Скриване на паролата</string>
   <string name="login_password_show">Показване на паролата</string>
@@ -237,7 +239,7 @@
   <string name="login_user_name">Потребителско име</string>
   <string name="login_user_name_optional">Потребителско име*</string>
   <string name="login_base_url">Основен адрес</string>
-  <string name="login_base_url_info"><![CDATA[Основата на адресът ще бъде директно проверен, но <a href="%s">услугите също могат да бъдат открити</a>чрез записи в DNS и добре познати адреси.]]></string>
+  <string name="login_base_url_info"><![CDATA[Основният адрес ще бъде проверен, но <a href="%s">някои услуги могат да бъдат открити и</a> чрез записи в DNS, и добре познати адреси.]]></string>
   <string name="login_select_certificate">Избор на сертификат</string>
   <string name="login_add_account">Нова регистрация</string>
   <string name="login_account_name">Име на регистрация</string>
@@ -412,7 +414,7 @@
   <string name="webdav_mounts_unmount">Демонтиране</string>
   <string name="webdav_add_mount_title">Монтиране на дял на WebDAV</string>
   <string name="webdav_mounts_empty">Получете директен достъп до файловете си в облака като монтирате дял на WebDAV.</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Вижте <a href="%1$s">как работят дяловете на WebDAV</a>в ръководството.</string>]]></string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Вижте <a href="%1$s">как работят дяловете на WebDAV</a> в ръководството.</string>]]></string>
   <string name="webdav_add_mount_display_name">Видимо име</string>
   <string name="webdav_add_mount_url">Адрес на WebDAV</string>
   <string name="webdav_add_mount_url_invalid">Недействителен адрес</string>

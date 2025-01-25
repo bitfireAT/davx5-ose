@@ -3,10 +3,8 @@
   <!--common strings-->
   <string name="account_invalid">계정이 존재하지 않음 (anymore)</string>
   <string name="account_title_address_book">DAVx⁵ 주소록</string>
-  <string name="address_books_authority_title">주소록</string>
   <string name="field_required">이 field는 필수입니다.</string>
   <string name="help">도움말</string>
-  <string name="manage_accounts">관리 계정</string>
   <string name="share">공유하기</string>
   <string name="database_destructive_migration_title">데이터베이스 손상</string>
   <string name="database_destructive_migration_text">모든 계정이 로컬에서 제거되었습니다.</string>

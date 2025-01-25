@@ -2,9 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_title_address_book">Ksiōnżka adresowo DAVx⁵</string>
-  <string name="address_books_authority_title">Ksiōnżka adresowo</string>
   <string name="help">Pōmoc</string>
-  <string name="manage_accounts">Zarzōndzej kōntami</string>
   <string name="notification_channel_debugging">Debugowanie</string>
   <string name="notification_channel_general">Inksze ważne wiadōmości</string>
   <string name="notification_channel_sync">Synchrōnizacyjo</string>

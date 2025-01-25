@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">Account bestaat niet (of niet meer)</string>
   <string name="account_title_address_book">DAVx⁵ Adresboek</string>
-  <string name="address_books_authority_title">Adresboeken</string>
+  <string name="account_prefs_use_app">Verander hier niet van account! Gebruik in plaats daarvan direct de app om accounts te beheren.</string>
   <string name="dialog_delete">Verwijderen</string>
   <string name="dialog_remove">Verwijder</string>
   <string name="dialog_deny">Annuleer</string>
   <string name="field_required">Dit veld is verplicht</string>
   <string name="help">Hulp</string>
-  <string name="manage_accounts">Accounts beheren</string>
   <string name="navigate_up">Navigeer omhoog</string>
   <string name="optional_label">*optioneel</string>
   <string name="options_menu">Opties menu</string>
@@ -122,7 +121,6 @@
   <string name="navigation_drawer_contribute">Hoe bijdragen</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
   <string name="account_list_no_notification_permission">Meldingen uitgeschakeld. U krijgt geen meldingen over synchronisatiefouten.</string>
-  <string name="account_list_no_internet">Geen gevalideerde internetverbinding. Synchronisatie wordt mogelijk niet uitgevoerd.</string>
   <string name="account_list_manage_connections">Verbindingen beheren</string>
   <string name="account_list_datasaver_enabled">Gegevensbesparing ingeschakeld. Synchronisatie op de achtergrond is beperkt.</string>
   <string name="account_list_manage_datasaver">Beheer van gegevensbesparing</string>

@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">Аккаунт не существует (больше)</string>
   <string name="account_title_address_book">Адресная книга DAVx⁵</string>
-  <string name="address_books_authority_title">Адресные книги</string>
+  <string name="account_prefs_use_app">Не меняйте аккаунт здесь! Вместо этого используйте приложение для управления учетными записями.</string>
   <string name="dialog_delete">Удалить</string>
   <string name="dialog_remove">Удалить</string>
   <string name="dialog_deny">Отмена</string>
   <string name="field_required">Это поле является обязательным</string>
   <string name="help">Помощь</string>
-  <string name="manage_accounts">Управление аккаунтами</string>
   <string name="navigate_up">Перейти наверх</string>
   <string name="optional_label">* опционально</string>
   <string name="options_menu">Меню параметров</string>
@@ -122,7 +121,6 @@
   <string name="navigation_drawer_contribute">Как внести свой вклад</string>
   <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
   <string name="account_list_no_notification_permission">Уведомления отключены. Вы не будете получать уведомления об ошибках синхронизации.</string>
-  <string name="account_list_no_internet">Нет проверенного подключения к интернету. Синхронизация может не выполняться.</string>
   <string name="account_list_manage_connections">Управление подключениями</string>
   <string name="account_list_datasaver_enabled">Экономия трафика включена. Фоновая синхронизация ограничена.</string>
   <string name="account_list_manage_datasaver">Экономия трафика</string>

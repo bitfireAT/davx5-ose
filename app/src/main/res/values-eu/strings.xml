@@ -3,13 +3,11 @@
   <!--common strings-->
   <string name="account_invalid">Kontua ez da existitzen (dagoeneko)</string>
   <string name="account_title_address_book">DAVx⁵ Helbide-liburua</string>
-  <string name="address_books_authority_title">Helbide-liburuak</string>
   <string name="dialog_delete">Ezabatu</string>
   <string name="dialog_remove">Kendu</string>
   <string name="dialog_deny">Utzi</string>
   <string name="field_required">Eremu hau beharrezkoa da</string>
   <string name="help">Laguntza</string>
-  <string name="manage_accounts">Kudeatu kontuak</string>
   <string name="navigate_up">Nabigatu gora</string>
   <string name="optional_label">* aukeran</string>
   <string name="options_menu">Aukeren menua</string>
@@ -123,7 +121,6 @@
   <string name="navigation_drawer_contribute">Nola lagundu</string>
   <string name="navigation_drawer_privacy_policy">Pribatutasun gidalerroak</string>
   <string name="account_list_no_notification_permission">Jakinarazpenak desgaituta. Ez zaitugu sinkronizazio-erroreei buruz jakinaraziko.</string>
-  <string name="account_list_no_internet">Ez dago baliozkotutako Interneteko konexiorik. Baliteke sinkronizazioa ez exekutatzea.</string>
   <string name="account_list_manage_connections">Kudeatu konexioak</string>
   <string name="account_list_datasaver_enabled">Datu-aurrezpena gaituta. Atzeko planoko sinkronizazioa murriztuko da.</string>
   <string name="account_list_manage_datasaver">Kudeatu datu-aurrezpena</string>

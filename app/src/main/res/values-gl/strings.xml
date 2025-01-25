@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">A conta non existe (definitivamente)</string>
   <string name="account_title_address_book">Libreta de enderezos DAVx⁵</string>
-  <string name="address_books_authority_title">Libretas de enderezos</string>
+  <string name="account_prefs_use_app">Non cambies de conta aquí! Usa directamente a aplicación para xestonar as contas.</string>
   <string name="dialog_delete">Eliminar</string>
   <string name="dialog_remove">Eliminar</string>
   <string name="dialog_deny">Desbotar</string>
   <string name="field_required">Este campo é requerido</string>
   <string name="help">Axuda</string>
-  <string name="manage_accounts">Xestionar contas</string>
   <string name="navigate_up">Ir arriba</string>
   <string name="optional_label">* optativo</string>
   <string name="options_menu">Menú de opcións</string>
@@ -122,7 +121,7 @@
   <string name="navigation_drawer_contribute">Como colaborar</string>
   <string name="navigation_drawer_privacy_policy">Política de Privacidade</string>
   <string name="account_list_no_notification_permission">Notificacións desactivadas. Non verás os avisos de erro na sincr.</string>
-  <string name="account_list_no_internet">Sen conexión a Internet verificada. A sincronización podería fallar.</string>
+  <string name="account_list_no_internet">A sincronización automática non está activa (sen conexión a internet verificada).</string>
   <string name="account_list_manage_connections">Xestionar conexións</string>
   <string name="account_list_datasaver_enabled">O aforro de datos está activado. A sincronización en segundo plano está restrinxida.</string>
   <string name="account_list_manage_datasaver">Xestionar aforro de datos</string>

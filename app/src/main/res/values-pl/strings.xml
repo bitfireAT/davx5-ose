@@ -3,12 +3,10 @@
   <!--common strings-->
   <string name="account_invalid">Konto (już) nie istnieje</string>
   <string name="account_title_address_book">Książka adresowa DAVx⁵</string>
-  <string name="address_books_authority_title">Książka adresowa</string>
   <string name="dialog_remove">Usuń</string>
   <string name="dialog_deny">Anuluj</string>
   <string name="field_required">To pole jest wymagane</string>
   <string name="help">Pomoc</string>
-  <string name="manage_accounts">Zadządzaj kontami</string>
   <string name="navigate_up">Nawiguj w górę</string>
   <string name="share">Udostępnij</string>
   <string name="database_destructive_migration_title">Uszkodzona baza danych</string>
@@ -111,7 +109,6 @@
   <string name="navigation_drawer_community">Społeczność</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
   <string name="account_list_no_notification_permission">Powiadomienia wyłączone. Nie będziesz otrzymywać powiadomień o błędach synchronizacji.</string>
-  <string name="account_list_no_internet">Brak sprawdzonego połączenia z Internetem. Synchronizacja nie może zostać uruchomiona.</string>
   <string name="account_list_manage_connections">Zarządzaj połączeniami</string>
   <string name="account_list_datasaver_enabled">Włączono oszczędzanie danych. Synchronizacja w tle jest ograniczona.</string>
   <string name="account_list_manage_datasaver">Zarządzaj oszczędzaniem danych</string>

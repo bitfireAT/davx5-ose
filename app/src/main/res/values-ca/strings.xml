@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">El compte no existeix (eliminat)</string>
   <string name="account_title_address_book">Llibreta d’adreces del DAVx⁵</string>
-  <string name="address_books_authority_title">Llibreta d’adreces</string>
+  <string name="account_prefs_use_app">No canvieu aquí el compte! Utilitzeu directament l\'aplicació per a gestionar els comptes.</string>
   <string name="dialog_delete">Eliminar</string>
   <string name="dialog_remove">Elimina</string>
   <string name="dialog_deny">Cancel·la</string>
   <string name="field_required">Cal aquest camp</string>
   <string name="help">Ajuda</string>
-  <string name="manage_accounts">Gestiona comptes</string>
   <string name="navigate_up">Navega cap amunt</string>
   <string name="optional_label">* opcional</string>
   <string name="options_menu">Menú d\'opcions</string>
@@ -122,7 +121,7 @@
   <string name="navigation_drawer_contribute">Com col·laborar</string>
   <string name="navigation_drawer_privacy_policy">Política de privacitat</string>
   <string name="account_list_no_notification_permission">Notificacions desactivades. No es notificaran els errors de sincronització.</string>
-  <string name="account_list_no_internet">No hi ha connectivitat a Internet validada. La sincronització no es pot executar.</string>
+  <string name="account_list_no_internet">La sincronització automàtica no està activa (no hi ha cap connexió a Internet verificada).</string>
   <string name="account_list_manage_connections">Gestiona les connexions</string>
   <string name="account_list_datasaver_enabled">S\'ha activat l\'estalviador de dades. La sincronització en segon pla està restringida.</string>
   <string name="account_list_manage_datasaver">Gestió de l\'estalviador de dades</string>
