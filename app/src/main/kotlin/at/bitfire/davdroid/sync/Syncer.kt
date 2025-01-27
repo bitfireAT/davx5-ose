@@ -17,7 +17,6 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalDataStore
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
@@ -63,15 +62,14 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
     abstract val dataStore: StoreType
 
-    @Inject
-    lateinit var accountSettingsFactory: AccountSettings.Factory
-
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
 
     @Inject
     lateinit var collectionRepository: DavCollectionRepository
+
+    @Inject
+    lateinit var httpClientBuilder: HttpClient.Builder
 
     @Inject
     lateinit var logger: Logger
@@ -86,8 +84,9 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     @ServiceType
     abstract val serviceType: String
 
-    val accountSettings by lazy { accountSettingsFactory.create(account) }
-    val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
+    val httpClient = lazy {
+        httpClientBuilder.fromAccount(account).build()
+    }
 
     /**
      * Creates, updates and/or deletes local collections (calendars, address books, etc) according to
@@ -225,9 +224,6 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
     /**
      * Get the local database collections which are sync-enabled (should by synchronized).
-     *
-     * [Syncer] will remove collections which are returned by [getLocalCollections], but not by
-     * this method, and add collections which are returned by this method, but not by [getLocalCollections].
      *
      * @param serviceId The CalDAV or CardDAV service (account) to be synchronized
      * @return Database collections to be synchronized

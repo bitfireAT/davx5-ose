@@ -23,7 +23,6 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
-import at.bitfire.davdroid.settings.AccountSettings
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.runInterruptible
@@ -36,6 +35,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.inject.Provider
 
 /**
  * Worker that registers push for all collections that support it.
@@ -47,8 +47,8 @@ import java.util.logging.Logger
 class PushRegistrationWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
+    private val httpClientBuilder: Provider<HttpClient.Builder>,
     private val logger: Logger,
     private val preferenceRepository: PreferenceRepository,
     private val serviceRepository: DavServiceRepository
@@ -68,13 +68,12 @@ class PushRegistrationWorker @AssistedInject constructor(
     }
 
     private suspend fun registerPushSubscription(collection: Collection, account: Account, endpoint: String) {
-        val settings = accountSettingsFactory.create(account)
-
-        runInterruptible {
-            HttpClient.Builder(applicationContext, settings)
-                .setForeground(true)
-                .build()
-                .use { client ->
+        httpClientBuilder.get()
+            .fromAccount(account)
+            .inForeground(true)
+            .build()
+            .use { client ->
+                runInterruptible {
                     val httpClient = client.okHttpClient
 
                     // requested expiration time: 3 days
@@ -116,7 +115,7 @@ class PushRegistrationWorker @AssistedInject constructor(
                             logger.warning("Couldn't register push for ${collection.url}: $response")
                     }
                 }
-        }
+            }
     }
 
     private suspend fun registerSyncable() {
@@ -150,14 +149,13 @@ class PushRegistrationWorker @AssistedInject constructor(
     }
 
     private suspend fun unregisterPushSubscription(collection: Collection, account: Account, url: HttpUrl) {
-        val settings = accountSettingsFactory.create(account)
-
-        runInterruptible {
-            HttpClient.Builder(applicationContext, settings)
-                .setForeground(true)
-                .build()
-                .use { client ->
-                    val httpClient = client.okHttpClient
+        httpClientBuilder.get()
+            .fromAccount(account)
+            .inForeground(true)
+            .build()
+            .use { httpClient ->
+                runInterruptible {
+                    val httpClient = httpClient.okHttpClient
 
                     try {
                         DavResource(httpClient, url).delete {
@@ -174,7 +172,7 @@ class PushRegistrationWorker @AssistedInject constructor(
                         expires = null
                     )
                 }
-        }
+            }
     }
 
     private suspend fun unregisterNotSyncable() {

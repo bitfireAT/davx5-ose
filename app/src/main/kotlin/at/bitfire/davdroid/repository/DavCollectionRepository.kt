@@ -27,7 +27,6 @@ import at.bitfire.davdroid.db.CollectionType
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.util.DateUtils
 import dagger.Lazy
@@ -38,7 +37,6 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.Multibinds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
-import kotlinx.coroutines.withContext
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.ComponentList
@@ -48,6 +46,7 @@ import java.io.StringWriter
 import java.util.Collections
 import java.util.UUID
 import javax.inject.Inject
+import javax.inject.Provider
 
 /**
  * Repository for managing collections.
@@ -55,10 +54,10 @@ import javax.inject.Inject
  * Implements an observer pattern that can be used to listen for changes of collections.
  */
 class DavCollectionRepository @Inject constructor(
-    private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     defaultListeners: Lazy<Set<@JvmSuppressWildcards OnChangeListener>>,
+    private val httpClientBuilder: Provider<HttpClient.Builder>,
     private val serviceRepository: DavServiceRepository
 ) {
 
@@ -177,15 +176,15 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        HttpClient.Builder(context, accountSettingsFactory.create(account))
-            .setForeground(true)
-            .build().use { httpClient ->
-                withContext(Dispatchers.IO) {
-                    runInterruptible {
-                        DavResource(httpClient.okHttpClient, collection.url).delete() {
-                            // success, otherwise an exception would have been thrown → delete locally, too
-                            delete(collection)
-                        }
+        httpClientBuilder.get()
+            .fromAccount(account)
+            .inForeground(true)
+            .build()
+            .use { httpClient ->
+                runInterruptible(Dispatchers.IO) {
+                    DavResource(httpClient.okHttpClient, collection.url).delete {
+                        // success, otherwise an exception would have been thrown → delete locally, too
+                        delete(collection)
                     }
                 }
             }
@@ -291,17 +290,17 @@ class DavCollectionRepository @Inject constructor(
     // helpers
 
     private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
-        HttpClient.Builder(context, accountSettingsFactory.create(account))
-            .setForeground(true)
-            .build().use { httpClient ->
-                withContext(Dispatchers.IO) {
-                    runInterruptible {
-                        DavResource(httpClient.okHttpClient, url).mkCol(
-                            xmlBody = xmlBody,
-                            method = method
-                        ) {
-                            // success, otherwise an exception would have been thrown
-                        }
+        httpClientBuilder.get()
+            .fromAccount(account)
+            .inForeground(true)
+            .build()
+            .use { httpClient ->
+                runInterruptible(Dispatchers.IO) {
+                    DavResource(httpClient.okHttpClient, url).mkCol(
+                        xmlBody = xmlBody,
+                        method = method
+                    ) {
+                        // success, otherwise an exception would have been thrown
                     }
                 }
             }

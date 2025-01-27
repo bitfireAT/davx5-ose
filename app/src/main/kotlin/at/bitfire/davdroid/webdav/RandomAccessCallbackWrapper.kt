@@ -12,7 +12,6 @@ import android.os.HandlerThread
 import android.os.ProxyFileDescriptorCallback
 import androidx.annotation.RequiresApi
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.webdav.RandomAccessCallbackWrapper.Companion.TIMEOUT_INTERVAL
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

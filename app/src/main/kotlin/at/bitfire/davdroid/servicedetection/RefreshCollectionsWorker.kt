@@ -26,7 +26,6 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
@@ -60,8 +59,8 @@ import java.util.logging.Logger
 class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionListRefresherFactory: CollectionListRefresher.Factory,
+    private val httpClientBuilder: HttpClient.Builder,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry,
     serviceRepository: DavServiceRepository
@@ -147,11 +146,13 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 .cancel(serviceId.toString(), NotificationRegistry.NOTIFY_REFRESH_COLLECTIONS)
 
             // create authenticating OkHttpClient (credentials taken from account settings)
-            runInterruptible {
-                HttpClient.Builder(applicationContext, accountSettingsFactory.create(account))
-                    .setForeground(true)
-                    .build().use { client ->
-                        val httpClient = client.okHttpClient
+            httpClientBuilder
+                .fromAccount(account)
+                .inForeground(true)
+                .build()
+                .use { httpClient ->
+                    runInterruptible {
+                        val httpClient = httpClient.okHttpClient
                         val refresher = collectionListRefresherFactory.create(service, httpClient)
 
                         // refresh home set list (from principal url)
@@ -169,7 +170,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         // Lastly, refresh the principals (collection owners)
                         refresher.refreshPrincipals()
                     }
-            }
+                }
 
         } catch(e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Invalid account", e)
