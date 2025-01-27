@@ -57,8 +57,7 @@
     <string name="intro_open_source_title">Open-source software</string>
     <string name="intro_open_source_text">We\'re happy that you use %s, which is open-source software. Development, maintenance and support are hard work. Please consider contributing (there are many ways) or a donation. It would be highly appreciated!</string>
     <string name="intro_open_source_details">How to contribute/donate</string>
-    <string name="intro_open_source_set_reminder">Set reminder</string>
-    <string name="intro_open_source_dont_show">Don\'t show this for</string>
+    <string name="intro_open_source_dont_show">Don\'t remind me for</string>
     <plurals name="intro_open_source_dont_show_months">
         <item quantity="one">%d month</item>
         <item quantity="other">%d months</item>

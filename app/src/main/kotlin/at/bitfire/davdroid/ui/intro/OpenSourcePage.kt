@@ -6,11 +6,9 @@ package at.bitfire.davdroid.ui.intro
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -62,8 +60,8 @@ class OpenSourcePage @Inject constructor(
 
     @HiltViewModel
     class Model @Inject constructor(
-        val settings: SettingsManager,
-        val logger: Logger
+        private val settings: SettingsManager,
+        private val logger: Logger
     ): ViewModel() {
 
         companion object {
@@ -125,40 +123,31 @@ fun OpenSourcePage(
                     )
                 }
             ) {
-                Text(stringResource(R.string.intro_open_source_details))
-            }
-        }
-        Card(modifier = Modifier.padding(vertical = 8.dp)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
                 Text(
-                    text = stringResource(R.string.intro_open_source_set_reminder),
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Text(
-                    text = stringResource(R.string.intro_open_source_dont_show),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 12.dp)
-                )
-                val radioOptions = donationPopupIntervalOptions.associate { numberOfMonths ->
-                    pluralStringResource(
-                        R.plurals.intro_open_source_dont_show_months,
-                        numberOfMonths,
-                        numberOfMonths
-                    ) to numberOfMonths
-                }
-                RadioButtons(
-                    radioOptions = radioOptions.keys.toList(),
-                    onOptionSelected = { option ->
-                        val months = radioOptions[option] ?: radioOptions.values.first()
-                        onChangeDontShowFor(months)
-                    }
+                    stringResource(R.string.intro_open_source_details)
                 )
             }
+
+            Text(
+                text = stringResource(R.string.intro_open_source_dont_show),
+                style = MaterialTheme.typography.bodyLarge
+            )
+            val radioOptions = donationPopupIntervalOptions.associate { numberOfMonths ->
+                pluralStringResource(
+                    R.plurals.intro_open_source_dont_show_months,
+                    numberOfMonths,
+                    numberOfMonths
+                ) to numberOfMonths
+            }
+            RadioButtons(
+                radioOptions = radioOptions.keys.toList(),
+                onOptionSelected = { option ->
+                    val months = radioOptions[option] ?: radioOptions.values.first()
+                    onChangeDontShowFor(months)
+                },
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
         }
     }
 }
