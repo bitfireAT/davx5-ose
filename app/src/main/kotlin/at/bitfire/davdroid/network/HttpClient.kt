@@ -186,7 +186,7 @@ class HttpClient(
                 // allow cleartext and TLS 1.2+
                 .connectionSpecs(listOf(
                     ConnectionSpec.CLEARTEXT,
-                    ConnectionSpec.COMPATIBLE_TLS
+                    ConnectionSpec.MODERN_TLS
                 ))
 
                 // offer Brotli and gzip compression (can be disabled per request with `Accept-Encoding: identity`)
