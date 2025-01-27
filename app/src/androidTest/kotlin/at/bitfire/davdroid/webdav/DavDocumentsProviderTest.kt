@@ -11,10 +11,8 @@ import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.network.HttpClient
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
 import okhttp3.CookieJar
 import okhttp3.mockwebserver.Dispatcher
@@ -27,6 +25,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.logging.Logger
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -39,13 +38,12 @@ class DavDocumentsProviderTest {
     @Inject @ApplicationContext
     lateinit var context: Context
 
-    @BindValue
-    @MockK(relaxed = true)
+    @Inject
     lateinit var credentialsStore: CredentialsStore
     
     @Inject
     lateinit var davDocumentsActorFactory: DavDocumentsProvider.DavDocumentsActor.Factory
-    
+
     @Inject
     lateinit var httpClientBuilder: HttpClient.Builder
     
@@ -53,7 +51,7 @@ class DavDocumentsProviderTest {
     lateinit var db: AppDatabase
 
     @Inject
-    lateinit var logger: java.util.logging.Logger
+    lateinit var testDispatcher: TestDispatcher
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -68,9 +66,8 @@ class DavDocumentsProviderTest {
     fun setUp() {
         hiltRule.inject()
 
-        // Start mock web server
         server = MockWebServer().apply {
-            dispatcher = TestDispatcher(logger)
+            dispatcher = testDispatcher
             start()
         }
 
@@ -169,13 +166,13 @@ class DavDocumentsProviderTest {
     }
 
     @Test
-    fun testDoQueryChildren_updateTwoParentsSimultaneous() {
+    fun testDoQueryChildren_updateTwoDirectoriesSimultaneously() {
         // Create root in database
         val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
         val webDavMount = db.webDavMountDao().getById(mountId)
         val root = db.webDavDocumentDao().getOrCreateRoot(webDavMount)
 
-        // Create two parents
+        // Create two directories
         val parent1Id = db.webDavDocumentDao().insert(WebDavDocument(0, mountId, root.id, "parent1", true))
         val parent2Id = db.webDavDocumentDao().insert(WebDavDocument(0, mountId, root.id, "parent2", true))
         val parent1 = db.webDavDocumentDao().get(parent1Id)!!
@@ -199,8 +196,8 @@ class DavDocumentsProviderTest {
 
     // mock server
 
-    class TestDispatcher(
-        private val logger: java.util.logging.Logger
+    class TestDispatcher @Inject constructor(
+        private val logger: Logger
     ): Dispatcher() {
 
         data class Resource(
@@ -209,10 +206,10 @@ class DavDocumentsProviderTest {
         )
 
         override fun dispatch(request: RecordedRequest): MockResponse {
+            logger.info("Request: $request")
             val requestPath = request.path!!.trimEnd('/')
 
             if (request.method.equals("PROPFIND", true)) {
-
                 val propsMap = mutableMapOf(
                     PATH_WEBDAV_ROOT to arrayOf(
                         Resource("",
@@ -256,7 +253,6 @@ class DavDocumentsProviderTest {
                         responses +
                     "</multistatus>"
 
-                logger.info("Query path: $requestPath")
                 logger.info("Response: $multistatus")
                 return MockResponse()
                     .setResponseCode(207)
