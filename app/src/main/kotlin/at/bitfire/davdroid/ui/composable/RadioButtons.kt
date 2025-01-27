@@ -5,9 +5,9 @@
 package at.bitfire.davdroid.ui.composable
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.ui.AppTheme
 
@@ -29,7 +28,7 @@ import at.bitfire.davdroid.ui.AppTheme
 fun RadioButtons(
     radioOptions: List<String> = listOf<String>(),
     onOptionSelected: (String) -> Unit = {},
-    height: Dp = 46.dp,
+    textPaddingPerOption: PaddingValues = PaddingValues(10.dp),
     modifier: Modifier = Modifier
 ) {
     val (selectedOption, setSelectedOption) = remember { mutableStateOf(radioOptions[0]) }
@@ -41,7 +40,6 @@ fun RadioButtons(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .height(height)
                     .selectable(
                         selected = (text == selectedOption),
                         onClick = {
@@ -55,12 +53,12 @@ fun RadioButtons(
             ) {
                 RadioButton(
                     selected = (text == selectedOption),
-                    onClick = null // null recommended for accessibility with screen readers
+                    onClick = null, // null recommended for accessibility with screen readers
                 )
                 Text(
                     text = text,
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(start = 12.dp)
+                    modifier = Modifier.padding(textPaddingPerOption)
                 )
             }
         }
@@ -72,7 +70,10 @@ fun RadioButtons(
 private fun RadioButtonsPreview() {
     AppTheme {
         RadioButtons(
-            radioOptions = listOf("Option 1", "Option 2", "Option 3")
+            radioOptions = listOf(
+                "Option 1",
+                "Option 2 is the longest of all the options, so we can see whether line breaks are not a problem.",
+                "Option 3")
         )
     }
 }
