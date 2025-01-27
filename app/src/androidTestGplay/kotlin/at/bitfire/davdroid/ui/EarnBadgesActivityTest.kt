@@ -12,7 +12,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit4.MockKRule
 import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.verify
@@ -26,14 +27,17 @@ import javax.inject.Inject
 @HiltAndroidTest
 class EarnBadgesActivityTest {
 
+    @Inject @ApplicationContext
+    lateinit var context: Context
+
+    @RelaxedMockK
+    lateinit var settings: SettingsManager
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    @Inject
-    @ApplicationContext
-    lateinit var context: Context
-
-    val settings = mockk<SettingsManager>(relaxed = true)
+    @get:Rule
+    val mockkRule = MockKRule(this)
 
     @Before
     fun setup() {
@@ -97,4 +101,5 @@ class EarnBadgesActivityTest {
             assertFalse(EarnBadgesActivity.shouldShowRatingRequest(context, settings)) // 0 > 14 => false
         }
     }
+
 }
