@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.provider.CalendarContract
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalCalendar
@@ -38,8 +37,6 @@ class CalendarSyncer @AssistedInject constructor(
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV
-    override val authority: String
-        get() = CalendarContract.AUTHORITY
 
 
     override fun prepare(provider: ContentProviderClient): Boolean {
@@ -62,7 +59,7 @@ class CalendarSyncer @AssistedInject constructor(
             account,
             extras,
             httpClient.value,
-            authority,
+            dataStore.authority,
             syncResult,
             localCollection,
             remoteCollection
