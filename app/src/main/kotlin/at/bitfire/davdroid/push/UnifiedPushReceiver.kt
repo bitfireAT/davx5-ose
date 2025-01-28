@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.push
 
+import android.accounts.Account
 import android.content.Context
 import at.bitfire.davdroid.db.Collection.Companion.TYPE_ADDRESSBOOK
 import at.bitfire.davdroid.db.SyncState
@@ -11,6 +12,8 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
+import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -33,7 +36,13 @@ class UnifiedPushReceiver: MessagingReceiver() {
 
     @Inject
     lateinit var collectionRepository: DavCollectionRepository
-    
+
+    @Inject
+    lateinit var localAddressBookStore: Lazy<LocalAddressBookStore>
+
+    @Inject
+    lateinit var localCalendarStore: Lazy<LocalCalendarStore>
+
     @Inject
     lateinit var logger: Logger
 
@@ -50,10 +59,10 @@ class UnifiedPushReceiver: MessagingReceiver() {
     lateinit var pushRegistrationWorkerManager: PushRegistrationWorkerManager
 
     @Inject
-    lateinit var tasksAppManager: Lazy<TasksAppManager>
+    lateinit var syncWorkerManager: SyncWorkerManager
 
     @Inject
-    lateinit var syncWorkerManager: SyncWorkerManager
+    lateinit var tasksAppManager: Lazy<TasksAppManager>
 
 
     override fun onNewEndpoint(context: Context, endpoint: String, instance: String) {
@@ -103,19 +112,11 @@ class UnifiedPushReceiver: MessagingReceiver() {
                         // Schedule sync for all the types identified
                         val account = accountRepository.fromName(service.accountName)
                         for (syncDataType in syncDataTypes) {
-                            // TODO: get LocalDataStore according to sync data type (i.e. LocalAddressBookStore if authority is contacts, etc.)
-                            val dataStore: LocalDataStore<*>? = TODO()
-
-                            val localCollection = dataStore?.getByLocalId(collection.id)
-                            val lastSyncedSyncToken = localCollection?.lastSyncState?.value.takeIf {
-                                localCollection?.lastSyncState?.type == SyncState.Type.SYNC_TOKEN
-                            }
-                            if (lastSyncedSyncToken == pushMessage.syncToken) {
-                                logger.fine("Collection $collection is already up-to-date, ignoring push message")
-                                continue
-                            }
-
-                            syncWorkerManager.enqueueOneTime(account, syncDataType, fromPush = true)
+                            val localSyncToken = lastSyncToken(account, syncDataType, collection.id)
+                            if (localSyncToken == pushMessage.syncToken)
+                                logger.fine("Collection $collection already up-to-date ($localSyncToken), ignoring push message")
+                            else
+                                syncWorkerManager.enqueueOneTime(account, syncDataType, fromPush = true)
                         }
                     }
                 }
@@ -126,6 +127,20 @@ class UnifiedPushReceiver: MessagingReceiver() {
                     syncWorkerManager.enqueueOneTimeAllAuthorities(account = account, fromPush = true)
 
             }
+        }
+    }
+
+    fun lastSyncToken(account: Account, dataType: SyncDataType, collectionId: Long): String? {
+        val dataStore: LocalDataStore<*>? = when (dataType) {
+            SyncDataType.CONTACTS -> localAddressBookStore.get()
+            SyncDataType.EVENTS -> localCalendarStore.get()
+            SyncDataType.TASKS -> tasksAppManager.get().getDataStore()
+        }
+
+        val provider = TODO("Add LocalDataStore.acquireProvider()")
+        val localCollection = dataStore?.getByLocalId(account, provider, collectionId)
+        return localCollection?.lastSyncState?.value.takeIf {
+            localCollection?.lastSyncState?.type == SyncState.Type.SYNC_TOKEN
         }
     }
 

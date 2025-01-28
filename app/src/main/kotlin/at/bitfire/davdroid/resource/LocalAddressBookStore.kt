@@ -121,6 +121,17 @@ class LocalAddressBookStore @Inject constructor(
             }
     }
 
+    override fun getByLocalId(account: Account, provider: ContentProviderClient, id: Long): LocalAddressBook? {
+        val accountManager = AccountManager.get(context)
+        return accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
+            .filter { addressBookAccount ->
+                accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID).toLongOrNull() == id
+            }
+            .map { addressBookAccount ->
+                localAddressBookFactory.create(account, addressBookAccount, provider)
+            }.firstOrNull()
+    }
+
 
     override fun update(provider: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
         var currentAccount = localCollection.addressBookAccount

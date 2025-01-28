@@ -38,11 +38,13 @@ interface LocalDataStore<T: LocalCollection<*>> {
     /**
      * Retrieves the local collection with the given local (database) ID.
      *
-     * @param id    the local (database) ID of the collection ([Collection.id])
+     * @param account  the account that the data store is associated with
+     * @param provider the content provider client
+     * @param id        the local (database) ID of the collection ([Collection.id])
      *
      * @return the local collection, or `null` if none was found
      */
-    fun getByLocalId(id: Long): T?
+    fun getByLocalId(account: Account, provider: ContentProviderClient, id: Long): T?
 
     /**
      * Updates the local collection with the data from the given (remote) collection info.
@@ -54,18 +56,18 @@ interface LocalDataStore<T: LocalCollection<*>> {
     fun update(provider: ContentProviderClient, localCollection: T, fromCollection: Collection)
 
     /**
-     * Deletes the local collection.
-     *
-     * @param localCollection the local collection to delete
-     */
-    fun delete(localCollection: T)
-
-    /**
      * Changes the account assigned to the containing data to another one.
      *
      * @param oldAccount The old account.
      * @param newAccount The new account.
      */
     fun updateAccount(oldAccount: Account, newAccount: Account)
+
+    /**
+     * Deletes the local collection.
+     *
+     * @param localCollection the local collection to delete
+     */
+    fun delete(localCollection: T)
 
 }
