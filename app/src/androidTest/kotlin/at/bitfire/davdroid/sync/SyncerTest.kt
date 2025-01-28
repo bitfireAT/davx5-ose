@@ -163,9 +163,6 @@ class SyncerTest {
         override val dataStore: LocalTestStore =
             theDataStore
 
-        override val authority: String
-            get() = throw NotImplementedError()
-
         override val serviceType: String
             get() = throw NotImplementedError()
 
@@ -186,6 +183,13 @@ class SyncerTest {
     }
 
     class LocalTestStore : LocalDataStore<LocalTestCollection> {
+
+        override val authority: String
+            get() = throw NotImplementedError()
+
+        override fun acquireContentProvider(): ContentProviderClient? {
+            throw NotImplementedError()
+        }
 
         override fun create(
             provider: ContentProviderClient,
