@@ -3,13 +3,11 @@
   <!--common strings-->
   <string name="account_invalid">Le compte n’existe plus (supprimé)</string>
   <string name="account_title_address_book">Carnet d\'adresses DAVx⁵</string>
-  <string name="address_books_authority_title">Carnets d\'adresses</string>
   <string name="dialog_delete">Supprimer</string>
   <string name="dialog_remove">Retirer</string>
   <string name="dialog_deny">Annuler</string>
   <string name="field_required">Ce champ est requis</string>
   <string name="help">Aide</string>
-  <string name="manage_accounts">Gestion des comptes</string>
   <string name="navigate_up">Revenir en haut</string>
   <string name="optional_label">* facultatif</string>
   <string name="options_menu">Menu d\'options</string>
@@ -88,6 +86,8 @@
   <string name="wifi_permissions_background_location_permission_label">Autorisez tout le temps</string>
   <string name="wifi_permissions_background_location_permission_on">Autorisation de localisation réglée sur : %s</string>
   <string name="wifi_permissions_background_location_permission_off">Autorisation de localisation non réglée sur : %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">%sutilise vos données de localisation (seulement concernant les SSID de WiFi) uniquement pour restreindre la synchronisation à un SSID WiFi spécifique. Cela se produira même lorsque la synchronisation se fera en tâche de fond.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Les données de localisation (seulement les SSID WiFi) ne sont utilisées que localement et ne sont envoyées nulle part.</string>
   <string name="wifi_permissions_location_enabled">Localisation toujours activée</string>
   <string name="wifi_permissions_location_enabled_on">Le service de localisation est activé</string>
   <string name="wifi_permissions_location_enabled_off">Le service de localisation est désactivé</string>
@@ -119,7 +119,6 @@
   <string name="navigation_drawer_contribute">Comment contribuer</string>
   <string name="navigation_drawer_privacy_policy">Politique de confidentialité</string>
   <string name="account_list_no_notification_permission">Notifications désactivées. Vous ne serez pas averti des erreurs de synchronisation.</string>
-  <string name="account_list_no_internet">Pas de connexion Internet. La synchronisation risque de ne pas fonctionner.</string>
   <string name="account_list_manage_connections">Gérer les connexions</string>
   <string name="account_list_datasaver_enabled">L\'économiseur de données est activé. La synchronisation en arrière-plan est limitée.</string>
   <string name="account_list_manage_datasaver">Gérer l\'économiseur de données</string>
@@ -127,6 +126,8 @@
   <string name="account_list_manage_battery_saver">Gérer l\'économiseur de batterie</string>
   <string name="account_list_low_storage">Espace de stockage faible. Android ne synchronisera pas les changements locaux immédiatement mais pendant la prochaine synchronisation.</string>
   <string name="account_list_manage_storage">Gérer le stockage</string>
+  <string name="account_list_welcome">Bienvenue sur DAVx⁵!</string>
+  <string name="account_list_empty">Connectez-vous à votre serveur pour garder vos calendriers et contacts synchronisés.</string>
   <string name="accounts_sync_all">Synchroniser tous les comptes</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">La détection du service a échoué</string>
@@ -138,7 +139,9 @@
   <string name="app_settings">Paramètres</string>
   <string name="app_settings_debug">Débogage</string>
   <string name="app_settings_show_debug_info">Afficher les infos de débogage</string>
+  <string name="app_settings_show_debug_info_details">Voir/partager les détails de configuration et les logs</string>
   <string name="app_settings_logging">Journalisation verbeuse</string>
+  <string name="app_settings_logging_on">Les journaux sont activés. Vous pouvez voir les journaux parmi les informations de débogage.</string>
   <string name="app_settings_logging_off">La journalisation est désactivée</string>
   <string name="app_settings_battery_optimization">Optimisation de la batterie</string>
   <string name="app_settings_battery_optimization_exempted">Pas de restriction (recommandé)</string>
@@ -177,6 +180,8 @@
   <string name="app_settings_integration">Intégration</string>
   <string name="app_settings_tasks_provider">Applications de gestion de tâches</string>
   <string name="app_settings_tasks_provider_none">Aucune application de tâches compatibles trouvée</string>
+  <string name="app_settings_unifiedpush">UnifiedPush (expérimental)</string>
+  <string name="app_settings_unifiedpush_no_endpoint">Aucun point de terminaison (endpoint) configuré</string>
   <!--AccountScreen-->
   <string name="account_carddav">Carnets d\'adresses (CardDAV)</string>
   <string name="account_caldav">Agendas (CalDAV)</string>
@@ -207,6 +212,7 @@
   <string name="account_install_icsx5">Installer ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Ajouter un compte</string>
+  <string name="login_privacy_hint"><![CDATA[Toutes les données ne seront transférées qu\'entre votre serveur et votre appareil. %1$sne les enverra nulle part ailleur. Consultez<a href="%2$s">la politique de confidentialité</a>.]]></string>
   <string name="login_generic_login">Connexion standard</string>
   <string name="login_provider_login">Connexion par fournisseur spécifique</string>
   <string name="login_continue">Suivant</string>
@@ -232,6 +238,8 @@
   <string name="login_account_contact_group_method">Méthode pour les contacts de type groupe :</string>
   <string name="login_account_name_required">Nom du compte requis</string>
   <string name="login_account_name_already_taken">Le nom du compte est déjà pris</string>
+  <string name="login_account_not_added">Le compte n\'a pas pu être ajouté</string>
+  <string name="login_finish">Finis</string>
   <string name="login_type_advanced">Connexion avancée</string>
   <string name="login_no_client_certificate_optional">Pas de certificat client*</string>
   <string name="login_client_certificate_selected">Certificat client : %s</string>
@@ -351,6 +359,7 @@
   <string name="collection_synchronization_off">Synchronisation désactivée</string>
   <string name="collection_read_only">Lecture seule</string>
   <string name="collection_read_only_by_server">Lecture seule (côté serveur)</string>
+  <string name="collection_read_only_by_setting">Lecture seule (selon les politiques)</string>
   <string name="collection_read_only_forced">Lecture seule (sur cet appareil)</string>
   <string name="collection_read_write">Lecture / écriture</string>
   <string name="collection_title">Titre</string>
@@ -426,6 +435,8 @@
   <string name="sync_invalid_event">Reçu un événement invalide du serveur</string>
   <string name="sync_invalid_task">Reçu une tâche invalide du serveur</string>
   <string name="sync_invalid_resources_ignoring">Ignorer une ou plusieurs ressources non valides</string>
+  <string name="sync_notification_pending_push_title">Synchronisation en attente</string>
+  <string name="sync_notification_pending_push_message">Les informations à distance ont changé</string>
   <!--widgets-->
   <string name="widget_sync_all">Tout synchroniser</string>
   <string name="widget_sync_all_accounts">Synchroniser tous les comptes</string>

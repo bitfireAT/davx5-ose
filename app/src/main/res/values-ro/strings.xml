@@ -3,13 +3,11 @@
   <!--common strings-->
   <string name="account_invalid">Contul nu (mai) există</string>
   <string name="account_title_address_book">Agenda DAVx⁵</string>
-  <string name="address_books_authority_title">Agende cu adrese</string>
   <string name="dialog_delete">Șterge</string>
   <string name="dialog_remove">Elimină</string>
   <string name="dialog_deny">Anulează</string>
   <string name="field_required">Acest câmp este obligatoriu</string>
   <string name="help">Ajutor</string>
-  <string name="manage_accounts">Gestionează conturile</string>
   <string name="navigate_up">Navigare în sus</string>
   <string name="optional_label">* opțional</string>
   <string name="options_menu">Meniul Opțiuni</string>
@@ -45,12 +43,14 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Nu pare a mai fi dezvoltat – nu este recomandat.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Unele caracteristici <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nu sunt acceptate</a>.]]></string>
   <string name="intro_tasks_no_app_store">Nu există un magazin de aplicații disponibil</string>
   <string name="intro_tasks_dont_show">Nu am nevoie de suport pentru sarcini.*</string>
   <string name="intro_open_source_title">Software cu sursă deschisă</string>
   <string name="intro_open_source_text">Ne bucurăm că utilizezi %s, care este un software open-source. Dezvoltarea, întreținerea și suportul sunt o muncă grea. Ia în considerare contribuția (există mai multe moduri) sau o donație. Ar fi foarte apreciat!</string>
   <string name="intro_open_source_details">Cum să contribui/donezi</string>
   <string name="intro_open_source_dont_show">Nu afișa în viitorul apropiat</string>
+  <string name="intro_next">Înainte</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisiuni</string>
   <string name="permissions_text">%s necesită permisiuni pentru a funcționa corect.</string>
@@ -87,6 +87,8 @@
   <string name="wifi_permissions_background_location_permission_label">Permite tot timpul</string>
   <string name="wifi_permissions_background_location_permission_on">Permisiunea locației setată la: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Permisiunea de locație nu este setată la: %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s folosește datele locației (doar WiFi SSID) numai pentru a restricționa sincronizarea la un anumit SSID WiFi. Acest lucru se va întâmpla chiar și atunci când sincronizarea rulează în fundal.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Toate datele locației (doar WiFi SSID) sunt folosite doar local și nu sunt trimise nicăieri.</string>
   <string name="wifi_permissions_location_enabled">Locația este întotdeauna activată</string>
   <string name="wifi_permissions_location_enabled_on">Serviciul de localizare este activat</string>
   <string name="wifi_permissions_location_enabled_off">Serviciul de localizare este dezactivat</string>
@@ -118,7 +120,6 @@
   <string name="navigation_drawer_contribute">Cum să contribui</string>
   <string name="navigation_drawer_privacy_policy">Politica de confidențialitate</string>
   <string name="account_list_no_notification_permission">Notificări dezactivate. Nu vei fi notificat despre erorile de sincronizare.</string>
-  <string name="account_list_no_internet">Nicio conexiune la internet validată. Este posibil ca sincronizarea să nu ruleze.</string>
   <string name="account_list_manage_connections">Gestionează conexiunile</string>
   <string name="account_list_datasaver_enabled">Economizorul de date este activat. Sincronizarea în fundal este restricționată.</string>
   <string name="account_list_manage_datasaver">Gestionează economizorul de date</string>
@@ -126,6 +127,8 @@
   <string name="account_list_manage_battery_saver">Gestionează economisirea bateriei</string>
   <string name="account_list_low_storage">Spațiu de depozitare redus. Android nu va sincroniza modificările locale imediat, ci în timpul următoarei sincronizări obișnuite.</string>
   <string name="account_list_manage_storage">Gestionează stocarea</string>
+  <string name="account_list_welcome">Bun venit la DAVx⁵!</string>
+  <string name="account_list_empty">Conectează-te la server și păstrează calendarele și contactele sincronizate.</string>
   <string name="accounts_sync_all">Sincronizează toate conturile</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Detectarea serviciului a eșuat</string>
@@ -137,7 +140,9 @@
   <string name="app_settings">Setări</string>
   <string name="app_settings_debug">Depanare</string>
   <string name="app_settings_show_debug_info">Afișează informațiile de depanare</string>
+  <string name="app_settings_show_debug_info_details">Vizualizează/partajează detaliile de configurare și jurnalele</string>
   <string name="app_settings_logging">Jurnalizare detaliată</string>
+  <string name="app_settings_logging_on">Înregistrarea este activă. Poți vizualiza jurnalele ca parte a informațiilor de depanare.</string>
   <string name="app_settings_logging_off">Înregistrarea este dezactivată</string>
   <string name="app_settings_battery_optimization">Optimizarea bateriei</string>
   <string name="app_settings_battery_optimization_exempted">Aplicația este exclusă (recomandat)</string>
@@ -176,6 +181,8 @@
   <string name="app_settings_integration">Integrare</string>
   <string name="app_settings_tasks_provider">Aplicația de sarcini</string>
   <string name="app_settings_tasks_provider_none">Nu a fost găsită nicio aplicație de sarcini compatibilă</string>
+  <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
+  <string name="app_settings_unifiedpush_no_endpoint">Niciun punct final configurat</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -206,6 +213,7 @@
   <string name="account_install_icsx5">Instalează ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Adaugă contul</string>
+  <string name="login_privacy_hint"><![CDATA[Toate datele vor fi transferate numai între server și dispozitiv. %1$s nu le voi trimite altundeva. Vezi <a href="%2$s">Politica de confidențialitate</a>.]]></string>
   <string name="login_generic_login">Autentificare generică</string>
   <string name="login_provider_login">Autentificare specifică furnizorului</string>
   <string name="login_continue">Continuă</string>
@@ -231,6 +239,8 @@
   <string name="login_account_contact_group_method">Metoda de grupare a contactelor:</string>
   <string name="login_account_name_required">Numele contului este necesar</string>
   <string name="login_account_name_already_taken">Numele contului este deja luat</string>
+  <string name="login_account_not_added">Contul nu a putut fi adăugat</string>
+  <string name="login_finish">Finalizează</string>
   <string name="login_type_advanced">Autentificare avansată</string>
   <string name="login_no_client_certificate_optional">Fără certificat de client*</string>
   <string name="login_client_certificate_selected">Certificat de client: %s</string>
@@ -350,6 +360,7 @@
   <string name="collection_synchronization_off">Sincronizarea este dezactivată</string>
   <string name="collection_read_only">Numai citire</string>
   <string name="collection_read_only_by_server">Numai citire (de pe server)</string>
+  <string name="collection_read_only_by_setting">Numai citire (după politică)</string>
   <string name="collection_read_only_forced">Numai citire (doar local)</string>
   <string name="collection_read_write">Citire/scriere</string>
   <string name="collection_title">Titlu</string>
@@ -357,6 +368,7 @@
   <string name="collection_owner">Proprietar</string>
   <string name="collection_push_support">Suport Push</string>
   <string name="collection_push_web_push">Serverul informează despre suportul Push</string>
+  <string name="collection_push_subscribed_at">Abonat la %1$s, expiră la %2$s</string>
   <string name="collection_last_sync">Ultima sincronizare (%s)</string>
   <string name="collection_url">Adresă (URL)</string>
   <!--debugging and DebugInfoActivity-->
@@ -425,6 +437,8 @@
   <string name="sync_invalid_event">S-a primit eveniment nevalid de la server</string>
   <string name="sync_invalid_task">S-a primit sarcină nevalidă de la server</string>
   <string name="sync_invalid_resources_ignoring">Ignorarea uneia sau mai multor resurse nevalide</string>
+  <string name="sync_notification_pending_push_title">Sincronizare în așteptare</string>
+  <string name="sync_notification_pending_push_message">Datele de la distanță s-au schimbat</string>
   <!--widgets-->
   <string name="widget_sync_all">Sincronizează tot</string>
   <string name="widget_sync_all_accounts">Sincronizează toate conturile</string>

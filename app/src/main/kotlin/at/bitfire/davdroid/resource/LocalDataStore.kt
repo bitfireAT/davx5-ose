@@ -25,7 +25,8 @@ interface LocalDataStore<T: LocalCollection<*>> {
     fun create(provider: ContentProviderClient, fromCollection: Collection): T?
 
     /**
-     * Retrieves all local collections of the data store.
+     * Returns all local collections of the data store, including those which don't have a corresponding remote
+     * [Collection] entry.
      *
      * @param account  the account that the data store is associated with
      * @param provider the content provider client
@@ -58,5 +59,13 @@ interface LocalDataStore<T: LocalCollection<*>> {
      * @param localCollection the local collection to delete
      */
     fun delete(localCollection: T)
+
+    /**
+     * Changes the account assigned to the containing data to another one.
+     *
+     * @param oldAccount The old account.
+     * @param newAccount The new account.
+     */
+    fun updateAccount(oldAccount: Account, newAccount: Account)
 
 }

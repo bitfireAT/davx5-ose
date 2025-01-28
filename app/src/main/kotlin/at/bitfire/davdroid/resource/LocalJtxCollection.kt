@@ -6,8 +6,6 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxCollectionFactory

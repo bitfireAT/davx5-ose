@@ -1,28 +1,29 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
 package at.bitfire.davdroid.sync.account
 
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.Configuration
-import androidx.work.WorkerFactory
-import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
-import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
+import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalTestAddressBook
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -38,8 +39,7 @@ class AccountsCleanupWorkerTest {
     @Inject
     lateinit var accountsCleanupWorkerFactory: AccountsCleanupWorker.Factory
 
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
 
     @Inject
@@ -59,23 +59,16 @@ class AccountsCleanupWorkerTest {
     @Before
     fun setUp() {
         hiltRule.inject()
+        TestUtils.setUpWorkManager(context, workerFactory)
 
-        service = createTestService(Service.TYPE_CARDDAV)
-
-        // Prepare test account
         accountManager = AccountManager.get(context)
-        addressBookAccountType = context.getString(R.string.account_type_address_book)
-        addressBookAccount = Account(
-            "Fancy address book account",
-            addressBookAccountType
-        )
+        service = createTestService()
 
-        // Initialize WorkManager for instrumentation tests.
-        val config = Configuration.Builder()
-            .setMinimumLoggingLevel(Log.DEBUG)
-            .setWorkerFactory(workerFactory)
-            .build()
-        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
+        addressBookAccountType = context.getString(R.string.account_type_address_book)
+        addressBookAccount = Account("Fancy address book account", addressBookAccountType)
+
+        // Make sure there are no address books
+        LocalTestAddressBook.removeAll(context)
     }
 
     @After
@@ -86,65 +79,87 @@ class AccountsCleanupWorkerTest {
 
 
     @Test
-    fun testDeleteOrphanedAddressBookAccounts_deletesAddressBookAccountWithoutCollection() {
-        // Create address book account without corresponding collection
-        assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, null))
-
-        val addressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)
-        assertEquals(addressBookAccount, addressBookAccounts.firstOrNull())
+    fun testCleanUpServices_noAccount() {
+        // Insert service that reference to invalid account
+        db.serviceDao().insertOrReplace(Service(id = 1, accountName = "test", type = Service.TYPE_CALDAV, principal = null))
+        assertNotNull(db.serviceDao().get(1))
 
         // Create worker and run the method
         val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
-            .setWorkerFactory(object: WorkerFactory() {
-                override fun createWorker(appContext: Context, workerClassName: String, workerParameters: WorkerParameters) =
-                    accountsCleanupWorkerFactory.create(appContext, workerParameters)
-            })
+            .setWorkerFactory(workerFactory)
             .build()
-        worker.deleteOrphanedAddressBookAccounts(addressBookAccounts)
+        worker.cleanUpServices()
+
+        // Verify that service is deleted
+        assertNull(db.serviceDao().get(1))
+    }
+
+    @Test
+    fun testCleanUpServices_oneAccount() {
+        TestAccount.provide { existingAccount ->
+            // Insert services, one that reference the existing account and one that references an invalid account
+            db.serviceDao().insertOrReplace(Service(id = 1, accountName = existingAccount.name, type = Service.TYPE_CALDAV, principal = null))
+            assertNotNull(db.serviceDao().get(1))
+
+            db.serviceDao().insertOrReplace(Service(id = 2, accountName = "not existing", type = Service.TYPE_CARDDAV, principal = null))
+            assertNotNull(db.serviceDao().get(2))
+
+            // Create worker and run the method
+            val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+                .setWorkerFactory(workerFactory)
+                .build()
+            worker.cleanUpServices()
+
+            // Verify that one service is deleted and the other one is kept
+            assertNotNull(db.serviceDao().get(1))
+            assertNull(db.serviceDao().get(2))
+        }
+    }
+
+
+    @Test
+    fun testCleanUpAddressBooks_deletesAddressBookWithoutAccount() {
+        // Create address book account without corresponding account
+        assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, null))
+        assertEquals(listOf(addressBookAccount), accountManager.getAccountsByType(addressBookAccountType).toList())
+
+        // Create worker and run the method
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.cleanUpAddressBooks()
 
         // Verify account was deleted
         assertTrue(accountManager.getAccountsByType(addressBookAccountType).isEmpty())
     }
 
     @Test
-    fun testDeleteOrphanedAddressBookAccounts_leavesAddressBookAccountWithCollection() {
-        // Create address book account _with_ corresponding collection and verify
-        val randomCollectionId = 12345L
-        val userData = Bundle(1).apply {
-            putString(USER_DATA_COLLECTION_ID, "$randomCollectionId")
+    fun testCleanUpAddressBooks_keepsAddressBookWithAccount() {
+        TestAccount.provide { existingAccount ->
+            // Create address book account _with_ corresponding account and verify
+            val userData = Bundle(2).apply {
+                putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, existingAccount.name)
+                putString(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, existingAccount.type)
+            }
+            assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, userData))
+            assertEquals(listOf(addressBookAccount), accountManager.getAccountsByType(addressBookAccountType).toList())
+
+            // Create worker and run the method
+            val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+                .setWorkerFactory(workerFactory)
+                .build()
+            worker.cleanUpAddressBooks()
+
+            // Verify account was _not_ deleted
+            assertEquals(listOf(addressBookAccount), accountManager.getAccountsByType(addressBookAccountType).toList())
         }
-        assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, userData))
-
-        val addressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)
-        assertEquals(randomCollectionId, accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID).toLong())
-
-        // Create the collection
-        val collectionDao = db.collectionDao()
-        collectionDao.insert(Collection(
-            randomCollectionId,
-            serviceId = service.id,
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = "http://www.example.com/yay.php".toHttpUrl()
-        ))
-
-        // Create worker and run the method
-        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
-            .setWorkerFactory(object: WorkerFactory() {
-                override fun createWorker(appContext: Context, workerClassName: String, workerParameters: WorkerParameters) =
-                    accountsCleanupWorkerFactory.create(appContext, workerParameters)
-            })
-            .build()
-        worker.deleteOrphanedAddressBookAccounts(addressBookAccounts)
-
-        // Verify account was _not_ deleted
-        assertEquals(addressBookAccount, addressBookAccounts.firstOrNull())
     }
 
 
     // helpers
 
-    private fun createTestService(serviceType: String): Service {
-        val service = Service(id=0, accountName="test", type=serviceType, principal = null)
+    private fun createTestService(): Service {
+        val service = Service(id=0, accountName="test", type=Service.TYPE_CARDDAV, principal = null)
         val serviceId = db.serviceDao().insertOrReplace(service)
         return db.serviceDao().get(serviceId)!!
     }

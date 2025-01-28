@@ -6,6 +6,7 @@ package at.bitfire.davdroid.repository
 
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.db.ServiceType
 import javax.inject.Inject
 
 class DavServiceRepository @Inject constructor(
@@ -19,7 +20,7 @@ class DavServiceRepository @Inject constructor(
 
     fun get(id: Long): Service? = dao.get(id)
 
-    fun getByAccountAndType(name: String, serviceType: String): Service? =
+    fun getByAccountAndType(name: String, @ServiceType serviceType: String): Service? =
         dao.getByAccountAndType(name, serviceType)
 
     fun getCalDavServiceFlow(accountName: String) =

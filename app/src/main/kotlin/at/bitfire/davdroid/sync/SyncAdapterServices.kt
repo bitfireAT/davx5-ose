@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.sync
 
@@ -15,7 +15,6 @@ import android.content.Intent
 import android.content.SyncResult
 import android.os.Bundle
 import android.os.IBinder
-import android.provider.ContactsContract
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
@@ -119,17 +118,8 @@ abstract class SyncAdapterService: Service() {
                 return
             }
 
-            /* Special case for contacts: because address books are separate accounts, changed contacts cause
-            this method to be called with authority = ContactsContract.AUTHORITY. However the sync worker shall be run for the
-            address book authority instead. */
-            val workerAuthority =
-                if (authority == ContactsContract.AUTHORITY)
-                    context.getString(R.string.address_books_authority)
-                else
-                    authority
-
-            logger.fine("Starting OneTimeSyncWorker for $account $workerAuthority and waiting for it")
-            val workerName = syncWorkerManager.enqueueOneTime(account, authority = workerAuthority, upload = upload)
+            logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
+            val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), upload = upload)
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
             use it to block the sync adapter. Instead we use a Flow to get notified when the sync

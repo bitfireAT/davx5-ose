@@ -7,7 +7,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.ContentUris
-import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.os.RemoteException
@@ -16,6 +15,7 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import androidx.annotation.OpenForTesting
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -24,7 +24,7 @@ import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
-import at.bitfire.davdroid.util.setAndVerifyUserData
+import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidGroup
@@ -44,20 +44,21 @@ import java.util.logging.Logger
  * account and there is no such thing as "address books". So, DAVx5 creates a "DAVx5
  * address book" account for every CardDAV address book.
  *
+ * @param account             TODO
  * @param _addressBookAccount Address book account (not: DAVx5 account) storing the actual Android
  * contacts. This is the initial value of [addressBookAccount]. However when the address book is renamed,
  * the new name will only be available in [addressBookAccount], so usually that one should be used.
- *
- * @param provider Content provider needed to access and modify the address book
+ * @param provider            Content provider needed to access and modify the address book
  */
 @OpenForTesting
 open class LocalAddressBook @AssistedInject constructor(
-    @Assisted _addressBookAccount: Account,
+    @Assisted("account") val account: Account,
+    @Assisted("addressBookAccount") _addressBookAccount: Account,
     @Assisted provider: ContentProviderClient,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
-    @ApplicationContext val context: Context,
-    val dirtyVerifier: Optional<ContactDirtyVerifier>,
+    @ApplicationContext private val context: Context,
+    internal val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
     private val syncFramework: SyncFrameworkIntegration
@@ -65,7 +66,11 @@ open class LocalAddressBook @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(addressBookAccount: Account, provider: ContentProviderClient): LocalAddressBook
+        fun create(
+            @Assisted("account") account: Account,
+            @Assisted("addressBookAccount") addressBookAccount: Account,
+            provider: ContentProviderClient
+        ): LocalAddressBook
     }
 
     override val tag: String
@@ -123,21 +128,15 @@ open class LocalAddressBook @AssistedInject constructor(
             AccountManager.get(context).setAndVerifyUserData(addressBookAccount, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
 
             // update raw contacts
-            val rawContactValues = ContentValues(1).apply {
-                put(RawContacts.RAW_CONTACT_IS_READ_ONLY, if (readOnly) 1 else 0)
-            }
+            val rawContactValues = contentValuesOf(RawContacts.RAW_CONTACT_IS_READ_ONLY to if (readOnly) 1 else 0)
             provider!!.update(rawContactsSyncUri(), rawContactValues, null, null)
 
             // update data rows
-            val dataValues = ContentValues(1).apply {
-                put(ContactsContract.Data.IS_READ_ONLY, if (readOnly) 1 else 0)
-            }
+            val dataValues = contentValuesOf(ContactsContract.Data.IS_READ_ONLY to if (readOnly) 1 else 0)
             provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
 
             // update group rows
-            val groupValues = ContentValues(1).apply {
-                put(Groups.GROUP_IS_READ_ONLY, if (readOnly) 1 else 0)
-            }
+            val groupValues = contentValuesOf(Groups.GROUP_IS_READ_ONLY to if (readOnly) 1 else 0)
             provider!!.update(groupsSyncUri(), groupValues, null, null)
         }
 
@@ -151,8 +150,7 @@ open class LocalAddressBook @AssistedInject constructor(
     /* operations on the collection (address book) itself */
 
     override fun markNotDirty(flags: Int): Int {
-        val values = ContentValues(1)
-        values.put(LocalContact.COLUMN_FLAGS, flags)
+        val values = contentValuesOf(LocalContact.COLUMN_FLAGS to flags)
         var number = provider!!.update(rawContactsSyncUri(), values, "${RawContacts.DIRTY}=0", null)
 
         if (includeGroups) {
@@ -273,12 +271,10 @@ open class LocalAddressBook @AssistedInject constructor(
 
     override fun forgetETags() {
         if (includeGroups) {
-            val values = ContentValues(1)
-            values.putNull(AndroidGroup.COLUMN_ETAG)
+            val values = contentValuesOf(AndroidGroup.COLUMN_ETAG to null)
             provider!!.update(groupsSyncUri(), values, null, null)
         }
-        val values = ContentValues(1)
-        values.putNull(AndroidContact.COLUMN_ETAG)
+        val values = contentValuesOf(AndroidContact.COLUMN_ETAG to null)
         provider!!.update(rawContactsSyncUri(), values, null, null)
     }
 
@@ -320,8 +316,7 @@ open class LocalAddressBook @AssistedInject constructor(
                 return cursor.getLong(0)
         }
 
-        val values = ContentValues(1)
-        values.put(Groups.TITLE, title)
+        val values = contentValuesOf(Groups.TITLE to title)
         val uri = provider!!.insert(syncAdapterURI(Groups.CONTENT_URI), values) ?: throw RemoteException("Couldn't create contact group")
         return ContentUris.parseId(uri)
     }
@@ -337,6 +332,9 @@ open class LocalAddressBook @AssistedInject constructor(
 
 
     companion object {
+
+        const val USER_DATA_ACCOUNT_NAME = "account_name"
+        const val USER_DATA_ACCOUNT_TYPE = "account_type"
 
         /**
          * URL of the corresponding CardDAV address book.

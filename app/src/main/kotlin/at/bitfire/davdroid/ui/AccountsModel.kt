@@ -1,14 +1,21 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager.NameNotFoundException
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.PowerManager
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.lifecycle.ViewModel
@@ -18,6 +25,7 @@ import androidx.work.WorkQuery
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -25,6 +33,7 @@ import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.intro.IntroPage
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
 import at.bitfire.davdroid.util.broadcastReceiverFlow
+import at.bitfire.davdroid.util.packageChangedFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -43,9 +52,9 @@ import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountsModel.Factory::class)
 class AccountsModel @AssistedInject constructor(
-    @Assisted val syncAccountsOnInit: Boolean,
+    @Assisted private val syncAccountsOnInit: Boolean,
     private val accountRepository: AccountRepository,
-    @ApplicationContext val context: Context,
+    @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     introPageFactory: IntroPageFactory,
     private val logger: Logger,
@@ -84,7 +93,6 @@ class AccountsModel @AssistedInject constructor(
     private val runningWorkers = workManager.getWorkInfosFlow(WorkQuery.fromStates(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
 
     val accountInfos: Flow<List<AccountInfo>> = combine(accounts, runningWorkers) { accounts, workInfos ->
-        val authorities = syncWorkerManager.syncAuthorities()
         val collator = Collator.getInstance()
 
         accounts
@@ -96,15 +104,15 @@ class AccountsModel @AssistedInject constructor(
                         info.state == WorkInfo.State.RUNNING && (
                                 services.any { serviceId ->
                                     info.tags.contains(RefreshCollectionsWorker.workerName(serviceId))
-                                } || authorities.any { authority ->
-                                    info.tags.contains(BaseSyncWorker.commonTag(account, authority))
+                                } || SyncDataType.entries.any { dataType ->
+                                    info.tags.contains(BaseSyncWorker.commonTag(account, dataType))
                                 }
                             )
                     } -> AccountProgress.Active
 
                     workInfos.any { info ->
-                        info.state == WorkInfo.State.ENQUEUED && authorities.any { authority ->
-                            info.tags.contains(OneTimeSyncWorker.workerName(account, authority))
+                        info.state == WorkInfo.State.ENQUEUED && SyncDataType.entries.any { dataType ->
+                            info.tags.contains(OneTimeSyncWorker.workerName(account, dataType))
                         }
                     } -> AccountProgress.Pending
 
@@ -199,6 +207,16 @@ class AccountsModel @AssistedInject constructor(
             }
         }
 
+    /** whether the calendar storage is missing or disabled */
+    val calendarStorageDisabled = packageChangedFlow(context).map {
+        !contentProviderAvailable(CalendarContract.AUTHORITY)
+    }
+
+    /** whether the calendar storage is missing or disabled */
+    val contactsStorageDisabled = packageChangedFlow(context).map {
+        !contentProviderAvailable(ContactsContract.AUTHORITY)
+    }
+
 
     init {
         if (syncAccountsOnInit)
@@ -216,5 +234,18 @@ class AccountsModel @AssistedInject constructor(
         for (account in accountRepository.getAll())
             syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
     }
+
+
+    // helpers
+
+    fun contentProviderAvailable(authority: String): Boolean =
+        try {
+            // resolveContentProvider returns null if the provider app is disabled or missing;
+            // so we can't distinguish between "disabled" and "not found"
+            context.packageManager.resolveContentProvider(authority, 0) != null
+        } catch (_: NameNotFoundException) {
+            logger.fine("$authority provider app not found")
+            false
+        }
 
 }

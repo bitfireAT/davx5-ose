@@ -10,6 +10,7 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
@@ -60,8 +61,7 @@ class LocalCalendar private constructor(
                         null
                 }
         set(state) {
-            val values = ContentValues(1)
-            values.put(COLUMN_SYNC_STATE, state.toString())
+            val values = contentValuesOf(COLUMN_SYNC_STATE to state.toString())
             provider.update(calendarSyncURI(), values, null, null)
         }
 
@@ -111,8 +111,7 @@ class LocalCalendar private constructor(
 
 
     override fun markNotDirty(flags: Int): Int {
-        val values = ContentValues(1)
-        values.put(LocalEvent.COLUMN_FLAGS, flags)
+        val values = contentValuesOf(LocalEvent.COLUMN_FLAGS to flags)
         return provider.update(Events.CONTENT_URI.asSyncAdapter(account), values,
                 "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL",
                 arrayOf(id.toString()))
@@ -138,8 +137,7 @@ class LocalCalendar private constructor(
     }
 
     override fun forgetETags() {
-        val values = ContentValues(1)
-        values.putNull(LocalEvent.COLUMN_ETAG)
+        val values = contentValuesOf(LocalEvent.COLUMN_ETAG to null)
         provider.update(Events.CONTENT_URI.asSyncAdapter(account), values, "${Events.CALENDAR_ID}=?",
                 arrayOf(id.toString()))
     }

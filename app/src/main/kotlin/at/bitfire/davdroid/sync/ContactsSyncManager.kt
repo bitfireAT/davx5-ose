@@ -95,7 +95,6 @@ import kotlin.jvm.optionals.getOrNull
  */
 class ContactsSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted accountSettings: AccountSettings,
     @Assisted httpClient: HttpClient,
     @Assisted extras: Array<String>,
     @Assisted authority: String,
@@ -103,10 +102,11 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val provider: ContentProviderClient,
     @Assisted localAddressBook: LocalAddressBook,
     @Assisted collection: Collection,
-    val dirtyVerifier: Optional<ContactDirtyVerifier>
+    val dirtyVerifier: Optional<ContactDirtyVerifier>,
+    accountSettingsFactory: AccountSettings.Factory,
+    private val httpClientBuilder: HttpClient.Builder
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
-    accountSettings,
     httpClient,
     extras,
     authority,
@@ -119,7 +119,6 @@ class ContactsSyncManager @AssistedInject constructor(
     interface Factory {
         fun contactsSyncManager(
             account: Account,
-            accountSettings: AccountSettings,
             httpClient: HttpClient,
             extras: Array<String>,
             authority: String,
@@ -133,6 +132,8 @@ class ContactsSyncManager @AssistedInject constructor(
     companion object {
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
     }
+
+    private val accountSettings = accountSettingsFactory.create(account)
 
     private var hasVCard4 = false
     private var hasJCard = false
@@ -434,7 +435,7 @@ class ContactsSyncManager @AssistedInject constructor(
     // downloader helper class
 
     private inner class ResourceDownloader(
-            val baseUrl: HttpUrl
+        val baseUrl: HttpUrl
     ): Contact.Downloader {
 
         override fun download(url: String, accepts: String): ByteArray? {
@@ -445,25 +446,26 @@ class ContactsSyncManager @AssistedInject constructor(
             }
 
             // authenticate only against a certain host, and only upon request
-            val client = HttpClient.Builder(context, baseUrl.host, accountSettings.credentials())
+            httpClientBuilder
+                .fromAccount(account, onlyHost = baseUrl.host)
                 .followRedirects(true)      // allow redirects
                 .build()
+                .use { httpClient ->
+                    try {
+                        val response = httpClient.okHttpClient.newCall(Request.Builder()
+                            .get()
+                            .url(httpUrl)
+                            .build()).execute()
 
-            try {
-                val response = client.okHttpClient.newCall(Request.Builder()
-                        .get()
-                        .url(httpUrl)
-                        .build()).execute()
+                        if (response.isSuccessful)
+                            return response.body?.bytes()
+                        else
+                            logger.warning("Couldn't download external resource")
+                    } catch(e: IOException) {
+                        logger.log(Level.SEVERE, "Couldn't download external resource", e)
+                    }
+                }
 
-                if (response.isSuccessful)
-                    return response.body?.bytes()
-                else
-                    logger.warning("Couldn't download external resource")
-            } catch(e: IOException) {
-                logger.log(Level.SEVERE, "Couldn't download external resource", e)
-            } finally {
-                client.close()
-            }
             return null
         }
     }

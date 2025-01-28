@@ -3,9 +3,7 @@
   <!--common strings-->
   <string name="account_invalid">Račun (više) ne postoji</string>
   <string name="account_title_address_book">DAVx⁵ Adresar</string>
-  <string name="address_books_authority_title">Adresari</string>
   <string name="help">Pomoć</string>
-  <string name="manage_accounts">Upravljaj računima</string>
   <string name="share">Dijeli</string>
   <string name="notification_channel_debugging">Debugging</string>
   <string name="notification_channel_general">Ostale važne poruke</string>

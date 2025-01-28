@@ -10,6 +10,7 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
@@ -43,10 +44,8 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
                     Events.CONTENT_URI,
                     eventID
                 ).asSyncAdapter(account),
-                ContentValues(1).apply {
-                    put(Events.DELETED, 1)
-                },
-                null,null
+                contentValuesOf(Events.DELETED to 1),
+                null, null
             )
         }
 
@@ -208,8 +207,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
             val newUid = UUID.randomUUID().toString()
 
             // update in calendar provider
-            val values = ContentValues(1)
-            values.put(Events.UID_2445, newUid)
+            val values = contentValuesOf(Events.UID_2445 to newUid)
             calendar.provider.update(eventSyncURI(), values, null, null)
 
             // update this event
@@ -249,15 +247,14 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
     }
 
     override fun updateFlags(flags: Int) {
-        val values = ContentValues(1)
-        values.put(COLUMN_FLAGS, flags)
+        val values = contentValuesOf(COLUMN_FLAGS to flags)
         calendar.provider.update(eventSyncURI(), values, null, null)
 
         this.flags = flags
     }
 
     override fun resetDeleted() {
-        val values = ContentValues(1).apply { put(Events.DELETED, 0) }
+        val values = contentValuesOf(Events.DELETED to 0)
         calendar.provider.update(eventSyncURI(), values, null, null)
     }
 

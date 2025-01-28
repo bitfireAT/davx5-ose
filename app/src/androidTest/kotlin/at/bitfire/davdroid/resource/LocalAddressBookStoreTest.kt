@@ -1,29 +1,44 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
 package at.bitfire.davdroid.resource
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.Context
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.impl.annotations.SpyK
-import io.mockk.junit4.MockKRule
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.runs
+import io.mockk.unmockkAll
 import io.mockk.verify
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.logging.Logger
+import javax.inject.Inject
 
 @HiltAndroidTest
 class LocalAddressBookStoreTest {
@@ -31,41 +46,64 @@ class LocalAddressBookStoreTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
-    val mockkRule = MockKRule(this)
+    @Inject
+    @ApplicationContext
+    @SpyK
+    lateinit var context: Context
 
-    val context: Context = mockk(relaxed = true) {
-        every { getString(R.string.account_type_address_book) } returns "com.bitfire.davdroid.addressbook"
-    }
-//    val account = Account("MrRobert@example.com", "com.bitfire.davdroid.addressbook")
-    val account: Account = mockk(relaxed = true) {
-//        every { name } returns "MrRobert@example.com"
-//        every { type } returns "com.bitfire.davdroid.addressbook"
-    }
+    val account by lazy { Account("Test Account", context.getString(R.string.account_type)) }
+    val addressBookAccount by lazy { Account("MrRobert@example.com", context.getString(R.string.account_type_address_book)) }
+
     val provider = mockk<ContentProviderClient>(relaxed = true)
     val addressBook: LocalAddressBook = mockk(relaxed = true) {
+        every { account } answers { this@LocalAddressBookStoreTest.account }
         every { updateSyncFrameworkSettings() } just runs
-        every { addressBookAccount } returns account
+        every { addressBookAccount } answers { this@LocalAddressBookStoreTest.addressBookAccount }
         every { settings } returns LocalAddressBookStore.contactsProviderSettings
     }
 
+    @Suppress("unused")     // used by @InjectMockKs LocalAddressBookStore
+    @RelaxedMockK
+    lateinit var collectionRepository: DavCollectionRepository
+
+    @Suppress("unused")     // used by @InjectMockKs LocalAddressBookStore
+    val localAddressBookFactory = mockk<LocalAddressBook.Factory> {
+        every { create(any(), any(), provider) } returns addressBook
+    }
+
+    @Inject
     @SpyK
+    lateinit var logger: Logger
+
+    @RelaxedMockK
+    lateinit var settingsManager: SettingsManager
+
+    @Suppress("unused")     // used by @InjectMockKs LocalAddressBookStore
+    val serviceRepository = mockk<DavServiceRepository>(relaxed = true) {
+        every { get(any<Long>()) } returns null
+        every { get(200) } returns mockk<Service> {
+            every { accountName } returns "MrRobert@example.com"
+        }
+    }
+
     @InjectMockKs
-    var localAddressBookStore = LocalAddressBookStore(
-        collectionRepository = mockk(relaxed = true),
-        context = context,
-        localAddressBookFactory = mockk(relaxed = true) {
-            every { create(account, provider) } returns addressBook
-        },
-        logger = mockk(relaxed = true),
-        serviceRepository = mockk(relaxed = true) {
-            every { get(any<Long>()) } returns null
-            every { get(200) } returns mockk<Service> {
-                every { accountName } returns "MrRobert@example.com"
-            }
-        },
-        settings = mockk(relaxed = true)
-    )
+    @SpyK
+    lateinit var localAddressBookStore: LocalAddressBookStore
+
+
+    @Before
+    fun setUp() {
+        hiltRule.inject()
+
+        // initialize global mocks
+        MockKAnnotations.init(this)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
+
 
     @Test
     fun test_accountName_missingService() {
@@ -104,26 +142,28 @@ class LocalAddressBookStoreTest {
 
     @Test
     fun test_create_createAccountReturnsNull() {
-        val collection = mockk<Collection>(relaxed = true)  {
+        val collection = mockk<Collection>(relaxed = true) {
+            every { serviceId } returns 200
             every { id } returns 1
             every { url } returns "https://example.com/addressbook/funnyfriends".toHttpUrl()
         }
-        every { localAddressBookStore.createAccount(any(), any(), any()) } returns null
+        every { localAddressBookStore.createAddressBookAccount(any(), any(), any(), any()) } returns null
         assertEquals(null, localAddressBookStore.create(provider, collection))
     }
 
     @Test
     fun test_create_createAccountReturnsAccount() {
-        val collection = mockk<Collection>(relaxed = true)  {
+        val collection = mockk<Collection>(relaxed = true) {
+            every { serviceId } returns 200
             every { id } returns 1
             every { url } returns "https://example.com/addressbook/funnyfriends".toHttpUrl()
         }
-        every { localAddressBookStore.createAccount(any(), any(), any()) } returns account
+        every { localAddressBookStore.createAddressBookAccount(any(), any(), any(), any()) } returns addressBookAccount
         every { addressBook.readOnly } returns true
         val addrBook = localAddressBookStore.create(provider, collection)!!
 
         verify(exactly = 1) { addressBook.updateSyncFrameworkSettings() }
-        assertEquals(account, addrBook.addressBookAccount)
+        assertEquals(addressBookAccount, addrBook.addressBookAccount)
         assertEquals(LocalAddressBookStore.contactsProviderSettings, addrBook.settings)
         assertEquals(true, addrBook.readOnly)
 
@@ -136,12 +176,36 @@ class LocalAddressBookStoreTest {
     fun test_createAccount_succeeds() {
         mockkObject(SystemAccountUtils)
         every { SystemAccountUtils.createAccount(any(), any(), any()) } returns true
-        val account = Account("MrRobert@example.com", "com.bitfire.davdroid.addressbook")
-        val createdAccount: Account = localAddressBookStore.createAccount(
-            "MrRobert@example.com", 42, "https://example.com/addressbook/funnyfriends"
+        val result: Account = localAddressBookStore.createAddressBookAccount(
+            account, "MrRobert@example.com", 42, "https://example.com/addressbook/funnyfriends"
         )!!
-        verify(exactly = 1) { SystemAccountUtils.createAccount(context, account, any()) }
-        assertEquals(account, createdAccount)
+        verify(exactly = 1) { SystemAccountUtils.createAccount(any(), any(), any()) }
+        assertEquals("MrRobert@example.com", result.name)
+        assertEquals(context.getString(R.string.account_type_address_book), result.type)
+    }
+
+
+    @Test
+    fun test_getAll_differentAccount() {
+        val accountManager = AccountManager.get(context)
+        mockkObject(accountManager)
+        every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
+        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME) } returns "Another Unrelated Account"
+        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) } returns account.type
+        val result = localAddressBookStore.getAll(account, provider)
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun test_getAll_sameAccount() {
+        val accountManager = AccountManager.get(context)
+        mockkObject(accountManager)
+        every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
+        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME) } returns account.name
+        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) } returns account.type
+        val result = localAddressBookStore.getAll(account, provider)
+        assertEquals(1, result.size)
+        assertEquals(addressBookAccount, result.first().addressBookAccount)
     }
 
 

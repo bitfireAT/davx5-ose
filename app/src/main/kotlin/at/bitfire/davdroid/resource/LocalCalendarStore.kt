@@ -9,52 +9,58 @@ import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import android.provider.CalendarContract
 import android.provider.CalendarContract.Calendars
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendar.Companion.calendarBaseValues
 import at.bitfire.ical4android.util.DateUtils
+import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
 class LocalCalendarStore @Inject constructor(
-    @ApplicationContext val context: Context,
-    val accountSettingsFactory: AccountSettings.Factory,
-    db: AppDatabase,
-    val logger: Logger
+    @ApplicationContext private val context: Context,
+    private val accountSettingsFactory: AccountSettings.Factory,
+    private val logger: Logger,
+    private val serviceRepository: DavServiceRepository
 ): LocalDataStore<LocalCalendar> {
 
-    private val serviceDao = db.serviceDao()
-
-
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalCalendar? {
-        val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
+        val service = serviceRepository.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
         // If the collection doesn't have a color, use a default color.
-        if (fromCollection.color != null)
-            fromCollection.color = Constants.DAVDROID_GREEN_RGBA
+        val collectionWithColor =
+            if (fromCollection.color != null)
+                fromCollection
+            else
+                fromCollection.copy(color = Constants.DAVDROID_GREEN_RGBA)
 
-        val values = valuesFromCollectionInfo(fromCollection, withColor = true)
+        val values = valuesFromCollectionInfo(
+            info = collectionWithColor,
+            withColor = true
+        ).apply {
+            // ACCOUNT_NAME and ACCOUNT_TYPE are required (see docs)! If it's missing, other apps will crash.
+            put(Calendars.ACCOUNT_NAME, account.name)
+            put(Calendars.ACCOUNT_TYPE, account.type)
 
-        // ACCOUNT_NAME and ACCOUNT_TYPE are required (see docs)! If it's missing, other apps will crash.
-        values.put(Calendars.ACCOUNT_NAME, account.name)
-        values.put(Calendars.ACCOUNT_TYPE, account.type)
+            // Email address for scheduling. Used by the calendar provider to determine whether the
+            // user is ORGANIZER/ATTENDEE for a certain event.
+            put(Calendars.OWNER_ACCOUNT, account.name)
 
-        // Email address for scheduling. Used by the calendar provider to determine whether the
-        // user is ORGANIZER/ATTENDEE for a certain event.
-        values.put(Calendars.OWNER_ACCOUNT, account.name)
-
-        // flag as visible & syncable at creation, might be changed by user at any time
-        values.put(Calendars.VISIBLE, 1)
-        values.put(Calendars.SYNC_EVENTS, 1)
+            // flag as visible & syncable at creation, might be changed by user at any time
+            put(Calendars.VISIBLE, 1)
+            put(Calendars.SYNC_EVENTS, 1)
+        }
 
         logger.log(Level.INFO, "Adding local calendar", values)
         val uri = AndroidCalendar.create(account, provider, values)
@@ -98,6 +104,14 @@ class LocalCalendarStore @Inject constructor(
         values.putAll(calendarBaseValues)
 
         return values
+    }
+
+    override fun updateAccount(oldAccount: Account, newAccount: Account) {
+        val values = contentValuesOf(Calendars.ACCOUNT_NAME to newAccount.name)
+        val uri = Calendars.CONTENT_URI.asSyncAdapter(oldAccount)
+        context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use {
+            it.update(uri, values, "${Calendars.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
+        }
     }
 
 

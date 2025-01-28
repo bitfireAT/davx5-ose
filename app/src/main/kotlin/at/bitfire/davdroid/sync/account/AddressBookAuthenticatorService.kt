@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 package at.bitfire.davdroid.sync.account
 
 import android.accounts.AbstractAccountAuthenticator
@@ -11,7 +11,8 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import at.bitfire.davdroid.ui.AccountsActivity
+import androidx.core.os.bundleOf
+import at.bitfire.davdroid.R
 
 class AddressBookAuthenticatorService: Service() {
 
@@ -22,20 +23,18 @@ class AddressBookAuthenticatorService: Service() {
     }
 
     override fun onBind(intent: Intent?) =
-            accountAuthenticator.iBinder.takeIf { intent?.action == AccountManager.ACTION_AUTHENTICATOR_INTENT }
+        accountAuthenticator.iBinder.takeIf { intent?.action == AccountManager.ACTION_AUTHENTICATOR_INTENT }
 
 
     private class AccountAuthenticator(
-            val context: Context
+        val context: Context
     ): AbstractAccountAuthenticator(context) {
 
-        override fun addAccount(response: AccountAuthenticatorResponse?, accountType: String?, authTokenType: String?, requiredFeatures: Array<String>?, options: Bundle?): Bundle {
-            val intent = Intent(context, AccountsActivity::class.java)
-            intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
-            val bundle = Bundle(1)
-            bundle.putParcelable(AccountManager.KEY_INTENT, intent)
-            return bundle
-        }
+        override fun addAccount(response: AccountAuthenticatorResponse?, accountType: String?, authTokenType: String?, requiredFeatures: Array<String>?, options: Bundle?) = bundleOf(
+            AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE to response,
+            AccountManager.KEY_ERROR_CODE to AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION,
+            AccountManager.KEY_ERROR_MESSAGE to context.getString(R.string.account_prefs_use_app)
+        )
 
         override fun editProperties(response: AccountAuthenticatorResponse?, accountType: String?) = null
         override fun getAuthTokenLabel(p0: String?) = null

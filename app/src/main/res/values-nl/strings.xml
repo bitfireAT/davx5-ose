@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">Account bestaat niet (of niet meer)</string>
   <string name="account_title_address_book">DAVx⁵ Adresboek</string>
-  <string name="address_books_authority_title">Adresboeken</string>
+  <string name="account_prefs_use_app">Verander hier niet van account! Gebruik in plaats daarvan direct de app om accounts te beheren.</string>
   <string name="dialog_delete">Verwijderen</string>
   <string name="dialog_remove">Verwijder</string>
   <string name="dialog_deny">Annuleer</string>
   <string name="field_required">Dit veld is verplicht</string>
   <string name="help">Hulp</string>
-  <string name="manage_accounts">Accounts beheren</string>
   <string name="navigate_up">Navigeer omhoog</string>
   <string name="optional_label">*optioneel</string>
   <string name="options_menu">Opties menu</string>
@@ -45,6 +44,7 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Schijnt niet meer ontwikkeld te worden - niet aanbevolen.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Enkele functies <a href="https://www.davx5.com/faq/tasks/advanced-task-features">worden niet ondersteund</a>.]]></string>
   <string name="intro_tasks_no_app_store">Geen app-store beschikbaar</string>
   <string name="intro_tasks_dont_show">Ik hoef geen ondersteuning van taken.*</string>
   <string name="intro_open_source_title">Open-source software</string>
@@ -88,6 +88,8 @@
   <string name="wifi_permissions_background_location_permission_label">Onbeperkt toestaan</string>
   <string name="wifi_permissions_background_location_permission_on">Locatietoestemming ingesteld op: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Locatietoestemming niet ingesteld op: %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s gebruikt locatiegegevens (alleen WiFi SSID) uitsluitend om de synchronisatie te beperken tot een specifieke WiFi SSID. Dit gebeurt zelfs als de synchronisatie op de achtergrond wordt uitgevoerd.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Alle locatiegegevens (alleen WiFi SSID) worden alleen lokaal gebruikt en worden nergens naartoe verzonden.</string>
   <string name="wifi_permissions_location_enabled">Toegang tot locatie altijd ingeschakeld</string>
   <string name="wifi_permissions_location_enabled_on">Toegang tot locatie is ingeschakeld</string>
   <string name="wifi_permissions_location_enabled_off">Toegang tot locatie is uitgeschakeld</string>
@@ -119,7 +121,6 @@
   <string name="navigation_drawer_contribute">Hoe bijdragen</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
   <string name="account_list_no_notification_permission">Meldingen uitgeschakeld. U krijgt geen meldingen over synchronisatiefouten.</string>
-  <string name="account_list_no_internet">Geen gevalideerde internetverbinding. Synchronisatie wordt mogelijk niet uitgevoerd.</string>
   <string name="account_list_manage_connections">Verbindingen beheren</string>
   <string name="account_list_datasaver_enabled">Gegevensbesparing ingeschakeld. Synchronisatie op de achtergrond is beperkt.</string>
   <string name="account_list_manage_datasaver">Beheer van gegevensbesparing</string>
@@ -127,6 +128,8 @@
   <string name="account_list_manage_battery_saver">Batterijbesparing beheren</string>
   <string name="account_list_low_storage">Weinig opslagruimte. Android zal lokale wijzigingen niet onmiddellijk synchroniseren, maar tijdens de volgende reguliere synchronisatie.</string>
   <string name="account_list_manage_storage">Opslag beheren</string>
+  <string name="account_list_welcome">Welkom bij DAVx⁵!</string>
+  <string name="account_list_empty">Maak verbinding met je server en houd je agenda\'s en contactpersonen gesynchroniseerd.</string>
   <string name="accounts_sync_all">Alle accounts synchroniseren</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Service herkenning is mislukt</string>
@@ -138,7 +141,9 @@
   <string name="app_settings">Instellingen</string>
   <string name="app_settings_debug">Debuggen</string>
   <string name="app_settings_show_debug_info">Debug-info</string>
+  <string name="app_settings_show_debug_info_details">Configuratiedetails en logbestanden bekijken/delen</string>
   <string name="app_settings_logging">Uitgebreid loggen</string>
+  <string name="app_settings_logging_on">Loggen is actief. Je kunt de logs bekijken als onderdeel van de debug-info.</string>
   <string name="app_settings_logging_off">Loggen is niet actief</string>
   <string name="app_settings_battery_optimization">Batterijoptimalisatie</string>
   <string name="app_settings_battery_optimization_exempted">App is vrijgesteld (aanbevolen)</string>
@@ -177,6 +182,12 @@
   <string name="app_settings_integration">Integratie</string>
   <string name="app_settings_tasks_provider">Taken app</string>
   <string name="app_settings_tasks_provider_none">Geen compatibele taken app gevonden</string>
+  <string name="app_settings_unifiedpush">UnifiedPush (experimenteel)</string>
+  <string name="app_settings_unifiedpush_disable">Geen (push uitschakelen)</string>
+  <string name="app_settings_unifiedpush_choose_distributor">Kies een distributeur</string>
+  <string name="app_settings_unifiedpush_no_distributor">Geen push distributeur geïnstalleerd</string>
+  <string name="app_settings_unifiedpush_no_endpoint">Geen eindpunt geconfigureerd</string>
+  <string name="app_settings_unifiedpush_ready">Klaar om pushberichten te ontvangen via %s</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -207,6 +218,7 @@
   <string name="account_install_icsx5">ICSx⁵ installeren</string>
   <!--AddAccountActivity-->
   <string name="login_title">Account toevoegen</string>
+  <string name="login_privacy_hint"><![CDATA[Alle gegevens worden alleen overgedragen tussen je server en je apparaat. %1$s  zal ze nergens anders naartoe sturen. Zie<a href="%2$s">privacybeleid</a>.]]></string>
   <string name="login_generic_login">Algemeen inloggen</string>
   <string name="login_provider_login">Aanbieder-specifieke login</string>
   <string name="login_continue">Ga verder</string>
@@ -232,6 +244,8 @@
   <string name="login_account_contact_group_method">Methode voor contact-groepen:</string>
   <string name="login_account_name_required">Accountnaam verplicht</string>
   <string name="login_account_name_already_taken">Accountnaam is al in gebruik</string>
+  <string name="login_account_not_added">Account kon niet worden toegevoegd</string>
+  <string name="login_finish">afwerken</string>
   <string name="login_type_advanced">Geavanceerd inloggen</string>
   <string name="login_no_client_certificate_optional">Geen cliëntcertificaat*</string>
   <string name="login_client_certificate_selected">Cliëntcertificaat: %s</string>
@@ -349,6 +363,7 @@
   <string name="collection_synchronization_off">Synchronisatie uitgeschakeld</string>
   <string name="collection_read_only">Alleen-lezen</string>
   <string name="collection_read_only_by_server">Alleen-lezen (door server)</string>
+  <string name="collection_read_only_by_setting">Alleen-lezen (volgens beleid)</string>
   <string name="collection_read_only_forced">Alleen-lezen (alleen lokaal)</string>
   <string name="collection_read_write">Lezen/schrijven</string>
   <string name="collection_title">Titel</string>
@@ -356,6 +371,7 @@
   <string name="collection_owner">Eigenaar</string>
   <string name="collection_push_support">Push-ondersteuning</string>
   <string name="collection_push_web_push">Server adverteert Push-ondersteuning</string>
+  <string name="collection_push_subscribed_at">Ingeschreven op %1$s, vervalt op %2$s</string>
   <string name="collection_last_sync">Laatste gesynchroniseerd (%s)</string>
   <string name="collection_url">Adres (URL)</string>
   <!--debugging and DebugInfoActivity-->
@@ -424,6 +440,8 @@
   <string name="sync_invalid_event">Ongeldige gebeurtenis ontvangen van server</string>
   <string name="sync_invalid_task">Ongeldige taak ontvangen van server</string>
   <string name="sync_invalid_resources_ignoring">Een of meer ongeldige bronnen negeren</string>
+  <string name="sync_notification_pending_push_title">Synchronisatie in afwachting</string>
+  <string name="sync_notification_pending_push_message">De gegevens op afstand zijn veranderd</string>
   <!--widgets-->
   <string name="widget_sync_all">Alles synchroniseren</string>
   <string name="widget_sync_all_accounts">Alle accounts synchroniseren</string>

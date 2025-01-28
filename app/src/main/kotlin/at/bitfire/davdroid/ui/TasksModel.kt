@@ -1,3 +1,7 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
 package at.bitfire.davdroid.ui
 
 import android.content.Context
@@ -44,7 +48,7 @@ class TasksModel @Inject constructor(
             settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
     }
 
-    val currentProvider = tasksAppManager.currentProviderFlow(viewModelScope)
+    val currentProvider = tasksAppManager.currentProviderFlow()
     val jtxSelected = currentProvider.map { it == TaskProvider.ProviderName.JtxBoard }
     val tasksOrgSelected = currentProvider.map { it == TaskProvider.ProviderName.TasksOrg }
     val openTasksSelected = currentProvider.map { it == TaskProvider.ProviderName.OpenTasks }
@@ -67,7 +71,7 @@ class TasksModel @Inject constructor(
         try {
             context.packageManager.getPackageInfo(packageName, 0)
             true
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
             false
         }
 

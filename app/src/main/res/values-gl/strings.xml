@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">A conta non existe (definitivamente)</string>
   <string name="account_title_address_book">Libreta de enderezos DAVx⁵</string>
-  <string name="address_books_authority_title">Libretas de enderezos</string>
+  <string name="account_prefs_use_app">Non cambies de conta aquí! Usa directamente a aplicación para xestonar as contas.</string>
   <string name="dialog_delete">Eliminar</string>
   <string name="dialog_remove">Eliminar</string>
   <string name="dialog_deny">Desbotar</string>
   <string name="field_required">Este campo é requerido</string>
   <string name="help">Axuda</string>
-  <string name="manage_accounts">Xestionar contas</string>
   <string name="navigate_up">Ir arriba</string>
   <string name="optional_label">* optativo</string>
   <string name="options_menu">Menú de opcións</string>
@@ -45,12 +44,14 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Semella que xa non está en desenvolvemento – non recomendado.</string>
   <string name="intro_tasks_tasks_org">Task.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Some features <a href="https://www.davx5.com/faq/tasks/advanced-task-features">Non hai compatibilidade</a> para algunhas características]]></string>
   <string name="intro_tasks_no_app_store">Sen tenda de apps dispoñible</string>
   <string name="intro_tasks_dont_show">Non necesito soporte para tarefas.*</string>
   <string name="intro_open_source_title">Software de código aberto</string>
   <string name="intro_open_source_text">Encántanos que uses %s, que é software de código aberto. O desenvolvemento, mantemento e soporte son un traballo difícil. Considera colaborar (hai moitos xeitos) ou facer unha doazón. Sería de agradecer!</string>
   <string name="intro_open_source_details">Como contribuír/doar</string>
   <string name="intro_open_source_dont_show">Non mostrar no futuro próximo</string>
+  <string name="intro_next">Seguinte</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisos</string>
   <string name="permissions_text">%s require permisos para funcionar axeitadamente.</string>
@@ -87,6 +88,8 @@
   <string name="wifi_permissions_background_location_permission_label">Permitir en todo momento</string>
   <string name="wifi_permissions_background_location_permission_on">Permiso de localización establecido como: %s</string>
   <string name="wifi_permissions_background_location_permission_off">O permiso de localización non é: %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s usa datos de localización (só WiFi SSID) có ánimo de limitar a sincronización a unha rede WifFi concreta. Isto acontece incluso cando a sincronización se realiza en segundo plano.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Todos os datos de localización (WiFi SSID) só se usan de xeito local e non se envían a ningures.</string>
   <string name="wifi_permissions_location_enabled">Localización sempre activada</string>
   <string name="wifi_permissions_location_enabled_on">Servizo de localización activado</string>
   <string name="wifi_permissions_location_enabled_off">Servizo de localización desactivado</string>
@@ -118,7 +121,7 @@
   <string name="navigation_drawer_contribute">Como colaborar</string>
   <string name="navigation_drawer_privacy_policy">Política de Privacidade</string>
   <string name="account_list_no_notification_permission">Notificacións desactivadas. Non verás os avisos de erro na sincr.</string>
-  <string name="account_list_no_internet">Sen conexión a Internet verificada. A sincronización podería fallar.</string>
+  <string name="account_list_no_internet">A sincronización automática non está activa (sen conexión a internet verificada).</string>
   <string name="account_list_manage_connections">Xestionar conexións</string>
   <string name="account_list_datasaver_enabled">O aforro de datos está activado. A sincronización en segundo plano está restrinxida.</string>
   <string name="account_list_manage_datasaver">Xestionar aforro de datos</string>
@@ -126,6 +129,8 @@
   <string name="account_list_manage_battery_saver">Xestionar aforro da batería</string>
   <string name="account_list_low_storage">Queda pouco espazo de almacenaxe. Android non vai sincronizar os cambios locais inmediatamente, farao na próxima sincronización regular.</string>
   <string name="account_list_manage_storage">Xestionar almacenaxe</string>
+  <string name="account_list_welcome">Benvida a DAVx⁵!</string>
+  <string name="account_list_empty">Conecta co teu servidor e mantén os contactos e calendarios sincronizados.</string>
   <string name="accounts_sync_all">Sincroniza todas as contas</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Fallou a detección do servizo</string>
@@ -137,7 +142,9 @@
   <string name="app_settings">Axustes</string>
   <string name="app_settings_debug">Depurando</string>
   <string name="app_settings_show_debug_info">Mostrar info de depuración</string>
+  <string name="app_settings_show_debug_info_details">Ver/compartir os detalles da configuración e rexistros</string>
   <string name="app_settings_logging">Rexistro polo miúdo</string>
+  <string name="app_settings_logging_on">O rexistro está activo. Podes ver os rexistros como parte da info de depuración.</string>
   <string name="app_settings_logging_off">O rexistro está desactivado</string>
   <string name="app_settings_battery_optimization">Optimización da batería</string>
   <string name="app_settings_battery_optimization_exempted">A app está excluída (recomendado)</string>
@@ -176,6 +183,12 @@
   <string name="app_settings_integration">Integración</string>
   <string name="app_settings_tasks_provider">App Tarefas</string>
   <string name="app_settings_tasks_provider_none">Non se atopan app de tarefas compatible</string>
+  <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
+  <string name="app_settings_unifiedpush_disable">Ningún (push desactivado)</string>
+  <string name="app_settings_unifiedpush_choose_distributor">Elixe un distribuidor</string>
+  <string name="app_settings_unifiedpush_no_distributor">Non hai un distribuidor instalado</string>
+  <string name="app_settings_unifiedpush_no_endpoint">Sen punto de acceso configurado</string>
+  <string name="app_settings_unifiedpush_ready">Preparado para recibir mensaxes push desde %s</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -206,6 +219,7 @@
   <string name="account_install_icsx5">Instalar ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Engadir conta</string>
+  <string name="login_privacy_hint"><![CDATA[Todos os datos transmítense entre o teu servidor e o teu dispositivo. %1$s non llos envía a ninguén máis. Le a <a href="%2$s">política de privacidade</a>.]]></string>
   <string name="login_generic_login">Acceso xenérico</string>
   <string name="login_provider_login">Acceso específico do provedor</string>
   <string name="login_continue">Continuar</string>
@@ -232,6 +246,8 @@
   <string name="login_account_contact_group_method">Método para agrupar contacto:</string>
   <string name="login_account_name_required">Nome de conta requerido</string>
   <string name="login_account_name_already_taken">O nome de conta xa está a ser utilizado</string>
+  <string name="login_account_not_added">Non se puido engadir a conta</string>
+  <string name="login_finish">Rematar</string>
   <string name="login_type_advanced">Acceso avanzado</string>
   <string name="login_no_client_certificate_optional">Sen certificado cliente*</string>
   <string name="login_client_certificate_selected">Certificado cliente: %s</string>
@@ -349,6 +365,7 @@
   <string name="collection_synchronization_off">Sincronización desactivada</string>
   <string name="collection_read_only">Só lectura</string>
   <string name="collection_read_only_by_server">Só lectura (polo servidor)</string>
+  <string name="collection_read_only_by_setting">Só-lectura (polas normas)</string>
   <string name="collection_read_only_forced">Só lectura (só localmente)</string>
   <string name="collection_read_write">Lectura/escritura</string>
   <string name="collection_title">Título</string>
@@ -356,6 +373,7 @@
   <string name="collection_owner">Dona</string>
   <string name="collection_push_support">Soporte Push</string>
   <string name="collection_push_web_push">O servidor anuncia soporte para Push</string>
+  <string name="collection_push_subscribed_at">Subscrición desde %1$s, caduca o %2$s</string>
   <string name="collection_last_sync">Última sincr (%s)</string>
   <string name="collection_url">Enderezo (URL)</string>
   <!--debugging and DebugInfoActivity-->
@@ -424,6 +442,8 @@
   <string name="sync_invalid_event">Recibido evento non válido desde o servidor</string>
   <string name="sync_invalid_task">Recibida tarefa non válida desde o servidor</string>
   <string name="sync_invalid_resources_ignoring">Ignorando un ou varios recursos non válidos</string>
+  <string name="sync_notification_pending_push_title">Sincr pendente</string>
+  <string name="sync_notification_pending_push_message">Os datos remotos cambiaron</string>
   <!--widgets-->
   <string name="widget_sync_all">Sincr todo</string>
   <string name="widget_sync_all_accounts">Sincroniza todas as contas</string>

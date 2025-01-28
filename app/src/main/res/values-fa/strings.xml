@@ -3,12 +3,10 @@
   <!--common strings-->
   <string name="account_invalid">حساب کاربری موجود نیست (بیشتر از این)</string>
   <string name="account_title_address_book">کتاب آدرس DAVx⁵</string>
-  <string name="address_books_authority_title">کتاب آدرس</string>
   <string name="dialog_remove">حذف</string>
   <string name="dialog_deny">لغو</string>
   <string name="field_required">این قسمت الزامیست</string>
   <string name="help">راهنما</string>
-  <string name="manage_accounts">مدیریت حساب‌ها</string>
   <string name="share">اشتراک گذاری</string>
   <string name="database_destructive_migration_title">پایگاه داده، دارای مشکل است</string>
   <string name="database_destructive_migration_text">تمام حساب های کاربری حذف شدند.</string>

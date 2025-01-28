@@ -11,6 +11,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalCalendarStore
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidCalendar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -24,6 +25,7 @@ class CalendarSyncer @AssistedInject constructor(
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
     calendarStore: LocalCalendarStore,
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory
 ): Syncer<LocalCalendarStore, LocalCalendar>(account, extras, syncResult) {
 
@@ -42,6 +44,7 @@ class CalendarSyncer @AssistedInject constructor(
 
     override fun prepare(provider: ContentProviderClient): Boolean {
         // Update colors
+        val accountSettings = accountSettingsFactory.create(account)
         if (accountSettings.getEventColors())
             AndroidCalendar.insertColors(provider, account)
         else
@@ -57,7 +60,6 @@ class CalendarSyncer @AssistedInject constructor(
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
             account,
-            accountSettings,
             extras,
             httpClient.value,
             authority,

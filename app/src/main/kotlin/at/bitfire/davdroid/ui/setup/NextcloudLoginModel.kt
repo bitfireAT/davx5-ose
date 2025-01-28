@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.ui.setup
 
@@ -26,8 +26,8 @@ import java.util.logging.Logger
 class NextcloudLoginModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     @ApplicationContext val context: Context,
-    private val logger: Logger
-    //val state: SavedStateHandle
+    private val logger: Logger,
+    private val loginFlow: NextcloudLoginFlow
 ): ViewModel() {
 
     @AssistedFactory
@@ -89,8 +89,6 @@ class NextcloudLoginModel @AssistedInject constructor(
     fun updateBaseUrl(baseUrl: String) {
         uiState = uiState.copy(baseUrl = baseUrl)
     }
-
-    val loginFlow = NextcloudLoginFlow(context)
 
     // Login flow state
     /*private var pollUrl: HttpUrl?

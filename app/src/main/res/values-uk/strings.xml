@@ -3,10 +3,8 @@
   <!--common strings-->
   <string name="account_invalid">Обліківки не існує (більше)</string>
   <string name="account_title_address_book">Адресна книга DAVx⁵</string>
-  <string name="address_books_authority_title">Адресні книги</string>
   <string name="field_required">Це поле обовʼязкове</string>
   <string name="help">Допомога</string>
-  <string name="manage_accounts">Керування обліковими записами</string>
   <string name="share">Поширити</string>
   <string name="database_destructive_migration_title">База даних пошкоджена</string>
   <string name="database_destructive_migration_text">Усі облікові записи видалено локально.</string>

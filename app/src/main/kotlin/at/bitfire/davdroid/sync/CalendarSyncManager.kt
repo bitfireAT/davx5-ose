@@ -50,16 +50,15 @@ import java.util.logging.Level
  */
 class CalendarSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted accountSettings: AccountSettings,
     @Assisted extras: Array<String>,
     @Assisted httpClient: HttpClient,
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
-    @Assisted collection: Collection
+    @Assisted collection: Collection,
+    private val accountSettingsFactory: AccountSettings.Factory
 ): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
-    accountSettings,
     httpClient,
     extras,
     authority,
@@ -72,7 +71,6 @@ class CalendarSyncManager @AssistedInject constructor(
     interface Factory {
         fun calendarSyncManager(
             account: Account,
-            accountSettings: AccountSettings,
             extras: Array<String>,
             httpClient: HttpClient,
             authority: String,
@@ -81,6 +79,9 @@ class CalendarSyncManager @AssistedInject constructor(
             collection: Collection
         ): CalendarSyncManager
     }
+
+    private val accountSettings = accountSettingsFactory.create(account)
+
 
     override fun prepare(): Boolean {
         davCollection = DavCalendar(httpClient.okHttpClient, collection.url)

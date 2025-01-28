@@ -25,7 +25,7 @@ class TaskSyncer @AssistedInject constructor(
     @Assisted override val authority: String,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
-    private val localTaskListStoreFactory: LocalTaskListStore.Factory,
+    localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
 ): Syncer<LocalTaskListStore, LocalTaskList>(account, extras, syncResult) {
@@ -37,7 +37,7 @@ class TaskSyncer @AssistedInject constructor(
 
     private val providerName = TaskProvider.ProviderName.fromAuthority(authority)
 
-    override val dataStore = localTaskListStoreFactory.create(authority)
+    override val dataStore = localTaskListStoreFactory.create(providerName)
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV
@@ -73,7 +73,6 @@ class TaskSyncer @AssistedInject constructor(
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
             account,
-            accountSettings,
             httpClient.value,
             extras,
             authority,

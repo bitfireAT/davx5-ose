@@ -12,7 +12,6 @@ import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import at.bitfire.vcard4android.contactrow.DataRowHandler
 import java.io.FileNotFoundException
-import java.util.logging.Logger
 
 class GroupMembershipHandler(val localContact: LocalContact): DataRowHandler() {
 

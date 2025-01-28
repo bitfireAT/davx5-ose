@@ -3,12 +3,10 @@
   <!--common strings-->
   <string name="account_invalid">A felhasználói fiók (már) nem létezik</string>
   <string name="account_title_address_book">DAVx⁵ címjegyzék</string>
-  <string name="address_books_authority_title">Címjegyzékek</string>
   <string name="dialog_remove">Eltávolítás</string>
   <string name="dialog_deny">Mégse</string>
   <string name="field_required">Ennek e mezőnek a megadása kötelező</string>
   <string name="help">Súgó</string>
-  <string name="manage_accounts">Fiókok kezelése</string>
   <string name="navigate_up">Navigáció felfelé</string>
   <string name="optional_label">* nem kötelező</string>
   <string name="options_menu">Beállítások menü</string>
@@ -118,7 +116,6 @@
   <string name="navigation_drawer_contribute">A közreműködés lehetőségei</string>
   <string name="navigation_drawer_privacy_policy">Adatvédelmi irányelv</string>
   <string name="account_list_no_notification_permission">Az értesítések tiltva vannak.  A szinkronizálási hibákról nem fog értesítést kapni.</string>
-  <string name="account_list_no_internet">Nincs ellenőrzött internetkapcsolat.  A szinkronizáció nem biztos, hogy fog futni. </string>
   <string name="account_list_manage_connections">Kapcsolatok kezelése</string>
   <string name="account_list_datasaver_enabled">Az adatcsökkentés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
   <string name="account_list_manage_datasaver">Adatcsökkentés kezelése</string>

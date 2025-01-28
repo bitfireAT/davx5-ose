@@ -1,3 +1,7 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
 package at.bitfire.davdroid.ui
 
 import android.content.Intent
@@ -77,8 +81,9 @@ fun TasksCard(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val currentProvider by model.currentProvider.collectAsStateWithLifecycle(null)
 
     val jtxInstalled = model.jtxInstalled
     val jtxSelected by model.jtxSelected.collectAsStateWithLifecycle(false)
@@ -101,7 +106,7 @@ fun TasksCard(
         showAgain = showAgain,
         onSetShowAgain = model::setShowAgain,
         onProviderSelected = { provider ->
-            if (model.currentProvider.value != provider)
+            if (currentProvider != provider)
                 model.selectProvider(provider)
         },
         installApp = { packageName ->

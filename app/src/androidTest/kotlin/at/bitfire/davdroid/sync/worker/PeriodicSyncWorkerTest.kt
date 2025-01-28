@@ -1,27 +1,25 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
 import android.content.Context
-import android.provider.CalendarContract
-import android.util.Log
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.work.Configuration
 import androidx.work.ListenableWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
-import androidx.work.testing.WorkManagerTestInitHelper
 import androidx.work.workDataOf
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
-import at.bitfire.davdroid.test.R
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.TestUtils
+import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.junit4.MockKRule
 import io.mockk.mockkObject
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
@@ -35,10 +33,8 @@ import javax.inject.Inject
 @HiltAndroidTest
 class PeriodicSyncWorkerTest {
 
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
-    val testContext = InstrumentationRegistry.getInstrumentation().context
 
     @Inject
     lateinit var syncWorkerFactory: PeriodicSyncWorker.Factory
@@ -46,39 +42,37 @@ class PeriodicSyncWorkerTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
+    @get:Rule
+    val mockkRule = MockKRule(this)
+
     lateinit var account: Account
 
     @Before
     fun setUp() {
         hiltRule.inject()
+        TestUtils.setUpWorkManager(context)
 
-        // Initialize WorkManager for instrumentation tests.
-        val config = Configuration.Builder()
-            .setMinimumLoggingLevel(Log.DEBUG)
-            .build()
-        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
-
-        account = TestAccountAuthenticator.create()
+        account = TestAccount.create()
     }
 
     @After
     fun tearDown() {
-        TestAccountAuthenticator.remove(account)
+        TestAccount.remove(account)
     }
 
 
     @Test
     fun doWork_cancelsItselfOnInvalidAccount() {
-        val invalidAccount = Account("invalid", testContext.getString(R.string.account_type_test))
+        val invalidAccount = Account("invalid", context.getString(R.string.account_type))
 
         // Run PeriodicSyncWorker as TestWorker
         val inputData = workDataOf(
-            BaseSyncWorker.INPUT_AUTHORITY to CalendarContract.AUTHORITY,
+            BaseSyncWorker.INPUT_DATA_TYPE to SyncDataType.EVENTS.toString(),
             BaseSyncWorker.INPUT_ACCOUNT_NAME to invalidAccount.name,
             BaseSyncWorker.INPUT_ACCOUNT_TYPE to invalidAccount.type
         )
 
-        // mock WorkManager to observe cancellation call
+        // observe WorkManager cancellation call
         val workManager = WorkManager.getInstance(context)
         mockkObject(workManager)
 

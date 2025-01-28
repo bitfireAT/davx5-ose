@@ -2,9 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_title_address_book">DAVx⁵-adressebok</string>
-  <string name="address_books_authority_title">Adressebøker</string>
   <string name="help">Hjelp</string>
-  <string name="manage_accounts">Behandle kontoer</string>
   <string name="notification_channel_debugging">Feilsøking</string>
   <string name="notification_channel_general">Andre viktige beskjeder</string>
   <string name="notification_channel_sync">Synkronisering</string>

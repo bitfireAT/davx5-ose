@@ -3,13 +3,11 @@
   <!--common strings-->
   <string name="account_invalid">Ο λογαριασμός δεν υπάρχει (πια)</string>
   <string name="account_title_address_book">Βιβλίο διευθύνσεων DAVx⁵</string>
-  <string name="address_books_authority_title">Βιβλία διευθύνσεων</string>
   <string name="dialog_delete">Διαγραφή</string>
   <string name="dialog_remove">Αφαίρεση</string>
   <string name="dialog_deny">Ακύρωση</string>
   <string name="field_required">Αυτό το πεδίο είναι απαραίτητο </string>
   <string name="help">Βοήθεια</string>
-  <string name="manage_accounts">Διαχείριση λογαριασμών</string>
   <string name="navigate_up">Πλοήγηση προς τα πάνω</string>
   <string name="optional_label">* προαιρετικό</string>
   <string name="options_menu">Μενού επιλογών</string>
@@ -118,7 +116,6 @@
   <string name="navigation_drawer_contribute">Πώς να συνεισφέρετε</string>
   <string name="navigation_drawer_privacy_policy">Πολιτική απορρήτου</string>
   <string name="account_list_no_notification_permission">Οι ειδοποιήσεις είναι απενεργοποιημένες. Δεν θα λαμβάνετε ειδοποιήσεις για σφάλματα συγχρονισμού.</string>
-  <string name="account_list_no_internet">Δεν υπάρχει επικυρωμένη σύνδεση στο διαδίκτυο. Ο συγχρονισμός ενδέχεται να μην εκτελεστεί.</string>
   <string name="account_list_manage_connections">Διαχείριση συνδέσεων</string>
   <string name="account_list_datasaver_enabled">Ενεργοποίηση της εξοικονόμησης δεδομένων. Ο συγχρονισμός στο παρασκήνιο είναι περιορισμένος.</string>
   <string name="account_list_manage_datasaver">Διαχείριση εξοικονόμησης δεδομένων</string>
