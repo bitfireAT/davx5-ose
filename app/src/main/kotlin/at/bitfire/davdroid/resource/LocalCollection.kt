@@ -8,11 +8,11 @@ import at.bitfire.davdroid.db.SyncState
 
 interface LocalCollection<out T: LocalResource<*>> {
 
-    /** A tag that uniquely identifies the collection (DAVx5-wide) */
+    /** a tag that uniquely identifies the collection (DAVx5-wide) */
     val tag: String
 
-    /** Database ID of the collection ([at.bitfire.davdroid.db.Collection.id]) */
-    val databaseId: Long?
+    /** ID of the collection in the database (corresponds to [at.bitfire.davdroid.db.Collection.id]) */
+    val dbCollectionId: Long?
 
     /** collection title (used for user notifications etc.) **/
     val title: String

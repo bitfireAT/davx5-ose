@@ -66,7 +66,7 @@ class SyncerTest {
     @Test
     fun testUpdateCollections_deletesCollection() {
         val localCollection = mockk<LocalTestCollection> {
-            every { databaseId } returns 0L
+            every { dbCollectionId } returns 0L
             every { title } returns "Collection to be deleted locally"
         }
 
@@ -82,7 +82,7 @@ class SyncerTest {
     @Test
     fun testUpdateCollections_updatesCollection() {
         val localCollection = mockk<LocalTestCollection> {
-            every { databaseId } returns 0L
+            every { dbCollectionId } returns 0L
             every { title } returns "The Local Collection"
         }
         val dbCollection = mockk<Collection> {
@@ -104,7 +104,7 @@ class SyncerTest {
             every { id } returns 0L
         }
         val localCollections = listOf(mockk<LocalTestCollection> {
-            every { databaseId } returns 0L
+            every { dbCollectionId } returns 0L
         })
         val dbCollections = listOf(dbCollection)
         val dbCollectionsMap = mapOf(dbCollection.id to dbCollection)
@@ -115,7 +115,7 @@ class SyncerTest {
 
         // Updated local collection list contain new entry
         assertEquals(1, result.size)
-        assertEquals(dbCollection.id, result[0].databaseId)
+        assertEquals(dbCollection.id, result[0].dbCollectionId)
     }
 
 
@@ -139,11 +139,11 @@ class SyncerTest {
             0L to dbCollection1,
             1L to dbCollection2
         )
-        val localCollection1 = mockk<LocalTestCollection> { every { databaseId } returns 0L }
-        val localCollection2 = mockk<LocalTestCollection> { every { databaseId } returns 1L }
+        val localCollection1 = mockk<LocalTestCollection> { every { dbCollectionId } returns 0L }
+        val localCollection2 = mockk<LocalTestCollection> { every { dbCollectionId } returns 1L }
         val localCollections = listOf(localCollection1, localCollection2)
-        every { localCollection1.databaseId } returns 0L
-        every { localCollection2.databaseId } returns 1L
+        every { localCollection1.dbCollectionId } returns 0L
+        every { localCollection2.dbCollectionId } returns 1L
         every { syncer.syncCollection(provider, any(), any()) } just runs
 
         // Should call the collection content sync on both collections

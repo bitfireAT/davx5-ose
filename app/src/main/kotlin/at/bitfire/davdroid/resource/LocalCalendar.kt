@@ -23,7 +23,7 @@ import java.util.logging.Logger
 /**
  * Application-specific subclass of [AndroidCalendar] for local calendars.
  *
- * [Calendars._SYNC_ID] is used for the DB-Collection ID [at.bitfire.davdroid.db.Collection].
+ * [Calendars._SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
 class LocalCalendar private constructor(
     account: Account,
@@ -40,7 +40,7 @@ class LocalCalendar private constructor(
 
     }
 
-    override val databaseId: Long?
+    override val dbCollectionId: Long?
         get() = syncId?.toLongOrNull()
 
     override val tag: String
