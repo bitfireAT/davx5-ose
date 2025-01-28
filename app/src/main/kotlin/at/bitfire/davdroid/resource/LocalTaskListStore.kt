@@ -97,6 +97,9 @@ class LocalTaskListStore @AssistedInject constructor(
     override fun getAll(account: Account, provider: ContentProviderClient) =
         DmfsTaskList.find(account, LocalTaskList.Factory, provider, providerName, null, null)
 
+    override fun getByLocalId(account: Account, provider: ContentProviderClient, id: Long): LocalTaskList? =
+        DmfsTaskList.find(account, LocalTaskList.Factory, provider, providerName, "${TaskLists._SYNC_ID}=?", arrayOf(id.toString())).firstOrNull()
+
     override fun update(provider: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list ${fromCollection.url}", fromCollection)
         val accountSettings = accountSettingsFactory.create(localCollection.account)

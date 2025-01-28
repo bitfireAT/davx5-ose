@@ -137,11 +137,14 @@ class UnifiedPushReceiver: MessagingReceiver() {
             SyncDataType.TASKS -> tasksAppManager.get().getDataStore()
         }
 
-        val provider = TODO("Add LocalDataStore.acquireProvider()")
-        val localCollection = dataStore?.getByLocalId(account, provider, collectionId)
-        return localCollection?.lastSyncState?.value.takeIf {
-            localCollection?.lastSyncState?.type == SyncState.Type.SYNC_TOKEN
+        dataStore?.acquireContentProvider()?.use { provider ->
+            val localCollection = dataStore.getByLocalId(account, provider, collectionId)
+            return localCollection?.lastSyncState?.value.takeIf {
+                localCollection?.lastSyncState?.type == SyncState.Type.SYNC_TOKEN
+            }
         }
+
+        return null
     }
 
 }
