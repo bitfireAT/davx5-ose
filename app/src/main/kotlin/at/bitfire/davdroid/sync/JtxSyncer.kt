@@ -38,8 +38,6 @@ class JtxSyncer @AssistedInject constructor(
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV
-    override val authority: String
-        get() = TaskProvider.ProviderName.JtxBoard.authority
 
 
     override fun prepare(provider: ContentProviderClient): Boolean {
@@ -74,7 +72,7 @@ class JtxSyncer @AssistedInject constructor(
             account,
             extras,
             httpClient.value,
-            authority,
+            dataStore.authority,
             syncResult,
             localCollection,
             remoteCollection

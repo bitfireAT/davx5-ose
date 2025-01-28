@@ -22,7 +22,7 @@ import dagger.assisted.AssistedInject
  */
 class TaskSyncer @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted override val authority: String,
+    @Assisted val providerName: TaskProvider.ProviderName,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
     localTaskListStoreFactory: LocalTaskListStore.Factory,
@@ -32,10 +32,8 @@ class TaskSyncer @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, authority: String, extras: Array<String>, syncResult: SyncResult): TaskSyncer
+        fun create(account: Account, providerName: TaskProvider.ProviderName, extras: Array<String>, syncResult: SyncResult): TaskSyncer
     }
-
-    private val providerName = TaskProvider.ProviderName.fromAuthority(authority)
 
     override val dataStore = localTaskListStoreFactory.create(providerName)
 
@@ -75,7 +73,7 @@ class TaskSyncer @AssistedInject constructor(
             account,
             httpClient.value,
             extras,
-            authority,
+            dataStore.authority,
             syncResult,
             localCollection,
             remoteCollection

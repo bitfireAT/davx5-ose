@@ -41,8 +41,6 @@ class AddressBookSyncer @AssistedInject constructor(
 
     override val serviceType: String
         get() = Service.TYPE_CARDDAV
-    override val authority: String
-        get() = ContactsContract.AUTHORITY // Address books use the contacts authority for sync
 
 
     override fun getDbSyncCollections(serviceId: Long): List<Collection> =
@@ -100,7 +98,16 @@ class AddressBookSyncer @AssistedInject constructor(
             }
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD, groupMethod)
 
-            val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
+            val syncManager = contactsSyncManagerFactory.contactsSyncManager(
+                account,
+                httpClient.value,
+                extras,
+                dataStore.authority,
+                syncResult,
+                provider,
+                addressBook,
+                collection
+            )
             syncManager.performSync()
 
         } catch(e: Exception) {

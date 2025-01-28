@@ -34,6 +34,12 @@ class LocalJtxCollectionStore @Inject constructor(
 
     private val serviceDao = db.serviceDao()
 
+    override val authority: String
+        get() = JtxContract.AUTHORITY
+
+    override fun acquireContentProvider() =
+        context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)
+
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalJtxCollection? {
         val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
@@ -81,20 +87,13 @@ class LocalJtxCollectionStore @Inject constructor(
         }
     }
 
-
     override fun getAll(account: Account, provider: ContentProviderClient): List<LocalJtxCollection> =
         JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
-
 
     override fun update(provider: ContentProviderClient, localCollection: LocalJtxCollection, fromCollection: Collection) {
         val accountSettings = accountSettingsFactory.create(localCollection.account)
         val values = valuesFromCollection(fromCollection, account = localCollection.account, withColor = accountSettings.getManageCalendarColors())
         localCollection.update(values)
-    }
-
-
-    override fun delete(localCollection: LocalJtxCollection) {
-        localCollection.delete()
     }
 
     override fun updateAccount(oldAccount: Account, newAccount: Account) {
@@ -103,6 +102,10 @@ class LocalJtxCollectionStore @Inject constructor(
             val uri = JtxContract.JtxCollection.CONTENT_URI.asSyncAdapter(oldAccount)
             provider.client.update(uri, values, "${JtxContract.JtxCollection.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
         }
+    }
+
+    override fun delete(localCollection: LocalJtxCollection) {
+        localCollection.delete()
     }
 
 }
