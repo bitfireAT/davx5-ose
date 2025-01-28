@@ -56,7 +56,7 @@ class CalendarSyncer @AssistedInject constructor(
         collectionRepository.getSyncCalendars(serviceId)
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalCalendar, remoteCollection: Collection) {
-        logger.info("Synchronizing calendar #${localCollection.id}, URL: ${localCollection.name}")
+        logger.info("Synchronizing calendar #${localCollection.id}, DB Collection ID: ${localCollection.databaseId}, URL: ${localCollection.name}")
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
             account,

@@ -7,6 +7,8 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentValues
+import android.provider.CalendarContract.SyncColumns
+import android.provider.CalendarContract.SyncColumns._SYNC_ID
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.DmfsTaskList
@@ -21,7 +23,7 @@ import java.util.logging.Logger
 /**
  * App-specific implementation of a task list.
  *
- * [TaskLists._SYNC_ID] is used to store the task list URL.
+ * [TaskLists._SYNC_ID] is used for the DB-Collection ID [at.bitfire.davdroid.db.Collection].
  */
 class LocalTaskList private constructor(
         account: Account,
@@ -38,8 +40,8 @@ class LocalTaskList private constructor(
             accessLevel != TaskListColumns.ACCESS_LEVEL_UNDEFINED &&
             accessLevel <= TaskListColumns.ACCESS_LEVEL_READ
 
-    override val collectionUrl: String?
-        get() = syncId
+    override val databaseId: Long?
+        get() = syncId?.toLongOrNull()
 
     override val tag: String
         get() = "tasks-${account.name}-$id"

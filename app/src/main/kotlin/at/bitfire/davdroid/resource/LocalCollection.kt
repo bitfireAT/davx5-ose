@@ -11,9 +11,8 @@ interface LocalCollection<out T: LocalResource<*>> {
     /** A tag that uniquely identifies the collection (DAVx5-wide) */
     val tag: String
 
-    /** Address of the remote collection */
-    @Deprecated("Local collection should be identified by ID, not by URL")
-    val collectionUrl: String?
+    /** Database ID of the collection ([at.bitfire.davdroid.db.Collection.id]) */
+    val databaseId: Long?
 
     /** collection title (used for user notifications etc.) **/
     val title: String

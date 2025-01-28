@@ -23,7 +23,7 @@ import java.util.logging.Logger
 /**
  * Application-specific subclass of [AndroidCalendar] for local calendars.
  *
- * [Calendars.NAME] is used to store the calendar URL.
+ * [Calendars._SYNC_ID] is used for the DB-Collection ID [at.bitfire.davdroid.db.Collection].
  */
 class LocalCalendar private constructor(
     account: Account,
@@ -40,8 +40,8 @@ class LocalCalendar private constructor(
 
     }
 
-    override val collectionUrl: String?
-        get() = name
+    override val databaseId: Long?
+        get() = syncId?.toLongOrNull()
 
     override val tag: String
         get() = "events-${account.name}-$id"

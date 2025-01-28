@@ -376,7 +376,6 @@ class DebugInfoGenerator @Inject constructor(
         val table = dumpAccount(account, null, AccountDumpInfo.addressBookAccount(account))
         writer.append(TextTable.indent(table, 4))
             .append("Collection ID: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_COLLECTION_ID)}\n")
-            .append("    URL: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_URL)}\n")
             .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
     }
 

@@ -69,7 +69,7 @@ class TaskSyncer @AssistedInject constructor(
         collectionRepository.getSyncTaskLists(serviceId)
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalTaskList, remoteCollection: Collection) {
-        logger.info("Synchronizing task list #${localCollection.id} [${localCollection.syncId}]")
+        logger.info("Synchronizing task list ${localCollection.id} with database collection ID: ${localCollection.databaseId}")
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
             account,

@@ -147,7 +147,7 @@ class LocalAddressBookStoreTest {
             every { id } returns 1
             every { url } returns "https://example.com/addressbook/funnyfriends".toHttpUrl()
         }
-        every { localAddressBookStore.createAddressBookAccount(any(), any(), any(), any()) } returns null
+        every { localAddressBookStore.createAddressBookAccount(any(), any(), any()) } returns null
         assertEquals(null, localAddressBookStore.create(provider, collection))
     }
 
@@ -158,7 +158,7 @@ class LocalAddressBookStoreTest {
             every { id } returns 1
             every { url } returns "https://example.com/addressbook/funnyfriends".toHttpUrl()
         }
-        every { localAddressBookStore.createAddressBookAccount(any(), any(), any(), any()) } returns addressBookAccount
+        every { localAddressBookStore.createAddressBookAccount(any(), any(), any()) } returns addressBookAccount
         every { addressBook.readOnly } returns true
         val addrBook = localAddressBookStore.create(provider, collection)!!
 
@@ -177,7 +177,7 @@ class LocalAddressBookStoreTest {
         mockkObject(SystemAccountUtils)
         every { SystemAccountUtils.createAccount(any(), any(), any()) } returns true
         val result: Account = localAddressBookStore.createAddressBookAccount(
-            account, "MrRobert@example.com", 42, "https://example.com/addressbook/funnyfriends"
+            account, "MrRobert@example.com", 42
         )!!
         verify(exactly = 1) { SystemAccountUtils.createAccount(any(), any(), any()) }
         assertEquals("MrRobert@example.com", result.name)

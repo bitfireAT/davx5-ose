@@ -14,6 +14,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -40,6 +41,7 @@ class AccountSettingsMigration17 @Inject constructor(
 ): AccountSettingsMigration {
 
     override fun migrate(account: Account) {
+        val localAddressBookAccountUserDataUrl = "url"
         val addressBookAccountType = context.getString(R.string.account_type_address_book)
         try {
             context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
@@ -62,10 +64,17 @@ class AccountSettingsMigration17 @Inject constructor(
                 // Old address books only have a URL, so use it to determine the collection ID
                 logger.info("Migrating address book ${oldAddressBookAccount.name}")
                 val oldAddressBook = localAddressBookFactory.create(account, oldAddressBookAccount, provider)
-                val url = accountManager.getUserData(oldAddressBookAccount, LocalAddressBook.USER_DATA_URL)
+                val url = accountManager.getUserData(oldAddressBookAccount, localAddressBookAccountUserDataUrl)
                 collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
                     // Set collection ID and rename the account
                     localAddressBookStore.update(provider, oldAddressBook, collection)
+                    // The user-data-url is not being set in localAddressBookStore.update() anymore,
+                    // but we need to keep it for the migration
+                    accountManager.setAndVerifyUserData(
+                        oldAddressBook.addressBookAccount,
+                        localAddressBookAccountUserDataUrl,
+                        collection.url.toString()
+                    )
                 }
             }
         }

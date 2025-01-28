@@ -19,9 +19,6 @@ import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.hilt.android.qualifiers.ApplicationContext
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -119,11 +116,11 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @return The sync enabled collections as hash map identified by their URL
      */
     @VisibleForTesting
-    internal fun getSyncEnabledCollections(): Map<HttpUrl, Collection> {
-        val dbCollections = mutableMapOf<HttpUrl, Collection>()
+    internal fun getSyncEnabledCollections(): Map<Long, Collection> {
+        val dbCollections = mutableMapOf<Long, Collection>()
         serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
             for (dbCollection in getDbSyncCollections(service.id))
-                dbCollections[dbCollection.url] = dbCollection
+                dbCollections[dbCollection.id] = dbCollection
         }
         return dbCollections
     }
@@ -145,14 +142,14 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     internal fun updateCollections(
         provider: ContentProviderClient,
         localCollections: List<CollectionType>,
-        dbCollections: Map<HttpUrl, Collection>
+        dbCollections: Map<Long, Collection>
     ): List<CollectionType> {
         // create mutable copies of input
         val updatedLocalCollections = localCollections.toMutableList()
         val newDbCollections = dbCollections.toMutableMap()
 
         for (localCollection in localCollections) {
-            val dbCollection = dbCollections[localCollection.collectionUrl?.toHttpUrlOrNull()]
+            val dbCollection = dbCollections[localCollection.databaseId]
             if (dbCollection == null) {
                 // Collection not available in db = on server (anymore), delete and remove from the updated list
                 logger.info("Deleting local collection ${localCollection.title} without matching remote collection")
@@ -162,7 +159,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 // Collection exists locally, update local collection and remove it from "to be created" map
                 logger.fine("Updating local collection ${localCollection.title} with $dbCollection")
                 dataStore.update(provider, localCollection, dbCollection)
-                newDbCollections -= dbCollection.url
+                newDbCollections -= dbCollection.id
             }
         }
 
@@ -207,9 +204,9 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     internal fun syncCollectionContents(
         provider: ContentProviderClient,
         localCollections: List<CollectionType>,
-        dbCollections: Map<HttpUrl, Collection>
+        dbCollections: Map<Long, Collection>
     ) = localCollections.forEach { localCollection ->
-        dbCollections[localCollection.collectionUrl?.toHttpUrl()]?.let { dbCollection ->
+        dbCollections[localCollection.databaseId]?.let { dbCollection ->
             syncCollection(provider, localCollection, dbCollection)
         }
     }

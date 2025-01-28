@@ -59,6 +59,7 @@ class LocalJtxCollectionStore @Inject constructor(
         val owner = info.ownerId?.let { principalRepository.get(it) }
 
         return ContentValues().apply {
+            put(JtxContract.JtxCollection.SYNC_ID, info.id)
             put(JtxContract.JtxCollection.URL, info.url.toString())
             put(
                 JtxContract.JtxCollection.DISPLAYNAME,

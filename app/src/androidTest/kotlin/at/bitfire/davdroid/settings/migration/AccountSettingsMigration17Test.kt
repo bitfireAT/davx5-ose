@@ -53,6 +53,7 @@ class AccountSettingsMigration17Test {
 
     @Test
     fun testMigrate_OldAddressBook_CollectionInDB() {
+        val localAddressBookUserDataUrl = "url"
         TestAccount.provide(version = 16) { account ->
             val accountManager = AccountManager.get(context)
             val addressBookAccountType = context.getString(R.string.account_type_address_book)
@@ -63,7 +64,7 @@ class AccountSettingsMigration17Test {
                 // address book has account + URL
                 val url = "https://example.com/address-book"
                 accountManager.setAndVerifyUserData(addressBookAccount, "real_account_name", account.name)
-                accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_URL, url)
+                accountManager.setAndVerifyUserData(addressBookAccount, localAddressBookUserDataUrl, url)
 
                 // and is known in database
                 db.serviceDao().insertOrReplace(
@@ -86,7 +87,7 @@ class AccountSettingsMigration17Test {
 
                 // migration renames address book, update account
                 addressBookAccount = accountManager.getAccountsByType(addressBookAccountType).filter {
-                    accountManager.getUserData(it, LocalAddressBook.USER_DATA_URL) == url
+                    accountManager.getUserData(it, localAddressBookUserDataUrl) == url
                 }.first()
                 assertEquals("Some Address Book (${account.name}) #100", addressBookAccount.name)
 
