@@ -34,6 +34,12 @@ class LocalCalendarStore @Inject constructor(
     private val serviceRepository: DavServiceRepository
 ): LocalDataStore<LocalCalendar> {
 
+    override val authority: String
+        get() = CalendarContract.AUTHORITY
+
+    override fun acquireContentProvider() =
+        context.contentResolver.acquireContentProviderClient(authority)
+
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalCalendar? {
         val service = serviceRepository.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
@@ -67,10 +73,8 @@ class LocalCalendarStore @Inject constructor(
         return AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
     }
 
-
     override fun getAll(account: Account, provider: ContentProviderClient) =
         AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${Calendars.SYNC_EVENTS}!=0", null)
-
 
     override fun update(provider: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
         val accountSettings = accountSettingsFactory.create(localCollection.account)
@@ -106,18 +110,17 @@ class LocalCalendarStore @Inject constructor(
         return values
     }
 
+    override fun delete(localCollection: LocalCalendar) {
+        logger.log(Level.INFO, "Deleting local calendar", localCollection)
+        localCollection.delete()
+    }
+
     override fun updateAccount(oldAccount: Account, newAccount: Account) {
         val values = contentValuesOf(Calendars.ACCOUNT_NAME to newAccount.name)
         val uri = Calendars.CONTENT_URI.asSyncAdapter(oldAccount)
         context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use {
             it.update(uri, values, "${Calendars.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
         }
-    }
-
-
-    override fun delete(localCollection: LocalCalendar) {
-        logger.log(Level.INFO, "Deleting local calendar", localCollection)
-        localCollection.delete()
     }
 
 }
