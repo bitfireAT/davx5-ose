@@ -113,7 +113,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * Finds sync enabled collections in database. They contain collection info which might have
      * been updated by collection refresh [at.bitfire.davdroid.servicedetection.DavResourceFinder].
      *
-     * @return The sync enabled collections as hash map identified by their URL
+     * @return The sync enabled database collections as hash map identified by their ID
      */
     @VisibleForTesting
     internal fun getSyncEnabledCollections(): Map<Long, Collection> {
