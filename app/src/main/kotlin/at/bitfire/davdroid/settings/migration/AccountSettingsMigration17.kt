@@ -41,7 +41,6 @@ class AccountSettingsMigration17 @Inject constructor(
 ): AccountSettingsMigration {
 
     override fun migrate(account: Account) {
-        val localAddressBookAccountUserDataUrl = "url"
         val addressBookAccountType = context.getString(R.string.account_type_address_book)
         try {
             context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
@@ -64,7 +63,7 @@ class AccountSettingsMigration17 @Inject constructor(
                 // Old address books only have a URL, so use it to determine the collection ID
                 logger.info("Migrating address book ${oldAddressBookAccount.name}")
                 val oldAddressBook = localAddressBookFactory.create(account, oldAddressBookAccount, provider)
-                val url = accountManager.getUserData(oldAddressBookAccount, localAddressBookAccountUserDataUrl)
+                val url = accountManager.getUserData(oldAddressBookAccount, LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL)
                 collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
                     // Set collection ID and rename the account
                     localAddressBookStore.update(provider, oldAddressBook, collection)
@@ -72,7 +71,7 @@ class AccountSettingsMigration17 @Inject constructor(
                     // but we need to keep it for the migration
                     accountManager.setAndVerifyUserData(
                         oldAddressBook.addressBookAccount,
-                        localAddressBookAccountUserDataUrl,
+                        LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL,
                         collection.url.toString()
                     )
                 }
@@ -80,6 +79,9 @@ class AccountSettingsMigration17 @Inject constructor(
         }
     }
 
+    companion object {
+        private const val LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL = "url"
+    }
 
     @Module
     @InstallIn(SingletonComponent::class)
