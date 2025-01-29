@@ -149,7 +149,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         val newDbCollections = dbCollections.toMutableMap()
 
         for (localCollection in localCollections) {
-            val dbCollection = dbCollections[localCollection.dbCollectionId]
+            val dbCollection = dbCollections.getOrDefault(localCollection.dbCollectionId, null)
             if (dbCollection == null) {
                 // Collection not available in db = on server (anymore), delete and remove from the updated list
                 logger.info("Deleting local collection ${localCollection.title} without matching remote collection")
