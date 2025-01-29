@@ -82,7 +82,7 @@ class LocalCalendarStore @Inject constructor(
 
     private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
         val values = ContentValues()
-        values.put(Calendars.NAME, info.url.toString())
+        values.put(Calendars._SYNC_ID, info.id)
         values.put(Calendars.CALENDAR_DISPLAY_NAME,
             if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
 

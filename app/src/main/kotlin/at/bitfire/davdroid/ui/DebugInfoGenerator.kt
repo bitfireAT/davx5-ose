@@ -329,7 +329,7 @@ class DebugInfoGenerator @Inject constructor(
         writer.append("\n\n - Account: ${account.name}\n")
         val accountSettings = accountSettingsFactory.create(account)
 
-        writer.append(dumpAccount(account, accountSettings, AccountDumpInfo.caldavAccount(account)))
+        writer.append(dumpAndroidAccount(account, AccountDumpInfo.caldavAccount(account)))
         try {
             val credentials = accountSettings.credentials()
             val authStr = mutableListOf<String>()
@@ -373,17 +373,16 @@ class DebugInfoGenerator @Inject constructor(
      */
     private fun dumpAddressBookAccount(account: Account, accountManager: AccountManager, writer: Writer) {
         writer.append("  * Address book: ${account.name}\n")
-        val table = dumpAccount(account, null, AccountDumpInfo.addressBookAccount(account))
+        val table = dumpAndroidAccount(account, AccountDumpInfo.addressBookAccount(account))
         writer.append(TextTable.indent(table, 4))
             .append("Collection ID: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_COLLECTION_ID)}\n")
-            .append("    URL: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_URL)}\n")
             .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
     }
 
     /**
      * Retrieves specified information from an android account.
      */
-    private fun dumpAccount(account: Account, accountSettings: AccountSettings?, infos: Iterable<AccountDumpInfo>): String {
+    private fun dumpAndroidAccount(account: Account, infos: Iterable<AccountDumpInfo>): String {
         val table = TextTable("Authority", "isSyncable", "syncsOnContentChange", "Entries")
         for (info in infos) {
             var nrEntries = "—"
@@ -529,7 +528,7 @@ class DebugInfoGenerator @Inject constructor(
 
         companion object {
 
-            fun caldavAccount(account: Account) = listOf(
+            internal fun caldavAccount(account: Account) = listOf(
                 AccountDumpInfo(account, CalendarContract.AUTHORITY, CalendarContract.Events.CONTENT_URI.asCalendarSyncAdapter(account), "event(s)"),
                 AccountDumpInfo(account, TaskProvider.ProviderName.JtxBoard.authority, JtxContract.JtxICalObject.CONTENT_URI.asJtxSyncAdapter(account), "jtx Board ICalObject(s)"),
                 AccountDumpInfo(account, TaskProvider.ProviderName.OpenTasks.authority, TaskContract.Tasks.getContentUri(
@@ -539,7 +538,7 @@ class DebugInfoGenerator @Inject constructor(
                 AccountDumpInfo(account, ContactsContract.AUTHORITY, ContactsContract.RawContacts.CONTENT_URI.asContactsSyncAdapter(account), "wrongly assigned raw contact(s)")
             )
 
-            fun addressBookAccount(account: Account) = listOf(
+            internal fun addressBookAccount(account: Account) = listOf(
                 AccountDumpInfo(account, ContactsContract.AUTHORITY, ContactsContract.RawContacts.CONTENT_URI.asContactsSyncAdapter(account), "raw contact(s)")
             )
 
