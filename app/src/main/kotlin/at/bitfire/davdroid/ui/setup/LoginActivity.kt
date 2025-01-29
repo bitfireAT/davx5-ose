@@ -23,6 +23,32 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LoginActivity @Inject constructor(): AppCompatActivity() {
 
+    @Inject lateinit var loginTypesProvider: LoginTypesProvider
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val (initialLoginType, skipLoginTypePage) = loginTypesProvider.intentToInitialLoginType(intent)
+
+        setContent {
+            LoginScreen(
+                initialLoginType = initialLoginType,
+                skipLoginTypePage = skipLoginTypePage,
+                initialLoginInfo = loginInfoFromIntent(intent),
+                onNavUp = { onSupportNavigateUp() },
+                onFinish = { newAccount ->
+                    finish()
+
+                    if (newAccount != null) {
+                        val intent = Intent(this, AccountActivity::class.java)
+                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
+                        startActivity(intent)
+                    }
+                }
+            )
+        }
+    }
+
     companion object {
 
         /**
@@ -112,32 +138,6 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
             )
         }
 
-    }
-
-    @Inject lateinit var loginTypesProvider: LoginTypesProvider
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val (initialLoginType, skipLoginTypePage) = loginTypesProvider.intentToInitialLoginType(intent)
-
-        setContent {
-            LoginScreen(
-                initialLoginType = initialLoginType,
-                skipLoginTypePage = skipLoginTypePage,
-                initialLoginInfo = loginInfoFromIntent(intent),
-                onNavUp = { onSupportNavigateUp() },
-                onFinish = { newAccount ->
-                    finish()
-
-                    if (newAccount != null) {
-                        val intent = Intent(this, AccountActivity::class.java)
-                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
-                        startActivity(intent)
-                    }
-                }
-            )
-        }
     }
 
 }
