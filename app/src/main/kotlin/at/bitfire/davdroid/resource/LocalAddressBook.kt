@@ -105,7 +105,7 @@ open class LocalAddressBook @AssistedInject constructor(
         get() = groupMethod == GroupMethod.GROUP_VCARDS
 
     override var dbCollectionId: Long?
-        get() = accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull() ?: throw IllegalStateException("Address book has no collection ID")
+        get() = accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()
         set(id) {
             accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_COLLECTION_ID, id.toString())
         }
