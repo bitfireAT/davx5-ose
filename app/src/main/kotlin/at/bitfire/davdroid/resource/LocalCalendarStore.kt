@@ -110,17 +110,17 @@ class LocalCalendarStore @Inject constructor(
         return values
     }
 
-    override fun delete(localCollection: LocalCalendar) {
-        logger.log(Level.INFO, "Deleting local calendar", localCollection)
-        localCollection.delete()
-    }
-
     override fun updateAccount(oldAccount: Account, newAccount: Account) {
         val values = contentValuesOf(Calendars.ACCOUNT_NAME to newAccount.name)
         val uri = Calendars.CONTENT_URI.asSyncAdapter(oldAccount)
         context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use {
             it.update(uri, values, "${Calendars.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
         }
+    }
+
+    override fun delete(localCollection: LocalCalendar) {
+        logger.log(Level.INFO, "Deleting local calendar", localCollection)
+        localCollection.delete()
     }
 
 }
