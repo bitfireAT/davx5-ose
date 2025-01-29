@@ -73,11 +73,17 @@ class OpenSourcePage @Inject constructor(
          */
         val donationPopupIntervalOptions = listOf(1, 3, 9)
 
+        init {
+            // Set default value on page load, in case user skips the page
+            setDontShowFor()
+        }
+
         /**
          * Set the next time the donation popup should be shown.
          * @param dontShowFor Number of months (30 days) to hide the donation popup for.
          */
-        fun setDontShowFor(dontShowFor: Int) {
+        fun setDontShowFor(dontShowFor: Int? = null) {
+            val dontShowFor = dontShowFor ?: donationPopupIntervalOptions.first()
             logger.info("Setting next donation popup to $dontShowFor months")
             val month = 30*86400000L            // 30 days (~ 1 month)
             val nextReminder = month * dontShowFor + System.currentTimeMillis()
@@ -91,7 +97,7 @@ class OpenSourcePage @Inject constructor(
 @Composable
 fun OpenSourcePage(
     donationPopupIntervalOptions: List<Int>,
-    onChangeDontShowFor: (Int) -> Unit = {}
+    onChangeDontShowFor: (Int?) -> Unit = {}
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -142,8 +148,7 @@ fun OpenSourcePage(
             RadioButtons(
                 radioOptions = radioOptions.keys.toList(),
                 onOptionSelected = { option ->
-                    val months = radioOptions[option] ?: radioOptions.values.first()
-                    onChangeDontShowFor(months)
+                    onChangeDontShowFor(radioOptions[option])
                 },
                 modifier = Modifier.padding(bottom = 12.dp)
             )
