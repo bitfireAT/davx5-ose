@@ -34,6 +34,9 @@ class LocalAddressBookStore @Inject constructor(
     private val settings: SettingsManager
 ): LocalDataStore<LocalAddressBook> {
 
+    override val authority: String
+        get() = ContactsContract.AUTHORITY
+
     /** whether a (usually managed) setting wants all address-books to be read-only **/
     val forceAllReadOnly: Boolean
         get() = settings.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
@@ -67,6 +70,8 @@ class LocalAddressBookStore @Inject constructor(
         return sb.toString()
     }
 
+    override fun acquireContentProvider() =
+        context.contentResolver.acquireContentProviderClient(authority)
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalAddressBook? {
         val service = serviceRepository.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
@@ -106,7 +111,6 @@ class LocalAddressBookStore @Inject constructor(
         return addressBookAccount
     }
 
-
     override fun getAll(account: Account, provider: ContentProviderClient): List<LocalAddressBook> {
         val accountManager = AccountManager.get(context)
         return accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
@@ -118,7 +122,6 @@ class LocalAddressBookStore @Inject constructor(
                 localAddressBookFactory.create(account, addressBookAccount, provider)
             }
     }
-
 
     override fun update(provider: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
         var currentAccount = localCollection.addressBookAccount
@@ -170,7 +173,6 @@ class LocalAddressBookStore @Inject constructor(
                 accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, newAccount.type)
             }
     }
-
 
     override fun delete(localCollection: LocalAddressBook) {
         val accountManager = AccountManager.get(context)

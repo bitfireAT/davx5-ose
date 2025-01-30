@@ -77,7 +77,6 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     @Inject
     lateinit var serviceRepository: DavServiceRepository
 
-    abstract val authority: String
     @ServiceType
     abstract val serviceType: String
 
@@ -214,7 +213,8 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     /**
      * For collection specific sync preparations.
      *
-     * @param provider Content provider for syncer specific authority
+     * @param provider Content provider for data store
+     *
      * @return *true* to run the sync; *false* to abort
      */
     open fun prepare(provider: ContentProviderClient): Boolean = true
@@ -223,6 +223,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * Get the local database collections which are sync-enabled (should by synchronized).
      *
      * @param serviceId The CalDAV or CardDAV service (account) to be synchronized
+     *
      * @return Database collections to be synchronized
      */
     abstract fun getDbSyncCollections(serviceId: Long): List<Collection>
@@ -244,13 +245,12 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * - handle occurring sync errors
      */
     operator fun invoke() {
-        logger.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))
+        logger.log(Level.INFO, "${dataStore.authority} sync of $account initiated", extras.joinToString(", "))
 
-        // Acquire ContentProviderClient
         try {
-            context.contentResolver.acquireContentProviderClient(authority)
+            dataStore.acquireContentProvider()
         } catch (e: SecurityException) {
-            logger.log(Level.WARNING, "Missing permissions for authority $authority", e)
+            logger.log(Level.WARNING, "Missing permissions for content provider authority ${dataStore.authority}", e)
             notificationRegistry.notifyPermissions()
             null
         }.use { provider ->
@@ -259,7 +259,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                  - we're not allowed to access the content provider, or
                  - the content provider is not available at all, for instance because the tasks app has been uninstalled
                    or the respective system app (like "calendar storage") is disabled */
-                logger.warning("Couldn't connect to content provider of authority $authority")
+                logger.warning("Couldn't connect to content provider of authority ${dataStore.authority}")
                 syncResult.contentProviderError = true
 
                 return // Don't continue without provider
@@ -281,7 +281,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 logger.log(Level.WARNING, "Account was removed during synchronization", e)
 
             } catch (e: Exception) {
-                logger.log(Level.SEVERE, "Couldn't sync $authority", e)
+                logger.log(Level.SEVERE, "Couldn't sync ${dataStore.authority}", e)
                 syncResult.numUnclassifiedErrors++ // Hard sync error
 
             } finally {
@@ -289,7 +289,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                     httpClient.value.close()
                 logger.log(
                     Level.INFO,
-                    "$authority sync of $account finished",
+                    "${dataStore.authority} sync of $account finished",
                     extras.joinToString(", "))
             }
         }
