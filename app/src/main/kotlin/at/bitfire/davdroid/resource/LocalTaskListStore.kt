@@ -79,7 +79,7 @@ class LocalTaskListStore @AssistedInject constructor(
 
     private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
         val values = ContentValues(3)
-        values.put(TaskLists._SYNC_ID, info.url.toString())
+        values.put(TaskLists._SYNC_ID, info.id.toString())
         values.put(TaskLists.LIST_NAME,
             if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
 

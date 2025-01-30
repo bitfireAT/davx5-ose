@@ -81,8 +81,7 @@ class LocalAddressBookStore @Inject constructor(
         val addressBookAccount = createAddressBookAccount(
             account = account,
             name = name,
-            id = fromCollection.id,
-            url = fromCollection.url.toString()
+            id = fromCollection.id
         ) ?: return null
 
         val addressBook = localAddressBookFactory.create(account, addressBookAccount, provider)
@@ -96,14 +95,13 @@ class LocalAddressBookStore @Inject constructor(
     }
 
     @OpenForTesting
-    internal fun createAddressBookAccount(account: Account, name: String, id: Long, url: String): Account? {
+    internal fun createAddressBookAccount(account: Account, name: String, id: Long): Account? {
         // create address book account with reference to account, collection ID and URL
         val addressBookAccount = Account(name, context.getString(R.string.account_type_address_book))
         val userData = bundleOf(
             LocalAddressBook.USER_DATA_ACCOUNT_NAME to account.name,
             LocalAddressBook.USER_DATA_ACCOUNT_TYPE to account.type,
-            LocalAddressBook.USER_DATA_COLLECTION_ID to id.toString(),
-            LocalAddressBook.USER_DATA_URL to url
+            LocalAddressBook.USER_DATA_COLLECTION_ID to id.toString()
         )
         if (!SystemAccountUtils.createAccount(context, addressBookAccount, userData)) {
             logger.warning("Couldn't create address book account: $addressBookAccount")
@@ -153,7 +151,6 @@ class LocalAddressBookStore @Inject constructor(
         accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, localCollection.account.name)
         accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, localCollection.account.type)
         accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_COLLECTION_ID, fromCollection.id.toString())
-        accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_URL, fromCollection.url.toString())
 
         // Set contacts provider settings
         localCollection.settings = contactsProviderSettings

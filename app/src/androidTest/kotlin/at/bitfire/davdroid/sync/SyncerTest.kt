@@ -17,7 +17,6 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -66,9 +65,10 @@ class SyncerTest {
 
     @Test
     fun testUpdateCollections_deletesCollection() {
-        val localCollection = mockk<LocalTestCollection>()
-        every { localCollection.collectionUrl } returns "http://delete.the/collection"
-        every { localCollection.title } returns "Collection to be deleted locally"
+        val localCollection = mockk<LocalTestCollection> {
+            every { dbCollectionId } returns 0L
+            every { title } returns "Collection to be deleted locally"
+        }
 
         // Should delete the localCollection if dbCollection (remote) does not exist
         val localCollections = mutableListOf(localCollection)
@@ -81,12 +81,14 @@ class SyncerTest {
 
     @Test
     fun testUpdateCollections_updatesCollection() {
-        val localCollection = mockk<LocalTestCollection>()
-        val dbCollection = mockk<Collection>()
-        val dbCollections = mapOf("http://update.the/collection".toHttpUrl() to dbCollection)
-        every { dbCollection.url } returns "http://update.the/collection".toHttpUrl()
-        every { localCollection.collectionUrl } returns "http://update.the/collection"
-        every { localCollection.title } returns "The Local Collection"
+        val localCollection = mockk<LocalTestCollection> {
+            every { dbCollectionId } returns 0L
+            every { title } returns "The Local Collection"
+        }
+        val dbCollection = mockk<Collection> {
+            every { id } returns 0L
+        }
+        val dbCollections = mapOf(0L to dbCollection)
 
         // Should update the localCollection if it exists
         val result = syncer.updateCollections(provider, listOf(localCollection), dbCollections)
@@ -99,13 +101,13 @@ class SyncerTest {
     @Test
     fun testUpdateCollections_findsNewCollection() {
         val dbCollection = mockk<Collection> {
-            every { url } returns "http://newly.found/collection".toHttpUrl()
+            every { id } returns 0L
         }
         val localCollections = listOf(mockk<LocalTestCollection> {
-            every { collectionUrl } returns "http://newly.found/collection"
+            every { dbCollectionId } returns 0L
         })
         val dbCollections = listOf(dbCollection)
-        val dbCollectionsMap = mapOf(dbCollection.url to dbCollection)
+        val dbCollectionsMap = mapOf(dbCollection.id to dbCollection)
         every { syncer.createLocalCollections(provider, dbCollections) } returns localCollections
 
         // Should return the new collection, because it was not updated
@@ -113,7 +115,7 @@ class SyncerTest {
 
         // Updated local collection list contain new entry
         assertEquals(1, result.size)
-        assertEquals(dbCollection.url.toString(), result[0].collectionUrl)
+        assertEquals(dbCollection.id, result[0].dbCollectionId)
     }
 
 
@@ -134,14 +136,14 @@ class SyncerTest {
         val dbCollection1 = mockk<Collection>()
         val dbCollection2 = mockk<Collection>()
         val dbCollections = mapOf(
-            "http://newly.found/collection1".toHttpUrl() to dbCollection1,
-            "http://newly.found/collection2".toHttpUrl() to dbCollection2
+            0L to dbCollection1,
+            1L to dbCollection2
         )
-        val localCollection1 = mockk<LocalTestCollection>()
-        val localCollection2 = mockk<LocalTestCollection>()
+        val localCollection1 = mockk<LocalTestCollection> { every { dbCollectionId } returns 0L }
+        val localCollection2 = mockk<LocalTestCollection> { every { dbCollectionId } returns 1L }
         val localCollections = listOf(localCollection1, localCollection2)
-        every { localCollection1.collectionUrl } returns "http://newly.found/collection1"
-        every { localCollection2.collectionUrl } returns "http://newly.found/collection2"
+        every { localCollection1.dbCollectionId } returns 0L
+        every { localCollection2.dbCollectionId } returns 1L
         every { syncer.syncCollection(provider, any(), any()) } just runs
 
         // Should call the collection content sync on both collections

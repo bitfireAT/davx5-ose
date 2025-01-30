@@ -40,11 +40,11 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
- * A local address book. Requires an own Android account, because Android manages contacts per
+ * A local address book. Requires its own Android account, because Android manages contacts per
  * account and there is no such thing as "address books". So, DAVx5 creates a "DAVx5
  * address book" account for every CardDAV address book.
  *
- * @param account             TODO
+ * @param account             DAVx5 account which "owns" this address book
  * @param _addressBookAccount Address book account (not: DAVx5 account) storing the actual Android
  * contacts. This is the initial value of [addressBookAccount]. However when the address book is renamed,
  * the new name will only be available in [addressBookAccount], so usually that one should be used.
@@ -79,6 +79,8 @@ open class LocalAddressBook @AssistedInject constructor(
     override val title
         get() = addressBookAccount.name
 
+    private val accountManager by lazy { AccountManager.get(context) }
+
     /**
      * Whether contact groups ([LocalGroup]) are included in query results
      * and are affected by updates/deletes on generic members.
@@ -87,8 +89,7 @@ open class LocalAddressBook @AssistedInject constructor(
      * but if it is enabled, [findDirty] will find dirty [LocalContact]s and [LocalGroup]s.
      */
     open val groupMethod: GroupMethod by lazy {
-        val manager = AccountManager.get(context)
-        val account = manager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
+        val account = accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
             collectionRepository.get(collectionId)?.let { collection ->
                 serviceRepository.get(collection.serviceId)?.let { service ->
                     Account(service.accountName, context.getString(R.string.account_type))
@@ -103,11 +104,11 @@ open class LocalAddressBook @AssistedInject constructor(
     val includeGroups
         get() = groupMethod == GroupMethod.GROUP_VCARDS
 
-    @Deprecated("Local collection should be identified by ID, not by URL")
-    override var collectionUrl: String
-        get() = AccountManager.get(context).getUserData(addressBookAccount, USER_DATA_URL)
-                ?: throw IllegalStateException("Address book has no URL")
-        set(url) = AccountManager.get(context).setAndVerifyUserData(addressBookAccount, USER_DATA_URL, url)
+    override var dbCollectionId: Long?
+        get() = accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()
+        set(id) {
+            accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_COLLECTION_ID, id.toString())
+        }
 
     /**
      * Read-only flag for the address book itself.
@@ -122,10 +123,10 @@ open class LocalAddressBook @AssistedInject constructor(
      * Reading this flag returns the stored value from [USER_DATA_READ_ONLY].
      */
     override var readOnly: Boolean
-        get() = AccountManager.get(context).getUserData(addressBookAccount, USER_DATA_READ_ONLY) != null
+        get() = accountManager.getUserData(addressBookAccount, USER_DATA_READ_ONLY) != null
         set(readOnly) {
             // set read-only flag for address book itself
-            AccountManager.get(context).setAndVerifyUserData(addressBookAccount, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
+            accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
 
             // update raw contacts
             val rawContactValues = contentValuesOf(RawContacts.RAW_CONTACT_IS_READ_ONLY to if (readOnly) 1 else 0)
@@ -213,7 +214,6 @@ open class LocalAddressBook @AssistedInject constructor(
         addressBookAccount = newAccount
 
         // delete old account
-        val accountManager = AccountManager.get(context)
         accountManager.removeAccountExplicitly(oldAccount)
 
         return true
@@ -335,14 +335,6 @@ open class LocalAddressBook @AssistedInject constructor(
 
         const val USER_DATA_ACCOUNT_NAME = "account_name"
         const val USER_DATA_ACCOUNT_TYPE = "account_type"
-
-        /**
-         * URL of the corresponding CardDAV address book.
-         *
-         * User data of the address book account (String).
-         */
-        @Deprecated("Use the URL of the DB collection instead")
-        const val USER_DATA_URL = "url"
 
         /**
          * ID of the corresponding database [at.bitfire.davdroid.db.Collection].

@@ -11,6 +11,11 @@ import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxCollectionFactory
 import at.bitfire.ical4android.JtxICalObject
 
+/**
+ * Application-specific implementation for jtx collections.
+ *
+ * [at.techbee.jtx.JtxContract.JtxCollection.SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
+ */
 class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Long):
     JtxCollection<JtxICalObject>(account, client, LocalJtxICalObject.Factory, id),
     LocalCollection<LocalJtxICalObject>{
@@ -20,10 +25,13 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
 
     override val tag: String
         get() =  "jtx-${account.name}-$id"
-    override val collectionUrl: String?
-        get() = url
+
+    override val dbCollectionId: Long?
+        get() = syncId
+
     override val title: String
         get() = displayname ?: id.toString()
+
     override var lastSyncState: SyncState?
         get() = SyncState.fromString(syncstate)
         set(value) { syncstate = value.toString() }
