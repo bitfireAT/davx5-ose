@@ -85,9 +85,16 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
             var givenUsername: String? = null
             var givenPassword: String? = null
 
-            // extract URI and optionally username/password from Intent data
+            // extract URI or Email and optionally username/password from Intent data
             val logger = Logger.getGlobal()
             intent.data?.normalizeScheme()?.let { uri ->
+                // Handle mailto scheme: extract user info
+                if (uri.scheme == "mailto") {
+                    givenUsername = uri.schemeSpecificPart
+                    return@let
+                }
+
+                // Handle URLs
                 try {
                     // replace caldav[s]:// and carddav[s]:// with http[s]://
                     val realScheme = when (uri.scheme) {
