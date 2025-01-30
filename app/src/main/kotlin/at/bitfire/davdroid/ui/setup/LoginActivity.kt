@@ -28,7 +28,8 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val (initialLoginType, skipLoginTypePage) = loginTypesProvider.intentToInitialLoginType(intent)
+        val initialLoginType = loginTypesProvider.intentToInitialLoginType(intent)
+        val skipLoginTypePage = initialLoginType != loginTypesProvider.defaultLoginType
 
         setContent {
             LoginScreen(
@@ -88,7 +89,7 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
             // extract URI or Email and optionally username/password from Intent data
             val logger = Logger.getGlobal()
             intent.data?.normalizeScheme()?.let { uri ->
-                // Handle mailto scheme: extract user info
+                // Handle mailto scheme
                 if (uri.scheme == "mailto") {
                     givenUsername = uri.schemeSpecificPart
                     return@let
