@@ -55,7 +55,7 @@ class LoginActivityTest {
     fun loginInfoFromIntent_implicit_email() {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("mailto:user@example.com"))
         val loginInfo = LoginActivity.loginInfoFromIntent(intent)
-        assertEquals(null, loginInfo.baseUri.toString())
+        assertEquals(null, loginInfo.baseUri)
         assertEquals("user@example.com", loginInfo.credentials!!.username)
         assertEquals(null, loginInfo.credentials.password)
     }
