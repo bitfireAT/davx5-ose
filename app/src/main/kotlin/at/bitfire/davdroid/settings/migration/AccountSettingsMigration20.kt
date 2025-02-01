@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import android.provider.CalendarContract.Calendars
+import androidx.annotation.OpenForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -58,7 +59,8 @@ class AccountSettingsMigration20 @Inject constructor(
         }
     }
 
-    fun migrateAddressBooks(account: Account, cardDavServiceId: Long) {
+    @OpenForTesting
+    internal fun migrateAddressBooks(account: Account, cardDavServiceId: Long) {
         try {
             addressBookStore.acquireContentProvider()
         } catch (_: SecurityException) {
@@ -73,7 +75,8 @@ class AccountSettingsMigration20 @Inject constructor(
         }
     }
 
-    fun migrateCalendars(account: Account, calDavServiceId: Long) {
+    @OpenForTesting
+    internal fun migrateCalendars(account: Account, calDavServiceId: Long) {
         try {
             calendarStore.acquireContentProvider()
         } catch (_: SecurityException) {
@@ -94,7 +97,8 @@ class AccountSettingsMigration20 @Inject constructor(
         }
     }
 
-    fun migrateTaskLists(account: Account, calDavServiceId: Long) {
+    @OpenForTesting
+    internal fun migrateTaskLists(account: Account, calDavServiceId: Long) {
         val taskListStore = tasksAppManager.getDataStore() ?: /* no tasks app */ return
         try {
             calendarStore.acquireContentProvider()
@@ -126,7 +130,7 @@ class AccountSettingsMigration20 @Inject constructor(
     }
 
     companion object {
-        private const val ADDRESS_BOOK_USER_DATA_URL = "url"
+        internal const val ADDRESS_BOOK_USER_DATA_URL = "url"
     }
 
     @Module
