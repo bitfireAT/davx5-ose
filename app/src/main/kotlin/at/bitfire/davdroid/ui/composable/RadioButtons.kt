@@ -15,8 +15,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -26,25 +28,26 @@ import at.bitfire.davdroid.ui.AppTheme
 
 @Composable
 fun RadioButtons(
-    radioOptions: List<String> = listOf<String>(),
-    onOptionSelected: (String) -> Unit = {},
-    textPaddingPerOption: PaddingValues = PaddingValues(10.dp),
+    options: List<String> = listOf<String>(),
+    initiallySelectedIdx: Int? = null,
+    onOptionSelected: (Int) -> Unit = { _ -> },
+    optionTextPadding: PaddingValues = PaddingValues(10.dp),
     modifier: Modifier = Modifier
 ) {
-    val (selectedOption, setSelectedOption) = remember { mutableStateOf(radioOptions[0]) }
+    var selectedIdx by remember { mutableStateOf(initiallySelectedIdx) }
     Column(
         // Modifier.selectableGroup() is essential to ensure correct accessibility behavior
         modifier = modifier.selectableGroup()
     ) {
-        radioOptions.forEach { text ->
+        options.forEachIndexed { idx, text ->
             Row(
                 Modifier
                     .fillMaxWidth()
                     .selectable(
-                        selected = (text == selectedOption),
+                        selected = (selectedIdx == idx),
                         onClick = {
-                            setSelectedOption(text)
-                            onOptionSelected(text)
+                            selectedIdx = idx
+                            onOptionSelected(idx)
                         },
                         role = Role.Companion.RadioButton
                     )
@@ -52,13 +55,13 @@ fun RadioButtons(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 RadioButton(
-                    selected = (text == selectedOption),
+                    selected = (idx == selectedIdx),
                     onClick = null, // null recommended for accessibility with screen readers
                 )
                 Text(
                     text = text,
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(textPaddingPerOption)
+                    modifier = Modifier.padding(optionTextPadding)
                 )
             }
         }
@@ -67,13 +70,28 @@ fun RadioButtons(
 
 @Preview
 @Composable
-private fun RadioButtonsPreview() {
+private fun RadioButtons_Preview_NoInitialSelection() {
     AppTheme {
         RadioButtons(
-            radioOptions = listOf(
+            options = listOf(
                 "Option 1",
                 "Option 2 is the longest of all the options, so we can see whether line breaks are not a problem.",
                 "Option 3")
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RadioButtons_Preview_InitialSelection() {
+    AppTheme {
+        RadioButtons(
+            options = listOf(
+                "Option 1",
+                "Option 2",
+                "Option 3"
+            ),
+            initiallySelectedIdx = 1
         )
     }
 }
