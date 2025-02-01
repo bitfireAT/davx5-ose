@@ -101,7 +101,7 @@ class AccountSettingsMigration20 @Inject constructor(
     internal fun migrateTaskLists(account: Account, calDavServiceId: Long) {
         val taskListStore = tasksAppManager.getDataStore() ?: /* no tasks app */ return
         try {
-            calendarStore.acquireContentProvider()
+            taskListStore.acquireContentProvider()
         } catch (_: SecurityException) {
             // no tasks permission
             null
