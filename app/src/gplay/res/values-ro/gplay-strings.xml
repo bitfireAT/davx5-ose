@@ -3,6 +3,13 @@
     <!-- Navigation drawer -->
     <string name="nav_earn_badges">Sprijină-ne cu insigne</string>
     <string name="nav_rate_us">Recenzie în Google Play</string>
+    <string name="nav_feedback_inapp_didnt_appear">Examinarea în aplicație nu a apărut?</string>
+    <string name="nav_feedback_google_play">Trimite în Google Play</string>
+    <string name="nav_feedback_scroll_to_reviews">Derulează la secțiunea de revizuire pentru a trimite feedback</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">Această versiune este eligibilă pentru distribuție numai prin Google Play.</string>
+
     <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Ai câștigat o insignă, îți mulțumim!</item>
@@ -19,4 +26,7 @@
     <string name="button_buy_badge_free">GRATUIT</string>
     <string name="button_buy_badge_bought">Mulțumesc!</string>
     <string name="earn_badges">Câștigă insigne pentru a ne susține!</string>
-    </resources>
+    <string name="billing_unavailable">API-ul de facturare nu este disponibil</string>
+    <string name="network_problems">Probleme de rețea, încearcă din nou mai târziu.</string>
+
+</resources>
