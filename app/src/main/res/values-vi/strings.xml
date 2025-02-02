@@ -41,7 +41,6 @@
   <string name="intro_open_source_title">Phần mềm mã nguồn mở</string>
   <string name="intro_open_source_text">Chúng tôi rất vui khi thấy bạn sử dụng %s, nó là phần mềm mã nguồn mở. Việc phát triển, duy trì và hỗ trợ là những công việc rất nặng nhọc. Vui lòng cân nhắc việc đóng góp (có nhiều cách) hoặc quyên góp. Chúng tôi sẽ rất cảm kích!</string>
   <string name="intro_open_source_details">Cách đóng góp/quyên góp</string>
-  <string name="intro_open_source_dont_show">Không hiện trong tương lai gần</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Quyền</string>
   <string name="permissions_text">%s yêu cầu các quyền để hoạt động đúng.</string>

@@ -41,7 +41,6 @@
   <string name="intro_tasks_dont_show">Не треба ми подршка за задатке.*</string>
   <string name="intro_open_source_title">Софтвер отвореног кода</string>
   <string name="intro_open_source_details">Како допринети/донирати</string>
-  <string name="intro_open_source_dont_show">Не приказуј у блиској будућности</string>
   <string name="intro_next">Следеће</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Дозволе</string>

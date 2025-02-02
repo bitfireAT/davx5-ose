@@ -50,13 +50,12 @@
   <string name="intro_open_source_title">Programari de codi obert</string>
   <string name="intro_open_source_text">Ens alegra saber que utilitzes %s, que és programari de codi obert. El desenvolupament, manteniment i suport requereixen un gran treball. Si us plau, considera contribuir (hi ha moltes formes) o realitzar una donació. Seria molt apreciat!</string>
   <string name="intro_open_source_details">Com contribuir/donar</string>
-  <string name="intro_open_source_dont_show">No mostrar en el futur pròxim</string>
   <string name="intro_next">Següent</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisos</string>
   <string name="permissions_text">%s requereix permisos per a funcionar correctament.</string>
   <string name="permissions_all_title">Tots els següents</string>
-  <string name="permissions_all_status_off">Utilitza això per activar totes les funcions (recomanat)</string>
+  <string name="permissions_all_status_off">Utilitza això per a activar totes les funcions (recomanat)</string>
   <string name="permissions_all_status_on">Tots els permisos concedits</string>
   <string name="permissions_contacts_title">Permisos de contactes</string>
   <string name="permissions_contacts_status_off">Sense sincronització de contactes (no recomanat)</string>
@@ -129,6 +128,9 @@
   <string name="account_list_manage_battery_saver">Gestiona l\'estalvi de bateria</string>
   <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no sincronitzarà els canvis locals immediatament, sinó durant la pròxima sincronització normal.</string>
   <string name="account_list_manage_storage">Gestiona l\'emmagatzematge</string>
+  <string name="account_list_calendar_storage_disabled">Falta el proveïdor del calendari. Heu desactivat l\'aplicació del sistema «Emmagatzematge de calendari»?</string>
+  <string name="account_list_contacts_storage_disabled">Falta el proveïdor dels contactes. Heu desactivat l\'aplicació del sistema «Emmagatzematge de contactes»?</string>
+  <string name="account_list_manage_apps">Gestioneu les aplicacions</string>
   <string name="account_list_welcome">Us donem la benvinguda al DAVx⁵!</string>
   <string name="account_list_empty">Connecteu-vos al vostre servidor i mantingueu els calendaris i contactes sincronitzats.</string>
   <string name="accounts_sync_all">Sincronitza tots els comptes</string>
@@ -254,7 +256,7 @@
   <string name="login_install_certificate">Instal·la un certificat</string>
   <string name="login_type_google">Contactes / Calendari de Google</string>
   <string name="login_google_see_tested_with">Vegeu la nostra guia «Tested with Google» per a obtenir informació actualitzada.</string>
-  <string name="login_google_unexpected_warnings">És possible que sorgeixin advertències inesperades, en aquesta cas hauràs de crear el teu propi ID de client.</string>
+  <string name="login_google_unexpected_warnings">És possible que sorgeixin advertències inesperades, en aquest cas hauràs de crear el teu propi ID de client.</string>
   <string name="login_google_account">Compte de Google</string>
   <string name="login_google">Inicia la sessió amb Google</string>
   <string name="login_google_client_id">ID de Client (opcional)</string>
@@ -341,9 +343,9 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Crea una llibreta d\'adreces</string>
-  <string name="create_addressbook_maybe_not_supported">La creació de llibretes de direccions sobre CardDAV pot no ser suportada pel servidor.</string>
+  <string name="create_addressbook_maybe_not_supported">La creació de llibretes d\'adreces sobre CardDAV pot no ser suportada pel servidor.</string>
   <string name="create_calendar">Crea un calendari</string>
-  <string name="create_calendar_time_zone_optional">Zona horaria per defecte*</string>
+  <string name="create_calendar_time_zone_optional">Zona horària per defecte*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Possibles entrades de calendari</string>
   <string name="create_calendar_type_vevent">Esdeveniments</string>
@@ -358,7 +360,7 @@
   <string name="create_collection_optional">* opcional</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Suprimeix la col·lecció</string>
-  <string name="collection_delete_warning">Aquesta colecció (%s) i totes les seves dades seran eliminades localment i del servidor.</string>
+  <string name="collection_delete_warning">Aquesta col·lecció (%s) i totes les seves dades seran eliminades localment i del servidor.</string>
   <string name="collection_synchronization">Sincronització</string>
   <string name="collection_synchronization_on">Sincronització habilitada</string>
   <string name="collection_synchronization_off">Sincronització deshabilitada</string>

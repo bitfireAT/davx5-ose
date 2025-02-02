@@ -48,7 +48,6 @@
   <string name="intro_open_source_title">ღია კოდის პროგრამული უზრუნველყოფა</string>
   <string name="intro_open_source_text">კმაყოფილები ვართ, რომ იყენებთ %s-ს, რომელიც ღია კოდის პროგრამული უზრუნველყოფაა. განვითარება და მხარდაჭერა რთული სამუშაო. გთხოვთ, გაითვალისწინოთ წილის შეტანა (მრავალი გზა არსებობს) ან ფულის ჩუქბეა. ძალიან მადლობელი ვიქნებით!</string>
   <string name="intro_open_source_details">როგორ შევიტანო წვლილი/დაგეხმაროთ</string>
-  <string name="intro_open_source_dont_show">არ მაჩვენოთ ახლო მომავალში</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">უფლებები</string>
   <string name="permissions_text">%s-ს სჭირდება უფლებები სწორად სამუშაოდ.</string>

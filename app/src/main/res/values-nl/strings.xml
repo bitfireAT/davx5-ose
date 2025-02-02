@@ -50,7 +50,11 @@
   <string name="intro_open_source_title">Open-source software</string>
   <string name="intro_open_source_text">We zijn blij dat de keuze valt op open source software %s. Ontwikkelen, onderhouden en ondersteunen is veel werk. Overweeg daarom bij te dragen (kan op vele manieren) of een donatie. Wij waarderen het zeer!</string>
   <string name="intro_open_source_details">Hoe bijdragen/doneren</string>
-  <string name="intro_open_source_dont_show">In de nabije toekomst niet weergeven</string>
+  <string name="intro_open_source_dont_show">Herinner me er niet aan voor</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d maand</item>
+    <item quantity="other">%d maanden</item>
+  </plurals>
   <string name="intro_next">Volgende</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Rechten toestaan</string>
@@ -121,6 +125,7 @@
   <string name="navigation_drawer_contribute">Hoe bijdragen</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
   <string name="account_list_no_notification_permission">Meldingen uitgeschakeld. U krijgt geen meldingen over synchronisatiefouten.</string>
+  <string name="account_list_no_internet">Automatische synchronisatie niet actief (geen geverifieerde internetverbinding).</string>
   <string name="account_list_manage_connections">Verbindingen beheren</string>
   <string name="account_list_datasaver_enabled">Gegevensbesparing ingeschakeld. Synchronisatie op de achtergrond is beperkt.</string>
   <string name="account_list_manage_datasaver">Beheer van gegevensbesparing</string>
@@ -128,6 +133,9 @@
   <string name="account_list_manage_battery_saver">Batterijbesparing beheren</string>
   <string name="account_list_low_storage">Weinig opslagruimte. Android zal lokale wijzigingen niet onmiddellijk synchroniseren, maar tijdens de volgende reguliere synchronisatie.</string>
   <string name="account_list_manage_storage">Opslag beheren</string>
+  <string name="account_list_calendar_storage_disabled">Agenda-aanbieder ontbreekt. Heb je de systeemapp “Agenda-opslag” uitgeschakeld?</string>
+  <string name="account_list_contacts_storage_disabled">Contacten provider ontbreekt. Heb je de systeemapp “Contacten opslaan” uitgeschakeld?</string>
+  <string name="account_list_manage_apps">Apps beheren</string>
   <string name="account_list_welcome">Welkom bij DAVx⁵!</string>
   <string name="account_list_empty">Maak verbinding met je server en houd je agenda\'s en contactpersonen gesynchroniseerd.</string>
   <string name="accounts_sync_all">Alle accounts synchroniseren</string>

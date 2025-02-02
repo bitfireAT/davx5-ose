@@ -44,7 +44,6 @@
   <string name="intro_open_source_title">برمجيات حرة المصدر</string>
   <string name="intro_open_source_text">نحن سعداء باستخدامك تطبيقنا حر المصدر %s. التطوير والعناية والدعم كلها مهام صعبة. نرجوا أن تضع المساهمة معنا أو التبرع لنا في عين الاعتبار. سنكون ممتنين لمساهمتك أو تبرعك.</string>
   <string name="intro_open_source_details">كيفية المساهمة أو التبرع</string>
-  <string name="intro_open_source_dont_show">لا تظهرها في المدى القريب</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">الأذونات</string>
   <string name="permissions_text">%sيتطلب بعض الأذونات للعمل بكفء.</string>

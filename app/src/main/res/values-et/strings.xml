@@ -50,7 +50,11 @@
   <string name="intro_open_source_title">Avatud lähtekoodiga tarkvara</string>
   <string name="intro_open_source_text">Me oleme rõõmsad, et kasutad avatud lähtekoodil põhinevat rakendust %s. Selle arendus, hooldus ja kasutajatugi nõuavad märgatavat tööd. Palun kaalu erinevaid võimalusi osalemiseks või rahalist toetamist. Me hindaksime seda väga!</string>
   <string name="intro_open_source_details">Võimalused kaastööks või rahaliseks toetamiseks</string>
-  <string name="intro_open_source_dont_show">Ära näita seda lähiajal uuesti</string>
+  <string name="intro_open_source_dont_show">Ära näita seda uuesti</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d kuu jooksul</item>
+    <item quantity="other">%d kuu jooksul</item>
+  </plurals>
   <string name="intro_next">Järgmine</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Õigused</string>
@@ -121,6 +125,7 @@
   <string name="navigation_drawer_contribute">Osalemise viisid</string>
   <string name="navigation_drawer_privacy_policy">Privaatsuspoliitika</string>
   <string name="account_list_no_notification_permission">Teavitused on väljalülitatud ja seega sünkroniseerimisvigade infot sa ei näe.</string>
+  <string name="account_list_no_internet">Automaatne sünkroniseerimine pole aktiivne (kontrollitud internetiühendus puudub)</string>
   <string name="account_list_manage_connections">Halda ühendusi</string>
   <string name="account_list_datasaver_enabled">Andmemahu piiraja on kasutusel. Taustal sünkroniseerimine võib toimida piirangutega.</string>
   <string name="account_list_manage_datasaver">Halda andmemahu piirajat</string>
@@ -128,6 +133,9 @@
   <string name="account_list_manage_battery_saver">Halda akukasutuse piirajat</string>
   <string name="account_list_low_storage">Vaba andmeruumi napib. Android ei sünkroniseeri kohalikke muudatusi kohe, vaid järgmise regulaarse sünkroniseerimise ajal.</string>
   <string name="account_list_manage_storage">Halda andmeruumi</string>
+  <string name="account_list_calendar_storage_disabled">Kalendris teenusepakkuja puudub. Kas sa oled lülitanud välja süsteemse kalendri salvestusruumi rakenduse „Calendar storage“ välja?</string>
+  <string name="account_list_contacts_storage_disabled">Kontaktide teenusepakkuja puudub. Kas sa oled lülitanud välja süsteemse kontaktide salvestusruumi rakenduse „Contacts storage“ välja?</string>
+  <string name="account_list_manage_apps">Halda rakendusi</string>
   <string name="account_list_welcome">Tere tulemast kasutama rakendust DAVx⁵!</string>
   <string name="account_list_empty">Loo ühendus oma serveriga ja hoia kalendrid ning kontaktid sünkroniseerituna.</string>
   <string name="accounts_sync_all">Sünkroniseeri kõik kasutajakontod</string>

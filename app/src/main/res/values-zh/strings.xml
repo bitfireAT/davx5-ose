@@ -50,7 +50,10 @@
   <string name="intro_open_source_title">开源软件</string>
   <string name="intro_open_source_text">我们很高兴您使用 %s 开源软件。开发、维护和支持是艰苦的工作。请考虑通过多种方式提供贡献或捐款。不胜感激！</string>
   <string name="intro_open_source_details">如何贡献或捐款</string>
-  <string name="intro_open_source_dont_show">以后不需要显示</string>
+  <string name="intro_open_source_dont_show">不要提醒时长</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="other">%d 个月</item>
+  </plurals>
   <string name="intro_next">继续</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">权限</string>
