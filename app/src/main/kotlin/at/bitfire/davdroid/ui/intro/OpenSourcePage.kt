@@ -53,8 +53,8 @@ class OpenSourcePage @Inject constructor(
     @Composable
     private fun Page(model: Model = viewModel()) {
         OpenSourcePage(
-            donationPopupIntervalOptions = model.donationPopupIntervalOptions,
-            onChangeDontShowFor = model::setDontShowFor
+            dontShowForMonthsOptions = model.donationPopupIntervalOptions,
+            onDontShowForMonths = model::setDontShowForMonths
         )
     }
 
@@ -75,12 +75,13 @@ class OpenSourcePage @Inject constructor(
 
         /**
          * Set the next time the donation popup should be shown.
-         * @param dontShowFor Number of months (30 days) to hide the donation popup for.
+         *
+         * @param months Number of months (30 days) to hide the donation popup for.
          */
-        fun setDontShowFor(dontShowFor: Int) {
-            logger.info("Setting next donation popup to $dontShowFor months")
-            val month = 30*86400000L            // 30 days (~ 1 month)
-            val nextReminder = month * dontShowFor + System.currentTimeMillis()
+        fun setDontShowForMonths(months: Int) {
+            logger.info("Setting next donation popup to $months months")
+            val oneMonth = 30*86400000L            // 30 days (~ 1 month)
+            val nextReminder = oneMonth * months + System.currentTimeMillis()
             settings.putLong(SETTING_NEXT_DONATION_POPUP, nextReminder)
         }
 
@@ -90,8 +91,8 @@ class OpenSourcePage @Inject constructor(
 
 @Composable
 fun OpenSourcePage(
-    donationPopupIntervalOptions: List<Int>,
-    onChangeDontShowFor: (Int) -> Unit = {}
+    dontShowForMonthsOptions: List<Int>,
+    onDontShowForMonths: (Int) -> Unit = {}
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -132,18 +133,13 @@ fun OpenSourcePage(
                 text = stringResource(R.string.intro_open_source_dont_show),
                 style = MaterialTheme.typography.bodyLarge
             )
-            val radioOptions = donationPopupIntervalOptions.associate { numberOfMonths ->
-                pluralStringResource(
-                    R.plurals.intro_open_source_dont_show_months,
-                    numberOfMonths,
-                    numberOfMonths
-                ) to numberOfMonths
-            }
             RadioButtons(
-                radioOptions = radioOptions.keys.toList(),
-                onOptionSelected = { option ->
-                    val months = radioOptions[option] ?: radioOptions.values.first()
-                    onChangeDontShowFor(months)
+                options = dontShowForMonthsOptions.map { months ->
+                    pluralStringResource(R.plurals.intro_open_source_dont_show_months, months, months)
+                },
+                onOptionSelected = { idx ->
+                    val months = dontShowForMonthsOptions[idx]
+                    onDontShowForMonths(months)
                 },
                 modifier = Modifier.padding(bottom = 12.dp)
             )
@@ -157,7 +153,7 @@ fun OpenSourcePage(
 fun OpenSourcePagePreview() {
     AppTheme {
         OpenSourcePage(
-            donationPopupIntervalOptions = listOf(1, 3, 9)
+            dontShowForMonthsOptions = listOf(1, 3, 9)
         )
     }
 }
