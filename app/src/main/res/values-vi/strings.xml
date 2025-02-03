@@ -3,12 +3,10 @@
   <!--common strings-->
   <string name="account_invalid">Tài khoản không tồn tại (nữa)</string>
   <string name="account_title_address_book">Sổ địa chỉ của DAVx⁵</string>
-  <string name="address_books_authority_title">Sổ địa chỉ</string>
   <string name="dialog_remove">Xóa</string>
   <string name="dialog_deny">Hủy</string>
   <string name="field_required">Trường này là bắt buộc</string>
   <string name="help">Trợ giúp</string>
-  <string name="manage_accounts">Quản lý các tài khoản</string>
   <string name="share">Chia sẻ</string>
   <string name="database_destructive_migration_title">Cơ sở dữ liệu đã bị lỗi</string>
   <string name="database_destructive_migration_text">Tất cả tài khoản đã bị xóa ở cục bộ.</string>
@@ -43,7 +41,6 @@
   <string name="intro_open_source_title">Phần mềm mã nguồn mở</string>
   <string name="intro_open_source_text">Chúng tôi rất vui khi thấy bạn sử dụng %s, nó là phần mềm mã nguồn mở. Việc phát triển, duy trì và hỗ trợ là những công việc rất nặng nhọc. Vui lòng cân nhắc việc đóng góp (có nhiều cách) hoặc quyên góp. Chúng tôi sẽ rất cảm kích!</string>
   <string name="intro_open_source_details">Cách đóng góp/quyên góp</string>
-  <string name="intro_open_source_dont_show">Không hiện trong tương lai gần</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Quyền</string>
   <string name="permissions_text">%s yêu cầu các quyền để hoạt động đúng.</string>

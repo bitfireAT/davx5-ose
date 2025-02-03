@@ -286,15 +286,25 @@ class AccountSettings @AssistedInject constructor(
 
     // UI settings
 
-    data class ShowOnlyPersonal(
-        val onlyPersonal: Boolean,
-        val locked: Boolean
-    )
+    /**
+     * Whether to show only personal collections in the UI
+     *
+     * @return *true* if only personal collections shall be shown; *false* otherwise
+     */
+    fun getShowOnlyPersonal(): Boolean = when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+        0 -> false
+        1 -> true
+        else /* including -1 */ -> accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null
+    }
 
-    fun getShowOnlyPersonal(): ShowOnlyPersonal {
-        @Suppress("DEPRECATION")
-        val pair = getShowOnlyPersonalPair()
-        return ShowOnlyPersonal(onlyPersonal = pair.first, locked = !pair.second)
+    /**
+     * Whether the user shall be able to change the setting (= setting not locked)
+     *
+     * @return *true* if the setting is locked; *false* otherwise
+     */
+    fun getShowOnlyPersonalLocked(): Boolean = when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+        0, 1 -> true
+        else /* including -1 */ -> false
     }
 
     /**
@@ -307,11 +317,11 @@ class AccountSettings @AssistedInject constructor(
      */
     @Deprecated("Use getShowOnlyPersonal() instead", replaceWith = ReplaceWith("getShowOnlyPersonal()"))
     fun getShowOnlyPersonalPair(): Pair<Boolean, Boolean> =
-            when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
-                0 -> Pair(false, false)
-                1 -> Pair(true, false)
-                else /* including -1 */ -> Pair(accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null, true)
-            }
+        when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+            0 -> Pair(false, false)
+            1 -> Pair(true, false)
+            else /* including -1 */ -> Pair(accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null, true)
+        }
 
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
         accountManager.setAndVerifyUserData(account, KEY_SHOW_ONLY_PERSONAL, if (showOnlyPersonal) "1" else null)
@@ -346,7 +356,7 @@ class AccountSettings @AssistedInject constructor(
 
     companion object {
 
-        const val CURRENT_VERSION = 19
+        const val CURRENT_VERSION = 20
         const val KEY_SETTINGS_VERSION = "version"
 
         const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"

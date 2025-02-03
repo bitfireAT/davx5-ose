@@ -3,12 +3,10 @@
   <!--common strings-->
   <string name="account_invalid">Račun ne obstaja (več)</string>
   <string name="account_title_address_book">DAVx⁵ imenik</string>
-  <string name="address_books_authority_title">Seznami s stiki</string>
   <string name="dialog_remove">Odstrani</string>
   <string name="dialog_deny">Preklic</string>
   <string name="field_required">To polje je obvezno</string>
   <string name="help">Pomoč</string>
-  <string name="manage_accounts">Urejanje prijav</string>
   <string name="share">Deli</string>
   <string name="database_destructive_migration_title">Okvarjena baza podatkov</string>
   <string name="database_destructive_migration_text">Vsi računi so bili lokalno odstranjeni.</string>
@@ -32,7 +30,6 @@
   <string name="intro_tasks_no_app_store">Nobene trgovine z aplikacijami ni na voljo</string>
   <string name="intro_open_source_title">Odprtokodna programska oprema</string>
   <string name="intro_open_source_details">Kako prispevati ali donirati</string>
-  <string name="intro_open_source_dont_show">Ne prikaži v bližnji prihodnosti</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Dovoljenja</string>
   <string name="permissions_all_title">Vse spodaj</string>

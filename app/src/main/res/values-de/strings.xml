@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">Konto nicht (mehr) vorhanden</string>
   <string name="account_title_address_book">DAVx⁵-Adressbuch</string>
-  <string name="address_books_authority_title">Adressbücher</string>
+  <string name="account_prefs_use_app">Konto nicht hier ändern! Um Konten zu verwalten, stattdessen direkt die App nutzen.</string>
   <string name="dialog_delete">Löschen</string>
   <string name="dialog_remove">Entfernen</string>
   <string name="dialog_deny">Abbrechen</string>
   <string name="field_required">Feld wird benötigt</string>
   <string name="help">Hilfe</string>
-  <string name="manage_accounts">Konten verwalten</string>
   <string name="navigate_up">Aufwärts navigieren</string>
   <string name="optional_label">* optional</string>
   <string name="options_menu">Auswahlmenü</string>
@@ -51,7 +50,11 @@
   <string name="intro_open_source_title">Open-Source-Software</string>
   <string name="intro_open_source_text">Wir freuen uns, dass Sie die Open-Source-Software %s verwenden. Entwicklung, Wartung und Support sind viel Arbeit. Ziehen Sie daher bitte in Betracht, mitzuhelfen (dazu gibt es viele Möglichkeiten) oder zu spenden. Vielen Dank!</string>
   <string name="intro_open_source_details">Infos zum Mithelfen/Spenden</string>
-  <string name="intro_open_source_dont_show">In nächster Zeit nicht anzeigen</string>
+  <string name="intro_open_source_dont_show">Nicht daran erinnern für</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d Monat</item>
+    <item quantity="other">%d Monate</item>
+  </plurals>
   <string name="intro_next">Weiter</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Berechtigungsverwaltung</string>
@@ -122,7 +125,7 @@
   <string name="navigation_drawer_contribute">Einen Beitrag leisten</string>
   <string name="navigation_drawer_privacy_policy">Datenschutzerklärung</string>
   <string name="account_list_no_notification_permission">Benachrichtigungen deaktiviert. Sie werden nicht über Fehler bei der Synchronisierung informiert.</string>
-  <string name="account_list_no_internet">Keine überprüfte Internetverbindung. Synchronisierung funktioniert eventuell nicht.</string>
+  <string name="account_list_no_internet">Automatische Synchronisation nicht aktiv (keine überprüfte Internetverbindung).</string>
   <string name="account_list_manage_connections">Verbindungen steuern</string>
   <string name="account_list_datasaver_enabled">Datensparen aktiviert. Hintergrundsynchronisierung ist eingeschränkt.</string>
   <string name="account_list_manage_datasaver">Datensparen verwalten</string>
@@ -130,6 +133,9 @@
   <string name="account_list_manage_battery_saver">Akkusparen verwalten</string>
   <string name="account_list_low_storage">Wenig Speicherplatz. Android wird lokale Änderungen nicht sofort synchronisieren, sondern bei der nächsten regulären Synchronisierung.</string>
   <string name="account_list_manage_storage">Speicherplatz verwalten</string>
+  <string name="account_list_calendar_storage_disabled">Kalender-Provider fehlt. Haben Sie die System-App „Kalender” deaktiviert?</string>
+  <string name="account_list_contacts_storage_disabled">Kontakte-Provider fehlt. Haben Sie die System-App „Kontakte” deaktiviert?</string>
+  <string name="account_list_manage_apps">Apps verwalten</string>
   <string name="account_list_welcome">Willkommen bei DAVx⁵!</string>
   <string name="account_list_empty">Verbinden Sie sich mit Ihrem Server und synchronisieren Ihre Kalender und Kontakte .</string>
   <string name="accounts_sync_all">Alle Konten synchronisieren</string>

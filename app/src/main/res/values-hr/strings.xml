@@ -3,9 +3,7 @@
   <!--common strings-->
   <string name="account_invalid">Račun (više) ne postoji</string>
   <string name="account_title_address_book">DAVx⁵ Adresar</string>
-  <string name="address_books_authority_title">Adresari</string>
   <string name="help">Pomoć</string>
-  <string name="manage_accounts">Upravljaj računima</string>
   <string name="share">Dijeli</string>
   <string name="notification_channel_debugging">Debugging</string>
   <string name="notification_channel_general">Ostale važne poruke</string>
@@ -36,7 +34,6 @@
   <string name="intro_open_source_title">Softver otvorenog koda</string>
   <string name="intro_open_source_text">Sretni smo što upotrebljavate %s, softver otvorenog koda. Razvoj, održavanje i podrška težak su posao. Molimo razmislite o doprinosu  (mnogo je načina) ili o donaciji. Biti ćemo vam vrlo zahvalni!</string>
   <string name="intro_open_source_details">Kako doprinijeti/donirati</string>
-  <string name="intro_open_source_dont_show">Ne prikazuj u bliskoj u bliskoj budućnosti</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Dopuštenja</string>
   <string name="permissions_text">%s treba dopuštenja kako bi radio ispravno.</string>

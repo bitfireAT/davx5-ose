@@ -19,6 +19,7 @@ import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.junit4.MockKRule
 import io.mockk.mockkObject
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
@@ -40,6 +41,9 @@ class PeriodicSyncWorkerTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val mockkRule = MockKRule(this)
 
     lateinit var account: Account
 
@@ -68,7 +72,7 @@ class PeriodicSyncWorkerTest {
             BaseSyncWorker.INPUT_ACCOUNT_TYPE to invalidAccount.type
         )
 
-        // mock WorkManager to observe cancellation call
+        // observe WorkManager cancellation call
         val workManager = WorkManager.getInstance(context)
         mockkObject(workManager)
 

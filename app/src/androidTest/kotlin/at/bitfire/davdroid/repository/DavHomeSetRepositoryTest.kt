@@ -18,26 +18,30 @@ import javax.inject.Inject
 @HiltAndroidTest
 class DavHomeSetRepositoryTest {
 
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
     @Inject
     lateinit var repository: DavHomeSetRepository
 
     @Inject
     lateinit var serviceRepository: DavServiceRepository
 
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    var serviceId: Long = 0
+
     @Before
     fun setUp() {
         hiltRule.inject()
+
+        serviceId = serviceRepository.insertOrReplace(
+            Service(id=0, accountName="test", type= Service.TYPE_CALDAV, principal = null)
+        )
     }
 
 
     @Test
     fun testInsertOrUpdate() {
         // should insert new row or update (upsert) existing row - without changing its key!
-        val serviceId = createTestService()
-
         val entry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toHttpUrl())
         val insertId1 = repository.insertOrUpdateByUrl(entry1)
         assertEquals(1L, insertId1)
@@ -57,8 +61,6 @@ class DavHomeSetRepositoryTest {
     @Test
     fun testDelete() {
         // should delete row with given primary key (id)
-        val serviceId = createTestService()
-
         val entry1 = HomeSet(id=1, serviceId=serviceId, personal=true, url= "https://example.com/1".toHttpUrl())
 
         val insertId1 = repository.insertOrUpdateByUrl(entry1)
@@ -67,12 +69,6 @@ class DavHomeSetRepositoryTest {
 
         repository.delete(entry1)
         assertEquals(null, repository.getById(1L))
-    }
-
-
-    private fun createTestService() : Long {
-        val service = Service(id=0, accountName="test", type= Service.TYPE_CALDAV, principal = null)
-        return serviceRepository.insertOrReplace(service)
     }
 
 }

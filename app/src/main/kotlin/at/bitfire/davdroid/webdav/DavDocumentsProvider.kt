@@ -49,10 +49,14 @@ import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import at.bitfire.davdroid.webdav.DavDocumentsProvider.DavDocumentsActor
 import at.bitfire.davdroid.webdav.cache.ThumbnailCache
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -73,6 +77,7 @@ import java.net.HttpURLConnection
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.inject.Provider
 
 /**
  * Provides functionality on WebDav documents.
@@ -85,6 +90,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     @InstallIn(SingletonComponent::class)
     interface DavDocumentsProviderEntryPoint {
         fun appDatabase(): AppDatabase
+        fun davDocumentsActorFactory(): DavDocumentsActor.Factory
         fun logger(): Logger
         fun randomAccessCallbackWrapperFactory(): RandomAccessCallbackWrapper.Factory
         fun streamingFileDescriptorFactory(): StreamingFileDescriptor.Factory
@@ -135,8 +141,6 @@ class DavDocumentsProvider: DocumentsProvider() {
     private val mountDao by lazy { db.webDavMountDao() }
     private val documentDao by lazy { db.webDavDocumentDao() }
 
-    private val credentialsStore by lazy { webdavEntryPoint.credentialsStore() }
-    private val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
     private val thumbnailCache by lazy { webdavEntryPoint.thumbnailCache() }
 
     private val connectivityManager by lazy { ourContext.getSystemService<ConnectivityManager>()!! }
@@ -149,7 +153,9 @@ class DavDocumentsProvider: DocumentsProvider() {
      */
     private val runningQueryChildren = ConcurrentHashMap<Long, Boolean>()
 
-    private val actor by lazy { DavDocumentsActor(ourContext, db, logger, cookieStore, credentialsStore, authority) }
+    private val credentialsStore by lazy { webdavEntryPoint.credentialsStore() }
+    private val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
+    private val actor by lazy { globalEntryPoint.davDocumentsActorFactory().create(cookieStore, credentialsStore) }
 
     override fun onCreate() = true
 
@@ -623,14 +629,21 @@ class DavDocumentsProvider: DocumentsProvider() {
      * to make the methods of [DavDocumentsProvider] more easily testable.
      * [DavDocumentsProvider]s methods should do nothing more, but to call [DavDocumentsActor]s methods.
      */
-    class DavDocumentsActor(
-        private val context: Context,
+    class DavDocumentsActor @AssistedInject constructor(
+        @Assisted private val cookieStores: MutableMap<Long, CookieJar>,
+        @Assisted private val credentialsStore: CredentialsStore,
+        @ApplicationContext private val context: Context,
         private val db: AppDatabase,
-        private val logger: Logger,
-        private val cookieStore: MutableMap<Long, CookieJar>,
-        private val credentialsStore: CredentialsStore,
-        private val authority: String
+        private val httpClientBuilder: Provider<HttpClient.Builder>,
+        private val logger: Logger
     ) {
+
+        @AssistedFactory
+        interface Factory {
+            fun create(cookieStore: MutableMap<Long, CookieJar>, credentialsStore: CredentialsStore): DavDocumentsActor
+        }
+
+        private val authority = context.getString(R.string.webdav_authority)
         private val documentDao = db.webDavDocumentDao()
 
         /**
@@ -711,15 +724,14 @@ class DavDocumentsProvider: DocumentsProvider() {
          * @param logBody    whether to log the body of HTTP requests (disable for potentially large files)
          */
         internal fun httpClient(mountId: Long, logBody: Boolean = true): HttpClient {
-            val builder = HttpClient.Builder(
-                context = context,
-                loggerLevel = if (logBody) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.HEADERS
-            ).cookieStore(
-                cookieStore.getOrPut(mountId) { MemoryCookieStore() }
-            )
+            val builder = httpClientBuilder.get()
+                .loggerInterceptorLevel(if (logBody) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.HEADERS)
+                .setCookieStore(
+                    cookieStores.getOrPut(mountId) { MemoryCookieStore() }
+                )
 
             credentialsStore.getCredentials(mountId)?.let { credentials ->
-                builder.addAuthentication(null, credentials, true)
+                builder.authenticate(host = null, credentials = credentials)
             }
 
             return builder.build()

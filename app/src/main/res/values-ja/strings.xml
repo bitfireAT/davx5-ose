@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">アカウントがありません</string>
   <string name="account_title_address_book">DAVx⁵ アドレス帳</string>
-  <string name="address_books_authority_title">アドレス帳</string>
+  <string name="account_prefs_use_app">ここでアカウントを変更しないでください！ アカウントの管理は、アプリから直接行ってください。</string>
   <string name="dialog_delete">削除</string>
   <string name="dialog_remove">削除</string>
   <string name="dialog_deny">キャンセル</string>
   <string name="field_required">このフィールドは入力必須です</string>
   <string name="help">ヘルプ</string>
-  <string name="manage_accounts">アカウントの管理</string>
   <string name="navigate_up">上に移動</string>
   <string name="optional_label">* オプション</string>
   <string name="options_menu">オプションメニュー</string>
@@ -51,7 +50,6 @@
   <string name="intro_open_source_title">オープンソースソフトウェア</string>
   <string name="intro_open_source_text">オープンソースソフトウェアとして %s をお届けできることをとても嬉しく思っています。開発・維持・サポートは簡単ではありません。貢献 (さまざまな方法があります) や寄付をご検討ください。プロジェクトはそれらに支えられています。</string>
   <string name="intro_open_source_details">貢献/寄付の方法</string>
-  <string name="intro_open_source_dont_show">しばらく非表示にする</string>
   <string name="intro_next">次へ</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">許可</string>
@@ -122,7 +120,7 @@
   <string name="navigation_drawer_contribute">貢献する方法</string>
   <string name="navigation_drawer_privacy_policy">プライバシーポリシー</string>
   <string name="account_list_no_notification_permission">通知が無効です。同期エラーが発生しても通知されません。</string>
-  <string name="account_list_no_internet">検証されたインターネット接続がありません。同期が実行されない場合があります。</string>
+  <string name="account_list_no_internet">自動同期が無効です (有効なインターネット接続がありあせん)。</string>
   <string name="account_list_manage_connections">接続を管理</string>
   <string name="account_list_datasaver_enabled">データサーバーが有効です。バックグラウンド同期が制限されています</string>
   <string name="account_list_manage_datasaver">データサーバーを管理</string>

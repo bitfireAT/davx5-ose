@@ -3,12 +3,10 @@
   <!--common strings-->
   <string name="account_invalid">A felhasználói fiók (már) nem létezik</string>
   <string name="account_title_address_book">DAVx⁵ címjegyzék</string>
-  <string name="address_books_authority_title">Címjegyzékek</string>
   <string name="dialog_remove">Eltávolítás</string>
   <string name="dialog_deny">Mégse</string>
   <string name="field_required">Ennek e mezőnek a megadása kötelező</string>
   <string name="help">Súgó</string>
-  <string name="manage_accounts">Fiókok kezelése</string>
   <string name="navigate_up">Navigáció felfelé</string>
   <string name="optional_label">* nem kötelező</string>
   <string name="options_menu">Beállítások menü</string>
@@ -49,7 +47,6 @@
   <string name="intro_open_source_title">Nyílt forráskódú szoftver</string>
   <string name="intro_open_source_text">Nagyon örülünk, hogy a %s felhasználói közé tartozik, amely nyílt forráskódú szoftver.  A fejlesztés, karbantartás és támogatás ugyanakkor kemény munkát igényel.  Fontolja meg, hogy ezt pénzzel, vagy valamilyen más módon támogassa (több lehetőség közül is választhat). Nagyon megköszönnénk!</string>
   <string name="intro_open_source_details">A hozzájárulás lehetőségei</string>
-  <string name="intro_open_source_dont_show">Ne mutassa a közeljövőben</string>
   <string name="intro_next">Tovább</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Engedélyek</string>
@@ -118,7 +115,6 @@
   <string name="navigation_drawer_contribute">A közreműködés lehetőségei</string>
   <string name="navigation_drawer_privacy_policy">Adatvédelmi irányelv</string>
   <string name="account_list_no_notification_permission">Az értesítések tiltva vannak.  A szinkronizálási hibákról nem fog értesítést kapni.</string>
-  <string name="account_list_no_internet">Nincs ellenőrzött internetkapcsolat.  A szinkronizáció nem biztos, hogy fog futni. </string>
   <string name="account_list_manage_connections">Kapcsolatok kezelése</string>
   <string name="account_list_datasaver_enabled">Az adatcsökkentés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
   <string name="account_list_manage_datasaver">Adatcsökkentés kezelése</string>

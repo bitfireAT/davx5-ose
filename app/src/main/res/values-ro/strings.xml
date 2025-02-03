@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">Contul nu (mai) există</string>
   <string name="account_title_address_book">Agenda DAVx⁵</string>
-  <string name="address_books_authority_title">Agende cu adrese</string>
+  <string name="account_prefs_use_app">Nu schimba contul aici! Utilizează direct aplicația pentru a gestiona conturile în schimb.</string>
   <string name="dialog_delete">Șterge</string>
   <string name="dialog_remove">Elimină</string>
   <string name="dialog_deny">Anulează</string>
   <string name="field_required">Acest câmp este obligatoriu</string>
   <string name="help">Ajutor</string>
-  <string name="manage_accounts">Gestionează conturile</string>
   <string name="navigate_up">Navigare în sus</string>
   <string name="optional_label">* opțional</string>
   <string name="options_menu">Meniul Opțiuni</string>
@@ -51,7 +50,6 @@
   <string name="intro_open_source_title">Software cu sursă deschisă</string>
   <string name="intro_open_source_text">Ne bucurăm că utilizezi %s, care este un software open-source. Dezvoltarea, întreținerea și suportul sunt o muncă grea. Ia în considerare contribuția (există mai multe moduri) sau o donație. Ar fi foarte apreciat!</string>
   <string name="intro_open_source_details">Cum să contribui/donezi</string>
-  <string name="intro_open_source_dont_show">Nu afișa în viitorul apropiat</string>
   <string name="intro_next">Înainte</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisiuni</string>
@@ -122,7 +120,7 @@
   <string name="navigation_drawer_contribute">Cum să contribui</string>
   <string name="navigation_drawer_privacy_policy">Politica de confidențialitate</string>
   <string name="account_list_no_notification_permission">Notificări dezactivate. Nu vei fi notificat despre erorile de sincronizare.</string>
-  <string name="account_list_no_internet">Nicio conexiune la internet validată. Este posibil ca sincronizarea să nu ruleze.</string>
+  <string name="account_list_no_internet">Sincronizarea automată nu este activă (fără conexiune la internet verificată).</string>
   <string name="account_list_manage_connections">Gestionează conexiunile</string>
   <string name="account_list_datasaver_enabled">Economizorul de date este activat. Sincronizarea în fundal este restricționată.</string>
   <string name="account_list_manage_datasaver">Gestionează economizorul de date</string>
@@ -130,6 +128,9 @@
   <string name="account_list_manage_battery_saver">Gestionează economisirea bateriei</string>
   <string name="account_list_low_storage">Spațiu de depozitare redus. Android nu va sincroniza modificările locale imediat, ci în timpul următoarei sincronizări obișnuite.</string>
   <string name="account_list_manage_storage">Gestionează stocarea</string>
+  <string name="account_list_calendar_storage_disabled">Furnizorul de calendar lipsește. Ai dezactivat aplicația de sistem „Stocare Calendar”?</string>
+  <string name="account_list_contacts_storage_disabled">Furnizorul de contacte lipsește. Ai dezactivat aplicația de sistem „Stocare contacte”?</string>
+  <string name="account_list_manage_apps">Gestionează aplicațiile</string>
   <string name="account_list_welcome">Bun venit la DAVx⁵!</string>
   <string name="account_list_empty">Conectează-te la server și păstrează calendarele și contactele sincronizate.</string>
   <string name="accounts_sync_all">Sincronizează toate conturile</string>
@@ -185,7 +186,11 @@
   <string name="app_settings_tasks_provider">Aplicația de sarcini</string>
   <string name="app_settings_tasks_provider_none">Nu a fost găsită nicio aplicație de sarcini compatibilă</string>
   <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
+  <string name="app_settings_unifiedpush_disable">Nimic (dezactivare Push)</string>
+  <string name="app_settings_unifiedpush_choose_distributor">Alege un distribuitor</string>
+  <string name="app_settings_unifiedpush_no_distributor">Nu este instalat un distribuitor push</string>
   <string name="app_settings_unifiedpush_no_endpoint">Niciun punct final configurat</string>
+  <string name="app_settings_unifiedpush_ready">Gata să primească mesaje push peste %s</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>

@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">Аккаунт не существует (больше)</string>
   <string name="account_title_address_book">Адресная книга DAVx⁵</string>
-  <string name="address_books_authority_title">Адресные книги</string>
+  <string name="account_prefs_use_app">Не меняйте аккаунт здесь! Вместо этого используйте приложение для управления учетными записями.</string>
   <string name="dialog_delete">Удалить</string>
   <string name="dialog_remove">Удалить</string>
   <string name="dialog_deny">Отмена</string>
   <string name="field_required">Это поле является обязательным</string>
   <string name="help">Помощь</string>
-  <string name="manage_accounts">Управление аккаунтами</string>
   <string name="navigate_up">Перейти наверх</string>
   <string name="optional_label">* опционально</string>
   <string name="options_menu">Меню параметров</string>
@@ -51,7 +50,13 @@
   <string name="intro_open_source_title">ПО с открытым исходным кодом</string>
   <string name="intro_open_source_text">Мы рады, что вы используете %s, программное обеспечение с открытым исходным кодом. Разработка, сопровождение и поддержка - это тяжелая работа. Пожалуйста, подумайте о том, чтобы внести свой вклад (существует множество способов) или сделать пожертвование. Будем очень признательны!</string>
   <string name="intro_open_source_details">Как внести свой вклад/пожертвовать</string>
-  <string name="intro_open_source_dont_show">Не показывать в ближайшем будущем</string>
+  <string name="intro_open_source_dont_show">Не напоминайте мне об этом в течение</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d месяц</item>
+    <item quantity="few">%d месяца</item>
+    <item quantity="many">%d месяцев</item>
+    <item quantity="other">%d месяца</item>
+  </plurals>
   <string name="intro_next">Далее</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Разрешения</string>
@@ -122,7 +127,7 @@
   <string name="navigation_drawer_contribute">Как внести свой вклад</string>
   <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
   <string name="account_list_no_notification_permission">Уведомления отключены. Вы не будете получать уведомления об ошибках синхронизации.</string>
-  <string name="account_list_no_internet">Нет проверенного подключения к интернету. Синхронизация может не выполняться.</string>
+  <string name="account_list_no_internet">Автоматическая синхронизация не активна (нет проверенного подключения к интернету).</string>
   <string name="account_list_manage_connections">Управление подключениями</string>
   <string name="account_list_datasaver_enabled">Экономия трафика включена. Фоновая синхронизация ограничена.</string>
   <string name="account_list_manage_datasaver">Экономия трафика</string>
@@ -130,6 +135,9 @@
   <string name="account_list_manage_battery_saver">Управлять экономией заряда батареи</string>
   <string name="account_list_low_storage">Недостаточно памяти для хранения данных. Android будет синхронизировать локальные изменения не сразу, а во время следующей регулярной синхронизации.</string>
   <string name="account_list_manage_storage">Управление хранилищем</string>
+  <string name="account_list_calendar_storage_disabled">Провайдер календаря отсутствует. Было ли отключено системное приложение Хранилище календаря?</string>
+  <string name="account_list_contacts_storage_disabled">Провайдер контактов отсутствует. Было ли отключено системное приложение Хранилище контактов?</string>
+  <string name="account_list_manage_apps">Управление приложениями</string>
   <string name="account_list_welcome">Добро пожаловать в DAVx⁵!</string>
   <string name="account_list_empty">Подключитесь к вашему серверу и синхронизируйте календари и контакты.</string>
   <string name="accounts_sync_all">Синхронизировать все аккаунты</string>

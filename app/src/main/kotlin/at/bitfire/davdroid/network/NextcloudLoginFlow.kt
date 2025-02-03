@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.network
 
-import android.content.Context
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.db.Credentials
@@ -24,14 +23,15 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URI
+import javax.inject.Inject
 
 /**
  * Implements Nextcloud Login Flow v2.
  *
  * See https://docs.nextcloud.com/server/latest/developer_manual/client_apis/LoginFlow/index.html#login-flow-v2
  */
-class NextcloudLoginFlow(
-    context: Context
+class NextcloudLoginFlow @Inject constructor(
+    httpClientBuilder: HttpClient.Builder
 ): AutoCloseable {
 
     companion object {
@@ -42,8 +42,8 @@ class NextcloudLoginFlow(
         const val DAV_PATH = "remote.php/dav"
     }
 
-    val httpClient = HttpClient.Builder(context)
-        .setForeground(true)
+    val httpClient = httpClientBuilder
+        .inForeground(true)
         .build()
 
     override fun close() {

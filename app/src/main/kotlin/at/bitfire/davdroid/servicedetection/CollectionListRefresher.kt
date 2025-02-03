@@ -386,8 +386,8 @@ class CollectionListRefresher @AssistedInject constructor(
      * Before a collection is pre-selected, we check whether its URL matches the regexp in
      * [Settings.PRESELECT_COLLECTIONS_EXCLUDED], in which case *false* is returned.
      *
-     * @param collection the collection to check
-     * @param homeSets list of home-sets (to check whether collection is in a personal home-set)
+     * @param collection    the collection to check
+     * @param homeSets      list of personal home-sets
      * @return *true* if the collection should be preselected for synchronization; *false* otherwise
      */
     internal fun shouldPreselect(collection: Collection, homeSets: Iterable<HomeSet>): Boolean {

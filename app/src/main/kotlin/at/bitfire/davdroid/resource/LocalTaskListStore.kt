@@ -44,6 +44,11 @@ class LocalTaskListStore @AssistedInject constructor(
 
     private val serviceDao = db.serviceDao()
 
+    override val authority: String
+        get() = providerName.authority
+
+    override fun acquireContentProvider() =
+        context.contentResolver.acquireContentProviderClient(authority)
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalTaskList? {
         val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
@@ -74,7 +79,7 @@ class LocalTaskListStore @AssistedInject constructor(
 
     private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
         val values = ContentValues(3)
-        values.put(TaskLists._SYNC_ID, info.url.toString())
+        values.put(TaskLists._SYNC_ID, info.id.toString())
         values.put(TaskLists.LIST_NAME,
             if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
 
@@ -89,20 +94,13 @@ class LocalTaskListStore @AssistedInject constructor(
         return values
     }
 
-
     override fun getAll(account: Account, provider: ContentProviderClient) =
         DmfsTaskList.find(account, LocalTaskList.Factory, provider, providerName, null, null)
-
 
     override fun update(provider: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list ${fromCollection.url}", fromCollection)
         val accountSettings = accountSettingsFactory.create(localCollection.account)
         localCollection.update(valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors()))
-    }
-
-
-    override fun delete(localCollection: LocalTaskList) {
-        localCollection.delete()
     }
 
     override fun updateAccount(oldAccount: Account, newAccount: Account) {
@@ -111,6 +109,10 @@ class LocalTaskListStore @AssistedInject constructor(
             val uri = Tasks.getContentUri(providerName.authority)
             provider.client.update(uri, values, "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
         }
+    }
+
+    override fun delete(localCollection: LocalTaskList) {
+        localCollection.delete()
     }
 
 }

@@ -9,15 +9,15 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.CollectionType
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flattenConcat
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -42,36 +42,31 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(
         serviceFlow: Flow<Service?>,
-        collectionType: String,
-        showOnlyPersonalFlow: Flow<AccountSettings.ShowOnlyPersonal?>
+        @CollectionType collectionType: String,
+        showOnlyPersonalFlow: Flow<Boolean>
     ): Flow<PagingData<Collection>> =
         combine(serviceFlow, showOnlyPersonalFlow, forceReadOnlyAddressBooksFlow) { service, onlyPersonal, forceReadOnlyAddressBooks ->
-            if (service == null)
-                flowOf(PagingData.empty<Collection>())
-            else {
+            service?.let { service ->
                 val dataFlow = Pager(
                     config = PagingConfig(PAGER_SIZE),
                     pagingSourceFactory = {
-                        if (onlyPersonal?.onlyPersonal == true)
+                        if (onlyPersonal == true)
                             collectionRepository.pagePersonalByServiceAndType(service.id, collectionType)
                         else
                             collectionRepository.pageByServiceAndType(service.id, collectionType)
                     }
                 ).flow
 
-                // generate resulting flow; set "forceReadOnly" for every address book if requested
-                if (forceReadOnlyAddressBooks)
+                // set "forceReadOnly" for every address book if requested
+                if (forceReadOnlyAddressBooks && collectionType == Collection.TYPE_ADDRESSBOOK)
                     dataFlow.map { pagingData ->
                         pagingData.map { collection ->
-                            if (collectionType == Collection.TYPE_ADDRESSBOOK)
-                                collection.copy(forceReadOnly = true)
-                            else
-                                collection
+                            collection.copy(forceReadOnly = true)
                         }
                     }
                 else
                     dataFlow
-            }
-        }.flattenConcat()
+            } ?: flowOf(PagingData.empty())
+        }.flatMapLatest { it }
 
 }

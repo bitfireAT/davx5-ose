@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">Kontot finns inte (längre)</string>
   <string name="account_title_address_book">DAVx⁵ Adressbok</string>
-  <string name="address_books_authority_title">Adressböcker</string>
+  <string name="account_prefs_use_app">Ändra inte kontot här!  Använd appen direkt för att hantera konton istället</string>
   <string name="dialog_delete">Radera</string>
   <string name="dialog_remove">Ta bort</string>
   <string name="dialog_deny">Avbryt</string>
   <string name="field_required">Detta fält är obligatoriskt</string>
   <string name="help">Hjälp</string>
-  <string name="manage_accounts">Hantera konton</string>
   <string name="navigate_up">Navigera upp</string>
   <string name="optional_label">* valfritt</string>
   <string name="options_menu">Inställningsmeny</string>
@@ -51,7 +50,6 @@
   <string name="intro_open_source_title">Öppen källkod mjukvara</string>
   <string name="intro_open_source_text">Vi är glada att du använder %s, som är mjukvara med öppen källkod. Utveckling, underhåll och support är hårt arbete. Överväg att bidra (det finns många sätt) eller en donation. Det skulle vara mycket uppskattat!</string>
   <string name="intro_open_source_details">Hur man kan bidra/donera</string>
-  <string name="intro_open_source_dont_show">Visa inte inom en snar framtid</string>
   <string name="intro_next">Nästa</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Behörigheter</string>
@@ -122,7 +120,7 @@
   <string name="navigation_drawer_contribute">Hur man kan bidra</string>
   <string name="navigation_drawer_privacy_policy">Integritetspolicy</string>
   <string name="account_list_no_notification_permission">Notifieringar avstängda. Du kommer inte bli informerad om synkroniseringsfel.</string>
-  <string name="account_list_no_internet">Ingen bekräftad internetanslutning. Synkronisering kanske inte kan köras.</string>
+  <string name="account_list_no_internet">Automatisk synkronisering ej aktiv (ingen verifierad internetanslutning)</string>
   <string name="account_list_manage_connections">Hantera anslutningar</string>
   <string name="account_list_datasaver_enabled">Begränsad data-synkronisering aktiverad. Begränsad bakgrundssynkronisering.</string>
   <string name="account_list_manage_datasaver">Hantera begränsad data-synkronisering</string>
@@ -130,6 +128,9 @@
   <string name="account_list_manage_battery_saver">Hantera batterisparare</string>
   <string name="account_list_low_storage">Lagringsutrymmet är lågt. Android kommer inte synka lokala ändringar direkt, utan vänta till nästa regelbundna synkronisering.</string>
   <string name="account_list_manage_storage">Hantera lagring</string>
+  <string name="account_list_calendar_storage_disabled">Kalenderleverantör saknas. Har du inaktiverat systemappen \"Kalenderlagring\"?</string>
+  <string name="account_list_contacts_storage_disabled">Kontaktleverantör saknas.  Har du inaktiverat systemappen \"Kontaktlagring\".?</string>
+  <string name="account_list_manage_apps">Hantera appar</string>
   <string name="account_list_welcome">Välkommen till DAVx⁵!</string>
   <string name="account_list_empty">Anslut till din server och håll dina kalendrar och kontakter synkroniserade</string>
   <string name="accounts_sync_all">Synkronisera alla konton</string>
