@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.ui.NotificationRegistry
@@ -45,14 +46,13 @@ class PushNotificationManager @Inject constructor(
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(
-                    PendingIntent.getActivity(
-                        context,
-                        0,
-                        Intent(context, AccountActivity::class.java).apply {
-                            putExtra(AccountActivity.EXTRA_ACCOUNT, account)
-                        },
-                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                    )
+                    TaskStackBuilder.create(context)
+                        .addNextIntent(
+                            Intent(context, AccountActivity::class.java).apply {
+                                putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+                            }
+                        )
+                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 )
                 .build()
         }
