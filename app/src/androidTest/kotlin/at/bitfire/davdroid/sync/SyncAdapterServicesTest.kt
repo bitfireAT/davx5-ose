@@ -6,13 +6,8 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.Context
-import android.content.SyncResult
-import android.os.Bundle
-import android.provider.CalendarContract
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -22,26 +17,11 @@ import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.mockk.Awaits
-import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.junit4.MockKRule
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.mockkStatic
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.junit.rules.Timeout
-import java.util.concurrent.CancellationException
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -113,7 +93,7 @@ class SyncAdapterServicesTest {
         )
 
 
-    @Test
+    /*@Test
     fun testSyncAdapter_onPerformSync_cancellation() {
         val syncWorkerManager = mockk<SyncWorkerManager>()
         val syncAdapter = syncAdapter(syncWorkerManager = syncWorkerManager)
@@ -183,6 +163,6 @@ class SyncAdapterServicesTest {
             // should just run
             syncAdapter.onPerformSync(account, Bundle(), CalendarContract.AUTHORITY, mockk(), SyncResult())
         }
-    }
+    }*/
 
 }

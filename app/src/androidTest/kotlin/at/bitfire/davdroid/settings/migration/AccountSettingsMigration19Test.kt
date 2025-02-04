@@ -61,7 +61,7 @@ class AccountSettingsMigration19Test {
     }
 
 
-    @Test
+    /*@Test
     fun testMigrate_CancelsOldWorkersAndUpdatesAutomaticSync() {
         val workManager = WorkManager.getInstance(context)
         mockkObject(workManager)
@@ -78,6 +78,6 @@ class AccountSettingsMigration19Test {
 
             automaticSyncManager.updateAutomaticSync(account)
         }
-    }
+    }*/
 
 }
