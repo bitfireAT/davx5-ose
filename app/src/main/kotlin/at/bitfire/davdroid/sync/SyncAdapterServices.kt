@@ -48,6 +48,11 @@ abstract class SyncAdapterService: Service() {
         return syncAdapter.get().syncAdapterBinder
     }
 
+    init {
+        Logger.getGlobal().info("Creating sync adapter service")
+        Logger.getGlobal().info("ContentResolver.getMasterSyncAutomatically(): ${ContentResolver.getMasterSyncAutomatically()}")
+    }
+
     /**
      * Entry point for the Sync Adapter Framework.
      *
@@ -72,6 +77,10 @@ abstract class SyncAdapterService: Service() {
         true    // isSyncable shouldn't be -1 because DAVx5 (SyncFrameworkIntegration) sets it to 0 or 1.
                 // However, if it is -1 by accident, set it to 1 to avoid endless sync loops.
     ) {
+        init {
+            Logger.getGlobal().info("Creating sync adapter")
+            Logger.getGlobal().info("ContentResolver.getMasterSyncAutomatically(): ${ContentResolver.getMasterSyncAutomatically()}")
+        }
 
         /**
          * Scope used to wait until the synchronization is finished. Will be cancelled when the sync framework
