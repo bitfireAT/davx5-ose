@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.network
 
+import android.content.ContentResolver
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertArrayEquals
@@ -30,6 +31,7 @@ class DnsRecordResolverTest {
 
     @Before
     fun setup() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
     }
 

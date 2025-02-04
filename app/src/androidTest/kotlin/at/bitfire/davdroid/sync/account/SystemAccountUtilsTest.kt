@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync.account
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
 import at.bitfire.davdroid.R
@@ -34,6 +35,7 @@ class SystemAccountUtilsTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
     }
 

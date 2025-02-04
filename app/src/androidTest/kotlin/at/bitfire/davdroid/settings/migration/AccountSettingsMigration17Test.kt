@@ -6,6 +6,7 @@ package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.ContentResolver
 import android.content.Context
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.R
@@ -47,6 +48,7 @@ class AccountSettingsMigration17Test {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
     }
 

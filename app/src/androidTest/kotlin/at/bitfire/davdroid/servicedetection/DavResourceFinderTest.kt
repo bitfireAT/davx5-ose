@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import android.content.ContentResolver
 import android.security.NetworkSecurityPolicy
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
@@ -63,6 +64,7 @@ class DavResourceFinderTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
 
         server = MockWebServer().apply {

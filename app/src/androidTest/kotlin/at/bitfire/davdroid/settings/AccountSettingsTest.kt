@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.settings
 
 import android.accounts.AccountManager
+import android.content.ContentResolver
 import android.content.Context
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.sync.account.TestAccount
@@ -32,6 +33,7 @@ class AccountSettingsTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
         TestUtils.setUpWorkManager(context)
     }

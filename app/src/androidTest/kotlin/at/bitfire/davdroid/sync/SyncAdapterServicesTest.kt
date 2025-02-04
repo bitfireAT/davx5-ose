@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
+import android.content.ContentResolver
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.hilt.work.HiltWorkerFactory
@@ -67,6 +68,7 @@ class SyncAdapterServicesTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
         TestUtils.setUpWorkManager(context, workerFactory)
 

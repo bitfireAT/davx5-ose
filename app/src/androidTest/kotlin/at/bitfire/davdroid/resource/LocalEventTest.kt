@@ -6,6 +6,7 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.content.ContentProviderClient
+import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
@@ -57,6 +58,7 @@ class LocalEventTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
 
         provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!

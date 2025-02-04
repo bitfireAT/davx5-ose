@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.db
 
+import android.content.ContentResolver
 import android.content.Context
 import androidx.room.Room
 import androidx.room.migration.AutoMigrationSpec
@@ -39,7 +40,8 @@ class AppDatabaseTest {
     lateinit var manualMigrations: Set<@JvmSuppressWildcards Migration>
 
     @Before
-    fun setup() {
+    fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
     }
 

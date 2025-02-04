@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
+import android.content.ContentResolver
 import at.bitfire.davdroid.db.Credentials
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -25,6 +26,7 @@ class CredentialsStoreTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
     }
 

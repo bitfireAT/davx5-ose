@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync.account
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
 import androidx.hilt.work.HiltWorkerFactory
@@ -58,6 +59,7 @@ class AccountsCleanupWorkerTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
         TestUtils.setUpWorkManager(context, workerFactory)
 

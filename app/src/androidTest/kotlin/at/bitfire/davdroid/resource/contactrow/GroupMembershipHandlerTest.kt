@@ -7,6 +7,7 @@ package at.bitfire.davdroid.resource.contactrow
 import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
+import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.provider.ContactsContract
@@ -44,6 +45,7 @@ class GroupMembershipHandlerTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
 
         provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!

@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.settings
 
+import android.content.ContentResolver
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -38,6 +39,7 @@ class SettingsManagerTest {
 
     @Before
     fun inject() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
     }
 

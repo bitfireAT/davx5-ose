@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
+import android.content.ContentResolver
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
@@ -27,6 +28,7 @@ class WebDavMountRepositoryTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
     }
 

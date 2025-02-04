@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
+import android.content.ContentResolver
 import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkManager
@@ -49,6 +50,7 @@ class PeriodicSyncWorkerTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
         TestUtils.setUpWorkManager(context)
 

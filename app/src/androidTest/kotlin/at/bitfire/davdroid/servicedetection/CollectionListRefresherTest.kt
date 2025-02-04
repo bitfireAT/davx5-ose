@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import android.content.ContentResolver
 import android.security.NetworkSecurityPolicy
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
@@ -65,6 +66,7 @@ class CollectionListRefresherTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
 
         // Start mock web server

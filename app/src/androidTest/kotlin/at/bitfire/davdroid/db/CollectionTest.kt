@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.db
 
+import android.content.ContentResolver
 import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
 import at.bitfire.dav4jvm.DavResource
@@ -39,6 +40,7 @@ class CollectionTest {
 
     @Before
     fun setup() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
 
         httpClient = httpClientBuilder.build()

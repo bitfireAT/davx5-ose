@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
+import android.content.ContentResolver
 import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
@@ -50,6 +51,7 @@ class AccountSettingsMigration19Test {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
 
         // Initialize WorkManager for instrumentation tests.

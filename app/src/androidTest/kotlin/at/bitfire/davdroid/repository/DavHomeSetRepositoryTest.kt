@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.repository
 
+import android.content.ContentResolver
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -31,6 +32,7 @@ class DavHomeSetRepositoryTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
 
         serviceId = serviceRepository.insertOrReplace(

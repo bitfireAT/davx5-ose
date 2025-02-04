@@ -7,6 +7,7 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
+import android.content.ContentResolver
 import android.content.Context
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -60,6 +61,7 @@ class LocalAddressBookStoreTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
 
         addressBookAccountType = context.getString(R.string.account_type_address_book)

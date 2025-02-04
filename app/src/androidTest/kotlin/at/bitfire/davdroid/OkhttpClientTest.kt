@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid
 
+import android.content.ContentResolver
 import at.bitfire.davdroid.network.HttpClient
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -24,6 +25,7 @@ class OkhttpClientTest {
 
     @Before
     fun inject() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
     }
 

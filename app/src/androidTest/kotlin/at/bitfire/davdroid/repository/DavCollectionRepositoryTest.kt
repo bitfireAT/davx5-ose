@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.repository
 
+import android.content.ContentResolver
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -47,6 +48,7 @@ class DavCollectionRepositoryTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
 
         // insert test service

@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
+import android.content.ContentResolver
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
@@ -69,6 +70,7 @@ class SyncConditionsTest {
 
     @Before
     fun setup() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
 
         // prepare accountSettings with some necessary data

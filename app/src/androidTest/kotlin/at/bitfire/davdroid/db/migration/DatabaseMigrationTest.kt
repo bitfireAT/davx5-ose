@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.db.migration
 
+import android.content.ContentResolver
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.room.testing.MigrationTestHelper
@@ -37,6 +38,7 @@ abstract class DatabaseMigrationTest(
 
     @Before
     fun setup() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
     }
 

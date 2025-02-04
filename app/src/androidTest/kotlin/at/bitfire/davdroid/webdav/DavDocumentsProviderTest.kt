@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
+import android.content.ContentResolver
 import android.content.Context
 import android.security.NetworkSecurityPolicy
 import at.bitfire.davdroid.db.AppDatabase
@@ -64,6 +65,7 @@ class DavDocumentsProviderTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
 
         server = MockWebServer().apply {

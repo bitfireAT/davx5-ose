@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.network
 
+import android.content.ContentResolver
 import android.security.NetworkSecurityPolicy
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -34,6 +35,7 @@ class HttpClientTest {
 
     @Before
     fun setUp() {
+        ContentResolver.setMasterSyncAutomatically(false)
         hiltRule.inject()
 
         httpClient = httpClientBuilder.build()
