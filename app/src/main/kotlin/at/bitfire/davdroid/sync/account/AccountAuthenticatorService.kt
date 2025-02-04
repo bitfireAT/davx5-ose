@@ -14,9 +14,8 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import at.bitfire.davdroid.R
 
-
 /**
- * Account authenticator for the DAVx5 account type.
+ * Account authenticator for the DAVx5 account type
  */
 class AccountAuthenticatorService: Service() {
 

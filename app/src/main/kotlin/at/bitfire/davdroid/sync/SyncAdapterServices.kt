@@ -25,6 +25,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECT
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
@@ -37,15 +38,35 @@ import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.inject.Provider
 
 abstract class SyncAdapterService: Service() {
 
     @Inject
-    lateinit var syncAdapter: Provider<SyncAdapter>
+    lateinit var syncAdapter: Lazy<SyncAdapter>
 
     override fun onBind(intent: Intent?): IBinder {
         return syncAdapter.get().syncAdapterBinder
+
+        /*
+        Use this to debug "IllegalStateException: The component was not created. Check that you have added the HiltAndroidRule":
+
+        val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
+            override fun onPerformSync(
+                account: Account,
+                extras: Bundle,
+                authority: String,
+                provider: ContentProviderClient,
+                syncResult: SyncResult
+            ) {
+                val logger = Logger.getGlobal()
+                logger.warning("fakeSyncAdapter onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)")
+                for (key in extras.keySet())
+                    logger.warning("\textras[$key] = ${extras[key]}")
+                throw NotImplementedError()
+            }
+        }
+        return fakeAdapter.syncAdapterBinder
+        */
     }
 
     /**
@@ -68,9 +89,8 @@ abstract class SyncAdapterService: Service() {
         private val syncConditionsFactory: SyncConditions.Factory,
         private val syncWorkerManager: SyncWorkerManager
     ): AbstractThreadedSyncAdapter(
-        context,
-        true    // isSyncable shouldn't be -1 because DAVx5 (SyncFrameworkIntegration) sets it to 0 or 1.
-                // However, if it is -1 by accident, set it to 1 to avoid endless sync loops.
+        /* context = */ context,
+        /* autoInitialize = */ true
     ) {
 
         /**

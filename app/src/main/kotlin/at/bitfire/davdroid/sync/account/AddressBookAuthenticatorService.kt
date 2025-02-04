@@ -14,6 +14,9 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import at.bitfire.davdroid.R
 
+/**
+ * Account authenticator for DAVx5 address books
+ */
 class AddressBookAuthenticatorService: Service() {
 
     private lateinit var accountAuthenticator: AccountAuthenticator
@@ -30,7 +33,8 @@ class AddressBookAuthenticatorService: Service() {
         val context: Context
     ): AbstractAccountAuthenticator(context) {
 
-        override fun addAccount(response: AccountAuthenticatorResponse?, accountType: String?, authTokenType: String?, requiredFeatures: Array<String>?, options: Bundle?) = bundleOf(
+        override fun addAccount(response: AccountAuthenticatorResponse?, accountType: String?, authTokenType: String?, requiredFeatures: Array<String>?, options: Bundle?) =
+            bundleOf(
             AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE to response,
             AccountManager.KEY_ERROR_CODE to AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION,
             AccountManager.KEY_ERROR_MESSAGE to context.getString(R.string.account_prefs_use_app)
