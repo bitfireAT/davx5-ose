@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import android.provider.CalendarContract
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -42,7 +43,6 @@ import org.junit.Test
 import org.junit.rules.Timeout
 import java.util.logging.Logger
 import javax.inject.Inject
-import kotlin.coroutines.cancellation.CancellationException
 
 @HiltAndroidTest
 class SyncAdapterServicesTest {
@@ -70,14 +70,17 @@ class SyncAdapterServicesTest {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    @get:Rule
+    @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
+    @get:Rule(order = 1)
     val mockkRule = MockKRule(this)
 
+    @get:Rule(order = 2)
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
     // test methods should run quickly and not wait 60 seconds for a sync timeout or something like that
-    @get:Rule
+    @get:Rule(order = 3)
     val timeoutRule: Timeout = Timeout.seconds(5)
 
 
