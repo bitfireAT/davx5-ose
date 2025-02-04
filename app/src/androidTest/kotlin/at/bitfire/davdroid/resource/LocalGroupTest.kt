@@ -12,7 +12,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.CachedGroupMembership
@@ -22,15 +21,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
-import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
@@ -41,8 +37,13 @@ class LocalGroupTest {
     @Inject @ApplicationContext
     lateinit var context: Context
 
-    @get:Rule
+    @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
+    val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)
+
+    private lateinit var provider: ContentProviderClient
 
     val account = Account("Test Account", "Test Account Type")
     private lateinit var addressBookGroupsAsCategories: LocalTestAddressBook
@@ -51,6 +52,8 @@ class LocalGroupTest {
     @Before
     fun setup() {
         hiltRule.inject()
+
+        provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
 
         addressBookGroupsAsCategories = LocalTestAddressBook.create(context, account, provider, GroupMethod.CATEGORIES)
         addressBookGroupsAsVCards = LocalTestAddressBook.create(context, account, provider, GroupMethod.GROUP_VCARDS)
@@ -64,6 +67,7 @@ class LocalGroupTest {
     fun tearDown() {
         addressBookGroupsAsCategories.remove()
         addressBookGroupsAsVCards.remove()
+        provider.close()
     }
 
 
@@ -258,28 +262,5 @@ class LocalGroupTest {
         ).apply {
             add()
         }
-
-
-    companion object {
-
-        @JvmField
-        @ClassRule
-        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
-
-        private lateinit var provider: ContentProviderClient
-
-        @BeforeClass
-        @JvmStatic
-        fun connect() {
-            val context = InstrumentationRegistry.getInstrumentation().context
-            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun disconnect() {
-            provider.close()
-        }
-    }
 
 }

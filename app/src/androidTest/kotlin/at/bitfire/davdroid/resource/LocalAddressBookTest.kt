@@ -10,7 +10,6 @@ import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.Context
 import android.provider.ContactsContract
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.LabeledProperty
@@ -19,13 +18,10 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import ezvcard.property.Telephone
 import org.junit.After
-import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 import java.util.LinkedList
@@ -37,8 +33,13 @@ class LocalAddressBookTest {
     @Inject @ApplicationContext
     lateinit var context: Context
 
-    @get:Rule
+    @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
+    val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)
+
+    private lateinit var provider: ContentProviderClient
 
     val account = Account("Test Account", "Test Account Type")
     lateinit var addressBook: LocalTestAddressBook
@@ -48,13 +49,14 @@ class LocalAddressBookTest {
     fun setUp() {
         hiltRule.inject()
 
+        provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
         addressBook = LocalTestAddressBook.create(context, account, provider)
     }
 
     @After
     fun tearDown() {
-        // remove address book
         addressBook.remove()
+        provider.close()
     }
 
 
@@ -116,29 +118,6 @@ class LocalAddressBookTest {
 
         val group = result.getContact()
         assertEquals("Test Group", group.displayName)
-    }
-
-
-    companion object {
-
-        @JvmField
-        @ClassRule
-        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
-
-        private lateinit var provider: ContentProviderClient
-
-        @BeforeClass
-        @JvmStatic
-        fun connect() {
-            val context = InstrumentationRegistry.getInstrumentation().context
-            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun disconnect() {
-            provider.close()
-        }
     }
 
 }

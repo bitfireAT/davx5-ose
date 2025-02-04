@@ -48,13 +48,13 @@ class AccountSettingsMigration20Test {
     @Inject
     lateinit var migration: AccountSettingsMigration20
 
-    @get:Rule
+    @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
+    @get:Rule(order = 1)
     val mockkRule = MockKRule(this)
 
-    @get:Rule
+    @get:Rule(order = 2)
     val permissionsRule = GrantPermissionRule.grant(
         Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS,
         Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR

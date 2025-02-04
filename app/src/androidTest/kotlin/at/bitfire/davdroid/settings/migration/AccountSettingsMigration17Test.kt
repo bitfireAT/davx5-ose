@@ -38,10 +38,10 @@ class AccountSettingsMigration17Test {
     @Inject
     lateinit var migration: AccountSettingsMigration17
 
-    @get:Rule
+    @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
+    @get:Rule(order = 1)
     val permissionRule = GrantPermissionRule.grant(android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.WRITE_CONTACTS)
 
 

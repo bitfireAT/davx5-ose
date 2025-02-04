@@ -10,7 +10,6 @@ import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.content.Context
 import android.provider.ContactsContract
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalTestAddressBook
@@ -20,13 +19,10 @@ import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.AfterClass
-import org.junit.Assert
+import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
@@ -37,14 +33,25 @@ class GroupMembershipHandlerTest {
     @Inject @ApplicationContext
     lateinit var context: Context
 
-    @get:Rule
+    @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
 
+    @get:Rule(order = 1)
+    val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)
+
     val account = Account("Test Account", "Test Account Type")
+    private lateinit var provider: ContentProviderClient
 
     @Before
-    fun inject() {
+    fun setUp() {
         hiltRule.inject()
+
+        provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+    }
+
+    @After
+    fun tearDown() {
+        provider.close()
     }
 
 
@@ -83,31 +90,6 @@ class GroupMembershipHandlerTest {
         } finally {
             addressBookGroupsAsVCards.remove()
         }
-    }
-
-
-    companion object {
-
-        @JvmField
-        @ClassRule
-        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
-
-        private lateinit var provider: ContentProviderClient
-
-        @BeforeClass
-        @JvmStatic
-        fun connect() {
-            val context: Context = InstrumentationRegistry.getInstrumentation().context
-            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-            Assert.assertNotNull(provider)
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun disconnect() {
-            provider.close()
-        }
-
     }
 
 }

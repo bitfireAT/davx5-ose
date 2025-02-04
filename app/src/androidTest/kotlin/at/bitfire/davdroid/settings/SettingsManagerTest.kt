@@ -28,9 +28,10 @@ class SettingsManagerTest {
     }
 
 
-    @get:Rule
+    @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
-    @get:Rule
+
+    @get:Rule(order = 1)
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Inject lateinit var settingsManager: SettingsManager

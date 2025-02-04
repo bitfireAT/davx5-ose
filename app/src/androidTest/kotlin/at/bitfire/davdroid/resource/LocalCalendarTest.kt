@@ -8,58 +8,51 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
 import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
-import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.InitCalendarProviderRule
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
-import at.bitfire.ical4android.util.MiscUtils.closeCompat
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Status
 import org.junit.After
-import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.ClassRule
+import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
+import javax.inject.Inject
 
+@HiltAndroidTest
 class LocalCalendarTest {
 
-    companion object {
+    @get:Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
 
-        @JvmField
-        @ClassRule
-        val initCalendarProviderRule: TestRule = InitCalendarProviderRule.getInstance()
+    @get:Rule(order = 1)
+    val initCalendarProviderRule: TestRule = InitCalendarProviderRule.getInstance()
 
-        private lateinit var provider: ContentProviderClient
-
-        @BeforeClass
-        @JvmStatic
-        fun setUpClass() {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
-            provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun tearDownClass() {
-            provider.closeCompat()
-        }
-
-    }
+    @ApplicationContext @Inject
+    lateinit var context: Context
 
     private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
     private lateinit var calendar: LocalCalendar
+    private lateinit var provider: ContentProviderClient
 
     @Before
     fun setUp() {
+        hiltRule.inject()
+
+        provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+
         val uri = AndroidCalendar.create(account, provider, ContentValues())
         calendar = AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
     }
@@ -67,6 +60,7 @@ class LocalCalendarTest {
     @After
     fun tearDown() {
         calendar.delete()
+        provider.close()
     }
 
 
