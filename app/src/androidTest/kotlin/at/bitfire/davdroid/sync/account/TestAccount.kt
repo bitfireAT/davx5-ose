@@ -5,9 +5,12 @@ package at.bitfire.davdroid.sync.account
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.ContentResolver
+import android.provider.CalendarContract
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.ical4android.TaskProvider
 import org.junit.Assert.assertTrue
 
 object TestAccount {
@@ -23,9 +26,14 @@ object TestAccount {
         val accountType = targetContext.getString(R.string.account_type)
         val account = Account("Test Account", accountType)
 
-        val initialData = AccountSettings.initialUserData(null)
+        val initialData = AccountSettings.initialUserData(credentials = null)
         initialData.putString(AccountSettings.KEY_SETTINGS_VERSION, version.toString())
         assertTrue(SystemAccountUtils.createAccount(targetContext, account, initialData))
+
+        // Disable sync for all providers. Should prevent sync adapters from running.
+        ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
+        for (possibleProvider in TaskProvider.ProviderName.entries)
+            ContentResolver.setIsSyncable(account, possibleProvider.authority, 0)
 
         return account
     }

@@ -6,6 +6,7 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
+import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.os.Bundle
@@ -195,6 +196,9 @@ open class LocalAddressBook @AssistedInject constructor(
         val newAccount = Account(newName, oldAccount.type)
         if (!SystemAccountUtils.createAccount(context, newAccount, Bundle()))
             return false
+
+        val wasSyncable = ContentResolver.getIsSyncable(oldAccount, ContactsContract.AUTHORITY)
+        ContentResolver.setIsSyncable(newAccount, ContactsContract.AUTHORITY, wasSyncable)
 
         // move contacts and groups to new account
         val batch = BatchOperation(provider!!)
