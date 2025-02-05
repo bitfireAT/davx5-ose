@@ -6,9 +6,7 @@ package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentResolver
 import android.content.Context
-import android.provider.ContactsContract
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -64,7 +62,6 @@ class AccountSettingsMigration17Test {
             val addressBookAccountType = context.getString(R.string.account_type_address_book)
             var addressBookAccount = Account("Address Book", addressBookAccountType)
             assertTrue(SystemAccountUtils.createAccount(context, addressBookAccount, null))
-            ContentResolver.setIsSyncable(addressBookAccount, ContactsContract.AUTHORITY, 0)
 
             try {
                 // address book has account + URL

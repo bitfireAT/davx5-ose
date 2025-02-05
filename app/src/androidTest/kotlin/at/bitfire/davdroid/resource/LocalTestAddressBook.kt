@@ -7,7 +7,6 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.provider.ContactsContract
@@ -129,11 +128,7 @@ class LocalTestAddressBook @AssistedInject constructor(
         fun create(context: Context, account: Account, provider: ContentProviderClient, groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS): LocalTestAddressBook {
             // create new address book account
             val addressBookAccount = Account("Test Address Book ${counter.incrementAndGet()}", context.getString(R.string.account_type_address_book))
-            val accountManager = AccountManager.get(context)
             assertTrue(SystemAccountUtils.createAccount(context, addressBookAccount, null))
-
-            // Disable sync. Should prevent the sync adapter from running.
-            ContentResolver.setIsSyncable(addressBookAccount, ContactsContract.AUTHORITY, 0)
 
             // return address book with this account
             val entryPoint = EntryPointAccessors.fromApplication<EntryPoint>(context)

@@ -6,10 +6,8 @@ package at.bitfire.davdroid.sync.account
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
-import android.provider.ContactsContract
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.testing.TestListenableWorkerBuilder
 import at.bitfire.davdroid.R
@@ -144,7 +142,6 @@ class AccountsCleanupWorkerTest {
                 putString(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, existingAccount.type)
             }
             assertTrue(SystemAccountUtils.createAccount(context, addressBookAccount, userData))
-            ContentResolver.setIsSyncable(addressBookAccount, ContactsContract.AUTHORITY, 0)
 
             assertEquals(listOf(addressBookAccount), accountManager.getAccountsByType(addressBookAccountType).toList())
 

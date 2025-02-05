@@ -3,5 +3,4 @@
     android:accountType="@string/account_type_address_book"
     android:userVisible="false"
     android:supportsUploading="true"
-    android:allowParallelSyncs="true"
-    android:isAlwaysSyncable="false" />
+    android:allowParallelSyncs="true" />
