@@ -11,6 +11,7 @@ import android.content.Context
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.ical4android.TaskProvider
 import java.util.logging.Logger
@@ -79,7 +80,7 @@ object SystemAccountUtils {
  * Everything else should be in the DB.
  */
 fun AccountManager.setAndVerifyUserData(account: Account, key: String, value: String?) {
-    for (i in 1..100) {
+    for (i in 1..10) {
         if (getUserData(account, key) == value)
             /* already set / success */
             return
@@ -89,5 +90,10 @@ fun AccountManager.setAndVerifyUserData(account: Account, key: String, value: St
         // wait a bit because AccountManager access sometimes seems a bit asynchronous
         Thread.sleep(100)
     }
-    Logger.getGlobal().warning("AccountManager failed to set $account user data $key := $value")
+
+    val message = "AccountManager.setAndVerifyUserData() failed to set $account user data $key := $value"
+    if (BuildConfig.DEBUG)
+        throw RuntimeException(message)
+    else
+        Logger.getGlobal().warning("AccountManager failed to set $account user data $key := $value")
 }
