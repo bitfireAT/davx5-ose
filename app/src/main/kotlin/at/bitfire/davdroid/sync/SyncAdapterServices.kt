@@ -69,7 +69,7 @@ abstract class SyncAdapterService: Service() {
                         message.append("fakeSyncAdapter onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)")
                         for (key in extras.keySet())
                             message.append("\n\textras[$key] = ${extras[key]}")
-                        throw NotImplementedError(message.toString())
+                        Logger.getGlobal().warning(message.toString())
                     }
                 }
                 return fakeAdapter.syncAdapterBinder

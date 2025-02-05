@@ -85,6 +85,11 @@ fun AccountManager.setAndVerifyUserData(account: Account, key: String, value: St
             /* already set / success */
             return
 
+        if (!accounts.contains(account))
+            /* invalid account */
+            return
+
+        // set user data
         setUserData(account, key, value)
 
         // wait a bit because AccountManager access sometimes seems a bit asynchronous
