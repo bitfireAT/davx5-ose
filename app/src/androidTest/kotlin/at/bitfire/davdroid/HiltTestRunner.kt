@@ -5,13 +5,29 @@
 package at.bitfire.davdroid
 
 import android.app.Application
+import android.content.ContentResolver
 import android.content.Context
+import android.os.Build
+import android.os.Bundle
 import androidx.test.runner.AndroidJUnitRunner
 import dagger.hilt.android.testing.HiltTestApplication
 
+@Suppress("unused")
 class HiltTestRunner : AndroidJUnitRunner() {
 
     override fun newApplication(cl: ClassLoader, name: String, context: Context): Application =
         super.newApplication(cl, HiltTestApplication::class.java.name, context)
+
+    override fun onCreate(arguments: Bundle?) {
+        super.onCreate(arguments)
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P)
+            throw AssertionError("MockK requires Android P [https://mockk.io/ANDROID.html]")
+
+        /* Prevent automatic syncs from being run.
+        Sometimes the sync framework starts syncs on accounts even when they're already removed.
+        Such calls on the SyncAdapterService then cause "Hilt: component not initialized" or other strange errors. */
+        ContentResolver.setMasterSyncAutomatically(false)
+    }
 
 }

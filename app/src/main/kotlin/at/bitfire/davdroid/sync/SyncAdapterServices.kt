@@ -45,10 +45,10 @@ abstract class SyncAdapterService: Service() {
     lateinit var syncAdapter: Lazy<SyncAdapter>
 
     override fun onBind(intent: Intent?): IBinder {
-        return syncAdapter.get().syncAdapterBinder
+        //return syncAdapter.get().syncAdapterBinder
 
         // Use this to debug "IllegalStateException: The component was not created. Check that you have added the HiltAndroidRule":
-        /*val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
+        val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
             override fun onPerformSync(
                 account: Account,
                 extras: Bundle,
@@ -63,7 +63,7 @@ abstract class SyncAdapterService: Service() {
                 throw NotImplementedError(message.toString())
             }
         }
-        return fakeAdapter.syncAdapterBinder*/
+        return fakeAdapter.syncAdapterBinder
     }
 
     /**
