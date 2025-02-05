@@ -7,6 +7,7 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
+import android.content.ContentResolver
 import android.content.Context
 import android.provider.ContactsContract
 import androidx.annotation.OpenForTesting

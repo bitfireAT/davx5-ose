@@ -30,11 +30,6 @@ object TestAccount {
         initialData.putString(AccountSettings.KEY_SETTINGS_VERSION, version.toString())
         assertTrue(SystemAccountUtils.createAccount(targetContext, account, initialData))
 
-        // Disable sync for all providers. Should prevent sync adapters from running.
-        ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
-        for (possibleProvider in TaskProvider.ProviderName.entries)
-            ContentResolver.setIsSyncable(account, possibleProvider.authority, 0)
-
         return account
     }
 

@@ -122,7 +122,7 @@ class AccountsCleanupWorkerTest {
     @Test
     fun testCleanUpAddressBooks_deletesAddressBookWithoutAccount() {
         // Create address book account without corresponding account
-        assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, null))
+        assertTrue(SystemAccountUtils.createAccount(context, addressBookAccount, Bundle()))
         assertEquals(listOf(addressBookAccount), accountManager.getAccountsByType(addressBookAccountType).toList())
 
         // Create worker and run the method
@@ -143,8 +143,7 @@ class AccountsCleanupWorkerTest {
                 putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, existingAccount.name)
                 putString(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, existingAccount.type)
             }
-            // FIXME use LocalTestAddressBook.create instead!
-            assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, userData))
+            assertTrue(SystemAccountUtils.createAccount(context, addressBookAccount, userData))
             ContentResolver.setIsSyncable(addressBookAccount, ContactsContract.AUTHORITY, 0)
 
             assertEquals(listOf(addressBookAccount), accountManager.getAccountsByType(addressBookAccountType).toList())

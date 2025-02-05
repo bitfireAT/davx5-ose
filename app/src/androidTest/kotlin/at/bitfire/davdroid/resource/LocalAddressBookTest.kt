@@ -7,6 +7,7 @@ package at.bitfire.davdroid.resource
 import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
+import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.provider.ContactsContract
@@ -78,7 +79,7 @@ class LocalAddressBookTest {
 
         // rename address book
         val newName = "New Name"
-        addressBook.renameAccount(newName)
+        assertTrue(addressBook.renameAccount(newName))
         assertEquals(newName, addressBook.addressBookAccount.name)
 
         // check whether contact is still here (including data rows) and not dirty
@@ -107,6 +108,7 @@ class LocalAddressBookTest {
 
         // rename address book
         val newName = "New Name"
+        //ContentResolver.setMasterSyncAutomatically(false)
         assertTrue(addressBook.renameAccount(newName))
         assertEquals(newName, addressBook.addressBookAccount.name)
 

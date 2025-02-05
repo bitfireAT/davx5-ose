@@ -47,10 +47,8 @@ abstract class SyncAdapterService: Service() {
     override fun onBind(intent: Intent?): IBinder {
         return syncAdapter.get().syncAdapterBinder
 
-        /*
-        Use this to debug "IllegalStateException: The component was not created. Check that you have added the HiltAndroidRule":
-
-        val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
+        // Use this to debug "IllegalStateException: The component was not created. Check that you have added the HiltAndroidRule":
+        /*val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
             override fun onPerformSync(
                 account: Account,
                 extras: Bundle,
@@ -58,15 +56,14 @@ abstract class SyncAdapterService: Service() {
                 provider: ContentProviderClient,
                 syncResult: SyncResult
             ) {
-                val logger = Logger.getGlobal()
-                logger.warning("fakeSyncAdapter onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)")
+                val message = StringBuilder()
+                message.append("fakeSyncAdapter onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)")
                 for (key in extras.keySet())
-                    logger.warning("\textras[$key] = ${extras[key]}")
-                throw NotImplementedError()
+                    message.append("\n\textras[$key] = ${extras[key]}")
+                throw NotImplementedError(message.toString())
             }
         }
-        return fakeAdapter.syncAdapterBinder
-        */
+        return fakeAdapter.syncAdapterBinder*/
     }
 
     /**

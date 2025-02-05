@@ -15,6 +15,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -62,7 +63,7 @@ class AccountSettingsMigration17Test {
             // FIXME Use LocalTestAddressBook.provide instead!
             val addressBookAccountType = context.getString(R.string.account_type_address_book)
             var addressBookAccount = Account("Address Book", addressBookAccountType)
-            assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, null))
+            assertTrue(SystemAccountUtils.createAccount(context, addressBookAccount, null))
             ContentResolver.setIsSyncable(addressBookAccount, ContactsContract.AUTHORITY, 0)
 
             try {

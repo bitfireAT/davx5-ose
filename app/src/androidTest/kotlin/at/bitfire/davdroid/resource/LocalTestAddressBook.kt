@@ -16,6 +16,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
+import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -129,7 +130,7 @@ class LocalTestAddressBook @AssistedInject constructor(
             // create new address book account
             val addressBookAccount = Account("Test Address Book ${counter.incrementAndGet()}", context.getString(R.string.account_type_address_book))
             val accountManager = AccountManager.get(context)
-            assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, null))
+            assertTrue(SystemAccountUtils.createAccount(context, addressBookAccount, null))
 
             // Disable sync. Should prevent the sync adapter from running.
             ContentResolver.setIsSyncable(addressBookAccount, ContactsContract.AUTHORITY, 0)

@@ -6,14 +6,21 @@ package at.bitfire.davdroid.sync.account
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
+import android.provider.CalendarContract
+import android.provider.ContactsContract
+import at.bitfire.davdroid.R
+import at.bitfire.ical4android.TaskProvider
 import java.util.logging.Logger
 
 object SystemAccountUtils {
 
     /**
-     * Creates a system account and makes sure the user data are set correctly.
+     * Creates a system account, disables synchronization and makes sure the user data are set correctly.
+     *
+     * Never call [AccountManager.addAccountExplicitly] directly, use this method instead!
      *
      * @param context  operating context
      * @param account  account to create
@@ -24,23 +31,40 @@ object SystemAccountUtils {
      * @throws IllegalArgumentException when user data contains non-String values
      * @throws IllegalStateException if user data can't be set
      */
-    fun createAccount(context: Context, account: Account, userData: Bundle, password: String? = null): Boolean {
-        // validate user data
-        for (key in userData.keySet()) {
-            userData.get(key)?.let { entry ->
-                if (entry !is String)
-                    throw IllegalArgumentException("userData[$key] is ${entry::class.java} (expected: String)")
+    fun createAccount(context: Context, account: Account, userData: Bundle?, password: String? = null): Boolean {
+        // Validate user data
+        if (userData != null)
+            for (key in userData.keySet()) {
+                userData.get(key)?.let { entry ->
+                    if (entry !is String)
+                        throw IllegalArgumentException("userData[$key] is ${entry::class.java} (expected: String)")
+                }
             }
-        }
 
-        // create account
+        // Create account
         val manager = AccountManager.get(context)
         if (!manager.addAccountExplicitly(account, password, userData))
             return false
 
+        // Disable all possible synchronization. If any sync adapter is needed, it should be enabled explicitly, usually by AutomaticSyncManager.
+        val authorities = when (account.type) {
+            context.getString(R.string.account_type) ->
+                arrayOf(
+                    CalendarContract.AUTHORITY,
+                    *TaskProvider.ProviderName.entries.map { it.authority }.toTypedArray()
+                )
+            context.getString(R.string.account_type_address_book) ->
+                arrayOf(ContactsContract.AUTHORITY)
+            else ->
+                throw IllegalArgumentException("Unknown account type: ${account.type}")
+        }
+        for (authority in authorities)
+            ContentResolver.setIsSyncable(account, authority, 0)
+
         // Android seems to lose the initial user data sometimes, so make sure that the values are set
-        for (key in userData.keySet())
-            manager.setAndVerifyUserData(account, key, userData.getString(key))
+        if (userData != null)
+            for (key in userData.keySet())
+                manager.setAndVerifyUserData(account, key, userData.getString(key))
 
         return true
     }
@@ -55,9 +79,9 @@ object SystemAccountUtils {
  * Everything else should be in the DB.
  */
 fun AccountManager.setAndVerifyUserData(account: Account, key: String, value: String?) {
-    for (i in 1..10) {
+    for (i in 1..100) {
         if (getUserData(account, key) == value)
-        /* already set / success */
+            /* already set / success */
             return
 
         setUserData(account, key, value)

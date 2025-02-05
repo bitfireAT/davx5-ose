@@ -107,6 +107,7 @@ class AccountSettingsMigration18Test {
         var addressBookAccount = Account("Address Book", addressBookAccountType)
 
         val accountManager = AccountManager.get(context)
+        // FIXME breaks setAndVerifyUserData
         mockkObject(accountManager)
         every { accountManager.getAccountsByType(addressBookAccountType) } returns arrayOf(addressBookAccount)
         every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID) } returns "100"

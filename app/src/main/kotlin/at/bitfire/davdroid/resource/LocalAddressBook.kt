@@ -9,7 +9,6 @@ import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
-import android.os.Bundle
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
@@ -190,14 +189,13 @@ open class LocalAddressBook @AssistedInject constructor(
      */
     internal fun renameAccount(newName: String): Boolean {
         val oldAccount = addressBookAccount
-        logger.info("Renaming address book from \"${oldAccount.name}\" to \"$newName\"")
+        val wasSyncable = ContentResolver.getIsSyncable(oldAccount, ContactsContract.AUTHORITY)
+        logger.info("Renaming address book from \"${oldAccount.name}\" (isSyncable=$wasSyncable) to \"$newName\"")
 
         // create new account
-        val newAccount = Account(newName, oldAccount.type)
-        if (!SystemAccountUtils.createAccount(context, newAccount, Bundle()))
+        val newAccount = Account(/* name = */ newName, /* type = */ oldAccount.type)
+        if (!SystemAccountUtils.createAccount(context, newAccount, null))
             return false
-
-        val wasSyncable = ContentResolver.getIsSyncable(oldAccount, ContactsContract.AUTHORITY)
         ContentResolver.setIsSyncable(newAccount, ContactsContract.AUTHORITY, wasSyncable)
 
         // move contacts and groups to new account
