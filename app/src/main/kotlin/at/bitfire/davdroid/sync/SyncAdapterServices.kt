@@ -17,6 +17,7 @@ import android.os.Bundle
 import android.os.IBinder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -54,27 +55,28 @@ abstract class SyncAdapterService: Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        val entryPoint = EntryPointAccessors.fromApplication<EntryPoint>(this)
-        val syncAdapter = entryPoint.syncAdapter()
-        return syncAdapter.syncAdapterBinder
+        try {
+            val entryPoint = EntryPointAccessors.fromApplication<EntryPoint>(this)
+            val syncAdapter = entryPoint.syncAdapter()
+            return syncAdapter.syncAdapterBinder
 
-        // Use this to debug "IllegalStateException: The component was not created. Check that you have added the HiltAndroidRule":
-        /*val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
-            override fun onPerformSync(
-                account: Account,
-                extras: Bundle,
-                authority: String,
-                provider: ContentProviderClient,
-                syncResult: SyncResult
-            ) {
-                val message = StringBuilder()
-                message.append("fakeSyncAdapter onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)")
-                for (key in extras.keySet())
-                    message.append("\n\textras[$key] = ${extras[key]}")
-                throw NotImplementedError(message.toString())
-            }
+        } catch (e: IllegalStateException) {
+            if (BuildConfig.DEBUG) {
+                Logger.getGlobal().log(Level.WARNING, "SyncAdapterService.onBind() was called without Hilt initialization. Ignoring", e)
+                val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
+                    override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+                        val message = StringBuilder()
+                        message.append("fakeSyncAdapter onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)")
+                        for (key in extras.keySet())
+                            message.append("\n\textras[$key] = ${extras[key]}")
+                        throw NotImplementedError(message.toString())
+                    }
+                }
+                return fakeAdapter.syncAdapterBinder
+            } else
+                // re-throw in production builds
+                throw e
         }
-        return fakeAdapter.syncAdapterBinder*/
     }
 
     /**
