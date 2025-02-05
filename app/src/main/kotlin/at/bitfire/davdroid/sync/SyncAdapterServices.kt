@@ -175,17 +175,19 @@ abstract class SyncAdapterService: Service() {
 
 // exported sync adapter services; we need a separate class for each authority
 
-@AndroidEntryPoint
-class CalendarsSyncAdapterService: SyncAdapterService()
+abstract class FakeSyncAdapterService: SyncAdapterService()
 
 @AndroidEntryPoint
-class ContactsSyncAdapterService: SyncAdapterService()
+class CalendarsSyncAdapterService: FakeSyncAdapterService()
 
 @AndroidEntryPoint
-class JtxSyncAdapterService: SyncAdapterService()
+class ContactsSyncAdapterService: FakeSyncAdapterService()
 
 @AndroidEntryPoint
-class OpenTasksSyncAdapterService: SyncAdapterService()
+class JtxSyncAdapterService: FakeSyncAdapterService()
 
 @AndroidEntryPoint
-class TasksOrgSyncAdapterService: SyncAdapterService()
+class OpenTasksSyncAdapterService: FakeSyncAdapterService()
+
+@AndroidEntryPoint
+class TasksOrgSyncAdapterService: FakeSyncAdapterService()
