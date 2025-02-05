@@ -25,9 +25,10 @@ import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECT
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import dagger.Lazy
-import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,14 +42,24 @@ import javax.inject.Inject
 
 abstract class SyncAdapterService: Service() {
 
-    @Inject
-    lateinit var syncAdapter: Lazy<SyncAdapter>
+    /**
+     * We don't use @AndroidEntryPoint / @Inject because the instrumented tests sometimes asynchronously
+     * create a [SyncAdapterService] instance for an account that's not existing anymore, even when [onBind] is then not called
+     * and no sync is run.
+     */
+    @dagger.hilt.EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface EntryPoint {
+        fun syncAdapter(): SyncAdapter
+    }
 
     override fun onBind(intent: Intent?): IBinder {
-        //return syncAdapter.get().syncAdapterBinder
+        val entryPoint = EntryPointAccessors.fromApplication<EntryPoint>(this)
+        val syncAdapter = entryPoint.syncAdapter()
+        return syncAdapter.syncAdapterBinder
 
         // Use this to debug "IllegalStateException: The component was not created. Check that you have added the HiltAndroidRule":
-        val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
+        /*val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
             override fun onPerformSync(
                 account: Account,
                 extras: Bundle,
@@ -63,7 +74,7 @@ abstract class SyncAdapterService: Service() {
                 throw NotImplementedError(message.toString())
             }
         }
-        return fakeAdapter.syncAdapterBinder
+        return fakeAdapter.syncAdapterBinder*/
     }
 
     /**
@@ -192,17 +203,8 @@ abstract class SyncAdapterService: Service() {
 
 // exported sync adapter services; we need a separate class for each authority
 
-@AndroidEntryPoint
 class CalendarsSyncAdapterService: SyncAdapterService()
-
-@AndroidEntryPoint
 class ContactsSyncAdapterService: SyncAdapterService()
-
-@AndroidEntryPoint
 class JtxSyncAdapterService: SyncAdapterService()
-
-@AndroidEntryPoint
 class OpenTasksSyncAdapterService: SyncAdapterService()
-
-@AndroidEntryPoint
 class TasksOrgSyncAdapterService: SyncAdapterService()
