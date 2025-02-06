@@ -6,14 +6,9 @@ package at.bitfire.davdroid.sync.account
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
-import android.provider.CalendarContract
-import android.provider.ContactsContract
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.R
-import at.bitfire.ical4android.TaskProvider
 import java.util.logging.Logger
 
 object SystemAccountUtils {
@@ -48,7 +43,7 @@ object SystemAccountUtils {
             return false
 
         // Disable all possible synchronization. If any sync adapter is needed, it should be enabled explicitly, usually by AutomaticSyncManager.
-        val authorities = when (account.type) {
+        /*val authorities = when (account.type) {
             context.getString(R.string.account_type) ->
                 arrayOf(
                     CalendarContract.AUTHORITY,
@@ -60,7 +55,7 @@ object SystemAccountUtils {
                 throw IllegalArgumentException("Unknown account type: ${account.type}")
         }
         for (authority in authorities)
-            ContentResolver.setIsSyncable(account, authority, 0)
+            ContentResolver.setIsSyncable(account, authority, 0)*/
 
         // Android seems to lose the initial user data sometimes, so make sure that the values are set
         if (userData != null)

@@ -62,14 +62,17 @@ abstract class SyncAdapterService: Service() {
 
         } catch (e: IllegalStateException) {
             if (BuildConfig.DEBUG) {
-                Logger.getGlobal().log(Level.WARNING, "SyncAdapterService.onBind() was called without Hilt initialization. Ignoring", e)
+                // only for debug builds
+                val logger = Logger.getLogger(this@SyncAdapterService::class.java.name)
+                logger.log(Level.WARNING, "SyncAdapterService.onBind() was called without Hilt initialization. Ignoring", e)
+
                 val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
                     override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
                         val message = StringBuilder()
                         message.append("fakeSyncAdapter onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)")
                         for (key in extras.keySet())
                             message.append("\n\textras[$key] = ${extras[key]}")
-                        Logger.getGlobal().warning(message.toString())
+                        logger.warning(message.toString())
                     }
                 }
                 return fakeAdapter.syncAdapterBinder
@@ -100,7 +103,8 @@ abstract class SyncAdapterService: Service() {
         private val syncWorkerManager: SyncWorkerManager
     ): AbstractThreadedSyncAdapter(
         /* context = */ context,
-        /* autoInitialize = */ true
+        /* autoInitialize = */ true    // Sets isSyncable=1 when isSyncable=-1 and SYNC_EXTRAS_INITIALIZE is set.
+                                       // Doesn't matter for us because we have android:isAlwaysSyncable="true" for all sync adapters.
     ) {
 
         /**

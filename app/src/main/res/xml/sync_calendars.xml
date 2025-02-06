@@ -3,4 +3,15 @@
     android:accountType="@string/account_type"
     android:userVisible="false"
     android:supportsUploading="true"
-    android:allowParallelSyncs="true" />
+    android:allowParallelSyncs="true"
+    android:isAlwaysSyncable="true" />
+
+<!-- Note:
+isAlwaysSyncable = false   sets isSyncable(contentAuthority) of newly created accountType accounts to -1
+                           → causes a sync with SYNC_EXTRAS_INITIALIZE to be scheduled
+                           → this sync is expected to finally set isSyncable to 0 or 1.
+isAlwaysSyncable = true    sets isSyncable(contentAuthority) of newly created accountType accounts to 1
+                           → causes a normal sync (without SYNC_EXTRAS_INITIALIZE) to be scheduled.
+
+There's no possibility to automatically set isSyncable to 0 at account creation.
+-->
