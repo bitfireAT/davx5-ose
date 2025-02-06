@@ -12,6 +12,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4jvm.exception.UnauthorizedException
@@ -50,9 +51,41 @@ class SyncNotificationManager @AssistedInject constructor(
         fun create(account: Account, authority: String): SyncNotificationManager
     }
 
-    fun dismiss(notificationTag: String) =
-        NotificationManagerCompat.from(context)
-            .cancel(notificationTag, NotificationRegistry.NOTIFY_SYNC_ERROR)
+    fun dismiss(notificationTag: String) = NotificationManagerCompat.from(context)
+        .cancel(notificationTag, NotificationRegistry.NOTIFY_SYNC_ERROR)
+
+    fun notifyContentProviderError() = notificationRegistry.notifyIfPossible(
+        NotificationRegistry.NOTIFY_SYNC_ERROR,
+        tag = NOTIFICATION_TAG_CONTENT_PROVIDER_ERROR
+    ) {
+        NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_ERRORS)
+            .setSmallIcon(R.drawable.ic_sync_problem_notify)
+            .apply {
+                when (authority) {
+                    ContactsContract.AUTHORITY -> {
+                        setContentTitle(context.getString(R.string.account_list_contacts_storage_disabled_title))
+                        setContentText(context.getString(R.string.account_list_contacts_storage_disabled))
+                    }
+                    CalendarContract.AUTHORITY -> {
+                        setContentTitle(context.getString(R.string.account_list_calendar_storage_disabled_title))
+                        setContentText(context.getString(R.string.account_list_calendar_storage_disabled))
+                    }
+                }
+            }
+            .setSubText(account.name)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setCategory(NotificationCompat.CATEGORY_ERROR)
+            .setAutoCancel(true)
+            .addAction(NotificationCompat.Action(
+                android.R.drawable.ic_menu_view,
+                context.getString(R.string.account_list_manage_apps),
+                PendingIntent.getActivity(context, 0,
+                    Intent(Settings.ACTION_APPLICATION_SETTINGS),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+            ))
+            .build()
+    }
 
     /**
      * Tries to inform the user that an exception occurred during synchronization. Includes the affected
@@ -75,9 +108,9 @@ class SyncNotificationManager @AssistedInject constructor(
                 account
             )
         } else {
-            contentIntent = buildDebugInfoIntent(e, local, remote)
+            contentIntent = buildDebugInfoIntentForLocalResource(e, local, remote)
             if (local != null)
-                viewItemAction = buildViewItemAction(local)
+                viewItemAction = buildViewItemActionForLocalResource(local)
         }
 
         // to make the PendingIntent unique
@@ -100,14 +133,9 @@ class SyncNotificationManager @AssistedInject constructor(
             .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
             .setSubText(account.name)
             .setOnlyAlertOnce(true)
-            .setContentIntent(
-                PendingIntent.getActivity(
-                    context,
-                    0,
-                    contentIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-            )
+            .setContentIntent(PendingIntent.getActivity(context, 0, contentIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            ))
             .setPriority(priority)
             .setCategory(NotificationCompat.CATEGORY_ERROR)
         viewItemAction?.let { builder.addAction(it) }
@@ -127,21 +155,16 @@ class SyncNotificationManager @AssistedInject constructor(
         notifyInvalidResourceTitle: String
     ) {
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_INVALID_RESOURCE, tag = notificationTag) {
-            val intent = buildDebugInfoIntent(e, null, collection.url.resolve(fileName))
+            val intent = buildDebugInfoIntentForLocalResource(e, null, collection.url.resolve(fileName))
 
             val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_WARNINGS)
             builder.setSmallIcon(R.drawable.ic_warning_notify)
                 .setContentTitle(notifyInvalidResourceTitle)
                 .setContentText(context.getString(R.string.sync_invalid_resources_ignoring))
                 .setSubText(account.name)
-                .setContentIntent(
-                    PendingIntent.getActivity(
-                        context,
-                        0,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                )
+                .setContentIntent(PendingIntent.getActivity(context, 0, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                ))
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
                 .priority = NotificationCompat.PRIORITY_LOW
@@ -155,7 +178,7 @@ class SyncNotificationManager @AssistedInject constructor(
     /**
      * Builds intent to go to debug information with the given exception, resource and remote address.
      */
-    private fun buildDebugInfoIntent(
+    private fun buildDebugInfoIntentForLocalResource(
         e: Throwable,
         local: LocalResource<*>?,
         remote: HttpUrl?
@@ -182,7 +205,7 @@ class SyncNotificationManager @AssistedInject constructor(
     /**
      * Builds view action for notification, based on the given local resource.
      */
-    private fun buildViewItemAction(local: LocalResource<*>): NotificationCompat.Action? {
+    private fun buildViewItemActionForLocalResource(local: LocalResource<*>): NotificationCompat.Action? {
         logger.log(Level.FINE, "Adding view action for local resource", local)
         val intent = local.id?.let { id ->
             when (local) {
@@ -197,10 +220,17 @@ class SyncNotificationManager @AssistedInject constructor(
             }
         }
         return if (intent != null && context.packageManager.resolveActivity(intent, 0) != null)
-            NotificationCompat.Action(android.R.drawable.ic_menu_view, context.getString(R.string.sync_error_view_item),
-                PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+            NotificationCompat.Action(
+                android.R.drawable.ic_menu_view,
+                context.getString(R.string.sync_error_view_item),
+                PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            )
         else
             null
+    }
+
+    companion object {
+        const val NOTIFICATION_TAG_CONTENT_PROVIDER_ERROR = "content-provider-error"
     }
 
 }
