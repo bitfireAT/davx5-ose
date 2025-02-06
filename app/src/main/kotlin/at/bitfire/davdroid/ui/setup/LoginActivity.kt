@@ -86,25 +86,23 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
             var givenUsername: String? = null
             var givenPassword: String? = null
 
-            // extract URI or Email and optionally username/password from Intent data
+            // extract URI or email and optionally username/password from Intent data
             val logger = Logger.getGlobal()
             intent.data?.normalizeScheme()?.let { uri ->
-                // Handle mailto scheme
-                if (uri.scheme == "mailto") {
-                    givenUsername = uri.schemeSpecificPart
-                    return@let
+                val realScheme = when (uri.scheme) {
+                    // replace caldav[s]:// and carddav[s]:// with http[s]://
+                    "caldav", "carddav" -> "http"
+                    "caldavs", "carddavs", "davx5" -> "https"
+
+                    // keep these
+                    "http", "https", "mailto" -> uri.scheme
+
+                    // unknown scheme
+                    else -> null
                 }
 
-                // Handle URLs
-                try {
-                    // replace caldav[s]:// and carddav[s]:// with http[s]://
-                    val realScheme = when (uri.scheme) {
-                        "caldav", "carddav" -> "http"
-                        "caldavs", "carddavs", "davx5" -> "https"
-                        "http", "https" -> uri.scheme
-                        else -> null
-                    }
-                    if (realScheme != null) {
+                when (realScheme) {
+                    "http", "https" -> {
                         // extract user info
                         uri.userInfo?.split(':')?.let { userInfo ->
                             givenUsername = userInfo.getOrNull(0)
@@ -119,8 +117,9 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
                             null
                         }
                     }
-                } catch (_: URISyntaxException) {
-                    logger.warning("Got invalid URI from login Intent: $uri")
+
+                    "mailto" ->
+                        givenUsername = uri.schemeSpecificPart
                 }
             }
 
