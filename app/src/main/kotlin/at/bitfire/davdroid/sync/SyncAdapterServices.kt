@@ -37,6 +37,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -54,33 +55,37 @@ abstract class SyncAdapterService: Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        try {
-            // create sync adapter via Hilt
-            val entryPoint = EntryPointAccessors.fromApplication<EntryPoint>(this)
-            val syncAdapter = entryPoint.syncAdapter()
-            return syncAdapter.syncAdapterBinder
+        if (BuildConfig.DEBUG && !syncActive.get()) {
+            // only for debug builds/testing: syncActive flag
+            val logger = Logger.getLogger(this@SyncAdapterService::class.java.name)
+            logger.log(Level.WARNING, "SyncAdapterService.onBind() was called but syncActive = false. Ignoring")
 
-        } catch (e: IllegalStateException) {
-            if (BuildConfig.DEBUG) {
-                // only for debug builds: handle "Hilt not initialized" exception
-                val logger = Logger.getLogger(this@SyncAdapterService::class.java.name)
-                logger.log(Level.WARNING, "SyncAdapterService.onBind() was called without Hilt initialization. Ignoring", e)
-
-                val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
-                    override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
-                        val message = StringBuilder()
-                        message.append("FakeSyncAdapter onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)")
-                        for (key in extras.keySet())
-                            message.append("\n\textras[$key] = ${extras[key]}")
-                        logger.warning(message.toString())
-                    }
+            val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
+                override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+                    val message = StringBuilder()
+                    message.append("FakeSyncAdapter onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)")
+                    for (key in extras.keySet())
+                        message.append("\n\textras[$key] = ${extras[key]}")
+                    logger.warning(message.toString())
                 }
-                return fakeAdapter.syncAdapterBinder
-            } else
-                // re-throw in production builds
-                throw e
+            }
+            return fakeAdapter.syncAdapterBinder
         }
+
+        // create sync adapter via Hilt
+        val entryPoint = EntryPointAccessors.fromApplication<EntryPoint>(this)
+        val syncAdapter = entryPoint.syncAdapter()
+        return syncAdapter.syncAdapterBinder
     }
+
+    companion object {
+        /**
+         * Flag to indicate whether the sync adapter should be active. When it is `false`, synchronization will not be run
+         * (only intended for tests).
+         */
+        val syncActive = AtomicBoolean(true)
+    }
+
 
     /**
      * Entry point for the Sync Adapter Framework.
