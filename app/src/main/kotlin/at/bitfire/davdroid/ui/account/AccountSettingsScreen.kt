@@ -106,6 +106,7 @@ fun AccountSettingsScreen(
             // Authentication Settings
             credentials = uiState.credentials,
             onUpdateCredentials = model::updateCredentials,
+            isCredentialsUpdateAllowed = uiState.allowCredentialsChange,
 
             // CalDav Settings
             timeRangePastDays = uiState.timeRangePastDays,
@@ -152,6 +153,7 @@ fun AccountSettingsScreen(
     // Authentication Settings
     credentials: Credentials?,
     onUpdateCredentials: (Credentials) -> Unit = {},
+    isCredentialsUpdateAllowed: Boolean,
 
     // CalDav Settings
     timeRangePastDays: Int?,
@@ -227,6 +229,7 @@ fun AccountSettingsScreen(
                 // Authentication Settings
                 credentials = credentials,
                 onUpdateCredentials = onUpdateCredentials,
+                isCredentialsUpdateAllowed = isCredentialsUpdateAllowed,
 
                 // CalDav Settings
                 timeRangePastDays = timeRangePastDays,
@@ -272,6 +275,7 @@ fun AccountSettings_FromModel(
     // Authentication Settings
     credentials: Credentials?,
     onUpdateCredentials: (Credentials) -> Unit = {},
+    isCredentialsUpdateAllowed: Boolean,
 
     // CalDav Settings
     timeRangePastDays: Int?,
@@ -312,6 +316,7 @@ fun AccountSettings_FromModel(
             AuthenticationSettings(
                 snackbarHostState = snackbarHostState,
                 credentials = credentials,
+                isEnabled = isCredentialsUpdateAllowed,
                 onUpdateCredentials = onUpdateCredentials
             )
         }
@@ -494,6 +499,7 @@ fun SyncIntervalSetting(
 fun AuthenticationSettings(
     credentials: Credentials,
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    isEnabled: Boolean = true,
     onUpdateCredentials: (Credentials) -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -511,6 +517,7 @@ fun AuthenticationSettings(
                     icon = Icons.Default.AccountCircle,
                     name = stringResource(R.string.settings_username),
                     summary = credentials.username,
+                    enabled = isEnabled,
                     onClick = {
                         showUsernameDialog = true
                     }
@@ -530,6 +537,7 @@ fun AuthenticationSettings(
                     icon = Icons.Default.Password,
                     name = stringResource(R.string.settings_password),
                     summary = stringResource(R.string.settings_password_summary),
+                    enabled = isEnabled,
                     onClick = {
                         showPasswordDialog = true
                     }
@@ -552,6 +560,7 @@ fun AuthenticationSettings(
                 icon = null,
                 name = stringResource(R.string.settings_certificate_alias),
                 summary = credentials.certificateAlias ?: stringResource(R.string.settings_certificate_alias_empty),
+                enabled = isEnabled,
                 onClick = {
                     val activity = context as Activity
                     KeyChain.choosePrivateKeyAlias(activity, { newAlias ->
@@ -733,6 +742,7 @@ fun AccountSettingsScreen_Preview() {
             // Authentication Settings
             credentials = Credentials(username = "test", password = "test"),
             onUpdateCredentials = {},
+            isCredentialsUpdateAllowed = true,
 
             // CalDav Settings
             timeRangePastDays = 365,

@@ -61,6 +61,7 @@ class AccountSettingsModel @AssistedInject constructor(
         val ignoreVpns: Boolean = false,
 
         val credentials: Credentials = Credentials(),
+        val allowCredentialsChange: Boolean = true,
 
         val timeRangePastDays: Int? = null,
         val defaultAlarmMinBefore: Int? = null,
@@ -119,6 +120,7 @@ class AccountSettingsModel @AssistedInject constructor(
             ignoreVpns = accountSettings.getIgnoreVpns(),
 
             credentials = accountSettings.credentials(),
+            allowCredentialsChange = accountSettings.changingCredentialsAllowed(),
 
             timeRangePastDays = accountSettings.getTimeRangePastDays(),
             defaultAlarmMinBefore = accountSettings.getDefaultAlarm(),

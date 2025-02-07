@@ -28,7 +28,6 @@ import java.util.Collections
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Provider
-import kotlin.collections.mutableSetOf
 
 /**
  * Manages settings of an account.
@@ -126,6 +125,15 @@ class AccountSettings @AssistedInject constructor(
 
         // OAuth
         accountManager.setAndVerifyUserData(account, KEY_AUTH_STATE, credentials.authState?.jsonSerializeString())
+    }
+
+    /**
+     * Returns whether users can modify credentials from the account settings screen.
+     * Checks the value of [CREDENTIALS_LOCK] to be `0` or not equal to [CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS].
+     */
+    fun changingCredentialsAllowed(): Boolean {
+        val credentialsLock = settingsManager.getIntOrNull(CREDENTIALS_LOCK)
+        return credentialsLock == null || credentialsLock != CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
     }
 
 
@@ -367,6 +375,11 @@ class AccountSettings @AssistedInject constructor(
 
         const val KEY_USERNAME = "user_name"
         const val KEY_CERTIFICATE_ALIAS = "certificate_alias"
+
+        const val CREDENTIALS_LOCK = "login_credentials_lock"
+        const val CREDENTIALS_LOCK_NO_LOCK = 0
+        const val CREDENTIALS_LOCK_AT_LOGIN = 1
+        const val CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS = 2
 
         /** OAuth [AuthState] (serialized as JSON) */
         const val KEY_AUTH_STATE = "auth_state"
