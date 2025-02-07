@@ -315,22 +315,6 @@ class AccountSettings @AssistedInject constructor(
         else /* including -1 */ -> false
     }
 
-    /**
-     * Whether only personal collections should be shown.
-     *
-     * @return [Pair] of values:
-     *
-     *   1. (first) whether only personal collections should be shown
-     *   2. (second) whether the user shall be able to change the setting (= setting not locked)
-     */
-    @Deprecated("Use getShowOnlyPersonal() instead", replaceWith = ReplaceWith("getShowOnlyPersonal()"))
-    fun getShowOnlyPersonalPair(): Pair<Boolean, Boolean> =
-        when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
-            0 -> Pair(false, false)
-            1 -> Pair(true, false)
-            else /* including -1 */ -> Pair(accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null, true)
-        }
-
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
         accountManager.setAndVerifyUserData(account, KEY_SHOW_ONLY_PERSONAL, if (showOnlyPersonal) "1" else null)
     }
