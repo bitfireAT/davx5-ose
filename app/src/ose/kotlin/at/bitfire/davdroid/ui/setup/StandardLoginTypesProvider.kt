@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui.setup
 import android.content.Intent
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import at.bitfire.davdroid.ui.setup.LoginTypesProvider.LoginAction
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -29,18 +30,18 @@ class StandardLoginTypesProvider @Inject constructor(
 
     override val defaultLoginType = UrlLogin
 
-    override fun intentToInitialLoginType(intent: Intent): Pair<LoginType, Boolean> =
+    override fun intentToInitialLoginType(intent: Intent): LoginAction =
         intent.data?.normalizeScheme().let { uri ->
             when {
                 intent.hasExtra(LoginActivity.EXTRA_LOGIN_FLOW) ->
-                    Pair(NextcloudLogin, true)
+                    LoginAction(NextcloudLogin, true)
                 uri?.scheme == "mailto" ->
-                    Pair(EmailLogin, true)
+                    LoginAction(EmailLogin, true)
                 listOf("caldavs", "carddavs", "davx5", "http", "https").any { uri?.scheme == it } ->
-                    Pair(UrlLogin, true)
+                    LoginAction(UrlLogin, true)
                 else -> {
                     logger.warning("Did not understand login intent: $intent")
-                    Pair(defaultLoginType, false) // Don't skip login type page if intent is unclear
+                    LoginAction(defaultLoginType, false) // Don't skip login type page if intent is unclear
                 }
             }
         }
