@@ -28,8 +28,7 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val initialLoginType = loginTypesProvider.intentToInitialLoginType(intent)
-        val skipLoginTypePage = initialLoginType != loginTypesProvider.defaultLoginType
+        val (initialLoginType, skipLoginTypePage) = loginTypesProvider.intentToInitialLoginType(intent)
 
         setContent {
             LoginScreen(

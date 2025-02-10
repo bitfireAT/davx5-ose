@@ -26,17 +26,17 @@ class StandardLoginTypesProvider @Inject constructor() : LoginTypesProvider {
 
     override val defaultLoginType = UrlLogin
 
-    override fun intentToInitialLoginType(intent: Intent): LoginType =
+    override fun intentToInitialLoginType(intent: Intent): Pair<LoginType, Boolean> =
         intent.data?.normalizeScheme().let { uri ->
             when {
                 intent.hasExtra(LoginActivity.EXTRA_LOGIN_FLOW) ->
-                    NextcloudLogin
+                    Pair(NextcloudLogin, true)
                 uri?.scheme == "mailto" ->
-                    EmailLogin
+                    Pair(EmailLogin, true)
                 listOf("caldavs", "carddavs", "davx5", "http", "https").any { uri?.scheme == it } ->
-                    UrlLogin
+                    Pair(UrlLogin, true)
                 else ->
-                    defaultLoginType
+                    Pair(defaultLoginType, false) // Don't skip login type page if intent is unclear
             }
         }
 
