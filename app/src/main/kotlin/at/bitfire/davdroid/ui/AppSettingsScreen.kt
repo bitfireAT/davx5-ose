@@ -70,7 +70,6 @@ import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import kotlinx.coroutines.launch
-import kotlin.collections.orEmpty
 
 @Composable
 fun AppSettingsScreen(
@@ -424,13 +423,37 @@ fun AppSettings_Security(
         Text(stringResource(R.string.app_settings_security))
     }
 
+    var showingDistrustWarning by remember { mutableStateOf(false) }
+    if (showingDistrustWarning) {
+        AlertDialog(
+            onDismissRequest = { showingDistrustWarning = false },
+            title = { Text(stringResource(R.string.app_settings_distrust_system_certs)) },
+            text = { Text(stringResource(R.string.app_settings_distrust_system_certs_warning)) },
+            confirmButton = {
+                TextButton(
+                    onClick = { onDistrustSystemCertsUpdated(true) }
+                ) { Text(stringResource(R.string.dialog_confirm)) }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showingDistrustWarning = false }
+                ) { Text(stringResource(R.string.dialog_deny)) }
+            },
+        )
+    }
+
     SwitchSetting(
         checked = distrustSystemCerts,
         name = stringResource(R.string.app_settings_distrust_system_certs),
         summaryOn = stringResource(R.string.app_settings_distrust_system_certs_on),
         summaryOff = stringResource(R.string.app_settings_distrust_system_certs_off)
-    ) {
-        onDistrustSystemCertsUpdated(it)
+    ) { checked ->
+        if (checked) {
+            // Show warning before enabling.
+            showingDistrustWarning = true
+        } else {
+            onDistrustSystemCertsUpdated(false)
+        }
     }
 
     Setting(
