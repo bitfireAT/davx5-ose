@@ -104,7 +104,7 @@ class DnsRecordResolver @Inject constructor(
     // record selection
 
     /**
-     * Selects the best SRV record from a list of records algorithm from RFC 2782.
+     * Selects the best SRV record from a list of records, based on algorithm from RFC 2782.
      *
      * @param records the records to choose from
      * @param random a random number generator to use for random selection
