@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">账户（已）不存在</string>
   <string name="account_title_address_book">DAVx⁵ 通讯录</string>
-  <string name="address_books_authority_title">通讯录</string>
+  <string name="account_prefs_use_app">别在这里更改账户！请直接使用应用管理账户。</string>
   <string name="dialog_delete">删除</string>
   <string name="dialog_remove">删除</string>
   <string name="dialog_deny">取消</string>
   <string name="field_required">此字段是必填项</string>
   <string name="help">帮助</string>
-  <string name="manage_accounts">管理账户</string>
   <string name="navigate_up">向上导航</string>
   <string name="optional_label">* 可选</string>
   <string name="options_menu">选项菜单</string>
@@ -51,7 +50,10 @@
   <string name="intro_open_source_title">开源软件</string>
   <string name="intro_open_source_text">我们很高兴您使用 %s 开源软件。开发、维护和支持是艰苦的工作。请考虑通过多种方式提供贡献或捐款。不胜感激！</string>
   <string name="intro_open_source_details">如何贡献或捐款</string>
-  <string name="intro_open_source_dont_show">以后不需要显示</string>
+  <string name="intro_open_source_dont_show">不要提醒时长</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="other">%d 个月</item>
+  </plurals>
   <string name="intro_next">继续</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">权限</string>
@@ -122,7 +124,7 @@
   <string name="navigation_drawer_contribute">如何作贡献</string>
   <string name="navigation_drawer_privacy_policy">隐私政策</string>
   <string name="account_list_no_notification_permission">已禁用通知。你将不会收到同步出错的通知</string>
-  <string name="account_list_no_internet">没有经验证的互联网连接。同步可能不会运行</string>
+  <string name="account_list_no_internet">自动同步不活跃（无已验证的互联网连接）</string>
   <string name="account_list_manage_connections">管理连接</string>
   <string name="account_list_datasaver_enabled">启用了流量节省程序。后台同步受限</string>
   <string name="account_list_manage_datasaver">管理流量节省程序</string>
@@ -130,6 +132,9 @@
   <string name="account_list_manage_battery_saver">管理节电程序</string>
   <string name="account_list_low_storage">低存储空间。Android 不会立即同步本地更改，但会在下次定期同步时进行</string>
   <string name="account_list_manage_storage">管理存储</string>
+  <string name="account_list_calendar_storage_disabled">缺少日历提供程序。你停用了“日历存储”系统应用吗？</string>
+  <string name="account_list_contacts_storage_disabled">缺少联系人提供程序。你停用了“联系人存储”系统应用吗？</string>
+  <string name="account_list_manage_apps">管理应用</string>
   <string name="account_list_welcome">欢迎来到 DAVx⁵！</string>
   <string name="account_list_empty">连接到你的服务器，保持日历和联系人同步</string>
   <string name="accounts_sync_all">同步所有账户</string>

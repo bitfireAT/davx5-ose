@@ -48,7 +48,6 @@ import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
@@ -84,7 +83,6 @@ import javax.net.ssl.SSLHandshakeException
  * @param RemoteType        type of remote collection
  *
  * @param account           account to synchronize
- * @param accountSettings   account settings of account to synchronize
  * @param httpClient        HTTP client to use for network requests, already authenticated with credentials from [account]
  * @param extras            additional sync parameters
  * @param authority         authority of the content provider the collection shall be synchronized with
@@ -94,7 +92,6 @@ import javax.net.ssl.SSLHandshakeException
  */
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
     val account: Account,
-    val accountSettings: AccountSettings,
     val httpClient: HttpClient,
     val extras: Array<String>,
     val authority: String,
@@ -388,7 +385,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         try {
                             remote.delete(ifETag = lastETag, ifScheduleTag = lastScheduleTag) {}
                             numDeleted++
-                        } catch (e: HttpException) {
+                        } catch (_: HttpException) {
                             logger.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
                         }
                     }
@@ -587,7 +584,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     toDownload += url
 
                 if (toDownload.size >= MAX_MULTIGET_RESOURCES || url == null) {
-                    while (toDownload.size > 0) {
+                    while (toDownload.isNotEmpty()) {
                         val bunch = LinkedList<HttpUrl>()
                         toDownload.drainTo(bunch, MAX_MULTIGET_RESOURCES)
                         launch {
@@ -676,7 +673,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
 
         var syncToken: SyncToken? = null
-        report.filterIsInstance(SyncToken::class.java).firstOrNull()?.let {
+        report.filterIsInstance<SyncToken>().firstOrNull()?.let {
             syncToken = it
         }
         if (syncToken == null)

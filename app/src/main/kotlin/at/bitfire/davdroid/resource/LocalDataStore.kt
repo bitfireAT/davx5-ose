@@ -15,6 +15,23 @@ import at.bitfire.davdroid.db.Collection
 interface LocalDataStore<T: LocalCollection<*>> {
 
     /**
+     * Content provider authority for the data store.
+     */
+    val authority: String
+
+    /**
+     * Acquires a content provider client for the data store. The result of this call
+     * should be passed to all other methods of this class.
+     *
+     * **The caller is responsible for closing the content provider client!**
+     *
+     * @return the content provider client, or `null` if the content provider could not be acquired
+     *
+     * @throws SecurityException on missing permissions
+     */
+    fun acquireContentProvider(): ContentProviderClient?
+
+    /**
      * Creates a new local collection from the given (remote) collection info.
      *
      * @param provider       the content provider client

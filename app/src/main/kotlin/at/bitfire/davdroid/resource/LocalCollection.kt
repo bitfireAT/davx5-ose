@@ -8,12 +8,11 @@ import at.bitfire.davdroid.db.SyncState
 
 interface LocalCollection<out T: LocalResource<*>> {
 
-    /** A tag that uniquely identifies the collection (DAVx5-wide) */
+    /** a tag that uniquely identifies the collection (DAVx5-wide) */
     val tag: String
 
-    /** Address of the remote collection */
-    @Deprecated("Local collection should be identified by ID, not by URL")
-    val collectionUrl: String?
+    /** ID of the collection in the database (corresponds to [at.bitfire.davdroid.db.Collection.id]) */
+    val dbCollectionId: Long?
 
     /** collection title (used for user notifications etc.) **/
     val title: String

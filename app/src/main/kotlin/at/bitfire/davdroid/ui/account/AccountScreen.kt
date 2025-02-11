@@ -69,7 +69,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
@@ -114,9 +113,8 @@ fun AccountScreen(
         error = model.error,
         onResetError = model::resetError,
         invalidAccount = model.invalidAccount.collectAsStateWithLifecycle(false).value,
-        showOnlyPersonal = model.showOnlyPersonal.collectAsStateWithLifecycle(
-            initialValue = AccountSettings.ShowOnlyPersonal(onlyPersonal = false, locked = false)
-        ).value,
+        showOnlyPersonal = model.showOnlyPersonal.collectAsStateWithLifecycle().value,
+        showOnlyPersonalLocked = model.showOnlyPersonalLocked.collectAsStateWithLifecycle().value,
         onSetShowOnlyPersonal = model::setShowOnlyPersonal,
         hasCardDav = cardDavService != null,
         canCreateAddressBook = model.canCreateAddressBook.collectAsStateWithLifecycle(false).value,
@@ -169,7 +167,8 @@ fun AccountScreen(
     error: String? = null,
     onResetError: () -> Unit = {},
     invalidAccount: Boolean = false,
-    showOnlyPersonal: AccountSettings.ShowOnlyPersonal,
+    showOnlyPersonal: Boolean = false,
+    showOnlyPersonalLocked: Boolean = false,
     onSetShowOnlyPersonal: (showOnlyPersonal: Boolean) -> Unit = {},
     hasCardDav: Boolean,
     canCreateAddressBook: Boolean,
@@ -257,6 +256,7 @@ fun AccountScreen(
                             canCreateCalendar = canCreateCalendar,
                             onCreateCalendar = onCreateCalendar,
                             showOnlyPersonal = showOnlyPersonal,
+                            showOnlyPersonalLocked = showOnlyPersonalLocked,
                             onSetShowOnlyPersonal = onSetShowOnlyPersonal,
                             currentPage = pagerState.currentPage,
                             idxCardDav = idxCardDav,
@@ -440,7 +440,8 @@ fun AccountScreen_Actions(
     onCreateAddressBook: () -> Unit,
     canCreateCalendar: Boolean,
     onCreateCalendar: () -> Unit,
-    showOnlyPersonal: AccountSettings.ShowOnlyPersonal,
+    showOnlyPersonal: Boolean,
+    showOnlyPersonalLocked: Boolean,
     onSetShowOnlyPersonal: (showOnlyPersonal: Boolean) -> Unit,
     currentPage: Int,
     idxCardDav: Int?,
@@ -513,8 +514,8 @@ fun AccountScreen_Actions(
                     LocalMinimumInteractiveComponentSize provides Dp.Unspecified
                 ) {
                     Checkbox(
-                        checked = showOnlyPersonal.onlyPersonal,
-                        enabled = !showOnlyPersonal.locked,
+                        checked = showOnlyPersonal,
+                        enabled = !showOnlyPersonalLocked,
                         onCheckedChange = {
                             onSetShowOnlyPersonal(it)
                             overflowOpen = false
@@ -527,10 +528,10 @@ fun AccountScreen_Actions(
                 Text(stringResource(R.string.account_only_personal))
             },
             onClick = {
-                onSetShowOnlyPersonal(!showOnlyPersonal.onlyPersonal)
+                onSetShowOnlyPersonal(!showOnlyPersonal)
                 overflowOpen = false
             },
-            enabled = !showOnlyPersonal.locked
+            enabled = !showOnlyPersonalLocked
         )
 
         // rename account
@@ -651,7 +652,8 @@ fun AccountScreen_ServiceTab(
 fun AccountScreen_Preview() {
     AccountScreen(
         accountName = "test@example.com",
-        showOnlyPersonal = AccountSettings.ShowOnlyPersonal(onlyPersonal = false, locked = true),
+        showOnlyPersonal = false,
+        showOnlyPersonalLocked = true,
         hasCardDav = true,
         canCreateAddressBook = false,
         cardDavProgress = AccountProgress.Active,

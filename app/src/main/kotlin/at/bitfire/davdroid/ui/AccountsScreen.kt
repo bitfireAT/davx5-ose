@@ -64,10 +64,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -159,7 +161,9 @@ fun AccountsScreen(
         internetUnavailable = !model.networkAvailable.collectAsStateWithLifecycle(false).value,
         batterySaverActive = model.batterySaverActive.collectAsStateWithLifecycle(false).value,
         dataSaverActive = model.dataSaverEnabled.collectAsStateWithLifecycle(false).value,
-        storageLow = model.storageLow.collectAsStateWithLifecycle(false).value
+        storageLow = model.storageLow.collectAsStateWithLifecycle(false).value,
+        calendarStorageDisabled = model.calendarStorageDisabled.collectAsStateWithLifecycle(false).value,
+        contactsStorageDisabled = model.contactsStorageDisabled.collectAsStateWithLifecycle(false).value
     )
 }
 
@@ -177,7 +181,9 @@ fun AccountsScreen(
     internetUnavailable: Boolean = false,
     batterySaverActive: Boolean = false,
     dataSaverActive: Boolean = false,
-    storageLow: Boolean = false
+    storageLow: Boolean = false,
+    calendarStorageDisabled: Boolean = false,
+    contactsStorageDisabled: Boolean = false
 ) {
     val scope = rememberCoroutineScope()
 
@@ -330,7 +336,14 @@ fun AccountsScreen(
                                     val intent = Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
                                     if (intent.resolveActivity(context.packageManager) != null)
                                         context.startActivity(intent)
-                                }
+                                },
+                                calendarStorageDisabled = calendarStorageDisabled,
+                                contactsStorageDisabled = contactsStorageDisabled,
+                                onManageApps = {
+                                    val intent = Intent(Settings.ACTION_APPLICATION_SETTINGS)
+                                    if (intent.resolveActivity(context.packageManager) != null)
+                                        context.startActivity(intent)
+                                },
                             )
 
                             // account list
@@ -472,36 +485,42 @@ fun AccountList(
 @Composable
 @Preview
 fun AccountList_Preview_Idle() {
-    AccountList(
-        listOf(
-            AccountsModel.AccountInfo(
-                Account("Account Name", "test"),
-                AccountProgress.Idle
+    AppTheme {
+        AccountList(
+            listOf(
+                AccountsModel.AccountInfo(
+                    Account("Account Name", "test"),
+                    AccountProgress.Idle
+                )
             )
         )
-    )
+    }
 }
 
 @Composable
 @Preview
 fun AccountList_Preview_SyncPending() {
-    AccountList(listOf(
-        AccountsModel.AccountInfo(
-            Account("Account Name", "test"),
-            AccountProgress.Pending
-        )
-    ))
+    AppTheme {
+        AccountList(listOf(
+            AccountsModel.AccountInfo(
+                Account("Account Name", "test"),
+                AccountProgress.Pending
+            )
+        ))
+    }
 }
 
 @Composable
 @Preview
 fun AccountList_Preview_Syncing() {
-    AccountList(listOf(
-        AccountsModel.AccountInfo(
-            Account("Account Name", "test"),
-            AccountProgress.Active
-        )
-    ))
+    AppTheme {
+        AccountList(listOf(
+            AccountsModel.AccountInfo(
+                Account("Account Name", "test"),
+                AccountProgress.Active
+            )
+        ))
+    }
 }
 
 
@@ -516,7 +535,10 @@ fun SyncWarnings(
     dataSaverActive: Boolean = true,
     onManageDataSaver: () -> Unit = {},
     lowStorageWarning: Boolean = true,
-    onManageStorage: () -> Unit = {}
+    onManageStorage: () -> Unit = {},
+    calendarStorageDisabled: Boolean = false,
+    contactsStorageDisabled: Boolean = false,
+    onManageApps: () -> Unit = {}
 ) {
     Column(Modifier.padding(horizontal = 8.dp)) {
         if (notificationsWarning)
@@ -568,17 +590,41 @@ fun SyncWarnings(
             ) {
                 Text(stringResource(R.string.account_list_low_storage))
             }
+
+        if (calendarStorageDisabled)
+            ActionCard(
+                icon = ImageVector.vectorResource(R.drawable.ic_database_off),
+                actionText = stringResource(R.string.account_list_manage_apps),
+                onAction = onManageApps,
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
+                Text(stringResource(R.string.account_list_calendar_storage_disabled))
+            }
+
+        if (contactsStorageDisabled)
+            ActionCard(
+                icon = ImageVector.vectorResource(R.drawable.ic_database_off),
+                actionText = stringResource(R.string.account_list_manage_apps),
+                onAction = onManageApps,
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
+                Text(stringResource(R.string.account_list_contacts_storage_disabled))
+            }
     }
 }
 
 @Composable
 @Preview
 fun SyncWarnings_Preview() {
-    SyncWarnings(
-        notificationsWarning = true,
-        internetWarning = true,
-        batterySaverActive = true,
-        dataSaverActive = true,
-        lowStorageWarning = true
-    )
+    AppTheme {
+        SyncWarnings(
+            notificationsWarning = true,
+            internetWarning = true,
+            batterySaverActive = true,
+            dataSaverActive = true,
+            lowStorageWarning = true,
+            calendarStorageDisabled = true,
+            contactsStorageDisabled = true
+        )
+    }
 }

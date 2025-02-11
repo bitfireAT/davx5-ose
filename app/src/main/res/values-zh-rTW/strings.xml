@@ -3,10 +3,8 @@
   <!--common strings-->
   <string name="account_invalid">帳號（已）不存在</string>
   <string name="account_title_address_book">DAVx⁵ 通訊錄</string>
-  <string name="address_books_authority_title">通訊錄</string>
   <string name="field_required">此為必填欄位</string>
   <string name="help">幫助</string>
-  <string name="manage_accounts">管理帳號</string>
   <string name="share">分享</string>
   <string name="database_destructive_migration_title">資料庫損毀</string>
   <string name="database_destructive_migration_text">所有帳號已在本地刪除</string>

@@ -24,11 +24,11 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.Awaits
 import io.mockk.coEvery
 import io.mockk.every
+import io.mockk.junit4.MockKRule
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
-import io.mockk.unmockkAll
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -55,8 +55,7 @@ class SyncAdapterServicesTest {
     @Inject
     lateinit var collectionRepository: DavCollectionRepository
 
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
 
     @Inject
@@ -74,6 +73,9 @@ class SyncAdapterServicesTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
+    @get:Rule
+    val mockkRule = MockKRule(this)
+
     // test methods should run quickly and not wait 60 seconds for a sync timeout or something like that
     @get:Rule
     val timeoutRule: Timeout = Timeout.seconds(5)
@@ -90,7 +92,6 @@ class SyncAdapterServicesTest {
     @After
     fun tearDown() {
         TestAccount.remove(account)
-        unmockkAll()
     }
 
 

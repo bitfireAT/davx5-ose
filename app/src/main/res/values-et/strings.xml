@@ -3,13 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">Kasutajakontot ei leidu (enam)</string>
   <string name="account_title_address_book">DAVx⁵ aadressiraamat</string>
-  <string name="address_books_authority_title">Aadressiraamatud</string>
+  <string name="account_prefs_use_app">Palun ära muuda kasutajakontot siin! Selle asemel pruugi kasutajakontode halduseks otseselt rakendust.</string>
   <string name="dialog_delete">Kustuta</string>
   <string name="dialog_remove">Eemalda</string>
   <string name="dialog_deny">Katkesta</string>
   <string name="field_required">See väli on kohustuslik</string>
   <string name="help">Abiteave</string>
-  <string name="manage_accounts">Halda kasutajakontosid</string>
   <string name="navigate_up">Liigu üles</string>
   <string name="optional_label">* valikuline</string>
   <string name="options_menu">Valikute menüü</string>
@@ -31,7 +30,12 @@
   <string name="intro_slogan1">Sinu andmed. Sinu valik.</string>
   <string name="intro_slogan2">Sina otsustad.</string>
   <string name="intro_battery_title">Regulaarne sünkroniseerimisvälp</string>
+  <string name="intro_battery_text">Selleks, et sünkroniseerimine soovitud ajavahemike järel toimiks taustateenusena, vajab %s õigust töötada taustal. Vastasel juhul võib Android igal ajal sünkroniseerimise peatada.</string>
+  <string name="intro_battery_dont_show">Ma ei soovi kasutada regulaarset sünkroniseerimisvälpa. *</string>
+  <string name="intro_autostart_title">%s ühilduvus</string>
   <string name="intro_autostart_text">Ilmselt see nutiseade blokeerib sünkroniseerimist. Kui see sinu tegevust mõjutab, siis saad olukorra lahendada käsitsi.</string>
+  <string name="intro_autostart_dont_show">Ma juba kasutan nõutavaid seadistusi. Ära enam tuleta seda mulle meelde.*</string>
+  <string name="intro_leave_unchecked">* Kui soovid hilisemat meeldetuletust, jäta see märkimata. Lisaks saad seada muuta rakenduse seadistustest / %s.</string>
   <string name="intro_more_info">Lisateave</string>
   <string name="intro_tasks_jtx">jtx Board</string>
   <string name="intro_tasks_jtx_info"><![CDATA[Toetab ülesannete, märkmete ja päevikute sünkroniseerimist.]]></string>
@@ -44,10 +48,24 @@
   <string name="intro_tasks_no_app_store">Rakendustepoodi pole saadaval</string>
   <string name="intro_tasks_dont_show">Ma ei vaja ülesannete tuge.*</string>
   <string name="intro_open_source_title">Avatud lähtekoodiga tarkvara</string>
+  <string name="intro_open_source_text">Me oleme rõõmsad, et kasutad avatud lähtekoodil põhinevat rakendust %s. Selle arendus, hooldus ja kasutajatugi nõuavad märgatavat tööd. Palun kaalu erinevaid võimalusi osalemiseks või rahalist toetamist. Me hindaksime seda väga!</string>
+  <string name="intro_open_source_details">Võimalused kaastööks või rahaliseks toetamiseks</string>
+  <string name="intro_open_source_dont_show">Ära näita seda uuesti</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d kuu jooksul</item>
+    <item quantity="other">%d kuu jooksul</item>
+  </plurals>
   <string name="intro_next">Järgmine</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Õigused</string>
   <string name="permissions_text">%s vajab korralikuks toimimiseks õigusi.</string>
+  <string name="permissions_all_title">Kõik alljärgnev</string>
+  <string name="permissions_all_status_off">Kasuta seda valikut kõikide funktsionaalsuste sisselülitamiseks (soovitatav)</string>
+  <string name="permissions_all_status_on">Rakenduse õigused on olemas</string>
+  <string name="permissions_contacts_title">Kontaktide õigused</string>
+  <string name="permissions_contacts_status_off">Kontaktide sünkroniseerimine puudub (pole soovitatud)</string>
+  <string name="permissions_contacts_status_on">Kontaktide sünkroniseerimine on võimalik</string>
+  <string name="permissions_calendar_title">Kalendri õigused</string>
   <string name="permissions_calendar_status_off">Kalendri sünkroniseerimine puudub (pole soovitatud)</string>
   <string name="permissions_calendar_status_on">Kalendri sünkroniseerimine on võimalik</string>
   <string name="permissions_notification_title">Teavituste õigused</string>
@@ -59,8 +77,23 @@
   <string name="permissions_tasks_status_off">Ülesannete sünkroniseerimine puudub</string>
   <string name="permissions_tasks_status_on">Ülesannete sünkroniseerimine on võimalik</string>
   <string name="permissions_autoreset_title">Säilita õigused</string>
+  <string name="permissions_autoreset_status_off">Õigusi võib muuta automaatselt (pole soovitatud)</string>
+  <string name="permissions_autoreset_status_on">Õigused ei saa olema automaatselt  muudetud</string>
+  <string name="permissions_autoreset_instruction">Klõpsi Õigused ja eemalda valik „Eemalda load, kui rakendust ei kasutata“</string>
+  <string name="permissions_app_settings_hint">Kui muutmine ei toimi, siis kasuta rakenduse õiguste seadistusi.</string>
   <string name="permissions_app_settings">Rakenduse seadistused</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WiFi SSID õigused</string>
+  <string name="wifi_permissions_intro">Selleks, et toimiks ligipääs hetkel kasutatavale WiFi võrgunimele (SSID), peavad olema täidetud järgnevad tingimused:</string>
+  <string name="wifi_permissions_location_permission">Õigused täpse asukoha tuvastamiseks</string>
+  <string name="wifi_permissions_location_permission_on">Õigused asukoha tuvastamiseks on olemas</string>
+  <string name="wifi_permissions_location_permission_off">Õigused asukoha tuvastamiseks on keelatud</string>
+  <string name="wifi_permissions_background_location_permission">Õigused asukoha tuvastamiseks taustal</string>
+  <string name="wifi_permissions_background_location_permission_label">Luba alati</string>
+  <string name="wifi_permissions_background_location_permission_on">Asukohaõigused on: %s</string>
+  <string name="wifi_permissions_background_location_permission_off">Asukohaõiguseid pole: %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s kasutab asukohaandmeid (vaid WiFi SSID võrgutunnust) vaid sünkroniseerimise tagamiseks konkreetse WiFi-võrgu piires. See kehtib ka siis, kui sünkroniseerimine on seadistatud töötama taustal.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Kõik asukohaandmed (vaid WiFi SSId võrgutunnus) on kasutusel kohalikus nutiseadmes ega saadeta mitte kuhugile mujale.</string>
   <string name="wifi_permissions_location_enabled">Asukohateenus on alati kasutusel</string>
   <string name="wifi_permissions_location_enabled_on">Asukohateenus on lubatud</string>
   <string name="wifi_permissions_location_enabled_off">Asukohateenus pole lubatud</string>
@@ -92,7 +125,7 @@
   <string name="navigation_drawer_contribute">Osalemise viisid</string>
   <string name="navigation_drawer_privacy_policy">Privaatsuspoliitika</string>
   <string name="account_list_no_notification_permission">Teavitused on väljalülitatud ja seega sünkroniseerimisvigade infot sa ei näe.</string>
-  <string name="account_list_no_internet">Kontrollitud internetiühendus puudub. Sünkroniseerimine ei pruugi toimida.</string>
+  <string name="account_list_no_internet">Automaatne sünkroniseerimine pole aktiivne (kontrollitud internetiühendus puudub)</string>
   <string name="account_list_manage_connections">Halda ühendusi</string>
   <string name="account_list_datasaver_enabled">Andmemahu piiraja on kasutusel. Taustal sünkroniseerimine võib toimida piirangutega.</string>
   <string name="account_list_manage_datasaver">Halda andmemahu piirajat</string>
@@ -100,6 +133,9 @@
   <string name="account_list_manage_battery_saver">Halda akukasutuse piirajat</string>
   <string name="account_list_low_storage">Vaba andmeruumi napib. Android ei sünkroniseeri kohalikke muudatusi kohe, vaid järgmise regulaarse sünkroniseerimise ajal.</string>
   <string name="account_list_manage_storage">Halda andmeruumi</string>
+  <string name="account_list_calendar_storage_disabled">Kalendris teenusepakkuja puudub. Kas sa oled lülitanud välja süsteemse kalendri salvestusruumi rakenduse „Calendar storage“ välja?</string>
+  <string name="account_list_contacts_storage_disabled">Kontaktide teenusepakkuja puudub. Kas sa oled lülitanud välja süsteemse kontaktide salvestusruumi rakenduse „Contacts storage“ välja?</string>
+  <string name="account_list_manage_apps">Halda rakendusi</string>
   <string name="account_list_welcome">Tere tulemast kasutama rakendust DAVx⁵!</string>
   <string name="account_list_empty">Loo ühendus oma serveriga ja hoia kalendrid ning kontaktid sünkroniseerituna.</string>
   <string name="accounts_sync_all">Sünkroniseeri kõik kasutajakontod</string>
@@ -284,13 +320,32 @@
   <string name="settings_certificate_alias_empty">Sertifikaati pole saadaval või paigaldatud</string>
   <string name="settings_certificate_install">Paigalda sertifikaat</string>
   <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Möödunud sündmuste ajapiir</string>
+  <string name="settings_sync_time_range_past_none">Kõik sündmused kuuluvad sünkroniseerimisele</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Eira enam kui üks päev vanu sündmuseid</item>
+    <item quantity="other">Eira enam kui %d päeva vanu sündmuseid</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Sündmused, mis on vanemad, kui siin märgitud päevade arv, jäävad sünkroniseerimata (võib olla ka 0). Kõikide sündmuste sünkroniseerimiseks jäta tühjaks.</string>
+  <string name="settings_default_alarm">Vaikimisi meeldetuletus</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Vaikimisi meeldetuletus üks minutit enne sündmust</item>
+    <item quantity="other">Vaikimisi meeldetuletus %d minutit enne sündmust</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Vaikimisi meeldetuletused puuduvad</string>
+  <string name="settings_default_alarm_message">Eelistus määrab, kas kasutame vaikimisi meeldetuletust sündmuste puhul, kus eraldi meeldetuletus on seadistamata. Aktiveerimiseks sisesta vaikimisi meeldetuletuse aeg minutites. Väljalülitamiseks jäta tühjaks.</string>
   <string name="settings_manage_calendar_colors">Halda kalendrivärve</string>
   <string name="settings_manage_calendar_colors_on">Kalendri värvid lähtestatakse igal sünkroniseerimisel</string>
   <string name="settings_manage_calendar_colors_off">Muud rakendused võivad kalendrivärve seadistada</string>
-  <string name="settings_event_colors">Sündmiste värvide tugi</string>
+  <string name="settings_event_colors">Sündmuste värvide tugi</string>
   <string name="settings_event_colors_on">Sündmuste värvid kuuluvad sünkroniseerimisele</string>
   <string name="settings_event_colors_off">Sündmuste värvid ei kuulu sünkroniseerimisele</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Kontaktgrupi meetod</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Grupid on eraldi vCard-kirjed</item>
+    <item>Grupid on kontaktikohased kategooriad</item>
+  </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Loo aadressiraamat</string>
   <string name="create_addressbook_maybe_not_supported">See server ei pruugi toetada aadressiraamatu loomist CardDAVi ühenduse abil.</string>
@@ -329,6 +384,11 @@
   <string name="collection_url">Aadress (võrguaadress)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Silumisteave</string>
+  <string name="debug_info_archive_caption">ZIP-arhiivifail</string>
+  <string name="debug_info_archive_subtitle">Sisaldab silumisteavet ja logisid</string>
+  <string name="debug_info_archive_text">Tõsta arhiiv uurimiseks arvutisse, saada huvilisele e-postiga või lisa veateatele meie veahalduses.</string>
+  <string name="debug_info_archive_share">Jaga arhiivi</string>
+  <string name="debug_info_attached">Sõnumile lisatud silumisteave (eeldab, et vastuvõttev rakendus oskab manuseid käsitleda).</string>
   <string name="debug_info_http_error">HTTP-viga</string>
   <string name="debug_info_server_error">Serveri viga</string>
   <string name="debug_info_webdav_error">WebDAVi viga</string>
@@ -340,6 +400,7 @@
   <string name="debug_info_view_details">Vaata üksikasju</string>
   <string name="debug_info_subtitle">Silumisteave on kogutud</string>
   <string name="debug_info_involved_caption">Seotud teenused ja tarvikud</string>
+  <string name="debug_info_involved_subtitle">Probleemi või veaga seotud teave</string>
   <string name="debug_info_involved_remote">Serveris asuvad teenused ja tarvikud:</string>
   <string name="debug_info_involved_local">Kohalikus nutiseadmes teenused ja tarvikud:</string>
   <string name="debug_info_logs_caption">Logid</string>
@@ -377,10 +438,12 @@
   <string name="sync_error_permissions_text">Vajalikud on täiendavad õigused</string>
   <string name="sync_error_tasks_too_old">%s on liiga vana</string>
   <string name="sync_error_tasks_required_version">Väikseim nõutav versioon: %1$s</string>
+  <string name="sync_error_authentication_failed">Autentimine ei õnnestunud (kontrolli, et kasutajanimi/salasõna oleksid õiged)</string>
   <string name="sync_error_io">Võrgu- või sisend/väljundviga – %s</string>
   <string name="sync_error_http_dav">HTTP serveri viga – %s</string>
   <string name="sync_error_local_storage">Kohaliku salvestusruumi viga – %s</string>
   <string name="sync_error_retry_limit_reached">Pehme viga (korduspäringute arvu ülempiir on käes)</string>
+  <string name="sync_error_view_item">Vaata objekti</string>
   <string name="sync_invalid_contact">Saime serverist vigase kontaktikirje</string>
   <string name="sync_invalid_event">Saime serverist vigase sündmusekirje</string>
   <string name="sync_invalid_task">Saime serverist vigase ülesandekirje</string>

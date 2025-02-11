@@ -3,13 +3,11 @@
   <!--common strings-->
   <string name="account_invalid">ანგარიში (აღარ) არსებობს</string>
   <string name="account_title_address_book">DAVx⁵ მისამართთა წიგნაკი</string>
-  <string name="address_books_authority_title">მისამართთა წიგნაკები</string>
   <string name="dialog_delete">წაშლა</string>
   <string name="dialog_remove">ამოშლა</string>
   <string name="dialog_deny">გაუქმება</string>
   <string name="field_required">ეს ველი სავალდებულოა</string>
   <string name="help">დახმარება</string>
-  <string name="manage_accounts">ანგარიშების მართვა</string>
   <string name="navigate_up">ზემოთ გადასვლა</string>
   <string name="optional_label">* არასავალდებულო</string>
   <string name="options_menu">ოპციების მენიუ</string>
@@ -50,7 +48,6 @@
   <string name="intro_open_source_title">ღია კოდის პროგრამული უზრუნველყოფა</string>
   <string name="intro_open_source_text">კმაყოფილები ვართ, რომ იყენებთ %s-ს, რომელიც ღია კოდის პროგრამული უზრუნველყოფაა. განვითარება და მხარდაჭერა რთული სამუშაო. გთხოვთ, გაითვალისწინოთ წილის შეტანა (მრავალი გზა არსებობს) ან ფულის ჩუქბეა. ძალიან მადლობელი ვიქნებით!</string>
   <string name="intro_open_source_details">როგორ შევიტანო წვლილი/დაგეხმაროთ</string>
-  <string name="intro_open_source_dont_show">არ მაჩვენოთ ახლო მომავალში</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">უფლებები</string>
   <string name="permissions_text">%s-ს სჭირდება უფლებები სწორად სამუშაოდ.</string>
@@ -118,7 +115,6 @@
   <string name="navigation_drawer_contribute">როგორ შევიტანო ღვაწლი</string>
   <string name="navigation_drawer_privacy_policy">პირადულობის პოლიტიკა</string>
   <string name="account_list_no_notification_permission">შეტყობინებები გათიშული. თქვენ არ მიიღებთ შეტყობინებებს სიქნრონიზაციის შეცდომების შესახებ.</string>
-  <string name="account_list_no_internet">დადასტურებული ინტერნეტ კავშირი არ არის. სიქნრონიზაცია შეიძლება არ გაეშვას.</string>
   <string name="account_list_manage_connections">კავშირების მართვა</string>
   <string name="account_list_datasaver_enabled">გააქტიურებულია მონაცემთა შემნახველი. ფონური სინქრონიზაცია შეზღუდულია.</string>
   <string name="account_list_manage_datasaver">მონაცემთა შემნახველის მართვა</string>

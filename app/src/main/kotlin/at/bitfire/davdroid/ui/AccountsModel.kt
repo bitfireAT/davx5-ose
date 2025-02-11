@@ -8,11 +8,14 @@ import android.accounts.Account
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager.NameNotFoundException
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.PowerManager
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.lifecycle.ViewModel
@@ -30,6 +33,7 @@ import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.intro.IntroPage
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
 import at.bitfire.davdroid.util.broadcastReceiverFlow
+import at.bitfire.davdroid.util.packageChangedFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -48,10 +52,10 @@ import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountsModel.Factory::class)
 class AccountsModel @AssistedInject constructor(
-    @Assisted val syncAccountsOnInit: Boolean,
+    @Assisted private val syncAccountsOnInit: Boolean,
     private val accountRepository: AccountRepository,
     internal val accountsDrawerHandler: AccountsDrawerHandler,
-    @ApplicationContext val context: Context,
+    @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     introPageFactory: IntroPageFactory,
     private val logger: Logger,
@@ -204,6 +208,16 @@ class AccountsModel @AssistedInject constructor(
             }
         }
 
+    /** whether the calendar storage is missing or disabled */
+    val calendarStorageDisabled = packageChangedFlow(context).map {
+        !contentProviderAvailable(CalendarContract.AUTHORITY)
+    }
+
+    /** whether the calendar storage is missing or disabled */
+    val contactsStorageDisabled = packageChangedFlow(context).map {
+        !contentProviderAvailable(ContactsContract.AUTHORITY)
+    }
+
 
     init {
         if (syncAccountsOnInit)
@@ -221,5 +235,18 @@ class AccountsModel @AssistedInject constructor(
         for (account in accountRepository.getAll())
             syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
     }
+
+
+    // helpers
+
+    fun contentProviderAvailable(authority: String): Boolean =
+        try {
+            // resolveContentProvider returns null if the provider app is disabled or missing;
+            // so we can't distinguish between "disabled" and "not found"
+            context.packageManager.resolveContentProvider(authority, 0) != null
+        } catch (_: NameNotFoundException) {
+            logger.fine("$authority provider app not found")
+            false
+        }
 
 }

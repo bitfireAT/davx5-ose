@@ -3,13 +3,11 @@
   <!--common strings-->
   <string name="account_invalid">A conta não existe (mais)</string>
   <string name="account_title_address_book">Livro de endereços do DAVx⁵</string>
-  <string name="address_books_authority_title">Livros de endereços</string>
   <string name="dialog_delete">Excluir</string>
   <string name="dialog_remove">Remover</string>
   <string name="dialog_deny">Cancelar</string>
   <string name="field_required">Este campo é necessário</string>
   <string name="help">Ajuda</string>
-  <string name="manage_accounts">Gerenciar contas</string>
   <string name="navigate_up">Navegar para cima</string>
   <string name="optional_label">* opcional</string>
   <string name="options_menu">Menu de opções</string>
@@ -50,7 +48,6 @@
   <string name="intro_open_source_title">Software Livre</string>
   <string name="intro_open_source_text">Estamos felizes por usar o %s, que é um software de código aberto. Desenvolvimento, manutenção e suporte são um trabalho árduo. Considere contribuir (existem várias maneiras) ou fazer uma doação. Seria muito apreciado!</string>
   <string name="intro_open_source_details">Como contribuir/doar</string>
-  <string name="intro_open_source_dont_show">Não mostrar no futuro próximo</string>
   <string name="intro_next">Próximo</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permissões</string>
@@ -119,7 +116,6 @@
   <string name="navigation_drawer_contribute">Como contribuir</string>
   <string name="navigation_drawer_privacy_policy">Política de privacidade</string>
   <string name="account_list_no_notification_permission">As notificações estão desativadas. Você não será notificado sobre erros de sincronização.</string>
-  <string name="account_list_no_internet">Sem conexão à internet validada. A sincronização pode não funcionar.</string>
   <string name="account_list_manage_connections">Gerenciar conexões</string>
   <string name="account_list_datasaver_enabled">A economia de dados está ativada. A sincronização em segundo plano está restrita.</string>
   <string name="account_list_manage_datasaver">Gerenciar a economia de dados</string>

@@ -3,12 +3,10 @@
   <!--common strings-->
   <string name="account_invalid">هذا الحساب ليس مسجلاً (لم يعد مسجلاً)</string>
   <string name="account_title_address_book">DAVx⁵ دفتر عناوين</string>
-  <string name="address_books_authority_title">دفاتر العناوين</string>
   <string name="dialog_remove">أزل</string>
   <string name="dialog_deny">ألغِ</string>
   <string name="field_required">يجب ملء هذا الحقل</string>
   <string name="help">مساعدة</string>
-  <string name="manage_accounts">إدارة الحسابات</string>
   <string name="navigate_up">العودة</string>
   <string name="share">شارك</string>
   <string name="database_destructive_migration_title">عطبت قاعدة البيانات</string>
@@ -46,7 +44,6 @@
   <string name="intro_open_source_title">برمجيات حرة المصدر</string>
   <string name="intro_open_source_text">نحن سعداء باستخدامك تطبيقنا حر المصدر %s. التطوير والعناية والدعم كلها مهام صعبة. نرجوا أن تضع المساهمة معنا أو التبرع لنا في عين الاعتبار. سنكون ممتنين لمساهمتك أو تبرعك.</string>
   <string name="intro_open_source_details">كيفية المساهمة أو التبرع</string>
-  <string name="intro_open_source_dont_show">لا تظهرها في المدى القريب</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">الأذونات</string>
   <string name="permissions_text">%sيتطلب بعض الأذونات للعمل بكفء.</string>

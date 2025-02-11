@@ -4,17 +4,13 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import android.content.Context
 import android.security.NetworkSecurityPolicy
-import androidx.test.filters.SmallTest
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
-import at.bitfire.davdroid.settings.SettingsManager
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.mockwebserver.Dispatcher
@@ -53,8 +49,7 @@ class DavResourceFinderTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
-    @ApplicationContext
-    lateinit var context: Context
+    lateinit var httpClientBuilder: HttpClient.Builder
 
     @Inject
     lateinit var logger: Logger
@@ -62,40 +57,37 @@ class DavResourceFinderTest {
     @Inject
     lateinit var resourceFinderFactory: DavResourceFinder.Factory
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
-
-    private val server = MockWebServer()
-
-    private lateinit var finder: DavResourceFinder
+    private lateinit var server: MockWebServer
     private lateinit var client: HttpClient
+    private lateinit var finder: DavResourceFinder
 
     @Before
-    fun setup() {
+    fun setUp() {
         hiltRule.inject()
 
-        server.dispatcher = TestDispatcher(logger)
-        server.start()
+        server = MockWebServer().apply {
+            dispatcher = TestDispatcher(logger)
+            start()
+        }
+
+        val credentials = Credentials("mock", "12345")
+        client = httpClientBuilder
+                .authenticate(host = null, credentials = credentials)
+                .build()
+        Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
 
         val baseURI = URI.create("/")
-        val credentials = Credentials("mock", "12345")
-
         finder = resourceFinderFactory.create(baseURI, credentials)
-        client = HttpClient.Builder(context)
-                .addAuthentication(null, credentials)
-                .build()
-
-        Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
     }
 
     @After
-    fun teardown() {
+    fun tearDown() {
+        client.close()
         server.shutdown()
     }
 
 
     @Test
-    @SmallTest
     fun testRememberIfAddressBookOrHomeset() {
         // recognize home set
         var info = ServiceInfo()

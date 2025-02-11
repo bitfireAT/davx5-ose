@@ -22,7 +22,6 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.JtxICalObject
@@ -39,7 +38,6 @@ import java.util.logging.Level
 
 class JtxSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted accountSettings: AccountSettings,
     @Assisted extras: Array<String>,
     @Assisted httpClient: HttpClient,
     @Assisted authority: String,
@@ -48,7 +46,6 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted collection: Collection
 ): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(
     account,
-    accountSettings,
     httpClient,
     extras,
     authority,
@@ -61,7 +58,6 @@ class JtxSyncManager @AssistedInject constructor(
     interface Factory {
         fun jtxSyncManager(
             account: Account,
-            accountSettings: AccountSettings,
             extras: Array<String>,
             httpClient: HttpClient,
             authority: String,

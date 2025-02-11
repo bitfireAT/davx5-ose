@@ -3,13 +3,11 @@
   <!--common strings-->
   <string name="account_invalid">La cuenta (ya) no existe</string>
   <string name="account_title_address_book">Agenda DAVx⁵</string>
-  <string name="address_books_authority_title">Agendas</string>
   <string name="dialog_delete">Eliminar</string>
   <string name="dialog_remove">Eliminar</string>
   <string name="dialog_deny">Cancelar</string>
   <string name="field_required">Este campo es requerido</string>
   <string name="help">Ayuda</string>
-  <string name="manage_accounts">Administrar cuentas</string>
   <string name="navigate_up">Navegar hacia arriba</string>
   <string name="optional_label">* opcional</string>
   <string name="options_menu">Menú de opciones</string>
@@ -50,7 +48,6 @@
   <string name="intro_open_source_title">Software open-source</string>
   <string name="intro_open_source_text">Nos complace que use%s, que es software open-source. Desarrollar, mantener y asistir a usuarios es un trabajo duro. Por favor, considere contribuir (hay muchas maneras) o hacer una donación. ¡Se agradecería mucho!</string>
   <string name="intro_open_source_details">Cómo contribuir o donar</string>
-  <string name="intro_open_source_dont_show">No mostrar en un futuro próximo</string>
   <string name="intro_next">Siguiente</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisos</string>
@@ -119,7 +116,6 @@
   <string name="navigation_drawer_contribute">Cómo contribuir o donar</string>
   <string name="navigation_drawer_privacy_policy">Reglamento de privacidad</string>
   <string name="account_list_no_notification_permission">Notificaciones deshabilitadas. No serás notificado de errores de sincronización.</string>
-  <string name="account_list_no_internet">No hay conexión a Internet. La sincronización puede que no se ejecute.</string>
   <string name="account_list_manage_connections">Administrar conexiones</string>
   <string name="account_list_datasaver_enabled">Ahorro de datos habilitado. Sincronización en segundo plano restringida.</string>
   <string name="account_list_manage_datasaver">Administrar ahorro de datos</string>

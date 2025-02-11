@@ -1,9 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="address_books_authority_title">Rehberler</string>
   <string name="help">Yardım</string>
-  <string name="manage_accounts">Hesapları yönet</string>
   <string name="notification_channel_debugging">Hata ayıklama</string>
   <string name="notification_channel_sync">Senkronizasyon</string>
   <!--IntroActivity-->

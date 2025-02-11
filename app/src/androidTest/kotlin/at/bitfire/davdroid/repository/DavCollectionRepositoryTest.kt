@@ -4,16 +4,14 @@
 
 package at.bitfire.davdroid.repository
 
-import android.content.Context
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.settings.AccountSettings
-import dagger.Lazy
-import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.BindValueIntoSet
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -26,28 +24,36 @@ import javax.inject.Inject
 @HiltAndroidTest
 class DavCollectionRepositoryTest {
 
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
     @Inject
-    lateinit var accountSettingsFactory: AccountSettings.Factory
-
-    @Inject
-    @ApplicationContext
-    lateinit var context: Context
+    lateinit var collectionRepository: DavCollectionRepository
 
     @Inject
     lateinit var db: AppDatabase
 
+    @BindValueIntoSet
+    @MockK(relaxed = true)
+    lateinit var testObserver: DavCollectionRepository.OnChangeListener
+
     @Inject
     lateinit var serviceRepository: DavServiceRepository
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val mockkKRule = MockKRule(this)
 
     var service: Service? = null
 
     @Before
     fun setUp() {
         hiltRule.inject()
-        service = createTestService(Service.TYPE_CARDDAV)!!
+
+        // insert test service
+        val serviceId = serviceRepository.insertOrReplace(
+            Service(id=0, accountName="test", type=Service.TYPE_CARDDAV, principal = null)
+        )
+        service = serviceRepository.get(serviceId)!!
     }
 
     @After
@@ -67,18 +73,6 @@ class DavCollectionRepositoryTest {
                 forceReadOnly = false,
             )
         )
-        val testObserver = mockk<DavCollectionRepository.OnChangeListener>(relaxed = true)
-        val collectionRepository = DavCollectionRepository(
-            accountSettingsFactory,
-            context,
-            db,
-            object : Lazy<Set<DavCollectionRepository.OnChangeListener>> {
-                override fun get(): Set<DavCollectionRepository.OnChangeListener> {
-                    return mutableSetOf(testObserver)
-                }
-            },
-            serviceRepository
-        )
 
         assert(db.collectionDao().get(collectionId)?.forceReadOnly == false)
         verify(exactly = 0) {
@@ -89,15 +83,6 @@ class DavCollectionRepositoryTest {
         verify(exactly = 1) {
             testObserver.onCollectionsChanged()
         }
-    }
-
-
-    // Test helpers and dependencies
-
-    private fun createTestService(serviceType: String) : Service? {
-        val service = Service(id=0, accountName="test", type=serviceType, principal = null)
-        val serviceId = serviceRepository.insertOrReplace(service)
-        return serviceRepository.get(serviceId)
     }
 
 }
