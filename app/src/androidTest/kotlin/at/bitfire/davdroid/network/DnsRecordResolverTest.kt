@@ -18,6 +18,7 @@ import org.xbill.DNS.Name
 import org.xbill.DNS.SRVRecord
 import org.xbill.DNS.TXTRecord
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltAndroidTest
 class DnsRecordResolverTest {
@@ -69,8 +70,9 @@ class DnsRecordResolverTest {
         // entries are selected randomly (for load balancing)
         // run 1000 times to get a good distribution
         val counts = IntArray(2)
+        val seededRandom = Random(0) // Seed of 0 ensures 100% deterministic non-failing results
         for (i in 0 until 1000) {
-            val result = dnsRecordResolver.bestSRVRecord(arrayOf(dns1010, dns1020))
+            val result = dnsRecordResolver.bestSRVRecord(arrayOf(dns1010, dns1020), seededRandom)
 
             when (result) {
                 dns1010 -> counts[0]++
