@@ -431,7 +431,10 @@ fun AppSettings_Security(
             text = { Text(stringResource(R.string.app_settings_distrust_system_certs_warning)) },
             confirmButton = {
                 TextButton(
-                    onClick = { onDistrustSystemCertsUpdated(true) }
+                    onClick = {
+                        onDistrustSystemCertsUpdated(true)
+                        showingDistrustWarning = false
+                    }
                 ) { Text(stringResource(R.string.dialog_confirm)) }
             },
             dismissButton = {
