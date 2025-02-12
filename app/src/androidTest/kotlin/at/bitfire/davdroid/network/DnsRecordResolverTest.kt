@@ -6,6 +6,8 @@ package at.bitfire.davdroid.network
 
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -66,26 +68,22 @@ class DnsRecordResolverTest {
             Name.fromString("_caldavs._tcp.example.com."),
             DClass.IN, 3600, 10, 20, 8443, Name.fromString("dav1020.example.com.")
         )
+        val dns1030 = SRVRecord(
+            Name.fromString("_caldavs._tcp.example.com."),
+            DClass.IN, 3600, 10, 30, 8443, Name.fromString("dav1030.example.com.")
+        )
+        val records = arrayOf(dns1010, dns1020, dns1030)
 
-        // entries are selected randomly (for load balancing)
-        // run 1000 times to get a good distribution
-        val counts = IntArray(2)
-        val seededRandom = Random(0) // Seed of 0 ensures 100% deterministic non-failing results
-        for (i in 0 until 1000) {
-            val result = dnsRecordResolver.bestSRVRecord(arrayOf(dns1010, dns1020), seededRandom)
-
-            when (result) {
-                dns1010 -> counts[0]++
-                dns1020 -> counts[1]++
+        val randomNumberGenerator = mockk<Random>()
+        for (i in 0..60) {
+            every { randomNumberGenerator.nextInt(0, 61) } returns i
+            val expected = when (i) {
+                in 0..10 -> dns1010
+                in 11..30 -> dns1020
+                else -> dns1030
             }
+            assertEquals(expected, dnsRecordResolver.bestSRVRecord(records, randomNumberGenerator))
         }
-
-        /* We had weights 10 and 20, so the distribution of 1000 tries should be roughly
-            weight 10   fraction 1/3   expected count 333   binomial distribution (p=1/3) with 99.99% in [275..393]
-            weight 20   fraction 2/3   expected count 667   binomial distribution (p=2/3) with 99.99% in [607..725]
-         */
-        assertTrue(counts[0] in 275..393)
-        assertTrue(counts[1] in 607..725)
     }
 
     @Test
