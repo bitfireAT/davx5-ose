@@ -206,7 +206,7 @@ class LocalAddressBookStoreTest {
     private fun removeAddressBooks() {
         val accountManager = AccountManager.get(context)
         accountManager.getAccountsByType(addressBookAccountType).forEach {
-            accountManager.removeAccount(it, null, null)
+            accountManager.removeAccountExplicitly(it)
         }
     }
 
