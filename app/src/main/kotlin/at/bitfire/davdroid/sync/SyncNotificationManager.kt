@@ -51,12 +51,12 @@ class SyncNotificationManager @AssistedInject constructor(
         fun create(account: Account, authority: String): SyncNotificationManager
     }
 
-    fun dismiss(notificationTag: String) = NotificationManagerCompat.from(context)
+    fun dismiss(notificationTag: String = authority) = NotificationManagerCompat.from(context)
         .cancel(notificationTag, NotificationRegistry.NOTIFY_SYNC_ERROR)
 
     fun notifyContentProviderError() = notificationRegistry.notifyIfPossible(
         NotificationRegistry.NOTIFY_SYNC_ERROR,
-        tag = NOTIFICATION_TAG_CONTENT_PROVIDER_ERROR
+        tag = authority
     ) {
         NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_ERRORS)
             .setSmallIcon(R.drawable.ic_sync_problem_notify)
@@ -227,10 +227,6 @@ class SyncNotificationManager @AssistedInject constructor(
             )
         else
             null
-    }
-
-    companion object {
-        const val NOTIFICATION_TAG_CONTENT_PROVIDER_ERROR = "content-provider-error"
     }
 
 }
