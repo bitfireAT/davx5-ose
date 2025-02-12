@@ -47,7 +47,7 @@ class PushNotificationManager @Inject constructor(
                 .setOnlyAlertOnce(true)
                 .setContentIntent(
                     TaskStackBuilder.create(context)
-                        .addNextIntent(
+                        .addNextIntentWithParentStack(
                             Intent(context, AccountActivity::class.java).apply {
                                 putExtra(AccountActivity.EXTRA_ACCOUNT, account)
                             }

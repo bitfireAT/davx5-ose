@@ -140,7 +140,7 @@ class LogFileHandler @Inject constructor(
                 .newTask()
                 .share()
             val pendingShare = TaskStackBuilder.create(context)
-                .addNextIntent(shareIntent)
+                .addNextIntentWithParentStack(shareIntent)
                 .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             builder.addAction(
                 NotificationCompat.Action.Builder(
@@ -154,7 +154,7 @@ class LogFileHandler @Inject constructor(
             val prefIntent = Intent(context, AppSettingsActivity::class.java)
             prefIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             val pendingPref = TaskStackBuilder.create(context)
-                .addNextIntent(prefIntent)
+                .addNextIntentWithParentStack(prefIntent)
                 .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             builder.addAction(
                 NotificationCompat.Action.Builder(

@@ -229,7 +229,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 .setContentText(contentText)
                 .setContentIntent(
                     TaskStackBuilder.create(applicationContext)
-                        .addNextIntent(contentIntent)
+                        .addNextIntentWithParentStack(contentIntent)
                         .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 )
                 .setSubText(account?.name)

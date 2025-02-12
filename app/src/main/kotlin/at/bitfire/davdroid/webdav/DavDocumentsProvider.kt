@@ -760,7 +760,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                     throw AuthenticationRequiredException(
                         this,
                         TaskStackBuilder.create(ourContext)
-                            .addNextIntent(intent)
+                            .addNextIntentWithParentStack(intent)
                             .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                     )
                 }

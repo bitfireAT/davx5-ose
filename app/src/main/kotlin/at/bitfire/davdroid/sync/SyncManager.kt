@@ -816,7 +816,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 .setOnlyAlertOnce(true)
                 .setContentIntent(
                     TaskStackBuilder.create(context)
-                        .addNextIntent(contentIntent)
+                        .addNextIntentWithParentStack(contentIntent)
                         .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 )
                 .setPriority(priority)
