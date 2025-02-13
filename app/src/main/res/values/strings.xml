@@ -11,7 +11,7 @@
     <string name="dialog_delete">Delete</string>
     <string name="dialog_remove">Remove</string>
     <string name="dialog_deny">Cancel</string>
-    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_enable">Enable</string>
     <string name="field_required">This field is required</string>
     <string name="help">Help</string>
     <string name="navigate_up">Navigate up</string>
@@ -194,7 +194,8 @@
     <string name="app_settings_distrust_system_certs">Distrust system certificates</string>
     <string name="app_settings_distrust_system_certs_on">System and user-added CAs won\'t be trusted</string>
     <string name="app_settings_distrust_system_certs_off">System and user-added CAs will be trusted (recommended)</string>
-    <string name="app_settings_distrust_system_certs_warning">Are you sure that you want to enable distrusting system certificates? When enabled, you need to manually install the certificates required for your connections, or otherwise they won\'t be possible. This option is targeted to users with high knowledge of networking.</string>
+    <string name="app_settings_distrust_system_certs_dialog_title">Attention!</string>
+    <string name="app_settings_distrust_system_certs_dialog_message">Enabling this option will cause DAVx5 to distrust system certificates. You will need to manually install the required certificates. This option is intended for advanced users.</string>
     <string name="app_settings_reset_certificates">Reset (un)trusted certificates</string>
     <string name="app_settings_reset_certificates_summary">Resets trust of all custom certificates</string>
     <string name="app_settings_reset_certificates_success">All custom certificates have been cleared</string>

@@ -425,23 +425,9 @@ fun AppSettings_Security(
 
     var showingDistrustWarning by remember { mutableStateOf(false) }
     if (showingDistrustWarning) {
-        AlertDialog(
-            onDismissRequest = { showingDistrustWarning = false },
-            title = { Text(stringResource(R.string.app_settings_distrust_system_certs)) },
-            text = { Text(stringResource(R.string.app_settings_distrust_system_certs_warning)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onDistrustSystemCertsUpdated(true)
-                        showingDistrustWarning = false
-                    }
-                ) { Text(stringResource(R.string.dialog_confirm)) }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showingDistrustWarning = false }
-                ) { Text(stringResource(R.string.dialog_deny)) }
-            },
+        DistrustSystemCertificatesAlertDialog(
+            onDistrustSystemCertsRequested = { onDistrustSystemCertsUpdated(true) },
+            onDismissRequested = { showingDistrustWarning = false }
         )
     }
 
@@ -470,6 +456,39 @@ fun AppSettings_Security(
         summary = stringResource(R.string.app_settings_security_app_permissions_summary),
         onClick = onNavPermissionsScreen
     )
+}
+
+@Composable
+fun DistrustSystemCertificatesAlertDialog(
+    onDistrustSystemCertsRequested: () -> Unit,
+    onDismissRequested: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequested,
+        title = { Text(stringResource(R.string.app_settings_distrust_system_certs_dialog_title)) },
+        text = { Text(stringResource(R.string.app_settings_distrust_system_certs_dialog_message)) },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDistrustSystemCertsRequested()
+                    onDismissRequested()
+                }
+            ) { Text(stringResource(R.string.dialog_enable)) }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequested
+            ) { Text(stringResource(R.string.dialog_deny)) }
+        },
+    )
+}
+
+@Preview
+@Composable
+fun DistrustSystemCertificatesAlertDialog_Preview() {
+    AppTheme {
+        DistrustSystemCertificatesAlertDialog({}, {})
+    }
 }
 
 @Composable
