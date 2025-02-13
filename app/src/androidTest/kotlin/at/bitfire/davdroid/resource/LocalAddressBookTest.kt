@@ -27,6 +27,7 @@ import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
+import java.io.FileNotFoundException
 import java.util.LinkedList
 import javax.inject.Inject
 
@@ -67,7 +68,7 @@ class LocalAddressBookTest {
             val id = ContentUris.parseId(uri)
             val localContact = addressBook.findContactById(id)
             localContact.resetDirty()
-            assertFalse("Contact is dirty before moving", addressBook.isContactDirty(id))
+            assertFalse("Contact is dirty before moving", isContactDirty(addressBook, id))
 
             // rename address book
             val newName = "New Name"
@@ -76,7 +77,7 @@ class LocalAddressBookTest {
 
             // check whether contact is still here (including data rows) and not dirty
             val result = addressBook.findContactById(id)
-            assertFalse("Contact is dirty after moving", addressBook.isContactDirty(id))
+            assertFalse("Contact is dirty after moving", isContactDirty(addressBook, id))
 
             val contact2 = result.getContact()
             assertEquals(uid, contact2.uid)
@@ -98,7 +99,7 @@ class LocalAddressBookTest {
 
             // make sure it's not dirty
             localGroup.clearDirty(null, null, null)
-            assertFalse("Group is dirty before moving", addressBook.isGroupDirty(id))
+            assertFalse("Group is dirty before moving", isGroupDirty(addressBook, id))
 
             // rename address book
             val newName = "New Name"
@@ -107,11 +108,46 @@ class LocalAddressBookTest {
 
             // check whether group is still here and not dirty
             val result = addressBook.findGroupById(id)
-            assertFalse("Group is dirty after moving", addressBook.isGroupDirty(id))
+            assertFalse("Group is dirty after moving", isGroupDirty(addressBook, id))
 
             val group = result.getContact()
             assertEquals("Test Group", group.displayName)
         }
+    }
+
+
+    // helpers
+
+    /**
+     * Returns the dirty flag of the given contact.
+     *
+     * @return true if the contact is dirty, false otherwise
+     *
+     * @throws FileNotFoundException if the contact can't be found
+     */
+    fun isContactDirty(adddressBook: LocalAddressBook, id: Long): Boolean {
+        val uri = ContentUris.withAppendedId(adddressBook.rawContactsSyncUri(), id)
+        provider!!.query(uri, arrayOf(ContactsContract.RawContacts.DIRTY), null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst())
+                return cursor.getInt(0) != 0
+        }
+        throw FileNotFoundException()
+    }
+
+    /**
+     * Returns the dirty flag of the given contact group.
+     *
+     * @return true if the group is dirty, false otherwise
+     *
+     * @throws FileNotFoundException if the group can't be found
+     */
+    fun isGroupDirty(adddressBook: LocalAddressBook, id: Long): Boolean {
+        val uri = ContentUris.withAppendedId(adddressBook.groupsSyncUri(), id)
+        provider!!.query(uri, arrayOf(ContactsContract.Groups.DIRTY), null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst())
+                return cursor.getInt(0) != 0
+        }
+        throw FileNotFoundException()
     }
 
 
