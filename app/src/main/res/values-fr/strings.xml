@@ -3,6 +3,7 @@
   <!--common strings-->
   <string name="account_invalid">Le compte n’existe plus (supprimé)</string>
   <string name="account_title_address_book">Carnet d\'adresses DAVx⁵</string>
+  <string name="account_prefs_use_app">Ne modifiez pas votre compte ici ! Utilisez plutôt l\'application pour configurer directement votre compte.</string>
   <string name="dialog_delete">Supprimer</string>
   <string name="dialog_remove">Retirer</string>
   <string name="dialog_deny">Annuler</string>
@@ -48,7 +49,6 @@
   <string name="intro_open_source_title">Logiciels open-source</string>
   <string name="intro_open_source_text">Nous sommes heureux que vous utilisiez %s, qui est un logiciel open-source. Le développement, la maintenance et l\'assistance sont un travail difficile. Veuillez envisager de contribuer (il y a plusieurs façons de le faire) ou de faire un don. Ce serait très apprécié !</string>
   <string name="intro_open_source_details">Comment contribuer / donner</string>
-  <string name="intro_open_source_dont_show">Ne plus afficher dans le futur</string>
   <string name="intro_next">Suivant</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Autorisations</string>

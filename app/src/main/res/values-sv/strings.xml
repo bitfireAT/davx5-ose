@@ -50,7 +50,6 @@
   <string name="intro_open_source_title">Öppen källkod mjukvara</string>
   <string name="intro_open_source_text">Vi är glada att du använder %s, som är mjukvara med öppen källkod. Utveckling, underhåll och support är hårt arbete. Överväg att bidra (det finns många sätt) eller en donation. Det skulle vara mycket uppskattat!</string>
   <string name="intro_open_source_details">Hur man kan bidra/donera</string>
-  <string name="intro_open_source_dont_show">Visa inte inom en snar framtid</string>
   <string name="intro_next">Nästa</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Behörigheter</string>

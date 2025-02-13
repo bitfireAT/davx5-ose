@@ -49,7 +49,6 @@
   <string name="intro_open_source_title">Kode irekiko softwarea</string>
   <string name="intro_open_source_text">%s erabiltzen duzula pozik gaude, software irekia delako. Garapen, mantentze eta laguntza lan gogorrak dira. Mesedez pentsatu kolaboratzen (modu asko daude) edo dohaintza bat. Asko eskertuko genuke!</string>
   <string name="intro_open_source_details">Nola lagundu/dirua eman</string>
-  <string name="intro_open_source_dont_show">Ez erakutsi etorkizunean</string>
   <string name="intro_next">Hurrengoa</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Baimenak</string>

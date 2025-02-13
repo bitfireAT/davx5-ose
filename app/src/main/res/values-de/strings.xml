@@ -50,7 +50,11 @@
   <string name="intro_open_source_title">Open-Source-Software</string>
   <string name="intro_open_source_text">Wir freuen uns, dass Sie die Open-Source-Software %s verwenden. Entwicklung, Wartung und Support sind viel Arbeit. Ziehen Sie daher bitte in Betracht, mitzuhelfen (dazu gibt es viele Möglichkeiten) oder zu spenden. Vielen Dank!</string>
   <string name="intro_open_source_details">Infos zum Mithelfen/Spenden</string>
-  <string name="intro_open_source_dont_show">In nächster Zeit nicht anzeigen</string>
+  <string name="intro_open_source_dont_show">Nicht daran erinnern für</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d Monat</item>
+    <item quantity="other">%d Monate</item>
+  </plurals>
   <string name="intro_next">Weiter</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Berechtigungsverwaltung</string>
@@ -129,6 +133,9 @@
   <string name="account_list_manage_battery_saver">Akkusparen verwalten</string>
   <string name="account_list_low_storage">Wenig Speicherplatz. Android wird lokale Änderungen nicht sofort synchronisieren, sondern bei der nächsten regulären Synchronisierung.</string>
   <string name="account_list_manage_storage">Speicherplatz verwalten</string>
+  <string name="account_list_calendar_storage_disabled">Kalender-Provider fehlt. Haben Sie die System-App „Kalender” deaktiviert?</string>
+  <string name="account_list_contacts_storage_disabled">Kontakte-Provider fehlt. Haben Sie die System-App „Kontakte” deaktiviert?</string>
+  <string name="account_list_manage_apps">Apps verwalten</string>
   <string name="account_list_welcome">Willkommen bei DAVx⁵!</string>
   <string name="account_list_empty">Verbinden Sie sich mit Ihrem Server und synchronisieren Ihre Kalender und Kontakte .</string>
   <string name="accounts_sync_all">Alle Konten synchronisieren</string>

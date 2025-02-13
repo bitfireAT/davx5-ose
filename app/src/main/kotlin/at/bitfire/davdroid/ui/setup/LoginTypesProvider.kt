@@ -10,13 +10,18 @@ import androidx.compose.runtime.Composable
 
 interface LoginTypesProvider {
 
+    data class LoginAction(
+        val loginType: LoginType,
+        val skipLoginTypePage: Boolean
+    )
+
     val defaultLoginType: LoginType
 
     /**
-     * Which login type to use and whether to skip the login type selection page. Used for Nextcloud
-     * login flow. May be used by other login flows.
+     * Which login type to use and whether to skip the login type page. Used for Nextcloud login
+     * flow and may be used for other intent started flows.
      */
-    fun intentToInitialLoginType(intent: Intent): Pair<LoginType, Boolean> = Pair(defaultLoginType, false)
+    fun intentToInitialLoginType(intent: Intent): LoginAction = LoginAction(defaultLoginType, false)
 
     /** Whether the [LoginTypePage] may be non-interactive. This causes it to be skipped in back navigation. */
     val maybeNonInteractive: Boolean

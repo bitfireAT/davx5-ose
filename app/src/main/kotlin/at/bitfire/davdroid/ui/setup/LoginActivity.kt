@@ -23,6 +23,32 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LoginActivity @Inject constructor(): AppCompatActivity() {
 
+    @Inject lateinit var loginTypesProvider: LoginTypesProvider
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val (initialLoginType, skipLoginTypePage) = loginTypesProvider.intentToInitialLoginType(intent)
+
+        setContent {
+            LoginScreen(
+                initialLoginType = initialLoginType,
+                skipLoginTypePage = skipLoginTypePage,
+                initialLoginInfo = loginInfoFromIntent(intent),
+                onNavUp = { onSupportNavigateUp() },
+                onFinish = { newAccount ->
+                    finish()
+
+                    if (newAccount != null) {
+                        val intent = Intent(this, AccountActivity::class.java)
+                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
+                        startActivity(intent)
+                    }
+                }
+            )
+        }
+    }
+
     companion object {
 
         /**
@@ -59,18 +85,23 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
             var givenUsername: String? = null
             var givenPassword: String? = null
 
-            // extract URI and optionally username/password from Intent data
+            // extract URI or email and optionally username/password from Intent data
             val logger = Logger.getGlobal()
             intent.data?.normalizeScheme()?.let { uri ->
-                try {
+                val realScheme = when (uri.scheme) {
                     // replace caldav[s]:// and carddav[s]:// with http[s]://
-                    val realScheme = when (uri.scheme) {
-                        "caldav", "carddav" -> "http"
-                        "caldavs", "carddavs", "davx5" -> "https"
-                        "http", "https" -> uri.scheme
-                        else -> null
-                    }
-                    if (realScheme != null) {
+                    "caldav", "carddav" -> "http"
+                    "caldavs", "carddavs", "davx5" -> "https"
+
+                    // keep these
+                    "http", "https", "mailto" -> uri.scheme
+
+                    // unknown scheme
+                    else -> null
+                }
+
+                when (realScheme) {
+                    "http", "https" -> {
                         // extract user info
                         uri.userInfo?.split(':')?.let { userInfo ->
                             givenUsername = userInfo.getOrNull(0)
@@ -85,8 +116,9 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
                             null
                         }
                     }
-                } catch (_: URISyntaxException) {
-                    logger.warning("Got invalid URI from login Intent: $uri")
+
+                    "mailto" ->
+                        givenUsername = uri.schemeSpecificPart
                 }
             }
 
@@ -112,32 +144,6 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
             )
         }
 
-    }
-
-    @Inject lateinit var loginTypesProvider: LoginTypesProvider
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val (initialLoginType, skipLoginTypePage) = loginTypesProvider.intentToInitialLoginType(intent)
-
-        setContent {
-            LoginScreen(
-                initialLoginType = initialLoginType,
-                skipLoginTypePage = skipLoginTypePage,
-                initialLoginInfo = loginInfoFromIntent(intent),
-                onNavUp = { onSupportNavigateUp() },
-                onFinish = { newAccount ->
-                    finish()
-
-                    if (newAccount != null) {
-                        val intent = Intent(this, AccountActivity::class.java)
-                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
-                        startActivity(intent)
-                    }
-                }
-            )
-        }
     }
 
 }

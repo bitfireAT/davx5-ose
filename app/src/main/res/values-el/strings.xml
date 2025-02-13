@@ -48,7 +48,6 @@
   <string name="intro_open_source_title">Λογισμικό ανοικτού κώδικα</string>
   <string name="intro_open_source_text">Χαιρόμαστε που χρησιμοποιείτε το %s, το οποίο είναι λογισμικό ανοικτού κώδικα. Η ανάπτυξη, η συντήρηση και η υποστήριξη είναι σκληρή δουλειά. Παρακαλούμε σκεφτείτε να συνεισφέρετε (υπάρχουν πολλοί τρόποι) ή να κάνετε μια δωρεά. Θα το εκτιμούσαμε ιδιαίτερα!</string>
   <string name="intro_open_source_details">Πώς να συνεισφέρετε/δωρήσετε</string>
-  <string name="intro_open_source_dont_show">Μην το εμφανίσεις στο προσεχές μέλλον</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Δικαιώματα</string>
   <string name="permissions_text">Το %sχρειάζεται δικαιώματα για να λειτουργήσει σωστά. </string>

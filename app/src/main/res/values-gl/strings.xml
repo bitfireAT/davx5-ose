@@ -50,7 +50,11 @@
   <string name="intro_open_source_title">Software de código aberto</string>
   <string name="intro_open_source_text">Encántanos que uses %s, que é software de código aberto. O desenvolvemento, mantemento e soporte son un traballo difícil. Considera colaborar (hai moitos xeitos) ou facer unha doazón. Sería de agradecer!</string>
   <string name="intro_open_source_details">Como contribuír/doar</string>
-  <string name="intro_open_source_dont_show">Non mostrar no futuro próximo</string>
+  <string name="intro_open_source_dont_show">Non mo lembres durante</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d mes</item>
+    <item quantity="other">%d meses</item>
+  </plurals>
   <string name="intro_next">Seguinte</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisos</string>
@@ -129,6 +133,9 @@
   <string name="account_list_manage_battery_saver">Xestionar aforro da batería</string>
   <string name="account_list_low_storage">Queda pouco espazo de almacenaxe. Android non vai sincronizar os cambios locais inmediatamente, farao na próxima sincronización regular.</string>
   <string name="account_list_manage_storage">Xestionar almacenaxe</string>
+  <string name="account_list_calendar_storage_disabled">Falta o provedor do calendario. Desactivaches a app do sistema \"Almacenaxe do calendario\"?</string>
+  <string name="account_list_contacts_storage_disabled">Falta o provedor de contactos. Desactivaches a app do sistema \"Almacenaxe de contactos\"?</string>
+  <string name="account_list_manage_apps">Xestionar apps</string>
   <string name="account_list_welcome">Benvida a DAVx⁵!</string>
   <string name="account_list_empty">Conecta co teu servidor e mantén os contactos e calendarios sincronizados.</string>
   <string name="accounts_sync_all">Sincroniza todas as contas</string>

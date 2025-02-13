@@ -43,7 +43,6 @@
   <string name="intro_open_source_title">برنامه‌های متن باز</string>
   <string name="intro_open_source_text">ما خوشحالیم که شما از %sکه یک نرم افزار منبع باز است استفاده می‌کنید. توسعه، نگهداری و پشتیبانی کار سختی است. لطفاً با یک کمک مالی (راه های زیادی وجود دارد) کمک کنید. بسیار ممنون می‌شویم!</string>
   <string name="intro_open_source_details">نحوه کمک / اهدا</string>
-  <string name="intro_open_source_dont_show">دیگر نشان داده نشود</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">مجوزها</string>
   <string name="permissions_text">%s برای کارکرد صحیح به این مجوزها نیاز دارد.</string>

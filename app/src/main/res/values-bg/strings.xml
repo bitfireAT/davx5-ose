@@ -50,7 +50,11 @@
   <string name="intro_open_source_title">Приложение с отворен код</string>
   <string name="intro_open_source_text">Радваме се, че използвате %s – приложение с отворен код. Разработката, издръжката и поддръжката му са тежка работа. Молим ви да допринесете (има много начини) или да дарите. Вашият жест ще бъде високо оценен.</string>
   <string name="intro_open_source_details">Как да допринеса или даря</string>
-  <string name="intro_open_source_dont_show">Без повторно показване в близко бъдеще</string>
+  <string name="intro_open_source_dont_show">Без напомняне за</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d месец</item>
+    <item quantity="other">%d месеца</item>
+  </plurals>
   <string name="intro_next">Напред</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Разрешения</string>

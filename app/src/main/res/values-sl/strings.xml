@@ -30,7 +30,6 @@
   <string name="intro_tasks_no_app_store">Nobene trgovine z aplikacijami ni na voljo</string>
   <string name="intro_open_source_title">Odprtokodna programska oprema</string>
   <string name="intro_open_source_details">Kako prispevati ali donirati</string>
-  <string name="intro_open_source_dont_show">Ne prikaži v bližnji prihodnosti</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Dovoljenja</string>
   <string name="permissions_all_title">Vse spodaj</string>

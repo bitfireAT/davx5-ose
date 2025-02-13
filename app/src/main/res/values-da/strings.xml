@@ -48,7 +48,6 @@
   <string name="intro_open_source_title">Åben kilde program</string>
   <string name="intro_open_source_text">Vi er glade for, at du bruger %s, som er åben-kilde software. Udvikling, vedligeholdelse og support er hårdt arbejde. Overvej at bidrage (der er mange måner) eller donere. Det ville være meget værdsat!</string>
   <string name="intro_open_source_details">Sådan bidrager/donerer du</string>
-  <string name="intro_open_source_dont_show">Vis ikke i den nærmeste fremtid</string>
   <string name="intro_next">Næste</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Tilladelser</string>

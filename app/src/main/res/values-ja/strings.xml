@@ -50,7 +50,6 @@
   <string name="intro_open_source_title">オープンソースソフトウェア</string>
   <string name="intro_open_source_text">オープンソースソフトウェアとして %s をお届けできることをとても嬉しく思っています。開発・維持・サポートは簡単ではありません。貢献 (さまざまな方法があります) や寄付をご検討ください。プロジェクトはそれらに支えられています。</string>
   <string name="intro_open_source_details">貢献/寄付の方法</string>
-  <string name="intro_open_source_dont_show">しばらく非表示にする</string>
   <string name="intro_next">次へ</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">許可</string>

@@ -44,7 +44,6 @@
   <string name="intro_open_source_title">Oprogramowanie open-source</string>
   <string name="intro_open_source_text">Cieszymy się, że używasz %s, czyli oprogramowania typu open-source. Rozwój, utrzymanie i wsparcie to ciężka praca. Prosimy o rozważenie wniesienia swojego wkładu (jest wiele sposobów) lub darowizny. Byłoby to bardzo cenne!</string>
   <string name="intro_open_source_details">Jak wspomóc/wesprzeć</string>
-  <string name="intro_open_source_dont_show">Nie pokazuj w najbliższej przyszłości</string>
   <string name="intro_next">Dalej</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Uprawnienia</string>
