@@ -5,12 +5,8 @@
 package at.bitfire.davdroid.resource
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.content.ContentUris
 import android.content.Context
-import android.provider.ContactsContract
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
@@ -19,14 +15,8 @@ import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import org.junit.Assert.assertTrue
-import java.io.FileNotFoundException
 import java.util.Optional
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Logger
 
 class LocalTestAddressBook @AssistedInject constructor(
@@ -55,11 +45,12 @@ class LocalTestAddressBook @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, @Assisted("addressBook") addressBookAccount: Account, provider: ContentProviderClient, groupMethod: GroupMethod): LocalTestAddressBook
+        fun create(
+            account: Account,
+            @Assisted("addressBook") addressBookAccount: Account,
+            provider: ContentProviderClient,
+            groupMethod: GroupMethod
+        ): LocalTestAddressBook
     }
-
-    override var readOnly: Boolean
-        get() = false
-        set(_) = throw NotImplementedError()
 
 }
