@@ -18,9 +18,10 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalCalendarStore
-import at.bitfire.davdroid.resource.LocalTestAddressBook
+import at.bitfire.davdroid.resource.LocalTestAddressBookStore
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
+import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -47,6 +48,9 @@ class AccountSettingsMigration20Test {
 
     @Inject
     lateinit var migration: AccountSettingsMigration20
+
+    @Inject
+    lateinit var localTestAddressBookStore: LocalTestAddressBookStore
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -81,8 +85,8 @@ class AccountSettingsMigration20Test {
             url = url.toHttpUrl()
         ))
 
-        val addressBook = LocalTestAddressBook.create(context, account, mockk())
-        try {
+        localTestAddressBookStore.provide(account, mockk(relaxed = true), GroupMethod.GROUP_VCARDS) { addressBook ->
+
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, AccountSettingsMigration20.ADDRESS_BOOK_USER_DATA_URL, url)
@@ -94,8 +98,6 @@ class AccountSettingsMigration20Test {
                 collectionId,
                 accountManager.getUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID).toLongOrNull()
             )
-        } finally {
-            addressBook.remove()
         }
     }
 

@@ -13,7 +13,7 @@ import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.davdroid.resource.LocalTestAddressBook
+import at.bitfire.davdroid.resource.LocalTestAddressBookStore
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
@@ -37,6 +37,9 @@ class GroupMembershipHandlerTest {
     @Inject @ApplicationContext
     lateinit var context: Context
 
+    @Inject
+    lateinit var localTestAddressBookStore: LocalTestAddressBookStore
+
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
@@ -50,8 +53,7 @@ class GroupMembershipHandlerTest {
 
     @Test
     fun testMembership_GroupsAsCategories() {
-        val addressBookGroupsAsCategories = LocalTestAddressBook.create(context, account, provider, GroupMethod.CATEGORIES)
-        try {
+        localTestAddressBookStore.provide(account, provider, GroupMethod.CATEGORIES) { addressBookGroupsAsCategories ->
             val addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
 
             val contact = Contact()
@@ -62,16 +64,13 @@ class GroupMembershipHandlerTest {
             }, contact)
             assertArrayEquals(arrayOf(addressBookGroupsAsCategoriesGroup), localContact.groupMemberships.toArray())
             assertArrayEquals(arrayOf("TEST GROUP"), contact.categories.toArray())
-        } finally {
-            addressBookGroupsAsCategories.remove()
         }
     }
 
 
     @Test
     fun testMembership_GroupsAsVCards() {
-        val addressBookGroupsAsVCards = LocalTestAddressBook.create(context, account, provider, GroupMethod.GROUP_VCARDS)
-        try {
+        localTestAddressBookStore.provide(account, provider, GroupMethod.GROUP_VCARDS) { addressBookGroupsAsVCards ->
             val contact = Contact()
             val localContact = LocalContact(addressBookGroupsAsVCards, contact, null, null, 0)
             GroupMembershipHandler(localContact).handle(ContentValues().apply {
@@ -80,8 +79,6 @@ class GroupMembershipHandlerTest {
             }, contact)
             assertArrayEquals(arrayOf(12345L), localContact.groupMemberships.toArray())
             assertTrue(contact.categories.isEmpty())
-        } finally {
-            addressBookGroupsAsVCards.remove()
         }
     }
 
