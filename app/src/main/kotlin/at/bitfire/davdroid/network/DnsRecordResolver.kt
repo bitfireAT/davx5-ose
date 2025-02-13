@@ -22,6 +22,7 @@ import java.util.LinkedList
 import java.util.TreeMap
 import java.util.logging.Logger
 import javax.inject.Inject
+import kotlin.random.Random
 
 /**
  * Allows to resolve SRV/TXT records. Chooses the correct resolver, DNS servers etc.
@@ -102,7 +103,14 @@ class DnsRecordResolver @Inject constructor(
 
     // record selection
 
-    fun bestSRVRecord(records: Array<out Record>): SRVRecord? {
+    /**
+     * Selects the best SRV record from a list of records, based on algorithm from RFC 2782.
+     *
+     * @param records the records to choose from
+     * @param randomGenerator a random number generator to use for random selection
+     * @return the best SRV record, or `null` if no SRV record is available
+     */
+    fun bestSRVRecord(records: Array<out Record>, randomGenerator: Random = Random.Default): SRVRecord? {
         val srvRecords = records.filterIsInstance<SRVRecord>()
         if (srvRecords.size <= 1)
             return srvRecords.firstOrNull()
@@ -141,7 +149,7 @@ class DnsRecordResolver @Inject constructor(
             map[runningWeight] = record
         }
 
-        val selector = (0..runningWeight).random()
+        val selector = (0..runningWeight).random(randomGenerator)
         return map.ceilingEntry(selector)!!.value
     }
 
