@@ -16,6 +16,7 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Error
@@ -814,12 +815,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 .setSubText(account.name)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(
-                    PendingIntent.getActivity(
-                        context,
-                        0,
-                        contentIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
+                    TaskStackBuilder.create(context)
+                        .addNextIntentWithParentStack(contentIntent)
+                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 )
                 .setPriority(priority)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
@@ -864,8 +862,13 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             }
         }
         return if (intent != null && context.packageManager.resolveActivity(intent, 0) != null)
-            NotificationCompat.Action(android.R.drawable.ic_menu_view, context.getString(R.string.sync_error_view_item),
-                    PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+            NotificationCompat.Action(
+                android.R.drawable.ic_menu_view,
+                context.getString(R.string.sync_error_view_item),
+                TaskStackBuilder.create(context)
+                    .addNextIntent(intent)
+                    .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            )
         else
             null
     }
@@ -880,12 +883,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 .setContentText(context.getString(R.string.sync_invalid_resources_ignoring))
                 .setSubText(account.name)
                 .setContentIntent(
-                    PendingIntent.getActivity(
-                        context,
-                        0,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
+                    TaskStackBuilder.create(context)
+                        .addNextIntent(intent)
+                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 )
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)

@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.Data
@@ -226,12 +227,9 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 .setContentTitle(applicationContext.getString(R.string.refresh_collections_worker_refresh_failed))
                 .setContentText(contentText)
                 .setContentIntent(
-                    PendingIntent.getActivity(
-                        applicationContext,
-                        0,
-                        contentIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
+                    TaskStackBuilder.create(applicationContext)
+                        .addNextIntentWithParentStack(contentIntent)
+                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 )
                 .setSubText(account?.name)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)

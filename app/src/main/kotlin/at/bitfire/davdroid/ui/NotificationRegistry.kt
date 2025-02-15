@@ -16,6 +16,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.R
@@ -166,12 +167,9 @@ class NotificationRegistry @Inject constructor(
                 .setContentTitle(context.getString(R.string.sync_error_permissions))
                 .setContentText(context.getString(R.string.sync_error_permissions_text))
                 .setContentIntent(
-                    PendingIntent.getActivity(
-                        context,
-                        0,
-                        contentIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
+                    TaskStackBuilder.create(context)
+                        .addNextIntentWithParentStack(contentIntent)
+                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 )
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .setAutoCancel(true)
