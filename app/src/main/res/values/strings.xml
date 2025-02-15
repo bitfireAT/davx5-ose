@@ -11,6 +11,7 @@
     <string name="dialog_delete">Delete</string>
     <string name="dialog_remove">Remove</string>
     <string name="dialog_deny">Cancel</string>
+    <string name="dialog_enable">Enable</string>
     <string name="field_required">This field is required</string>
     <string name="help">Help</string>
     <string name="navigate_up">Navigate up</string>
@@ -193,6 +194,7 @@
     <string name="app_settings_distrust_system_certs">Distrust system certificates</string>
     <string name="app_settings_distrust_system_certs_on">System and user-added CAs won\'t be trusted</string>
     <string name="app_settings_distrust_system_certs_off">System and user-added CAs will be trusted (recommended)</string>
+    <string name="app_settings_distrust_system_certs_dialog_message">If this setting is active, system certificates are not considered as trustworthy. This means that you will have to manually accept every certificate (also when the server renews its certificate) or account setup and sync will not work.</string>
     <string name="app_settings_reset_certificates">Reset (un)trusted certificates</string>
     <string name="app_settings_reset_certificates_summary">Resets trust of all custom certificates</string>
     <string name="app_settings_reset_certificates_success">All custom certificates have been cleared</string>
