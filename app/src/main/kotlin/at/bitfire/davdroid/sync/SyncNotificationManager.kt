@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
@@ -133,9 +134,11 @@ class SyncNotificationManager @AssistedInject constructor(
             .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
             .setSubText(account.name)
             .setOnlyAlertOnce(true)
-            .setContentIntent(PendingIntent.getActivity(context, 0, contentIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            ))
+            .setContentIntent(
+                TaskStackBuilder.create(context)
+                    .addNextIntentWithParentStack(contentIntent)
+                    .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            )
             .setPriority(priority)
             .setCategory(NotificationCompat.CATEGORY_ERROR)
         viewItemAction?.let { builder.addAction(it) }
@@ -162,9 +165,11 @@ class SyncNotificationManager @AssistedInject constructor(
                 .setContentTitle(notifyInvalidResourceTitle)
                 .setContentText(context.getString(R.string.sync_invalid_resources_ignoring))
                 .setSubText(account.name)
-                .setContentIntent(PendingIntent.getActivity(context, 0, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                ))
+                .setContentIntent(
+                    TaskStackBuilder.create(context)
+                        .addNextIntent(intent)
+                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                )
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
                 .priority = NotificationCompat.PRIORITY_LOW
@@ -223,7 +228,9 @@ class SyncNotificationManager @AssistedInject constructor(
             NotificationCompat.Action(
                 android.R.drawable.ic_menu_view,
                 context.getString(R.string.sync_error_view_item),
-                PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                TaskStackBuilder.create(context)
+                    .addNextIntent(intent)
+                    .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             )
         else
             null
