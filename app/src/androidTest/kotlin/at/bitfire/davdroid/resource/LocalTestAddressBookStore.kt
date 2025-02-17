@@ -44,7 +44,7 @@ class LocalTestAddressBookStore @Inject constructor(
         provideLocalTestAddressBook: (LocalTestAddressBook) -> Unit
     ) {
         // remove all test address book accounts - start with a clean slate
-        removeAll(context)
+        removeAll()
 
         // create new address book account
         val addressBookAccount = Account("Test Address Book ${counter.incrementAndGet()}", context.getString(R.string.account_type_address_book))
@@ -62,7 +62,7 @@ class LocalTestAddressBookStore @Inject constructor(
         provideLocalTestAddressBook(addressBook)
     }
 
-    fun removeAll(context: Context) {
+    fun removeAll() {
         val accountManager = AccountManager.get(context)
         for (account in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
             accountManager.removeAccountExplicitly(account)
