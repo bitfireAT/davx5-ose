@@ -18,7 +18,7 @@ import javax.inject.Inject
 /**
  * Provides [LocalTestAddressBook]s in tests.
  */
-class LocalTestAddressBookStore @Inject constructor(
+class LocalTestAddressBookProvider @Inject constructor(
     @ApplicationContext private val context: Context,
     private val localTestAddressBookFactory: LocalTestAddressBook.Factory
 ) {

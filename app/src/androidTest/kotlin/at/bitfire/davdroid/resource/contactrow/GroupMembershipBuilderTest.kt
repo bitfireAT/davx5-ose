@@ -13,7 +13,7 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.davdroid.resource.LocalTestAddressBookStore
+import at.bitfire.davdroid.resource.LocalTestAddressBookProvider
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -35,7 +35,7 @@ class GroupMembershipBuilderTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var localTestAddressBookStore: LocalTestAddressBookStore
+    lateinit var localTestAddressBookProvider: LocalTestAddressBookProvider
     
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -54,7 +54,7 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
-        localTestAddressBookStore.provide(account, provider, GroupMethod.CATEGORIES) { addressBookGroupsAsCategories ->
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { addressBookGroupsAsCategories ->
             GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories, false).build().also { result ->
                 assertEquals(1, result.size)
                 assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
@@ -68,7 +68,7 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
-        localTestAddressBookStore.provide(account, provider, GroupMethod.GROUP_VCARDS) { addressBookGroupsAsVCards ->
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.GROUP_VCARDS) { addressBookGroupsAsVCards ->
             GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards, false).build().also { result ->
                 // group membership is constructed during post-processing
                 assertEquals(0, result.size)

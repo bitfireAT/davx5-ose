@@ -13,7 +13,7 @@ import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.davdroid.resource.LocalTestAddressBookStore
+import at.bitfire.davdroid.resource.LocalTestAddressBookProvider
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
@@ -38,7 +38,7 @@ class GroupMembershipHandlerTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var localTestAddressBookStore: LocalTestAddressBookStore
+    lateinit var localTestAddressBookProvider: LocalTestAddressBookProvider
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
@@ -53,7 +53,7 @@ class GroupMembershipHandlerTest {
 
     @Test
     fun testMembership_GroupsAsCategories() {
-        localTestAddressBookStore.provide(account, provider, GroupMethod.CATEGORIES) { addressBookGroupsAsCategories ->
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { addressBookGroupsAsCategories ->
             val addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
 
             val contact = Contact()
@@ -70,7 +70,7 @@ class GroupMembershipHandlerTest {
 
     @Test
     fun testMembership_GroupsAsVCards() {
-        localTestAddressBookStore.provide(account, provider, GroupMethod.GROUP_VCARDS) { addressBookGroupsAsVCards ->
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.GROUP_VCARDS) { addressBookGroupsAsVCards ->
             val contact = Contact()
             val localContact = LocalContact(addressBookGroupsAsVCards, contact, null, null, 0)
             GroupMembershipHandler(localContact).handle(ContentValues().apply {

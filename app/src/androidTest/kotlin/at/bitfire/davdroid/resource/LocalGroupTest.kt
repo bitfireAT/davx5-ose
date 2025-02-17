@@ -41,7 +41,7 @@ class LocalGroupTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var localTestAddressBookStore: LocalTestAddressBookStore
+    lateinit var localTestAddressBookProvider: LocalTestAddressBookProvider
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -56,7 +56,7 @@ class LocalGroupTest {
 
     @Test
     fun testApplyPendingMemberships_addPendingMembership() {
-        localTestAddressBookStore.provide(account, provider, GroupMethod.GROUP_VCARDS) { ab ->
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.GROUP_VCARDS) { ab ->
             val contact1 = LocalContact(ab, Contact().apply {
                 uid = "test1"
                 displayName = "Test"
@@ -105,7 +105,7 @@ class LocalGroupTest {
 
     @Test
     fun testApplyPendingMemberships_removeMembership() {
-        localTestAddressBookStore.provide(account, provider, GroupMethod.GROUP_VCARDS) { ab ->
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.GROUP_VCARDS) { ab ->
             val contact1 = LocalContact(ab, Contact().apply {
                 uid = "test1"
                 displayName = "Test"
@@ -148,7 +148,7 @@ class LocalGroupTest {
 
     @Test
     fun testClearDirty_addCachedGroupMembership() {
-        localTestAddressBookStore.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
             val group = newGroup(ab)
 
             val contact1 =
@@ -185,7 +185,7 @@ class LocalGroupTest {
 
     @Test
     fun testClearDirty_removeCachedGroupMembership() {
-        localTestAddressBookStore.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
             val group = newGroup(ab)
 
             val contact1 = LocalContact(ab, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
@@ -216,7 +216,7 @@ class LocalGroupTest {
 
     @Test
     fun testMarkMembersDirty() {
-        localTestAddressBookStore.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
             val group = newGroup(ab)
 
             val contact1 =
@@ -236,7 +236,7 @@ class LocalGroupTest {
 
     @Test
     fun testPrepareForUpload() {
-        localTestAddressBookStore.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
             val group = newGroup(ab)
             assertNull(group.getContact().uid)
 

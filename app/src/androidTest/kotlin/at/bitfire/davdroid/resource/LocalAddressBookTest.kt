@@ -38,7 +38,7 @@ class LocalAddressBookTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var localTestAddressBookStore: LocalTestAddressBookStore
+    lateinit var localTestAddressBookProvider: LocalTestAddressBookProvider
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -56,7 +56,7 @@ class LocalAddressBookTest {
      */
     @Test
     fun test_renameAccount_retainsContacts() {
-        localTestAddressBookStore.provide(account, provider) { addressBook ->
+        localTestAddressBookProvider.provide(account, provider) { addressBook ->
             // insert contact with data row
             val uid = "12345"
             val contact = Contact(
@@ -91,7 +91,7 @@ class LocalAddressBookTest {
      */
     @Test
     fun test_renameAccount_retainsGroups() {
-        localTestAddressBookStore.provide(account, provider) { addressBook ->
+        localTestAddressBookProvider.provide(account, provider) { addressBook ->
             // insert group
             val localGroup = LocalGroup(addressBook, Contact(displayName = "Test Group"), null, null, 0)
             val uri = localGroup.add()

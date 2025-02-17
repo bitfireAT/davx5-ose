@@ -18,7 +18,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalCalendarStore
-import at.bitfire.davdroid.resource.LocalTestAddressBookStore
+import at.bitfire.davdroid.resource.LocalTestAddressBookProvider
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.vcard4android.GroupMethod
@@ -50,7 +50,7 @@ class AccountSettingsMigration20Test {
     lateinit var migration: AccountSettingsMigration20
 
     @Inject
-    lateinit var localTestAddressBookStore: LocalTestAddressBookStore
+    lateinit var localTestAddressBookProvider: LocalTestAddressBookProvider
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -85,7 +85,7 @@ class AccountSettingsMigration20Test {
             url = url.toHttpUrl()
         ))
 
-        localTestAddressBookStore.provide(account, mockk(relaxed = true), GroupMethod.GROUP_VCARDS) { addressBook ->
+        localTestAddressBookProvider.provide(account, mockk(relaxed = true), GroupMethod.GROUP_VCARDS) { addressBook ->
 
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
