@@ -28,6 +28,10 @@ class LocalTestAddressBookStore @Inject constructor(
      */
     val counter = AtomicInteger()
 
+    val accountManager = AccountManager.get(context)
+
+    val accountType = context.getString(R.string.account_type_address_book)
+
     /**
      * Creates and provides a new temporary [LocalTestAddressBook] for the given [account] and
      * removes it again.
@@ -47,8 +51,7 @@ class LocalTestAddressBookStore @Inject constructor(
         removeAll()
 
         // create new address book account
-        val addressBookAccount = Account("Test Address Book ${counter.incrementAndGet()}", context.getString(R.string.account_type_address_book))
-        val accountManager = AccountManager.get(context)
+        val addressBookAccount = Account("Test Address Book ${counter.incrementAndGet()}", accountType)
         assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, null))
         val addressBook = localTestAddressBookFactory.create(account, addressBookAccount, provider, groupMethod)
 
@@ -62,10 +65,8 @@ class LocalTestAddressBookStore @Inject constructor(
         provideLocalTestAddressBook(addressBook)
     }
 
-    fun removeAll() {
-        val accountManager = AccountManager.get(context)
-        for (account in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
-            accountManager.removeAccountExplicitly(account)
+    fun removeAll() = accountManager.getAccountsByType(accountType).forEach { account ->
+        accountManager.removeAccountExplicitly(account)
     }
 
 }
