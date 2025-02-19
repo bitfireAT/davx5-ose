@@ -65,11 +65,11 @@ class SyncNotificationManager @AssistedInject constructor(
                 when (authority) {
                     ContactsContract.AUTHORITY -> {
                         setContentTitle(context.getString(R.string.account_list_contacts_storage_disabled_title))
-                        setContentText(context.getString(R.string.account_list_contacts_storage_disabled))
+                        setContentText(context.getString(R.string.account_list_contacts_storage_disabled_description))
                     }
                     CalendarContract.AUTHORITY -> {
                         setContentTitle(context.getString(R.string.account_list_calendar_storage_disabled_title))
-                        setContentText(context.getString(R.string.account_list_calendar_storage_disabled))
+                        setContentText(context.getString(R.string.account_list_calendar_storage_disabled_description))
                     }
                 }
             }
