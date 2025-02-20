@@ -19,6 +19,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Optional
 import java.util.logging.Logger
 
+/**
+ * A local address book that provides an easy way to set the group method in tests.
+ */
 class LocalTestAddressBook @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted("addressBook") addressBookAccount: Account,
@@ -26,7 +29,7 @@ class LocalTestAddressBook @AssistedInject constructor(
     @Assisted override val groupMethod: GroupMethod,
     accountSettingsFactory: AccountSettings.Factory,
     collectionRepository: DavCollectionRepository,
-    @ApplicationContext private val context: Context,
+    @ApplicationContext context: Context,
     logger: Logger,
     serviceRepository: DavServiceRepository,
     syncFramework: SyncFrameworkIntegration

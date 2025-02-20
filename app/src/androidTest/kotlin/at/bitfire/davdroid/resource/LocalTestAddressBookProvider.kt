@@ -19,7 +19,7 @@ import javax.inject.Inject
  * Provides [LocalTestAddressBook]s in tests.
  */
 class LocalTestAddressBookProvider @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @ApplicationContext context: Context,
     private val localTestAddressBookFactory: LocalTestAddressBook.Factory
 ) {
 
@@ -29,7 +29,6 @@ class LocalTestAddressBookProvider @Inject constructor(
     val counter = AtomicInteger()
 
     val accountManager = AccountManager.get(context)
-
     val accountType = context.getString(R.string.account_type_address_book)
 
     /**
