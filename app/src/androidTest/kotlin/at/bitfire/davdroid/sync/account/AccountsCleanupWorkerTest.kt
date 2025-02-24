@@ -65,10 +65,6 @@ class AccountsCleanupWorkerTest {
 
         addressBookAccountType = context.getString(R.string.account_type_address_book)
         addressBookAccount = Account("Fancy address book account", addressBookAccountType)
-
-        // Make sure there are no address books
-        for (account in accountManager.getAccountsByType(addressBookAccountType))
-            accountManager.removeAccountExplicitly(account)
     }
 
     @After
