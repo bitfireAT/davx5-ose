@@ -57,14 +57,16 @@ class LocalTestAddressBookProvider @Inject constructor(
         for (group in addressBook.queryGroups(null, null))
             group.delete()
 
-        // provide address book
-        provideLocalTestAddressBook(addressBook)
-
-        // remove address book account / address book
-        assertTrue(accountManager.removeAccountExplicitly(
-            // recreate account of provided address book, since the account might have been renamed
-            Account(addressBook.addressBookAccount.name, addressBook.addressBookAccount.type)
-        ))
+        try {
+            // provide address book
+            provideLocalTestAddressBook(addressBook)
+        } finally {
+            // remove address book account / address book
+            assertTrue(accountManager.removeAccountExplicitly(
+                // recreate account of provided address book, since the account might have been renamed
+                Account(addressBook.addressBookAccount.name, addressBook.addressBookAccount.type)
+            ))
+        }
     }
 
 }
