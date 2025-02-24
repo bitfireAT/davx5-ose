@@ -50,13 +50,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.dmfs.tasks.contract.TaskContract
 import java.io.PrintWriter
 import java.io.Writer
+import java.time.ZonedDateTime
 import java.util.TimeZone
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import kotlin.collections.filter
-import kotlin.collections.orEmpty
-import kotlin.text.removePrefix
 import kotlin.use
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
 import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
@@ -84,7 +82,12 @@ class DebugInfoGenerator @Inject constructor(
         writer.println("--- BEGIN DEBUG INFO ---")
         writer.println()
 
-        // begin with most specific information
+        // begin with a timestamp to know when this was generated
+        val now = ZonedDateTime.now()
+        writer.println("TIMESTAMP: $now")
+        writer.println()
+
+        // continue with most specific information
         if (syncAccount != null || syncAuthority != null) {
             writer.append("SYNCHRONIZATION INFO\n")
             if (syncAccount != null)
