@@ -46,9 +46,6 @@ class LocalTestAddressBookProvider @Inject constructor(
         groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS,
         provideLocalTestAddressBook: (LocalTestAddressBook) -> Unit
     ) {
-        // remove all test address book accounts - start with a clean slate
-        removeAll()
-
         // create new address book account
         val addressBookAccount = Account("Test Address Book ${counter.incrementAndGet()}", accountType)
         assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, null))
@@ -60,12 +57,14 @@ class LocalTestAddressBookProvider @Inject constructor(
         for (group in addressBook.queryGroups(null, null))
             group.delete()
 
-        // provide
+        // provide address book
         provideLocalTestAddressBook(addressBook)
-    }
 
-    fun removeAll() = accountManager.getAccountsByType(accountType).forEach { account ->
-        accountManager.removeAccountExplicitly(account)
+        // remove address book account / address book
+        assertTrue(accountManager.removeAccountExplicitly(
+            // recreate account of provided address book, since the account might have been renamed
+            Account(addressBook.addressBookAccount.name, addressBook.addressBookAccount.type)
+        ))
     }
 
 }
