@@ -50,7 +50,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.dmfs.tasks.contract.TaskContract
 import java.io.PrintWriter
 import java.io.Writer
-import java.time.ZonedDateTime
+import java.time.Instant
+import java.time.ZoneId
 import java.util.TimeZone
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -77,15 +78,18 @@ class DebugInfoGenerator @Inject constructor(
         cause: Throwable?,
         localResource: String?,
         remoteResource: String?,
+        timestamp: Long?,
         writer: PrintWriter
     ) {
         writer.println("--- BEGIN DEBUG INFO ---")
         writer.println()
 
-        // begin with a timestamp to know when this was generated
-        val now = ZonedDateTime.now()
-        writer.println("TIMESTAMP: $now")
-        writer.println()
+        // begin with a timestamp to know when the error occurred
+        if (timestamp != null) {
+            val instant = Instant.ofEpochSecond(timestamp).atZone(ZoneId.systemDefault())
+            writer.println("TIMESTAMP: $instant")
+            writer.println()
+        }
 
         // continue with most specific information
         if (syncAccount != null || syncAuthority != null) {
