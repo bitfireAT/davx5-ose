@@ -18,7 +18,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.unifiedpush.android.connector.FailedReason
 import org.unifiedpush.android.connector.MessagingReceiver
+import org.unifiedpush.android.connector.data.PushEndpoint
+import org.unifiedpush.android.connector.data.PushMessage
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -54,7 +57,7 @@ class UnifiedPushReceiver: MessagingReceiver() {
     lateinit var syncWorkerManager: SyncWorkerManager
 
 
-    override fun onNewEndpoint(context: Context, endpoint: String, instance: String) {
+    override fun onNewEndpoint(context: Context, endpoint: PushEndpoint, instance: String) {
         // remember new endpoint
         preferenceRepository.unifiedPushEndpoint(endpoint)
 
@@ -62,14 +65,24 @@ class UnifiedPushReceiver: MessagingReceiver() {
         pushRegistrationWorkerManager.updatePeriodicWorker()
     }
 
+    override fun onRegistrationFailed(context: Context, reason: FailedReason, instance: String) {
+        logger.warning("Unified Push registration failed: $reason")
+        // reset known endpoint to make sure nothing is stored when not registered
+        preferenceRepository.unifiedPushEndpoint(null)
+    }
+
     override fun onUnregistered(context: Context, instance: String) {
         // reset known endpoint
         preferenceRepository.unifiedPushEndpoint(null)
     }
 
-    override fun onMessage(context: Context, message: ByteArray, instance: String) {
+    override fun onMessage(context: Context, message: PushMessage, instance: String) {
         CoroutineScope(Dispatchers.Default).launch {
-            val messageXml = message.toString(Charsets.UTF_8)
+            if (!message.decrypted) {
+                logger.severe("Received a push message that could not be decrypted.")
+                return@launch
+            }
+            val messageXml = message.content.toString(Charsets.UTF_8)
             logger.log(Level.INFO, "Received push message", messageXml)
 
             // parse push notification
