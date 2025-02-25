@@ -80,7 +80,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     abstract val serviceType: String
 
     val syncNotificationManager by lazy {
-        syncNotificationManagerFactory.create(account, dataStore.authority)
+        syncNotificationManagerFactory.create(account)
     }
 
     val httpClient = lazy {
@@ -264,14 +264,14 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                  - the content provider is not available at all, for instance because the tasks app has been uninstalled
                    or the respective system app (like "calendar storage") is disabled */
                 logger.warning("Couldn't connect to content provider of authority ${dataStore.authority}")
-                syncNotificationManager.notifyContentProviderError()
+                syncNotificationManager.notifyContentProviderError(dataStore.authority)
                 syncResult.contentProviderError = true
 
                 return // Don't continue without provider
             }
 
             // Dismiss previous content provider error notification
-            syncNotificationManager.dismissContentProviderErrorNotification()
+            syncNotificationManager.dismissContentProviderErrorNotification(dataStore.authority)
 
             // run sync
             try {

@@ -159,7 +159,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     protected var hasCollectionSync = false
 
     private val syncNotificationManager by lazy {
-        syncNotificationManagerFactory.create(account, authority)
+        syncNotificationManagerFactory.create(account)
     }
 
     fun performSync() {
@@ -765,6 +765,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
 
         syncNotificationManager.notifyException(
+            authority,
             localCollection.tag,
             message,
             localCollection,
@@ -776,6 +777,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     protected fun notifyInvalidResource(e: Throwable, fileName: String) =
         syncNotificationManager.notifyInvalidResource(
+            authority,
             localCollection.tag,
             collection,
             e,

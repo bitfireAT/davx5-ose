@@ -38,11 +38,9 @@ import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
-import kotlin.math.log
 
 class SyncNotificationManager @AssistedInject constructor(
     @Assisted val account: Account,
-    @Assisted val authority: String,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry
@@ -50,13 +48,13 @@ class SyncNotificationManager @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, authority: String): SyncNotificationManager
+        fun create(account: Account): SyncNotificationManager
     }
 
     /**
      * Tries to inform the user that the content provider is missing or disabled.
      */
-    fun notifyContentProviderError() {
+    fun notifyContentProviderError(authority: String) {
         val (titleResource, textResource) = when {
             authority == ContactsContract.AUTHORITY -> Pair(
                 R.string.sync_warning_contacts_storage_disabled_title,
@@ -109,6 +107,7 @@ class SyncNotificationManager @AssistedInject constructor(
      * @param remote            The remote URL that caused the exception.
      */
     fun notifyException(
+        authority: String,
         notificationTag: String,
         message: String,
         localCollection: LocalCollection<*>,
@@ -125,7 +124,7 @@ class SyncNotificationManager @AssistedInject constructor(
                 account
             )
         } else {
-            contentIntent = buildDebugInfoIntentForLocalResource(e, local, remote)
+            contentIntent = buildDebugInfoIntentForLocalResource(authority, e, local, remote)
             if (local != null)
                 viewItemAction = buildViewItemActionForLocalResource(local)
         }
@@ -172,6 +171,7 @@ class SyncNotificationManager @AssistedInject constructor(
      * @param title             The title of the notification.
      */
     fun notifyInvalidResource(
+        authority: String,
         notificationTag: String,
         collection: Collection,
         e: Throwable,
@@ -179,7 +179,7 @@ class SyncNotificationManager @AssistedInject constructor(
         title: String
     ) {
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_INVALID_RESOURCE, tag = notificationTag) {
-            val intent = buildDebugInfoIntentForLocalResource(e, null, collection.url.resolve(fileName))
+            val intent = buildDebugInfoIntentForLocalResource(authority, e, null, collection.url.resolve(fileName))
 
             val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_WARNINGS)
             builder.setSmallIcon(R.drawable.ic_warning_notify)
@@ -208,8 +208,10 @@ class SyncNotificationManager @AssistedInject constructor(
 
     /**
      * Dismisses the notification for content provider errors.
+     *
+     * @param authority The authority of the content provider used as notification tag.
      */
-    fun dismissContentProviderErrorNotification() =
+    fun dismissContentProviderErrorNotification(authority: String) =
         dismissNotification(authority)
 
 
@@ -225,6 +227,7 @@ class SyncNotificationManager @AssistedInject constructor(
      * Builds intent to go to debug information with the given exception, resource and remote address.
      */
     private fun buildDebugInfoIntentForLocalResource(
+        authority: String,
         e: Throwable,
         local: LocalResource<*>?,
         remote: HttpUrl?
