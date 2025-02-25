@@ -39,7 +39,7 @@ mockk = "1.13.16"
 okhttp = "4.12.0"
 openid-appauth = "0.11.1"
 room = "2.6.1"
-unifiedpush = "2.4.0"
+unifiedpush = "3.0.4"
 
 [libraries]
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs_nio", version.ref = "android-desugaring" }
