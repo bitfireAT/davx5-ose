@@ -52,9 +52,9 @@ class SyncNotificationManager @AssistedInject constructor(
         fun create(account: Account, authority: String): SyncNotificationManager
     }
 
-    fun dismiss(notificationTag: String = authority) = NotificationManagerCompat.from(context)
-        .cancel(notificationTag, NotificationRegistry.NOTIFY_SYNC_ERROR)
-
+    /**
+     * Tries to inform the user that the content provider is missing or disabled.
+     */
     fun notifyContentProviderError() = notificationRegistry.notifyIfPossible(
         NotificationRegistry.NOTIFY_SYNC_ERROR,
         tag = authority
@@ -91,6 +91,13 @@ class SyncNotificationManager @AssistedInject constructor(
     /**
      * Tries to inform the user that an exception occurred during synchronization. Includes the affected
      * local resource, its collection, the URL, the exception and a user message.
+     *
+     * @param notificationTag   The tag to use for the notification.
+     * @param message           The message to show to the user.
+     * @param localCollection   The affected local collection.
+     * @param e                 The exception that occurred.
+     * @param local             The affected local resource.
+     * @param remote            The remote URL that caused the exception.
      */
     fun notifyException(
         notificationTag: String,
@@ -149,20 +156,25 @@ class SyncNotificationManager @AssistedInject constructor(
     /**
      * Sends a notification to inform the user that a push notification has been received, the
      * sync has been scheduled, but it still has not run.
+     *
+     * @param notificationTag   The tag to use for the notification.
+     * @param collection        The affected collection.
+     * @param fileName          The name of the file containing the invalid resource.
+     * @param title             The title of the notification.
      */
     fun notifyInvalidResource(
         notificationTag: String,
         collection: Collection,
         e: Throwable,
         fileName: String,
-        notifyInvalidResourceTitle: String
+        title: String
     ) {
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_INVALID_RESOURCE, tag = notificationTag) {
             val intent = buildDebugInfoIntentForLocalResource(e, null, collection.url.resolve(fileName))
 
             val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_WARNINGS)
             builder.setSmallIcon(R.drawable.ic_warning_notify)
-                .setContentTitle(notifyInvalidResourceTitle)
+                .setContentTitle(title)
                 .setContentText(context.getString(R.string.sync_invalid_resources_ignoring))
                 .setSubText(account.name)
                 .setContentIntent(
@@ -177,8 +189,28 @@ class SyncNotificationManager @AssistedInject constructor(
         }
     }
 
+    /**
+     * Dismisses the (error) notification for a specific collection.
+     *
+     * @param localCollectionTag The tag of the local collection which is used as notification tag also.
+     */
+    fun dismissCollectionSpecificNotification(localCollectionTag: String) =
+        dismissNotification(localCollectionTag)
+
+    /**
+     * Dismisses the notification for content provider errors.
+     */
+    fun dismissContentProviderErrorNotification() =
+        dismissNotification(authority)
+
 
     // helpers
+
+    /**
+     * Dismisses the sync error notification for a specific tag.
+     */
+    private fun dismissNotification(tag: String) = NotificationManagerCompat.from(context)
+        .cancel(tag, NotificationRegistry.NOTIFY_SYNC_ERROR)
 
     /**
      * Builds intent to go to debug information with the given exception, resource and remote address.
