@@ -52,6 +52,8 @@ import java.io.PrintWriter
 import java.io.Writer
 import java.time.Instant
 import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.TimeZone
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -86,8 +88,11 @@ class DebugInfoGenerator @Inject constructor(
 
         // begin with a timestamp to know when the error occurred
         if (timestamp != null) {
-            val instant = Instant.ofEpochSecond(timestamp).atZone(ZoneId.systemDefault())
-            writer.println("TIMESTAMP: $instant")
+            val instant = Instant.ofEpochSecond(timestamp)
+            writer.println("NOTIFICATION TIME")
+            val iso = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+            writer.println("Local time: ${instant.atZone(ZoneId.systemDefault()).format(iso)}")
+            writer.println("UTC: ${instant.atZone(ZoneOffset.UTC).format(iso)}")
             writer.println()
         }
 
