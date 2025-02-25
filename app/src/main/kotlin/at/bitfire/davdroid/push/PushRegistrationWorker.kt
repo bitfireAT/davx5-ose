@@ -29,6 +29,7 @@ import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.unifiedpush.android.connector.data.PushEndpoint
 import java.io.IOException
 import java.io.StringWriter
 import java.time.Duration
@@ -67,7 +68,7 @@ class PushRegistrationWorker @AssistedInject constructor(
         return Result.success()
     }
 
-    private suspend fun registerPushSubscription(collection: Collection, account: Account, endpoint: String) {
+    private suspend fun registerPushSubscription(collection: Collection, account: Account, endpoint: PushEndpoint) {
         httpClientBuilder.get()
             .fromAccount(account)
             .inForeground(true)
@@ -88,7 +89,18 @@ class PushRegistrationWorker @AssistedInject constructor(
                             // subscription URL
                             serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "web-push-subscription")) {
                                 serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-resource")) {
-                                    text(endpoint)
+                                    text(endpoint.url)
+                                }
+                                endpoint.pubKeySet?.let { pubKeySet ->
+                                    // Right now only p256dh is supported, but more can be added in
+                                    // the future.
+                                    serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "client-public-key")) {
+                                        attribute(NS_WEBDAV_PUSH, "type", "p256dh")
+                                        text(pubKeySet.pubKey)
+                                    }
+                                    serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "auth-secret")) {
+                                        text(pubKeySet.auth)
+                                    }
                                 }
                             }
                         }

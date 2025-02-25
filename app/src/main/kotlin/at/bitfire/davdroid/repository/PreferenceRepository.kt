@@ -11,6 +11,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import org.unifiedpush.android.connector.data.PublicKeySet
+import org.unifiedpush.android.connector.data.PushEndpoint
 import javax.inject.Inject
 
 /**
@@ -24,7 +26,9 @@ class PreferenceRepository @Inject constructor(
 
     companion object {
         const val LOG_TO_FILE = "log_to_file"
-        const val UNIFIED_PUSH_ENDPOINT = "unified_push_endpoint"
+        const val UNIFIED_PUSH_ENDPOINT_URL = "unified_push_endpoint_url"
+        const val UNIFIED_PUSH_ENDPOINT_KEY = "unified_push_endpoint_key"
+        const val UNIFIED_PUSH_ENDPOINT_AUTH = "unified_push_endpoint_auth"
     }
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -54,17 +58,24 @@ class PreferenceRepository @Inject constructor(
     }
 
 
-    fun unifiedPushEndpoint() =
-        preferences.getString(UNIFIED_PUSH_ENDPOINT, null)
+    fun unifiedPushEndpoint(): PushEndpoint? {
+        val url = preferences.getString(UNIFIED_PUSH_ENDPOINT_URL, null) ?: return null
+        val key = preferences.getString(UNIFIED_PUSH_ENDPOINT_KEY, null)
+        val auth = preferences.getString(UNIFIED_PUSH_ENDPOINT_AUTH, null)
+        val publicKeySet = if (key != null && auth != null) PublicKeySet(key, auth) else null
+        return PushEndpoint(url, publicKeySet)
+    }
 
-    fun unifiedPushEndpointFlow() = observeAsFlow(UNIFIED_PUSH_ENDPOINT) {
+    fun unifiedPushEndpointFlow() = observeAsFlow(UNIFIED_PUSH_ENDPOINT_URL) {
         unifiedPushEndpoint()
     }
 
-    fun unifiedPushEndpoint(endpoint: String?) {
+    fun unifiedPushEndpoint(endpoint: PushEndpoint?) {
         preferences
             .edit()
-            .putString(UNIFIED_PUSH_ENDPOINT, endpoint)
+            .putString(UNIFIED_PUSH_ENDPOINT_URL, endpoint?.url)
+            .putString(UNIFIED_PUSH_ENDPOINT_KEY, endpoint?.pubKeySet?.pubKey)
+            .putString(UNIFIED_PUSH_ENDPOINT_AUTH, endpoint?.pubKeySet?.auth)
             .apply()
     }
 
