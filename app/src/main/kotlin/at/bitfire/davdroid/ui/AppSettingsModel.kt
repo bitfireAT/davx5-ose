@@ -160,12 +160,12 @@ class AppSettingsModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             if (pushDistributor == null) {
                 // Disable UnifiedPush if the distributor given is null
-                UnifiedPush.safeRemoveDistributor(context)
-                UnifiedPush.unregisterApp(context)
+                UnifiedPush.removeDistributor(context)
+                UnifiedPush.unregister(context)
             } else {
                 // If a distributor was passed, store it and register the app
                 UnifiedPush.saveDistributor(context, pushDistributor)
-                UnifiedPush.registerApp(context)
+                UnifiedPush.register(context)
             }
             _pushDistributor.value = pushDistributor
         }
