@@ -61,11 +61,11 @@ class LocalTestAddressBookProvider @Inject constructor(
             // provide address book
             block(addressBook)
         } finally {
+            // recreate account of provided address book, since the account might have been renamed
+            val renamedAccount = Account(addressBook.addressBookAccount.name, addressBook.addressBookAccount.type)
+
             // remove address book account / address book
-            assertTrue(accountManager.removeAccountExplicitly(
-                // recreate account of provided address book, since the account might have been renamed
-                Account(addressBook.addressBookAccount.name, addressBook.addressBookAccount.type)
-            ))
+            assertTrue(accountManager.removeAccountExplicitly(renamedAccount))
         }
     }
 
