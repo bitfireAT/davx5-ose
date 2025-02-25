@@ -38,6 +38,7 @@ import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
+import kotlin.math.log
 
 class SyncNotificationManager @AssistedInject constructor(
     @Assisted val account: Account,
@@ -55,37 +56,45 @@ class SyncNotificationManager @AssistedInject constructor(
     /**
      * Tries to inform the user that the content provider is missing or disabled.
      */
-    fun notifyContentProviderError() = notificationRegistry.notifyIfPossible(
-        NotificationRegistry.NOTIFY_SYNC_ERROR,
-        tag = authority
-    ) {
-        NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_ERRORS)
-            .setSmallIcon(R.drawable.ic_sync_problem_notify)
-            .apply {
-                when (authority) {
-                    ContactsContract.AUTHORITY -> {
-                        setContentTitle(context.getString(R.string.sync_warning_contacts_storage_disabled_title))
-                        setContentText(context.getString(R.string.sync_warning_contacts_storage_disabled_description))
-                    }
-                    CalendarContract.AUTHORITY -> {
-                        setContentTitle(context.getString(R.string.sync_warning_calendar_storage_disabled_title))
-                        setContentText(context.getString(R.string.sync_warning_calendar_storage_disabled_description))
-                    }
-                }
+    fun notifyContentProviderError() {
+        val (titleResource, textResource) = when {
+            authority == ContactsContract.AUTHORITY -> Pair(
+                R.string.sync_warning_contacts_storage_disabled_title,
+                R.string.sync_warning_contacts_storage_disabled_description
+            )
+            authority == CalendarContract.AUTHORITY -> Pair(
+                R.string.sync_warning_calendar_storage_disabled_title,
+                R.string.sync_warning_calendar_storage_disabled_description
+            )
+            TaskProvider.ProviderName.entries.map { it.authority }.contains(authority) -> Pair(
+                R.string.sync_warning_tasks_storage_disabled_title,
+                R.string.sync_warning_tasks_storage_disabled_description
+            )
+            else -> {
+                logger.log(Level.WARNING, "Content provider error for unknown authority: $authority")
+                return
             }
-            .setSubText(account.name)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setCategory(NotificationCompat.CATEGORY_ERROR)
-            .setAutoCancel(true)
-            .addAction(NotificationCompat.Action(
-                android.R.drawable.ic_menu_view,
-                context.getString(R.string.sync_warning_manage_apps),
-                PendingIntent.getActivity(context, 0,
-                    Intent(Settings.ACTION_APPLICATION_SETTINGS),
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-            ))
-            .build()
+        }
+
+        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = authority) {
+            NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_ERRORS)
+                .setSmallIcon(R.drawable.ic_sync_problem_notify)
+                .setContentTitle(context.getString(titleResource))
+                .setContentText(context.getString(textResource))
+                .setSubText(account.name)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setCategory(NotificationCompat.CATEGORY_ERROR)
+                .setAutoCancel(true)
+                .addAction(NotificationCompat.Action(
+                    android.R.drawable.ic_menu_view,
+                    context.getString(R.string.sync_warning_manage_apps),
+                    PendingIntent.getActivity(context, 0,
+                        Intent(Settings.ACTION_APPLICATION_SETTINGS),
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                ))
+                .build()
+        }
     }
 
     /**
