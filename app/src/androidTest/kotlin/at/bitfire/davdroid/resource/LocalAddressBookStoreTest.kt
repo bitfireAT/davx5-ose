@@ -63,7 +63,6 @@ class LocalAddressBookStoreTest {
         hiltRule.inject()
 
         addressBookAccountType = context.getString(R.string.account_type_address_book)
-        removeAddressBooks()
 
         account = TestAccount.create()
         service = Service(
@@ -82,6 +81,7 @@ class LocalAddressBookStoreTest {
     @After
     fun tearDown() {
         TestAccount.remove(account)
+        removeAddressBooks()
     }
 
 
