@@ -64,12 +64,12 @@ class SyncNotificationManager @AssistedInject constructor(
             .apply {
                 when (authority) {
                     ContactsContract.AUTHORITY -> {
-                        setContentTitle(context.getString(R.string.account_list_contacts_storage_disabled_title))
-                        setContentText(context.getString(R.string.account_list_contacts_storage_disabled_description))
+                        setContentTitle(context.getString(R.string.sync_warning_contacts_storage_disabled_title))
+                        setContentText(context.getString(R.string.sync_warning_contacts_storage_disabled_description))
                     }
                     CalendarContract.AUTHORITY -> {
-                        setContentTitle(context.getString(R.string.account_list_calendar_storage_disabled_title))
-                        setContentText(context.getString(R.string.account_list_calendar_storage_disabled_description))
+                        setContentTitle(context.getString(R.string.sync_warning_calendar_storage_disabled_title))
+                        setContentText(context.getString(R.string.sync_warning_calendar_storage_disabled_description))
                     }
                 }
             }
@@ -79,7 +79,7 @@ class SyncNotificationManager @AssistedInject constructor(
             .setAutoCancel(true)
             .addAction(NotificationCompat.Action(
                 android.R.drawable.ic_menu_view,
-                context.getString(R.string.account_list_manage_apps),
+                context.getString(R.string.sync_warning_manage_apps),
                 PendingIntent.getActivity(context, 0,
                     Intent(Settings.ACTION_APPLICATION_SETTINGS),
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

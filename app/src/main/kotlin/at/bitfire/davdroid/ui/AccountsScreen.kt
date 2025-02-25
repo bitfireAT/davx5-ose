@@ -511,67 +511,73 @@ fun SyncWarnings(
                 onAction = onManagePermissions,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
-                Text(stringResource(R.string.account_list_no_notification_permission))
+                Text(stringResource(R.string.sync_warning_no_notification_permission))
             }
 
         if (internetWarning)
             ActionCard(
                 icon = Icons.Default.SignalCellularOff,
-                actionText = stringResource(R.string.account_list_manage_connections),
+                actionText = stringResource(R.string.sync_warning_manage_connections),
                 onAction = onManageConnections,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
-                Text(stringResource(R.string.account_list_no_internet))
+                Text(stringResource(R.string.sync_warning_no_internet))
             }
 
         if (batterySaverActive)
             ActionCard(
                 icon = Icons.Default.BatterySaver,
-                actionText = stringResource(R.string.account_list_manage_battery_saver),
+                actionText = stringResource(R.string.sync_warning_manage_battery_saver),
                 onAction = onManageBatterySaver,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
-                Text(stringResource(R.string.account_list_battery_saver_enabled))
+                Text(stringResource(R.string.sync_warning_battery_saver_enabled))
             }
 
         if (dataSaverActive)
             ActionCard(
                 icon = Icons.Default.DataSaverOn,
-                actionText = stringResource(R.string.account_list_manage_datasaver),
+                actionText = stringResource(R.string.sync_warning_manage_datasaver),
                 onAction = onManageDataSaver,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
-                Text(stringResource(R.string.account_list_datasaver_enabled))
+                Text(stringResource(R.string.sync_warning_datasaver_enabled))
             }
 
         if (lowStorageWarning)
             ActionCard(
                 icon = Icons.Default.Storage,
-                actionText = stringResource(R.string.account_list_manage_storage),
+                actionText = stringResource(R.string.sync_warning_manage_storage),
                 onAction = onManageStorage,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
-                Text(stringResource(R.string.account_list_low_storage))
+                Text(stringResource(R.string.sync_warning_low_storage))
             }
 
         if (calendarStorageDisabled)
             ActionCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_database_off),
-                actionText = stringResource(R.string.account_list_manage_apps),
+                actionText = stringResource(R.string.sync_warning_manage_apps),
                 onAction = onManageApps,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
-                Text(stringResource(R.string.account_list_calendar_storage_disabled))
+                Column {
+                    Text(stringResource(R.string.sync_warning_calendar_storage_disabled_title))
+                    Text(stringResource(R.string.sync_warning_calendar_storage_disabled_description))
+                }
             }
 
         if (contactsStorageDisabled)
             ActionCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_database_off),
-                actionText = stringResource(R.string.account_list_manage_apps),
+                actionText = stringResource(R.string.sync_warning_manage_apps),
                 onAction = onManageApps,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
-                Text(stringResource(R.string.account_list_contacts_storage_disabled))
+                Column {
+                    Text(stringResource(R.string.sync_warning_contacts_storage_disabled_title))
+                    Text(stringResource(R.string.sync_warning_contacts_storage_disabled_description))
+                }
             }
     }
 }
