@@ -276,7 +276,7 @@
         </service>
 
         <!-- Widgets -->
-        <receiver android:name=".ui.widget.SyncButtonWidgetReceiver"
+        <receiver android:name=".ui.widget.LabeledSyncButtonWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -284,7 +284,7 @@
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info_sync_button" />
+                android:resource="@xml/widget_info_labeled_sync_button" />
         </receiver>
 
     </application>

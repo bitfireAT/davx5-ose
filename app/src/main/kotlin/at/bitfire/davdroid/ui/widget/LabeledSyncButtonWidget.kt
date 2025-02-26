@@ -46,7 +46,7 @@ import javax.inject.Inject
 /**
  * A widget with a "Sync all" button.
  */
-class SyncButtonWidget : GlanceAppWidget() {
+class LabeledSyncButtonWidget : GlanceAppWidget() {
 
     // Hilt over @AndroidEntryPoint is not available for widgets
     @EntryPoint
