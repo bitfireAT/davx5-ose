@@ -50,13 +50,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.dmfs.tasks.contract.TaskContract
 import java.io.PrintWriter
 import java.io.Writer
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.TimeZone
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import kotlin.collections.filter
-import kotlin.collections.orEmpty
-import kotlin.text.removePrefix
 import kotlin.use
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
 import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
@@ -79,12 +80,23 @@ class DebugInfoGenerator @Inject constructor(
         cause: Throwable?,
         localResource: String?,
         remoteResource: String?,
+        timestamp: Long?,
         writer: PrintWriter
     ) {
         writer.println("--- BEGIN DEBUG INFO ---")
         writer.println()
 
-        // begin with most specific information
+        // begin with a timestamp to know when the error occurred
+        if (timestamp != null) {
+            val instant = Instant.ofEpochSecond(timestamp)
+            writer.println("NOTIFICATION TIME")
+            val iso = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+            writer.println("Local time: ${instant.atZone(ZoneId.systemDefault()).format(iso)}")
+            writer.println("UTC: ${instant.atZone(ZoneOffset.UTC).format(iso)}")
+            writer.println()
+        }
+
+        // continue with most specific information
         if (syncAccount != null || syncAuthority != null) {
             writer.append("SYNCHRONIZATION INFO\n")
             if (syncAccount != null)
