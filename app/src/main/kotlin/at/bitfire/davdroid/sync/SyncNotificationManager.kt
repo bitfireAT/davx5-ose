@@ -124,7 +124,7 @@ class SyncNotificationManager @AssistedInject constructor(
                 account
             )
         } else {
-            contentIntent = buildDebugInfoIntentForLocalResource(authority, e, local, remote)
+            contentIntent = buildDebugInfoIntent(authority, e, local, remote)
             if (local != null)
                 viewItemAction = buildViewItemActionForLocalResource(local)
         }
@@ -179,7 +179,7 @@ class SyncNotificationManager @AssistedInject constructor(
         title: String
     ) {
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_INVALID_RESOURCE, tag = notificationTag) {
-            val intent = buildDebugInfoIntentForLocalResource(authority, e, null, collection.url.resolve(fileName))
+            val intent = buildDebugInfoIntent(authority, e, null, collection.url.resolve(fileName))
 
             val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_WARNINGS)
             builder.setSmallIcon(R.drawable.ic_warning_notify)
@@ -203,7 +203,7 @@ class SyncNotificationManager @AssistedInject constructor(
      *
      * @param localCollectionTag The tag of the local collection which is used as notification tag also.
      */
-    fun dismissCollectionSpecificNotification(localCollectionTag: String) =
+    fun dismissCollectionNotification(localCollectionTag: String) =
         dismissNotification(localCollectionTag)
 
     /**
@@ -211,7 +211,7 @@ class SyncNotificationManager @AssistedInject constructor(
      *
      * @param authority The authority of the content provider used as notification tag.
      */
-    fun dismissContentProviderErrorNotification(authority: String) =
+    fun dismissContentProviderNotification(authority: String) =
         dismissNotification(authority)
 
 
@@ -226,7 +226,7 @@ class SyncNotificationManager @AssistedInject constructor(
     /**
      * Builds intent to go to debug information with the given exception, resource and remote address.
      */
-    private fun buildDebugInfoIntentForLocalResource(
+    private fun buildDebugInfoIntent(
         authority: String,
         e: Throwable,
         local: LocalResource<*>?,

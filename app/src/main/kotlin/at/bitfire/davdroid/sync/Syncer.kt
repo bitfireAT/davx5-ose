@@ -271,7 +271,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             }
 
             // Dismiss previous content provider error notification
-            syncNotificationManager.dismissContentProviderErrorNotification(dataStore.authority)
+            syncNotificationManager.dismissContentProviderNotification(dataStore.authority)
 
             // run sync
             try {

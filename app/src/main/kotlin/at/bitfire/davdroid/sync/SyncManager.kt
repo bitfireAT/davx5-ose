@@ -164,7 +164,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     fun performSync() {
         // dismiss previous error notifications
-        syncNotificationManager.dismissCollectionSpecificNotification(localCollectionTag = localCollection.tag)
+        syncNotificationManager.dismissCollectionNotification(localCollectionTag = localCollection.tag)
 
 
         try {
