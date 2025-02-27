@@ -249,24 +249,25 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      */
     operator fun invoke() {
         logger.log(Level.INFO, "${dataStore.authority} sync of $account initiated", extras.joinToString(", "))
+        var securityExceptionOccurred = false
 
         try {
             dataStore.acquireContentProvider()
         } catch (e: SecurityException) {
             logger.log(Level.WARNING, "Missing permissions for content provider authority ${dataStore.authority}", e)
+            securityExceptionOccurred = true
             /* Don't show a notification here without possibility to permanently dismiss it!
             Some users intentionally don't grant all permissions for what is syncable. */
             null
         }.use { provider ->
             if (provider == null) {
-                /* Can happen if
-                 - we're not allowed to access the content provider, or
-                 - the content provider is not available at all, for instance because the tasks app has been uninstalled
-                   or the respective system app (like "calendar storage") is disabled */
-                logger.warning("Couldn't connect to content provider of authority ${dataStore.authority}")
-                syncNotificationManager.notifyContentProviderError(dataStore.authority)
-                syncResult.contentProviderError = true
-
+                if (!securityExceptionOccurred) {
+                    /* Content provider is not available at all.
+                    I.E. system app (like "calendar storage") is missing or disabled */
+                    logger.warning("Couldn't connect to content provider of authority ${dataStore.authority}")
+                    syncNotificationManager.notifyContentProviderError(dataStore.authority)
+                    syncResult.contentProviderError = true
+                }
                 return // Don't continue without provider
             }
 
