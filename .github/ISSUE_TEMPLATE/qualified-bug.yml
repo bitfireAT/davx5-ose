@@ -1,5 +1,6 @@
 name: Qualified Bug Report
-description: "[Developers only] For qualified bug reports. (Use Discussions if unsure.)"
+description: "For qualified bug reports. (Use Discussions if unsure.)"
+type: bug
 labels: ["bug"]
 body:
   - type: checkboxes
