@@ -86,6 +86,17 @@ class LocalAddressBookStoreTest {
 
 
     @Test
+    fun test_accountName_removesSpecialChars() {
+        val collection = mockk<Collection> {
+            every { id } returns 1
+            every { url } returns "https://example.com/addressbook/funnyfriends".toHttpUrl()
+            every { displayName } returns "Mate's _ \"Fri-ends\" \\(´д`)/  øåæä äöü #42"
+            every { serviceId } returns service.id
+        }
+        assertEquals("Mates _ Fri-ends     42 (Test Account) #1", localAddressBookStore.accountName(collection))
+    }
+
+    @Test
     fun test_accountName_missingService() {
         val collection = mockk<Collection> {
             every { id } returns 42
