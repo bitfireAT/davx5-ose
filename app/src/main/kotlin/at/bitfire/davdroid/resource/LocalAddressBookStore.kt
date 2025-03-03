@@ -54,14 +54,14 @@ class LocalAddressBookStore @Inject constructor(
      * @param info  Collection to take info from
      */
     fun accountName(info: Collection): String {
-        // Name the address book after given collection display name, otherwise use last URL path segment
-        val sb = StringBuilder(info.displayName.let {
-            if (it.isNullOrEmpty())
-                info.url.lastSegment
-            else
-                it
-        })
+        // Name of address book is given collection display name, otherwise the last URL path segment
+        var name = info.displayName.takeIf { !it.isNullOrEmpty() } ?: info.url.lastSegment
+
+        // Remove every character that is not alphanumeric or "-", "_", " "
+        name = name.replace(Regex("[^a-zA-Z0-9-_ ]"), "")
+
         // Add the actual account name to the address book account name
+        val sb = StringBuilder(name)
         serviceRepository.get(info.serviceId)?.let { service ->
             sb.append(" (${service.accountName})")
         }
