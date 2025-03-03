@@ -47,7 +47,7 @@ class LocalAddressBookStore @Inject constructor(
      *
      * The address book account name contains
      *
-     * - the collection display name or last URL path segment
+     * - the collection display name or last URL path segment (filtered for special characters)
      * - the actual account name
      * - the collection ID, to make it unique.
      *
