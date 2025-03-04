@@ -155,8 +155,6 @@
     <string name="sync_warning_calendar_storage_disabled_description">Did you disable the \"Calendar storage\" system app?</string>
     <string name="sync_warning_contacts_storage_disabled_title">Contacts provider missing</string>
     <string name="sync_warning_contacts_storage_disabled_description">Did you disable the \"Contacts storage\" system app?</string>
-    <string name="sync_warning_tasks_storage_disabled_title">Tasks app missing</string>
-    <string name="sync_warning_tasks_storage_disabled_description">Did you disable or uninstall your Tasks app?</string>
     <string name="sync_warning_manage_apps">Manage apps</string>
 
 

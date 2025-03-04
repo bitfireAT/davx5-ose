@@ -58,18 +58,14 @@ class SyncNotificationManager @AssistedInject constructor(
      * @param authority The authority of the content provider.
      */
     fun notifyProviderError(authority: String) {
-        val (titleResource, textResource) = when {
-            authority == ContactsContract.AUTHORITY -> Pair(
+        val (titleResource, textResource) = when (authority) {
+            ContactsContract.AUTHORITY -> Pair(
                 R.string.sync_warning_contacts_storage_disabled_title,
                 R.string.sync_warning_contacts_storage_disabled_description
             )
-            authority == CalendarContract.AUTHORITY -> Pair(
+            CalendarContract.AUTHORITY -> Pair(
                 R.string.sync_warning_calendar_storage_disabled_title,
                 R.string.sync_warning_calendar_storage_disabled_description
-            )
-            TaskProvider.ProviderName.entries.map { it.authority }.contains(authority) -> Pair(
-                R.string.sync_warning_tasks_storage_disabled_title,
-                R.string.sync_warning_tasks_storage_disabled_description
             )
             else -> {
                 logger.log(Level.WARNING, "Content provider error for unknown authority: $authority")
