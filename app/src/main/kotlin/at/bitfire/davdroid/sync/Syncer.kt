@@ -249,30 +249,26 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      */
     operator fun invoke() {
         logger.log(Level.INFO, "${dataStore.authority} sync of $account initiated", extras.joinToString(", "))
-        var securityExceptionOccurred = false
 
         try {
             dataStore.acquireContentProvider()
         } catch (e: SecurityException) {
             logger.log(Level.WARNING, "Missing permissions for content provider authority ${dataStore.authority}", e)
-            securityExceptionOccurred = true
             /* Don't show a notification here without possibility to permanently dismiss it!
             Some users intentionally don't grant all permissions for what is syncable. */
-            null
+            return
         }.use { provider ->
             if (provider == null) {
-                if (!securityExceptionOccurred) {
-                    /* Content provider is not available at all.
-                    I.E. system app (like "calendar storage") is missing or disabled */
-                    logger.warning("Couldn't connect to content provider of authority ${dataStore.authority}")
-                    syncNotificationManager.notifyContentProviderError(dataStore.authority)
-                    syncResult.contentProviderError = true
-                }
+                /* Content provider is not available at all.
+                I.E. system app (like "calendar storage") is missing or disabled */
+                logger.warning("Couldn't connect to content provider of authority ${dataStore.authority}")
+                syncNotificationManager.notifyProviderError(dataStore.authority)
+                syncResult.contentProviderError = true
                 return // Don't continue without provider
             }
 
             // Dismiss previous content provider error notification
-            syncNotificationManager.dismissContentProviderNotification(dataStore.authority)
+            syncNotificationManager.dismissProviderError(dataStore.authority)
 
             // run sync
             try {

@@ -54,7 +54,7 @@ class SyncNotificationManager @AssistedInject constructor(
     /**
      * Tries to inform the user that the content provider is missing or disabled.
      */
-    fun notifyContentProviderError(authority: String) {
+    fun notifyProviderError(authority: String) {
         val (titleResource, textResource) = when {
             authority == ContactsContract.AUTHORITY -> Pair(
                 R.string.sync_warning_contacts_storage_disabled_title,
@@ -94,6 +94,14 @@ class SyncNotificationManager @AssistedInject constructor(
                 .build()
         }
     }
+
+    /**
+     * Dismisses the notification for content provider errors.
+     *
+     * @param authority The authority of the content provider used as notification tag.
+     */
+    fun dismissProviderError(authority: String) =
+        dismissNotification(authority)
 
     /**
      * Tries to inform the user that an exception occurred during synchronization. Includes the affected
@@ -203,16 +211,8 @@ class SyncNotificationManager @AssistedInject constructor(
      *
      * @param localCollectionTag The tag of the local collection which is used as notification tag also.
      */
-    fun dismissCollectionNotification(localCollectionTag: String) =
+    fun dismissInvalidResource(localCollectionTag: String) =
         dismissNotification(localCollectionTag)
-
-    /**
-     * Dismisses the notification for content provider errors.
-     *
-     * @param authority The authority of the content provider used as notification tag.
-     */
-    fun dismissContentProviderNotification(authority: String) =
-        dismissNotification(authority)
 
 
     // helpers
