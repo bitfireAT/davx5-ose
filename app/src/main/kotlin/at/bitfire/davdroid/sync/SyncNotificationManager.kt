@@ -53,6 +53,9 @@ class SyncNotificationManager @AssistedInject constructor(
 
     /**
      * Tries to inform the user that the content provider is missing or disabled.
+     * Use [dismissProviderError] to dismiss the notification.
+     *
+     * @param authority The authority of the content provider.
      */
     fun notifyProviderError(authority: String) {
         val (titleResource, textResource) = when {
@@ -172,6 +175,7 @@ class SyncNotificationManager @AssistedInject constructor(
     /**
      * Sends a notification to inform the user that a push notification has been received, the
      * sync has been scheduled, but it still has not run.
+     * Use [dismissInvalidResource] to dismiss the notification.
      *
      * @param notificationTag   The tag to use for the notification.
      * @param collection        The affected collection.
