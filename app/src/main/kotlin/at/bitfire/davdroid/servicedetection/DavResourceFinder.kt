@@ -84,7 +84,6 @@ class DavResourceFinder @AssistedInject constructor(
     private var encountered401 = false
 
     private val httpClient = httpClientBuilder
-        .inForeground(true)
         .setLogger(log)
         .apply {
             if (credentials != null)

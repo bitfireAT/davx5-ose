@@ -182,7 +182,6 @@ class DavCollectionRepository @Inject constructor(
 
         httpClientBuilder.get()
             .fromAccount(account)
-            .inForeground(true)
             .build()
             .use { httpClient ->
                 runInterruptible(Dispatchers.IO) {
@@ -296,7 +295,6 @@ class DavCollectionRepository @Inject constructor(
     private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
         httpClientBuilder.get()
             .fromAccount(account)
-            .inForeground(true)
             .build()
             .use { httpClient ->
                 runInterruptible(Dispatchers.IO) {
