@@ -562,7 +562,10 @@ fun SyncWarnings(
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Column {
-                    Text(stringResource(R.string.sync_warning_calendar_storage_disabled_title))
+                    Text(
+                        text = stringResource(R.string.sync_warning_calendar_storage_disabled_title),
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                     Text(stringResource(R.string.sync_warning_calendar_storage_disabled_description))
                 }
             }
@@ -575,7 +578,10 @@ fun SyncWarnings(
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Column {
-                    Text(stringResource(R.string.sync_warning_contacts_storage_disabled_title))
+                    Text(
+                        text = stringResource(R.string.sync_warning_contacts_storage_disabled_title),
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                     Text(stringResource(R.string.sync_warning_contacts_storage_disabled_description))
                 }
             }
