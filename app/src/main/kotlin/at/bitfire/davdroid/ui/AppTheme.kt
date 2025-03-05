@@ -50,9 +50,9 @@ fun AppTheme(
     
     // Track if the app is in the foreground
     LifecycleResumeEffect(view) {
-        ForegroundTracker.inForeground.value = true
+        ForegroundTracker.onResume()
         onPauseOrDispose {
-            ForegroundTracker.inForeground.value = false
+            ForegroundTracker.onPaused()
         }
     }
 }
