@@ -86,6 +86,18 @@ class LocalAddressBookStoreTest {
 
 
     @Test
+    fun test_accountName_removesSpecialChars() {
+        // Should remove iso control characters and `, ", ',
+        val collection = mockk<Collection> {
+            every { id } returns 1
+            every { url } returns "https://example.com/addressbook/funnyfriends".toHttpUrl()
+            every { displayName } returns "手 M's_\"F-e\"\\(´д`)/;æøå% äöü #42"
+            every { serviceId } returns service.id
+        }
+        assertEquals("手 Ms_F-e\\(´д)/;æøå% äöü #42 (Test Account) #1", localAddressBookStore.accountName(collection))
+    }
+
+    @Test
     fun test_accountName_missingService() {
         val collection = mockk<Collection> {
             every { id } returns 42
