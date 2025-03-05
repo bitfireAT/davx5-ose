@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 object ForegroundTracker {
 
-    private val _inForeground: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _inForeground = MutableStateFlow(false)
 
     /**
      * Whether the app is in foreground or not.
