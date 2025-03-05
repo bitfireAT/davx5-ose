@@ -43,7 +43,6 @@ class NextcloudLoginFlow @Inject constructor(
     }
 
     val httpClient = httpClientBuilder
-        .inForeground(true)
         .build()
 
     override fun close() {
