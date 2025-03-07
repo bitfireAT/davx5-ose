@@ -163,9 +163,14 @@ class JtxSyncManager @AssistedInject constructor(
 
         icalobjects.forEach { jtxICalObject ->
             // if the entry is a recurring entry (and therefore has a recurid)
-            // we udpate the existing (generated) entry
+            // we update the existing (generated) entry
             if(jtxICalObject.recurid != null) {
-                val local = localCollection.findRecurring(jtxICalObject.uid, jtxICalObject.recurid!!, jtxICalObject.dtstart!!)
+                val local = jtxICalObject.dtstart?.let { dtstart ->
+                    localCollection.findRecurring(jtxICalObject.uid, jtxICalObject.recurid!!, dtstart)
+                } ?: run {
+                    logger.log(Level.INFO, "Got a recur instance (${jtxICalObject.recurid}/${jtxICalObject.uid}) with an invalid dtstart.")
+                    null
+                }
                 SyncException.wrapWithLocalResource(local) {
                     logger.log(Level.INFO, "Updating $fileName with recur instance ${jtxICalObject.recurid} in local list", jtxICalObject)
                     if(local != null) {
