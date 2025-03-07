@@ -13,7 +13,7 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.davdroid.resource.LocalTestAddressBook
+import at.bitfire.davdroid.resource.LocalTestAddressBookProvider
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -34,6 +34,9 @@ class GroupMembershipBuilderTest {
     @Inject @ApplicationContext
     lateinit var context: Context
 
+    @Inject
+    lateinit var localTestAddressBookProvider: LocalTestAddressBookProvider
+    
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
@@ -51,15 +54,12 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
-        val addressBookGroupsAsCategories = LocalTestAddressBook.create(context, account, provider, GroupMethod.CATEGORIES)
-        try {
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { addressBookGroupsAsCategories ->
             GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories, false).build().also { result ->
                 assertEquals(1, result.size)
                 assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
                 assertEquals(addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP"), result[0].values[GroupMembership.GROUP_ROW_ID])
             }
-        } finally {
-            addressBookGroupsAsCategories.remove()
         }
     }
 
@@ -68,14 +68,11 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
-        val addressBookGroupsAsVCards = LocalTestAddressBook.create(context, account, provider, GroupMethod.GROUP_VCARDS)
-        try {
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.GROUP_VCARDS) { addressBookGroupsAsVCards ->
             GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards, false).build().also { result ->
                 // group membership is constructed during post-processing
                 assertEquals(0, result.size)
             }
-        } finally {
-            addressBookGroupsAsVCards.remove()
         }
     }
 

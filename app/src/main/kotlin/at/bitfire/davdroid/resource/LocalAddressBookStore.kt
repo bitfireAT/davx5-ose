@@ -21,6 +21,7 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.util.DavUtils.lastSegment
+import com.google.common.base.CharMatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -47,21 +48,24 @@ class LocalAddressBookStore @Inject constructor(
      *
      * The address book account name contains
      *
-     * - the collection display name or last URL path segment
+     * - the collection display name or last URL path segment (filtered for dangerous special characters)
      * - the actual account name
      * - the collection ID, to make it unique.
      *
      * @param info  Collection to take info from
      */
     fun accountName(info: Collection): String {
-        // Name the address book after given collection display name, otherwise use last URL path segment
-        val sb = StringBuilder(info.displayName.let {
-            if (it.isNullOrEmpty())
-                info.url.lastSegment
-            else
-                it
-        })
+        // Name of address book is given collection display name, otherwise the last URL path segment
+        var name = info.displayName.takeIf { !it.isNullOrEmpty() } ?: info.url.lastSegment
+
+        // Remove ISO control characters + SQL problematic characters
+        name = CharMatcher
+            .javaIsoControl()
+            .or(CharMatcher.anyOf("`'\""))
+            .removeFrom(name)
+
         // Add the actual account name to the address book account name
+        val sb = StringBuilder(name)
         serviceRepository.get(info.serviceId)?.let { service ->
             sb.append(" (${service.accountName})")
         }

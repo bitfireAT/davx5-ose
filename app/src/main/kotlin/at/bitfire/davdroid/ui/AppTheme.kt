@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
 
 @Composable
@@ -45,5 +46,13 @@ fun AppTheme(
                 M3ColorScheme.darkScheme,
             content = content
         )
+    }
+    
+    // Track if the app is in the foreground
+    LifecycleResumeEffect(view) {
+        ForegroundTracker.onResume()
+        onPauseOrDispose {
+            ForegroundTracker.onPaused()
+        }
     }
 }

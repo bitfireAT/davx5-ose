@@ -13,7 +13,7 @@ import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.davdroid.resource.LocalTestAddressBook
+import at.bitfire.davdroid.resource.LocalTestAddressBookProvider
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
@@ -36,6 +36,9 @@ class CachedGroupMembershipHandlerTest {
     @ApplicationContext
     lateinit var context: Context
 
+    @Inject
+    lateinit var localTestAddressBookProvider: LocalTestAddressBookProvider
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
@@ -49,8 +52,7 @@ class CachedGroupMembershipHandlerTest {
 
     @Test
     fun testMembership() {
-        val addressBook = LocalTestAddressBook.create(context, account, provider, GroupMethod.GROUP_VCARDS)
-        try {
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.GROUP_VCARDS) { addressBook ->
             val contact = Contact()
             val localContact = LocalContact(addressBook, contact, null, null, 0)
             CachedGroupMembershipHandler(localContact).handle(ContentValues().apply {
@@ -58,8 +60,6 @@ class CachedGroupMembershipHandlerTest {
                 put(CachedGroupMembership.RAW_CONTACT_ID, 789)
             }, contact)
             assertArrayEquals(arrayOf(123456L), localContact.cachedGroupMemberships.toArray())
-        } finally {
-            addressBook.remove()
         }
     }
 

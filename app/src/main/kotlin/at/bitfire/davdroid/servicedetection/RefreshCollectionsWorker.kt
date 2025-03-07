@@ -149,7 +149,6 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             // create authenticating OkHttpClient (credentials taken from account settings)
             httpClientBuilder
                 .fromAccount(account)
-                .inForeground(true)
                 .build()
                 .use { httpClient ->
                     runInterruptible {
