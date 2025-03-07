@@ -27,6 +27,7 @@ import android.provider.DocumentsContract.buildRootsUri
 import android.provider.DocumentsProvider
 import android.webkit.MimeTypeMap
 import androidx.annotation.WorkerThread
+import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
@@ -756,7 +757,12 @@ class DavDocumentsProvider: DocumentsProvider() {
                 if (Build.VERSION.SDK_INT >= 26) {
                     // TODO edit mount
                     val intent = Intent(ourContext, WebdavMountsActivity::class.java)
-                    throw AuthenticationRequiredException(this, PendingIntent.getActivity(ourContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+                    throw AuthenticationRequiredException(
+                        this,
+                        TaskStackBuilder.create(ourContext)
+                            .addNextIntentWithParentStack(intent)
+                            .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                    )
                 }
             }
             HttpURLConnection.HTTP_NOT_FOUND ->

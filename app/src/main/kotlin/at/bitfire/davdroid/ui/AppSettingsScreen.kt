@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.SyncProblem
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -70,7 +71,6 @@ import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import kotlinx.coroutines.launch
-import kotlin.collections.orEmpty
 
 @Composable
 fun AppSettingsScreen(
@@ -424,13 +424,26 @@ fun AppSettings_Security(
         Text(stringResource(R.string.app_settings_security))
     }
 
+    var showingDistrustWarning by remember { mutableStateOf(false) }
+    if (showingDistrustWarning) {
+        DistrustSystemCertificatesAlertDialog(
+            onDistrustSystemCertsRequested = { onDistrustSystemCertsUpdated(true) },
+            onDismissRequested = { showingDistrustWarning = false }
+        )
+    }
+
     SwitchSetting(
         checked = distrustSystemCerts,
         name = stringResource(R.string.app_settings_distrust_system_certs),
         summaryOn = stringResource(R.string.app_settings_distrust_system_certs_on),
         summaryOff = stringResource(R.string.app_settings_distrust_system_certs_off)
-    ) {
-        onDistrustSystemCertsUpdated(it)
+    ) { checked ->
+        if (checked) {
+            // Show warning before enabling.
+            showingDistrustWarning = true
+        } else {
+            onDistrustSystemCertsUpdated(false)
+        }
     }
 
     Setting(
@@ -444,6 +457,40 @@ fun AppSettings_Security(
         summary = stringResource(R.string.app_settings_security_app_permissions_summary),
         onClick = onNavPermissionsScreen
     )
+}
+
+@Composable
+fun DistrustSystemCertificatesAlertDialog(
+    onDistrustSystemCertsRequested: () -> Unit,
+    onDismissRequested: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequested,
+        icon = { Icon(Icons.Default.Warning, stringResource(R.string.app_settings_distrust_system_certs)) },
+        title = { Text(stringResource(R.string.app_settings_distrust_system_certs)) },
+        text = { Text(stringResource(R.string.app_settings_distrust_system_certs_dialog_message)) },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDistrustSystemCertsRequested()
+                    onDismissRequested()
+                }
+            ) { Text(stringResource(R.string.dialog_enable)) }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequested
+            ) { Text(stringResource(R.string.dialog_deny)) }
+        },
+    )
+}
+
+@Preview
+@Composable
+fun DistrustSystemCertificatesAlertDialog_Preview() {
+    AppTheme {
+        DistrustSystemCertificatesAlertDialog({}, {})
+    }
 }
 
 @Composable

@@ -116,7 +116,6 @@ class WebDavMountRepository @Inject constructor(
         val validVersions = arrayOf("1", "2", "3")
 
         val builder = httpClientBuilder.get()
-            .inForeground(true)
 
         if (credentials != null)
             builder.authenticate(

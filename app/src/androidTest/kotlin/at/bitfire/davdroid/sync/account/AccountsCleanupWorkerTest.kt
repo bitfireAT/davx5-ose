@@ -15,7 +15,6 @@ import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalTestAddressBook
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -66,9 +65,6 @@ class AccountsCleanupWorkerTest {
 
         addressBookAccountType = context.getString(R.string.account_type_address_book)
         addressBookAccount = Account("Fancy address book account", addressBookAccountType)
-
-        // Make sure there are no address books
-        LocalTestAddressBook.removeAll(context)
     }
 
     @After

@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteQueryBuilder
 import androidx.core.app.NotificationCompat
+import androidx.core.app.TaskStackBuilder
 import androidx.core.database.getStringOrNull
 import androidx.room.AutoMigration
 import androidx.room.Database
@@ -81,7 +82,11 @@ abstract class AppDatabase: RoomDatabase() {
                             .setContentTitle(context.getString(R.string.database_destructive_migration_title))
                             .setContentText(context.getString(R.string.database_destructive_migration_text))
                             .setCategory(NotificationCompat.CATEGORY_ERROR)
-                            .setContentIntent(PendingIntent.getActivity(context, 0, launcherIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+                            .setContentIntent(
+                                TaskStackBuilder.create(context)
+                                    .addNextIntent(launcherIntent)
+                                    .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                            )
                             .setAutoCancel(true)
                             .build()
                     }

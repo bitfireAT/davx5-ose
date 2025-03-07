@@ -11,6 +11,7 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.core.app.NotificationCompat
+import androidx.core.app.TaskStackBuilder
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalDataStore
@@ -125,7 +126,11 @@ class TasksAppManager @Inject constructor(
             val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
 
             if (intent.resolveActivity(pm) != null)
-                notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, flags))
+                notify.setContentIntent(
+                    TaskStackBuilder.create(context)
+                        .addNextIntent(intent)
+                        .getPendingIntent(0, flags)
+                )
 
             notify.build()
         }

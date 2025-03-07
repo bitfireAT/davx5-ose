@@ -42,7 +42,8 @@ class DebugInfoModel @AssistedInject constructor(
         val cause: Throwable?,
         val localResource: String?,
         val remoteResource: String?,
-        val logs: String?
+        val logs: String?,
+        val timestamp: Long?
     )
 
     @AssistedFactory
@@ -102,7 +103,8 @@ class DebugInfoModel @AssistedInject constructor(
                 syncAuthority = details.authority,
                 cause = details.cause,
                 localResource = details.localResource,
-                remoteResource = details.remoteResource
+                remoteResource = details.remoteResource,
+                timestamp = details.timestamp
             )
         }
     }
@@ -112,7 +114,14 @@ class DebugInfoModel @AssistedInject constructor(
      *
      * Note: Part of this method and all of it's helpers (listed below) should probably be extracted in the future
      */
-    private fun generateDebugInfo(syncAccount: Account?, syncAuthority: String?, cause: Throwable?, localResource: String?, remoteResource: String?) {
+    private fun generateDebugInfo(
+        syncAccount: Account?,
+        syncAuthority: String?,
+        cause: Throwable?,
+        localResource: String?,
+        remoteResource: String?,
+        timestamp: Long?
+    ) {
         val debugInfoFile = File(LogFileHandler.debugDir(context), FILE_DEBUG_INFO)
         debugInfoFile.printWriter().use { writer ->
             debugInfoGenerator(
@@ -121,6 +130,7 @@ class DebugInfoModel @AssistedInject constructor(
                 cause = cause,
                 localResource = localResource,
                 remoteResource = remoteResource,
+                timestamp = timestamp,
                 writer = writer
             )
         }
