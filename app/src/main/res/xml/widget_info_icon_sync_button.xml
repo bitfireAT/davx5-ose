@@ -7,6 +7,7 @@
     android:targetCellWidth="1"
     android:targetCellHeight="1"
     android:resizeMode="none"
+    android:previewLayout="@layout/widget_preview_icon_sync_button"
     android:description="@string/widget_icon_sync_description"
     tools:ignore="UnusedAttribute">
 </appwidget-provider>
