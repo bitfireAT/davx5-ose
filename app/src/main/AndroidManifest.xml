@@ -277,6 +277,7 @@
 
         <!-- Widgets -->
         <receiver android:name=".ui.widget.LabeledSyncButtonWidgetReceiver"
+            android:label="@string/widget_labeled_sync_label"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -287,6 +288,7 @@
                 android:resource="@xml/widget_info_labeled_sync_button" />
         </receiver>
         <receiver android:name=".ui.widget.IconSyncButtonWidgetReceiver"
+            android:label="@string/widget_icon_sync_label"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

@@ -9,5 +9,6 @@
     android:maxResizeWidth="250dp"
     android:maxResizeHeight="30dp"
     android:resizeMode="horizontal"
+    android:description="@string/widget_labeled_sync_description"
     tools:ignore="UnusedAttribute">
 </appwidget-provider>
