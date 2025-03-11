@@ -9,7 +9,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.os.DeadObjectException
 import androidx.annotation.VisibleForTesting
-import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.network.HttpClient
