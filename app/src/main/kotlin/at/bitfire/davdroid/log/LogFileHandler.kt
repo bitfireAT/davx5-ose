@@ -10,6 +10,7 @@ import android.content.Intent
 import android.os.Process
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.DebugInfoActivity
@@ -138,8 +139,9 @@ class LogFileHandler @Inject constructor(
             val shareIntent = DebugInfoActivity.IntentBuilder(context)
                 .newTask()
                 .share()
-            val pendingShare =
-                PendingIntent.getActivity(context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            val pendingShare = TaskStackBuilder.create(context)
+                .addNextIntentWithParentStack(shareIntent)
+                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             builder.addAction(
                 NotificationCompat.Action.Builder(
                     R.drawable.ic_share,
@@ -151,8 +153,9 @@ class LogFileHandler @Inject constructor(
             // add action to disable verbose logging
             val prefIntent = Intent(context, AppSettingsActivity::class.java)
             prefIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            val pendingPref =
-                PendingIntent.getActivity(context, 0, prefIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            val pendingPref = TaskStackBuilder.create(context)
+                .addNextIntentWithParentStack(prefIntent)
+                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             builder.addAction(
                 NotificationCompat.Action.Builder(
                     R.drawable.ic_settings,

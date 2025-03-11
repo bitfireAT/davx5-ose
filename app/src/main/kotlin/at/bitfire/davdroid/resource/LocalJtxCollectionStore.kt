@@ -9,6 +9,7 @@ import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -17,7 +18,9 @@ import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.JtxCollection
+import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract
+import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -31,14 +34,28 @@ class LocalJtxCollectionStore @Inject constructor(
 
     private val serviceDao = db.serviceDao()
 
-    override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalJtxCollection? {
-        // If the collection doesn't have a color, use a default color.
-        if (fromCollection.color != null)
-            fromCollection.color = Constants.DAVDROID_GREEN_RGBA
+    override val authority: String
+        get() = JtxContract.AUTHORITY
 
+    override fun acquireContentProvider() =
+        context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)
+
+    override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalJtxCollection? {
         val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
-        val values = valuesFromCollection(fromCollection, account = account, withColor = true)
+
+        // If the collection doesn't have a color, use a default color.
+        val collectionWithColor =
+            if (fromCollection.color != null)
+                fromCollection
+            else
+                fromCollection.copy(color = Constants.DAVDROID_GREEN_RGBA)
+
+        val values = valuesFromCollection(
+            info = collectionWithColor,
+            account = account,
+            withColor = true
+        )
 
         val uri = JtxCollection.create(account, provider, values)
         return LocalJtxCollection(account, provider, ContentUris.parseId(uri))
@@ -48,6 +65,7 @@ class LocalJtxCollectionStore @Inject constructor(
         val owner = info.ownerId?.let { principalRepository.get(it) }
 
         return ContentValues().apply {
+            put(JtxContract.JtxCollection.SYNC_ID, info.id)
             put(JtxContract.JtxCollection.URL, info.url.toString())
             put(
                 JtxContract.JtxCollection.DISPLAYNAME,
@@ -70,10 +88,8 @@ class LocalJtxCollectionStore @Inject constructor(
         }
     }
 
-
     override fun getAll(account: Account, provider: ContentProviderClient): List<LocalJtxCollection> =
         JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
-
 
     override fun update(provider: ContentProviderClient, localCollection: LocalJtxCollection, fromCollection: Collection) {
         val accountSettings = accountSettingsFactory.create(localCollection.account)
@@ -81,6 +97,13 @@ class LocalJtxCollectionStore @Inject constructor(
         localCollection.update(values)
     }
 
+    override fun updateAccount(oldAccount: Account, newAccount: Account) {
+        TaskProvider.acquire(context, TaskProvider.ProviderName.JtxBoard)?.use { provider ->
+            val values = contentValuesOf(JtxContract.JtxCollection.ACCOUNT_NAME to newAccount.name)
+            val uri = JtxContract.JtxCollection.CONTENT_URI.asSyncAdapter(oldAccount)
+            provider.client.update(uri, values, "${JtxContract.JtxCollection.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
+        }
+    }
 
     override fun delete(localCollection: LocalJtxCollection) {
         localCollection.delete()

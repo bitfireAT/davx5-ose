@@ -1,3 +1,7 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
@@ -54,6 +58,7 @@ fun DebugInfoScreen(
     localResource: String?,
     remoteResource: String?,
     logs: String?,
+    timestamp: Long?,
     onShareZipFile: (File) -> Unit,
     onViewFile: (File) -> Unit,
     onNavUp: () -> Unit
@@ -66,7 +71,8 @@ fun DebugInfoScreen(
                 cause = cause,
                 localResource = localResource,
                 remoteResource = remoteResource,
-                logs = logs
+                logs = logs,
+                timestamp = timestamp
             ))
         }
     )

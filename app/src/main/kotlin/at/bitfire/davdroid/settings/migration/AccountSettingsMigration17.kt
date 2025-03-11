@@ -14,6 +14,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -62,15 +63,25 @@ class AccountSettingsMigration17 @Inject constructor(
                 // Old address books only have a URL, so use it to determine the collection ID
                 logger.info("Migrating address book ${oldAddressBookAccount.name}")
                 val oldAddressBook = localAddressBookFactory.create(account, oldAddressBookAccount, provider)
-                val url = accountManager.getUserData(oldAddressBookAccount, LocalAddressBook.USER_DATA_URL)
+                val url = accountManager.getUserData(oldAddressBookAccount, LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL)
                 collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
                     // Set collection ID and rename the account
                     localAddressBookStore.update(provider, oldAddressBook, collection)
+                    // The user-data-url is not being set in localAddressBookStore.update() anymore,
+                    // but we need to keep it for the migration
+                    accountManager.setAndVerifyUserData(
+                        oldAddressBook.addressBookAccount,
+                        LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL,
+                        collection.url.toString()
+                    )
                 }
             }
         }
     }
 
+    companion object {
+        private const val LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL = "url"
+    }
 
     @Module
     @InstallIn(SingletonComponent::class)

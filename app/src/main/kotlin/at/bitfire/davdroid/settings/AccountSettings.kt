@@ -9,6 +9,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Looper
 import androidx.annotation.WorkerThread
+import androidx.core.os.bundleOf
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
@@ -27,7 +28,6 @@ import java.util.Collections
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Provider
-import kotlin.collections.mutableSetOf
 
 /**
  * Manages settings of an account.
@@ -125,6 +125,15 @@ class AccountSettings @AssistedInject constructor(
 
         // OAuth
         accountManager.setAndVerifyUserData(account, KEY_AUTH_STATE, credentials.authState?.jsonSerializeString())
+    }
+
+    /**
+     * Returns whether users can modify credentials from the account settings screen.
+     * Checks the value of [CREDENTIALS_LOCK] to be `0` or not equal to [CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS].
+     */
+    fun changingCredentialsAllowed(): Boolean {
+        val credentialsLock = settingsManager.getIntOrNull(CREDENTIALS_LOCK)
+        return credentialsLock == null || credentialsLock != CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
     }
 
 
@@ -285,32 +294,26 @@ class AccountSettings @AssistedInject constructor(
 
     // UI settings
 
-    data class ShowOnlyPersonal(
-        val onlyPersonal: Boolean,
-        val locked: Boolean
-    )
-
-    fun getShowOnlyPersonal(): ShowOnlyPersonal {
-        @Suppress("DEPRECATION")
-        val pair = getShowOnlyPersonalPair()
-        return ShowOnlyPersonal(onlyPersonal = pair.first, locked = !pair.second)
+    /**
+     * Whether to show only personal collections in the UI
+     *
+     * @return *true* if only personal collections shall be shown; *false* otherwise
+     */
+    fun getShowOnlyPersonal(): Boolean = when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+        0 -> false
+        1 -> true
+        else /* including -1 */ -> accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null
     }
 
     /**
-     * Whether only personal collections should be shown.
+     * Whether the user shall be able to change the setting (= setting not locked)
      *
-     * @return [Pair] of values:
-     *
-     *   1. (first) whether only personal collections should be shown
-     *   2. (second) whether the user shall be able to change the setting (= setting not locked)
+     * @return *true* if the setting is locked; *false* otherwise
      */
-    @Deprecated("Use getShowOnlyPersonal() instead", replaceWith = ReplaceWith("getShowOnlyPersonal()"))
-    fun getShowOnlyPersonalPair(): Pair<Boolean, Boolean> =
-            when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
-                0 -> Pair(false, false)
-                1 -> Pair(true, false)
-                else /* including -1 */ -> Pair(accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null, true)
-            }
+    fun getShowOnlyPersonalLocked(): Boolean = when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+        0, 1 -> true
+        else /* including -1 */ -> false
+    }
 
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
         accountManager.setAndVerifyUserData(account, KEY_SHOW_ONLY_PERSONAL, if (showOnlyPersonal) "1" else null)
@@ -345,7 +348,7 @@ class AccountSettings @AssistedInject constructor(
 
     companion object {
 
-        const val CURRENT_VERSION = 19
+        const val CURRENT_VERSION = 20
         const val KEY_SETTINGS_VERSION = "version"
 
         const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"
@@ -356,6 +359,11 @@ class AccountSettings @AssistedInject constructor(
 
         const val KEY_USERNAME = "user_name"
         const val KEY_CERTIFICATE_ALIAS = "certificate_alias"
+
+        const val CREDENTIALS_LOCK = "login_credentials_lock"
+        const val CREDENTIALS_LOCK_NO_LOCK = 0
+        const val CREDENTIALS_LOCK_AT_LOGIN = 1
+        const val CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS = 2
 
         /** OAuth [AuthState] (serialized as JSON) */
         const val KEY_AUTH_STATE = "auth_state"
@@ -407,8 +415,7 @@ class AccountSettings @AssistedInject constructor(
         val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<Account>())
 
         fun initialUserData(credentials: Credentials?): Bundle {
-            val bundle = Bundle()
-            bundle.putString(KEY_SETTINGS_VERSION, CURRENT_VERSION.toString())
+            val bundle = bundleOf(KEY_SETTINGS_VERSION to CURRENT_VERSION.toString())
 
             if (credentials != null) {
                 if (credentials.username != null)

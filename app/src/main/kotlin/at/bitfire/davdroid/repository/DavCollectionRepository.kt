@@ -23,11 +23,12 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.CollectionType
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.ical4android.ICalendar
 import at.bitfire.ical4android.util.DateUtils
 import dagger.Lazy
 import dagger.Module
@@ -37,16 +38,19 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.Multibinds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
-import kotlinx.coroutines.withContext
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.ComponentList
+import net.fortuna.ical4j.model.Property
+import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.component.VTimeZone
+import net.fortuna.ical4j.model.property.Version
 import okhttp3.HttpUrl
 import java.io.StringWriter
 import java.util.Collections
 import java.util.UUID
 import javax.inject.Inject
+import javax.inject.Provider
 
 /**
  * Repository for managing collections.
@@ -54,10 +58,10 @@ import javax.inject.Inject
  * Implements an observer pattern that can be used to listen for changes of collections.
  */
 class DavCollectionRepository @Inject constructor(
-    private val accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext val context: Context,
-    db: AppDatabase,
+    @ApplicationContext private val context: Context,
+    private val db: AppDatabase,
     defaultListeners: Lazy<Set<@JvmSuppressWildcards OnChangeListener>>,
+    private val httpClientBuilder: Provider<HttpClient.Builder>,
     private val serviceRepository: DavServiceRepository
 ) {
 
@@ -68,8 +72,7 @@ class DavCollectionRepository @Inject constructor(
     /**
      * Whether there are any collections that are registered for push.
      */
-    suspend fun anyPushCapable() =
-        dao.anyPushCapable()
+    suspend fun anyPushCapable() = dao.anyPushCapable()
 
     /**
      * Creates address book collection on server and locally
@@ -177,15 +180,14 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        HttpClient.Builder(context, accountSettingsFactory.create(account))
-            .setForeground(true)
-            .build().use { httpClient ->
-                withContext(Dispatchers.IO) {
-                    runInterruptible {
-                        DavResource(httpClient.okHttpClient, collection.url).delete() {
-                            // success, otherwise an exception would have been thrown → delete locally, too
-                            delete(collection)
-                        }
+        httpClientBuilder.get()
+            .fromAccount(account)
+            .build()
+            .use { httpClient ->
+                runInterruptible(Dispatchers.IO) {
+                    DavResource(httpClient.okHttpClient, collection.url).delete {
+                        // success, otherwise an exception would have been thrown → delete locally, too
+                        delete(collection)
                     }
                 }
             }
@@ -217,20 +219,28 @@ class DavCollectionRepository @Inject constructor(
         dao.getPushRegisteredAndNotSyncable()
 
     /**
-     * Inserts or updates the collection. On update it will not update flag values ([Collection.sync],
-     * [Collection.forceReadOnly]), but use the values of the already existing collection.
+     * Inserts or updates the collection.
+     *
+     * On update, it will _not_ update the flags
+     *  - [Collection.sync] and
+     *  - [Collection.forceReadOnly],
+     *  but use the values of the already existing collection.
      *
      * @param newCollection Collection to be inserted or updated
      */
     fun insertOrUpdateByUrlAndRememberFlags(newCollection: Collection) {
-        // remember locally set flags
-        dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())?.let { oldCollection ->
-            newCollection.sync = oldCollection.sync
-            newCollection.forceReadOnly = oldCollection.forceReadOnly
-        }
+        db.runInTransaction {
+            // remember locally set flags
+            val oldCollection = dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())
+            val newCollectionWithFlags =
+                if (oldCollection != null)
+                    newCollection.copy(sync = oldCollection.sync, forceReadOnly = oldCollection.forceReadOnly)
+                else
+                    newCollection
 
-        // commit to database
-        insertOrUpdateByUrl(newCollection)
+            // commit new collection to database
+            insertOrUpdateByUrl(newCollectionWithFlags)
+        }
     }
 
     /**
@@ -241,10 +251,10 @@ class DavCollectionRepository @Inject constructor(
         notifyOnChangeListeners()
     }
 
-    fun pageByServiceAndType(serviceId: Long, type: String) =
+    fun pageByServiceAndType(serviceId: Long, @CollectionType type: String) =
         dao.pageByServiceAndType(serviceId, type)
 
-    fun pagePersonalByServiceAndType(serviceId: Long, type: String) =
+    fun pagePersonalByServiceAndType(serviceId: Long, @CollectionType type: String) =
         dao.pagePersonalByServiceAndType(serviceId, type)
 
     /**
@@ -283,17 +293,16 @@ class DavCollectionRepository @Inject constructor(
     // helpers
 
     private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
-        HttpClient.Builder(context, accountSettingsFactory.create(account))
-            .setForeground(true)
-            .build().use { httpClient ->
-                withContext(Dispatchers.IO) {
-                    runInterruptible {
-                        DavResource(httpClient.okHttpClient, url).mkCol(
-                            xmlBody = xmlBody,
-                            method = method
-                        ) {
-                            // success, otherwise an exception would have been thrown
-                        }
+        httpClientBuilder.get()
+            .fromAccount(account)
+            .build()
+            .use { httpClient ->
+                runInterruptible(Dispatchers.IO) {
+                    DavResource(httpClient.okHttpClient, url).mkCol(
+                        xmlBody = xmlBody,
+                        method = method
+                    ) {
+                        // success, otherwise an exception would have been thrown
                     }
                 }
             }
@@ -368,7 +377,15 @@ class DavCollectionRepository @Inject constructor(
                                 insertTag(CalendarTimezone.NAME) {
                                     text(
                                         // spec requires "an iCalendar object with exactly one VTIMEZONE component"
-                                        Calendar(ComponentList(listOf(vTimezone))).toString()
+                                        Calendar(
+                                            PropertyList<Property>().apply {
+                                                add(ICalendar.prodId)
+                                                add(Version.VERSION_2_0)
+                                            },
+                                            ComponentList(
+                                                listOf(vTimezone)
+                                            )
+                                        ).toString()
                                     )
                                 }
                             }

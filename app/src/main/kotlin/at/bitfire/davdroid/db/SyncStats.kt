@@ -24,5 +24,5 @@ data class SyncStats(
     val collectionId: Long,
     val authority: String,
 
-    var lastSync: Long
+    val lastSync: Long
 )

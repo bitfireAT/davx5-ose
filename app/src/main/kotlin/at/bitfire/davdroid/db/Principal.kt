@@ -15,6 +15,9 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.util.trimToNull
 import okhttp3.HttpUrl
 
+/**
+ * A principal entity representing a WebDAV principal (rfc3744).
+ */
 @Entity(tableName = "principal",
     foreignKeys = [
         ForeignKey(entity = Service::class, parentColumns = arrayOf("id"), childColumns = arrayOf("serviceId"), onDelete = ForeignKey.CASCADE)
@@ -26,11 +29,11 @@ import okhttp3.HttpUrl
 )
 data class Principal(
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
-    var serviceId: Long,
+    val id: Long = 0,
+    val serviceId: Long,
     /** URL of the principal, always without trailing slash */
-    var url: HttpUrl,
-    var displayName: String? = null
+    val url: HttpUrl,
+    val displayName: String? = null
 ) {
 
     companion object {

@@ -7,12 +7,12 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.content.ContentValues
 import android.content.Context
-import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.annotation.OpenForTesting
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.contentValuesOf
+import androidx.core.os.bundleOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -21,6 +21,7 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.util.DavUtils.lastSegment
+import com.google.common.base.CharMatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -34,6 +35,9 @@ class LocalAddressBookStore @Inject constructor(
     private val settings: SettingsManager
 ): LocalDataStore<LocalAddressBook> {
 
+    override val authority: String
+        get() = ContactsContract.AUTHORITY
+
     /** whether a (usually managed) setting wants all address-books to be read-only **/
     val forceAllReadOnly: Boolean
         get() = settings.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
@@ -44,21 +48,24 @@ class LocalAddressBookStore @Inject constructor(
      *
      * The address book account name contains
      *
-     * - the collection display name or last URL path segment
+     * - the collection display name or last URL path segment (filtered for dangerous special characters)
      * - the actual account name
      * - the collection ID, to make it unique.
      *
      * @param info  Collection to take info from
      */
     fun accountName(info: Collection): String {
-        // Name the address book after given collection display name, otherwise use last URL path segment
-        val sb = StringBuilder(info.displayName.let {
-            if (it.isNullOrEmpty())
-                info.url.lastSegment
-            else
-                it
-        })
+        // Name of address book is given collection display name, otherwise the last URL path segment
+        var name = info.displayName.takeIf { !it.isNullOrEmpty() } ?: info.url.lastSegment
+
+        // Remove ISO control characters + SQL problematic characters
+        name = CharMatcher
+            .javaIsoControl()
+            .or(CharMatcher.anyOf("`'\""))
+            .removeFrom(name)
+
         // Add the actual account name to the address book account name
+        val sb = StringBuilder(name)
         serviceRepository.get(info.serviceId)?.let { service ->
             sb.append(" (${service.accountName})")
         }
@@ -67,6 +74,8 @@ class LocalAddressBookStore @Inject constructor(
         return sb.toString()
     }
 
+    override fun acquireContentProvider() =
+        context.contentResolver.acquireContentProviderClient(authority)
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalAddressBook? {
         val service = serviceRepository.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
@@ -76,8 +85,7 @@ class LocalAddressBookStore @Inject constructor(
         val addressBookAccount = createAddressBookAccount(
             account = account,
             name = name,
-            id = fromCollection.id,
-            url = fromCollection.url.toString()
+            id = fromCollection.id
         ) ?: return null
 
         val addressBook = localAddressBookFactory.create(account, addressBookAccount, provider)
@@ -91,15 +99,14 @@ class LocalAddressBookStore @Inject constructor(
     }
 
     @OpenForTesting
-    internal fun createAddressBookAccount(account: Account, name: String, id: Long, url: String): Account? {
+    internal fun createAddressBookAccount(account: Account, name: String, id: Long): Account? {
         // create address book account with reference to account, collection ID and URL
         val addressBookAccount = Account(name, context.getString(R.string.account_type_address_book))
-        val userData = Bundle(4).apply {
-            putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
-            putString(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
-            putString(LocalAddressBook.USER_DATA_COLLECTION_ID, id.toString())
-            putString(LocalAddressBook.USER_DATA_URL, url)
-        }
+        val userData = bundleOf(
+            LocalAddressBook.USER_DATA_ACCOUNT_NAME to account.name,
+            LocalAddressBook.USER_DATA_ACCOUNT_TYPE to account.type,
+            LocalAddressBook.USER_DATA_COLLECTION_ID to id.toString()
+        )
         if (!SystemAccountUtils.createAccount(context, addressBookAccount, userData)) {
             logger.warning("Couldn't create address book account: $addressBookAccount")
             return null
@@ -107,7 +114,6 @@ class LocalAddressBookStore @Inject constructor(
 
         return addressBookAccount
     }
-
 
     override fun getAll(account: Account, provider: ContentProviderClient): List<LocalAddressBook> {
         val accountManager = AccountManager.get(context)
@@ -120,7 +126,6 @@ class LocalAddressBookStore @Inject constructor(
                 localAddressBookFactory.create(account, addressBookAccount, provider)
             }
     }
-
 
     override fun update(provider: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
         var currentAccount = localCollection.addressBookAccount
@@ -139,7 +144,6 @@ class LocalAddressBookStore @Inject constructor(
         accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, localCollection.account.name)
         accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, localCollection.account.type)
         accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_COLLECTION_ID, fromCollection.id.toString())
-        accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_URL, fromCollection.url.toString())
 
         // Set contacts provider settings
         localCollection.settings = contactsProviderSettings
@@ -161,7 +165,7 @@ class LocalAddressBookStore @Inject constructor(
      * @param oldAccount    The old account
      * @param newAccount    The new account
      */
-    fun updateAccount(oldAccount: Account, newAccount: Account) {
+    override fun updateAccount(oldAccount: Account, newAccount: Account) {
         val accountManager = AccountManager.get(context)
         accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
@@ -173,7 +177,6 @@ class LocalAddressBookStore @Inject constructor(
                 accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, newAccount.type)
             }
     }
-
 
     override fun delete(localCollection: LocalAddressBook) {
         val accountManager = AccountManager.get(context)
@@ -201,13 +204,13 @@ class LocalAddressBookStore @Inject constructor(
          * Contacts Provider Settings (equal for every address book)
          */
         val contactsProviderSettings
-            get() = ContentValues(2).apply {
+            get() = contentValuesOf(
                 // SHOULD_SYNC is just a hint that an account's contacts (the contacts of this local address book) are syncable.
-                put(ContactsContract.Settings.SHOULD_SYNC, 1)
+                ContactsContract.Settings.SHOULD_SYNC to 1,
 
                 // UNGROUPED_VISIBLE is required for making contacts work over Bluetooth (especially with some car systems).
-                put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
-            }
+                ContactsContract.Settings.UNGROUPED_VISIBLE to 1
+            )
 
         /**
          * Determines whether the address book should be set to read-only.

@@ -6,8 +6,8 @@ package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
 import android.content.ContentUris
-import android.content.ContentValues
 import android.content.Context
+import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.Binds
@@ -44,11 +44,12 @@ class AccountSettingsMigration8 @Inject constructor(
                     val id = cursor.getLong(0)
                     val eTag = cursor.getString(1)
                     val uid = cursor.getString(2)
-                    val values = ContentValues(4)
-                    values.put(TaskContract.Tasks._UID, uid)
-                    values.put(TaskContract.Tasks.SYNC_VERSION, eTag)
-                    values.putNull(TaskContract.Tasks.SYNC1)
-                    values.putNull(TaskContract.Tasks.SYNC2)
+                    val values = contentValuesOf(
+                        TaskContract.Tasks._UID to uid,
+                        TaskContract.Tasks.SYNC_VERSION to eTag,
+                        TaskContract.Tasks.SYNC1 to null,
+                        TaskContract.Tasks.SYNC2 to null
+                    )
                     logger.log(Level.FINER, "Updating task $id", values)
                     provider.client.update(
                         ContentUris.withAppendedId(provider.tasksUri(), id).asSyncAdapter(account),

@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +12,8 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.ui.account.AccountActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.net.URI
+import java.net.URISyntaxException
+import java.util.logging.Logger
 import javax.inject.Inject
 
 /**
@@ -21,6 +22,32 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class LoginActivity @Inject constructor(): AppCompatActivity() {
+
+    @Inject lateinit var loginTypesProvider: LoginTypesProvider
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val (initialLoginType, skipLoginTypePage) = loginTypesProvider.intentToInitialLoginType(intent)
+
+        setContent {
+            LoginScreen(
+                initialLoginType = initialLoginType,
+                skipLoginTypePage = skipLoginTypePage,
+                initialLoginInfo = loginInfoFromIntent(intent),
+                onNavUp = { onSupportNavigateUp() },
+                onFinish = { newAccount ->
+                    finish()
+
+                    if (newAccount != null) {
+                        val intent = Intent(this, AccountActivity::class.java)
+                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
+                        startActivity(intent)
+                    }
+                }
+            )
+        }
+    }
 
     companion object {
 
@@ -58,29 +85,40 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
             var givenUsername: String? = null
             var givenPassword: String? = null
 
-            // extract URI and optionally username/password from Intent data
+            // extract URI or email and optionally username/password from Intent data
+            val logger = Logger.getGlobal()
             intent.data?.normalizeScheme()?.let { uri ->
-                // We've got initial login data from the Intent.
-                // We can't use uri.buildUpon() because this keeps the user info (it's readable, but not writable).
                 val realScheme = when (uri.scheme) {
+                    // replace caldav[s]:// and carddav[s]:// with http[s]://
                     "caldav", "carddav" -> "http"
                     "caldavs", "carddavs", "davx5" -> "https"
-                    "http", "https" -> uri.scheme
+
+                    // keep these
+                    "http", "https", "mailto" -> uri.scheme
+
+                    // unknown scheme
                     else -> null
                 }
-                if (realScheme != null) {
-                    val realUri = Uri.Builder()
-                        .scheme(realScheme)
-                        .authority(uri.host)
-                        .path(uri.path)
-                        .query(uri.query)
-                    givenUri = realUri.build().toString()
 
-                    // extract user info
-                    uri.userInfo?.split(':')?.let { userInfo ->
-                        givenUsername = userInfo.getOrNull(0)
-                        givenPassword = userInfo.getOrNull(1)
+                when (realScheme) {
+                    "http", "https" -> {
+                        // extract user info
+                        uri.userInfo?.split(':')?.let { userInfo ->
+                            givenUsername = userInfo.getOrNull(0)
+                            givenPassword = userInfo.getOrNull(1)
+                        }
+
+                        // use real scheme, drop user info and fragment
+                        givenUri = try {
+                            URI(realScheme, null, uri.host, uri.port, uri.path, uri.query, null).toString()
+                        } catch (_: URISyntaxException) {
+                            logger.warning("Couldn't construct URI from login Intent data: $uri")
+                            null
+                        }
                     }
+
+                    "mailto" ->
+                        givenUsername = uri.schemeSpecificPart
                 }
             }
 
@@ -106,32 +144,6 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
             )
         }
 
-    }
-
-    @Inject lateinit var loginTypesProvider: LoginTypesProvider
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val (initialLoginType, skipLoginTypePage) = loginTypesProvider.intentToInitialLoginType(intent)
-
-        setContent {
-            LoginScreen(
-                initialLoginType = initialLoginType,
-                skipLoginTypePage = skipLoginTypePage,
-                initialLoginInfo = loginInfoFromIntent(intent),
-                onNavUp = { onSupportNavigateUp() },
-                onFinish = { newAccount ->
-                    finish()
-
-                    if (newAccount != null) {
-                        val intent = Intent(this, AccountActivity::class.java)
-                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
-                        startActivity(intent)
-                    }
-                }
-            )
-        }
     }
 
 }

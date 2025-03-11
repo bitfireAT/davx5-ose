@@ -4,9 +4,7 @@
 
 package at.bitfire.davdroid.network
 
-import android.content.Context
 import android.security.NetworkSecurityPolicy
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.Request
@@ -25,21 +23,20 @@ import javax.inject.Inject
 @HiltAndroidTest
 class HttpClientTest {
 
-    lateinit var server: MockWebServer
-    lateinit var httpClient: HttpClient
-
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
     @Inject
-    @ApplicationContext
-    lateinit var context: Context
+    lateinit var httpClientBuilder: HttpClient.Builder
+
+    lateinit var httpClient: HttpClient
+    lateinit var server: MockWebServer
 
     @Before
     fun setUp() {
         hiltRule.inject()
 
-        httpClient = HttpClient.Builder(context).build()
+        httpClient = httpClientBuilder.build()
 
         server = MockWebServer()
         server.start(30000)

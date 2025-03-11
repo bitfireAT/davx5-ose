@@ -9,6 +9,7 @@ import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts.Data
+import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.resource.contactrow.CachedGroupMembershipHandler
 import at.bitfire.davdroid.resource.contactrow.GroupMembershipBuilder
@@ -75,8 +76,7 @@ class LocalContact: AndroidContact, LocalAddress {
             val newUid = UUID.randomUUID().toString()
 
             // update in contacts provider
-            val values = ContentValues(1)
-            values.put(COLUMN_UID, newUid)
+            val values = contentValuesOf(COLUMN_UID to newUid)
             addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
             // update this event
@@ -116,20 +116,17 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
     override fun resetDeleted() {
-        val values = ContentValues(1)
-        values.put(ContactsContract.Groups.DELETED, 0)
+        val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
     fun resetDirty() {
-        val values = ContentValues(1)
-        values.put(ContactsContract.RawContacts.DIRTY, 0)
+        val values = contentValuesOf(ContactsContract.RawContacts.DIRTY to 0)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
     override fun updateFlags(flags: Int) {
-        val values = ContentValues(1)
-        values.put(COLUMN_FLAGS, flags)
+        val values = contentValuesOf(COLUMN_FLAGS to flags)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
         this.flags = flags

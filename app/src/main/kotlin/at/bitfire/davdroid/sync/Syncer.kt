@@ -11,17 +11,13 @@ import android.os.DeadObjectException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalDataStore
-import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.hilt.android.qualifiers.ApplicationContext
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -62,30 +58,34 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
     abstract val dataStore: StoreType
 
-    @Inject
-    lateinit var accountSettingsFactory: AccountSettings.Factory
-
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
 
     @Inject
     lateinit var collectionRepository: DavCollectionRepository
 
     @Inject
-    lateinit var logger: Logger
+    lateinit var httpClientBuilder: HttpClient.Builder
 
     @Inject
-    lateinit var notificationRegistry: NotificationRegistry
+    lateinit var logger: Logger
 
     @Inject
     lateinit var serviceRepository: DavServiceRepository
 
-    abstract val authority: String
+    @Inject
+    lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
+
+    @ServiceType
     abstract val serviceType: String
 
-    val accountSettings by lazy { accountSettingsFactory.create(account) }
-    val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
+    val syncNotificationManager by lazy {
+        syncNotificationManagerFactory.create(account)
+    }
+
+    val httpClient = lazy {
+        httpClientBuilder.fromAccount(account).build()
+    }
 
     /**
      * Creates, updates and/or deletes local collections (calendars, address books, etc) according to
@@ -115,14 +115,14 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * Finds sync enabled collections in database. They contain collection info which might have
      * been updated by collection refresh [at.bitfire.davdroid.servicedetection.DavResourceFinder].
      *
-     * @return The sync enabled collections as hash map identified by their URL
+     * @return The sync enabled database collections as hash map identified by their ID
      */
     @VisibleForTesting
-    internal fun getSyncEnabledCollections(): Map<HttpUrl, Collection> {
-        val dbCollections = mutableMapOf<HttpUrl, Collection>()
+    internal fun getSyncEnabledCollections(): Map<Long, Collection> {
+        val dbCollections = mutableMapOf<Long, Collection>()
         serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
             for (dbCollection in getDbSyncCollections(service.id))
-                dbCollections[dbCollection.url] = dbCollection
+                dbCollections[dbCollection.id] = dbCollection
         }
         return dbCollections
     }
@@ -144,14 +144,14 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     internal fun updateCollections(
         provider: ContentProviderClient,
         localCollections: List<CollectionType>,
-        dbCollections: Map<HttpUrl, Collection>
+        dbCollections: Map<Long, Collection>
     ): List<CollectionType> {
         // create mutable copies of input
         val updatedLocalCollections = localCollections.toMutableList()
         val newDbCollections = dbCollections.toMutableMap()
 
         for (localCollection in localCollections) {
-            val dbCollection = dbCollections[localCollection.collectionUrl?.toHttpUrlOrNull()]
+            val dbCollection = dbCollections.getOrDefault(localCollection.dbCollectionId, null)
             if (dbCollection == null) {
                 // Collection not available in db = on server (anymore), delete and remove from the updated list
                 logger.info("Deleting local collection ${localCollection.title} without matching remote collection")
@@ -161,7 +161,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 // Collection exists locally, update local collection and remove it from "to be created" map
                 logger.fine("Updating local collection ${localCollection.title} with $dbCollection")
                 dataStore.update(provider, localCollection, dbCollection)
-                newDbCollections -= dbCollection.url
+                newDbCollections -= dbCollection.id
             }
         }
 
@@ -206,9 +206,9 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     internal fun syncCollectionContents(
         provider: ContentProviderClient,
         localCollections: List<CollectionType>,
-        dbCollections: Map<HttpUrl, Collection>
+        dbCollections: Map<Long, Collection>
     ) = localCollections.forEach { localCollection ->
-        dbCollections[localCollection.collectionUrl?.toHttpUrl()]?.let { dbCollection ->
+        dbCollections[localCollection.dbCollectionId]?.let { dbCollection ->
             syncCollection(provider, localCollection, dbCollection)
         }
     }
@@ -216,7 +216,8 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     /**
      * For collection specific sync preparations.
      *
-     * @param provider Content provider for syncer specific authority
+     * @param provider Content provider for data store
+     *
      * @return *true* to run the sync; *false* to abort
      */
     open fun prepare(provider: ContentProviderClient): Boolean = true
@@ -224,10 +225,8 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     /**
      * Get the local database collections which are sync-enabled (should by synchronized).
      *
-     * [Syncer] will remove collections which are returned by [getLocalCollections], but not by
-     * this method, and add collections which are returned by this method, but not by [getLocalCollections].
-     *
      * @param serviceId The CalDAV or CardDAV service (account) to be synchronized
+     *
      * @return Database collections to be synchronized
      */
     abstract fun getDbSyncCollections(serviceId: Long): List<Collection>
@@ -249,26 +248,27 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * - handle occurring sync errors
      */
     operator fun invoke() {
-        logger.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))
+        logger.log(Level.INFO, "${dataStore.authority} sync of $account initiated", extras.joinToString(", "))
 
-        // Acquire ContentProviderClient
         try {
-            context.contentResolver.acquireContentProviderClient(authority)
+            dataStore.acquireContentProvider()
         } catch (e: SecurityException) {
-            logger.log(Level.WARNING, "Missing permissions for authority $authority", e)
-            notificationRegistry.notifyPermissions()
-            null
+            logger.log(Level.WARNING, "Missing permissions for content provider authority ${dataStore.authority}", e)
+            /* Don't show a notification here without possibility to permanently dismiss it!
+            Some users intentionally don't grant all permissions for what is syncable. */
+            return
         }.use { provider ->
             if (provider == null) {
-                /* Can happen if
-                 - we're not allowed to access the content provider, or
-                 - the content provider is not available at all, for instance because the tasks app has been uninstalled
-                   or the respective system app (like "calendar storage") is disabled */
-                logger.warning("Couldn't connect to content provider of authority $authority")
+                /* Content provider is not available at all.
+                I.E. system app (like "calendar storage") is missing or disabled */
+                logger.warning("Couldn't connect to content provider of authority ${dataStore.authority}")
+                syncNotificationManager.notifyProviderError(dataStore.authority)
                 syncResult.contentProviderError = true
-
                 return // Don't continue without provider
             }
+
+            // Dismiss previous content provider error notification
+            syncNotificationManager.dismissProviderError(dataStore.authority)
 
             // run sync
             try {
@@ -286,7 +286,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 logger.log(Level.WARNING, "Account was removed during synchronization", e)
 
             } catch (e: Exception) {
-                logger.log(Level.SEVERE, "Couldn't sync $authority", e)
+                logger.log(Level.SEVERE, "Couldn't sync ${dataStore.authority}", e)
                 syncResult.numUnclassifiedErrors++ // Hard sync error
 
             } finally {
@@ -294,7 +294,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                     httpClient.value.close()
                 logger.log(
                     Level.INFO,
-                    "$authority sync of $account finished",
+                    "${dataStore.authority} sync of $account finished",
                     extras.joinToString(", "))
             }
         }

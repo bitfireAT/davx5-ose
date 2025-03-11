@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.sync.worker
 
@@ -169,7 +169,7 @@ abstract class BaseSyncWorker(
                         jtxSyncer.create(account, extras, syncResult)
                     TaskProvider.ProviderName.OpenTasks,
                     TaskProvider.ProviderName.TasksOrg ->
-                        taskSyncer.create(account, currentProvider.authority, extras, syncResult)
+                        taskSyncer.create(account, currentProvider, extras, syncResult)
                     else -> {
                         logger.warning("No valid tasks provider found, aborting sync")
                         return@withContext Result.failure()

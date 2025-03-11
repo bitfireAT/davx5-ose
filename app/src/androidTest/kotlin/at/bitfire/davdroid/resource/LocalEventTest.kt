@@ -12,7 +12,6 @@ import android.os.Build
 import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
-import androidx.datastore.dataStore
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.InitCalendarProviderRule
 import at.bitfire.ical4android.AndroidCalendar
@@ -40,29 +39,6 @@ import org.junit.rules.TestRule
 import java.util.UUID
 
 class LocalEventTest {
-
-    companion object {
-
-        @JvmField
-        @ClassRule
-        val initCalendarProviderRule: TestRule = InitCalendarProviderRule.getInstance()
-
-        private lateinit var provider: ContentProviderClient
-
-        @BeforeClass
-        @JvmStatic
-        fun setUpClass() {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
-            provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun tearDownClass() {
-            provider.closeCompat()
-        }
-
-    }
 
     private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
     private lateinit var calendar: LocalCalendar
@@ -480,6 +456,30 @@ class LocalEventTest {
             cursor.moveToNext()
             assertEquals(0, cursor.getInt(0))
         }
+    }
+
+
+    companion object {
+
+        @JvmField
+        @ClassRule
+        val initCalendarProviderRule: TestRule = InitCalendarProviderRule.getInstance()
+
+        private lateinit var provider: ContentProviderClient
+
+        @BeforeClass
+        @JvmStatic
+        fun setUpClass() {
+            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun tearDownClass() {
+            provider.closeCompat()
+        }
+
     }
 
 }

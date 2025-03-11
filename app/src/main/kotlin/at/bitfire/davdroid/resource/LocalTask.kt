@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.resource
 
 import android.content.ContentValues
+import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.BatchOperation
 import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.DmfsTaskFactory
@@ -63,8 +64,7 @@ class LocalTask: DmfsTask, LocalResource<Task> {
             val newUid = UUID.randomUUID().toString()
 
             // update in tasks provider
-            val values = ContentValues(1)
-            values.put(Tasks._UID, newUid)
+            val values = contentValuesOf(Tasks._UID to newUid)
             taskList.provider.update(taskSyncURI(), values, null, null)
 
             // update this task
@@ -95,8 +95,7 @@ class LocalTask: DmfsTask, LocalResource<Task> {
 
     override fun updateFlags(flags: Int) {
         if (id != null) {
-            val values = ContentValues(1)
-            values.put(COLUMN_FLAGS, flags)
+            val values = contentValuesOf(COLUMN_FLAGS to flags)
             taskList.provider.update(taskSyncURI(), values, null, null)
         }
 

@@ -3,13 +3,11 @@
   <!--common strings-->
   <string name="account_invalid">Account inesistente (o cancellato)</string>
   <string name="account_title_address_book">Rubrica DAVx⁵</string>
-  <string name="address_books_authority_title">Rubriche</string>
   <string name="dialog_delete">Cancella</string>
   <string name="dialog_remove">Elimina</string>
   <string name="dialog_deny">Annulla</string>
   <string name="field_required">Questo campo è necessario</string>
   <string name="help">Aiuto</string>
-  <string name="manage_accounts">Gestione account</string>
   <string name="optional_label">* opzionale</string>
   <string name="options_menu">Menu opzioni</string>
   <string name="share">Condividi</string>
@@ -48,7 +46,6 @@
   <string name="intro_open_source_title">Software open-source</string>
   <string name="intro_open_source_text">Siamo felici che tu usi %s, che è un software open source. Lo sviluppo, la manutenzione e il supporto sono compiti duri. Per piacere prendi in considerazione di dare una mano (puoi farlo in molti modi) o una donazione. Sarebbe davvero apprezzato!</string>
   <string name="intro_open_source_details">Come aiutare/donare</string>
-  <string name="intro_open_source_dont_show">Non mostrare nell\'immediato futuro</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Autorizzazioni</string>
   <string name="permissions_text">%s richiede autorizzazioni per funzionare correttamente.</string>
@@ -114,7 +111,6 @@
   <string name="navigation_drawer_contribute">Come contribuire</string>
   <string name="navigation_drawer_privacy_policy">Politica sulla riservatezza</string>
   <string name="account_list_no_notification_permission">Notifiche non attive. Non sarai avvisato di eventuali errori di sincronizzazione</string>
-  <string name="account_list_no_internet">Connettività Internet non valida. La sincronizzazione non è attiva.</string>
   <string name="account_list_manage_connections">Gestione connessioni</string>
   <string name="account_list_datasaver_enabled">Risparmio dati attivo. La sincronizzazione in background è limitata,</string>
   <string name="account_list_battery_saver_enabled">Risparmio energetico attivo. La sincronizzazione in background è limitata,</string>

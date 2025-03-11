@@ -1,5 +1,17 @@
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accountType="@string/account_type"
     android:contentAuthority="com.android.calendar"
+    android:accountType="@string/account_type"
+    android:userVisible="false"
+    android:supportsUploading="true"
     android:allowParallelSyncs="true"
-    android:supportsUploading="true" />
+    android:isAlwaysSyncable="true" />
+
+<!-- Note:
+isAlwaysSyncable = false   Sets isSyncable(contentAuthority) of new Account(type=accountType) to -1
+                           → causes a sync with SYNC_EXTRAS_INITIALIZE to be scheduled
+                           → that sync is expected to finally set isSyncable to 0 or 1.
+isAlwaysSyncable = true    Sets isSyncable(contentAuthority) of new Account(type=accountType) to 1
+                           → causes a normal sync (without SYNC_EXTRAS_INITIALIZE) to be scheduled.
+
+There's no possibility to automatically set isSyncable to 0 at account creation.
+-->

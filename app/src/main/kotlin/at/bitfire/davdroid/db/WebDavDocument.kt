@@ -8,17 +8,18 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.provider.DocumentsContract.Document
 import android.webkit.MimeTypeMap
+import androidx.core.os.bundleOf
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import at.bitfire.davdroid.util.DavUtils.MEDIA_TYPE_OCTET_STREAM
 import at.bitfire.davdroid.webdav.DocumentState
-import java.io.FileNotFoundException
-import java.time.Instant
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import java.io.FileNotFoundException
+import java.time.Instant
 
 @Entity(
     tableName = "webdav_document",
@@ -34,30 +35,30 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 data class WebDavDocument(
 
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
+    val id: Long = 0,
 
     /** refers to the [WebDavMount] the document belongs to */
     val mountId: Long,
 
     /** refers to parent document (*null* when this document is a root document) */
-    var parentId: Long?,
+    val parentId: Long?,
 
     /** file name (without any slashes) */
-    var name: String,
-    var isDirectory: Boolean = false,
+    val name: String,
+    val isDirectory: Boolean = false,
 
-    var displayName: String? = null,
-    var mimeType: MediaType? = null,
-    var eTag: String? = null,
-    var lastModified: Long? = null,
-    var size: Long? = null,
+    val displayName: String? = null,
+    val mimeType: MediaType? = null,
+    val eTag: String? = null,
+    val lastModified: Long? = null,
+    val size: Long? = null,
 
-    var mayBind: Boolean? = null,
-    var mayUnbind: Boolean? = null,
-    var mayWriteContent: Boolean? = null,
+    val mayBind: Boolean? = null,
+    val mayUnbind: Boolean? = null,
+    val mayWriteContent: Boolean? = null,
 
-    var quotaAvailable: Long? = null,
-    var quotaUsed: Long? = null
+    val quotaAvailable: Long? = null,
+    val quotaUsed: Long? = null
 
 ) {
 
@@ -72,9 +73,10 @@ data class WebDavDocument(
         if (parent?.isDirectory == false)
             throw IllegalArgumentException("Parent must be a directory")
 
-        val bundle = Bundle()
-        bundle.putString(Document.COLUMN_DOCUMENT_ID, id.toString())
-        bundle.putString(Document.COLUMN_DISPLAY_NAME, name)
+        val bundle = bundleOf(
+            Document.COLUMN_DOCUMENT_ID to id.toString(),
+            Document.COLUMN_DISPLAY_NAME to name
+        )
 
         displayName?.let { bundle.putString(Document.COLUMN_SUMMARY, it) }
         size?.let { bundle.putLong(Document.COLUMN_SIZE, it) }

@@ -48,9 +48,8 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
- * Does initial resource detection (straight after app install). Called after user has supplied url in
- * app setup process [at.bitfire.davdroid.ui.setup.DetectConfigurationFragment].
- * It uses the (user given) base URL to find
+ * Does initial resource detection when an account is added. It uses the (user given) base URL to find
+ *
  * - services (CalDAV and/or CardDAV),
  * - principal,
  * - homeset/collections (multistatus responses are handled through dav4jvm).
@@ -63,7 +62,8 @@ class DavResourceFinder @AssistedInject constructor(
     @Assisted private val baseURI: URI,
     @Assisted private val credentials: Credentials? = null,
     @ApplicationContext val context: Context,
-    private val dnsRecordResolver: DnsRecordResolver
+    private val dnsRecordResolver: DnsRecordResolver,
+    httpClientBuilder: HttpClient.Builder
 ): AutoCloseable {
 
     @AssistedFactory
@@ -83,13 +83,16 @@ class DavResourceFinder @AssistedInject constructor(
 
     private var encountered401 = false
 
-    private val httpClient: HttpClient = HttpClient.Builder(context, logger = log).let {
-        credentials?.let { credentials ->
-            it.addAuthentication(null, credentials)
-        }
-        it.setForeground(true)
-        it.build()
-    }
+    private val httpClient = httpClientBuilder
+        .setLogger(log)
+        .apply {
+            if (credentials != null)
+                authenticate(
+                    host = null,
+                    credentials = credentials
+                )
+            }
+        .build()
 
     override fun close() {
         httpClient.close()
@@ -136,7 +139,7 @@ class DavResourceFinder @AssistedInject constructor(
                 log.log(Level.INFO, "CalDAV service detection failed", e)
                 processException(e)
             }
-        } catch(e: Exception) {
+        } catch(_: Exception) {
             // we have been interrupted; reset results so that an error message will be shown
             cardDavConfig = null
             calDavConfig = null

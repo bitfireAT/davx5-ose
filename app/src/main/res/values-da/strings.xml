@@ -3,13 +3,11 @@
   <!--common strings-->
   <string name="account_invalid">Konto findes ikke (længere)</string>
   <string name="account_title_address_book">DAVx⁵ adressebog</string>
-  <string name="address_books_authority_title">Adressebøger</string>
   <string name="dialog_delete">Slet</string>
   <string name="dialog_remove">Fjern</string>
   <string name="dialog_deny">Annullér</string>
   <string name="field_required">Feltet er påkrævet</string>
   <string name="help">Hjælp</string>
-  <string name="manage_accounts">Administrer konti</string>
   <string name="navigate_up">Naviger opad</string>
   <string name="optional_label">* valgfri</string>
   <string name="options_menu">Indstillinger</string>
@@ -50,7 +48,6 @@
   <string name="intro_open_source_title">Åben kilde program</string>
   <string name="intro_open_source_text">Vi er glade for, at du bruger %s, som er åben-kilde software. Udvikling, vedligeholdelse og support er hårdt arbejde. Overvej at bidrage (der er mange måner) eller donere. Det ville være meget værdsat!</string>
   <string name="intro_open_source_details">Sådan bidrager/donerer du</string>
-  <string name="intro_open_source_dont_show">Vis ikke i den nærmeste fremtid</string>
   <string name="intro_next">Næste</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Tilladelser</string>
@@ -119,8 +116,6 @@
   <string name="navigation_drawer_contribute">Sådan bidrager du</string>
   <string name="navigation_drawer_privacy_policy">Privatlivs politik</string>
   <string name="account_list_no_notification_permission">Notifikationer slået fra. Du vil ikke blive gjort opmærksom på synkroniserings-fejl.</string>
-  <string name="account_list_no_internet">Ingen valideret internetforbindelse. 
-Synkronisering kører muligvis ikke.</string>
   <string name="account_list_manage_connections">Aministrer forbindelser</string>
   <string name="account_list_datasaver_enabled">Gemning af data slået til. Synkronisering i baggrunden er begrænset.</string>
   <string name="account_list_manage_datasaver">Administrer gemning af data</string>

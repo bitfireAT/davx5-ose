@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.sync
 
@@ -15,9 +15,9 @@ import android.content.Intent
 import android.content.SyncResult
 import android.os.Bundle
 import android.os.IBinder
-import android.provider.ContactsContract
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -26,8 +26,10 @@ import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECT
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,19 +37,55 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.inject.Provider
 
 abstract class SyncAdapterService: Service() {
 
-    @Inject
-    lateinit var syncAdapter: Provider<SyncAdapter>
+    /**
+     * We don't use @AndroidEntryPoint / @Inject because it's unavoidable that instrumented tests sometimes accidentally / asynchronously
+     * create a [SyncAdapterService] instance before Hilt is initialized during the tests.
+     */
+    @dagger.hilt.EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface EntryPoint {
+        fun syncAdapter(): SyncAdapter
+    }
 
     override fun onBind(intent: Intent?): IBinder {
-        return syncAdapter.get().syncAdapterBinder
+        if (BuildConfig.DEBUG && !syncActive.get()) {
+            // only for debug builds/testing: syncActive flag
+            val logger = Logger.getLogger(this@SyncAdapterService::class.java.name)
+            logger.log(Level.WARNING, "SyncAdapterService.onBind() was called but syncActive = false. Ignoring")
+
+            val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
+                override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+                    val message = StringBuilder()
+                    message.append("FakeSyncAdapter onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)")
+                    for (key in extras.keySet())
+                        message.append("\n\textras[$key] = ${extras[key]}")
+                    logger.warning(message.toString())
+                }
+            }
+            return fakeAdapter.syncAdapterBinder
+        }
+
+        // create sync adapter via Hilt
+        val entryPoint = EntryPointAccessors.fromApplication<EntryPoint>(this)
+        val syncAdapter = entryPoint.syncAdapter()
+        return syncAdapter.syncAdapterBinder
     }
+
+    companion object {
+        /**
+         * Flag to indicate whether the sync adapter should be active. When it is `false`, synchronization will not be run
+         * (only intended for tests).
+         */
+        val syncActive = AtomicBoolean(true)
+    }
+
 
     /**
      * Entry point for the Sync Adapter Framework.
@@ -69,9 +107,9 @@ abstract class SyncAdapterService: Service() {
         private val syncConditionsFactory: SyncConditions.Factory,
         private val syncWorkerManager: SyncWorkerManager
     ): AbstractThreadedSyncAdapter(
-        context,
-        true    // isSyncable shouldn't be -1 because DAVx5 (SyncFrameworkIntegration) sets it to 0 or 1.
-                // However, if it is -1 by accident, set it to 1 to avoid endless sync loops.
+        /* context = */ context,
+        /* autoInitialize = */ true     // Sets isSyncable=1 when isSyncable=-1 and SYNC_EXTRAS_INITIALIZE is set.
+                                        // Doesn't matter for us because we have android:isAlwaysSyncable="true" for all sync adapters.
     ) {
 
         /**
@@ -119,17 +157,8 @@ abstract class SyncAdapterService: Service() {
                 return
             }
 
-            /* Special case for contacts: because address books are separate accounts, changed contacts cause
-            this method to be called with authority = ContactsContract.AUTHORITY. However the sync worker shall be run for the
-            address book authority instead. */
-            val workerAuthority =
-                if (authority == ContactsContract.AUTHORITY)
-                    context.getString(R.string.address_books_authority)
-                else
-                    authority
-
-            logger.fine("Starting OneTimeSyncWorker for $account $workerAuthority and waiting for it")
-            val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(context, workerAuthority), upload = upload)
+            logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
+            val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), upload = upload)
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
             use it to block the sync adapter. Instead we use a Flow to get notified when the sync
@@ -184,18 +213,8 @@ abstract class SyncAdapterService: Service() {
 }
 
 // exported sync adapter services; we need a separate class for each authority
-
-@AndroidEntryPoint
 class CalendarsSyncAdapterService: SyncAdapterService()
-
-@AndroidEntryPoint
 class ContactsSyncAdapterService: SyncAdapterService()
-
-@AndroidEntryPoint
 class JtxSyncAdapterService: SyncAdapterService()
-
-@AndroidEntryPoint
 class OpenTasksSyncAdapterService: SyncAdapterService()
-
-@AndroidEntryPoint
 class TasksOrgSyncAdapterService: SyncAdapterService()

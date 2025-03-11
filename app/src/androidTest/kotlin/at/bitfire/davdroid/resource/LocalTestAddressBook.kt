@@ -5,11 +5,8 @@
 package at.bitfire.davdroid.resource
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.content.ContentUris
 import android.content.Context
-import android.provider.ContactsContract
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
@@ -19,13 +16,15 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
-import org.junit.Assert.assertTrue
-import java.io.FileNotFoundException
 import java.util.Optional
 import java.util.logging.Logger
 
+/**
+ * A local address book that provides an easy way to set the group method in tests.
+ */
 class LocalTestAddressBook @AssistedInject constructor(
     @Assisted account: Account,
+    @Assisted("addressBook") addressBookAccount: Account,
     @Assisted provider: ContentProviderClient,
     @Assisted override val groupMethod: GroupMethod,
     accountSettingsFactory: AccountSettings.Factory,
@@ -36,7 +35,7 @@ class LocalTestAddressBook @AssistedInject constructor(
     syncFramework: SyncFrameworkIntegration
 ): LocalAddressBook(
     account = account,
-    _addressBookAccount = ACCOUNT,
+    _addressBookAccount = addressBookAccount,
     provider = provider,
     accountSettingsFactory = accountSettingsFactory,
     collectionRepository = collectionRepository,
@@ -49,64 +48,12 @@ class LocalTestAddressBook @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, provider: ContentProviderClient, groupMethod: GroupMethod): LocalTestAddressBook
-    }
-
-    override var readOnly: Boolean
-        get() = false
-        set(_) = throw NotImplementedError()
-
-
-    fun clear() {
-        for (contact in queryContacts(null, null))
-            contact.delete()
-        for (group in queryGroups(null, null))
-            group.delete()
-    }
-
-
-    /**
-     * Returns the dirty flag of the given contact.
-     *
-     * @return true if the contact is dirty, false otherwise
-     *
-     * @throws FileNotFoundException if the contact can't be found
-     */
-    fun isContactDirty(id: Long): Boolean {
-        val uri = ContentUris.withAppendedId(rawContactsSyncUri(), id)
-        provider!!.query(uri, arrayOf(ContactsContract.RawContacts.DIRTY), null, null, null)?.use { cursor ->
-            if (cursor.moveToFirst())
-                return cursor.getInt(0) != 0
-        }
-        throw FileNotFoundException()
-    }
-
-    /**
-     * Returns the dirty flag of the given contact group.
-     *
-     * @return true if the group is dirty, false otherwise
-     *
-     * @throws FileNotFoundException if the group can't be found
-     */
-    fun isGroupDirty(id: Long): Boolean {
-        val uri = ContentUris.withAppendedId(groupsSyncUri(), id)
-        provider!!.query(uri, arrayOf(ContactsContract.Groups.DIRTY), null, null, null)?.use { cursor ->
-            if (cursor.moveToFirst())
-                return cursor.getInt(0) != 0
-        }
-        throw FileNotFoundException()
-    }
-
-
-    companion object {
-
-        val ACCOUNT = Account("LocalTestAddressBook", "at.bitfire.davdroid.test")
-
-        fun createAccount(context: Context) {
-            val am = AccountManager.get(context)
-            assertTrue("Couldn't create account for local test address-book", am.addAccountExplicitly(ACCOUNT, null, null))
-        }
-
+        fun create(
+            account: Account,
+            @Assisted("addressBook") addressBookAccount: Account,
+            provider: ContentProviderClient,
+            groupMethod: GroupMethod
+        ): LocalTestAddressBook
     }
 
 }

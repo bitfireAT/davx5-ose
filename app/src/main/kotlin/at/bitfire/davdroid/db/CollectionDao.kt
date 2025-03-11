@@ -30,13 +30,13 @@ interface CollectionDao {
     fun getByServiceAndHomeset(serviceId: Long, homeSetId: Long?): List<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
-    fun getByServiceAndType(serviceId: Long, type: String): List<Collection>
+    fun getByServiceAndType(serviceId: Long, @CollectionType type: String): List<Collection>
 
     @Query("SELECT * FROM collection WHERE pushTopic=:topic AND sync")
     fun getSyncableByPushTopic(topic: String): Collection?
 
     @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND type=:type")
-    suspend fun anyOfType(serviceId: Long, type: String): Boolean
+    suspend fun anyOfType(serviceId: Long, @CollectionType type: String): Boolean
 
     @Query("SELECT COUNT(*) FROM collection WHERE supportsWebPush AND pushTopic IS NOT NULL")
     suspend fun anyPushCapable(): Boolean
@@ -48,13 +48,13 @@ interface CollectionDao {
      */
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type " +
             "AND (supportsVTODO OR supportsVEVENT OR supportsVJOURNAL OR (supportsVEVENT IS NULL AND supportsVTODO IS NULL AND supportsVJOURNAL IS NULL)) ORDER BY displayName COLLATE NOCASE, URL COLLATE NOCASE")
-    fun pageByServiceAndType(serviceId: Long, type: String): PagingSource<Int, Collection>
+    fun pageByServiceAndType(serviceId: Long, @CollectionType type: String): PagingSource<Int, Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync")
     fun getByServiceAndSync(serviceId: Long): List<Collection>
 
     @Query("SELECT collection.* FROM collection, homeset WHERE collection.serviceId=:serviceId AND type=:type AND homeSetId=homeset.id AND homeset.personal ORDER BY collection.displayName COLLATE NOCASE, collection.url COLLATE NOCASE")
-    fun pagePersonalByServiceAndType(serviceId: Long, type: String): PagingSource<Int, Collection>
+    fun pagePersonalByServiceAndType(serviceId: Long, @CollectionType type: String): PagingSource<Int, Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND url=:url")
     fun getByServiceAndUrl(serviceId: Long, url: String): Collection?

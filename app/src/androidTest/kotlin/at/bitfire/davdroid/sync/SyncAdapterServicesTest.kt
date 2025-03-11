@@ -16,7 +16,7 @@ import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -24,12 +24,11 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.Awaits
 import io.mockk.coEvery
 import io.mockk.every
+import io.mockk.junit4.MockKRule
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
-import io.mockk.unmockkAll
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -43,6 +42,7 @@ import org.junit.Test
 import org.junit.rules.Timeout
 import java.util.logging.Logger
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltAndroidTest
 class SyncAdapterServicesTest {
@@ -55,8 +55,7 @@ class SyncAdapterServicesTest {
     @Inject
     lateinit var collectionRepository: DavCollectionRepository
 
-    @Inject
-    @ApplicationContext
+    @Inject @ApplicationContext
     lateinit var context: Context
 
     @Inject
@@ -74,6 +73,9 @@ class SyncAdapterServicesTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
+    @get:Rule
+    val mockkRule = MockKRule(this)
+
     // test methods should run quickly and not wait 60 seconds for a sync timeout or something like that
     @get:Rule
     val timeoutRule: Timeout = Timeout.seconds(5)
@@ -84,13 +86,12 @@ class SyncAdapterServicesTest {
         hiltRule.inject()
         TestUtils.setUpWorkManager(context, workerFactory)
 
-        account = TestAccountAuthenticator.create()
+        account = TestAccount.create()
     }
 
     @After
     fun tearDown() {
-        TestAccountAuthenticator.remove(account)
-        unmockkAll()
+        TestAccount.remove(account)
     }
 
 

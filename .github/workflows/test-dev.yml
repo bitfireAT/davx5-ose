@@ -30,7 +30,7 @@ jobs:
 
   test:
     needs: compile
-    if: ${{ always() }}     # even if compile didn't run (because not on main branch)
+    if: ${{ !cancelled() }}     # even if compile didn't run (because not on main branch)
     name: Lint and unit tests
     runs-on: ubuntu-latest
     steps:
@@ -51,7 +51,7 @@ jobs:
 
   test_on_emulator:
     needs: compile
-    if: ${{ always() }}     # even if compile didn't run (because not on main branch)
+    if: ${{ !cancelled() }}     # even if compile didn't run (because not on main branch)
     name: Instrumented tests
     runs-on: ubuntu-latest
     steps:

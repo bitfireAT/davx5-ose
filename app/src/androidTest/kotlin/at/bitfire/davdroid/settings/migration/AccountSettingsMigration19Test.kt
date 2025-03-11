@@ -11,19 +11,15 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.mockk.MockKAnnotations
-import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.SpyK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit4.MockKRule
 import io.mockk.mockkObject
-import io.mockk.unmockkAll
 import io.mockk.verify
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,13 +29,13 @@ import javax.inject.Inject
 class AccountSettingsMigration19Test {
 
     @Inject @ApplicationContext
-    @SpyK
     lateinit var context: Context
 
-    @MockK(relaxed = true)
+    @BindValue
+    @RelaxedMockK
     lateinit var automaticSyncManager: AutomaticSyncManager
 
-    @InjectMockKs
+    @Inject
     lateinit var migration: AccountSettingsMigration19
 
     @Inject
@@ -47,6 +43,9 @@ class AccountSettingsMigration19Test {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val mockkRule = MockKRule(this)
 
 
     @Before
@@ -59,13 +58,6 @@ class AccountSettingsMigration19Test {
             .setWorkerFactory(workerFactory)
             .build()
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
-
-        MockKAnnotations.init(this)
-    }
-
-    @After
-    fun tearDown() {
-        unmockkAll()
     }
 
 
@@ -77,9 +69,8 @@ class AccountSettingsMigration19Test {
         val account = Account("Some", "Test")
         migration.migrate(account)
 
-        val addressBookAuthority = context.getString(R.string.address_books_authority)
         verify {
-            workManager.cancelUniqueWork("periodic-sync $addressBookAuthority Test/Some")
+            workManager.cancelUniqueWork("periodic-sync at.bitfire.davdroid.addressbooks Test/Some")
             workManager.cancelUniqueWork("periodic-sync com.android.calendar Test/Some")
             workManager.cancelUniqueWork("periodic-sync at.techbee.jtx.provider Test/Some")
             workManager.cancelUniqueWork("periodic-sync org.dmfs.tasks Test/Some")

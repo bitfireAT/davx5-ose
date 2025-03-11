@@ -13,7 +13,7 @@ import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.davdroid.resource.LocalTestAddressBook
+import at.bitfire.davdroid.resource.LocalTestAddressBookProvider
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
@@ -33,6 +33,55 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 class GroupMembershipHandlerTest {
+
+    @Inject @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
+    lateinit var localTestAddressBookProvider: LocalTestAddressBookProvider
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    val account = Account("Test Account", "Test Account Type")
+
+    @Before
+    fun inject() {
+        hiltRule.inject()
+    }
+
+
+    @Test
+    fun testMembership_GroupsAsCategories() {
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { addressBookGroupsAsCategories ->
+            val addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
+
+            val contact = Contact()
+            val localContact = LocalContact(addressBookGroupsAsCategories, contact, null, null, 0)
+            GroupMembershipHandler(localContact).handle(ContentValues().apply {
+                put(CachedGroupMembership.GROUP_ID, addressBookGroupsAsCategoriesGroup)
+                put(CachedGroupMembership.RAW_CONTACT_ID, -1)
+            }, contact)
+            assertArrayEquals(arrayOf(addressBookGroupsAsCategoriesGroup), localContact.groupMemberships.toArray())
+            assertArrayEquals(arrayOf("TEST GROUP"), contact.categories.toArray())
+        }
+    }
+
+
+    @Test
+    fun testMembership_GroupsAsVCards() {
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.GROUP_VCARDS) { addressBookGroupsAsVCards ->
+            val contact = Contact()
+            val localContact = LocalContact(addressBookGroupsAsVCards, contact, null, null, 0)
+            GroupMembershipHandler(localContact).handle(ContentValues().apply {
+                put(CachedGroupMembership.GROUP_ID, 12345)    // because the group name is not queried and put into CATEGORIES, the group doesn't have to really exist
+                put(CachedGroupMembership.RAW_CONTACT_ID, -1)
+            }, contact)
+            assertArrayEquals(arrayOf(12345L), localContact.groupMemberships.toArray())
+            assertTrue(contact.categories.isEmpty())
+        }
+    }
+
 
     companion object {
 
@@ -56,53 +105,6 @@ class GroupMembershipHandlerTest {
             provider.close()
         }
 
-    }
-
-    @Inject
-    lateinit var addressbookFactory: LocalTestAddressBook.Factory
-
-    @Inject @ApplicationContext
-    lateinit var context: Context
-
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    val account = Account("Test Account", "Test Account Type")
-
-    @Before
-    fun inject() {
-        hiltRule.inject()
-    }
-
-
-    @Test
-    fun testMembership_GroupsAsCategories() {
-        val addressBookGroupsAsCategories = addressbookFactory.create(account, provider, GroupMethod.CATEGORIES)
-        val addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
-
-        val contact = Contact()
-        val localContact = LocalContact(addressBookGroupsAsCategories, contact, null, null, 0)
-        GroupMembershipHandler(localContact).handle(ContentValues().apply {
-            put(CachedGroupMembership.GROUP_ID, addressBookGroupsAsCategoriesGroup)
-            put(CachedGroupMembership.RAW_CONTACT_ID, -1)
-        }, contact)
-        assertArrayEquals(arrayOf(addressBookGroupsAsCategoriesGroup), localContact.groupMemberships.toArray())
-        assertArrayEquals(arrayOf("TEST GROUP"), contact.categories.toArray())
-    }
-
-
-    @Test
-    fun testMembership_GroupsAsVCards() {
-        val addressBookGroupsAsVCards = addressbookFactory.create(account, provider, GroupMethod.GROUP_VCARDS)
-
-        val contact = Contact()
-        val localContact = LocalContact(addressBookGroupsAsVCards, contact, null, null, 0)
-        GroupMembershipHandler(localContact).handle(ContentValues().apply {
-            put(CachedGroupMembership.GROUP_ID, 12345)    // because the group name is not queried and put into CATEGORIES, the group doesn't have to really exist
-            put(CachedGroupMembership.RAW_CONTACT_ID, -1)
-        }, contact)
-        assertArrayEquals(arrayOf(12345L), localContact.groupMemberships.toArray())
-        assertTrue(contact.categories.isEmpty())
     }
 
 }

@@ -13,7 +13,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -53,7 +53,8 @@ class AccountSettingsMigration17Test {
 
     @Test
     fun testMigrate_OldAddressBook_CollectionInDB() {
-        TestAccountAuthenticator.provide(version = 16) { account ->
+        val localAddressBookUserDataUrl = "url"
+        TestAccount.provide(version = 16) { account ->
             val accountManager = AccountManager.get(context)
             val addressBookAccountType = context.getString(R.string.account_type_address_book)
             var addressBookAccount = Account("Address Book", addressBookAccountType)
@@ -63,7 +64,7 @@ class AccountSettingsMigration17Test {
                 // address book has account + URL
                 val url = "https://example.com/address-book"
                 accountManager.setAndVerifyUserData(addressBookAccount, "real_account_name", account.name)
-                accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_URL, url)
+                accountManager.setAndVerifyUserData(addressBookAccount, localAddressBookUserDataUrl, url)
 
                 // and is known in database
                 db.serviceDao().insertOrReplace(
@@ -86,7 +87,7 @@ class AccountSettingsMigration17Test {
 
                 // migration renames address book, update account
                 addressBookAccount = accountManager.getAccountsByType(addressBookAccountType).filter {
-                    accountManager.getUserData(it, LocalAddressBook.USER_DATA_URL) == url
+                    accountManager.getUserData(it, localAddressBookUserDataUrl) == url
                 }.first()
                 assertEquals("Some Address Book (${account.name}) #100", addressBookAccount.name)
 

@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.provider.ContactsContract
 import at.bitfire.davdroid.db.Collection
@@ -12,6 +13,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -26,6 +28,7 @@ class AddressBookSyncer @AssistedInject constructor(
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
     addressBookStore: LocalAddressBookStore,
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory
 ): Syncer<LocalAddressBookStore, LocalAddressBook>(account, extras, syncResult) {
 
@@ -38,8 +41,6 @@ class AddressBookSyncer @AssistedInject constructor(
 
     override val serviceType: String
         get() = Service.TYPE_CARDDAV
-    override val authority: String
-        get() = ContactsContract.AUTHORITY // Address books use the contacts authority for sync
 
 
     override fun getDbSyncCollections(serviceId: Long): List<Collection> =
@@ -78,11 +79,12 @@ class AddressBookSyncer @AssistedInject constructor(
         collection: Collection
     ) {
         try {
-            val accountSettings = accountSettingsFactory.create(account)
-
             // handle group method change
+            val accountSettings = accountSettingsFactory.create(account)
             val groupMethod = accountSettings.getGroupMethod().name
-            accountSettings.accountManager.getUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
+
+            val accountManager = AccountManager.get(context)
+            accountManager.getUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
                 if (previousGroupMethod != groupMethod) {
                     logger.info("Group method changed, deleting all local contacts/groups")
 
@@ -94,9 +96,18 @@ class AddressBookSyncer @AssistedInject constructor(
                     addressBook.syncState = null
                 }
             }
-            accountSettings.accountManager.setAndVerifyUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD, groupMethod)
+            accountManager.setAndVerifyUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD, groupMethod)
 
-            val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
+            val syncManager = contactsSyncManagerFactory.contactsSyncManager(
+                account,
+                httpClient.value,
+                extras,
+                dataStore.authority,
+                syncResult,
+                provider,
+                addressBook,
+                collection
+            )
             syncManager.performSync()
 
         } catch(e: Exception) {
