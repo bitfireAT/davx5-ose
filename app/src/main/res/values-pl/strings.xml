@@ -5,6 +5,7 @@
   <string name="account_title_address_book">Książka adresowa DAVx⁵</string>
   <string name="dialog_remove">Usuń</string>
   <string name="dialog_deny">Anuluj</string>
+  <string name="dialog_enable">Włącz</string>
   <string name="field_required">To pole jest wymagane</string>
   <string name="help">Pomoc</string>
   <string name="navigate_up">Nawiguj w górę</string>
@@ -107,13 +108,14 @@
   <string name="navigation_drawer_faq">Często zadawane pytania</string>
   <string name="navigation_drawer_community">Społeczność</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
-  <string name="account_list_no_notification_permission">Powiadomienia wyłączone. Nie będziesz otrzymywać powiadomień o błędach synchronizacji.</string>
-  <string name="account_list_manage_connections">Zarządzaj połączeniami</string>
-  <string name="account_list_datasaver_enabled">Włączono oszczędzanie danych. Synchronizacja w tle jest ograniczona.</string>
-  <string name="account_list_manage_datasaver">Zarządzaj oszczędzaniem danych</string>
-  <string name="account_list_low_storage">Mało miejsca do przechowywania. Android nie zsynchronizuje lokalnych zmian od razu, ale podczas następnej regularnej synchronizacji.</string>
-  <string name="account_list_manage_storage">Zarządzaj pamięcią</string>
   <string name="accounts_sync_all">Synchronizuj wszystkie konta</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Powiadomienia wyłączone. Nie będziesz otrzymywać powiadomień o błędach synchronizacji.</string>
+  <string name="sync_warning_manage_connections">Zarządzaj połączeniami</string>
+  <string name="sync_warning_datasaver_enabled">Włączono oszczędzanie danych. Synchronizacja w tle jest ograniczona.</string>
+  <string name="sync_warning_manage_datasaver">Zarządzaj oszczędzaniem danych</string>
+  <string name="sync_warning_low_storage">Mało miejsca do przechowywania. Android nie zsynchronizuje lokalnych zmian od razu, ale podczas następnej regularnej synchronizacji.</string>
+  <string name="sync_warning_manage_storage">Zarządzaj pamięcią</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Wykrycie serwisu nie powiodło się</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Nie można odświeżyć listy kolekcji</string>

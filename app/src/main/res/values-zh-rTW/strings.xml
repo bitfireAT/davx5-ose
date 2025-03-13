@@ -3,6 +3,7 @@
   <!--common strings-->
   <string name="account_invalid">帳號（已）不存在</string>
   <string name="account_title_address_book">DAVx⁵ 通訊錄</string>
+  <string name="dialog_enable">啟用</string>
   <string name="field_required">此為必填欄位</string>
   <string name="help">幫助</string>
   <string name="share">分享</string>
@@ -56,6 +57,7 @@
   <string name="navigation_drawer_manual">使用説明書</string>
   <string name="navigation_drawer_faq">常見問答</string>
   <string name="navigation_drawer_privacy_policy">隱私權政策</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">未發現遠端服務</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">無法更新清單</string>

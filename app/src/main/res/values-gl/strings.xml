@@ -7,6 +7,7 @@
   <string name="dialog_delete">Eliminar</string>
   <string name="dialog_remove">Eliminar</string>
   <string name="dialog_deny">Desbotar</string>
+  <string name="dialog_enable">Activar</string>
   <string name="field_required">Este campo é requerido</string>
   <string name="help">Axuda</string>
   <string name="navigate_up">Ir arriba</string>
@@ -124,21 +125,24 @@
   <string name="navigation_drawer_support_project">Apoia ao proxecto</string>
   <string name="navigation_drawer_contribute">Como colaborar</string>
   <string name="navigation_drawer_privacy_policy">Política de Privacidade</string>
-  <string name="account_list_no_notification_permission">Notificacións desactivadas. Non verás os avisos de erro na sincr.</string>
-  <string name="account_list_no_internet">A sincronización automática non está activa (sen conexión a internet verificada).</string>
-  <string name="account_list_manage_connections">Xestionar conexións</string>
-  <string name="account_list_datasaver_enabled">O aforro de datos está activado. A sincronización en segundo plano está restrinxida.</string>
-  <string name="account_list_manage_datasaver">Xestionar aforro de datos</string>
-  <string name="account_list_battery_saver_enabled">Activado o aforrador de batería. A sincronización podería estar limitada.</string>
-  <string name="account_list_manage_battery_saver">Xestionar aforro da batería</string>
-  <string name="account_list_low_storage">Queda pouco espazo de almacenaxe. Android non vai sincronizar os cambios locais inmediatamente, farao na próxima sincronización regular.</string>
-  <string name="account_list_manage_storage">Xestionar almacenaxe</string>
-  <string name="account_list_calendar_storage_disabled">Falta o provedor do calendario. Desactivaches a app do sistema \"Almacenaxe do calendario\"?</string>
-  <string name="account_list_contacts_storage_disabled">Falta o provedor de contactos. Desactivaches a app do sistema \"Almacenaxe de contactos\"?</string>
-  <string name="account_list_manage_apps">Xestionar apps</string>
   <string name="account_list_welcome">Benvida a DAVx⁵!</string>
   <string name="account_list_empty">Conecta co teu servidor e mantén os contactos e calendarios sincronizados.</string>
   <string name="accounts_sync_all">Sincroniza todas as contas</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Notificacións desactivadas. Non verás os avisos de erro na sincr.</string>
+  <string name="sync_warning_no_internet">A sincronización automática non está activa (sen conexión a internet verificada).</string>
+  <string name="sync_warning_manage_connections">Xestionar conexións</string>
+  <string name="sync_warning_datasaver_enabled">O aforro de datos está activado. A sincronización en segundo plano está restrinxida.</string>
+  <string name="sync_warning_manage_datasaver">Xestionar aforro de datos</string>
+  <string name="sync_warning_battery_saver_enabled">Activado o aforrador de batería. A sincronización podería estar limitada.</string>
+  <string name="sync_warning_manage_battery_saver">Xestionar aforro da batería</string>
+  <string name="sync_warning_low_storage">Queda pouco espazo de almacenaxe. Android non vai sincronizar os cambios locais inmediatamente, farao na próxima sincronización regular.</string>
+  <string name="sync_warning_manage_storage">Xestionar almacenaxe</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Falta o provedor do calendario</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Desactivouse a app do sistema \"Almacenaxe do calendario\"?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Falta o provedor de contactos</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Desactivouse a app do sistema \"Almacenaxe de contactos\"?</string>
+  <string name="sync_warning_manage_apps">Xestionar apps</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Fallou a detección do servizo</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Non se actualizou a lista da colección</string>
@@ -172,6 +176,7 @@
   <string name="app_settings_distrust_system_certs">Non confiar en certificados do sistema</string>
   <string name="app_settings_distrust_system_certs_on">Non se confiará nos CAs do sistema ou engadidos por usuaria</string>
   <string name="app_settings_distrust_system_certs_off">Confiarase nos CAs do sistema e engadidos por usuaria (recomendado)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Se este axuste está activo, os certificados do sistema non se consideran de confianza. Isto significa que haberá que aceptar manualmente cada certificado (tamén cando o servidor o renove) ou a configuración e a sincronización non funcionarán.</string>
   <string name="app_settings_reset_certificates">Restablecer certificados repudiados</string>
   <string name="app_settings_reset_certificates_summary">Restablece a confianza en todos os certificados personalizados</string>
   <string name="app_settings_reset_certificates_success">Todos os certificados personalizados foron admitidos</string>

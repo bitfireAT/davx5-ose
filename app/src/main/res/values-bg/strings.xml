@@ -7,6 +7,7 @@
   <string name="dialog_delete">Премахване</string>
   <string name="dialog_remove">Премахване</string>
   <string name="dialog_deny">Отказ</string>
+  <string name="dialog_enable">Включване</string>
   <string name="field_required">Задължително поле</string>
   <string name="help">Помощ</string>
   <string name="navigate_up">Придвижване нагоре</string>
@@ -124,21 +125,24 @@
   <string name="navigation_drawer_support_project">Подкрепа за проекта</string>
   <string name="navigation_drawer_contribute">Как да допринеса</string>
   <string name="navigation_drawer_privacy_policy">Лични данни</string>
-  <string name="account_list_no_notification_permission">Известията са изключени. Няма да бъдете известявани за грешки при синхронизиране.</string>
-  <string name="account_list_no_internet">Автоматичното синхронизиране е изключено (липсва потвърдена връзка с интернет)</string>
-  <string name="account_list_manage_connections">Управление на връзките</string>
-  <string name="account_list_datasaver_enabled">Включена е икономия на данни. Синхронизацията във фонов режим е ограничена.</string>
-  <string name="account_list_manage_datasaver">Икономия на трафик</string>
-  <string name="account_list_battery_saver_enabled">Включена е икономия на батерия. Синхронизацията може да е ограничена.</string>
-  <string name="account_list_manage_battery_saver">Икономия на батерия</string>
-  <string name="account_list_low_storage">Пространството за съхранение е малко. Андроид няма да синхронизира местните промени веднага, а по време на следващата редовна синхронизация.</string>
-  <string name="account_list_manage_storage">Управление на хранилището</string>
-  <string name="account_list_calendar_storage_disabled">Липсва доставчик на календар. Да не би системното приложение „Съхранение в Календар“ да е изключено?</string>
-  <string name="account_list_contacts_storage_disabled">Липсва доставчик на контакти. Да не би системното приложение „Хранилище на Контакти“ да е изключено?</string>
-  <string name="account_list_manage_apps">Управление на приложения</string>
   <string name="account_list_welcome">Добре дошли при DAVx⁵!</string>
   <string name="account_list_empty">Свържете се със сървър и поддържайте календарите и контактите си синхронизирани.</string>
   <string name="accounts_sync_all">Синхронизиране на всички профили</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Известията са изключени. Няма да бъдете известявани за грешки при синхронизиране.</string>
+  <string name="sync_warning_no_internet">Автоматичното синхронизиране е изключено (липсва потвърдена връзка с интернет)</string>
+  <string name="sync_warning_manage_connections">Управление на връзките</string>
+  <string name="sync_warning_datasaver_enabled">Включена е икономия на данни. Синхронизацията във фонов режим е ограничена.</string>
+  <string name="sync_warning_manage_datasaver">Икономия на трафик</string>
+  <string name="sync_warning_battery_saver_enabled">Включена е икономия на батерия. Синхронизацията може да е ограничена.</string>
+  <string name="sync_warning_manage_battery_saver">Икономия на батерия</string>
+  <string name="sync_warning_low_storage">Пространството за съхранение е малко. Андроид няма да синхронизира местните промени веднага, а по време на следващата редовна синхронизация.</string>
+  <string name="sync_warning_manage_storage">Управление на хранилището</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Липсва доставчик на календар</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Да не би да сте изключили системното приложение „Съхранение в календар“?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Липсва доставчик на контакти</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Да не би да сте изключили системното приложение „Хранилище на контакти“?</string>
+  <string name="sync_warning_manage_apps">Управление на приложения</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Грешка при откриване на услугите</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Грешка при презареждане</string>
@@ -172,6 +176,7 @@
   <string name="app_settings_distrust_system_certs">Оттегляне на доверието в системните сертификати</string>
   <string name="app_settings_distrust_system_certs_on">Издатели на сертификати познати на системата или добавени от потребителя няма да бъдат доверени</string>
   <string name="app_settings_distrust_system_certs_off">Издателите на сертификатите познати на системата или добавени от потребителя ще бъдат доверени (препоръчително)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Когато е отметнато доверието от системните сертификати е оттеглено. Това означава, че вие ръчно трябва да приемете всеки сертификат (включително и при обновяване на сертификата на сървъра) в противен случай настройката на профил и синхронизирането няма да работят.</string>
   <string name="app_settings_reset_certificates">Нулиране на (не)доверените сертификати</string>
   <string name="app_settings_reset_certificates_summary">Нулиране на доверието към всички потребителски сертификати</string>
   <string name="app_settings_reset_certificates_success">Всички потребителски сертификати са премахнати</string>
