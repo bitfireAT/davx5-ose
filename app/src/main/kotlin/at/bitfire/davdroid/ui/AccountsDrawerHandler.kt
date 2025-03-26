@@ -7,16 +7,13 @@ package at.bitfire.davdroid.ui
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -46,7 +43,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -82,18 +78,9 @@ abstract class AccountsDrawerHandler {
         snackbarHostState: SnackbarHostState,
         onCloseDrawer: () -> Unit
     ) {
-        val conf = LocalConfiguration.current
-        val isHorizontal = conf.orientation == Configuration.ORIENTATION_LANDSCAPE
         Column(modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
-            .let { mod ->
-                if (isHorizontal) {
-                    mod.displayCutoutPadding()
-                } else {
-                    mod.navigationBarsPadding()
-                }
-            }
         ) {
             BrandingHeader()
 

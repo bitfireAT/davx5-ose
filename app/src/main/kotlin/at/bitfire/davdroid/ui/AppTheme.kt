@@ -8,10 +8,16 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.displayCutoutPadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -44,8 +50,11 @@ fun AppTheme(
                 M3ColorScheme.lightScheme
             else
                 M3ColorScheme.darkScheme,
-            content = content
-        )
+        ) {
+            Box(Modifier.fillMaxSize().displayCutoutPadding().navigationBarsPadding().clipToBounds()) {
+                content()
+            }
+        }
     }
     
     // Track if the app is in the foreground

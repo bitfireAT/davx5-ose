@@ -7,7 +7,6 @@ package at.bitfire.davdroid.ui
 import android.Manifest
 import android.accounts.Account
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -19,9 +18,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -66,7 +63,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -189,7 +185,6 @@ fun AccountsScreen(
             }
         ) {
             Scaffold(
-                contentWindowInsets = WindowInsets.safeContent,
                 topBar = {
                     TopAppBar(
                         navigationIcon = {
@@ -213,15 +208,7 @@ fun AccountsScreen(
                     )
                 },
                 floatingActionButton = {
-                    val conf = LocalConfiguration.current
-                    val isHorizontal = conf.orientation == Configuration.ORIENTATION_LANDSCAPE
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = if (isHorizontal)
-                            Modifier.navigationBarsPadding()
-                        else
-                            Modifier,
-                    ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         if (showAddAccount == AccountsModel.FABStyle.WithText)
                             ExtendedFloatingActionButton(
                                 text = { Text(stringResource(R.string.login_add_account)) },
