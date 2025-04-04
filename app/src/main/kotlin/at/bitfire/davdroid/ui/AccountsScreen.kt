@@ -16,9 +16,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -44,10 +48,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -78,6 +84,9 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
+import at.bitfire.davdroid.ui.edgetoedge.LocalStatusBarScrimColors
+import at.bitfire.davdroid.ui.edgetoedge.onlyLandscape
+import at.bitfire.davdroid.ui.edgetoedge.withOrientation
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -167,6 +176,16 @@ fun AccountsScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
     AppTheme {
+        val statusBarTheme = LocalStatusBarScrimColors.current
+        LaunchedEffect(drawerState.isClosed) {
+            // Set to false because the background is dark, so show icons in light mode
+            if (drawerState.isClosed) {
+                statusBarTheme.resetStatusBarDarkTheme()
+            } else {
+                statusBarTheme.setStatusBarDarkTheme(true)
+            }
+        }
+
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
@@ -185,8 +204,16 @@ fun AccountsScreen(
             }
         ) {
             Scaffold(
+                contentWindowInsets = withOrientation(
+                    landscape = WindowInsets.safeContent,
+                    portrait = ScaffoldDefaults.contentWindowInsets,
+                ),
                 topBar = {
                     TopAppBar(
+                        windowInsets = TopAppBarDefaults.windowInsets.onlyLandscape {
+                            // only add the display cutout when portrait
+                            add(WindowInsets.displayCutout)
+                        },
                         navigationIcon = {
                             IconToggleButton(false, onCheckedChange = { openDrawer ->
                                 scope.launch {
@@ -208,7 +235,13 @@ fun AccountsScreen(
                     )
                 },
                 floatingActionButton = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = withOrientation(
+                            landscape = Modifier.navigationBarsPadding(),
+                            portrait = Modifier,
+                        ),
+                    ) {
                         if (showAddAccount == AccountsModel.FABStyle.WithText)
                             ExtendedFloatingActionButton(
                                 text = { Text(stringResource(R.string.login_add_account)) },
