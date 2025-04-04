@@ -5,7 +5,10 @@
 package at.bitfire.davdroid.ui.edgetoedge
 
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
@@ -39,4 +42,9 @@ fun <T> withOrientation(landscape: T, portrait: T): T {
     } else {
         portrait
     }
+}
+
+@Composable
+fun NavigationBarSpacer() {
+    Spacer(Modifier.navigationBarsPadding())
 }
