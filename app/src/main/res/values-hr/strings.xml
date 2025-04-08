@@ -3,6 +3,7 @@
   <!--common strings-->
   <string name="account_invalid">Račun (više) ne postoji</string>
   <string name="account_title_address_book">DAVx⁵ Adresar</string>
+  <string name="dialog_enable">Omogući</string>
   <string name="help">Pomoć</string>
   <string name="share">Dijeli</string>
   <string name="notification_channel_debugging">Debugging</string>
@@ -88,6 +89,7 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_privacy_policy">Pravila o zaštiti privatnosti</string>
   <string name="accounts_sync_all">Sinkroniziraj sve račune</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Detekcija servisa nije uspjela</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Nije moguće osvježiti popis zbirki</string>

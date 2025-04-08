@@ -12,12 +12,14 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
+import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import com.google.common.base.Ascii
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.HttpUrl
 import java.io.File
+import java.time.Instant
 
 /**
  * Debug info activity. Provides verbose information for debugging and support. Should enable users
@@ -50,6 +52,9 @@ class DebugInfoActivity : AppCompatActivity() {
 
         /** URL of remote resource related to the problem (plain-text [String]) */
         private const val EXTRA_REMOTE_RESOURCE = "remoteResource"
+
+        /** A timestamp of the moment at which the error took place. */
+        private const val EXTRA_TIMESTAMP = "timestamp"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,12 +63,13 @@ class DebugInfoActivity : AppCompatActivity() {
 
         setContent { 
             DebugInfoScreen(
-                account = extras?.getParcelable(EXTRA_ACCOUNT),
+                account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
                 authority = extras?.getString(EXTRA_AUTHORITY),
-                cause = extras?.getSerializable(EXTRA_CAUSE) as? Throwable,
+                cause = IntentCompat.getParcelableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE),
                 remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
                 logs = extras?.getString(EXTRA_LOGS),
+                timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,
                 onNavUp = ::onSupportNavigateUp
@@ -132,6 +138,7 @@ class DebugInfoActivity : AppCompatActivity() {
         }
 
         val intent = Intent(context, DebugInfoActivity::class.java)
+            .putExtra(EXTRA_TIMESTAMP, Instant.now().epochSecond)
 
         fun newTask(): IntentBuilder {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

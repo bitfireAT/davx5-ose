@@ -7,6 +7,7 @@
   <string name="dialog_delete">Kustuta</string>
   <string name="dialog_remove">Eemalda</string>
   <string name="dialog_deny">Katkesta</string>
+  <string name="dialog_enable">Võta kasutusele</string>
   <string name="field_required">See väli on kohustuslik</string>
   <string name="help">Abiteave</string>
   <string name="navigate_up">Liigu üles</string>
@@ -124,21 +125,24 @@
   <string name="navigation_drawer_support_project">Toeta projekti</string>
   <string name="navigation_drawer_contribute">Osalemise viisid</string>
   <string name="navigation_drawer_privacy_policy">Privaatsuspoliitika</string>
-  <string name="account_list_no_notification_permission">Teavitused on väljalülitatud ja seega sünkroniseerimisvigade infot sa ei näe.</string>
-  <string name="account_list_no_internet">Automaatne sünkroniseerimine pole aktiivne (kontrollitud internetiühendus puudub)</string>
-  <string name="account_list_manage_connections">Halda ühendusi</string>
-  <string name="account_list_datasaver_enabled">Andmemahu piiraja on kasutusel. Taustal sünkroniseerimine võib toimida piirangutega.</string>
-  <string name="account_list_manage_datasaver">Halda andmemahu piirajat</string>
-  <string name="account_list_battery_saver_enabled">Akukasutuse piiraja on kasutusel. Taustal sünkroniseerimine võib toimida piirangutega.</string>
-  <string name="account_list_manage_battery_saver">Halda akukasutuse piirajat</string>
-  <string name="account_list_low_storage">Vaba andmeruumi napib. Android ei sünkroniseeri kohalikke muudatusi kohe, vaid järgmise regulaarse sünkroniseerimise ajal.</string>
-  <string name="account_list_manage_storage">Halda andmeruumi</string>
-  <string name="account_list_calendar_storage_disabled">Kalendris teenusepakkuja puudub. Kas sa oled lülitanud välja süsteemse kalendri salvestusruumi rakenduse „Calendar storage“ välja?</string>
-  <string name="account_list_contacts_storage_disabled">Kontaktide teenusepakkuja puudub. Kas sa oled lülitanud välja süsteemse kontaktide salvestusruumi rakenduse „Contacts storage“ välja?</string>
-  <string name="account_list_manage_apps">Halda rakendusi</string>
   <string name="account_list_welcome">Tere tulemast kasutama rakendust DAVx⁵!</string>
   <string name="account_list_empty">Loo ühendus oma serveriga ja hoia kalendrid ning kontaktid sünkroniseerituna.</string>
   <string name="accounts_sync_all">Sünkroniseeri kõik kasutajakontod</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Teavitused on väljalülitatud ja seega sünkroniseerimisvigade infot sa ei näe.</string>
+  <string name="sync_warning_no_internet">Automaatne sünkroniseerimine pole aktiivne (kontrollitud internetiühendus puudub)</string>
+  <string name="sync_warning_manage_connections">Halda ühendusi</string>
+  <string name="sync_warning_datasaver_enabled">Andmemahu piiraja on kasutusel. Taustal sünkroniseerimine võib toimida piirangutega.</string>
+  <string name="sync_warning_manage_datasaver">Halda andmemahu piirajat</string>
+  <string name="sync_warning_battery_saver_enabled">Akukasutuse piiraja on kasutusel. Taustal sünkroniseerimine võib toimida piirangutega.</string>
+  <string name="sync_warning_manage_battery_saver">Halda akukasutuse piirajat</string>
+  <string name="sync_warning_low_storage">Vaba andmeruumi napib. Android ei sünkroniseeri kohalikke muudatusi kohe, vaid järgmise regulaarse sünkroniseerimise ajal.</string>
+  <string name="sync_warning_manage_storage">Halda andmeruumi</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Kalendri teenusepakkuja puudub. </string>
+  <string name="sync_warning_calendar_storage_disabled_description">Kas sa oled lülitanud välja süsteemse kalendri salvestusruumi rakenduse „Calendar storage“ välja?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Kontaktide teenusepakkuja puudub.</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Kas sa oled lülitanud välja süsteemse kontaktide salvestusruumi rakenduse „Contacts storage“ välja?</string>
+  <string name="sync_warning_manage_apps">Halda rakendusi</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Teenuse tuvastamine ei õnnestunud</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Kogumike loendi uuendamine ei õnnestunud</string>
@@ -172,6 +176,7 @@
   <string name="app_settings_distrust_system_certs">Ära usalda nutiseadme süsteemseid sertifikaate</string>
   <string name="app_settings_distrust_system_certs_on">Süsteemsed ja kasutaja lisatud sertifitseerimiskeskused ei ole usaldatud</string>
   <string name="app_settings_distrust_system_certs_off">Süsteemsed ja kasutaja lisatud sertifitseerimiskeskused on usaldatud (soovitatav valik)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Kui see seadistus on aktiivne, siis operatsioonisüsteemis leiduvad sertifikaate ei loeta usaldusväärseteks. See tähendab, et iga kord pead sertifikaadiga käsitsi nõustuma (seda ka siis, kui server uuendab oma sertifikaate), vastasel juhul kasutajakonto seadistamine ja sünkroniseerimine ei toimi.</string>
   <string name="app_settings_reset_certificates">Lähtesta (mitte)usaldatud sertifikaatide loend</string>
   <string name="app_settings_reset_certificates_summary">Selle valikuga eemaldatakse kõik sinu lisatud sertifikaatide usaldusmärked</string>
   <string name="app_settings_reset_certificates_success">Kõik sinu lisatud sertifikaatide usaldusmärked on eemaldatud</string>

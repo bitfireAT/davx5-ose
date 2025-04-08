@@ -5,18 +5,9 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.app.PendingIntent
-import android.content.ContentUris
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.DeadObjectException
 import android.os.RemoteException
-import android.provider.CalendarContract
-import android.provider.ContactsContract
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.TaskStackBuilder
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Error
@@ -35,7 +26,7 @@ import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
-import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -45,25 +36,16 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
-import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.resource.LocalTask
-import at.bitfire.davdroid.ui.DebugInfoActivity
-import at.bitfire.davdroid.ui.NotificationRegistry
-import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.Ical4Android
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.ContactsStorageException
-import com.google.common.base.Ascii
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
-import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.HttpURLConnection
@@ -152,9 +134,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     lateinit var logger: Logger
 
     @Inject
-    lateinit var notificationRegistry: NotificationRegistry
-
-    @Inject
     lateinit var accountRepository: AccountRepository
 
     @Inject
@@ -166,23 +145,27 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     @Inject
     lateinit var collectionRepository: DavCollectionRepository
 
+    @Inject
+    lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
+
 
     init {
         // required for ServiceLoader -> ical4j -> ical4android
         Ical4Android.checkThreadContextClassLoader()
     }
 
-    protected val notificationTag = localCollection.tag
-
     protected lateinit var davCollection: RemoteType
 
     protected var hasCollectionSync = false
 
+    private val syncNotificationManager by lazy {
+        syncNotificationManagerFactory.create(account)
+    }
 
     fun performSync() {
         // dismiss previous error notifications
-        val nm = NotificationManagerCompat.from(context)
-        nm.cancel(notificationTag, NotificationRegistry.NOTIFY_SYNC_ERROR)
+        syncNotificationManager.dismissInvalidResource(localCollectionTag = localCollection.tag)
+
 
         try {
             logger.info("Preparing synchronization")
@@ -322,7 +305,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
                     // when a certificate is rejected by cert4android, the cause will be a CertificateException
                     if (e.cause !is CertificateException)
-                        notifyException(e, local, remote)
+                        handleException(e, local, remote)
                 }
 
                 // specific HTTP errors
@@ -335,7 +318,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
                 // all others
                 else ->
-                    notifyException(e, local, remote)
+                    handleException(e, local, remote)
             }
         }
     }
@@ -742,157 +725,65 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
 
-    // exception helpers
+    // notification helpers
 
-    private fun notifyException(e: Throwable, local: LocalResource<*>?, remote: HttpUrl?) {
-        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
-            val message: String
-
-            when (e) {
-                is IOException -> {
-                    logger.log(Level.WARNING, "I/O error", e)
-                    message = context.getString(R.string.sync_error_io, e.localizedMessage)
-                    syncResult.numIoExceptions++
-                }
-
-                is UnauthorizedException -> {
-                    logger.log(Level.SEVERE, "Not authorized anymore", e)
-                    message = context.getString(R.string.sync_error_authentication_failed)
-                    syncResult.numAuthExceptions++
-                }
-
-                is HttpException, is DavException -> {
-                    logger.log(Level.SEVERE, "HTTP/DAV exception", e)
-                    message = context.getString(R.string.sync_error_http_dav, e.localizedMessage)
-                    syncResult.numHttpExceptions++
-                }
-
-                is CalendarStorageException, is ContactsStorageException, is RemoteException -> {
-                    logger.log(Level.SEVERE, "Couldn't access local storage", e)
-                    message = context.getString(R.string.sync_error_local_storage, e.localizedMessage)
-                    syncResult.localStorageError = true
-                }
-
-                else -> {
-                    logger.log(Level.SEVERE, "Unclassified sync error", e)
-                    message = e.localizedMessage ?: e::class.java.simpleName
-                    syncResult.numUnclassifiedErrors++
-                }
+    /**
+     * Logs the exception, updates sync result and shows a notification to the user.
+     */
+    private fun handleException(e: Throwable, local: LocalResource<*>?, remote: HttpUrl?) {
+        var message: String
+        when (e) {
+            is IOException -> {
+                logger.log(Level.WARNING, "I/O error", e)
+                syncResult.numIoExceptions++
+                message = context.getString(R.string.sync_error_io, e.localizedMessage)
             }
 
-            val contentIntent: Intent
-            var viewItemAction: NotificationCompat.Action? = null
-            if (e is UnauthorizedException) {
-                contentIntent = Intent(context, AccountSettingsActivity::class.java)
-                contentIntent.putExtra(
-                    AccountSettingsActivity.EXTRA_ACCOUNT,
-                    account
-                )
-            } else {
-                contentIntent = buildDebugInfoIntent(e, local, remote)
-                if (local != null)
-                    viewItemAction = buildViewItemAction(local)
+            is UnauthorizedException -> {
+                logger.log(Level.SEVERE, "Not authorized anymore", e)
+                syncResult.numAuthExceptions++
+                message = context.getString(R.string.sync_error_authentication_failed)
             }
 
-            // to make the PendingIntent unique
-            contentIntent.data = Uri.parse("davdroid:exception/${e.hashCode()}")
-
-            val channel: String
-            val priority: Int
-            if (e is IOException) {
-                channel = notificationRegistry.CHANNEL_SYNC_IO_ERRORS
-                priority = NotificationCompat.PRIORITY_MIN
-            } else {
-                channel = notificationRegistry.CHANNEL_SYNC_ERRORS
-                priority = NotificationCompat.PRIORITY_DEFAULT
+            is HttpException, is DavException -> {
+                logger.log(Level.SEVERE, "HTTP/DAV exception", e)
+                syncResult.numHttpExceptions++
+                message = context.getString(R.string.sync_error_http_dav, e.localizedMessage)
             }
 
-            val builder = NotificationCompat.Builder(context, channel)
-            builder.setSmallIcon(R.drawable.ic_sync_problem_notify)
-                .setContentTitle(localCollection.title)
-                .setContentText(message)
-                .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
-                .setSubText(account.name)
-                .setOnlyAlertOnce(true)
-                .setContentIntent(
-                    TaskStackBuilder.create(context)
-                        .addNextIntentWithParentStack(contentIntent)
-                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-                )
-                .setPriority(priority)
-                .setCategory(NotificationCompat.CATEGORY_ERROR)
-            viewItemAction?.let { builder.addAction(it) }
-
-            builder.build()
-        }
-    }
-
-    private fun buildDebugInfoIntent(e: Throwable, local: LocalResource<*>?, remote: HttpUrl?): Intent {
-        val builder = DebugInfoActivity.IntentBuilder(context)
-            .withAccount(account)
-            .withAuthority(authority)
-            .withCause(e)
-
-        if (local != null)
-            try {
-                // Truncate the string to avoid the Intent to be > 1 MB, which doesn't work (IPC limit)
-                builder.withLocalResource(Ascii.truncate(local.toString(), 10000, "[…]"))
-            } catch (_: OutOfMemoryError) {
-                // For instance because of a huge contact photo; maybe we're lucky and can catch it
+            is CalendarStorageException, is ContactsStorageException, is RemoteException -> {
+                logger.log(Level.SEVERE, "Couldn't access local storage", e)
+                syncResult.localStorageError = true
+                message = context.getString(R.string.sync_error_local_storage, e.localizedMessage)
             }
 
-        if (remote != null)
-            builder.withRemoteResource(remote)
-
-        return builder.build()
-    }
-
-    private fun buildViewItemAction(local: LocalResource<*>): NotificationCompat.Action? {
-        logger.log(Level.FINE, "Adding view action for local resource", local)
-        val intent = local.id?.let { id ->
-            when (local) {
-                is LocalContact ->
-                    Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, id))
-                is LocalEvent ->
-                    Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id))
-                is LocalTask ->
-                    Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(TaskContract.Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority), id))
-                else ->
-                    null
+            else -> {
+                logger.log(Level.SEVERE, "Unclassified sync error", e)
+                syncResult.numUnclassifiedErrors++
+                message = e.localizedMessage ?: e::class.java.simpleName
             }
         }
-        return if (intent != null && context.packageManager.resolveActivity(intent, 0) != null)
-            NotificationCompat.Action(
-                android.R.drawable.ic_menu_view,
-                context.getString(R.string.sync_error_view_item),
-                TaskStackBuilder.create(context)
-                    .addNextIntent(intent)
-                    .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-            )
-        else
-            null
+
+        syncNotificationManager.notifyException(
+            authority,
+            localCollection.tag,
+            message,
+            localCollection,
+            e,
+            local,
+            remote
+        )
     }
 
-    protected fun notifyInvalidResource(e: Throwable, fileName: String) {
-        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_INVALID_RESOURCE, tag = notificationTag) {
-            val intent = buildDebugInfoIntent(e, null, collection.url.resolve(fileName))
-
-            val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_WARNINGS)
-            builder.setSmallIcon(R.drawable.ic_warning_notify)
-                .setContentTitle(notifyInvalidResourceTitle())
-                .setContentText(context.getString(R.string.sync_invalid_resources_ignoring))
-                .setSubText(account.name)
-                .setContentIntent(
-                    TaskStackBuilder.create(context)
-                        .addNextIntent(intent)
-                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-                )
-                .setAutoCancel(true)
-                .setOnlyAlertOnce(true)
-                .priority = NotificationCompat.PRIORITY_LOW
-            builder.build()
-        }
-    }
+    protected fun notifyInvalidResource(e: Throwable, fileName: String) =
+        syncNotificationManager.notifyInvalidResource(
+            authority,
+            localCollection.tag,
+            collection,
+            e,
+            fileName,
+            notifyInvalidResourceTitle()
+        )
 
     protected abstract fun notifyInvalidResourceTitle(): String
 

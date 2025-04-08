@@ -13,8 +13,8 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.ForegroundTracker
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.MutableStateFlow
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import okhttp3.Authenticator
@@ -117,12 +117,6 @@ class HttpClient(
         private var followRedirects = false
         fun followRedirects(follow: Boolean): Builder {
             followRedirects = follow
-            return this
-        }
-
-        private var appInForeground: MutableStateFlow<Boolean>? = MutableStateFlow(false)
-        fun inForeground(foreground: Boolean): Builder {
-            appInForeground?.value = foreground
             return this
         }
 
@@ -240,7 +234,10 @@ class HttpClient(
             val certManager = CustomCertManager(
                 context = context,
                 trustSystemCerts = !settingsManager.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES),
-                appInForeground = appInForeground
+                appInForeground = if (/* davx5-ose */ true)
+                    ForegroundTracker.inForeground  // interactive mode
+                else
+                    null                            // non-interactive mode
             )
 
             val sslContext = SSLContext.getInstance("TLS")

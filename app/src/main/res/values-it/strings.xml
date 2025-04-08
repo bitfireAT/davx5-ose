@@ -6,6 +6,7 @@
   <string name="dialog_delete">Cancella</string>
   <string name="dialog_remove">Elimina</string>
   <string name="dialog_deny">Annulla</string>
+  <string name="dialog_enable">Attiva</string>
   <string name="field_required">Questo campo è necessario</string>
   <string name="help">Aiuto</string>
   <string name="optional_label">* opzionale</string>
@@ -110,14 +111,15 @@
   <string name="navigation_drawer_support_project">Supporta il progetto</string>
   <string name="navigation_drawer_contribute">Come contribuire</string>
   <string name="navigation_drawer_privacy_policy">Politica sulla riservatezza</string>
-  <string name="account_list_no_notification_permission">Notifiche non attive. Non sarai avvisato di eventuali errori di sincronizzazione</string>
-  <string name="account_list_manage_connections">Gestione connessioni</string>
-  <string name="account_list_datasaver_enabled">Risparmio dati attivo. La sincronizzazione in background è limitata,</string>
-  <string name="account_list_battery_saver_enabled">Risparmio energetico attivo. La sincronizzazione in background è limitata,</string>
-  <string name="account_list_manage_battery_saver">Gestisci risparmio energetico</string>
-  <string name="account_list_low_storage">Spazio di memorizzazione scarso. Androin non salverà immediatamente i cambiamente, ma alla prossima sincronizzazione programmata.</string>
-  <string name="account_list_manage_storage">Gestisci spazio di memorizzazione</string>
   <string name="accounts_sync_all">Sincronizzazione di tutti gli account</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Notifiche non attive. Non sarai avvisato di eventuali errori di sincronizzazione</string>
+  <string name="sync_warning_manage_connections">Gestione connessioni</string>
+  <string name="sync_warning_datasaver_enabled">Risparmio dati attivo. La sincronizzazione in background è limitata,</string>
+  <string name="sync_warning_battery_saver_enabled">Risparmio energetico attivo. La sincronizzazione in background è limitata,</string>
+  <string name="sync_warning_manage_battery_saver">Gestisci risparmio energetico</string>
+  <string name="sync_warning_low_storage">Spazio di memorizzazione scarso. Androin non salverà immediatamente i cambiamente, ma alla prossima sincronizzazione programmata.</string>
+  <string name="sync_warning_manage_storage">Gestisci spazio di memorizzazione</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Impossibile trovare il servizio</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Impossibile aggiornare la lista delle raccolte</string>

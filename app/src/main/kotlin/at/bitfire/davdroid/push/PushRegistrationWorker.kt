@@ -70,7 +70,6 @@ class PushRegistrationWorker @AssistedInject constructor(
     private suspend fun registerPushSubscription(collection: Collection, account: Account, endpoint: String) {
         httpClientBuilder.get()
             .fromAccount(account)
-            .inForeground(true)
             .build()
             .use { client ->
                 runInterruptible {
@@ -151,7 +150,6 @@ class PushRegistrationWorker @AssistedInject constructor(
     private suspend fun unregisterPushSubscription(collection: Collection, account: Account, url: HttpUrl) {
         httpClientBuilder.get()
             .fromAccount(account)
-            .inForeground(true)
             .build()
             .use { httpClient ->
                 runInterruptible {

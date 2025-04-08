@@ -5,6 +5,7 @@
   <string name="account_title_address_book">DAVx⁵ imenik</string>
   <string name="dialog_remove">Odstrani</string>
   <string name="dialog_deny">Preklic</string>
+  <string name="dialog_enable">Omogoči</string>
   <string name="field_required">To polje je obvezno</string>
   <string name="help">Pomoč</string>
   <string name="share">Deli</string>
@@ -62,6 +63,7 @@
   <string name="navigation_drawer_website">Spletna stran</string>
   <string name="navigation_drawer_manual">Priročnik</string>
   <string name="navigation_drawer_faq">Pogosta vprašanja</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Zaznava storitve ni uspela</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Zbirke ni bilo mogoče osvežiti</string>

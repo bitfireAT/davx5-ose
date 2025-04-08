@@ -9,7 +9,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.os.DeadObjectException
 import androidx.annotation.VisibleForTesting
-import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.network.HttpClient
@@ -73,8 +73,15 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     @Inject
     lateinit var serviceRepository: DavServiceRepository
 
+    @Inject
+    lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
+
     @ServiceType
     abstract val serviceType: String
+
+    val syncNotificationManager by lazy {
+        syncNotificationManagerFactory.create(account)
+    }
 
     val httpClient = lazy {
         httpClientBuilder.fromAccount(account).build()
@@ -249,18 +256,19 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             logger.log(Level.WARNING, "Missing permissions for content provider authority ${dataStore.authority}", e)
             /* Don't show a notification here without possibility to permanently dismiss it!
             Some users intentionally don't grant all permissions for what is syncable. */
-            null
+            return
         }.use { provider ->
             if (provider == null) {
-                /* Can happen if
-                 - we're not allowed to access the content provider, or
-                 - the content provider is not available at all, for instance because the tasks app has been uninstalled
-                   or the respective system app (like "calendar storage") is disabled */
+                /* Content provider is not available at all.
+                I.E. system app (like "calendar storage") is missing or disabled */
                 logger.warning("Couldn't connect to content provider of authority ${dataStore.authority}")
+                syncNotificationManager.notifyProviderError(dataStore.authority)
                 syncResult.contentProviderError = true
-
                 return // Don't continue without provider
             }
+
+            // Dismiss previous content provider error notification
+            syncNotificationManager.dismissProviderError(dataStore.authority)
 
             // run sync
             try {

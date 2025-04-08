@@ -6,6 +6,7 @@
   <string name="dialog_delete">Slet</string>
   <string name="dialog_remove">Fjern</string>
   <string name="dialog_deny">Annullér</string>
+  <string name="dialog_enable">Aktivere</string>
   <string name="field_required">Feltet er påkrævet</string>
   <string name="help">Hjælp</string>
   <string name="navigate_up">Naviger opad</string>
@@ -115,16 +116,17 @@
   <string name="navigation_drawer_support_project">Støt projektet</string>
   <string name="navigation_drawer_contribute">Sådan bidrager du</string>
   <string name="navigation_drawer_privacy_policy">Privatlivs politik</string>
-  <string name="account_list_no_notification_permission">Notifikationer slået fra. Du vil ikke blive gjort opmærksom på synkroniserings-fejl.</string>
-  <string name="account_list_manage_connections">Aministrer forbindelser</string>
-  <string name="account_list_datasaver_enabled">Gemning af data slået til. Synkronisering i baggrunden er begrænset.</string>
-  <string name="account_list_manage_datasaver">Administrer gemning af data</string>
-  <string name="account_list_battery_saver_enabled">Batteribesparelse aktiveret. Synkronisering kan være forhindret.</string>
-  <string name="account_list_manage_battery_saver">Administrer batteribesparelse</string>
-  <string name="account_list_low_storage">124
-Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, men under den næste almindelige synkronisering.</string>
-  <string name="account_list_manage_storage">Administrer lagerplads</string>
   <string name="accounts_sync_all">Synkroniser alle konti</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Notifikationer slået fra. Du vil ikke blive gjort opmærksom på synkroniserings-fejl.</string>
+  <string name="sync_warning_manage_connections">Aministrer forbindelser</string>
+  <string name="sync_warning_datasaver_enabled">Gemning af data slået til. Synkronisering i baggrunden er begrænset.</string>
+  <string name="sync_warning_manage_datasaver">Administrer gemning af data</string>
+  <string name="sync_warning_battery_saver_enabled">Batteribesparelse aktiveret. Synkronisering kan være forhindret.</string>
+  <string name="sync_warning_manage_battery_saver">Administrer batteribesparelse</string>
+  <string name="sync_warning_low_storage">124
+Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, men under den næste almindelige synkronisering.</string>
+  <string name="sync_warning_manage_storage">Administrer lagerplads</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Registrering af tjeneste kunne ikke foretages</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Kunne ikke opdatere samling liste</string>

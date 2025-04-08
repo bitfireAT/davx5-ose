@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_title_address_book">DAVx⁵ adresár</string>
+  <string name="dialog_enable">Povoliť</string>
   <string name="help">Pomoc</string>
   <string name="notification_channel_debugging">Ladenie</string>
   <string name="notification_channel_general">Ďalšie dôležité správy</string>
@@ -34,6 +35,7 @@
   <string name="navigation_drawer_manual">Manuál</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_privacy_policy">Zásady bezpečnosti</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Zisťovanie služby zlyhalo</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Nie je možné obnoviť zoznam kolekcií</string>
