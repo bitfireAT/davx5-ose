@@ -31,6 +31,7 @@ import dagger.assisted.AssistedInject
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.jetbrains.annotations.TestOnly
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
@@ -148,7 +149,8 @@ class JtxSyncManager @AssistedInject constructor(
         context.getString(R.string.sync_invalid_event)
 
 
-    private fun processICalObject(fileName: String, eTag: String, reader: Reader) {
+    @TestOnly
+    internal fun processICalObject(fileName: String, eTag: String, reader: Reader) {
         val icalobjects: MutableList<JtxICalObject> = mutableListOf()
         try {
             // parse the reader content and return the list of ICalObjects

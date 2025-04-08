@@ -15,16 +15,14 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.mockk.every
 import io.mockk.junit4.MockKRule
-import io.mockk.mockk
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.AfterClass
@@ -33,6 +31,7 @@ import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
+import java.io.StringReader
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -84,23 +83,35 @@ class JtxSyncManagerTest {
 
 
     @Test
-    fun test_recurrenceIdWithoutDtStart() {
-        val collection = LocalJtxCollection(account, provider, 0).apply {
-            lastSyncState = SyncState(SyncState.Type.CTAG, "ctag1")
+    fun testProcessICalObject_recurrenceIdWithoutDtStart() {
+        val reader = StringReader(
+            "BEGIN:VCALENDAR\n" +
+                "BEGIN:VTODO\n" +
+                "DTSTAMP;VALUE=DATE-TIME:20250228T032800Z\n" +
+                "RECURRENCE-ID;TZID=America/New_York:20250228T130000\n" +
+                "END:VTODO\n" +
+                "END:VCALENDAR")
+        try {
+            syncManager().processICalObject("demo-calendar", "abc123", reader)
+        } catch (e: Exception) {
+            // Fail on NPE, allow all other exceptions
+            if (e is NullPointerException)
+                throw e
         }
-        val syncManager = syncManager(collection)
     }
 
 
     // helpers
 
     private fun syncManager(
-        localCollection: LocalJtxCollection,
+        localCollection: LocalJtxCollection = LocalJtxCollection(account, provider, 0),
         syncResult: SyncResult = SyncResult(),
-        collection: Collection = mockk<Collection> {
-            every { id } returns 1
-            every { url } returns server.url("/")
-        }
+        collection: Collection = Collection(
+            0,
+            0,
+            type = Collection.TYPE_CALENDAR,
+            url = "https://example.com".toHttpUrl()
+        )
     ) = jtxSyncManagerFactory.jtxSyncManager(
         account,
         arrayOf(),
