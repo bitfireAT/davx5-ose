@@ -84,6 +84,7 @@ class JtxSyncManagerTest {
 
     @Test
     fun testProcessICalObject_recurrenceIdWithoutDtStart() {
+        val syncManager = syncManager()
         val reader = StringReader(
             "BEGIN:VCALENDAR\n" +
                 "BEGIN:VTODO\n" +
@@ -92,7 +93,7 @@ class JtxSyncManagerTest {
                 "END:VTODO\n" +
                 "END:VCALENDAR")
         try {
-            syncManager().processICalObject("demo-calendar", "abc123", reader)
+            syncManager.processICalObject("demo-calendar", "abc123", reader)
         } catch (e: Exception) {
             // Fail on NPE, allow all other exceptions
             if (e is NullPointerException)
