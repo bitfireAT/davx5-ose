@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -57,7 +56,6 @@ import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.M3ColorScheme
-import at.bitfire.davdroid.ui.edgetoedge.withOrientation
 import kotlinx.coroutines.launch
 
 @Composable
@@ -111,10 +109,7 @@ fun IntroScreen(
                 }
             }
         },
-        contentWindowInsets = withOrientation(
-            landscape = WindowInsets(0.dp),
-            portrait = WindowInsets.statusBars,
-        )
+        contentWindowInsets = WindowInsets(0)
     ) { paddingValues ->
         Column(modifier = Modifier
             .fillMaxSize()

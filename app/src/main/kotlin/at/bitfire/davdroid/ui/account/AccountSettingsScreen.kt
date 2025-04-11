@@ -10,7 +10,6 @@ import android.security.KeyChain
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -64,7 +63,6 @@ import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
 import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
-import at.bitfire.davdroid.ui.edgetoedge.NavigationBarSpacer
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.vcard4android.GroupMethod
 import kotlinx.coroutines.launch
@@ -175,7 +173,6 @@ fun AccountSettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
                 navigationIcon = {
@@ -339,8 +336,6 @@ fun AccountSettings_FromModel(
             contactGroupMethod = contactGroupMethod,
             onUpdateContactGroupMethod = onUpdateContactGroupMethod
         )
-
-        NavigationBarSpacer()
     }
 }
 

@@ -13,11 +13,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -57,7 +53,6 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.PixelBoxes
-import at.bitfire.davdroid.ui.edgetoedge.NavigationBarSpacer
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.util.withJson
@@ -98,7 +93,6 @@ class AboutActivity: AppCompatActivity() {
                 val uriHandler = LocalUriHandler.current
 
                 Scaffold(
-                    contentWindowInsets = WindowInsets(0.dp),
                     topBar = {
                         TopAppBar(
                             navigationIcon = {
@@ -174,8 +168,6 @@ class AboutActivity: AppCompatActivity() {
                                 }
 
                                 2 -> LibrariesContainer(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentPadding = WindowInsets.navigationBars.asPaddingValues(),
                                     itemContentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
                                     itemSpacing = 8.dp,
                                     librariesBlock = { ctx ->
@@ -314,8 +306,6 @@ fun AboutApp(licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null) 
         )
 
         licenseInfoProvider?.LicenseInfo()
-
-        NavigationBarSpacer()
     }
 }
 
@@ -336,7 +326,7 @@ fun TranslatorsGallery(
     translations: List<AboutActivity.Model.Translation>
 ) {
     val collator = Collator.getInstance()
-    LazyColumn(Modifier.padding(horizontal = 8.dp)) {
+    LazyColumn(Modifier.padding(8.dp)) {
         items(translations) { translation ->
             Text(
                 translation.language,
@@ -350,9 +340,6 @@ fun TranslatorsGallery(
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-        }
-        item {
-            NavigationBarSpacer()
         }
     }
 }

@@ -9,45 +9,34 @@ import androidx.activity.compose.LocalActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.compose.LifecycleResumeEffect
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
-import at.bitfire.davdroid.ui.edgetoedge.LocalStatusBarScrimColors
-import at.bitfire.davdroid.ui.edgetoedge.StatusBarScrimColors
 
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
-) = CompositionLocalProvider(
-    LocalStatusBarScrimColors provides StatusBarScrimColors(
-        initialStatusBarDarkTheme = darkTheme
-    )
 ) {
     val activity = LocalActivity.current
-    val statusBarDarkMode by LocalStatusBarScrimColors.current.statusBarDarkTheme.collectAsStateWithLifecycle()
-    val navigationBarDarkTheme by LocalStatusBarScrimColors.current.navigationBarDarkTheme.collectAsStateWithLifecycle()
-    LaunchedEffect(statusBarDarkMode, navigationBarDarkTheme) {
+    SideEffect {
         // If applicable, call Activity.enableEdgeToEdge to enable edge-to-edge layout on Android <15, too.
         // When we have moved everything into one Activity with Compose navigation, we can call it there instead.
         (activity as? AppCompatActivity)?.enableEdgeToEdge(
             navigationBarStyle = SystemBarStyle.auto(
                 lightScrim = M3ColorScheme.lightScheme.scrim.toArgb(),
                 darkScrim = M3ColorScheme.darkScheme.scrim.toArgb()
-            ) { navigationBarDarkTheme },
-            statusBarStyle = SystemBarStyle.auto(
-                lightScrim = M3ColorScheme.lightScheme.scrim.toArgb(),
-                darkScrim = M3ColorScheme.darkScheme.scrim.toArgb()
-            ) { statusBarDarkMode }
+            ) { darkTheme }
         )
     }
 
@@ -59,8 +48,11 @@ fun AppTheme(
                 M3ColorScheme.lightScheme
             else
                 M3ColorScheme.darkScheme,
-            content = content,
-        )
+        ) {
+            Box(Modifier.safeContentPadding()) {
+                content()
+            }
+        }
     }
     
     // Track if the app is in the foreground
