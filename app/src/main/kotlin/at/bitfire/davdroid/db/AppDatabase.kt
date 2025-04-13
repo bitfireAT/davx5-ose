@@ -42,7 +42,8 @@ import javax.inject.Singleton
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 16, autoMigrations = [
+], exportSchema = true, version = 17, autoMigrations = [
+    AutoMigration(from = 16, to = 17),      // collection: add VAPID key
     AutoMigration(from = 15, to = 16, spec = AutoMigration16::class),
     AutoMigration(from = 14, to = 15),
     AutoMigration(from = 13, to = 14),
