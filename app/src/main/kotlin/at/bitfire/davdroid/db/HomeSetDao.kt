@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 interface HomeSetDao {
 
     @Query("SELECT * FROM homeset WHERE id=:homesetId")
-    fun getById(homesetId: Long): HomeSet
+    fun getById(homesetId: Long): HomeSet?
 
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND url=:url")
     fun getByUrl(serviceId: Long, url: String): HomeSet?

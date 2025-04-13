@@ -7,6 +7,7 @@
   <string name="dialog_delete">删除</string>
   <string name="dialog_remove">删除</string>
   <string name="dialog_deny">取消</string>
+  <string name="dialog_enable">启用</string>
   <string name="field_required">此字段是必填项</string>
   <string name="help">帮助</string>
   <string name="navigate_up">向上导航</string>
@@ -123,21 +124,24 @@
   <string name="navigation_drawer_support_project">支持项目</string>
   <string name="navigation_drawer_contribute">如何作贡献</string>
   <string name="navigation_drawer_privacy_policy">隐私政策</string>
-  <string name="account_list_no_notification_permission">已禁用通知。你将不会收到同步出错的通知</string>
-  <string name="account_list_no_internet">自动同步不活跃（无已验证的互联网连接）</string>
-  <string name="account_list_manage_connections">管理连接</string>
-  <string name="account_list_datasaver_enabled">启用了流量节省程序。后台同步受限</string>
-  <string name="account_list_manage_datasaver">管理流量节省程序</string>
-  <string name="account_list_battery_saver_enabled">启用了节电程序。同步可能受限。</string>
-  <string name="account_list_manage_battery_saver">管理节电程序</string>
-  <string name="account_list_low_storage">低存储空间。Android 不会立即同步本地更改，但会在下次定期同步时进行</string>
-  <string name="account_list_manage_storage">管理存储</string>
-  <string name="account_list_calendar_storage_disabled">缺少日历提供程序。你停用了“日历存储”系统应用吗？</string>
-  <string name="account_list_contacts_storage_disabled">缺少联系人提供程序。你停用了“联系人存储”系统应用吗？</string>
-  <string name="account_list_manage_apps">管理应用</string>
   <string name="account_list_welcome">欢迎来到 DAVx⁵！</string>
   <string name="account_list_empty">连接到你的服务器，保持日历和联系人同步</string>
   <string name="accounts_sync_all">同步所有账户</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">已禁用通知。你将不会收到同步出错的通知</string>
+  <string name="sync_warning_no_internet">自动同步不活跃（无已验证的互联网连接）</string>
+  <string name="sync_warning_manage_connections">管理连接</string>
+  <string name="sync_warning_datasaver_enabled">启用了流量节省程序。后台同步受限</string>
+  <string name="sync_warning_manage_datasaver">管理流量节省程序</string>
+  <string name="sync_warning_battery_saver_enabled">启用了节电程序。同步可能受限。</string>
+  <string name="sync_warning_manage_battery_saver">管理节电程序</string>
+  <string name="sync_warning_low_storage">低存储空间。Android 不会立即同步本地更改，但会在下次定期同步时进行</string>
+  <string name="sync_warning_manage_storage">管理存储</string>
+  <string name="sync_warning_calendar_storage_disabled_title">缺少日历程序</string>
+  <string name="sync_warning_calendar_storage_disabled_description">你禁用了“日历存储”系统应用吗？</string>
+  <string name="sync_warning_contacts_storage_disabled_title">缺少联系人程序</string>
+  <string name="sync_warning_contacts_storage_disabled_description">你禁用了“联系人存储”系统应用吗？</string>
+  <string name="sync_warning_manage_apps">管理应用</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">服务配置检测失败</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">无法刷新集合列表</string>
@@ -171,6 +175,7 @@
   <string name="app_settings_distrust_system_certs">不信任系统证书</string>
   <string name="app_settings_distrust_system_certs_on">系统和用户增加的发布者不会被信任</string>
   <string name="app_settings_distrust_system_certs_off">系统和用户增加的发布者会被信任（推荐）</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">如果此设置处于开启状态，系统证书不会被认为是可信的。这表示你必须手动接受每一个证书（服务器更新其证书时也必须加以确认）或账户设置，且同步不会工作。</string>
   <string name="app_settings_reset_certificates">重设证书信任状态</string>
   <string name="app_settings_reset_certificates_summary">重设所有自定义证书的信任状态</string>
   <string name="app_settings_reset_certificates_success">所有自定义证书已清除</string>

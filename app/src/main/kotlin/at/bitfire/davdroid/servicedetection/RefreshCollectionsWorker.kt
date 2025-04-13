@@ -23,7 +23,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.exception.UnauthorizedException
-import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavServiceRepository

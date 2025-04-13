@@ -3,6 +3,9 @@
   <!--common strings-->
   <string name="account_invalid">Обліківки не існує (більше)</string>
   <string name="account_title_address_book">Адресна книга DAVx⁵</string>
+  <string name="dialog_remove">Видалити</string>
+  <string name="dialog_deny">Скасувати</string>
+  <string name="dialog_enable">Увімкнути</string>
   <string name="field_required">Це поле обовʼязкове</string>
   <string name="help">Допомога</string>
   <string name="share">Поширити</string>
@@ -65,6 +68,7 @@
   <string name="navigation_drawer_faq">Питання/Відповіді</string>
   <string name="navigation_drawer_privacy_policy">Політика конфіденційності</string>
   <string name="accounts_sync_all">Синхронізувати всі обліківки</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Не вдалося виявити сервіси</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Не вдалося оновити перелік колекції</string>
@@ -114,6 +118,9 @@
   <string name="account_synchronize_this_collection">синхронізувати дану колекцію</string>
   <string name="account_read_only">лише читання</string>
   <string name="account_calendar">календар</string>
+  <string name="account_contacts">контакти</string>
+  <string name="account_journal">журнал</string>
+  <string name="account_task_list">завдання</string>
   <string name="account_no_webcal_handler_found">Не знайдено додатку з підтримкою Webcal</string>
   <string name="account_install_icsx5">Встановити ICSx⁵</string>
   <!--AddAccountActivity-->

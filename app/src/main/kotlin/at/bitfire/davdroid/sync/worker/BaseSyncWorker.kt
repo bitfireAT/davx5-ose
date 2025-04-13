@@ -16,7 +16,7 @@ import androidx.work.Data
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.settings.AccountSettings

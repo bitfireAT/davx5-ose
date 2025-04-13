@@ -5,6 +5,7 @@
   <string name="account_title_address_book">Sổ địa chỉ của DAVx⁵</string>
   <string name="dialog_remove">Xóa</string>
   <string name="dialog_deny">Hủy</string>
+  <string name="dialog_enable">Bật</string>
   <string name="field_required">Trường này là bắt buộc</string>
   <string name="help">Trợ giúp</string>
   <string name="share">Chia sẻ</string>
@@ -101,6 +102,7 @@
   <string name="navigation_drawer_community">Cộng đồng</string>
   <string name="navigation_drawer_privacy_policy">Chính sách riêng tư</string>
   <string name="accounts_sync_all">Đồng bộ tất cả tài khoản</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Dò tìm dịch vụ thất bại</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Không thể làm mới danh sách bộ sưu tập</string>

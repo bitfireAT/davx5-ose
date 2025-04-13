@@ -18,7 +18,7 @@ import android.os.IBinder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
