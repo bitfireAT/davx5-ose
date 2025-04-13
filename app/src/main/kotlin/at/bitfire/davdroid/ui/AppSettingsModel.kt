@@ -130,7 +130,7 @@ class AppSettingsModel @Inject constructor(
      * - If there's only one push distributor available, and none is selected, it's selected automatically.
      * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
      */
-    private suspend fun loadPushDistributors() {
+    private fun loadPushDistributors() {
         val savedPushDistributor = UnifiedPush.getSavedDistributor(context)
         _pushDistributor.value = savedPushDistributor
 

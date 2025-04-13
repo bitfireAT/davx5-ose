@@ -268,13 +268,10 @@
                 android:resource="@xml/debug_paths" />
         </provider>
 
-        <!-- UnifiedPush receiver -->
-        <receiver android:exported="true"  android:enabled="true"  android:name=".push.UnifiedPushReceiver" tools:ignore="ExportedReceiver">
+        <!-- UnifiedPush -->
+        <receiver android:exported="false" android:name=".push.UnifiedPushReceiver">
             <intent-filter>
-                <action android:name="org.unifiedpush.android.connector.MESSAGE"/>
-                <action android:name="org.unifiedpush.android.connector.UNREGISTERED"/>
-                <action android:name="org.unifiedpush.android.connector.NEW_ENDPOINT"/>
-                <action android:name="org.unifiedpush.android.connector.REGISTRATION_FAILED"/>
+                <action android:name="org.unifiedpush.android.connector.PUSH_EVENT"/>
             </intent-filter>
         </receiver>
 

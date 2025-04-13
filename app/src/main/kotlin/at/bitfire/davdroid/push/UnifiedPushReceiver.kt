@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.push
 
-import android.content.Context
 import at.bitfire.davdroid.db.Collection.Companion.TYPE_ADDRESSBOOK
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -19,7 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.unifiedpush.android.connector.FailedReason
-import org.unifiedpush.android.connector.MessagingReceiver
+import org.unifiedpush.android.connector.PushService
 import org.unifiedpush.android.connector.data.PushEndpoint
 import org.unifiedpush.android.connector.data.PushMessage
 import java.util.logging.Level
@@ -27,7 +26,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class UnifiedPushReceiver: MessagingReceiver() {
+class UnifiedPushReceiver: PushService() {
 
     @Inject
     lateinit var accountRepository: AccountRepository
@@ -57,7 +56,7 @@ class UnifiedPushReceiver: MessagingReceiver() {
     lateinit var syncWorkerManager: SyncWorkerManager
 
 
-    override fun onNewEndpoint(context: Context, endpoint: PushEndpoint, instance: String) {
+    override fun onNewEndpoint(endpoint: PushEndpoint, instance: String) {
         // remember new endpoint
         preferenceRepository.unifiedPushEndpoint(endpoint)
 
@@ -65,18 +64,18 @@ class UnifiedPushReceiver: MessagingReceiver() {
         pushRegistrationWorkerManager.updatePeriodicWorker()
     }
 
-    override fun onRegistrationFailed(context: Context, reason: FailedReason, instance: String) {
+    override fun onRegistrationFailed(reason: FailedReason, instance: String) {
         logger.warning("Unified Push registration failed: $reason")
         // reset known endpoint to make sure nothing is stored when not registered
         preferenceRepository.unifiedPushEndpoint(null)
     }
 
-    override fun onUnregistered(context: Context, instance: String) {
+    override fun onUnregistered(instance: String) {
         // reset known endpoint
         preferenceRepository.unifiedPushEndpoint(null)
     }
 
-    override fun onMessage(context: Context, message: PushMessage, instance: String) {
+    override fun onMessage(message: PushMessage, instance: String) {
         CoroutineScope(Dispatchers.Default).launch {
             if (!message.decrypted) {
                 logger.severe("Received a push message that could not be decrypted.")
