@@ -35,6 +35,9 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE pushTopic=:topic AND sync")
     fun getSyncableByPushTopic(topic: String): Collection?
 
+    @Query("SELECT DISTINCT pushVapidKey FROM collection WHERE pushVapidKey IS NOT NULL")
+    suspend fun getVapidKeys(): List<String>
+
     @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND type=:type")
     suspend fun anyOfType(serviceId: Long, @CollectionType type: String): Boolean
 

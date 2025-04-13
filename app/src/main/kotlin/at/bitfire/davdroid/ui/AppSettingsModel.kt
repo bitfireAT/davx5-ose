@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -37,7 +38,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AppSettingsModel @Inject constructor(
     @ApplicationContext val context: Context,
-    private val preference: PreferenceRepository,
+    private val collectionRepository: DavCollectionRepository,
+    private val preferences: PreferenceRepository,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -50,9 +52,9 @@ class AppSettingsModel @Inject constructor(
         .map { powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
-    fun verboseLogging() = preference.logToFileFlow()
+    fun verboseLogging() = preferences.logToFileFlow()
     fun updateVerboseLogging(verbose: Boolean) {
-        preference.logToFile(verbose)
+        preferences.logToFile(verbose)
     }
 
 
@@ -163,9 +165,17 @@ class AppSettingsModel @Inject constructor(
                 UnifiedPush.removeDistributor(context)
                 UnifiedPush.unregister(context)
             } else {
-                // If a distributor was passed, store it and register the app
+                // If a distributor was passed, store it
                 UnifiedPush.saveDistributor(context, pushDistributor)
-                UnifiedPush.register(context)
+
+                // … and register it so that UnifiedPushReceiver.onNewEndpoint is called
+                // TODO: Re-register whenever VAPID key changes/becomes available. Probably this code should be somewhere else.
+                val vapidKeys = collectionRepository.getVapidKeys()
+                if (vapidKeys.isNotEmpty())
+                    for (key in vapidKeys)
+                        UnifiedPush.register(context, vapid = key)
+                else
+                    UnifiedPush.register(context)
             }
             _pushDistributor.value = pushDistributor
         }

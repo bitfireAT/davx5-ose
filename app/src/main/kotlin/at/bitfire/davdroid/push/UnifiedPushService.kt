@@ -26,7 +26,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class UnifiedPushReceiver: PushService() {
+class UnifiedPushService: PushService() {
 
     @Inject
     lateinit var accountRepository: AccountRepository
@@ -57,6 +57,8 @@ class UnifiedPushReceiver: PushService() {
 
 
     override fun onNewEndpoint(endpoint: PushEndpoint, instance: String) {
+        logger.info("Got UnifiedPush endpoint: ${endpoint.url}")
+
         // remember new endpoint
         preferenceRepository.unifiedPushEndpoint(endpoint)
 
@@ -65,12 +67,13 @@ class UnifiedPushReceiver: PushService() {
     }
 
     override fun onRegistrationFailed(reason: FailedReason, instance: String) {
-        logger.warning("Unified Push registration failed: $reason")
+        logger.warning("UnifiedPush registration failed: $reason")
         // reset known endpoint to make sure nothing is stored when not registered
         preferenceRepository.unifiedPushEndpoint(null)
     }
 
     override fun onUnregistered(instance: String) {
+        logger.warning("UnifiedPush unregistered")
         // reset known endpoint
         preferenceRepository.unifiedPushEndpoint(null)
     }

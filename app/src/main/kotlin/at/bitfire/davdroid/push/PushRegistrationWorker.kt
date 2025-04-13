@@ -12,11 +12,15 @@ import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
-import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
 import at.bitfire.dav4jvm.exception.DavException
-import at.bitfire.dav4jvm.property.push.NS_WEBDAV_PUSH
+import at.bitfire.dav4jvm.property.push.AuthSecret
+import at.bitfire.dav4jvm.property.push.PushRegister
+import at.bitfire.dav4jvm.property.push.PushResource
+import at.bitfire.dav4jvm.property.push.Subscription
+import at.bitfire.dav4jvm.property.push.SubscriptionPublicKey
+import at.bitfire.dav4jvm.property.push.WebPushSubscription
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.network.HttpClient
@@ -83,28 +87,26 @@ class PushRegistrationWorker @AssistedInject constructor(
                     val writer = StringWriter()
                     serializer.setOutput(writer)
                     serializer.startDocument("UTF-8", true)
-                    serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-register")) {
-                        serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "subscription")) {
+                    serializer.insertTag(PushRegister.NAME) {
+                        serializer.insertTag(Subscription.NAME) {
                             // subscription URL
-                            serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "web-push-subscription")) {
-                                serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "push-resource")) {
+                            serializer.insertTag(WebPushSubscription.NAME) {
+                                serializer.insertTag(PushResource.NAME) {
                                     text(endpoint.url)
                                 }
                                 endpoint.pubKeySet?.let { pubKeySet ->
-                                    // Right now only p256dh is supported, but more can be added in
-                                    // the future.
-                                    serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "client-public-key")) {
-                                        attribute(NS_WEBDAV_PUSH, "type", "p256dh")
+                                    serializer.insertTag(SubscriptionPublicKey.NAME) {
+                                        attribute(null, "type", "p256dh")
                                         text(pubKeySet.pubKey)
                                     }
-                                    serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "auth-secret")) {
+                                    serializer.insertTag(AuthSecret.NAME) {
                                         text(pubKeySet.auth)
                                     }
                                 }
                             }
                         }
                         // requested expiration
-                        serializer.insertTag(Property.Name(NS_WEBDAV_PUSH, "expires")) {
+                        serializer.insertTag(PushRegister.EXPIRES) {
                             text(HttpUtils.formatDate(requestedExpiration))
                         }
                     }
@@ -133,11 +135,12 @@ class PushRegistrationWorker @AssistedInject constructor(
         val endpoint = preferenceRepository.unifiedPushEndpoint()
 
         // register push subscription for syncable collections
-        if (endpoint != null)
+        if (endpoint != null) {
+            // subscribe to collections
             for (collection in collectionRepository.getPushCapableAndSyncable()) {
                 val expires = collection.pushSubscriptionExpires
                 // calculate next run time, but use the duplicate interval for safety (times are not exact)
-                val nextRun = Instant.now() + Duration.ofDays(2*PushRegistrationWorkerManager.INTERVAL_DAYS)
+                val nextRun = Instant.now() + Duration.ofDays(2 * PushRegistrationWorkerManager.INTERVAL_DAYS)
                 if (expires != null && expires >= nextRun.epochSecond) {
                     logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
                     continue
@@ -155,7 +158,7 @@ class PushRegistrationWorker @AssistedInject constructor(
                     }
                 }
             }
-        else
+        } else
             logger.info("No UnifiedPush endpoint configured")
     }
 

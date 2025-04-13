@@ -269,11 +269,11 @@
         </provider>
 
         <!-- UnifiedPush -->
-        <receiver android:exported="false" android:name=".push.UnifiedPushReceiver">
+        <service android:exported="false" android:name=".push.UnifiedPushService">
             <intent-filter>
                 <action android:name="org.unifiedpush.android.connector.PUSH_EVENT"/>
             </intent-filter>
-        </receiver>
+        </service>
 
         <!-- Widgets -->
         <receiver android:name=".ui.widget.SyncButtonWidgetReceiver"

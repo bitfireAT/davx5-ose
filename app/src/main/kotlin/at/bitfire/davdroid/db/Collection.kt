@@ -138,6 +138,7 @@ data class Collection(
     val supportsWebPush: Boolean = false,
 
     /** WebDAV-Push: VAPID public key */
+    // TODO: add non-unique index
     val pushVapidKey: String? = null,
 
     /** WebDAV-Push subscription URL */
