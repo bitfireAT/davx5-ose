@@ -32,7 +32,6 @@ import dagger.assisted.AssistedInject
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.jetbrains.annotations.TestOnly
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
@@ -168,12 +167,13 @@ class JtxSyncManager @AssistedInject constructor(
             // if the entry is a recurring entry (and therefore has a recurid)
             // we update the existing (generated) entry
             if(jtxICalObject.recurid != null) {
-                val local = jtxICalObject.dtstart?.let { dtstart ->
-                    localCollection.findRecurring(jtxICalObject.uid, jtxICalObject.recurid!!, dtstart)
-                } ?: run {
-                    logger.log(Level.INFO, "Got a recur instance (${jtxICalObject.recurid}/${jtxICalObject.uid}) with an invalid dtstart.")
-                    null
-                }
+                val dtstart = jtxICalObject.dtstart
+                val recurid = jtxICalObject.recurid
+                val local: LocalJtxICalObject? =
+                    if (dtstart != null && recurid != null)
+                        localCollection.findRecurring(jtxICalObject.uid, recurid, dtstart)
+                    else
+                        null
                 SyncException.wrapWithLocalResource(local) {
                     logger.log(Level.INFO, "Updating $fileName with recur instance ${jtxICalObject.recurid} in local list", jtxICalObject)
                     if(local != null) {
