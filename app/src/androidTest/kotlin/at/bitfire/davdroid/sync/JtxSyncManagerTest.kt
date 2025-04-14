@@ -157,6 +157,7 @@ class JtxSyncManagerTest {
         // Verify main VTODO is created
         val vtodoObj = localJtxCollection.findByName("demo-calendar")!!
         assertEquals("Test Task (Main VTODO)", vtodoObj.summary)
+        assertEquals("FREQ=WEEKLY;UNTIL=20250505T235959Z;INTERVAL=1;BYDAY=FR", vtodoObj.rrule)
 
         // Verify the RRULE exception VTODO was created
         provider.query(
