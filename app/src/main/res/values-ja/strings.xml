@@ -7,6 +7,7 @@
   <string name="dialog_delete">削除</string>
   <string name="dialog_remove">削除</string>
   <string name="dialog_deny">キャンセル</string>
+  <string name="dialog_enable">有効</string>
   <string name="field_required">このフィールドは入力必須です</string>
   <string name="help">ヘルプ</string>
   <string name="navigate_up">上に移動</string>
@@ -29,7 +30,7 @@
   <!--IntroActivity-->
   <string name="intro_slogan1">あなたのデータはあなたの手に</string>
   <string name="intro_slogan2">コントロールを始める</string>
-  <string name="intro_battery_title">一定の間隔で同期</string>
+  <string name="intro_battery_title">一定の間隔で同期する</string>
   <string name="intro_battery_text">一定の間隔で同期するには、%s のバックグラウンドでの動作を許可する必要があります。許可しない場合、Android によって同期が停止されることがあります。</string>
   <string name="intro_battery_dont_show">一定間隔での同期は不要です*</string>
   <string name="intro_autostart_title">%s 適合性</string>
@@ -50,30 +51,34 @@
   <string name="intro_open_source_title">オープンソースソフトウェア</string>
   <string name="intro_open_source_text">オープンソースソフトウェアとして %s をお届けできることをとても嬉しく思っています。開発・維持・サポートは簡単ではありません。貢献 (さまざまな方法があります) や寄付をご検討ください。プロジェクトはそれらに支えられています。</string>
   <string name="intro_open_source_details">貢献/寄付の方法</string>
+  <string name="intro_open_source_dont_show">次の期間は通知しない:</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="other">%d か月</item>
+  </plurals>
   <string name="intro_next">次へ</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">許可</string>
-  <string name="permissions_text">%s が正しく動作するには権限を許可する必要があります</string>
+  <string name="permissions_text">%s を正しく動作させるには、権限を許可してください。</string>
   <string name="permissions_all_title">以下のすべて</string>
-  <string name="permissions_all_status_off">すべての機能を使用する (推奨)</string>
+  <string name="permissions_all_status_off">これを有効にすると、すべての機能が使用できるようになります (推奨)</string>
   <string name="permissions_all_status_on">すべての権限が許可されました</string>
   <string name="permissions_contacts_title">連絡先へのアクセス</string>
-  <string name="permissions_contacts_status_off">連絡先を同期しない (非推奨)</string>
+  <string name="permissions_contacts_status_off">無効のため、連絡先を同期しません (非推奨)</string>
   <string name="permissions_contacts_status_on">連絡先を同期できます</string>
   <string name="permissions_calendar_title">カレンダーへのアクセス</string>
-  <string name="permissions_calendar_status_off">カレンダーを同期しない (非推奨)</string>
+  <string name="permissions_calendar_status_off">無効のため、カレンダーを同期しません (非推奨)</string>
   <string name="permissions_calendar_status_on">カレンダーを同期できます</string>
   <string name="permissions_notification_title">通知の権限</string>
-  <string name="permissions_notification_status_off">通知が無効です (非推奨)</string>
+  <string name="permissions_notification_status_off">通知が無効になっています (非推奨)</string>
   <string name="permissions_notification_status_on">通知が有効です</string>
   <string name="permissions_jtx_title">jtx Board へのアクセス</string>
   <string name="permissions_opentasks_title">OpenTasks へのアクセス</string>
   <string name="permissions_tasksorg_title">Tasks へのアクセス</string>
-  <string name="permissions_tasks_status_off">ToDo リストを同期しない</string>
+  <string name="permissions_tasks_status_off">無効のため、ToDo リストを同期しません</string>
   <string name="permissions_tasks_status_on">ToDo リストを同期できます</string>
-  <string name="permissions_autoreset_title">権限を維持</string>
-  <string name="permissions_autoreset_status_off">権限が自動的にリセットされることがあります (非推奨)</string>
-  <string name="permissions_autoreset_status_on">権限は自動でリセットされません</string>
+  <string name="permissions_autoreset_title">権限を維持する</string>
+  <string name="permissions_autoreset_status_off">無効のため、権限が自動的にリセットされることがあります (非推奨)</string>
+  <string name="permissions_autoreset_status_on">権限は自動でリセットされることはありません</string>
   <string name="permissions_autoreset_instruction">許可から「アプリが使用されていない場合に権限を削除」を無効化してください</string>
   <string name="permissions_app_settings_hint">スイッチが機能しない場合、アプリ情報 / 許可 にアクセスしてください</string>
   <string name="permissions_app_settings">アプリ設定</string>
@@ -119,18 +124,24 @@
   <string name="navigation_drawer_support_project">プロジェクトを支援</string>
   <string name="navigation_drawer_contribute">貢献する方法</string>
   <string name="navigation_drawer_privacy_policy">プライバシーポリシー</string>
-  <string name="account_list_no_notification_permission">通知が無効です。同期エラーが発生しても通知されません。</string>
-  <string name="account_list_no_internet">自動同期が無効です (有効なインターネット接続がありあせん)。</string>
-  <string name="account_list_manage_connections">接続を管理</string>
-  <string name="account_list_datasaver_enabled">データサーバーが有効です。バックグラウンド同期が制限されています</string>
-  <string name="account_list_manage_datasaver">データサーバーを管理</string>
-  <string name="account_list_battery_saver_enabled">バッテリー最適化機能が有効です。同期が制限される可能性があります。</string>
-  <string name="account_list_manage_battery_saver">バッテリー最適化機能を管理</string>
-  <string name="account_list_low_storage">ストレージの容量が残りわずかです。Android はローカルの変更を即座に同期しませんが、次の通常サイクルで同期します。</string>
-  <string name="account_list_manage_storage">ストレージを管理</string>
   <string name="account_list_welcome">DAVx⁵ にようこそ！</string>
   <string name="account_list_empty">サーバーに接続して、カレンダーと連絡先を同期しましょう。</string>
   <string name="accounts_sync_all">すべてのアカウントを同期</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">通知が無効です。同期エラーが発生しても通知されません。</string>
+  <string name="sync_warning_no_internet">自動同期が無効です (有効なインターネット接続がありあせん)。</string>
+  <string name="sync_warning_manage_connections">接続を管理</string>
+  <string name="sync_warning_datasaver_enabled">データサーバーが有効です。バックグラウンド同期が制限されています</string>
+  <string name="sync_warning_manage_datasaver">データサーバーを管理</string>
+  <string name="sync_warning_battery_saver_enabled">バッテリー最適化機能が有効です。同期が制限される可能性があります。</string>
+  <string name="sync_warning_manage_battery_saver">バッテリー最適化機能を管理</string>
+  <string name="sync_warning_low_storage">ストレージの容量が残りわずかです。Android はローカルの変更を即座に同期しませんが、次の通常サイクルで同期します。</string>
+  <string name="sync_warning_manage_storage">ストレージを管理</string>
+  <string name="sync_warning_calendar_storage_disabled_title">カレンダープロバイダーが見つかりません</string>
+  <string name="sync_warning_calendar_storage_disabled_description">システムアプリ「Calendar storage (カレンダーの保存などと表示)」を無効にしていませんか？</string>
+  <string name="sync_warning_contacts_storage_disabled_title">連絡先プロバイダーが見つかりません</string>
+  <string name="sync_warning_contacts_storage_disabled_description">システムアプリ「Contacts storage (連絡帳などと表示)」を無効にしていませんか？</string>
+  <string name="sync_warning_manage_apps">アプリを管理</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">サービスの検出に失敗しました</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">コレクションリストを再読み込みできませんでした</string>
@@ -161,9 +172,10 @@
   <string name="app_settings_security">セキュリティ</string>
   <string name="app_settings_security_app_permissions">アプリの権限</string>
   <string name="app_settings_security_app_permissions_summary">同期に必要な権限を確認する</string>
-  <string name="app_settings_distrust_system_certs">システム証明書を無視</string>
+  <string name="app_settings_distrust_system_certs">システム証明書を無視する</string>
   <string name="app_settings_distrust_system_certs_on">システムとユーザーが追加した CA を信頼しません</string>
   <string name="app_settings_distrust_system_certs_off">システムとユーザーが追加した CA を信頼します (推奨)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">この設定が有効な場合、システム証明書は信頼されません。(サーバーが証明書を更新した場合を含めて) すべての証明書を手動で許可する必要があります。手動で許可しない場合、アカウントセットアップと同期は機能しません。</string>
   <string name="app_settings_reset_certificates">(未) 信頼証明書をリセット</string>
   <string name="app_settings_reset_certificates_summary">すべてのカスタム証明書の信頼をリセットします</string>
   <string name="app_settings_reset_certificates_success">すべてのカスタム証明書をクリアしました</string>
@@ -291,11 +303,11 @@
     <item>4 時間ごと</item>
     <item>毎日 1 回</item>
   </string-array>
-  <string name="settings_sync_wifi_only">WiFi でのみ同期</string>
-  <string name="settings_sync_wifi_only_on">WiFi 接続でのみ同期します</string>
+  <string name="settings_sync_wifi_only">WiFi のみで同期</string>
+  <string name="settings_sync_wifi_only_on">WiFi 接続のみで同期します</string>
   <string name="settings_sync_wifi_only_off">接続の種類は考慮されません</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID 制限</string>
-  <string name="settings_sync_wifi_only_ssids_on">%s でのみ同期します</string>
+  <string name="settings_sync_wifi_only_ssids_on">%s のみで同期します</string>
   <string name="settings_sync_wifi_only_ssids_off">すべての WiFi 接続が使用されます</string>
   <string name="settings_sync_wifi_only_ssids_message">利用可能な WiFi ネットワークのカンマ区切りの名前 (SSID) (空白にするとすべて)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 制限にはさらに設定が必要です</string>
@@ -324,17 +336,17 @@
   </plurals>
   <string name="settings_default_alarm_off">デフォルトのリマインダーはありません</string>
   <string name="settings_default_alarm_message">デフォルトのリマインダーは、リマインダーのない予定に適用されます。希望する分数を入力してください。デフォルトのリマインダーを無効にするには、空白のままにしてください。</string>
-  <string name="settings_manage_calendar_colors">カレンダーの色を管理</string>
+  <string name="settings_manage_calendar_colors">カレンダーの色を管理する</string>
   <string name="settings_manage_calendar_colors_on">カレンダーの色は同期ごとにリセットされます</string>
   <string name="settings_manage_calendar_colors_off">カレンダーの色は他のアプリで設定できます</string>
-  <string name="settings_event_colors">予定の色への対応</string>
+  <string name="settings_event_colors">予定の色に対応する</string>
   <string name="settings_event_colors_on">予定の色が同期されます</string>
   <string name="settings_event_colors_off">予定の色は同期されません</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">連絡先のグループ方法</string>
   <string-array name="settings_contact_group_method_entries">
-    <item>グループを個別の vCard に分割</item>
-    <item>グループを連絡先ごとのカテゴリーとして記録</item>
+    <item>グループで個別の vCard に分割する</item>
+    <item>各連絡先にグループをカテゴリーとして記録する</item>
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">アドレス帳を作成</string>

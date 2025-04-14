@@ -10,7 +10,7 @@ import android.os.Bundle
 import android.os.Looper
 import androidx.annotation.WorkerThread
 import androidx.core.os.bundleOf
-import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration

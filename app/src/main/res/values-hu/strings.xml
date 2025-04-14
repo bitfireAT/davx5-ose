@@ -5,6 +5,7 @@
   <string name="account_title_address_book">DAVx⁵ címjegyzék</string>
   <string name="dialog_remove">Eltávolítás</string>
   <string name="dialog_deny">Mégse</string>
+  <string name="dialog_enable">Bekapcsolás</string>
   <string name="field_required">Ennek e mezőnek a megadása kötelező</string>
   <string name="help">Súgó</string>
   <string name="navigate_up">Navigáció felfelé</string>
@@ -114,15 +115,16 @@
   <string name="navigation_drawer_support_project">A projekt támogatása</string>
   <string name="navigation_drawer_contribute">A közreműködés lehetőségei</string>
   <string name="navigation_drawer_privacy_policy">Adatvédelmi irányelv</string>
-  <string name="account_list_no_notification_permission">Az értesítések tiltva vannak.  A szinkronizálási hibákról nem fog értesítést kapni.</string>
-  <string name="account_list_manage_connections">Kapcsolatok kezelése</string>
-  <string name="account_list_datasaver_enabled">Az adatcsökkentés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
-  <string name="account_list_manage_datasaver">Adatcsökkentés kezelése</string>
-  <string name="account_list_battery_saver_enabled">Az akkumulátorkímélés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
-  <string name="account_list_manage_battery_saver">Akkumulátorkímélés kezelése</string>
-  <string name="account_list_low_storage">A rendelkezésre álló tárhely kevés.  Az Android nem fogja a helyi erőforrásokat azonnal szinkronizálni, csak a következő rendes alkalommal.</string>
-  <string name="account_list_manage_storage">Tárhely kezelése</string>
   <string name="accounts_sync_all">Az összes fiók szinkronizálása</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Az értesítések tiltva vannak.  A szinkronizálási hibákról nem fog értesítést kapni.</string>
+  <string name="sync_warning_manage_connections">Kapcsolatok kezelése</string>
+  <string name="sync_warning_datasaver_enabled">Az adatcsökkentés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
+  <string name="sync_warning_manage_datasaver">Adatcsökkentés kezelése</string>
+  <string name="sync_warning_battery_saver_enabled">Az akkumulátorkímélés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
+  <string name="sync_warning_manage_battery_saver">Akkumulátorkímélés kezelése</string>
+  <string name="sync_warning_low_storage">A rendelkezésre álló tárhely kevés.  Az Android nem fogja a helyi erőforrásokat azonnal szinkronizálni, csak a következő rendes alkalommal.</string>
+  <string name="sync_warning_manage_storage">Tárhely kezelése</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>

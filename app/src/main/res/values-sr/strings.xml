@@ -5,6 +5,7 @@
   <string name="account_title_address_book">ДАВдроид адресар</string>
   <string name="dialog_remove">Уклони</string>
   <string name="dialog_deny">Поништи</string>
+  <string name="dialog_enable">Укључи</string>
   <string name="field_required">Ово поље је обавезно</string>
   <string name="help">Помоћ</string>
   <string name="share">Подели</string>
@@ -101,9 +102,10 @@
   <string name="navigation_drawer_faq">ЧПП</string>
   <string name="navigation_drawer_community">Заједница</string>
   <string name="navigation_drawer_privacy_policy">Политика приватности</string>
-  <string name="account_list_no_notification_permission">Обавештења су онемогућена. Нећете бити обавештени о проблемима са синхронизацијом.</string>
-  <string name="account_list_manage_storage">Управљајте складиштем</string>
   <string name="accounts_sync_all">Синхронизуј све налоге</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Обавештења су онемогућена. Нећете бити обавештени о проблемима са синхронизацијом.</string>
+  <string name="sync_warning_manage_storage">Управљајте складиштем</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Откривање услуге није успело</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Не могох да освежим списак збирки</string>
