@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.text.format.Formatter
+import androidx.annotation.OpenForTesting
 import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
@@ -149,7 +150,7 @@ class JtxSyncManager @AssistedInject constructor(
         context.getString(R.string.sync_invalid_event)
 
 
-    @TestOnly
+    @OpenForTesting
     internal fun processICalObject(fileName: String, eTag: String, reader: Reader) {
         val icalobjects: MutableList<JtxICalObject> = mutableListOf()
         try {
