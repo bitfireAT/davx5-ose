@@ -6,8 +6,10 @@ package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.SystemClock
+import androidx.core.content.ContextCompat
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
@@ -26,16 +28,16 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assume.assumeTrue
 import org.junit.Before
-import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 import java.io.StringReader
 import javax.inject.Inject
 
+
 /**
- * Ensure you have jtxBoard installed on the emulator, before running these tests, or you will see
- * an error on granting permissions.
+ * Ensure you have jtxBoard installed on the emulator, before running these tests
  */
 @HiltAndroidTest
 class JtxSyncManagerTest {
@@ -69,11 +71,20 @@ class JtxSyncManagerTest {
     fun setUp() {
         hiltRule.inject()
 
-        // For some reason we can't acquire the provider in the @BeforeClass method (before hilt
-        // injection) so we do it here.
         val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+        // Check jtxBoard is installed; skip test otherwise
+        assumeTrue("jtxBoard not installed", isPackageInstalled("at.techbee.jtx"))
+
+        // Grant content provider permissions at runtime; skip tests on failure
+        val permissions = listOf("at.techbee.jtx.permission.READ", "at.techbee.jtx.permission.WRITE")
+        val permissionsGranted = tryGrantPermissions(context.packageName, permissions)
+        assumeTrue("Missing permissions", permissionsGranted)
+
+        // Acquire the jtx content provider
         provider = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)!!
 
+        // Create dummy dependencies
         val service = Service(0, account.name, Service.TYPE_CALDAV, null)
         val serviceId = serviceRepository.insertOrReplace(service)
         val dbCollection = Collection(0, serviceId, type = Collection.TYPE_CALENDAR, url = "https://example.com".toHttpUrl())
@@ -91,8 +102,10 @@ class JtxSyncManagerTest {
 
     @After
     fun tearDown() {
-        localJtxCollectionStore.delete(localJtxCollection)
+        if (this::localJtxCollection.isInitialized)
+            localJtxCollectionStore.delete(localJtxCollection)
         serviceRepository.deleteAll()
+        if (this::provider.isInitialized)
         provider.closeCompat()
         TestAccount.remove(account)
     }
@@ -177,15 +190,36 @@ class JtxSyncManagerTest {
     }
 
 
-    companion object {
+    // helpers
 
-        @JvmField
-        @ClassRule
-        val permissionRule = GrantPermissionRule.grant(
-            "at.techbee.jtx.permission.READ",
-            "at.techbee.jtx.permission.WRITE"
-        )!!
+    private fun tryGrantPermissions(packageName: String, permissions: List<String>): Boolean =
+        permissions.all { permission ->
+            if (isPermissionDeclared(permission))
+                tryGrantPermission(packageName, permission)
+            else
+                false
+        }
 
+    private fun tryGrantPermission(packageName: String, permission: String):Boolean {
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+        val command = "pm grant $packageName $permission"
+        automation.executeShellCommand(command)
+        // delay to ensure the command completes
+        SystemClock.sleep(1000)
+        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun isPermissionDeclared(permission: String): Boolean {
+        val declaredPermissions = context.packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+            .flatMap { it.requestedPermissions?.asList() ?: emptyList() }
+        return permission in declaredPermissions
+    }
+
+    private fun isPackageInstalled(packageName: String): Boolean = try {
+        context.packageManager.getPackageInfo(packageName, 0)
+        true
+    } catch (e: PackageManager.NameNotFoundException) {
+        false
     }
 
 }
