@@ -13,6 +13,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -167,15 +168,14 @@ class AboutActivity: AppCompatActivity() {
                                     TranslatorsGallery(translations.value)
                                 }
 
-                                2 -> LibrariesContainer(
+                                2 -> LibrariesContainer(Modifier.fillMaxSize(),
                                     itemContentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
                                     itemSpacing = 8.dp,
                                     librariesBlock = { ctx ->
                                         Libs.Builder()
                                             .withJson(ctx, R.raw.aboutlibraries)
                                             .build()
-                                    }
-                                )
+                                    })
                             }
                         }
                     }
