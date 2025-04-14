@@ -10,7 +10,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -26,6 +29,7 @@ import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    windowInsets: WindowInsets = WindowInsets.safeDrawing,
     content: @Composable () -> Unit
 ) {
     val activity = LocalActivity.current
@@ -49,7 +53,7 @@ fun AppTheme(
             else
                 M3ColorScheme.darkScheme,
         ) {
-            Box(Modifier.safeContentPadding()) {
+            Box(Modifier.padding(windowInsets.asPaddingValues())) {
                 content()
             }
         }

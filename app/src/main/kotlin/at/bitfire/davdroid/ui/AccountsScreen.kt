@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -166,7 +167,7 @@ fun AccountsScreen(
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
-    AppTheme {
+    AppTheme(windowInsets = WindowInsets(0.dp)) {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
@@ -240,7 +241,8 @@ fun AccountsScreen(
                             }
                     }
                 },
-                snackbarHost = { SnackbarHost(snackbarHostState) }
+                snackbarHost = { SnackbarHost(snackbarHostState) },
+                contentWindowInsets = WindowInsets.safeDrawing,
             ) { padding ->
                 PullToRefreshBox(
                     isRefreshing = isRefreshing,
