@@ -7,6 +7,7 @@
   <string name="dialog_delete">Verwijderen</string>
   <string name="dialog_remove">Verwijder</string>
   <string name="dialog_deny">Annuleer</string>
+  <string name="dialog_enable">Inschakelen</string>
   <string name="field_required">Dit veld is verplicht</string>
   <string name="help">Hulp</string>
   <string name="navigate_up">Navigeer omhoog</string>
@@ -124,21 +125,20 @@
   <string name="navigation_drawer_support_project">Ondersteun het project</string>
   <string name="navigation_drawer_contribute">Hoe bijdragen</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
-  <string name="account_list_no_notification_permission">Meldingen uitgeschakeld. U krijgt geen meldingen over synchronisatiefouten.</string>
-  <string name="account_list_no_internet">Automatische synchronisatie niet actief (geen geverifieerde internetverbinding).</string>
-  <string name="account_list_manage_connections">Verbindingen beheren</string>
-  <string name="account_list_datasaver_enabled">Gegevensbesparing ingeschakeld. Synchronisatie op de achtergrond is beperkt.</string>
-  <string name="account_list_manage_datasaver">Beheer van gegevensbesparing</string>
-  <string name="account_list_battery_saver_enabled">Batterijbesparing ingeschakeld. Synchronisatie kan beperkt zijn.</string>
-  <string name="account_list_manage_battery_saver">Batterijbesparing beheren</string>
-  <string name="account_list_low_storage">Weinig opslagruimte. Android zal lokale wijzigingen niet onmiddellijk synchroniseren, maar tijdens de volgende reguliere synchronisatie.</string>
-  <string name="account_list_manage_storage">Opslag beheren</string>
-  <string name="account_list_calendar_storage_disabled">Agenda-aanbieder ontbreekt. Heb je de systeemapp “Agenda-opslag” uitgeschakeld?</string>
-  <string name="account_list_contacts_storage_disabled">Contacten provider ontbreekt. Heb je de systeemapp “Contacten opslaan” uitgeschakeld?</string>
-  <string name="account_list_manage_apps">Apps beheren</string>
   <string name="account_list_welcome">Welkom bij DAVx⁵!</string>
   <string name="account_list_empty">Maak verbinding met je server en houd je agenda\'s en contactpersonen gesynchroniseerd.</string>
   <string name="accounts_sync_all">Alle accounts synchroniseren</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Meldingen uitgeschakeld. U krijgt geen meldingen over synchronisatiefouten.</string>
+  <string name="sync_warning_no_internet">Automatische synchronisatie niet actief (geen geverifieerde internetverbinding).</string>
+  <string name="sync_warning_manage_connections">Verbindingen beheren</string>
+  <string name="sync_warning_datasaver_enabled">Gegevensbesparing ingeschakeld. Synchronisatie op de achtergrond is beperkt.</string>
+  <string name="sync_warning_manage_datasaver">Beheer van gegevensbesparing</string>
+  <string name="sync_warning_battery_saver_enabled">Batterijbesparing ingeschakeld. Synchronisatie kan beperkt zijn.</string>
+  <string name="sync_warning_manage_battery_saver">Batterijbesparing beheren</string>
+  <string name="sync_warning_low_storage">Weinig opslagruimte. Android zal lokale wijzigingen niet onmiddellijk synchroniseren, maar tijdens de volgende reguliere synchronisatie.</string>
+  <string name="sync_warning_manage_storage">Opslag beheren</string>
+  <string name="sync_warning_manage_apps">Apps beheren</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Service herkenning is mislukt</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">De collectielijst is niet bijgewerkt</string>
@@ -172,6 +172,7 @@
   <string name="app_settings_distrust_system_certs">Wantrouw systeemcertificaten</string>
   <string name="app_settings_distrust_system_certs_on">Door systeem en gebruiker toegevoegde CA certificaten niet vertrouwen</string>
   <string name="app_settings_distrust_system_certs_off">Door systeem en gebruiker toegevoegde CA certificaten vertrouwen (aanbevolen)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Als deze instelling actief is, worden systeemcertificaten niet als betrouwbaar beschouwd. Dit betekent dat je elk certificaat handmatig moet accepteren (ook wanneer de server zijn certificaat vernieuwt) anders werken accountinstelling en synchronisatie niet.</string>
   <string name="app_settings_reset_certificates">(Niet-)vertrouwde certificaten terugzetten</string>
   <string name="app_settings_reset_certificates_summary">Herstelt het vertrouwen van alle aangepaste certificaten</string>
   <string name="app_settings_reset_certificates_success">Alle aangepaste certificaten zijn gewist</string>

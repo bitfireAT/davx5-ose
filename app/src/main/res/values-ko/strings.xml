@@ -3,6 +3,7 @@
   <!--common strings-->
   <string name="account_invalid">계정이 존재하지 않음 (anymore)</string>
   <string name="account_title_address_book">DAVx⁵ 주소록</string>
+  <string name="dialog_enable">활성</string>
   <string name="field_required">이 field는 필수입니다.</string>
   <string name="help">도움말</string>
   <string name="share">공유하기</string>
@@ -99,6 +100,7 @@
   <string name="navigation_drawer_community">커뮤니티</string>
   <string name="navigation_drawer_privacy_policy">개인 정보 보호 정책</string>
   <string name="accounts_sync_all">모든 계정 동기화</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">서비스 검색 실패</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">collection 목록을 새로 고칠 수 없습니다.</string>

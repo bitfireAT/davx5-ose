@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_title_address_book">Ksiōnżka adresowo DAVx⁵</string>
+  <string name="dialog_enable">Włōncz</string>
   <string name="help">Pōmoc</string>
   <string name="notification_channel_debugging">Debugowanie</string>
   <string name="notification_channel_general">Inksze ważne wiadōmości</string>
@@ -50,6 +51,7 @@
   <string name="navigation_drawer_manual">Ryncznie</string>
   <string name="navigation_drawer_faq">Pytania i ôdpowiedzi</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Niy szło ôdświyżyć serwisu</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Niy szło ôdświyżyć listy kolekcyje</string>

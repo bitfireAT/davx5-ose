@@ -234,7 +234,10 @@ class HttpClient(
             val certManager = CustomCertManager(
                 context = context,
                 trustSystemCerts = !settingsManager.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES),
-                appInForeground = ForegroundTracker.inForeground
+                appInForeground = if (/* davx5-ose */ true)
+                    ForegroundTracker.inForeground  // interactive mode
+                else
+                    null                            // non-interactive mode
             )
 
             val sslContext = SSLContext.getInstance("TLS")

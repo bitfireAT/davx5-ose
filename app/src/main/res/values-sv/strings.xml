@@ -7,6 +7,7 @@
   <string name="dialog_delete">Radera</string>
   <string name="dialog_remove">Ta bort</string>
   <string name="dialog_deny">Avbryt</string>
+  <string name="dialog_enable">Aktivera</string>
   <string name="field_required">Detta fält är obligatoriskt</string>
   <string name="help">Hjälp</string>
   <string name="navigate_up">Navigera upp</string>
@@ -50,6 +51,11 @@
   <string name="intro_open_source_title">Öppen källkod mjukvara</string>
   <string name="intro_open_source_text">Vi är glada att du använder %s, som är mjukvara med öppen källkod. Utveckling, underhåll och support är hårt arbete. Överväg att bidra (det finns många sätt) eller en donation. Det skulle vara mycket uppskattat!</string>
   <string name="intro_open_source_details">Hur man kan bidra/donera</string>
+  <string name="intro_open_source_dont_show">Påminn mig inte på </string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d månad</item>
+    <item quantity="other">%d månader</item>
+  </plurals>
   <string name="intro_next">Nästa</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Behörigheter</string>
@@ -119,21 +125,24 @@
   <string name="navigation_drawer_support_project">Stöd projektet</string>
   <string name="navigation_drawer_contribute">Hur man kan bidra</string>
   <string name="navigation_drawer_privacy_policy">Integritetspolicy</string>
-  <string name="account_list_no_notification_permission">Notifieringar avstängda. Du kommer inte bli informerad om synkroniseringsfel.</string>
-  <string name="account_list_no_internet">Automatisk synkronisering ej aktiv (ingen verifierad internetanslutning)</string>
-  <string name="account_list_manage_connections">Hantera anslutningar</string>
-  <string name="account_list_datasaver_enabled">Begränsad data-synkronisering aktiverad. Begränsad bakgrundssynkronisering.</string>
-  <string name="account_list_manage_datasaver">Hantera begränsad data-synkronisering</string>
-  <string name="account_list_battery_saver_enabled">Batterisparning aktiverad. Det kan hända att synkronisering begränsas.</string>
-  <string name="account_list_manage_battery_saver">Hantera batterisparare</string>
-  <string name="account_list_low_storage">Lagringsutrymmet är lågt. Android kommer inte synka lokala ändringar direkt, utan vänta till nästa regelbundna synkronisering.</string>
-  <string name="account_list_manage_storage">Hantera lagring</string>
-  <string name="account_list_calendar_storage_disabled">Kalenderleverantör saknas. Har du inaktiverat systemappen \"Kalenderlagring\"?</string>
-  <string name="account_list_contacts_storage_disabled">Kontaktleverantör saknas.  Har du inaktiverat systemappen \"Kontaktlagring\".?</string>
-  <string name="account_list_manage_apps">Hantera appar</string>
   <string name="account_list_welcome">Välkommen till DAVx⁵!</string>
   <string name="account_list_empty">Anslut till din server och håll dina kalendrar och kontakter synkroniserade</string>
   <string name="accounts_sync_all">Synkronisera alla konton</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Notifieringar avstängda. Du kommer inte bli informerad om synkroniseringsfel.</string>
+  <string name="sync_warning_no_internet">Automatisk synkronisering ej aktiv (ingen verifierad internetanslutning)</string>
+  <string name="sync_warning_manage_connections">Hantera anslutningar</string>
+  <string name="sync_warning_datasaver_enabled">Begränsad data-synkronisering aktiverad. Begränsad bakgrundssynkronisering.</string>
+  <string name="sync_warning_manage_datasaver">Hantera begränsad data-synkronisering</string>
+  <string name="sync_warning_battery_saver_enabled">Batterisparning aktiverad. Det kan hända att synkronisering begränsas.</string>
+  <string name="sync_warning_manage_battery_saver">Hantera batterisparare</string>
+  <string name="sync_warning_low_storage">Lagringsutrymmet är lågt. Android kommer inte synka lokala ändringar direkt, utan vänta till nästa regelbundna synkronisering.</string>
+  <string name="sync_warning_manage_storage">Hantera lagring</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Kalenderdistributör saknas </string>
+  <string name="sync_warning_calendar_storage_disabled_description">Har du stängt av \"kalenderlagrings\"-systemappen?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Kontaktdistributör saknas</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Har du stängt av \"kontaktlagrings\"-systemappen</string>
+  <string name="sync_warning_manage_apps">Hantera appar</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Servicedetektering misslyckades</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Det gick inte att uppdatera samlingslistan</string>

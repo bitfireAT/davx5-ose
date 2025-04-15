@@ -21,6 +21,7 @@ import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
 import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
 import at.bitfire.dav4jvm.property.push.PushTransports
 import at.bitfire.dav4jvm.property.push.Topic
+import at.bitfire.dav4jvm.property.push.WebPush
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
@@ -136,6 +137,9 @@ data class Collection(
     @ColumnInfo(defaultValue = "0")
     val supportsWebPush: Boolean = false,
 
+    /** WebDAV-Push: VAPID public key */
+    val pushVapidKey: String? = null,
+
     /** WebDAV-Push subscription URL */
     val pushSubscription: String? = null,
 
@@ -223,8 +227,13 @@ data class Collection(
 
             // WebDAV-Push
             var supportsWebPush = false
+            var vapidPublicKey: String? = null
             dav[PushTransports::class.java]?.let { pushTransports ->
-                supportsWebPush = pushTransports.hasWebPush()
+                for (transport in pushTransports.transports)
+                    if (transport is WebPush) {
+                        supportsWebPush = true
+                        vapidPublicKey = transport.vapidPublicKey?.key
+                    }
             }
             val pushTopic = dav[Topic::class.java]?.topic
 
@@ -242,6 +251,7 @@ data class Collection(
                 supportsVJOURNAL = supportsVJOURNAL,
                 source = source,
                 supportsWebPush = supportsWebPush,
+                pushVapidKey = vapidPublicKey,
                 pushTopic = pushTopic
             )
         }

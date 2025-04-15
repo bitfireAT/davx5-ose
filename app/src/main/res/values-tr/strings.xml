@@ -23,6 +23,7 @@
   <string name="navigation_drawer_external_links">Harici bağlantılar</string>
   <string name="navigation_drawer_website">Web sitesi</string>
   <string name="navigation_drawer_faq">SSS</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Servis keşfi başarısız</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Kolleksiyon listesi yenilenemedi</string>

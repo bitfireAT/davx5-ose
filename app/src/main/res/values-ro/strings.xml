@@ -7,6 +7,7 @@
   <string name="dialog_delete">Șterge</string>
   <string name="dialog_remove">Elimină</string>
   <string name="dialog_deny">Anulează</string>
+  <string name="dialog_enable">Activează</string>
   <string name="field_required">Acest câmp este obligatoriu</string>
   <string name="help">Ajutor</string>
   <string name="navigate_up">Navigare în sus</string>
@@ -50,6 +51,12 @@
   <string name="intro_open_source_title">Software cu sursă deschisă</string>
   <string name="intro_open_source_text">Ne bucurăm că utilizezi %s, care este un software open-source. Dezvoltarea, întreținerea și suportul sunt o muncă grea. Ia în considerare contribuția (există mai multe moduri) sau o donație. Ar fi foarte apreciat!</string>
   <string name="intro_open_source_details">Cum să contribui/donezi</string>
+  <string name="intro_open_source_dont_show">Nu-mi aminti</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d lună</item>
+    <item quantity="few">%d luni</item>
+    <item quantity="other">%d luni</item>
+  </plurals>
   <string name="intro_next">Înainte</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisiuni</string>
@@ -119,21 +126,24 @@
   <string name="navigation_drawer_support_project">Susține proiectul</string>
   <string name="navigation_drawer_contribute">Cum să contribui</string>
   <string name="navigation_drawer_privacy_policy">Politica de confidențialitate</string>
-  <string name="account_list_no_notification_permission">Notificări dezactivate. Nu vei fi notificat despre erorile de sincronizare.</string>
-  <string name="account_list_no_internet">Sincronizarea automată nu este activă (fără conexiune la internet verificată).</string>
-  <string name="account_list_manage_connections">Gestionează conexiunile</string>
-  <string name="account_list_datasaver_enabled">Economizorul de date este activat. Sincronizarea în fundal este restricționată.</string>
-  <string name="account_list_manage_datasaver">Gestionează economizorul de date</string>
-  <string name="account_list_battery_saver_enabled">Economisirea bateriei este activată. Sincronizarea poate fi restricționată.</string>
-  <string name="account_list_manage_battery_saver">Gestionează economisirea bateriei</string>
-  <string name="account_list_low_storage">Spațiu de depozitare redus. Android nu va sincroniza modificările locale imediat, ci în timpul următoarei sincronizări obișnuite.</string>
-  <string name="account_list_manage_storage">Gestionează stocarea</string>
-  <string name="account_list_calendar_storage_disabled">Furnizorul de calendar lipsește. Ai dezactivat aplicația de sistem „Stocare Calendar”?</string>
-  <string name="account_list_contacts_storage_disabled">Furnizorul de contacte lipsește. Ai dezactivat aplicația de sistem „Stocare contacte”?</string>
-  <string name="account_list_manage_apps">Gestionează aplicațiile</string>
   <string name="account_list_welcome">Bun venit la DAVx⁵!</string>
   <string name="account_list_empty">Conectează-te la server și păstrează calendarele și contactele sincronizate.</string>
   <string name="accounts_sync_all">Sincronizează toate conturile</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Notificări dezactivate. Nu vei fi notificat despre erorile de sincronizare.</string>
+  <string name="sync_warning_no_internet">Sincronizarea automată nu este activă (fără conexiune la internet verificată).</string>
+  <string name="sync_warning_manage_connections">Gestionează conexiunile</string>
+  <string name="sync_warning_datasaver_enabled">Economizorul de date este activat. Sincronizarea în fundal este restricționată.</string>
+  <string name="sync_warning_manage_datasaver">Gestionează economizorul de date</string>
+  <string name="sync_warning_battery_saver_enabled">Economisirea bateriei este activată. Sincronizarea poate fi restricționată.</string>
+  <string name="sync_warning_manage_battery_saver">Gestionează economisirea bateriei</string>
+  <string name="sync_warning_low_storage">Spațiu de depozitare redus. Android nu va sincroniza modificările locale imediat, ci în timpul următoarei sincronizări obișnuite.</string>
+  <string name="sync_warning_manage_storage">Gestionează stocarea</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Furnizorul de calendar lipsește</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Ai dezactivat aplicația de sistem „Stocare Calendar”?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Furnizorul de contacte lipsește</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Ai dezactivat aplicația de sistem „Stocare Contacte”?</string>
+  <string name="sync_warning_manage_apps">Gestionează aplicațiile</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Detectarea serviciului a eșuat</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Lista de colecții nu a putut fi actualizată</string>
@@ -167,6 +177,7 @@
   <string name="app_settings_distrust_system_certs">Nu avea încredere în certificatele de sistem</string>
   <string name="app_settings_distrust_system_certs_on">CA de sistem și de utilizator nu vor fi de încredere</string>
   <string name="app_settings_distrust_system_certs_off">CA de sistem și de utilizator vor fi de încredere (recomandat)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Dacă această setare este activă, certificatele de sistem nu sunt considerate ca fiind de încredere. Aceasta înseamnă că va trebui să accepți manual fiecare certificat (de asemenea, atunci când serverul își reînnoiește certificatul) sau configurarea contului și sincronizarea nu va funcționa.</string>
   <string name="app_settings_reset_certificates">Resetează certificatele de (ne)încredere</string>
   <string name="app_settings_reset_certificates_summary">Resetează încrederea tuturor certificatelor personalizate</string>
   <string name="app_settings_reset_certificates_success">Toate certificatele personalizate au fost șterse</string>
