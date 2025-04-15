@@ -71,7 +71,7 @@ class JtxSyncManagerTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
 
         // Check jtxBoard is installed; skip test otherwise
-        assumeTrue("jtxBoard not installed", isPackageInstalled("at.techbee.jtx"))
+        assumeTrue("jtxBoard not installed", isJtxBoardInstalled())
 
         // Grant content provider permissions at runtime; skip tests on failure
         val permissions = listOf("at.techbee.jtx.permission.READ", "at.techbee.jtx.permission.WRITE")
@@ -201,10 +201,10 @@ class JtxSyncManagerTest {
         return permission in declaredPermissions
     }
 
-    private fun isPackageInstalled(packageName: String): Boolean = try {
-        context.packageManager.getPackageInfo(packageName, 0)
+    private fun isJtxBoardInstalled(): Boolean = try {
+        context.packageManager.getPackageInfo("at.techbee.jtx", 0)
         true
-    } catch (e: PackageManager.NameNotFoundException) {
+    } catch (_: PackageManager.NameNotFoundException) {
         false
     }
 
