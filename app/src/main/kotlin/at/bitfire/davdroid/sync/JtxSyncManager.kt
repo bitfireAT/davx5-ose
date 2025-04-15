@@ -168,11 +168,7 @@ class JtxSyncManager @AssistedInject constructor(
             // we update the existing (generated) entry
             val recurid = jtxICalObject.recurid
             if(recurid != null) {
-                val dtstart = jtxICalObject.dtstart
-                val local: LocalJtxICalObject? = if (dtstart != null)
-                    localCollection.findRecurring(jtxICalObject.uid, recurid, dtstart)
-                else
-                    null
+                val local = localCollection.findRecurring(jtxICalObject.uid, recurid)
                 SyncException.wrapWithLocalResource(local) {
                     logger.log(Level.INFO, "Updating $fileName with recur instance $recurid in local list", jtxICalObject)
                     if(local != null) {
