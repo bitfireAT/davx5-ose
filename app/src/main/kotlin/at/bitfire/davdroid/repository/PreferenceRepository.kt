@@ -6,6 +6,7 @@ package at.bitfire.davdroid.repository
 
 import android.content.Context
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
@@ -34,10 +35,9 @@ class PreferenceRepository @Inject constructor(
      * Updates the "log to file" (verbose logging") preference.
      */
     fun logToFile(logToFile: Boolean) {
-        preferences
-            .edit()
-            .putBoolean(LOG_TO_FILE, logToFile)
-            .apply()
+        preferences.edit {
+            putBoolean(LOG_TO_FILE, logToFile)
+        }
     }
 
     /**
@@ -62,10 +62,9 @@ class PreferenceRepository @Inject constructor(
     }
 
     fun unifiedPushEndpoint(endpoint: String?) {
-        preferences
-            .edit()
-            .putString(UNIFIED_PUSH_ENDPOINT, endpoint)
-            .apply()
+        preferences.edit {
+            putString(UNIFIED_PUSH_ENDPOINT, endpoint)
+        }
     }
 
 
