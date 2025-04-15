@@ -212,11 +212,11 @@ class DavCollectionRepository @Inject constructor(
     fun getSyncTaskLists(serviceId: Long) = dao.getSyncTaskLists(serviceId)
 
     /** Returns all collections that are both selected for synchronization and push-capable. */
-    suspend fun getPushCapableAndSyncable() = dao.getPushCapableSyncCollections()
+    fun getPushCapableAndSyncable(serviceId: Long) = dao.getPushCapableSyncCollections(serviceId)
 
     suspend fun getPushRegisteredAndNotSyncable() = dao.getPushRegisteredAndNotSyncable()
 
-    suspend fun getVapidKeys() = dao.getVapidKeys()
+    fun getVapidKey(serviceId: Long) = dao.getFirstVapidKey(serviceId)
 
     /**
      * Inserts or updates the collection.

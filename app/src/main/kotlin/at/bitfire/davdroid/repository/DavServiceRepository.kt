@@ -20,6 +20,8 @@ class DavServiceRepository @Inject constructor(
 
     fun get(id: Long): Service? = dao.get(id)
 
+    fun getAll(): List<Service> = dao.getAll()
+
     fun getByAccountAndType(name: String, @ServiceType serviceType: String): Service? =
         dao.getByAccountAndType(name, serviceType)
 

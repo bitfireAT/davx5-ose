@@ -35,8 +35,8 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE pushTopic=:topic AND sync")
     fun getSyncableByPushTopic(topic: String): Collection?
 
-    @Query("SELECT DISTINCT pushVapidKey FROM collection WHERE pushVapidKey IS NOT NULL")
-    suspend fun getVapidKeys(): List<String>
+    @Query("SELECT pushVapidKey FROM collection WHERE serviceId=:serviceId AND pushVapidKey IS NOT NULL LIMIT 1")
+    fun getFirstVapidKey(serviceId: Long): String?
 
     @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND type=:type")
     suspend fun anyOfType(serviceId: Long, @CollectionType type: String): Boolean
@@ -75,8 +75,8 @@ interface CollectionDao {
      * Get a list of collections that are both sync enabled and push capable (supportsWebPush and
      * pushTopic is available).
      */
-    @Query("SELECT * FROM collection WHERE sync AND supportsWebPush AND pushTopic IS NOT NULL")
-    suspend fun getPushCapableSyncCollections(): List<Collection>
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync AND supportsWebPush AND pushTopic IS NOT NULL")
+    fun getPushCapableSyncCollections(serviceId: Long): List<Collection>
 
     @Query("SELECT * FROM collection WHERE pushSubscription IS NOT NULL AND NOT sync")
     suspend fun getPushRegisteredAndNotSyncable(): List<Collection>

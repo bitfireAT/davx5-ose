@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
@@ -40,6 +41,7 @@ class AppSettingsModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val collectionRepository: DavCollectionRepository,
     private val preferences: PreferenceRepository,
+    private val pushRegistrationManager: PushRegistrationManager,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -163,19 +165,12 @@ class AppSettingsModel @Inject constructor(
             if (pushDistributor == null) {
                 // Disable UnifiedPush if the distributor given is null
                 UnifiedPush.removeDistributor(context)
-                UnifiedPush.unregister(context)
             } else {
                 // If a distributor was passed, store it
                 UnifiedPush.saveDistributor(context, pushDistributor)
 
                 // … and register it so that UnifiedPushReceiver.onNewEndpoint is called
-                // TODO: Re-register whenever VAPID key changes/becomes available. Probably this code should be somewhere else.
-                val vapidKeys = collectionRepository.getVapidKeys()
-                if (vapidKeys.isNotEmpty())
-                    for (key in vapidKeys)
-                        UnifiedPush.register(context, vapid = key)
-                else
-                    UnifiedPush.register(context)
+                pushRegistrationManager.update()
             }
             _pushDistributor.value = pushDistributor
         }

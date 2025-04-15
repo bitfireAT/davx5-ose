@@ -12,8 +12,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import org.unifiedpush.android.connector.data.PublicKeySet
-import org.unifiedpush.android.connector.data.PushEndpoint
 import javax.inject.Inject
 
 /**
@@ -55,23 +53,6 @@ class PreferenceRepository @Inject constructor(
      */
     fun logToFileFlow(): Flow<Boolean> = observeAsFlow(LOG_TO_FILE) {
         logToFile()
-    }
-
-
-    fun unifiedPushEndpoint(): PushEndpoint? {
-        val url = preferences.getString(UNIFIED_PUSH_ENDPOINT_URL, null) ?: return null
-        val key = preferences.getString(UNIFIED_PUSH_ENDPOINT_KEY, null)
-        val auth = preferences.getString(UNIFIED_PUSH_ENDPOINT_AUTH, null)
-        val publicKeySet = if (key != null && auth != null) PublicKeySet(key, auth) else null
-        return PushEndpoint(url, publicKeySet)
-    }
-
-    fun unifiedPushEndpoint(endpoint: PushEndpoint?) {
-        preferences.edit {
-            putString(UNIFIED_PUSH_ENDPOINT_URL, endpoint?.url)
-            putString(UNIFIED_PUSH_ENDPOINT_KEY, endpoint?.pubKeySet?.pubKey)
-            putString(UNIFIED_PUSH_ENDPOINT_AUTH, endpoint?.pubKeySet?.auth)
-        }
     }
 
 

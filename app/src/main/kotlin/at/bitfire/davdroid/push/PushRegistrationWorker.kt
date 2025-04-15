@@ -52,27 +52,31 @@ import javax.inject.Provider
 class PushRegistrationWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val collectionRepository: DavCollectionRepository,
+    private val pushRegistrationManager: PushRegistrationManager,
+    /*private val collectionRepository: DavCollectionRepository,
     private val httpClientBuilder: Provider<HttpClient.Builder>,
     private val logger: Logger,
-    private val preferenceRepository: PreferenceRepository,
+    private val preferenceRepository: PreferenceRepository,*/
     private val serviceRepository: DavServiceRepository
 ) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun doWork(): Result {
-        logger.info("Running push registration worker")
+        /*logger.info("Running push registration worker")
 
         try {
             registerSyncable()
             unregisterNotSyncable()
         } catch (_: IOException) {
             return Result.retry()       // retry on I/O errors
-        }
+        }*/
+
+        // update registrations for all services
+        pushRegistrationManager.update()
 
         return Result.success()
     }
 
-    private suspend fun registerPushSubscription(collection: Collection, account: Account, endpoint: PushEndpoint) {
+    /*private suspend fun registerPushSubscription(collection: Collection, account: Account, endpoint: PushEndpoint) {
         httpClientBuilder.get()
             .fromAccount(account)
             .build()
@@ -198,6 +202,6 @@ class PushRegistrationWorker @AssistedInject constructor(
                 }
             }
         }
-    }
+    }*/
 
 }

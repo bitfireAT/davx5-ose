@@ -8,7 +8,6 @@ import at.bitfire.davdroid.db.Collection.Companion.TYPE_ADDRESSBOOK
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -41,13 +40,10 @@ class UnifiedPushService: PushService() {
     lateinit var serviceRepository: DavServiceRepository
 
     @Inject
-    lateinit var preferenceRepository: PreferenceRepository
-
-    @Inject
     lateinit var parsePushMessage: PushMessageParser
 
     @Inject
-    lateinit var pushRegistrationWorkerManager: PushRegistrationWorkerManager
+    lateinit var pushRegistrationManager: PushRegistrationManager
 
     @Inject
     lateinit var tasksAppManager: Lazy<TasksAppManager>
@@ -55,31 +51,41 @@ class UnifiedPushService: PushService() {
     @Inject
     lateinit var syncWorkerManager: SyncWorkerManager
 
+    val dispatcher = Dispatchers.IO.limitedParallelism(1)
+    val scope = CoroutineScope(dispatcher)
+
 
     override fun onNewEndpoint(endpoint: PushEndpoint, instance: String) {
-        logger.info("Got UnifiedPush endpoint: ${endpoint.url}")
-
-        // remember new endpoint
-        preferenceRepository.unifiedPushEndpoint(endpoint)
+        val serviceId = instance.toLongOrNull() ?: return
+        logger.log(Level.FINE, "Got UnifiedPush endpoint for service $serviceId", endpoint.url)
 
         // register new endpoint at CalDAV/CardDAV servers
-        pushRegistrationWorkerManager.updatePeriodicWorker()
+        scope.launch {
+            pushRegistrationManager.registerSubscription(serviceId, endpoint)
+        }
     }
 
     override fun onRegistrationFailed(reason: FailedReason, instance: String) {
-        logger.warning("UnifiedPush registration failed: $reason")
-        // reset known endpoint to make sure nothing is stored when not registered
-        preferenceRepository.unifiedPushEndpoint(null)
+        val serviceId = instance.toLongOrNull() ?: return
+        logger.warning("UnifiedPush registration failed for service $serviceId: $reason")
+
+        // unregister subscriptions
+        scope.launch {
+            pushRegistrationManager.unregisterSubscription(serviceId)
+        }
     }
 
     override fun onUnregistered(instance: String) {
-        logger.warning("UnifiedPush unregistered")
-        // reset known endpoint
-        preferenceRepository.unifiedPushEndpoint(null)
+        val serviceId = instance.toLongOrNull() ?: return
+        logger.warning("UnifiedPush unregistered for service $serviceId")
+
+        scope.launch {
+            pushRegistrationManager.unregisterSubscription(serviceId)
+        }
     }
 
     override fun onMessage(message: PushMessage, instance: String) {
-        CoroutineScope(Dispatchers.Default).launch {
+        scope.launch {
             if (!message.decrypted) {
                 logger.severe("Received a push message that could not be decrypted.")
                 return@launch
