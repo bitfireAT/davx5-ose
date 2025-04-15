@@ -6,6 +6,7 @@ package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
 import android.content.Context
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.settings.Settings
 import dagger.Binds
@@ -36,26 +37,26 @@ class AccountSettingsMigration13 @Inject constructor(
         val overrideProxyHost = "override_proxy_host"
         val overrideProxyPort = "override_proxy_port"
 
-        val edit = preferences.edit()
-        if (preferences.contains(overrideProxy)) {
-            if (preferences.getBoolean(overrideProxy, false))
-            // override_proxy set, migrate to proxy_type = HTTP
-                edit.putInt(Settings.PROXY_TYPE, Settings.PROXY_TYPE_HTTP)
-            edit.remove(overrideProxy)
-        }
-        if (preferences.contains(overrideProxyHost)) {
-            preferences.getString(overrideProxyHost, null)?.let { host ->
-                edit.putString(Settings.PROXY_HOST, host)
+        preferences.edit {
+            if (preferences.contains(overrideProxy)) {
+                if (preferences.getBoolean(overrideProxy, false))
+                    // override_proxy set, migrate to proxy_type = HTTP
+                    putInt(Settings.PROXY_TYPE, Settings.PROXY_TYPE_HTTP)
+                remove(overrideProxy)
             }
-            edit.remove(overrideProxyHost)
+            if (preferences.contains(overrideProxyHost)) {
+                preferences.getString(overrideProxyHost, null)?.let { host ->
+                    putString(Settings.PROXY_HOST, host)
+                }
+                remove(overrideProxyHost)
+            }
+            if (preferences.contains(overrideProxyPort)) {
+                val port = preferences.getInt(overrideProxyPort, 0)
+                if (port != 0)
+                    putInt(Settings.PROXY_PORT, port)
+                remove(overrideProxyPort)
+            }
         }
-        if (preferences.contains(overrideProxyPort)) {
-            val port = preferences.getInt(overrideProxyPort, 0)
-            if (port != 0)
-                edit.putInt(Settings.PROXY_PORT, port)
-            edit.remove(overrideProxyPort)
-        }
-        edit.apply()
     }
 
 
