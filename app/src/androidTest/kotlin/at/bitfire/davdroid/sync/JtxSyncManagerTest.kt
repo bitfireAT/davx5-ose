@@ -16,12 +16,9 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
-import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
-import at.bitfire.ical4android.util.MiscUtils.toValues
 import at.techbee.jtx.JtxContract
-import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -136,6 +133,7 @@ class JtxSyncManagerTest {
     @Test
     fun testProcessICalObject_addsRecurringVtodo_withoutDtStart() {
         // Valid calendar example (See bitfireAT/davx5-ose#1265)
+        // Note: We don't support starting a recurrence from DUE (RFC 5545  leaves it open to interpretation)
         val calendar = "BEGIN:VCALENDAR\n" +
             "PRODID:-Vivaldi Calendar V1.0//EN\n" +
             "VERSION:2.0\n" +
@@ -159,34 +157,22 @@ class JtxSyncManagerTest {
 
             "END:VTODO\n" +
             "END:VCALENDAR"
-        val reader = StringReader(calendar)
 
-        // Should create "demo-calendar" without NPE on missing DTSTART
-        syncManager.processICalObject("demo-calendar", "abc123", reader)
+        // Create and store calendar
+        syncManager.processICalObject("demo-calendar", "abc123", StringReader(calendar))
 
-        // Note: We don't support starting a recurrence from DUE (RFC 5545  leaves it open to interpretation)
-        // Specifically LocalJtxCollection.findRecurring() expects DTSTART value and can not use DUE
+        // Verify main VTODO was created with RRULE present
+        val mainVtodo = localJtxCollection.findByName("demo-calendar")!!
+        assertEquals("Test Task (Main VTODO)", mainVtodo.summary)
+        assertEquals("FREQ=WEEKLY;UNTIL=20250505T235959Z;INTERVAL=1;BYDAY=FR", mainVtodo.rrule)
 
-        // Verify main VTODO is created
-        val vtodoObj = localJtxCollection.findByName("demo-calendar")!!
-        assertEquals("Test Task (Main VTODO)", vtodoObj.summary)
-        assertEquals("FREQ=WEEKLY;UNTIL=20250505T235959Z;INTERVAL=1;BYDAY=FR", vtodoObj.rrule)
-
-        // Verify the RRULE exception VTODO was created
-        provider.query(
-            JtxContract.JtxICalObject.CONTENT_URI.asSyncAdapter(account),
-            null,
-            "${JtxContract.JtxICalObject.UID} = ? AND ${JtxContract.JtxICalObject.SUMMARY} = ?",
-            arrayOf(vtodoObj.uid, "Test Task (Exception)"),
-            null
-        )?.use { cursor ->
-            assertEquals(1, cursor.count)
-            cursor.moveToFirst()
-            val values = cursor.toValues()
-            val localJtxIcalObject = LocalJtxICalObject.Factory.fromProvider(localJtxCollection, values)
-            assertEquals("America/New_York", localJtxIcalObject.recuridTimezone)
-            assertEquals("20250228T130000", localJtxIcalObject.recurid)
-        }
+        // Verify the RRULE exception instance was created with correct recurrence-id timezone
+        val vtodoException = localJtxCollection.findRecurInstance(
+            uid = "47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f",
+            recurid = "20250228T130000"
+        )!!
+        assertEquals("Test Task (Exception)", vtodoException.summary)
+        assertEquals("America/New_York", vtodoException.recuridTimezone)
     }
 
 
