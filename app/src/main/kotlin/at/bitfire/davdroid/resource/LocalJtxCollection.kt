@@ -61,9 +61,12 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
     }
 
     /**
-     * Finds and returns a recurring instance of a [LocalJtxICalObject]
+     * Finds and returns a recurrence instance of a [LocalJtxICalObject]
+     * @param uid       UID of the main VTODO
+     * @param recurid   RECURRENCE-ID of the recurrence instance
+     * @return LocalJtxICalObject or null if none or multiple entries found
      */
-    fun findRecurring(uid: String, recurid: String): LocalJtxICalObject? {
+    fun findRecurInstance(uid: String, recurid: String): LocalJtxICalObject? {
         val values = queryRecur(uid, recurid) ?: return null
         return LocalJtxICalObject.Factory.fromProvider(this, values)
     }
