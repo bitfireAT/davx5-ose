@@ -11,8 +11,11 @@ import kotlin.reflect.KClass
 
 /**
  * Use this custom rule to ignore exceptions thrown by another rule.
+ *
+ * @param innerRule The rule to wrap.
+ * @param exceptionsToIgnore The exceptions to ignore.
  */
-class CaptureExceptionsRule(
+class CatchExceptionsRule(
     private val innerRule: TestRule,
     private vararg val exceptionsToIgnore: KClass<out Throwable>
 ) : TestRule {

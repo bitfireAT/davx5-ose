@@ -7,7 +7,7 @@ package at.bitfire.davdroid.sync
 import android.content.ContentProviderClient
 import android.content.Context
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.davdroid.CaptureExceptionsRule
+import at.bitfire.davdroid.CatchExceptionsRule
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
@@ -60,7 +60,7 @@ class JtxSyncManagerTest {
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule
-    val permissionRule = CaptureExceptionsRule(
+    val permissionRule = CatchExceptionsRule(
         GrantPermissionRule.grant(*TaskProvider.PERMISSIONS_JTX),
         SecurityException::class
     )
