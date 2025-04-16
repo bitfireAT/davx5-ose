@@ -6,6 +6,7 @@ package at.bitfire.davdroid.webdav
 
 import android.content.Context
 import androidx.annotation.StringDef
+import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import at.bitfire.davdroid.db.Credentials
@@ -52,18 +53,18 @@ class CredentialsStore @Inject constructor(
     }
 
     fun setCredentials(mountId: Long, credentials: Credentials?) {
-        val edit = prefs.edit()
-        if (credentials != null)
-            edit.putBoolean(keyName(mountId, HAS_CREDENTIALS), true)
-                .putString(keyName(mountId, USER_NAME), credentials.username)
-                .putString(keyName(mountId, PASSWORD), credentials.password)
-                .putString(keyName(mountId, CERTIFICATE_ALIAS), credentials.certificateAlias)
-        else
-            edit.remove(keyName(mountId, HAS_CREDENTIALS))
-                .remove(keyName(mountId, USER_NAME))
-                .remove(keyName(mountId, PASSWORD))
-                .remove(keyName(mountId, CERTIFICATE_ALIAS))
-        edit.apply()
+        prefs.edit {
+            if (credentials != null)
+                putBoolean(keyName(mountId, HAS_CREDENTIALS), true)
+                    .putString(keyName(mountId, USER_NAME), credentials.username)
+                    .putString(keyName(mountId, PASSWORD), credentials.password)
+                    .putString(keyName(mountId, CERTIFICATE_ALIAS), credentials.certificateAlias)
+            else
+                remove(keyName(mountId, HAS_CREDENTIALS))
+                    .remove(keyName(mountId, USER_NAME))
+                    .remove(keyName(mountId, PASSWORD))
+                    .remove(keyName(mountId, CERTIFICATE_ALIAS))
+        }
     }
 
 

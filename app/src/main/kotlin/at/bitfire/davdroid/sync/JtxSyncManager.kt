@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.text.format.Formatter
+import androidx.annotation.OpenForTesting
 import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
@@ -148,7 +149,8 @@ class JtxSyncManager @AssistedInject constructor(
         context.getString(R.string.sync_invalid_event)
 
 
-    private fun processICalObject(fileName: String, eTag: String, reader: Reader) {
+    @OpenForTesting
+    internal fun processICalObject(fileName: String, eTag: String, reader: Reader) {
         val icalobjects: MutableList<JtxICalObject> = mutableListOf()
         try {
             // parse the reader content and return the list of ICalObjects
@@ -163,11 +165,12 @@ class JtxSyncManager @AssistedInject constructor(
 
         icalobjects.forEach { jtxICalObject ->
             // if the entry is a recurring entry (and therefore has a recurid)
-            // we udpate the existing (generated) entry
-            if(jtxICalObject.recurid != null) {
-                val local = localCollection.findRecurring(jtxICalObject.uid, jtxICalObject.recurid!!, jtxICalObject.dtstart!!)
+            // we update the existing (generated) entry
+            val recurid = jtxICalObject.recurid
+            if(recurid != null) {
+                val local = localCollection.findRecurInstance(jtxICalObject.uid, recurid)
                 SyncException.wrapWithLocalResource(local) {
-                    logger.log(Level.INFO, "Updating $fileName with recur instance ${jtxICalObject.recurid} in local list", jtxICalObject)
+                    logger.log(Level.INFO, "Updating $fileName with recur instance $recurid in local list", jtxICalObject)
                     if(local != null) {
                         local.update(jtxICalObject)
                     } else {
