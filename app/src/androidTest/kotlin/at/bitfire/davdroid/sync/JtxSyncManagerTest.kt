@@ -7,9 +7,9 @@ package at.bitfire.davdroid.sync
 import android.content.ContentProviderClient
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.SystemClock
 import androidx.core.content.ContextCompat
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
+import at.bitfire.davdroid.CaptureExceptionsRule
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
@@ -34,7 +34,8 @@ import javax.inject.Inject
 
 
 /**
- * Ensure you have jtxBoard installed on the emulator, before running these tests
+ * Ensure you have jtxBoard installed on the emulator, before running these tests. Otherwise they
+ * will be skipped.
  */
 @HiltAndroidTest
 class JtxSyncManagerTest {
@@ -58,6 +59,15 @@ class JtxSyncManagerTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
+    @get:Rule
+    val permissionRule = CaptureExceptionsRule(
+        GrantPermissionRule.grant(
+            "at.techbee.jtx.permission.READ",
+            "at.techbee.jtx.permission.WRITE"
+        ),
+        SecurityException::class
+    )
+
     private val account = TestAccount.create()
 
     private lateinit var provider: ContentProviderClient
@@ -68,15 +78,10 @@ class JtxSyncManagerTest {
     fun setUp() {
         hiltRule.inject()
 
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-
-        // Check jtxBoard is installed; skip test otherwise
-        assumeTrue("jtxBoard not installed", isJtxBoardInstalled())
-
-        // Grant content provider permissions at runtime; skip tests on failure
-        val permissions = listOf("at.techbee.jtx.permission.READ", "at.techbee.jtx.permission.WRITE")
-        val permissionsGranted = tryGrantPermissions(context.packageName, permissions)
-        assumeTrue("Missing permissions", permissionsGranted)
+        // Check jtxBoard permissions were granted (+jtxBoard is installed); skip test otherwise
+        val canRead = permissionGranted("at.techbee.jtx.permission.READ")
+        val canWrite = permissionGranted("at.techbee.jtx.permission.WRITE")
+        assumeTrue(canRead && canWrite)
 
         // Acquire the jtx content provider
         provider = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)!!
@@ -178,34 +183,7 @@ class JtxSyncManagerTest {
 
     // helpers
 
-    private fun tryGrantPermissions(packageName: String, permissions: List<String>): Boolean =
-        permissions.all { permission ->
-            if (isPermissionDeclared(permission))
-                tryGrantPermission(packageName, permission)
-            else
-                false
-        }
-
-    private fun tryGrantPermission(packageName: String, permission: String):Boolean {
-        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
-        val command = "pm grant $packageName $permission"
-        automation.executeShellCommand(command)
-        // delay to ensure the command completes
-        SystemClock.sleep(1000)
-        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun isPermissionDeclared(permission: String): Boolean {
-        val declaredPermissions = context.packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS)
-            .flatMap { it.requestedPermissions?.asList() ?: emptyList() }
-        return permission in declaredPermissions
-    }
-
-    private fun isJtxBoardInstalled(): Boolean = try {
-        context.packageManager.getPackageInfo("at.techbee.jtx", 0)
-        true
-    } catch (_: PackageManager.NameNotFoundException) {
-        false
-    }
+    private fun permissionGranted(permission: String) =
+        ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
 
 }
