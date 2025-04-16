@@ -6,8 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
 import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.CaptureExceptionsRule
 import at.bitfire.davdroid.db.Collection
@@ -17,6 +15,8 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
 import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -61,10 +61,7 @@ class JtxSyncManagerTest {
 
     @get:Rule
     val permissionRule = CaptureExceptionsRule(
-        GrantPermissionRule.grant(
-            "at.techbee.jtx.permission.READ",
-            "at.techbee.jtx.permission.WRITE"
-        ),
+        GrantPermissionRule.grant(*TaskProvider.PERMISSIONS_JTX),
         SecurityException::class
     )
 
@@ -79,9 +76,7 @@ class JtxSyncManagerTest {
         hiltRule.inject()
 
         // Check jtxBoard permissions were granted (+jtxBoard is installed); skip test otherwise
-        val canRead = permissionGranted("at.techbee.jtx.permission.READ")
-        val canWrite = permissionGranted("at.techbee.jtx.permission.WRITE")
-        assumeTrue(canRead && canWrite)
+        assumeTrue(PermissionUtils.havePermissions(context, TaskProvider.PERMISSIONS_JTX))
 
         // Acquire the jtx content provider
         provider = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)!!
@@ -179,11 +174,5 @@ class JtxSyncManagerTest {
         assertEquals("Test Task (Exception)", vtodoException.summary)
         assertEquals("America/New_York", vtodoException.recuridTimezone)
     }
-
-
-    // helpers
-
-    private fun permissionGranted(permission: String) =
-        ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
 
 }
