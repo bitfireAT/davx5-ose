@@ -84,7 +84,12 @@ class JtxSyncManagerTest {
         // Create dummy dependencies
         val service = Service(0, account.name, Service.TYPE_CALDAV, null)
         val serviceId = serviceRepository.insertOrReplace(service)
-        val dbCollection = Collection(0, serviceId, type = Collection.TYPE_CALENDAR, url = "https://example.com".toHttpUrl())
+        val dbCollection = Collection(
+            0,
+            serviceId,
+            type = Collection.TYPE_CALENDAR,
+            url = "https://example.com".toHttpUrl()
+        )
         localJtxCollection = localJtxCollectionStore.create(provider, dbCollection)!!
         syncManager = jtxSyncManagerFactory.jtxSyncManager(
             account = account,
@@ -103,7 +108,7 @@ class JtxSyncManagerTest {
             localJtxCollectionStore.delete(localJtxCollection)
         serviceRepository.deleteAll()
         if (this::provider.isInitialized)
-        provider.closeCompat()
+            provider.closeCompat()
         TestAccount.remove(account)
     }
 
@@ -111,14 +116,14 @@ class JtxSyncManagerTest {
     @Test
     fun testProcessICalObject_addsVtodo() {
         val calendar = "BEGIN:VCALENDAR\n" +
-            "PRODID:-Vivaldi Calendar V1.0//EN\n" +
-            "VERSION:2.0\n" +
-            "BEGIN:VTODO\n" +
-            "SUMMARY:Test Task (Main VTODO)\n" +
-            "DTSTAMP;VALUE=DATE-TIME:20250228T032800Z\n" +
-            "UID:47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f\n" +
-            "END:VTODO\n" +
-            "END:VCALENDAR"
+                "PRODID:-Vivaldi Calendar V1.0//EN\n" +
+                "VERSION:2.0\n" +
+                "BEGIN:VTODO\n" +
+                "SUMMARY:Test Task (Main VTODO)\n" +
+                "DTSTAMP;VALUE=DATE-TIME:20250228T032800Z\n" +
+                "UID:47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f\n" +
+                "END:VTODO\n" +
+                "END:VCALENDAR"
 
         // Should create "demo-calendar"
         syncManager.processICalObject("demo-calendar", "abc123", StringReader(calendar))
@@ -135,28 +140,28 @@ class JtxSyncManagerTest {
         // Valid calendar example (See bitfireAT/davx5-ose#1265)
         // Note: We don't support starting a recurrence from DUE (RFC 5545  leaves it open to interpretation)
         val calendar = "BEGIN:VCALENDAR\n" +
-            "PRODID:-Vivaldi Calendar V1.0//EN\n" +
-            "VERSION:2.0\n" +
-            "BEGIN:VTODO\n" +
+                "PRODID:-Vivaldi Calendar V1.0//EN\n" +
+                "VERSION:2.0\n" +
+                "BEGIN:VTODO\n" +
 
-            "SUMMARY:Test Task (Exception)\n" +
-            "DTSTAMP;VALUE=DATE-TIME:20250228T032800Z\n" +
-            "DUE;TZID=America/New_York:20250228T130000\n" +
-            "RECURRENCE-ID;TZID=America/New_York:20250228T130000\n" +
-            "UID:47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f\n" +
+                "SUMMARY:Test Task (Exception)\n" +
+                "DTSTAMP;VALUE=DATE-TIME:20250228T032800Z\n" +
+                "DUE;TZID=America/New_York:20250228T130000\n" +
+                "RECURRENCE-ID;TZID=America/New_York:20250228T130000\n" +
+                "UID:47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f\n" +
 
-            "END:VTODO\n" +
-            "BEGIN:VTODO\n" +
+                "END:VTODO\n" +
+                "BEGIN:VTODO\n" +
 
-            "SUMMARY:Test Task (Main VTODO)\n" +
-            "DTSTAMP;VALUE=DATE-TIME:20250228T032800Z\n" +
-            "DUE;TZID=America/New_York:20250228T130000\n" + // Due date will NOT be assumed as start for recurrence
-            "SEQUENCE:1\n" +
-            "UID:47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f\n" +
-            "RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=FR;UNTIL=20250505T235959Z\n" +
+                "SUMMARY:Test Task (Main VTODO)\n" +
+                "DTSTAMP;VALUE=DATE-TIME:20250228T032800Z\n" +
+                "DUE;TZID=America/New_York:20250228T130000\n" + // Due date will NOT be assumed as start for recurrence
+                "SEQUENCE:1\n" +
+                "UID:47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f\n" +
+                "RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=FR;UNTIL=20250505T235959Z\n" +
 
-            "END:VTODO\n" +
-            "END:VCALENDAR"
+                "END:VTODO\n" +
+                "END:VCALENDAR"
 
         // Create and store calendar
         syncManager.processICalObject("demo-calendar", "abc123", StringReader(calendar))
