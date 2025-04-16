@@ -24,7 +24,7 @@ interface CollectionDao {
     fun getFlow(id: Long): Flow<Collection?>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId")
-    fun getByService(serviceId: Long): List<Collection>
+    suspend fun getByService(serviceId: Long): List<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND homeSetId IS :homeSetId")
     fun getByServiceAndHomeset(serviceId: Long, homeSetId: Long?): List<Collection>
@@ -36,7 +36,7 @@ interface CollectionDao {
     fun getSyncableByPushTopic(topic: String): Collection?
 
     @Query("SELECT pushVapidKey FROM collection WHERE serviceId=:serviceId AND pushVapidKey IS NOT NULL LIMIT 1")
-    fun getFirstVapidKey(serviceId: Long): String?
+    suspend fun getFirstVapidKey(serviceId: Long): String?
 
     @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND type=:type")
     suspend fun anyOfType(serviceId: Long, @CollectionType type: String): Boolean
@@ -78,8 +78,11 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync AND supportsWebPush AND pushTopic IS NOT NULL")
     fun getPushCapableSyncCollections(serviceId: Long): List<Collection>
 
-    @Query("SELECT * FROM collection WHERE pushSubscription IS NOT NULL AND NOT sync")
-    suspend fun getPushRegisteredAndNotSyncable(): List<Collection>
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND pushSubscription IS NOT NULL")
+    suspend fun getPushRegistered(serviceId: Long): List<Collection>
+
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND pushSubscription IS NOT NULL AND NOT sync")
+    suspend fun getPushRegisteredAndNotSyncable(serviceId: Long): List<Collection>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(collection: Collection): Long

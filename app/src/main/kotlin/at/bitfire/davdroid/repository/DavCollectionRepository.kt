@@ -199,7 +199,7 @@ class DavCollectionRepository @Inject constructor(
 
     fun getFlow(id: Long) = dao.getFlow(id)
 
-    fun getByService(serviceId: Long) = dao.getByService(serviceId)
+    suspend fun getByService(serviceId: Long) = dao.getByService(serviceId)
 
     fun getByServiceAndUrl(serviceId: Long, url: String) = dao.getByServiceAndUrl(serviceId, url)
 
@@ -214,9 +214,10 @@ class DavCollectionRepository @Inject constructor(
     /** Returns all collections that are both selected for synchronization and push-capable. */
     fun getPushCapableAndSyncable(serviceId: Long) = dao.getPushCapableSyncCollections(serviceId)
 
-    suspend fun getPushRegisteredAndNotSyncable() = dao.getPushRegisteredAndNotSyncable()
+    suspend fun getPushRegistered(serviceId: Long) = dao.getPushRegistered(serviceId)
+    suspend fun getPushRegisteredAndNotSyncable(serviceId: Long) = dao.getPushRegisteredAndNotSyncable(serviceId)
 
-    fun getVapidKey(serviceId: Long) = dao.getFirstVapidKey(serviceId)
+    suspend fun getVapidKey(serviceId: Long) = dao.getFirstVapidKey(serviceId)
 
     /**
      * Inserts or updates the collection.
