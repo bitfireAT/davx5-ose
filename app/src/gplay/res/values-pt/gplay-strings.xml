@@ -3,6 +3,13 @@
     <!-- Navigation drawer -->
     <string name="nav_earn_badges">Nos apoie com emblemas</string>
     <string name="nav_rate_us">Avalie na Google Play</string>
+    <string name="nav_feedback_inapp_didnt_appear">A avaliação dentro do app não apareceu?</string>
+    <string name="nav_feedback_google_play">Enviar no Google Play</string>
+    <string name="nav_feedback_scroll_to_reviews">Deslize para a seção de avaliações para enviar um retorno</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">Essa versão só é válida para distribuição pelo Google Play.</string>
+
     <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Você ganhou um emblema, obrigado!</item>
@@ -19,4 +26,7 @@
     <string name="button_buy_badge_free">GRÁTIS</string>
     <string name="button_buy_badge_bought">Obrigado!</string>
     <string name="earn_badges">Ganhe emblemas para nos apoiar!</string>
-    </resources>
+    <string name="billing_unavailable">API de cobrança indisponível</string>
+    <string name="network_problems">Problemas de rede, tente novamente mais tarde.</string>
+
+</resources>
