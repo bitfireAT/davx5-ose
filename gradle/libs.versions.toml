@@ -20,7 +20,7 @@ androidx-test-junit = "1.2.1"
 androidx-work = "2.10.0"
 bitfire-cert4android = "701ae604eb"
 bitfire-dav4jvm = "7d0c4f6fb9"
-bitfire-ical4android = "afa7724bcb"
+bitfire-ical4android = "0bf7641e11"
 bitfire-vcard4android = "ae5d609f92"
 compose-accompanist = "0.37.2"
 compose-bom = "2025.04.00"
@@ -40,6 +40,11 @@ okhttp = "4.12.0"
 openid-appauth = "0.11.1"
 room = "2.7.0"
 unifiedpush = "2.4.0"
+
+# Other libraries, especially ical4android/ical4j, require Apache Commons. Some recent versions of Apache
+# Commons require a newer Java version than our minSdk provides. So we require these strict versions here:
+commons-codec = { strictly = "1.17.1" }
+commons-lang = { strictly = "3.15.0" }
 
 [libraries]
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs_nio", version.ref = "android-desugaring" }
@@ -68,6 +73,8 @@ bitfire-cert4android = { module = "com.github.bitfireAT:cert4android", version.r
 bitfire-dav4jvm = { module = "com.github.bitfireAT:dav4jvm", version.ref = "bitfire-dav4jvm" }
 bitfire-ical4android = { module = "com.github.bitfireAT:ical4android", version.ref = "bitfire-ical4android" }
 bitfire-vcard4android = { module = "com.github.bitfireAT:vcard4android", version.ref = "bitfire-vcard4android" }
+commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
+commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }

@@ -197,6 +197,10 @@ dependencies {
     implementation(libs.openid.appauth)
     implementation(libs.unifiedpush)
 
+    // force some versions for compatibility with our minSdk level (see version catalog for details)
+    implementation(libs.commons.codec)
+    implementation(libs.commons.lang)
+
     // for tests
     androidTestImplementation(libs.androidx.arch.core.testing)
     androidTestImplementation(libs.androidx.test.core)
