@@ -407,7 +407,6 @@
   <string name="webdav_mounts_unmount">Démonter</string>
   <string name="webdav_add_mount_title">Ajouter un point de montage WebDAV</string>
   <string name="webdav_mounts_empty">Accédez directement à vos fichiers du cloud en ajoutant un point de montage WebDAV !</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Consultez le manuel pour voir <a href="%1$s">comment fonctionnent les points de montage WebDAV</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Nom affiché</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL incorrecte</string>

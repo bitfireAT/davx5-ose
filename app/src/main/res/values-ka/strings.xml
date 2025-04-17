@@ -390,7 +390,6 @@
   <string name="webdav_mounts_unmount">მიბმის გათიშვა</string>
   <string name="webdav_add_mount_title">WebDAV-ის მიბმის დამატება</string>
   <string name="webdav_mounts_empty">პირდაპირ იქონიეთ წვდომა თქვენი ღრუბლის ფაილებზე WebDAV-ის მიბმის დამატებით!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[იხილეთ ინსტრუქცია, თუ <a href="%1$s">როგორ მოქმედებს WebDAV-ის მიბმები</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">ნაჩვენები სახელი</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">არასწორი URL</string>

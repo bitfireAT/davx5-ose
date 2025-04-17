@@ -423,7 +423,6 @@
   <string name="webdav_mounts_unmount">Avmontera</string>
   <string name="webdav_add_mount_title">Lägg till WebDAV-fäste</string>
   <string name="webdav_mounts_empty">Direkt åtkomst till dina filer i molnet genom att lägga till en WebDAV montering!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Se i manualen för att se <a href="%1$s">hur WebDAV monteringar fungerar </a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Visningsnamn</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Felaktig URL</string>

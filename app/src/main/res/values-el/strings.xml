@@ -391,7 +391,6 @@
   <string name="webdav_mounts_unmount">Αποπροσάρτηση</string>
   <string name="webdav_add_mount_title">Προσθήκη βάσης WebDAV</string>
   <string name="webdav_mounts_empty">Απευθείας πρόσβαση στα αρχεία σας στο cloud δημιουργώντας μία προσάρτηση WebDAV</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Ανατρέξτε στο εγχειρίδιο για <a href="%1$s"> το πώς λειτουργούν οι προσαρτήσεις WebDAV </a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Εμφανιζόμενο όνομα</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Μη έγκυρο URL</string>

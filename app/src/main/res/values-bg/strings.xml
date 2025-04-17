@@ -421,9 +421,9 @@
   <string name="webdav_mounts_quota_used_available">Използвана квота: %1$s / налична: %2$s</string>
   <string name="webdav_mounts_share_content">Споделяне на съдържание</string>
   <string name="webdav_mounts_unmount">Демонтиране</string>
-  <string name="webdav_add_mount_title">Монтиране на дял на WebDAV</string>
+  <string name="webdav_add_mount_title">Добавяне на дял на WebDAV</string>
   <string name="webdav_mounts_empty">Получете директен достъп до файловете си в облака като монтирате дял на WebDAV.</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Вижте <a href="%1$s">как работят дяловете на WebDAV</a> в ръководството.</string>]]></string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Прочетете в документацията за това <a href="%1$s">как работят дяловете на WebDAV</a>.]]></string>
   <string name="webdav_add_mount_display_name">Видимо име</string>
   <string name="webdav_add_mount_url">Адрес на WebDAV</string>
   <string name="webdav_add_mount_url_invalid">Недействителен адрес</string>

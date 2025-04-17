@@ -423,7 +423,7 @@
   <string name="webdav_mounts_unmount">Aushängen</string>
   <string name="webdav_add_mount_title">WebDAV-Zugang hinzufügen</string>
   <string name="webdav_mounts_empty">Greifen Sie mit einem WebDAV-Zugang direkt auf Ihre Cloud-Dateien zu!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[In der Anleitung erfahren Sie mehr darüber, <a href="%1$s">wie WebDAV-Zugänge funktionieren</a>.</string>]]></string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[In der Anleitung erfahren Sie mehr darüber, <a href="%1$s">wie WebDAV-Zugänge funktionieren</a>.]]></string>
   <string name="webdav_add_mount_display_name">Anzeigename</string>
   <string name="webdav_add_mount_url">WebDAV-Adresse</string>
   <string name="webdav_add_mount_url_invalid">Ungültige Adresse</string>
