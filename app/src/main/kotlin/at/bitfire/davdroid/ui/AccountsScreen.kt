@@ -15,14 +15,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -69,7 +64,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -171,13 +165,11 @@ fun AccountsScreen(
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
-    AppTheme(windowInsets = WindowInsets(0.dp)) {
+    AppTheme {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                ModalDrawerSheet(
-                    windowInsets = WindowInsets(0.dp)
-                ) {
+                ModalDrawerSheet {
                     accountsDrawerHandler.AccountsDrawer(
                         snackbarHostState = snackbarHostState,
                         onCloseDrawer = {
@@ -213,15 +205,7 @@ fun AccountsScreen(
                     )
                 },
                 floatingActionButton = {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(
-                            // Set padding only to the right, because the bottom is automatically padded.
-                            end = WindowInsets.safeContent
-                                .asPaddingValues()
-                                .calculateEndPadding(LocalLayoutDirection.current),
-                        ),
-                    ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         if (showAddAccount == AccountsModel.FABStyle.WithText)
                             ExtendedFloatingActionButton(
                                 text = { Text(stringResource(R.string.login_add_account)) },
@@ -253,8 +237,7 @@ fun AccountsScreen(
                             }
                     }
                 },
-                snackbarHost = { SnackbarHost(snackbarHostState) },
-                contentWindowInsets = WindowInsets.safeDrawing,
+                snackbarHost = { SnackbarHost(snackbarHostState) }
             ) { padding ->
                 PullToRefreshBox(
                     isRefreshing = isRefreshing,
