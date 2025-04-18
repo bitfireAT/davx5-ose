@@ -25,9 +25,6 @@ class PreferenceRepository @Inject constructor(
 
     companion object {
         const val LOG_TO_FILE = "log_to_file"
-        const val UNIFIED_PUSH_ENDPOINT_URL = "unified_push_endpoint_url"
-        const val UNIFIED_PUSH_ENDPOINT_KEY = "unified_push_endpoint_key"
-        const val UNIFIED_PUSH_ENDPOINT_AUTH = "unified_push_endpoint_auth"
     }
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)

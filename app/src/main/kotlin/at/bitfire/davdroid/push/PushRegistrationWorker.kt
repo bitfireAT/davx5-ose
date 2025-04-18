@@ -8,7 +8,6 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.repository.DavServiceRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.logging.Logger
@@ -24,8 +23,7 @@ class PushRegistrationWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val logger: Logger,
-    private val pushRegistrationManager: PushRegistrationManager,
-    private val serviceRepository: DavServiceRepository
+    private val pushRegistrationManager: PushRegistrationManager
 ) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun doWork(): Result {

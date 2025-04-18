@@ -32,7 +32,6 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
@@ -92,7 +91,7 @@ class PushRegistrationManager @Inject constructor(
         else
             UnifiedPush.unregister(context, serviceId.toString())
 
-        // UnifiedPush has now been called. It will do its work and then call back to UnifiedPushService, which
+        // UnifiedPush has now been called. It will do its work and then asynchronously call back to UnifiedPushService, which
         // will then call processSubscription or removeSubscription.
     }
 
@@ -158,13 +157,13 @@ class PushRegistrationManager @Inject constructor(
     /**
      * Called when no subscription is available (anymore) for the given service.
      *
-     * Unsubscribes from all collections.
+     * Unsubscribes from all subscribed collections.
      */
-    internal suspend fun removeSubscription(serviceId: Long) {
-        val service = serviceRepository.get(serviceId) ?: return
+    internal suspend fun removeSubscription(serviceId: Long) = withContext(dispatcher) {
+        val service = serviceRepository.get(serviceId) ?: return@withContext
         val unsubscribeFrom = collectionRepository.getPushRegistered(service.id)
         if (unsubscribeFrom.isEmpty())
-            return
+            return@withContext
 
         val account = accountRepository.get().fromName(service.accountName)
         httpClientBuilder.get()
@@ -268,10 +267,8 @@ class PushRegistrationManager @Inject constructor(
      *
      * Otherwise, a potentially existing worker is cancelled.
      */
-    fun updatePeriodicWorker() {
-        val workerNeeded = runBlocking {
-            collectionRepository.anyPushCapable()
-        }
+    suspend fun updatePeriodicWorker() = withContext(dispatcher) {
+        val workerNeeded = collectionRepository.anyPushCapable()
 
         val workManager = WorkManager.getInstance(context)
         if (workerNeeded) {
@@ -301,6 +298,9 @@ class PushRegistrationManager @Inject constructor(
         private const val WORKER_UNIQUE_NAME = "push-registration"
         const val WORKER_INTERVAL_DAYS = 1L
 
+        /**
+         * Single-thread dispatcher to synchronize tasks.
+         */
         val dispatcher = Dispatchers.IO.limitedParallelism(1)
 
     }
