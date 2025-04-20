@@ -181,6 +181,7 @@ dependencies {
     implementation(libs.bitfire.cert4android)
     implementation(libs.bitfire.dav4jvm) {
         exclude(group="junit")
+        exclude(group="org.ogce", module="xpp3")    // Android has its own XmlPullParser implementation
     }
     implementation(libs.bitfire.ical4android)
     implementation(libs.bitfire.vcard4android)
