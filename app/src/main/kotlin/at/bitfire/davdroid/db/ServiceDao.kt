@@ -26,7 +26,7 @@ interface ServiceDao {
     fun get(id: Long): Service?
 
     @Query("SELECT * FROM service")
-    fun getAll(): List<Service>
+    suspend fun getAll(): List<Service>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrReplace(service: Service): Long

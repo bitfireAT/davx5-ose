@@ -15,7 +15,6 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.push.PushRegistrationManager
-import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -39,7 +38,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AppSettingsModel @Inject constructor(
     @ApplicationContext val context: Context,
-    private val collectionRepository: DavCollectionRepository,
     private val preferences: PreferenceRepository,
     private val pushRegistrationManager: PushRegistrationManager,
     private val settings: SettingsManager,
@@ -50,9 +48,10 @@ class AppSettingsModel @Inject constructor(
     // debugging
 
     private val powerManager = context.getSystemService<PowerManager>()!!
-    val batterySavingExempted = broadcastReceiverFlow(context, IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED), immediate = true)
-        .map { powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    val batterySavingExempted =
+        broadcastReceiverFlow(context, IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED), immediate = true)
+            .map { powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     fun verboseLogging() = preferences.logToFileFlow()
     fun updateVerboseLogging(verbose: Boolean) {

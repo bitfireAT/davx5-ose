@@ -76,7 +76,7 @@ interface CollectionDao {
      * pushTopic is available).
      */
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync AND supportsWebPush AND pushTopic IS NOT NULL")
-    fun getPushCapableSyncCollections(serviceId: Long): List<Collection>
+    suspend fun getPushCapableSyncCollections(serviceId: Long): List<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND pushSubscription IS NOT NULL")
     suspend fun getPushRegistered(serviceId: Long): List<Collection>

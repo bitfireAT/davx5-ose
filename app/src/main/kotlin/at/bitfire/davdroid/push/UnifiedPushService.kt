@@ -13,6 +13,7 @@ import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.unifiedpush.android.connector.FailedReason
 import org.unifiedpush.android.connector.PushService
@@ -80,7 +81,7 @@ class UnifiedPushService : PushService() {
     }
 
     override fun onMessage(message: PushMessage, instance: String) {
-        runBlocking {
+        runBlocking(Dispatchers.Default) {
             if (!message.decrypted) {
                 logger.severe("Received a push message that could not be decrypted.")
                 return@runBlocking
