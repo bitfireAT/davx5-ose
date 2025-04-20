@@ -138,6 +138,10 @@
   <string name="sync_warning_manage_battery_saver">Gestiona l\'estalvi de bateria</string>
   <string name="sync_warning_low_storage">Espai d\'emmagatzematge baix. L\'Android no sincronitzarà els canvis locals immediatament, sinó durant la pròxima sincronització normal.</string>
   <string name="sync_warning_manage_storage">Gestiona l\'emmagatzematge</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Manca el proveïdor de calendari</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Heu desactivat l\'aplicació del sistema «Emmagatzematge de calendari»?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Manca el proveïdor de contactes</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Heu desactivat l\'aplicació del sistema «Emmagatzematge de contactes»?</string>
   <string name="sync_warning_manage_apps">Gestioneu les aplicacions</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Ha fallat la detecció del servei</string>
@@ -419,7 +423,7 @@
   <string name="webdav_mounts_unmount">Desmunta</string>
   <string name="webdav_add_mount_title">Afegeix un muntatge WebDAV</string>
   <string name="webdav_mounts_empty">Accediu directament als fitxers en el núvol afegint un muntatge WebDAV!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Vegeu el manual quant a <a href="%1$s">com funcionen els muntatges WebDAV</a>.</string>]]></string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Vegeu el manual per a conèixer <a href="%1$s">com funcionen els muntatges WebDAV</a>.]]></string>
   <string name="webdav_add_mount_display_name">Nom a mostrar</string>
   <string name="webdav_add_mount_url">URL del WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL no vàlid</string>

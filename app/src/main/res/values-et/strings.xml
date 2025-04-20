@@ -129,7 +129,7 @@
   <string name="account_list_empty">Loo ühendus oma serveriga ja hoia kalendrid ning kontaktid sünkroniseerituna.</string>
   <string name="accounts_sync_all">Sünkroniseeri kõik kasutajakontod</string>
   <!--Sync warnings-->
-  <string name="sync_warning_no_notification_permission">Teavitused on väljalülitatud ja seega sünkroniseerimisvigade infot sa ei näe.</string>
+  <string name="sync_warning_no_notification_permission">Teavitused on välja lülitatud ja seega sünkroniseerimisvigade infot sa ei näe.</string>
   <string name="sync_warning_no_internet">Automaatne sünkroniseerimine pole aktiivne (kontrollitud internetiühendus puudub)</string>
   <string name="sync_warning_manage_connections">Halda ühendusi</string>
   <string name="sync_warning_datasaver_enabled">Andmemahu piiraja on kasutusel. Taustal sünkroniseerimine võib toimida piirangutega.</string>
@@ -423,7 +423,7 @@
   <string name="webdav_mounts_unmount">Eemalda haakimine</string>
   <string name="webdav_add_mount_title">Lisa WebDAVi haakepunkt</string>
   <string name="webdav_mounts_empty">Otseligipääs sinu failidele WebDAVi haakepunktist!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Vaata juhendit <a href="%1$s">kuidas WebDAVi haakepunktid toimivad</a>.</string>]]></string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Vaata juhendist <a href="%1$s">kuidas WebDAVi haakepunktid toimivad</a>.]]></string>
   <string name="webdav_add_mount_display_name">Kuvatav nimi</string>
   <string name="webdav_add_mount_url">WebDAVi võrguaadress</string>
   <string name="webdav_add_mount_url_invalid">Vigane võrguaadress</string>

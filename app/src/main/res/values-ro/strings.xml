@@ -426,7 +426,7 @@
   <string name="webdav_mounts_unmount">Demontează</string>
   <string name="webdav_add_mount_title">Adaugă o montare WebDAV</string>
   <string name="webdav_mounts_empty">Accesează direct fișierele din cloud adăugând o montare WebDAV!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Vezi manualul pentru a afla <a href="%1$s">cum funcționează montările WebDAV</a>.</string>]]></string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Vezi manualul pentru a afla <a href="%1$s">cum funcționează montările WebDAV</a>.]]></string>
   <string name="webdav_add_mount_display_name">Numele afișat</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL greșit</string>

@@ -391,7 +391,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="webdav_mounts_unmount">Afmontere</string>
   <string name="webdav_add_mount_title">Tilføj WebDAV monteringspunkt</string>
   <string name="webdav_mounts_empty">Tilføj en WebDAV mount for at tilgå dine filer i skyen</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Se manualen for <a href="%1$s">hvordan WebDAV mounts virker</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Vis navn</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Ugyldig URL</string>

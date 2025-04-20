@@ -419,7 +419,6 @@
   <string name="webdav_mounts_unmount">Desmuntatu</string>
   <string name="webdav_add_mount_title">Gehitu WebDAV muntaia</string>
   <string name="webdav_mounts_empty">Atzitu zure cloud fitxategiak zuzenean WebDAV muntaia bat gehitzen!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Ikusi <a href="%1$s">WebDAV muntaiak nola funtzionatzen duten</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Bistaratze-izena</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">URL baliogabea</string>

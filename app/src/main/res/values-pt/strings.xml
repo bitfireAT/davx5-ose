@@ -3,6 +3,7 @@
   <!--common strings-->
   <string name="account_invalid">A conta não existe (mais)</string>
   <string name="account_title_address_book">Livro de endereços do DAVx⁵</string>
+  <string name="account_prefs_use_app">Não mude a conta por aqui! Em vez disso, use o app diretamente para gerenciar as contas.</string>
   <string name="dialog_delete">Excluir</string>
   <string name="dialog_remove">Remover</string>
   <string name="dialog_deny">Cancelar</string>
@@ -44,11 +45,18 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Parece não ser mais desenvolvido -- não recomendado.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Alguns recursos <a href="https://www.davx5.com/faq/tasks/advanced-task-features">não são suportados</a>.]]></string>
   <string name="intro_tasks_no_app_store">Nenhuma loja de aplicativos disponível</string>
   <string name="intro_tasks_dont_show">Não preciso de suporte a tarefas.*</string>
   <string name="intro_open_source_title">Software Livre</string>
   <string name="intro_open_source_text">Estamos felizes por usar o %s, que é um software de código aberto. Desenvolvimento, manutenção e suporte são um trabalho árduo. Considere contribuir (existem várias maneiras) ou fazer uma doação. Seria muito apreciado!</string>
   <string name="intro_open_source_details">Como contribuir/doar</string>
+  <string name="intro_open_source_dont_show">Não me lembrar por</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d mês</item>
+    <item quantity="many">%d de meses</item>
+    <item quantity="other">%d meses</item>
+  </plurals>
   <string name="intro_next">Próximo</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permissões</string>
@@ -86,6 +94,8 @@
   <string name="wifi_permissions_background_location_permission_label">Permitir o tempo todo</string>
   <string name="wifi_permissions_background_location_permission_on">Permissão de localização está definida como:%s</string>
   <string name="wifi_permissions_background_location_permission_off">Permissão de localização não está definida como:%s</string>
+  <string name="wifi_permissions_background_location_disclaimer">O %susa dados de localização (somente os SSIDs de Wi-Fi) para restringir a sincronização em uma rede Wi-Fi específica. Isso pode acontecer mesmo quando a sincronização é executada em segundo plano.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Todos os dados de localização (que são somente SSIDs de Wi-Fi) são usados somente localmente e não são enviados para qualquer servidor.</string>
   <string name="wifi_permissions_location_enabled">Localização sempre ativa</string>
   <string name="wifi_permissions_location_enabled_on">Serviço de localização está ativado</string>
   <string name="wifi_permissions_location_enabled_off">Serviço de localização está desativado</string>
@@ -116,9 +126,12 @@
   <string name="navigation_drawer_support_project">Apoie o projeto</string>
   <string name="navigation_drawer_contribute">Como contribuir</string>
   <string name="navigation_drawer_privacy_policy">Política de privacidade</string>
+  <string name="account_list_welcome">Bem-vindo ao DAVx⁵!</string>
+  <string name="account_list_empty">Conecte-se ao seu servidor e mantenha seus calendários e contatos sincronizados.</string>
   <string name="accounts_sync_all">Sincronizar todas as contas</string>
   <!--Sync warnings-->
   <string name="sync_warning_no_notification_permission">As notificações estão desativadas. Você não será notificado sobre erros de sincronização.</string>
+  <string name="sync_warning_no_internet">Sincronização automática inativa (sem conexão à internet verificada).</string>
   <string name="sync_warning_manage_connections">Gerenciar conexões</string>
   <string name="sync_warning_datasaver_enabled">A economia de dados está ativada. A sincronização em segundo plano está restrita.</string>
   <string name="sync_warning_manage_datasaver">Gerenciar a economia de dados</string>
@@ -126,6 +139,11 @@
   <string name="sync_warning_manage_battery_saver">Gerenciar a economia de bateria</string>
   <string name="sync_warning_low_storage">Pouco espaço de armazenamento. O Android não sincronizará as mudanças locais imediatamente, mas sim na próxima sincronização regular.</string>
   <string name="sync_warning_manage_storage">Gerenciar armazenamento</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Provedor de calendários ausente</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Você desativou o app do sistema chamado \"Armazenamento de calendários\"?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Provedor de contatos ausente</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Você desativou o app do sistema chamado \"Armazenamento de contatos\"?</string>
+  <string name="sync_warning_manage_apps">Gerenciar apps</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Falha na detecção do serviço</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Não foi possível atualizar a lista da coleção</string>
@@ -136,7 +154,9 @@
   <string name="app_settings">Configurações</string>
   <string name="app_settings_debug">Depuração</string>
   <string name="app_settings_show_debug_info">Mostrar informações de depuração</string>
+  <string name="app_settings_show_debug_info_details">Ver/compartilhar configurações de configuração e registros</string>
   <string name="app_settings_logging">Registro de atividades detalhado</string>
+  <string name="app_settings_logging_on">O registro está ativo. Você pode ver os registros como parte das informações de depuração.</string>
   <string name="app_settings_logging_off">Registro de atividades desativado</string>
   <string name="app_settings_battery_optimization">Otimização da bateria</string>
   <string name="app_settings_battery_optimization_exempted">O app está isento (recomendado)</string>
@@ -157,6 +177,7 @@
   <string name="app_settings_distrust_system_certs">Desconfiar dos certificados de sistema</string>
   <string name="app_settings_distrust_system_certs_on">ACs adicionadas pelo usuário e pelo sistema não serão confiáveis</string>
   <string name="app_settings_distrust_system_certs_off">ACs adicionadas pelo usuário e pelo sistema serão confiáveis (recomendado)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Se essa configuração está ativa, os certificados do sistema não são tratados como confiáveis. Isso significa que você terá que manualmente aceitar cada certificado (e quando o servidor renova o seu certificado) ou a configuração da conta e a sincronização não funcionarão.</string>
   <string name="app_settings_reset_certificates">Redefinir certificados não-confiáveis</string>
   <string name="app_settings_reset_certificates_summary">Restaura a confiança de todos os certificados personalizados</string>
   <string name="app_settings_reset_certificates_success">Todos os certificados personalizados foram restaurados</string>
@@ -175,6 +196,12 @@
   <string name="app_settings_integration">Integração</string>
   <string name="app_settings_tasks_provider">App de tarefas</string>
   <string name="app_settings_tasks_provider_none">Nenhum app de tarefas compatível encontrado</string>
+  <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
+  <string name="app_settings_unifiedpush_disable">Nenhum (desativar push)</string>
+  <string name="app_settings_unifiedpush_choose_distributor">Escolha um distribuidor</string>
+  <string name="app_settings_unifiedpush_no_distributor">Nenhum distribuidor push instalado</string>
+  <string name="app_settings_unifiedpush_no_endpoint">Nenhum servidor configurado</string>
+  <string name="app_settings_unifiedpush_ready">Pronto para receber mensagems push pelo %s</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -205,6 +232,7 @@
   <string name="account_install_icsx5">Instalar ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Adicionar conta</string>
+  <string name="login_privacy_hint"><![CDATA[Todos os dados serão transferidos somente entre o servidor e o seu dispositivo. O %1$s não enviará eles para qualquer outro lugar. Leia a <a href="%2$s">política de privacidade</a>.]]></string>
   <string name="login_generic_login">Login genérico</string>
   <string name="login_provider_login">Login de provedor específico</string>
   <string name="login_continue">Continuar</string>
@@ -230,6 +258,8 @@
   <string name="login_account_contact_group_method">Método do grupo Contato:</string>
   <string name="login_account_name_required">É necessário um nome de conta</string>
   <string name="login_account_name_already_taken">O nome da conta já foi utilizado</string>
+  <string name="login_account_not_added">A conta não pôde ser adicionada</string>
+  <string name="login_finish">Concluir</string>
   <string name="login_type_advanced">Login avançado</string>
   <string name="login_no_client_certificate_optional">Sem certificado de cliente*</string>
   <string name="login_client_certificate_selected">Certificado do cliente: %s</string>
@@ -349,6 +379,7 @@
   <string name="collection_synchronization_off">Sincronização desativada</string>
   <string name="collection_read_only">Somente leitura</string>
   <string name="collection_read_only_by_server">Somente leitura (pelo servidor)</string>
+  <string name="collection_read_only_by_setting">Somente-leitura (pela política)</string>
   <string name="collection_read_only_forced">Somente leitura (somente localmente)</string>
   <string name="collection_read_write">Leitura/escrita</string>
   <string name="collection_title">Título</string>
@@ -356,6 +387,7 @@
   <string name="collection_owner">Proprietário</string>
   <string name="collection_push_support">Suporte à Push</string>
   <string name="collection_push_web_push">Servidor anuncia suporte à Push</string>
+  <string name="collection_push_subscribed_at">Inscrito em %1$s, expira às %2$s</string>
   <string name="collection_last_sync">Última sincronização (%s)</string>
   <string name="collection_url">Endereço (URL)</string>
   <!--debugging and DebugInfoActivity-->
@@ -394,7 +426,6 @@
   <string name="webdav_mounts_unmount">Desmontar</string>
   <string name="webdav_add_mount_title">Adicionar uma pasta WebDAV</string>
   <string name="webdav_mounts_empty">Acesse diretamente seus arquivos da nuvem adicionando uma pasta WebDAV!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Veja o manual para ver <a href="%1$s">como as pastas WebDAV funcionam</a>.]]></string>
   <string name="webdav_add_mount_display_name">Nome de exibição</string>
   <string name="webdav_add_mount_url">URL do WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL inválida</string>
@@ -424,6 +455,8 @@
   <string name="sync_invalid_event">Evento inválido recebido do servidor</string>
   <string name="sync_invalid_task">Tarefa inválida recebida do servidor</string>
   <string name="sync_invalid_resources_ignoring">Ignorando um ou mais recursos inválidos</string>
+  <string name="sync_notification_pending_push_title">Sincronização em espera</string>
+  <string name="sync_notification_pending_push_message">Dados remotos podem ter mudado</string>
   <!--widgets-->
   <string name="widget_sync_all">Sincronizar tudo</string>
   <string name="widget_sync_all_accounts">Sincronizar todas as contas</string>

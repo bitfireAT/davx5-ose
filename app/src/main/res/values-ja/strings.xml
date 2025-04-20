@@ -420,7 +420,7 @@
   <string name="webdav_mounts_unmount">マウント解除</string>
   <string name="webdav_add_mount_title">WebDAV マウントを追加</string>
   <string name="webdav_mounts_empty">WebDAV マウントを追加してクラウドファイルに直接アクセスしましょう！</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[WebDAV マウントの機能は <a href="%1$s">マニュアル</a> を確認</string>]]></string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[操作方法は <a href="%1$s">WebDAV マウントの動作について</a>を確認してください。]]></string>
   <string name="webdav_add_mount_display_name">表示名</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">無効な URL</string>

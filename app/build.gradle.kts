@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 plugins {
     alias(libs.plugins.mikepenz.aboutLibraries)
@@ -18,8 +18,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 404080001
-        versionName = "4.4.8"
+        versionCode = 404090001
+        versionName = "4.4.9"
 
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
@@ -181,6 +181,7 @@ dependencies {
     implementation(libs.bitfire.cert4android)
     implementation(libs.bitfire.dav4jvm) {
         exclude(group="junit")
+        exclude(group="org.ogce", module="xpp3")    // Android has its own XmlPullParser implementation
     }
     implementation(libs.bitfire.ical4android)
     implementation(libs.bitfire.vcard4android)
@@ -203,6 +204,10 @@ dependencies {
     }
     implementation(libs.unifiedpush.fcm)
 
+    // force some versions for compatibility with our minSdk level (see version catalog for details)
+    implementation(libs.commons.codec)
+    implementation(libs.commons.lang)
+
     // for tests
     androidTestImplementation(libs.androidx.arch.core.testing)
     androidTestImplementation(libs.androidx.test.core)
@@ -216,6 +221,7 @@ dependencies {
     androidTestImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(libs.room.testing)
 
+    testImplementation(libs.bitfire.dav4jvm)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.okhttp.mockwebserver)
