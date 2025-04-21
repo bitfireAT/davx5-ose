@@ -19,6 +19,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
+import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -142,7 +143,7 @@ class CollectionListRefresherTest {
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             ),
-            db.collectionDao().getByService(service.id).first()
+            runBlocking { db.collectionDao().getByService(service.id).first() }
         )
     }
 
