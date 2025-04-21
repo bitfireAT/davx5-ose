@@ -10,7 +10,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toSet
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -59,7 +59,7 @@ class SettingsManagerTest {
 
 
     @Test
-    fun test_observerFlow_initialValue() = runBlocking {
+    fun test_observerFlow_initialValue() = runTest {
         var counter = 0
         val live = settingsManager.observerFlow {
             if (counter++ == 0)
@@ -71,7 +71,7 @@ class SettingsManagerTest {
     }
 
     @Test
-    fun test_observerFlow_updatedValue() = runBlocking {
+    fun test_observerFlow_updatedValue() = runTest {
         var counter = 0
         val live = settingsManager.observerFlow {
             when (counter++) {

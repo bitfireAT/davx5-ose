@@ -13,7 +13,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
 import io.mockk.verify
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Before
@@ -64,7 +64,7 @@ class DavCollectionRepositoryTest {
 
 
     @Test
-    fun testOnChangeListener_setForceReadOnly() = runBlocking {
+    fun testOnChangeListener_setForceReadOnly() = runTest {
         val collectionId = db.collectionDao().insertOrUpdateByUrl(
             Collection(
                 serviceId = service!!.id,
