@@ -48,6 +48,11 @@ import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
 
+/**
+ * Manages push registrations and subscriptions.
+ *
+ * To update push registrations and subscriptions (for instance after collections have been changed), call [update].
+ */
 class PushRegistrationManager @Inject constructor(
     private val accountRepository: Lazy<AccountRepository>,
     private val collectionRepository: DavCollectionRepository,
@@ -73,13 +78,13 @@ class PushRegistrationManager @Inject constructor(
     /**
      * Same as [update], but for a specific database service.
      */
-    suspend fun update(serviceId: Long) {
+    suspend fun update(serviceId: Long) = withContext(dispatcher) {
         updateService(serviceId)
         updatePeriodicWorker()
     }
 
-    private suspend fun updateService(serviceId: Long) = withContext(dispatcher) {
-        val service = serviceRepository.get(serviceId) ?: return@withContext
+    private suspend fun updateService(serviceId: Long) {
+        val service = serviceRepository.get(serviceId) ?: return
         val vapid = collectionRepository.getVapidKey(serviceId)
 
         if (vapid != null)
@@ -299,7 +304,7 @@ class PushRegistrationManager @Inject constructor(
         const val WORKER_INTERVAL_DAYS = 1L
 
         /**
-         * Single-thread dispatcher to synchronize tasks.
+         * Single-thread dispatcher to synchronize non-private calls.
          */
         val dispatcher = Dispatchers.IO.limitedParallelism(1)
 

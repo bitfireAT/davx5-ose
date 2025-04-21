@@ -23,6 +23,12 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
+/**
+ * Entry point for UnifiedPush.
+ *
+ * Calls [PushRegistrationManager] for most tasks, except incoming push messages,
+ * which are handled directly.
+ */
 @AndroidEntryPoint
 class UnifiedPushService : PushService() {
 
