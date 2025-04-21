@@ -129,10 +129,18 @@ class UnifiedPushService : PushService() {
                 }
 
             } else {
-                logger.warning("Got push message without topic, syncing all accounts")
-                for (account in accountRepository.getAll())
+                // fallback when no known topic is present (shouldn't happen)
+                val service = instance.toLongOrNull()?.let { serviceRepository.get(it) }
+                if (service != null) {
+                    logger.warning("Got push message without topic and service, syncing all accounts")
+                    val account = accountRepository.fromName(service.accountName)
                     syncWorkerManager.enqueueOneTimeAllAuthorities(account, fromPush = true)
 
+                } else {
+                    logger.warning("Got push message without topic, syncing all accounts")
+                    for (account in accountRepository.getAll())
+                        syncWorkerManager.enqueueOneTimeAllAuthorities(account, fromPush = true)
+                }
             }
         }
     }
