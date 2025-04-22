@@ -23,7 +23,7 @@ class PermissionsModel @Inject constructor(
     @ApplicationContext val context: Context,
 ): ViewModel() {
 
-    var needKeepPermissions by mutableStateOf(false)
+    var needKeepPermissions by mutableStateOf<Boolean?>(null)
         private set
     var openTasksAvailable by mutableStateOf(false)
         private set
