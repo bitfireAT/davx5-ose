@@ -188,11 +188,14 @@ class LoginScreenModel @AssistedInject constructor(
     private var detectResourcesJob: Job? = null
 
     private fun detectResources() {
+        // Make sure baseUri has been initialized
+        val baseUri = loginInfo.baseUri ?: return
+
         detectResourcesUiState = detectResourcesUiState.copy(loading = true)
         detectResourcesJob = viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
                  runInterruptible {
-                     resourceFinderFactory.create(loginInfo.baseUri!!, loginInfo.credentials).use { finder ->
+                     resourceFinderFactory.create(baseUri, loginInfo.credentials).use { finder ->
                          finder.findInitialConfiguration()
                      }
                  }
