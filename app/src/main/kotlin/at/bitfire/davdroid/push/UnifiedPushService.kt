@@ -15,6 +15,7 @@ import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.annotations.TestOnly
 import org.unifiedpush.android.connector.FailedReason
 import org.unifiedpush.android.connector.PushService
 import org.unifiedpush.android.connector.data.PushEndpoint
@@ -22,6 +23,8 @@ import org.unifiedpush.android.connector.data.PushMessage
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * Entry point for UnifiedPush.
@@ -59,10 +62,10 @@ class UnifiedPushService : PushService() {
 
     override fun onNewEndpoint(endpoint: PushEndpoint, instance: String) {
         val serviceId = instance.toLongOrNull() ?: return
-        logger.log(Level.FINE, "Got UnifiedPush endpoint for service $serviceId", endpoint.url)
+        logger.warning("Got UnifiedPush endpoint for service $serviceId: ${endpoint.url}")
 
         // register new endpoint at CalDAV/CardDAV servers
-        runBlocking {
+        runBlocking(Dispatchers.Default) {
             pushRegistrationManager.processSubscription(serviceId, endpoint)
         }
     }
@@ -72,7 +75,7 @@ class UnifiedPushService : PushService() {
         logger.warning("UnifiedPush registration failed for service $serviceId: $reason")
 
         // unregister subscriptions
-        runBlocking {
+        runBlocking(Dispatchers.Default) {
             pushRegistrationManager.removeSubscription(serviceId)
         }
     }
@@ -81,7 +84,7 @@ class UnifiedPushService : PushService() {
         val serviceId = instance.toLongOrNull() ?: return
         logger.warning("UnifiedPush unregistered for service $serviceId")
 
-        runBlocking {
+        runBlocking(Dispatchers.Default) {
             pushRegistrationManager.removeSubscription(serviceId)
         }
     }
@@ -143,6 +146,35 @@ class UnifiedPushService : PushService() {
                 }
             }
         }
+    }
+
+
+    companion object {
+
+        /**
+         * We need to reset PushService::Companion.binder to null before creating a new PushService with a new binder. The
+         * current implementation caches the binder, which will always use the first UnifiedPushService that is created during the first
+         * test. All following test will fail because the wrong binder is used by PushService.
+         *
+         * This method resets the binder using reflection, because it's not accessible directly.
+         *
+         * See https://codeberg.org/UnifiedPush/android-connector/issues/8
+         */
+        @TestOnly
+        fun resetBinder() {
+            // requires kotlin-reflection
+            val pushServiceClass = PushService::class
+            val companionClass = pushServiceClass.nestedClasses.first { it.isCompanion }
+
+            val binderProperty = companionClass.members
+                .filterIsInstance(KMutableProperty::class.java)
+                .first { it.name.contains("binder") }
+            binderProperty.isAccessible = true
+            val binderSetter = binderProperty.setter
+
+            binderSetter.call(companionClass, null)
+        }
+
     }
 
 }
