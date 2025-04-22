@@ -4,23 +4,30 @@
 
 package at.bitfire.davdroid.ui.account
 
+import android.accounts.Account
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.DelayedSyncManager
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,10 +38,13 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = CollectionScreenModel.Factory::class)
 class CollectionScreenModel @AssistedInject constructor(
+    @ApplicationContext private val context: Context,
     @Assisted val collectionId: Long,
     db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
-    private val settings: SettingsManager,
+    private val delayedSyncManager: DelayedSyncManager,
+    private val serviceRepository: DavServiceRepository,
+    settings: SettingsManager,
     syncStatsRepository: DavSyncStatsRepository
 ): ViewModel() {
 
@@ -124,15 +134,29 @@ class CollectionScreenModel @AssistedInject constructor(
     }
 
     fun setForceReadOnly(forceReadOnly: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             collectionRepository.setForceReadOnly(collectionId, forceReadOnly)
+            syncAfterDelay(collectionId)
         }
     }
 
     fun setSync(sync: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             collectionRepository.setSync(collectionId, sync)
+            syncAfterDelay(collectionId)
         }
+    }
+
+    /**
+     * Enqueues a one-time account wide sync after a short delay or scope cancellation.
+     * @param collectionId collection ID of collection in the account to be synchronized
+     */
+    private fun syncAfterDelay(collectionId: Long) {
+        val serviceId = collectionRepository.get(collectionId)?.serviceId ?: return
+        val accountName = serviceRepository.get(serviceId)?.accountName ?: return
+        val account = Account(accountName, context.getString(R.string.account_type))
+
+        delayedSyncManager.enqueueAfterDelay(account)
     }
 
 }
