@@ -48,7 +48,6 @@ import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
-import at.bitfire.davdroid.webdav.DavDocumentsProvider.DavDocumentsActor
 import at.bitfire.davdroid.webdav.cache.ThumbnailCache
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -59,8 +58,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -85,7 +86,9 @@ import javax.inject.Provider
  *
  * Actual implementation should go into [DavDocumentsActor].
  */
-class DavDocumentsProvider: DocumentsProvider() {
+class DavDocumentsProvider(
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+): DocumentsProvider() {
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
@@ -125,6 +128,8 @@ class DavDocumentsProvider: DocumentsProvider() {
             context.contentResolver.notifyChange(buildRootsUri(context.getString(R.string.webdav_authority)), null)
         }
     }
+
+    val documentProviderScope = CoroutineScope(SupervisorJob())
 
     private val ourContext by lazy { context!! }        // requireContext() requires API level 30
     private val authority by lazy { ourContext.getString(R.string.webdav_authority) }
@@ -260,7 +265,7 @@ class DavDocumentsProvider: DocumentsProvider() {
 
         // Dispatch worker querying for the children and keep track of it
         val running = runningQueryChildren.getOrPut(parentId) {
-            CoroutineScope(Dispatchers.IO).launch {
+            documentProviderScope.launch(ioDispatcher) {
                 actor.queryChildren(parent)
                 // Once the query is done, set query as finished (not running)
                 runningQueryChildren[parentId] = false
@@ -484,14 +489,11 @@ class DavDocumentsProvider: DocumentsProvider() {
 
     /*** read/write ***/
 
-    private fun headRequest(client: HttpClient, url: HttpUrl, signal: CancellationSignal?): HeadResponse {
-        val response = CoroutineScope(Dispatchers.IO).async {
+    private fun headRequest(client: HttpClient, url: HttpUrl, externalScope: CoroutineScope): HeadResponse {
+        val response = externalScope.async(ioDispatcher) {
             runInterruptible {
                 HeadResponse.fromUrl(client, url)
             }
-        }
-        signal?.setOnCancelListener {
-            response.cancel("Cancelled by signal")
         }
         return runBlocking {
             response.await()
@@ -512,7 +514,13 @@ class DavDocumentsProvider: DocumentsProvider() {
             else -> throw UnsupportedOperationException("Mode $mode not supported by WebDAV")
         }
 
-        val fileInfo = headRequest(client, url, signal)
+        val accessScope = CoroutineScope(SupervisorJob())
+        signal?.setOnCancelListener {
+            logger.fine("Cancelling WebDAV access to $url")
+            accessScope.cancel()
+        }
+
+        val fileInfo = headRequest(client, url, accessScope)
         logger.fine("Received file info: $fileInfo")
 
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
@@ -525,12 +533,12 @@ class DavDocumentsProvider: DocumentsProvider() {
         ) {
             logger.fine("Creating RandomAccessCallback for $url")
             val factory = globalEntryPoint.randomAccessCallbackWrapperFactory()
-            val accessor = factory.create(client, url, doc.mimeType, fileInfo, signal)
+            val accessor = factory.create(client, url, doc.mimeType, fileInfo, accessScope)
             storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
         } else {
             logger.fine("Creating StreamingFileDescriptor for $url")
             val factory = globalEntryPoint.streamingFileDescriptorFactory()
-            val fd = factory.create(client, url, doc.mimeType, signal) { transferred ->
+            val fd = factory.create(client, url, doc.mimeType, accessScope) { transferred ->
                 // called when transfer is finished
 
                 val now = System.currentTimeMillis()
@@ -557,9 +565,13 @@ class DavDocumentsProvider: DocumentsProvider() {
             return null
 
         if (signal == null) {
-            // see https://github.com/zhanghai/MaterialFiles/issues/588
             logger.warning("openDocumentThumbnail without cancellationSignal causes too much problems, please fix calling app")
             return null
+        }
+        val accessScope = CoroutineScope(SupervisorJob())
+        signal.setOnCancelListener {
+            logger.fine("Cancelling thumbnail generation for $documentId")
+            accessScope.cancel()
         }
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
@@ -572,7 +584,7 @@ class DavDocumentsProvider: DocumentsProvider() {
 
         val thumbFile = thumbnailCache.get(docCacheKey, sizeHint) {
             // create thumbnail
-            val job = CoroutineScope(Dispatchers.IO).async {
+            val job = accessScope.async(ioDispatcher) {
                 withTimeout(THUMBNAIL_TIMEOUT_MS) {
                     actor.httpClient(doc.mountId, logBody = false).use { client ->
                         val url = doc.toHttpUrl(db)
@@ -593,11 +605,6 @@ class DavDocumentsProvider: DocumentsProvider() {
                         result
                     }
                 }
-            }
-
-            signal.setOnCancelListener {
-                logger.fine("Cancelling thumbnail for ${doc.name}")
-                job.cancel("Cancelled by signal")
             }
 
             try {
