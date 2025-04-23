@@ -185,7 +185,7 @@ class AccountScreenModel @AssistedInject constructor(
     }
 
     fun setCollectionSync(id: Long, sync: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             collectionRepository.setSync(id, sync)
             syncAfterDelay(id)
         }
@@ -199,9 +199,9 @@ class AccountScreenModel @AssistedInject constructor(
      * Enqueues a one-time account wide sync after a short delay or scope cancellation.
      * @param collectionId collection ID of collection in the account to be synchronized
      */
-    private fun syncAfterDelay(collectionId: Long) {
-        val serviceId = collectionRepository.get(collectionId)?.serviceId ?: return
-        val accountName = serviceRepository.get(serviceId)?.accountName ?: return
+    private suspend fun syncAfterDelay(collectionId: Long) = withContext(Dispatchers.IO) {
+        val serviceId = collectionRepository.get(collectionId)?.serviceId ?: return@withContext
+        val accountName = serviceRepository.get(serviceId)?.accountName ?: return@withContext
         val account = Account(accountName, context.getString(R.string.account_type))
 
         delayedSyncManager.enqueueAfterDelay(account)
