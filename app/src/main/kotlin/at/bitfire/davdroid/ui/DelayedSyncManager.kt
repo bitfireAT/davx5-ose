@@ -36,7 +36,7 @@ class DelayedSyncManager @Inject constructor(
             previousJob?.cancel()
 
             // Start delay and enqueue sync on finish
-            /* return */ applicationScope.launch {
+            applicationScope.launch {
                 delay(10000L)
                 syncWorkerManager.enqueueOneTimeAllAuthorities(account)
             }
