@@ -202,7 +202,7 @@ class AccountScreenModel @AssistedInject constructor(
     private suspend fun syncAfterDelay(collectionId: Long) = withContext(Dispatchers.IO) {
         val serviceId = collectionRepository.get(collectionId)?.serviceId ?: return@withContext
         val accountName = serviceRepository.get(serviceId)?.accountName ?: return@withContext
-        val account = Account(accountName, context.getString(R.string.account_type))
+        val account = accountRepository.fromName(accountName)
 
         delayedSyncManager.enqueueAfterDelay(account)
     }

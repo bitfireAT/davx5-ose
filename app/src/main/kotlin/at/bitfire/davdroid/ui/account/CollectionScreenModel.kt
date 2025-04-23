@@ -4,16 +4,14 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
@@ -25,7 +23,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -39,7 +36,7 @@ import kotlinx.coroutines.withContext
 
 @HiltViewModel(assistedFactory = CollectionScreenModel.Factory::class)
 class CollectionScreenModel @AssistedInject constructor(
-    @ApplicationContext private val context: Context,
+    private val accountRepository: AccountRepository,
     @Assisted val collectionId: Long,
     db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
@@ -155,7 +152,7 @@ class CollectionScreenModel @AssistedInject constructor(
     private suspend fun syncAfterDelay(collectionId: Long) = withContext(Dispatchers.IO) {
         val serviceId = collectionRepository.get(collectionId)?.serviceId ?: return@withContext
         val accountName = serviceRepository.get(serviceId)?.accountName ?: return@withContext
-        val account = Account(accountName, context.getString(R.string.account_type))
+        val account = accountRepository.fromName(accountName)
 
         delayedSyncManager.enqueueAfterDelay(account)
     }
