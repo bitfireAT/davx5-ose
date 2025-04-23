@@ -99,12 +99,12 @@ class RandomAccessCallback @AssistedInject constructor(
 
     override fun onFsync() { /* not used */ }
 
-    override fun onGetSize(): Long = runBlockingSaf("onGetFileSize") {
+    override fun onGetSize(): Long = runBlockingFd("onGetFileSize") {
         logger.fine("onGetFileSize $url")
         fileSize
     }
 
-    override fun onRead(offset: Long, size: Int, data: ByteArray) = runBlockingSaf("onRead") {
+    override fun onRead(offset: Long, size: Int, data: ByteArray) = runBlockingFd("onRead") {
         logger.fine("onRead $url $offset $size")
         pagingReader.read(offset, size, data)
     }
@@ -126,11 +126,12 @@ class RandomAccessCallback @AssistedInject constructor(
     /**
      * Runs blocking in [externalScope].
      *
-     * Exceptions (including [CancellationException]) are wrapped in an [ErrnoException] for Storage Access Framework.
+     * Exceptions (including [CancellationException]) are wrapped in an [ErrnoException], as expected by the file
+     * descriptor / Storage Access Framework.
      *
      * @param functionName  name of the operation, passed to [ErrnoException] in case of cancellation
      */
-    private fun<T> runBlockingSaf(functionName: String, block: () -> T): T =
+    private fun<T> runBlockingFd(functionName: String, block: () -> T): T =
         runBlocking {
             try {
                 externalScope.async {
