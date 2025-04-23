@@ -33,7 +33,7 @@ interface CollectionDao {
     fun getByServiceAndType(serviceId: Long, @CollectionType type: String): List<Collection>
 
     @Query("SELECT * FROM collection WHERE pushTopic=:topic AND sync")
-    fun getSyncableByPushTopic(topic: String): Collection?
+    suspend fun getSyncableByPushTopic(topic: String): Collection?
 
     @Query("SELECT pushVapidKey FROM collection WHERE serviceId=:serviceId AND pushVapidKey IS NOT NULL LIMIT 1")
     suspend fun getFirstVapidKey(serviceId: Long): String?

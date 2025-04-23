@@ -25,6 +25,9 @@ interface ServiceDao {
     @Query("SELECT * FROM service WHERE id=:id")
     fun get(id: Long): Service?
 
+    @Query("SELECT * FROM service WHERE id=:id")
+    suspend fun getAsync(id: Long): Service?
+
     @Query("SELECT * FROM service")
     suspend fun getAll(): List<Service>
 
