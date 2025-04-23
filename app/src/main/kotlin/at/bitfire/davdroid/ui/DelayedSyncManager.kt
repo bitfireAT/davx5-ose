@@ -25,8 +25,8 @@ class DelayedSyncManager @Inject constructor(
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     /**
-     * Enqueues a one-time sync for given account, after a delay of 10 seconds. Resets delay when called
-     * again before delay finishes.
+     * Enqueues a one-time sync for given account, after a delay of [DELAY] ms. Resets delay when
+     * called again before delay finishes.
      * @param account   account to sync
      */
     fun enqueueAfterDelay(account: Account) {
@@ -37,10 +37,19 @@ class DelayedSyncManager @Inject constructor(
 
             // Start delay and enqueue sync on finish
             applicationScope.launch {
-                delay(10000L)
+                delay(DELAY)
                 syncWorkerManager.enqueueOneTimeAllAuthorities(account)
             }
         }
+    }
+
+    companion object {
+
+        /**
+         * Length of delay in milliseconds
+         */
+        const val DELAY = 10000L // 10 seconds
+
     }
 
 }
