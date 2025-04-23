@@ -237,7 +237,7 @@ class PushRegistrationManager @Inject constructor(
         }
         serializer.endDocument()
 
-        runInterruptible(ioDispatcher) {
+        runInterruptible(ioDispatcher) {    // network traffic
             val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
             DavCollection(httpClient.okHttpClient, collection.url).post(xml) { response ->
                 if (response.isSuccessful) {
@@ -258,7 +258,7 @@ class PushRegistrationManager @Inject constructor(
     }
 
     private suspend fun unsubscribe(httpClient: HttpClient, collection: Collection, url: HttpUrl) {
-        runInterruptible(ioDispatcher) {
+        runInterruptible(ioDispatcher) {    // network traffic
             try {
                 DavResource(httpClient.okHttpClient, url).delete {
                     // deleted
