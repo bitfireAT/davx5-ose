@@ -39,7 +39,7 @@ mockk = "1.14.0"
 okhttp = "4.12.0"
 openid-appauth = "0.11.1"
 room = "2.7.0"
-unifiedpush = "3.0.7"
+unifiedpush = "3.0.8"
 unifiedpush-fcm = "3.0.0"
 
 # Other libraries, especially ical4android/ical4j, require Apache Commons. Some recent versions of Apache

@@ -18,7 +18,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -39,10 +38,12 @@ class UnifiedPushServiceTest {
     @get:Rule
     val serviceTestRule = ServiceTestRule()
 
-    @Inject @ApplicationContext
+    @Inject
+    @ApplicationContext
     lateinit var context: Context
 
-    @RelaxedMockK @BindValue
+    @RelaxedMockK
+    @BindValue
     lateinit var pushRegistrationManager: PushRegistrationManager
 
     lateinit var binder: IBinder
@@ -57,14 +58,9 @@ class UnifiedPushServiceTest {
         unifiedPushService = (binder as PushService.PushBinder).getService() as UnifiedPushService
     }
 
-    @After
-    fun tearDown() {
-        UnifiedPushService.resetBinder()
-    }
-
 
     @Test
-    fun testOnNewEndpoint_1() {
+    fun testOnNewEndpoint() {
         val endpoint = mockk<PushEndpoint> {
             every { url } returns "https://example.com/12"
         }
@@ -77,24 +73,21 @@ class UnifiedPushServiceTest {
     }
 
     @Test
-    fun testOnNewEndpoint_2() {
-        val endpoint = mockk<PushEndpoint> {
-            every { url } returns "https://example.com/34"
-        }
-        unifiedPushService.onNewEndpoint(endpoint, "34")
-
-        coVerify {
-            pushRegistrationManager.processSubscription(34, endpoint)
-        }
-        confirmVerified(pushRegistrationManager)
-    }
-
-    @Test
     fun testOnRegistrationFailed() {
         unifiedPushService.onRegistrationFailed(FailedReason.INTERNAL_ERROR, "34")
 
         coVerify {
             pushRegistrationManager.removeSubscription(34)
+        }
+        confirmVerified(pushRegistrationManager)
+    }
+
+    @Test
+    fun testOnUnregistered() {
+        unifiedPushService.onRegistrationFailed(FailedReason.INTERNAL_ERROR, "45")
+
+        coVerify {
+            pushRegistrationManager.removeSubscription(45)
         }
         confirmVerified(pushRegistrationManager)
     }

@@ -137,9 +137,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines)
     coreLibraryDesugaring(libs.android.desugaring)
 
-    // reflection
-    implementation(kotlin("reflect"))    // only for UnifiedPushService.resetBinder workaround, remove when not needed anymore
-
     // Hilt
     implementation(libs.hilt.android.base)
     ksp(libs.androidx.hilt.compiler)
