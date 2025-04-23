@@ -26,14 +26,15 @@ import at.bitfire.dav4jvm.property.push.WebPushSubscription
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -52,6 +53,8 @@ import javax.inject.Provider
  * Manages push registrations and subscriptions.
  *
  * To update push registrations and subscriptions (for instance after collections have been changed), call [update].
+ *
+ * Public API calls are protected by [mutex] so that there won't be multiple subscribe/unsubscribe operations at the same time.
  */
 class PushRegistrationManager @Inject constructor(
     private val accountRepository: Lazy<AccountRepository>,
@@ -68,7 +71,7 @@ class PushRegistrationManager @Inject constructor(
      *
      * Also makes sure that the [PushRegistrationWorker] is enabled if there's a Push-enabled collection.
      */
-    suspend fun update() = withContext(dispatcher) {
+    suspend fun update() = mutex.withLock {
         for (service in serviceRepository.getAll())
             updateService(service.id)
 
@@ -78,13 +81,13 @@ class PushRegistrationManager @Inject constructor(
     /**
      * Same as [update], but for a specific database service.
      */
-    suspend fun update(serviceId: Long) = withContext(dispatcher) {
+    suspend fun update(serviceId: Long) = mutex.withLock {
         updateService(serviceId)
         updatePeriodicWorker()
     }
 
     private suspend fun updateService(serviceId: Long) {
-        val service = serviceRepository.get(serviceId) ?: return
+        val service = serviceRepository.getAsync(serviceId) ?: return
         val vapid = collectionRepository.getVapidKey(serviceId)
 
         if (vapid != null)
@@ -102,12 +105,12 @@ class PushRegistrationManager @Inject constructor(
 
 
     /**
-     * Called when a subscription (endpoint) is available for the given service.
+     * Called by [UnifiedPushService] when a subscription (endpoint) is available for the given service.
      *
      * Uses the subscription to subscribe to syncable collections, and then unsubscribes from non-syncable collections.
      */
-    internal suspend fun processSubscription(serviceId: Long, endpoint: PushEndpoint) = withContext(dispatcher) {
-        val service = serviceRepository.get(serviceId) ?: return@withContext
+    internal suspend fun processSubscription(serviceId: Long, endpoint: PushEndpoint) = mutex.withLock {
+        val service = serviceRepository.getAsync(serviceId) ?: return
 
         subscribeSyncable(service, endpoint)
         unsubscribeNotSyncable(service)
@@ -164,11 +167,11 @@ class PushRegistrationManager @Inject constructor(
      *
      * Unsubscribes from all subscribed collections.
      */
-    internal suspend fun removeSubscription(serviceId: Long) = withContext(dispatcher) {
-        val service = serviceRepository.get(serviceId) ?: return@withContext
+    internal suspend fun removeSubscription(serviceId: Long) = mutex.withLock {
+        val service = serviceRepository.getAsync(serviceId) ?: return
         val unsubscribeFrom = collectionRepository.getPushRegistered(service.id)
         if (unsubscribeFrom.isEmpty())
-            return@withContext
+            return
 
         val account = accountRepository.get().fromName(service.accountName)
         httpClientBuilder.get()
@@ -272,7 +275,7 @@ class PushRegistrationManager @Inject constructor(
      *
      * Otherwise, a potentially existing worker is cancelled.
      */
-    suspend fun updatePeriodicWorker() = withContext(dispatcher) {
+    private suspend fun updatePeriodicWorker() {
         val workerNeeded = collectionRepository.anyPushCapable()
 
         val workManager = WorkManager.getInstance(context)
@@ -303,10 +306,7 @@ class PushRegistrationManager @Inject constructor(
         private const val WORKER_UNIQUE_NAME = "push-registration"
         const val WORKER_INTERVAL_DAYS = 1L
 
-        /**
-         * Single-thread dispatcher to synchronize non-private calls.
-         */
-        val dispatcher = Dispatchers.IO.limitedParallelism(1)
+        val mutex = Mutex()
 
     }
 
