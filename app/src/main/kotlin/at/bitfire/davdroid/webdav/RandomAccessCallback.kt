@@ -4,13 +4,13 @@
 
 package at.bitfire.davdroid.webdav
 
-import android.annotation.TargetApi
 import android.content.Context
 import android.os.CancellationSignal
 import android.os.ProxyFileDescriptorCallback
 import android.system.ErrnoException
 import android.system.OsConstants
 import android.text.format.Formatter
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4jvm.DavResource
@@ -28,10 +28,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import okhttp3.Headers
@@ -42,7 +45,7 @@ import java.net.HttpURLConnection
 import java.util.logging.Level
 import java.util.logging.Logger
 
-@TargetApi(26)
+@RequiresApi(26)
 class RandomAccessCallback @AssistedInject constructor(
     @Assisted val httpClient: HttpClient,
     @Assisted val url: HttpUrl,
@@ -89,7 +92,8 @@ class RandomAccessCallback @AssistedInject constructor(
         .setOngoing(true)
     private val notificationTag = url.toString()
 
-    private val pageLoader = PageLoader()
+    private val scope = CoroutineScope(SupervisorJob())
+    private val pageLoader = PageLoader(scope)
     private val pageCache: LoadingCache<PageIdentifier, ByteArray> = CacheBuilder.newBuilder()
         .maximumSize(10)    // don't cache more than 10 entries (MAX_PAGE_SIZE each)
         .softValues()       // use SoftReference for the page contents so they will be garbage collected if memory is needed
@@ -98,27 +102,25 @@ class RandomAccessCallback @AssistedInject constructor(
     private val pagingReader = PagingReader(fileSize, MAX_PAGE_SIZE, pageCache)
 
     init {
-        cancellationSignal?.let {
+        cancellationSignal?.setOnCancelListener {
             logger.fine("Cancelling random access to $url")
-            pageLoader.cancelAll()
+            scope.cancel()
         }
     }
 
 
     override fun onFsync() { /* not used */ }
 
-    override fun onGetSize(): Long {
+    override fun onGetSize(): Long = runLocalScope("onGetFileSize") {
         logger.fine("onGetFileSize $url")
-        throwIfCancelled("onGetFileSize")
-        return fileSize
+        fileSize
     }
 
-    override fun onRead(offset: Long, size: Int, data: ByteArray): Int {
+    override fun onRead(offset: Long, size: Int, data: ByteArray) = runLocalScope("onRead") {
         logger.fine("onRead $url $offset $size")
-        throwIfCancelled("onRead")
 
         try {
-            return pagingReader.read(offset, size, data)
+            pagingReader.read(offset, size, data)
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't read from WebDAV resource", e)
             throw e.toErrNoException("onRead")
@@ -136,12 +138,20 @@ class RandomAccessCallback @AssistedInject constructor(
         notificationManager.cancel(notificationTag, NotificationRegistry.NOTIFY_WEBDAV_ACCESS)
     }
 
-    private fun throwIfCancelled(functionName: String) {
-        if (cancellationSignal?.isCanceled == true) {
-            logger.warning("Random file access cancelled, throwing ErrnoException(EINTR)")
-            throw ErrnoException(functionName, OsConstants.EINTR)
+
+    // scope / cancellation
+
+    private fun<T> runLocalScope(functionName: String, block: () -> T): T =
+        runBlocking {
+            try {
+                scope.async {
+                    block()
+                }.await()
+            } catch (_: CancellationException) {
+                logger.warning("Random file access cancelled in $functionName, throwing ErrnoException(EINTR)")
+                throw ErrnoException(functionName, OsConstants.EINTR)
+            }
         }
-    }
 
     private fun Exception.toErrNoException(functionName: String) =
         ErrnoException(
@@ -164,17 +174,21 @@ class RandomAccessCallback @AssistedInject constructor(
 
     /**
      * Responsible for loading (= downloading) a single page from the WebDAV resource.
+     *
+     * @param scope     cancellable scope the loader runs in (loader cancels I/O) when this scope is cancelled
      */
-    inner class PageLoader: CacheLoader<PageIdentifier, ByteArray>() {
+    inner class PageLoader(
+        private val scope: CoroutineScope,
+        private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    ): CacheLoader<PageIdentifier, ByteArray>() {
 
-        private val jobs = mutableSetOf<Deferred<ByteArray>>()
-
-        fun cancelAll() {
-            for (job in jobs)
-                job.cancel()
+        override fun load(key: PageIdentifier) = runBlocking {
+            scope.async {
+                loadAsync(key)
+            }.await()
         }
 
-        override fun load(key: PageIdentifier): ByteArray {
+        suspend fun loadAsync(key: PageIdentifier): ByteArray {
             val offset = key.offset
             val size = key.size
             logger.fine("Loading page $url $offset/$size")
@@ -196,39 +210,23 @@ class RandomAccessCallback @AssistedInject constructor(
                     Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
                 } ?: throw DavException("ETag/Last-Modified required for random access")
 
-            // create async job that can be cancelled (and cancellation interrupts I/O)
-            val job = CoroutineScope(Dispatchers.IO).async {
-                runInterruptible {
-                    var result: ByteArray? = null
-                    dav.getRange(
-                        DavUtils.acceptAnything(preferred = mimeType),
-                        offset,
-                        size,
-                        ifMatch
-                    ) { response ->
-                        if (response.code == 200)       // server doesn't support ranged requests
-                            throw PartialContentNotSupportedException()
-                        else if (response.code != 206)
-                            throw HttpException(response)
+            return runInterruptible(ioDispatcher) {   // network I/O that should be cancelled by Thread interruption
+                var result: ByteArray? = null
+                dav.getRange(
+                    DavUtils.acceptAnything(preferred = mimeType),
+                    offset,
+                    size,
+                    ifMatch
+                ) { response ->
+                    if (response.code == 200)       // server doesn't support ranged requests
+                        throw PartialContentNotSupportedException()
+                    else if (response.code != 206)
+                        throw HttpException(response)
 
-                        result = response.body?.bytes()
-                    }
-                    return@runInterruptible result ?: throw DavException("No response body")
+                    result = response.body?.bytes()
                 }
+                result ?: throw DavException("No response body")
             }
-
-            try {
-                // register job in set so that it can be cancelled
-                jobs += job
-
-                // wait for result
-                return runBlocking {
-                    job.await()
-                }
-            } finally {
-                jobs -= job
-            }
-
         }
 
     }
