@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.webdav
 
 import android.content.Context
-import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import android.text.format.Formatter
 import androidx.annotation.WorkerThread
@@ -17,13 +16,14 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.IoDispatcher
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.MediaType
@@ -38,12 +38,13 @@ import java.util.logging.Logger
  * @param client    HTTP client– [StreamingFileDescriptor] is responsible to close it
  */
 class StreamingFileDescriptor @AssistedInject constructor(
-    @Assisted val client: HttpClient,
-    @Assisted val url: HttpUrl,
-    @Assisted val mimeType: MediaType?,
-    @Assisted val cancellationSignal: CancellationSignal?,
-    @Assisted val finishedCallback: OnSuccessCallback,
-    @ApplicationContext val context: Context,
+    @Assisted private val client: HttpClient,
+    @Assisted private val url: HttpUrl,
+    @Assisted private val mimeType: MediaType?,
+    @Assisted private val externalScope: CoroutineScope,
+    @Assisted private val finishedCallback: OnSuccessCallback,
+    @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry
 ) {
@@ -55,7 +56,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(client: HttpClient, url: HttpUrl, mimeType: MediaType?, cancellationSignal: CancellationSignal?, finishedCallback: OnSuccessCallback): StreamingFileDescriptor
+        fun create(client: HttpClient, url: HttpUrl, mimeType: MediaType?, externalScope: CoroutineScope, finishedCallback: OnSuccessCallback): StreamingFileDescriptor
     }
 
     val dav = DavResource(client.okHttpClient, url)
@@ -77,7 +78,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
     private fun doStreaming(upload: Boolean): ParcelFileDescriptor {
         val (readFd, writeFd) = ParcelFileDescriptor.createReliablePipe()
 
-        val result = CoroutineScope(Dispatchers.IO).async {
+        externalScope.launch(ioDispatcher) {
             try {
                 if (upload)
                     uploadNow(readFd)
@@ -87,7 +88,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
                 logger.log(Level.WARNING, "HTTP error when opening remote file", e)
                 writeFd.closeWithError("${e.code} ${e.message}")
             } catch (e: Exception) {
-                logger.log(Level.INFO, "Couldn't serve file (not necessesarily an error)", e)
+                logger.log(Level.INFO, "Couldn't serve file (not necessarily an error)", e)
                 writeFd.closeWithError(e.message)
             } finally {
                 client.close()
@@ -96,16 +97,11 @@ class StreamingFileDescriptor @AssistedInject constructor(
             try {
                 readFd.close()
                 writeFd.close()
-            } catch (ignored: IOException) {}
+            } catch (_: IOException) {}
 
             notificationManager.cancel(notificationTag, NotificationRegistry.NOTIFY_WEBDAV_ACCESS)
 
             finishedCallback.onSuccess(transferred)
-        }
-
-        cancellationSignal?.setOnCancelListener {
-            logger.fine("Cancelling transfer of $url")
-            result.cancel()
         }
 
         return if (upload)

@@ -4,18 +4,17 @@
 
 package at.bitfire.davdroid.webdav
 
-import android.content.Context
 import android.os.Build
-import android.os.CancellationSignal
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.ProxyFileDescriptorCallback
 import androidx.annotation.RequiresApi
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.webdav.RandomAccessCallbackWrapper.Companion.TIMEOUT_INTERVAL
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import ru.nsk.kstatemachine.event.Event
@@ -52,12 +51,11 @@ import kotlin.concurrent.schedule
  */
 @RequiresApi(Build.VERSION_CODES.O)
 class RandomAccessCallbackWrapper @AssistedInject constructor(
-    @Assisted val httpClient: HttpClient,
-    @Assisted val url: HttpUrl,
-    @Assisted val mimeType: MediaType?,
-    @Assisted val headResponse: HeadResponse,
-    @Assisted val cancellationSignal: CancellationSignal?,
-    @ApplicationContext val context: Context,
+    @Assisted private val httpClient: HttpClient,
+    @Assisted private val url: HttpUrl,
+    @Assisted private val mimeType: MediaType?,
+    @Assisted private val headResponse: HeadResponse,
+    @Assisted private val externalScope: CoroutineScope,
     private val logger: Logger,
     private val callbackFactory: RandomAccessCallback.Factory
 ): ProxyFileDescriptorCallback() {
@@ -68,7 +66,7 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(httpClient: HttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, cancellationSignal: CancellationSignal?): RandomAccessCallbackWrapper
+        fun create(httpClient: HttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallbackWrapper
     }
 
     sealed class Events {
@@ -87,7 +85,7 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
 
         initialState("active") {
             onEntry {
-                _callback = callbackFactory.create(httpClient, url, mimeType, headResponse, cancellationSignal)
+                _callback = callbackFactory.create(httpClient, url, mimeType, headResponse, externalScope)
             }
             onExit {
                 _callback?.onRelease()
