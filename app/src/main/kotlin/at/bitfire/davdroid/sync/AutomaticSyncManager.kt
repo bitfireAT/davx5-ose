@@ -10,6 +10,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -112,7 +113,7 @@ class AutomaticSyncManager @Inject constructor(
             SyncDataType.EVENTS,
             SyncDataType.TASKS -> Service.TYPE_CALDAV
         }
-        val hasService = serviceRepository.getByAccountAndType(account.name, serviceType) != null
+        val hasService = runBlocking { serviceRepository.getByAccountAndType(account.name, serviceType) != null }
 
         val hasProvider = if (dataType == SyncDataType.TASKS)
             tasksAppManager.get().currentProvider() != null

@@ -9,7 +9,6 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.os.DeadObjectException
 import androidx.annotation.VisibleForTesting
-import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.network.HttpClient
@@ -17,7 +16,9 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalDataStore
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.runBlocking
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -118,13 +119,14 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @return The sync enabled database collections as hash map identified by their ID
      */
     @VisibleForTesting
-    internal fun getSyncEnabledCollections(): Map<Long, Collection> {
+    internal fun getSyncEnabledCollections(): Map<Long, Collection> = runBlocking {
         val dbCollections = mutableMapOf<Long, Collection>()
         serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
             for (dbCollection in getDbSyncCollections(service.id))
                 dbCollections[dbCollection.id] = dbCollection
         }
-        return dbCollections
+
+        dbCollections
     }
 
     /**
