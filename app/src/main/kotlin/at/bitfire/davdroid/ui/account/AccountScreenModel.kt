@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.push.PushRegistrationWorkerManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -53,7 +54,8 @@ class AccountScreenModel @AssistedInject constructor(
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: SyncWorkerManager,
-    tasksAppManager: TasksAppManager
+    tasksAppManager: TasksAppManager,
+    private val pushRegistrationWorkerManager: PushRegistrationWorkerManager
 ): ViewModel() {
 
     @AssistedFactory
@@ -187,6 +189,7 @@ class AccountScreenModel @AssistedInject constructor(
     fun setCollectionSync(id: Long, sync: Boolean) {
         viewModelScope.launch {
             collectionRepository.setSync(id, sync)
+            pushRegistrationWorkerManager.updatePeriodicWorker()
             syncAfterDelay(id)
         }
     }
