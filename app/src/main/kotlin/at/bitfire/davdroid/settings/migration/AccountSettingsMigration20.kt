@@ -26,6 +26,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.runBlocking
 import org.dmfs.tasks.contract.TaskContract.TaskLists
 import javax.inject.Inject
 
@@ -49,13 +50,15 @@ class AccountSettingsMigration20 @Inject constructor(
     val accountManager = AccountManager.get(context)
 
     override fun migrate(account: Account) {
-        serviceRepository.getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { cardDavService ->
-            migrateAddressBooks(account, cardDavService.id)
-        }
+        runBlocking {
+            serviceRepository.getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { cardDavService ->
+                migrateAddressBooks(account, cardDavService.id)
+            }
 
-        serviceRepository.getByAccountAndType(account.name, Service.TYPE_CALDAV)?.let { calDavService ->
-            migrateCalendars(account, calDavService.id)
-            migrateTaskLists(account, calDavService.id)
+            serviceRepository.getByAccountAndType(account.name, Service.TYPE_CALDAV)?.let { calDavService ->
+                migrateCalendars(account, calDavService.id)
+                migrateTaskLists(account, calDavService.id)
+            }
         }
     }
 

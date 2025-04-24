@@ -22,10 +22,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.runBlocking
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import kotlin.use
 
 /**
  * With DAVx5 4.4.3 address book account names now contain the collection ID as a unique
@@ -49,31 +49,33 @@ class AccountSettingsMigration17 @Inject constructor(
             logger.log(Level.WARNING, "Missing permissions for contacts authority, won't set collection ID for address books", e)
             null
         }?.use { provider ->
-            val service = serviceRepository.getByAccountAndType(account.name, Service.TYPE_CARDDAV) ?: return
+            runBlocking {
+                val service = serviceRepository.getByAccountAndType(account.name, Service.TYPE_CARDDAV) ?: return@runBlocking
 
-            val accountManager = AccountManager.get(context)
-            // Get all old address books of this account, i.e. the ones which have a "real_account_name" of this account.
-            // After this migration is run, address books won't be associated to accounts anymore but only to their respective collection/URL.
-            val oldAddressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)
-                .filter { addressBookAccount ->
-                    account.name == accountManager.getUserData(addressBookAccount, "real_account_name")
-                }
+                val accountManager = AccountManager.get(context)
+                // Get all old address books of this account, i.e. the ones which have a "real_account_name" of this account.
+                // After this migration is run, address books won't be associated to accounts anymore but only to their respective collection/URL.
+                val oldAddressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)
+                    .filter { addressBookAccount ->
+                        account.name == accountManager.getUserData(addressBookAccount, "real_account_name")
+                    }
 
-            for (oldAddressBookAccount in oldAddressBookAccounts) {
-                // Old address books only have a URL, so use it to determine the collection ID
-                logger.info("Migrating address book ${oldAddressBookAccount.name}")
-                val oldAddressBook = localAddressBookFactory.create(account, oldAddressBookAccount, provider)
-                val url = accountManager.getUserData(oldAddressBookAccount, LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL)
-                collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
-                    // Set collection ID and rename the account
-                    localAddressBookStore.update(provider, oldAddressBook, collection)
-                    // The user-data-url is not being set in localAddressBookStore.update() anymore,
-                    // but we need to keep it for the migration
-                    accountManager.setAndVerifyUserData(
-                        oldAddressBook.addressBookAccount,
-                        LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL,
-                        collection.url.toString()
-                    )
+                for (oldAddressBookAccount in oldAddressBookAccounts) {
+                    // Old address books only have a URL, so use it to determine the collection ID
+                    logger.info("Migrating address book ${oldAddressBookAccount.name}")
+                    val oldAddressBook = localAddressBookFactory.create(account, oldAddressBookAccount, provider)
+                    val url = accountManager.getUserData(oldAddressBookAccount, LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL)
+                    collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
+                        // Set collection ID and rename the account
+                        localAddressBookStore.update(provider, oldAddressBook, collection)
+                        // The user-data-url is not being set in localAddressBookStore.update() anymore,
+                        // but we need to keep it for the migration
+                        accountManager.setAndVerifyUserData(
+                            oldAddressBook.addressBookAccount,
+                            LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL,
+                            collection.url.toString()
+                        )
+                    }
                 }
             }
         }
