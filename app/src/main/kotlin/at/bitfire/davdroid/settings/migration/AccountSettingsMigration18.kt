@@ -19,6 +19,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 /**
@@ -39,17 +40,24 @@ class AccountSettingsMigration18 @Inject constructor(
 
     override fun migrate(account: Account) {
         val accountManager = AccountManager.get(context)
-        db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
-            db.collectionDao().getByService(service.id).forEach { collection ->
-                // Find associated address book account by collection ID (if it exists)
-                val addressBookAccount = accountManager
-                    .getAccountsByType(context.getString(R.string.account_type_address_book))
-                    .firstOrNull { accountManager.getUserData(it, LocalAddressBook.USER_DATA_COLLECTION_ID) == collection.id.toString() }
+        runBlocking {
+            db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
+                db.collectionDao().getByService(service.id).forEach { collection ->
+                    // Find associated address book account by collection ID (if it exists)
+                    val addressBookAccount = accountManager
+                        .getAccountsByType(context.getString(R.string.account_type_address_book))
+                        .firstOrNull {
+                            accountManager.getUserData(
+                                it,
+                                LocalAddressBook.USER_DATA_COLLECTION_ID
+                            ) == collection.id.toString()
+                        }
 
-                if (addressBookAccount != null) {
-                    // (Re-)assign address book to account
-                    accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
-                    accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
+                    if (addressBookAccount != null) {
+                        // (Re-)assign address book to account
+                        accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
+                        accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
+                    }
                 }
             }
         }

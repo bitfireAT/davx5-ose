@@ -6,6 +6,7 @@ package at.bitfire.davdroid.network
 
 import android.accounts.Account
 import android.content.Context
+import androidx.annotation.WorkerThread
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
@@ -14,7 +15,10 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.ForegroundTracker
+import at.bitfire.davdroid.util.IoDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import okhttp3.Authenticator
@@ -64,6 +68,7 @@ class HttpClient(
         private val authorizationServiceProvider: Provider<AuthorizationService>,
         @ApplicationContext private val context: Context,
         defaultLogger: Logger,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
         private val keyManagerFactory: ClientCertKeyManager.Factory,
         private val settingsManager: SettingsManager
     ) {
@@ -141,9 +146,12 @@ class HttpClient(
         /**
          * Takes authentication (basic/digest or OAuth and client certificate) from a given account.
          *
+         * **Must not be run on main thread, because it creates [AccountSettings]!** Use [fromAccountAsync] if possible.
+         *
          * @param account   the account to take authentication from
          * @param onlyHost  if set: only authenticate for this host name
          */
+        @WorkerThread
         fun fromAccount(account: Account, onlyHost: String? = null): Builder {
             val accountSettings = accountSettingsFactory.create(account)
             authenticate(
@@ -154,6 +162,13 @@ class HttpClient(
                 }
             )
             return this
+        }
+
+        /**
+         * Same as [fromAccount], but can be called on any thread.
+         */
+        suspend fun fromAccountAsync(account: Account, onlyHost: String? = null): Builder = withContext(ioDispatcher) {
+            fromAccount(account, onlyHost)
         }
 
 

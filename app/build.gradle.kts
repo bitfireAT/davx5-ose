@@ -197,7 +197,13 @@ dependencies {
     implementation(libs.okhttp.brotli)
     implementation(libs.okhttp.logging)
     implementation(libs.openid.appauth)
-    implementation(libs.unifiedpush)
+    implementation(libs.unifiedpush) {
+        // UnifiedPush connector seems to be using a workaround by importing this library.
+        // Will be removed after https://github.com/tink-crypto/tink-java-apps/pull/5 is merged.
+        // See: https://codeberg.org/UnifiedPush/android-connector/src/commit/28cb0d622ed0a972996041ab9cc85b701abc48c6/connector/build.gradle#L56-L59
+        exclude(group = "com.google.crypto.tink", module = "tink")
+    }
+    implementation(libs.unifiedpush.fcm)
 
     // force some versions for compatibility with our minSdk level (see version catalog for details)
     implementation(libs.commons.codec)

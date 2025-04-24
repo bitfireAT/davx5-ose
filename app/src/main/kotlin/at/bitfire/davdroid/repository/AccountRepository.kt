@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
-import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
@@ -23,6 +22,7 @@ import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.vcard4android.GroupMethod

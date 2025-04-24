@@ -39,7 +39,8 @@ mockk = "1.14.0"
 okhttp = "4.12.0"
 openid-appauth = "0.11.1"
 room = "2.7.0"
-unifiedpush = "2.4.0"
+unifiedpush = "3.0.8"
+unifiedpush-fcm = "3.0.0"
 
 # Other libraries, especially ical4android/ical4j, require Apache Commons. Some recent versions of Apache
 # Commons require a newer Java version than our minSdk provides. So we require these strict versions here:
@@ -107,7 +108,8 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
-unifiedpush = { module = "com.github.UnifiedPush:android-connector", version.ref = "unifiedpush" }
+unifiedpush = { module = "org.unifiedpush.android:connector", version.ref = "unifiedpush" }
+unifiedpush-fcm = { module = "org.unifiedpush.android:embedded-fcm-distributor", version.ref = "unifiedpush-fcm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-agp" }

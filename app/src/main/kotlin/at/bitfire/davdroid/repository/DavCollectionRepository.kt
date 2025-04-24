@@ -193,13 +193,13 @@ class DavCollectionRepository @Inject constructor(
             }
     }
 
-    fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
+    suspend fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
 
     fun get(id: Long) = dao.get(id)
 
     fun getFlow(id: Long) = dao.getFlow(id)
 
-    fun getByService(serviceId: Long) = dao.getByService(serviceId)
+    suspend fun getByService(serviceId: Long) = dao.getByService(serviceId)
 
     fun getByServiceAndUrl(serviceId: Long, url: String) = dao.getByServiceAndUrl(serviceId, url)
 
@@ -212,11 +212,12 @@ class DavCollectionRepository @Inject constructor(
     fun getSyncTaskLists(serviceId: Long) = dao.getSyncTaskLists(serviceId)
 
     /** Returns all collections that are both selected for synchronization and push-capable. */
-    suspend fun getPushCapableAndSyncable(): List<Collection> =
-        dao.getPushCapableSyncCollections()
+    suspend fun getPushCapableAndSyncable(serviceId: Long) = dao.getPushCapableSyncCollections(serviceId)
 
-    suspend fun getPushRegisteredAndNotSyncable(): List<Collection> =
-        dao.getPushRegisteredAndNotSyncable()
+    suspend fun getPushRegistered(serviceId: Long) = dao.getPushRegistered(serviceId)
+    suspend fun getPushRegisteredAndNotSyncable(serviceId: Long) = dao.getPushRegisteredAndNotSyncable(serviceId)
+
+    suspend fun getVapidKey(serviceId: Long) = dao.getFirstVapidKey(serviceId)
 
     /**
      * Inserts or updates the collection.
@@ -273,7 +274,7 @@ class DavCollectionRepository @Inject constructor(
         notifyOnChangeListeners()
     }
 
-    fun updatePushSubscription(id: Long, subscriptionUrl: String?, expires: Long?) {
+    suspend fun updatePushSubscription(id: Long, subscriptionUrl: String?, expires: Long?) {
         dao.updatePushSubscription(
             id = id,
             pushSubscription = subscriptionUrl,
