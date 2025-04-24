@@ -34,10 +34,10 @@ import at.bitfire.davdroid.util.IoDispatcher
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -125,29 +125,27 @@ class PushRegistrationManager @Inject constructor(
         if (subscribeTo.isEmpty())
             return
 
-        withContext(ioDispatcher) {     // HttpClientBuilder.fromAccount() must not run in main thread and is not suspending
-            val account = accountRepository.get().fromName(service.accountName)
-            httpClientBuilder.get()
-                .fromAccount(account)
-                .build()
-                .use { httpClient ->
-                    for (collection in subscribeTo)
-                        try {
-                            val expires = collection.pushSubscriptionExpires
-                            // calculate next run time, but use the duplicate interval for safety (times are not exact)
-                            val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
-                            if (expires != null && expires >= nextRun.epochSecond)
-                                logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
-                            else {
-                                // no existing subscription or expiring soon
-                                logger.fine("Registering push subscription for ${collection.url}")
-                                subscribe(httpClient, collection, endpoint)
-                            }
-                        } catch (e: Exception) {
-                            logger.log(Level.WARNING, "Couldn't register subscription at CalDAV/CardDAV server", e)
+        val account = accountRepository.get().fromName(service.accountName)
+        httpClientBuilder.get()
+            .fromAccountAsync(account)
+            .build()
+            .use { httpClient ->
+                for (collection in subscribeTo)
+                    try {
+                        val expires = collection.pushSubscriptionExpires
+                        // calculate next run time, but use the duplicate interval for safety (times are not exact)
+                        val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
+                        if (expires != null && expires >= nextRun.epochSecond)
+                            logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
+                        else {
+                            // no existing subscription or expiring soon
+                            logger.fine("Registering push subscription for ${collection.url}")
+                            subscribe(httpClient, collection, endpoint)
                         }
-                }
-        }
+                    } catch (e: Exception) {
+                        logger.log(Level.WARNING, "Couldn't register subscription at CalDAV/CardDAV server", e)
+                    }
+            }
     }
 
     private suspend fun unsubscribeNotSyncable(service: Service) {
@@ -155,19 +153,17 @@ class PushRegistrationManager @Inject constructor(
         if (unsubscribeFrom.isEmpty())
             return
 
-        withContext(ioDispatcher) {     // HttpClientBuilder.fromAccount() must not run in main thread and is not suspending
-            val account = accountRepository.get().fromName(service.accountName)
-            httpClientBuilder.get()
-                .fromAccount(account)
-                .build()
-                .use { httpClient ->
-                    for (collection in unsubscribeFrom)
-                        collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
-                            logger.info("Unregistering push for ${collection.url}")
-                            unsubscribe(httpClient, collection, url)
-                        }
-                }
-        }
+        val account = accountRepository.get().fromName(service.accountName)
+        httpClientBuilder.get()
+            .fromAccountAsync(account)
+            .build()
+            .use { httpClient ->
+                for (collection in unsubscribeFrom)
+                    collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
+                        logger.info("Unregistering push for ${collection.url}")
+                        unsubscribe(httpClient, collection, url)
+                    }
+            }
     }
 
     /**
@@ -181,19 +177,17 @@ class PushRegistrationManager @Inject constructor(
         if (unsubscribeFrom.isEmpty())
             return
 
-        withContext(ioDispatcher) {     // HttpClientBuilder.fromAccount() must not run in main thread and is not suspending
-            val account = accountRepository.get().fromName(service.accountName)
-            httpClientBuilder.get()
-                .fromAccount(account)
-                .build()
-                .use { httpClient ->
-                    for (collection in unsubscribeFrom)
-                        collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
-                            logger.info("Unregistering push for ${collection.url}")
-                            unsubscribe(httpClient, collection, url)
-                        }
-                }
-        }
+        val account = accountRepository.get().fromName(service.accountName)
+        httpClientBuilder.get()
+            .fromAccountAsync(account)
+            .build()
+            .use { httpClient ->
+                for (collection in unsubscribeFrom)
+                    collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
+                        logger.info("Unregistering push for ${collection.url}")
+                        unsubscribe(httpClient, collection, url)
+                    }
+            }
     }
 
 
@@ -237,7 +231,7 @@ class PushRegistrationManager @Inject constructor(
         }
         serializer.endDocument()
 
-        runInterruptible(ioDispatcher) {    // network traffic
+        runInterruptible(ioDispatcher) {
             val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
             DavCollection(httpClient.okHttpClient, collection.url).post(xml) { response ->
                 if (response.isSuccessful) {
@@ -246,11 +240,14 @@ class PushRegistrationManager @Inject constructor(
                     val expires = response.header("Expires")?.let { expiresDate ->
                         HttpUtils.parseDate(expiresDate)
                     } ?: requestedExpiration
-                    collectionRepository.updatePushSubscription(
-                        id = collection.id,
-                        subscriptionUrl = subscriptionUrl,
-                        expires = expires?.epochSecond
-                    )
+
+                    runBlocking {
+                        collectionRepository.updatePushSubscription(
+                            id = collection.id,
+                            subscriptionUrl = subscriptionUrl,
+                            expires = expires?.epochSecond
+                        )
+                    }
                 } else
                     logger.warning("Couldn't register push for ${collection.url}: $response")
             }
@@ -258,22 +255,22 @@ class PushRegistrationManager @Inject constructor(
     }
 
     private suspend fun unsubscribe(httpClient: HttpClient, collection: Collection, url: HttpUrl) {
-        runInterruptible(ioDispatcher) {    // network traffic
-            try {
+        try {
+            runInterruptible(ioDispatcher) {
                 DavResource(httpClient.okHttpClient, url).delete {
                     // deleted
                 }
-            } catch (e: DavException) {
-                logger.log(Level.WARNING, "Couldn't unregister push for ${collection.url}", e)
             }
-
-            // remove registration URL from DB in any case
-            collectionRepository.updatePushSubscription(
-                id = collection.id,
-                subscriptionUrl = null,
-                expires = null
-            )
+        } catch (e: DavException) {
+            logger.log(Level.WARNING, "Couldn't unregister push for ${collection.url}", e)
         }
+
+        // remove registration URL from DB in any case
+        collectionRepository.updatePushSubscription(
+            id = collection.id,
+            subscriptionUrl = null,
+            expires = null
+        )
     }
 
 
@@ -316,6 +313,9 @@ class PushRegistrationManager @Inject constructor(
         private const val WORKER_UNIQUE_NAME = "push-registration"
         const val WORKER_INTERVAL_DAYS = 1L
 
+        /**
+         * Mutex to synchronize (un)subscription.
+         */
         val mutex = Mutex()
 
     }

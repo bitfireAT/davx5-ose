@@ -21,11 +21,12 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
+import at.bitfire.davdroid.util.IoDispatcher
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +38,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AppSettingsModel @Inject constructor(
-    @ApplicationContext val context: Context,
+    @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
     private val pushRegistrationManager: PushRegistrationManager,
     private val settings: SettingsManager,
@@ -160,7 +162,7 @@ class AppSettingsModel @Inject constructor(
      * @param pushDistributor The package name of the push distributor, _null_ to disable push.
      */
     fun updatePushDistributor(pushDistributor: String?) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             if (pushDistributor == null) {
                 // Disable UnifiedPush if the distributor given is null
                 UnifiedPush.removeDistributor(context)
@@ -177,7 +179,7 @@ class AppSettingsModel @Inject constructor(
 
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             loadPushDistributors()
         }
     }
