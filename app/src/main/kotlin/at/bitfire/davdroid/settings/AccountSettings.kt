@@ -10,12 +10,14 @@ import android.os.Bundle
 import android.os.Looper
 import androidx.annotation.WorkerThread
 import androidx.core.os.bundleOf
-import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
+import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.vcard4android.GroupMethod
@@ -32,7 +34,7 @@ import javax.inject.Provider
 /**
  * Manages settings of an account.
  *
- * Must not be called from main thread as it uses blocking I/O and may run migrations.
+ * **Must not be called from main thread as it uses blocking I/O and may run migrations.**
  *
  * @param account                   account to take settings from
  * @param abortOnMissingMigration   whether to throw an [IllegalArgumentException] when migrations are missing (useful for testing)
@@ -54,8 +56,7 @@ class AccountSettings @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         /**
-         * Must not be called from main thread as AccountSettings uses blocking I/O and may run
-         * migrations.
+         * **Must not be called on main thread. Throws exceptions!** See [AccountSettings] for details.
          */
         @WorkerThread
         fun create(account: Account, abortOnMissingMigration: Boolean = false): AccountSettings

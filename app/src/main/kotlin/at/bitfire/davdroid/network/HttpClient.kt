@@ -150,6 +150,8 @@ class HttpClient(
          *
          * @param account   the account to take authentication from
          * @param onlyHost  if set: only authenticate for this host name
+         *
+         * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
          */
         @WorkerThread
         fun fromAccount(account: Account, onlyHost: String? = null): Builder {
@@ -166,6 +168,8 @@ class HttpClient(
 
         /**
          * Same as [fromAccount], but can be called on any thread.
+         *
+         * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
          */
         suspend fun fromAccountAsync(account: Account, onlyHost: String? = null): Builder = withContext(ioDispatcher) {
             fromAccount(account, onlyHost)
