@@ -12,12 +12,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import at.bitfire.davdroid.repository.DavCollectionRepository
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.IntoSet
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
@@ -70,29 +65,4 @@ class PushRegistrationWorkerManager @Inject constructor(
         const val INTERVAL_DAYS = 1L
     }
 
-
-    /**
-     * Listener that enqueues a push registration worker when the collection list changes.
-     */
-    class CollectionsListener @Inject constructor(
-        @ApplicationContext val context: Context,
-        val workerManager: PushRegistrationWorkerManager
-    ): DavCollectionRepository.OnChangeListener {
-
-        override fun onCollectionsChanged() {
-            workerManager.updatePeriodicWorker()
-        }
-
-    }
-
-    /**
-     * Hilt module that registers [CollectionsListener] in [DavCollectionRepository].
-     */
-    @Module
-    @InstallIn(SingletonComponent::class)
-    interface PushRegistrationWorkerModule {
-        @Binds
-        @IntoSet
-        fun listener(impl: CollectionsListener): DavCollectionRepository.OnChangeListener
-    }
 }
