@@ -165,6 +165,10 @@ class DavDocumentsProvider(
 
     override fun onCreate() = true
 
+    override fun shutdown() {
+        documentProviderScope.cancel()
+    }
+
 
     /*** query ***/
 
@@ -179,7 +183,7 @@ class DavDocumentsProvider(
             Root.COLUMN_SUMMARY
         ))
 
-        runBlocking(ioDispatcher) {
+        runBlocking {
             for (mount in mountDao.getAll()) {
                 val rootDocument = documentDao.getOrCreateRoot(mount)
                 logger.info("Root ID: $rootDocument")
@@ -267,7 +271,7 @@ class DavDocumentsProvider(
 
         // Dispatch worker querying for the children and keep track of it
         val running = runningQueryChildren.getOrPut(parentId) {
-            documentProviderScope.launch(ioDispatcher) {
+            documentProviderScope.launch {
                 actor.queryChildren(parent)
                 // Once the query is done, set query as finished (not running)
                 runningQueryChildren[parentId] = false
@@ -312,7 +316,7 @@ class DavDocumentsProvider(
 
     /*** copy/create/delete/move/rename ***/
 
-    override fun copyDocument(sourceDocumentId: String, targetParentDocumentId: String): String {
+    override fun copyDocument(sourceDocumentId: String, targetParentDocumentId: String): String = runBlocking {
         logger.fine("WebDAV copyDocument $sourceDocumentId $targetParentDocumentId")
         val srcDoc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
         val dstFolder = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()
@@ -321,58 +325,56 @@ class DavDocumentsProvider(
         if (srcDoc.mountId != dstFolder.mountId)
             throw UnsupportedOperationException("Can't COPY between WebDAV servers")
 
-        val dstDocId: String
-        runBlocking(ioDispatcher) {
-            actor.httpClient(srcDoc.mountId).use { client ->
-                val dav = DavResource(client.okHttpClient, srcDoc.toHttpUrl(db))
-                try {
-                    val dstUrl = dstFolder.toHttpUrl(db).newBuilder()
-                        .addPathSegment(name)
-                        .build()
+        actor.httpClient(srcDoc.mountId).use { client ->
+            val dav = DavResource(client.okHttpClient, srcDoc.toHttpUrl(db))
+            val dstUrl = dstFolder.toHttpUrl(db).newBuilder()
+                .addPathSegment(name)
+                .build()
+
+            try {
+                runInterruptible(ioDispatcher) {
                     dav.copy(dstUrl, false) {
                         // successfully copied
                     }
-
-                    dstDocId = documentDao.insertOrReplace(
-                        WebDavDocument(
-                            mountId = dstFolder.mountId,
-                            parentId = dstFolder.id,
-                            name = name,
-                            isDirectory = srcDoc.isDirectory,
-                            displayName = srcDoc.displayName,
-                            mimeType = srcDoc.mimeType,
-                            size = srcDoc.size
-                        )
-                    ).toString()
-
-                    actor.notifyFolderChanged(targetParentDocumentId)
-                } catch (e: HttpException) {
-                    if (e.code == HttpURLConnection.HTTP_NOT_FOUND)
-                        throw FileNotFoundException()
-                    throw e
                 }
+            } catch (e: HttpException) {
+                e.throwForDocumentProvider()
             }
-        }
 
-        return dstDocId
+            val dstDocId = documentDao.insertOrReplace(
+                WebDavDocument(
+                    mountId = dstFolder.mountId,
+                    parentId = dstFolder.id,
+                    name = name,
+                    isDirectory = srcDoc.isDirectory,
+                    displayName = srcDoc.displayName,
+                    mimeType = srcDoc.mimeType,
+                    size = srcDoc.size
+                )
+            ).toString()
+
+            actor.notifyFolderChanged(targetParentDocumentId)
+
+            /* return */ dstDocId
+        }
     }
 
-    override fun createDocument(parentDocumentId: String, mimeType: String, displayName: String): String? {
+    override fun createDocument(parentDocumentId: String, mimeType: String, displayName: String): String? = runBlocking {
         logger.fine("WebDAV createDocument $parentDocumentId $mimeType $displayName")
         val parent = documentDao.get(parentDocumentId.toLong()) ?: throw FileNotFoundException()
         val createDirectory = mimeType == Document.MIME_TYPE_DIR
 
         var docId: Long? = null
-        runBlocking(ioDispatcher) {
-            actor.httpClient(parent.mountId).use { client ->
-                for (attempt in 0..MAX_NAME_ATTEMPTS) {
-                    val newName = displayNameToMemberName(displayName, attempt)
-                    val parentUrl = parent.toHttpUrl(db)
-                    val newLocation = parentUrl.newBuilder()
-                        .addPathSegment(newName)
-                        .build()
-                    val doc = DavResource(client.okHttpClient, newLocation)
-                    try {
+        actor.httpClient(parent.mountId).use { client ->
+            for (attempt in 0..MAX_NAME_ATTEMPTS) {
+                val newName = displayNameToMemberName(displayName, attempt)
+                val parentUrl = parent.toHttpUrl(db)
+                val newLocation = parentUrl.newBuilder()
+                    .addPathSegment(newName)
+                    .build()
+                val doc = DavResource(client.okHttpClient, newLocation)
+                try {
+                    runInterruptible(ioDispatcher) {
                         if (createDirectory)
                             doc.mkCol(null) {
                                 // directory successfully created
@@ -381,52 +383,53 @@ class DavDocumentsProvider(
                             doc.put("".toRequestBody(null), ifNoneMatch = true) {
                                 // document successfully created
                             }
-
-                        docId = documentDao.insertOrReplace(
-                            WebDavDocument(
-                                mountId = parent.mountId,
-                                parentId = parent.id,
-                                name = newName,
-                                mimeType = mimeType.toMediaTypeOrNull(),
-                                isDirectory = createDirectory
-                            )
-                        )
-
-                        actor.notifyFolderChanged(parentDocumentId)
-                        break
-                    } catch (e: HttpException) {
-                        e.throwForDocumentProvider(true)
                     }
+
+                    docId = documentDao.insertOrReplace(
+                        WebDavDocument(
+                            mountId = parent.mountId,
+                            parentId = parent.id,
+                            name = newName,
+                            mimeType = mimeType.toMediaTypeOrNull(),
+                            isDirectory = createDirectory
+                        )
+                    )
+
+                    actor.notifyFolderChanged(parentDocumentId)
+
+                    return@runBlocking docId.toString()
+                } catch (e: HttpException) {
+                    e.throwForDocumentProvider(ignorePreconditionFailed = true)
                 }
             }
         }
 
-        return docId?.toString()
+        null
     }
 
-    override fun deleteDocument(documentId: String) {
+    override fun deleteDocument(documentId: String) = runBlocking {
         logger.fine("WebDAV removeDocument $documentId")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
-        runBlocking(ioDispatcher) {
-            actor.httpClient(doc.mountId).use { client ->
-                val dav = DavResource(client.okHttpClient, doc.toHttpUrl(db))
-                try {
+        actor.httpClient(doc.mountId).use { client ->
+            val dav = DavResource(client.okHttpClient, doc.toHttpUrl(db))
+            try {
+                runInterruptible(ioDispatcher) {
                     dav.delete {
                         // successfully deleted
                     }
-                    logger.fine("Successfully removed")
-                    documentDao.delete(doc)
-
-                    actor.notifyFolderChanged(doc.parentId)
-                } catch (e: HttpException) {
-                    e.throwForDocumentProvider()
                 }
+                logger.fine("Successfully removed")
+                documentDao.delete(doc)
+
+                actor.notifyFolderChanged(doc.parentId)
+            } catch (e: HttpException) {
+                e.throwForDocumentProvider()
             }
         }
     }
 
-    override fun moveDocument(sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String): String {
+    override fun moveDocument(sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String): String = runBlocking {
         logger.fine("WebDAV moveDocument $sourceDocumentId $sourceParentDocumentId $targetParentDocumentId")
         val doc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
         val dstParent = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()
@@ -434,61 +437,62 @@ class DavDocumentsProvider(
         if (doc.mountId != dstParent.mountId)
             throw UnsupportedOperationException("Can't MOVE between WebDAV servers")
 
-        runBlocking(ioDispatcher) {
-            val newLocation = dstParent.toHttpUrl(db).newBuilder()
-                .addPathSegment(doc.name)
-                .build()
+        val newLocation = dstParent.toHttpUrl(db).newBuilder()
+            .addPathSegment(doc.name)
+            .build()
 
-            actor.httpClient(doc.mountId).use { client ->
-                val dav = DavResource(client.okHttpClient, doc.toHttpUrl(db))
-                try {
+        actor.httpClient(doc.mountId).use { client ->
+            val dav = DavResource(client.okHttpClient, doc.toHttpUrl(db))
+            try {
+                runInterruptible(ioDispatcher) {
                     dav.move(newLocation, false) {
                         // successfully moved
                     }
-
-                    documentDao.update(doc.copy(parentId = dstParent.id))
-
-                    actor.notifyFolderChanged(sourceParentDocumentId)
-                    actor.notifyFolderChanged(targetParentDocumentId)
-                } catch (e: HttpException) {
-                    e.throwForDocumentProvider()
                 }
+
+                documentDao.update(doc.copy(parentId = dstParent.id))
+
+                actor.notifyFolderChanged(sourceParentDocumentId)
+                actor.notifyFolderChanged(targetParentDocumentId)
+            } catch (e: HttpException) {
+                e.throwForDocumentProvider()
             }
         }
 
-        return doc.id.toString()
+        doc.id.toString()
     }
 
-    override fun renameDocument(documentId: String, displayName: String): String? {
+    override fun renameDocument(documentId: String, displayName: String): String? = runBlocking {
         logger.fine("WebDAV renameDocument $documentId $displayName")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
-        runBlocking(ioDispatcher) {
-            actor.httpClient(doc.mountId).use { client ->
-                for (attempt in 0..MAX_NAME_ATTEMPTS) {
-                    val newName = displayNameToMemberName(displayName, attempt)
-                    val oldUrl = doc.toHttpUrl(db)
-                    val newLocation = oldUrl.newBuilder()
-                        .removePathSegment(oldUrl.pathSegments.lastIndex)
-                        .addPathSegment(newName)
-                        .build()
-                    try {
-                        val dav = DavResource(client.okHttpClient, oldUrl)
+        actor.httpClient(doc.mountId).use { client ->
+            for (attempt in 0..MAX_NAME_ATTEMPTS) {
+                val newName = displayNameToMemberName(displayName, attempt)
+                val oldUrl = doc.toHttpUrl(db)
+                val newLocation = oldUrl.newBuilder()
+                    .removePathSegment(oldUrl.pathSegments.lastIndex)
+                    .addPathSegment(newName)
+                    .build()
+                try {
+                    val dav = DavResource(client.okHttpClient, oldUrl)
+                    runInterruptible(ioDispatcher) {
                         dav.move(newLocation, false) {
                             // successfully renamed
                         }
-                        documentDao.update(doc.copy(name = newName))
-
-                        actor.notifyFolderChanged(doc.parentId)
-                        doc.id.toString()
-                    } catch (e: HttpException) {
-                        e.throwForDocumentProvider(true)
                     }
+                    documentDao.update(doc.copy(name = newName))
+
+                    actor.notifyFolderChanged(doc.parentId)
+
+                    return@runBlocking doc.id.toString()
+                } catch (e: HttpException) {
+                    e.throwForDocumentProvider(true)
                 }
             }
         }
 
-        return null
+        null
     }
 
     private fun displayNameToMemberName(displayName: String, appendNumber: Int = 0): String {
@@ -598,13 +602,13 @@ class DavDocumentsProvider(
 
         val thumbFile = thumbnailCache.get(docCacheKey, sizeHint) {
             // create thumbnail
-            val job = accessScope.async(ioDispatcher) {
+            val job = accessScope.async {
                 withTimeout(THUMBNAIL_TIMEOUT_MS) {
                     actor.httpClient(doc.mountId, logBody = false).use { client ->
                         val url = doc.toHttpUrl(db)
                         val dav = DavResource(client.okHttpClient, url)
                         var result: ByteArray? = null
-                        runInterruptible {
+                        runInterruptible(ioDispatcher) {
                             dav.get("image/*", null) { response ->
                                 response.body?.byteStream()?.use { data ->
                                     BitmapFactory.decodeStream(data)?.let { bitmap ->
@@ -682,11 +686,11 @@ class DavDocumentsProvider(
             val newChildrenList = hashMapOf<String, WebDavDocument>()
 
             val parentUrl = parent.toHttpUrl(db)
-            runInterruptible(ioDispatcher) {
-                httpClient(parent.mountId).use { client ->
-                    val folder = DavCollection(client.okHttpClient, parentUrl)
+            httpClient(parent.mountId).use { client ->
+                val folder = DavCollection(client.okHttpClient, parentUrl)
 
-                    try {
+                try {
+                    runInterruptible(ioDispatcher) {
                         folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
                             logger.fine("$relation $response")
 
@@ -706,7 +710,8 @@ class DavDocumentsProvider(
                                 }
 
                             val updatedResource = resource.copy(
-                                isDirectory = response[ResourceType::class.java]?.types?.contains(ResourceType.COLLECTION) ?: resource.isDirectory,
+                                isDirectory = response[ResourceType::class.java]?.types?.contains(ResourceType.COLLECTION)
+                                    ?: resource.isDirectory,
                                 displayName = response[DisplayName::class.java]?.displayName,
                                 mimeType = response[GetContentType::class.java]?.type,
                                 eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.let { resource.eTag },
@@ -729,9 +734,9 @@ class DavDocumentsProvider(
                             // remove resource from known child nodes, because not found on server
                             oldChildren.remove(resource.name)
                         }
-                    } catch (e: Exception) {
-                        logger.log(Level.WARNING, "Couldn't query children", e)
                     }
+                } catch (e: Exception) {
+                    logger.log(Level.WARNING, "Couldn't query children", e)
                 }
             }
 
