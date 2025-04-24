@@ -116,8 +116,11 @@ class PushRegistrationManager @Inject constructor(
     internal suspend fun processSubscription(serviceId: Long, endpoint: PushEndpoint) = mutex.withLock {
         val service = serviceRepository.getAsync(serviceId) ?: return
 
+        // subscribe to collections which are selected for synchronization
         subscribeSyncable(service, endpoint)
-        unsubscribeNotSyncable(service)
+
+        // unsubscribe from collections which are not selected for synchronization
+        unsubscribeCollections(service, collectionRepository.getPushRegisteredAndNotSyncable(service.id))
     }
 
     private suspend fun subscribeSyncable(service: Service, endpoint: PushEndpoint) {
@@ -148,24 +151,6 @@ class PushRegistrationManager @Inject constructor(
             }
     }
 
-    private suspend fun unsubscribeNotSyncable(service: Service) {
-        val unsubscribeFrom = collectionRepository.getPushRegisteredAndNotSyncable(service.id)
-        if (unsubscribeFrom.isEmpty())
-            return
-
-        val account = accountRepository.get().fromName(service.accountName)
-        httpClientBuilder.get()
-            .fromAccountAsync(account)
-            .build()
-            .use { httpClient ->
-                for (collection in unsubscribeFrom)
-                    collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
-                        logger.info("Unregistering push for ${collection.url}")
-                        unsubscribe(httpClient, collection, url)
-                    }
-            }
-    }
-
     /**
      * Called when no subscription is available (anymore) for the given service.
      *
@@ -174,20 +159,7 @@ class PushRegistrationManager @Inject constructor(
     internal suspend fun removeSubscription(serviceId: Long) = mutex.withLock {
         val service = serviceRepository.getAsync(serviceId) ?: return
         val unsubscribeFrom = collectionRepository.getPushRegistered(service.id)
-        if (unsubscribeFrom.isEmpty())
-            return
-
-        val account = accountRepository.get().fromName(service.accountName)
-        httpClientBuilder.get()
-            .fromAccountAsync(account)
-            .build()
-            .use { httpClient ->
-                for (collection in unsubscribeFrom)
-                    collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
-                        logger.info("Unregistering push for ${collection.url}")
-                        unsubscribe(httpClient, collection, url)
-                    }
-            }
+        unsubscribeCollections(service, unsubscribeFrom)
     }
 
 
@@ -252,6 +224,26 @@ class PushRegistrationManager @Inject constructor(
                     logger.warning("Couldn't register push for ${collection.url}: $response")
             }
         }
+    }
+
+    /**
+     * Unsubscribe from the given collections.
+     */
+    private suspend fun unsubscribeCollections(service: Service, from: List<Collection>) {
+        if (from.isEmpty())
+            return
+
+        val account = accountRepository.get().fromName(service.accountName)
+        httpClientBuilder.get()
+            .fromAccountAsync(account)
+            .build()
+            .use { httpClient ->
+                for (collection in from)
+                    collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
+                        logger.info("Unsubscribing Push from ${collection.url}")
+                        unsubscribe(httpClient, collection, url)
+                    }
+            }
     }
 
     private suspend fun unsubscribe(httpClient: HttpClient, collection: Collection, url: HttpUrl) {
