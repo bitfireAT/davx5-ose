@@ -54,10 +54,8 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.PixelBoxes
-import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
-import com.mikepenz.aboutlibraries.util.withJson
 import dagger.BindsOptionalOf
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -176,12 +174,7 @@ class AboutActivity: AppCompatActivity() {
                                     ),
                                     dimensions = LibraryDefaults.libraryDimensions(
                                         itemSpacing = 8.dp
-                                    ),
-                                    librariesBlock = { ctx ->
-                                        Libs.Builder()
-                                            .withJson(ctx, R.raw.aboutlibraries)
-                                            .build()
-                                    },
+                                    )
                                 )
                             }
                         }

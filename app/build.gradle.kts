@@ -3,12 +3,13 @@
  */
 
 plugins {
-    alias(libs.plugins.mikepenz.aboutLibraries)
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+
+    alias(libs.plugins.mikepenz.aboutLibraries)
 }
 
 // Android configuration
