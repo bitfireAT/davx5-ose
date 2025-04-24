@@ -30,6 +30,7 @@ import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.util.IoDispatcher
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -92,16 +93,19 @@ class PushRegistrationManager @Inject constructor(
 
     private suspend fun updateService(serviceId: Long) {
         val service = serviceRepository.getAsync(serviceId) ?: return
-        val vapid = collectionRepository.getVapidKey(serviceId)
 
-        if (vapid != null)
+        val distributorAvailable = UnifiedPush.getSavedDistributor(context) != null
+        if (distributorAvailable)
             try {
+                val vapid = collectionRepository.getVapidKey(serviceId)
                 UnifiedPush.register(context, serviceId.toString(), service.accountName, vapid)
             } catch (e: UnifiedPush.VapidNotValidException) {
                 logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
             }
-        else
-            UnifiedPush.unregister(context, serviceId.toString())
+        else {
+            UnifiedPush.unregister(context, serviceId.toString())   // doesn't call UnifiedPushService.onUnregistered
+            unsubscribeAll(service)
+        }
 
         // UnifiedPush has now been called. It will do its work and then asynchronously call back to UnifiedPushService, which
         // will then call processSubscription or removeSubscription.
@@ -113,14 +117,18 @@ class PushRegistrationManager @Inject constructor(
      *
      * Uses the subscription to subscribe to syncable collections, and then unsubscribes from non-syncable collections.
      */
-    internal suspend fun processSubscription(serviceId: Long, endpoint: PushEndpoint) = mutex.withLock {
+    suspend fun processSubscription(serviceId: Long, endpoint: PushEndpoint) = mutex.withLock {
         val service = serviceRepository.getAsync(serviceId) ?: return
 
-        // subscribe to collections which are selected for synchronization
-        subscribeSyncable(service, endpoint)
+        try {
+            // subscribe to collections which are selected for synchronization
+            subscribeSyncable(service, endpoint)
 
-        // unsubscribe from collections which are not selected for synchronization
-        unsubscribeCollections(service, collectionRepository.getPushRegisteredAndNotSyncable(service.id))
+            // unsubscribe from collections which are not selected for synchronization
+            unsubscribeCollections(service, collectionRepository.getPushRegisteredAndNotSyncable(service.id))
+        } catch (_: InvalidAccountException) {
+            // couldn't create authenticating HTTP client because account is not available
+        }
     }
 
     private suspend fun subscribeSyncable(service: Service, endpoint: PushEndpoint) {
@@ -156,10 +164,19 @@ class PushRegistrationManager @Inject constructor(
      *
      * Unsubscribes from all subscribed collections.
      */
-    internal suspend fun removeSubscription(serviceId: Long) = mutex.withLock {
+    suspend fun removeSubscription(serviceId: Long) = mutex.withLock {
         val service = serviceRepository.getAsync(serviceId) ?: return
+        unsubscribeAll(service)
+    }
+
+    private suspend fun unsubscribeAll(service: Service) {
         val unsubscribeFrom = collectionRepository.getPushRegistered(service.id)
-        unsubscribeCollections(service, unsubscribeFrom)
+
+        try {
+            unsubscribeCollections(service, unsubscribeFrom)
+        } catch (_: InvalidAccountException) {
+            // couldn't create authenticating HTTP client because account is not available
+        }
     }
 
 

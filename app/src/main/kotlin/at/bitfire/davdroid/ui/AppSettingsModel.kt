@@ -169,10 +169,11 @@ class AppSettingsModel @Inject constructor(
             } else {
                 // If a distributor was passed, store it
                 UnifiedPush.saveDistributor(context, pushDistributor)
-
-                // … and register it so that UnifiedPushReceiver.onNewEndpoint is called
-                pushRegistrationManager.update()
             }
+
+            // Update subscriptions
+            pushRegistrationManager.update()
+
             _pushDistributor.value = pushDistributor
         }
     }
