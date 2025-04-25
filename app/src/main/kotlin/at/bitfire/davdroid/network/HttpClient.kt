@@ -188,7 +188,7 @@ class HttpClient(
                 .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
 
                 // don't allow redirects by default because it would break PROPFIND handling
-                .followRedirects(false)
+                .followRedirects(followRedirects)
 
                 // add User-Agent to every request
                 .addInterceptor(UserAgentInterceptor)
