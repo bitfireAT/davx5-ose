@@ -6,7 +6,9 @@ package at.bitfire.davdroid.push
 
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.unifiedpush.android.connector.FailedReason
 import org.unifiedpush.android.connector.PushService
 import org.unifiedpush.android.connector.data.PushEndpoint
@@ -32,13 +34,18 @@ class UnifiedPushService : PushService() {
     @Inject
     lateinit var pushRegistrationManager: Lazy<PushRegistrationManager>
 
+    /* Scope to run the requests asynchronously. UnifiedPush binds the service,
+    * sends the message and unbinds one second later. Our operations may take longer,
+    * so the scope should not be bound to the service lifecycle. */
+    val serviceScope = CoroutineScope(SupervisorJob())
+
 
     override fun onNewEndpoint(endpoint: PushEndpoint, instance: String) {
         val serviceId = instance.toLongOrNull() ?: return
         logger.warning("Got UnifiedPush endpoint for service $serviceId: ${endpoint.url}")
 
         // register new endpoint at CalDAV/CardDAV servers
-        runBlocking {
+        serviceScope.launch {
             pushRegistrationManager.get().processSubscription(serviceId, endpoint)
         }
     }
@@ -48,7 +55,7 @@ class UnifiedPushService : PushService() {
         logger.warning("UnifiedPush registration failed for service $serviceId: $reason")
 
         // unregister subscriptions
-        runBlocking {
+        serviceScope.launch {
             pushRegistrationManager.get().removeSubscription(serviceId)
         }
     }
@@ -57,13 +64,13 @@ class UnifiedPushService : PushService() {
         val serviceId = instance.toLongOrNull() ?: return
         logger.warning("UnifiedPush unregistered for service $serviceId")
 
-        runBlocking {
+        serviceScope.launch {
             pushRegistrationManager.get().removeSubscription(serviceId)
         }
     }
 
     override fun onMessage(message: PushMessage, instance: String) {
-        runBlocking {
+        serviceScope.launch {
             pushMessageHandler.get().processMessage(message, instance)
         }
     }
