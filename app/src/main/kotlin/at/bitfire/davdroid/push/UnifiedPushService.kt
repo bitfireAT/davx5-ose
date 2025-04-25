@@ -34,6 +34,9 @@ class UnifiedPushService : PushService() {
     @Inject
     lateinit var pushRegistrationManager: Lazy<PushRegistrationManager>
 
+    /* Scope to run the requests asynchronously. UnifiedPush binds the service,
+    * sends the message and unbinds one second later. Our operations may take longer,
+    * so the scope should not be bound to the service lifecycle. */
     val serviceScope = CoroutineScope(SupervisorJob())
 
 
