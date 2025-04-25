@@ -80,7 +80,6 @@ compose-accompanist-permissions = { module = "com.google.accompanist:accompanist
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -24,9 +23,6 @@ interface WebDavDocumentDao {
 
     @Query("SELECT * FROM webdav_document WHERE parentId=:parentId")
     fun getChildren(parentId: Long): List<WebDavDocument>
-
-    @Query("SELECT * FROM webdav_document WHERE parentId IS NULL")
-    fun getRootsLive(): LiveData<List<WebDavDocument>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrReplace(document: WebDavDocument): Long

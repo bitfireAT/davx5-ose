@@ -36,7 +36,6 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,14 +45,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.PixelBoxes
+import at.bitfire.davdroid.util.IoDispatcher
 import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import dagger.BindsOptionalOf
@@ -63,8 +62,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.text.Collator
 import java.util.LinkedList
@@ -163,7 +165,7 @@ class AboutActivity: AppCompatActivity() {
                             when (index) {
                                 0 -> AboutApp(licenseInfoProvider = licenseInfoProvider.getOrNull())
                                 1 -> {
-                                    val translations = model.translations.observeAsState(emptyList())
+                                    val translations = model.translations.collectAsStateWithLifecycle(emptyList())
                                     TranslatorsGallery(translations.value)
                                 }
 
@@ -188,6 +190,7 @@ class AboutActivity: AppCompatActivity() {
     @HiltViewModel
     class Model @Inject constructor(
         @ApplicationContext val context: Context,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
         private val logger: Logger
     ): ViewModel() {
 
@@ -196,15 +199,12 @@ class AboutActivity: AppCompatActivity() {
             val translators: Set<String>
         )
 
-        val translations = MutableLiveData<List<Translation>>()
-
-        init {
-            viewModelScope.launch(Dispatchers.IO) {
-                loadTranslations()
-            }
+        val translations: Flow<List<Translation>> = flow {
+            val translations = loadTranslations()
+            emit(translations)
         }
 
-        private fun loadTranslations() {
+        private suspend fun loadTranslations(): List<Translation> = withContext(ioDispatcher) {
             try {
                 context.resources.assets.open("translators.json").use { stream ->
                     val jsonTranslations = JSONObject(stream.readBytes().decodeToString())
@@ -226,10 +226,11 @@ class AboutActivity: AppCompatActivity() {
                         collator.compare(o1.language, o2.language)
                     }
 
-                    translations.postValue(result)
+                    result
                 }
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't load translators", e)
+                emptyList()
             }
         }
 
