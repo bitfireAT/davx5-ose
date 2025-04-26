@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -40,8 +39,7 @@ class CollectionScreenModel @AssistedInject constructor(
     @Assisted val collectionId: Long,
     db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
-    private val collectionSelectedListener: CollectionSelectedListener,
-    private val pushRegistrationManager: Lazy<PushRegistrationManager>,
+    private val collectionSelectedListener: Lazy<CollectionSelectedListener>,
     private val serviceRepository: DavServiceRepository,
     settings: SettingsManager,
     syncStatsRepository: DavSyncStatsRepository
@@ -155,7 +153,7 @@ class CollectionScreenModel @AssistedInject constructor(
         val accountName = serviceRepository.getAsync(serviceId)?.accountName ?: return
         val account = accountRepository.fromName(accountName)
 
-        collectionSelectedListener.enqueueAfterDelay(account, serviceId)
+        collectionSelectedListener.get().enqueueAfterDelay(account, serviceId)
     }
 
 }
