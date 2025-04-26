@@ -25,13 +25,13 @@ import at.bitfire.dav4jvm.property.push.SubscriptionPublicKey
 import at.bitfire.dav4jvm.property.push.WebPushSubscription
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.davdroid.util.IoDispatcher
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher

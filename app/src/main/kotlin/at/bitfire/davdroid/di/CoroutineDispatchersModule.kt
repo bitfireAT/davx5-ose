@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.util
+package at.bitfire.davdroid.di
 
 import dagger.Module
 import dagger.Provides
@@ -26,7 +26,7 @@ annotation class MainDispatcher
 
 @Module
 @InstallIn(SingletonComponent::class)
-class CoroutineDispatcherModule {
+class CoroutineDispatchersModule {
 
     @Provides
     @DefaultDispatcher

@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
-import at.bitfire.davdroid.util.MainDispatcher
+import at.bitfire.davdroid.di.MainDispatcher
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.CoroutineDispatcher

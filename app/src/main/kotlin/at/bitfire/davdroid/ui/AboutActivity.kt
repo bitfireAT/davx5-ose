@@ -51,8 +51,8 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.ui.composable.PixelBoxes
-import at.bitfire.davdroid.util.IoDispatcher
 import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import dagger.BindsOptionalOf

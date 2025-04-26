@@ -9,8 +9,8 @@ import android.security.NetworkSecurityPolicy
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
+import at.bitfire.davdroid.di.MainDispatcher
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.util.MainDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

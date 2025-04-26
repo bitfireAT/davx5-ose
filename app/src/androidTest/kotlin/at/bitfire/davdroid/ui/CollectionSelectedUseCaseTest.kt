@@ -6,11 +6,11 @@ package at.bitfire.davdroid.ui
 
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.di.MainDispatcher
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.davdroid.util.MainDispatcher
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

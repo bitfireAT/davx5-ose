@@ -5,14 +5,14 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
+import at.bitfire.davdroid.di.ApplicationScope
+import at.bitfire.davdroid.di.DefaultDispatcher
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.ui.CollectionSelectedUseCase.Companion.DELAY_MS
-import at.bitfire.davdroid.util.ApplicationScope
-import at.bitfire.davdroid.util.DefaultDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

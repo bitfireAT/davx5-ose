@@ -11,11 +11,11 @@ import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.ForegroundTracker
-import at.bitfire.davdroid.util.IoDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext

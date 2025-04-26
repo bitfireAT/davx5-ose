@@ -44,10 +44,10 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
+import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
-import at.bitfire.davdroid.util.IoDispatcher
 import at.bitfire.davdroid.webdav.cache.ThumbnailCache
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

@@ -2,7 +2,9 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid
+package at.bitfire.davdroid.di
+
+import at.bitfire.davdroid.ui.intro.OseIntroPageFactory
 
 import at.bitfire.davdroid.ui.AboutActivity
 import at.bitfire.davdroid.ui.AccountsDrawerHandler
@@ -18,7 +20,7 @@ import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
 
-interface OseFlavorModules {
+interface OseModules {
 
     @Module
     @InstallIn(ActivityComponent::class)

@@ -13,10 +13,10 @@ import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.davdroid.util.IoDispatcher
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
