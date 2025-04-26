@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 interface ServiceDao {
 
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
-    fun getByAccountAndType(accountName: String, @ServiceType type: String): Service?
+    suspend fun getByAccountAndType(accountName: String, @ServiceType type: String): Service?
 
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getByAccountAndTypeFlow(accountName: String, @ServiceType type: String): Flow<Service?>
@@ -24,6 +24,12 @@ interface ServiceDao {
 
     @Query("SELECT * FROM service WHERE id=:id")
     fun get(id: Long): Service?
+
+    @Query("SELECT * FROM service WHERE id=:id")
+    suspend fun getAsync(id: Long): Service?
+
+    @Query("SELECT * FROM service")
+    suspend fun getAll(): List<Service>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrReplace(service: Service): Long

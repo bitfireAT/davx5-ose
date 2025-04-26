@@ -3,12 +3,13 @@
  */
 
 plugins {
-    alias(libs.plugins.mikepenz.aboutLibraries)
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+
+    alias(libs.plugins.mikepenz.aboutLibraries)
 }
 
 // Android configuration
@@ -18,8 +19,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 404090001
-        versionName = "4.4.9"
+        versionCode = 404100001
+        versionName = "4.4.10-alpha.2"
 
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
@@ -85,7 +86,7 @@ android {
     }
 
     lint {
-        disable += arrayOf("GoogleAppIndexingWarning", "ImpliedQuantity", "MissingQuantity", "MissingTranslation", "ExtraTranslation", "RtlEnabled", "RtlHardcoded", "Typos", "NullSafeMutableLiveData")
+        disable += arrayOf("GoogleAppIndexingWarning", "ImpliedQuantity", "MissingQuantity", "MissingTranslation", "ExtraTranslation", "RtlEnabled", "RtlHardcoded", "Typos")
     }
 
     packaging {
@@ -163,7 +164,6 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.material3)
     implementation(libs.compose.materialIconsExtended)
-    implementation(libs.compose.runtime.livedata)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.toolingPreview)
 
@@ -196,7 +196,13 @@ dependencies {
     implementation(libs.okhttp.brotli)
     implementation(libs.okhttp.logging)
     implementation(libs.openid.appauth)
-    implementation(libs.unifiedpush)
+    implementation(libs.unifiedpush) {
+        // UnifiedPush connector seems to be using a workaround by importing this library.
+        // Will be removed after https://github.com/tink-crypto/tink-java-apps/pull/5 is merged.
+        // See: https://codeberg.org/UnifiedPush/android-connector/src/commit/28cb0d622ed0a972996041ab9cc85b701abc48c6/connector/build.gradle#L56-L59
+        exclude(group = "com.google.crypto.tink", module = "tink")
+    }
+    implementation(libs.unifiedpush.fcm)
 
     // force some versions for compatibility with our minSdk level (see version catalog for details)
     implementation(libs.commons.codec)

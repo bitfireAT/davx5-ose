@@ -17,16 +17,16 @@ interface WebDavMountDao {
     suspend fun deleteAsync(mount: WebDavMount)
 
     @Query("SELECT * FROM webdav_mount ORDER BY name, url")
-    fun getAll(): List<WebDavMount>
+    suspend fun getAll(): List<WebDavMount>
 
     @Query("SELECT * FROM webdav_mount ORDER BY name, url")
     fun getAllFlow(): Flow<List<WebDavMount>>
 
     @Query("SELECT * FROM webdav_mount WHERE id=:id")
-    fun getById(id: Long): WebDavMount
+    suspend fun getById(id: Long): WebDavMount
 
     @Insert
-    fun insert(mount: WebDavMount): Long
+    suspend fun insert(mount: WebDavMount): Long
 
 
     // complex queries

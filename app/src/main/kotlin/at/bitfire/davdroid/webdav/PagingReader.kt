@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
+import androidx.annotation.RequiresApi
 import com.google.common.cache.LoadingCache
 import java.io.IOException
 import java.util.logging.Logger
@@ -21,7 +22,7 @@ import kotlin.math.min
  * @param pageSize     page size (big enough to cache efficiently, small enough to avoid unnecessary traffic and spare memory)
  * @param pageCache    [LoadingCache] that loads page content from the actual data source
  */
-@Suppress("LocalVariableName")
+@RequiresApi(26)
 class PagingReader(
     private val fileSize: Long,
     private val pageSize: Int,
@@ -50,16 +51,16 @@ class PagingReader(
      * Will split the request into multiple page access operations, if necessary.
      *
      * @param offset    starting position
-     * @param _size     number of bytes to read
+     * @param size      number of bytes to read
      * @param dst       destination where data are read into
      *
-     * @return number of bytes read (may be smaller than [_size] if the file is not that big)
+     * @return number of bytes read (may be smaller than [size] if the file is not that big)
      */
-    fun read(offset: Long, _size: Int, dst: ByteArray): Int {
+    fun read(offset: Long, size: Int, dst: ByteArray): Int {
         // input validation
         if (offset > fileSize)
             throw IndexOutOfBoundsException()
-        var remaining = min(_size.toLong(), fileSize - offset).toInt()
+        var remaining = min(size.toLong(), fileSize - offset).toInt()
 
         var transferred = 0
         while (remaining > 0) {
