@@ -11,21 +11,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.push.PushRegistrationWorkerManager
+import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.DelayedSyncManager
+import at.bitfire.davdroid.ui.CollectionSelectedListener
 import at.bitfire.davdroid.util.DavUtils.lastSegment
+import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @HiltViewModel(assistedFactory = CollectionScreenModel.Factory::class)
 class CollectionScreenModel @AssistedInject constructor(
@@ -41,11 +40,11 @@ class CollectionScreenModel @AssistedInject constructor(
     @Assisted val collectionId: Long,
     db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
-    private val delayedSyncManager: DelayedSyncManager,
+    private val collectionSelectedListener: CollectionSelectedListener,
+    private val pushRegistrationManager: Lazy<PushRegistrationManager>,
     private val serviceRepository: DavServiceRepository,
     settings: SettingsManager,
-    syncStatsRepository: DavSyncStatsRepository,
-    private val pushRegistrationWorkerManager: PushRegistrationWorkerManager
+    syncStatsRepository: DavSyncStatsRepository
 ): ViewModel() {
 
     @AssistedFactory
@@ -143,7 +142,6 @@ class CollectionScreenModel @AssistedInject constructor(
     fun setSync(sync: Boolean) {
         viewModelScope.launch {
             collectionRepository.setSync(collectionId, sync)
-            pushRegistrationWorkerManager.updatePeriodicWorker()
             syncAfterDelay(collectionId)
         }
     }
@@ -152,12 +150,12 @@ class CollectionScreenModel @AssistedInject constructor(
      * Enqueues a one-time account wide sync after a short delay or scope cancellation.
      * @param collectionId collection ID of collection in the account to be synchronized
      */
-    private suspend fun syncAfterDelay(collectionId: Long) = withContext(Dispatchers.IO) {
-        val serviceId = collectionRepository.get(collectionId)?.serviceId ?: return@withContext
-        val accountName = serviceRepository.get(serviceId)?.accountName ?: return@withContext
+    private suspend fun syncAfterDelay(collectionId: Long) {
+        val serviceId = collectionRepository.getAsync(collectionId)?.serviceId ?: return
+        val accountName = serviceRepository.getAsync(serviceId)?.accountName ?: return
         val account = accountRepository.fromName(accountName)
 
-        delayedSyncManager.enqueueAfterDelay(account)
+        collectionSelectedListener.enqueueAfterDelay(account, serviceId)
     }
 
 }

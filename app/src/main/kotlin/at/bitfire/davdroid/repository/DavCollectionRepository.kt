@@ -181,6 +181,7 @@ class DavCollectionRepository @Inject constructor(
     suspend fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
 
     fun get(id: Long) = dao.get(id)
+    suspend fun getAsync(id: Long) = dao.getAsync(id)
 
     fun getFlow(id: Long) = dao.getFlow(id)
 

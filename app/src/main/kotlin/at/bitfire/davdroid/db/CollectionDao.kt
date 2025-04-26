@@ -21,6 +21,9 @@ interface CollectionDao {
     fun get(id: Long): Collection?
 
     @Query("SELECT * FROM collection WHERE id=:id")
+    suspend fun getAsync(id: Long): Collection?
+
+    @Query("SELECT * FROM collection WHERE id=:id")
     fun getFlow(id: Long): Flow<Collection?>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId")

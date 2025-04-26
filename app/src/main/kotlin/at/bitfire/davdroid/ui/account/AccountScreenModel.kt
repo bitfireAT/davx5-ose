@@ -207,7 +207,7 @@ class AccountScreenModel @AssistedInject constructor(
         val accountName = serviceRepository.getAsync(serviceId)?.accountName ?: return
         val account = accountRepository.fromName(accountName)
 
-        collectionSelectedListener.enqueueAfterDelay(account, serviceId = serviceId)
+        collectionSelectedListener.enqueueAfterDelay(account, serviceId)
     }
 
 }
