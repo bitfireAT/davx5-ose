@@ -11,37 +11,30 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.ui.CollectionSelectedUseCase.Companion.DELAY_MS
+import at.bitfire.davdroid.util.ApplicationScope
 import at.bitfire.davdroid.util.DefaultDispatcher
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 
 /**
  * Performs actions when a collection was (un)selected for synchronization.
  *
  * @see handleWithDelay
  */
-class CollectionSelectedUseCase @AssistedInject constructor(
-    @Assisted private val appScope: CoroutineScope,
+class CollectionSelectedUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
+    @ApplicationScope private val applicationScope: CoroutineScope,
     private val collectionRepository: DavCollectionRepository,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: SyncWorkerManager
 ) {
-
-    @AssistedFactory
-    interface Factory {
-        fun create(appScope: CoroutineScope = CoroutineScope(SupervisorJob())): CollectionSelectedUseCase
-    }
 
     /**
      * After a delay of [DELAY_MS] ms:
@@ -63,7 +56,7 @@ class CollectionSelectedUseCase @AssistedInject constructor(
             // Stop previous delay, if exists
             previousJob?.cancel()
 
-            appScope.launch(defaultDispatcher) {
+            applicationScope.launch(defaultDispatcher) {
                 // wait
                 delay(DELAY_MS)
 

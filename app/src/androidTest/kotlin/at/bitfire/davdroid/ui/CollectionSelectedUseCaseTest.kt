@@ -70,7 +70,7 @@ class CollectionSelectedUseCaseTest {
     lateinit var syncWorkerManager: SyncWorkerManager
 
     @Inject
-    lateinit var useCaseFactory: CollectionSelectedUseCase.Factory
+    lateinit var useCase: CollectionSelectedUseCase
 
     @Before
     fun setUp() {
@@ -88,7 +88,6 @@ class CollectionSelectedUseCaseTest {
 
     @Test
     fun testHandleWithDelay() = runTest(mainDispatcher) {
-        val useCase = useCaseFactory.create(appScope = this)
         useCase.handleWithDelay(collectionId = collection.id)
 
         advanceUntilIdle()
