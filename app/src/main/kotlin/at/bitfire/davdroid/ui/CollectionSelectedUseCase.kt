@@ -12,6 +12,9 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.ui.CollectionSelectedUseCase.Companion.DELAY_MS
 import at.bitfire.davdroid.util.DefaultDispatcher
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -19,16 +22,14 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Performs actions when a collection was (un)selected for synchronization.
  *
  * @see handleWithDelay
  */
-@Singleton
-class CollectionSelectedUseCase @Inject constructor(
+class CollectionSelectedUseCase @AssistedInject constructor(
+    @Assisted private val appScope: CoroutineScope,
     private val accountRepository: AccountRepository,
     private val collectionRepository: DavCollectionRepository,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
@@ -37,8 +38,10 @@ class CollectionSelectedUseCase @Inject constructor(
     private val syncWorkerManager: SyncWorkerManager
 ) {
 
-    private val delayJobs: ConcurrentHashMap<Account, Job> = ConcurrentHashMap()
-    private val scope = CoroutineScope(SupervisorJob())
+    @AssistedFactory
+    interface Factory {
+        fun create(appScope: CoroutineScope = CoroutineScope(SupervisorJob())): CollectionSelectedUseCase
+    }
 
     /**
      * After a delay of [DELAY_MS] ms:
@@ -60,7 +63,7 @@ class CollectionSelectedUseCase @Inject constructor(
             // Stop previous delay, if exists
             previousJob?.cancel()
 
-            scope.launch(defaultDispatcher) {
+            appScope.launch(defaultDispatcher) {
                 // wait
                 delay(DELAY_MS)
 
@@ -83,6 +86,8 @@ class CollectionSelectedUseCase @Inject constructor(
          * Length of delay in milliseconds
          */
         const val DELAY_MS = 5000L     // 5 seconds
+
+        private val delayJobs: ConcurrentHashMap<Account, Job> = ConcurrentHashMap()
 
     }
 
