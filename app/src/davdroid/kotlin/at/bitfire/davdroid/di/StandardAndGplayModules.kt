@@ -2,8 +2,9 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid
+package at.bitfire.davdroid.di
 
+import at.bitfire.davdroid.ui.intro.StandardAndGplayIntroPageFactory
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
 import at.bitfire.davdroid.ui.setup.LoginTypesProvider
 import at.bitfire.davdroid.ui.setup.StandardLoginTypesProvider
@@ -14,7 +15,7 @@ import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
 
-interface StandardAndGplayFlavorModules {
+interface StandardAndGplayModules {
 
     @Module
     @InstallIn(ActivityComponent::class)

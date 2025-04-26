@@ -2,13 +2,8 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid
+package at.bitfire.davdroid.ui.intro
 
-import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage
-import at.bitfire.davdroid.ui.intro.IntroPageFactory
-import at.bitfire.davdroid.ui.intro.PermissionsIntroPage
-import at.bitfire.davdroid.ui.intro.TasksIntroPage
-import at.bitfire.davdroid.ui.intro.WelcomePage
 import javax.inject.Inject
 
 class StandardAndGplayIntroPageFactory @Inject constructor(
