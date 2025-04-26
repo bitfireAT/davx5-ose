@@ -21,7 +21,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.davdroid.ui.CollectionSelectedListener
+import at.bitfire.davdroid.ui.CollectionSelectedUseCase
 import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -48,7 +48,7 @@ class AccountScreenModel @AssistedInject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext val context: Context,
-    private val collectionSelectedListener: Lazy<CollectionSelectedListener>,
+    private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
     getBindableHomesetsFromService: GetBindableHomeSetsFromServiceUseCase,
     getServiceCollectionPager: GetServiceCollectionPagerUseCase,
     private val logger: Logger,
@@ -188,24 +188,12 @@ class AccountScreenModel @AssistedInject constructor(
     fun setCollectionSync(id: Long, sync: Boolean) {
         viewModelScope.launch {
             collectionRepository.setSync(id, sync)
-            afterSetCollectionSync(id)
+            collectionSelectedUseCase.get().handleWithDelay(id)
         }
     }
 
     fun sync() {
         syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
-    }
-
-    /**
-     * Enqueues a one-time account wide sync after a short delay or scope cancellation.
-     * @param collectionId collection ID of collection in the account to be synchronized
-     */
-    private suspend fun afterSetCollectionSync(collectionId: Long) {
-        val serviceId = collectionRepository.getAsync(collectionId)?.serviceId ?: return
-        val accountName = serviceRepository.getAsync(serviceId)?.accountName ?: return
-        val account = accountRepository.fromName(accountName)
-
-        collectionSelectedListener.get().enqueueAfterDelay(account, serviceId)
     }
 
 }

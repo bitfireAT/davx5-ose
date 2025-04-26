@@ -13,11 +13,10 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.CollectionSelectedListener
+import at.bitfire.davdroid.ui.CollectionSelectedUseCase
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.Lazy
 import dagger.assisted.Assisted
@@ -39,8 +38,7 @@ class CollectionScreenModel @AssistedInject constructor(
     @Assisted val collectionId: Long,
     db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
-    private val collectionSelectedListener: Lazy<CollectionSelectedListener>,
-    private val serviceRepository: DavServiceRepository,
+    private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
     settings: SettingsManager,
     syncStatsRepository: DavSyncStatsRepository
 ): ViewModel() {
@@ -133,27 +131,15 @@ class CollectionScreenModel @AssistedInject constructor(
     fun setForceReadOnly(forceReadOnly: Boolean) {
         viewModelScope.launch {
             collectionRepository.setForceReadOnly(collectionId, forceReadOnly)
-            syncAfterDelay(collectionId)
+            collectionSelectedUseCase.get().handleWithDelay(collectionId)
         }
     }
 
     fun setSync(sync: Boolean) {
         viewModelScope.launch {
             collectionRepository.setSync(collectionId, sync)
-            syncAfterDelay(collectionId)
+            collectionSelectedUseCase.get().handleWithDelay(collectionId)
         }
-    }
-
-    /**
-     * Enqueues a one-time account wide sync after a short delay or scope cancellation.
-     * @param collectionId collection ID of collection in the account to be synchronized
-     */
-    private suspend fun syncAfterDelay(collectionId: Long) {
-        val serviceId = collectionRepository.getAsync(collectionId)?.serviceId ?: return
-        val accountName = serviceRepository.getAsync(serviceId)?.accountName ?: return
-        val account = accountRepository.fromName(accountName)
-
-        collectionSelectedListener.get().enqueueAfterDelay(account, serviceId)
     }
 
 }
