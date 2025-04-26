@@ -21,7 +21,6 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.davdroid.ui.CollectionSelectedUseCase
 import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

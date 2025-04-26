@@ -16,7 +16,6 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.CollectionSelectedUseCase
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.Lazy
 import dagger.assisted.Assisted
