@@ -30,12 +30,7 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.ICalendar
 import at.bitfire.ical4android.util.DateUtils
-import dagger.Lazy
-import dagger.Module
-import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.Multibinds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Calendar
@@ -47,25 +42,19 @@ import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.property.Version
 import okhttp3.HttpUrl
 import java.io.StringWriter
-import java.util.Collections
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Provider
 
 /**
  * Repository for managing collections.
- *
- * Implements an observer pattern that can be used to listen for changes of collections.
  */
 class DavCollectionRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
-    defaultListeners: Lazy<Set<@JvmSuppressWildcards OnChangeListener>>,
     private val httpClientBuilder: Provider<HttpClient.Builder>,
     private val serviceRepository: DavServiceRepository
 ) {
-
-    private val listeners by lazy { Collections.synchronizedSet(defaultListeners.get().toMutableSet()) }
 
     private val dao = db.collectionDao()
 
@@ -111,8 +100,6 @@ class DavCollectionRepository @Inject constructor(
             description = description
         )
         dao.insertAsync(collection)
-
-        notifyOnChangeListeners()
     }
 
     /**
@@ -171,8 +158,6 @@ class DavCollectionRepository @Inject constructor(
         // Trigger service detection (because the collection may actually have other properties than the ones we have inserted).
         // Some servers are known to change the supported components (VEVENT, …) after creation.
         RefreshCollectionsWorker.enqueue(context, homeSet.serviceId)
-
-        notifyOnChangeListeners()
     }
 
     /** Deletes the given collection from the server and the database. */
@@ -196,6 +181,7 @@ class DavCollectionRepository @Inject constructor(
     suspend fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
 
     fun get(id: Long) = dao.get(id)
+    suspend fun getAsync(id: Long) = dao.getAsync(id)
 
     fun getFlow(id: Long) = dao.getFlow(id)
 
@@ -249,7 +235,6 @@ class DavCollectionRepository @Inject constructor(
      */
     fun insertOrUpdateByUrl(collection: Collection) {
         dao.insertOrUpdateByUrl(collection)
-        notifyOnChangeListeners()
     }
 
     fun pageByServiceAndType(serviceId: Long, @CollectionType type: String) =
@@ -263,7 +248,6 @@ class DavCollectionRepository @Inject constructor(
      */
     suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
         dao.updateForceReadOnly(id, forceReadOnly)
-        notifyOnChangeListeners()
     }
 
     /**
@@ -271,7 +255,6 @@ class DavCollectionRepository @Inject constructor(
      */
     suspend fun setSync(id: Long, forceReadOnly: Boolean) {
         dao.updateSync(id, forceReadOnly)
-        notifyOnChangeListeners()
     }
 
     suspend fun updatePushSubscription(id: Long, subscriptionUrl: String?, expires: Long?) {
@@ -287,7 +270,6 @@ class DavCollectionRepository @Inject constructor(
      */
     fun delete(collection: Collection) {
         dao.delete(collection)
-        notifyOnChangeListeners()
     }
 
 
@@ -423,33 +405,5 @@ class DavCollectionRepository @Inject constructor(
     }
 
     private fun getVTimeZone(tzId: String): VTimeZone? = DateUtils.ical4jTimeZone(tzId)?.vTimeZone
-
-
-    /*** OBSERVERS ***/
-
-    /**
-     * Notifies registered listeners about changes in the collections.
-     */
-    private fun notifyOnChangeListeners() = synchronized(listeners) {
-        listeners.forEach { listener ->
-            listener.onCollectionsChanged()
-        }
-    }
-
-    fun interface OnChangeListener {
-        /**
-         * Will be called when collections have changed. Will run in the coroutine context/thread
-         * of the data-modifying method. For instance, if [delete] is called, [onCollectionsChanged]
-         * will be called in the context/thread that called [delete].
-         */
-        fun onCollectionsChanged()
-    }
-
-    @Module
-    @InstallIn(SingletonComponent::class)
-    abstract class DavCollectionRepositoryModule {
-        // Provides empty set of listeners
-        @Multibinds abstract fun defaultOnChangeListeners(): Set<OnChangeListener>
-    }
 
 }

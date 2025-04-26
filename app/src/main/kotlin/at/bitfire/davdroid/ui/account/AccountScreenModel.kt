@@ -21,7 +21,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.davdroid.ui.DelayedSyncManager
+import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -47,7 +47,7 @@ class AccountScreenModel @AssistedInject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext val context: Context,
-    private val delayedSyncManager: DelayedSyncManager,
+    private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
     getBindableHomesetsFromService: GetBindableHomeSetsFromServiceUseCase,
     getServiceCollectionPager: GetServiceCollectionPagerUseCase,
     private val logger: Logger,
@@ -187,24 +187,12 @@ class AccountScreenModel @AssistedInject constructor(
     fun setCollectionSync(id: Long, sync: Boolean) {
         viewModelScope.launch {
             collectionRepository.setSync(id, sync)
-            syncAfterDelay(id)
+            collectionSelectedUseCase.get().handleWithDelay(id)
         }
     }
 
     fun sync() {
         syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
-    }
-
-    /**
-     * Enqueues a one-time account wide sync after a short delay or scope cancellation.
-     * @param collectionId collection ID of collection in the account to be synchronized
-     */
-    private suspend fun syncAfterDelay(collectionId: Long) = withContext(Dispatchers.IO) {
-        val serviceId = collectionRepository.get(collectionId)?.serviceId ?: return@withContext
-        val accountName = serviceRepository.get(serviceId)?.accountName ?: return@withContext
-        val account = accountRepository.fromName(accountName)
-
-        delayedSyncManager.enqueueAfterDelay(account)
     }
 
 }

@@ -33,7 +33,7 @@ data class Service(
     @ServiceType
     val type: String,
 
-    val principal: HttpUrl?
+    val principal: HttpUrl? = null
 ) {
 
     companion object {

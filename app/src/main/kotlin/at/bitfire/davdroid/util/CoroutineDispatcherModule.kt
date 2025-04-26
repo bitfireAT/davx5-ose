@@ -37,7 +37,7 @@ class CoroutineDispatcherModule {
     fun ioDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
-    @DefaultDispatcher
+    @MainDispatcher
     fun mainDispatcher(): CoroutineDispatcher = Dispatchers.Main
 
 }
