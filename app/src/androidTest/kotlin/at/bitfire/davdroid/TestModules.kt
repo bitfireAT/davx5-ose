@@ -31,6 +31,11 @@ abstract class TestTasksAppWatcherModuleModule {
     abstract fun empty(): Set<StartupPlugin>
 }
 
+
+/**
+ * If you run tests that switch context to one of these dispatchers, use `runTest(mainDispatcher)`
+ * with `mainDispatcher` being an injected [MainDispatcher] instead of plain `runTest`.
+ */
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],

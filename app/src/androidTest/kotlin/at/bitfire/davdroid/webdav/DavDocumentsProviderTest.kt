@@ -10,10 +10,12 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.util.MainDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.test.runTest
 import okhttp3.CookieJar
 import okhttp3.mockwebserver.Dispatcher
@@ -50,6 +52,10 @@ class DavDocumentsProviderTest {
     
     @Inject
     lateinit var db: AppDatabase
+    
+    @Inject
+    @MainDispatcher
+    lateinit var mainDispatcher: CoroutineDispatcher
 
     @Inject
     lateinit var testDispatcher: TestDispatcher
@@ -86,7 +92,7 @@ class DavDocumentsProviderTest {
 
 
     @Test
-    fun testDoQueryChildren_insert() = runTest {
+    fun testDoQueryChildren_insert() = runTest(mainDispatcher) {
         // Create parent and root in database
         val id = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
         val webDavMount = db.webDavMountDao().getById(id)
@@ -107,7 +113,7 @@ class DavDocumentsProviderTest {
     }
 
     @Test
-    fun testDoQueryChildren_update() = runTest {
+    fun testDoQueryChildren_update() = runTest(mainDispatcher) {
         // Create parent and root in database
         val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
         val webDavMount = db.webDavMountDao().getById(mountId)
@@ -143,7 +149,7 @@ class DavDocumentsProviderTest {
     }
 
     @Test
-    fun testDoQueryChildren_delete() = runTest {
+    fun testDoQueryChildren_delete() = runTest(mainDispatcher) {
         // Create parent and root in database
         val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
         val webDavMount = db.webDavMountDao().getById(mountId)
@@ -167,7 +173,7 @@ class DavDocumentsProviderTest {
     }
 
     @Test
-    fun testDoQueryChildren_updateTwoDirectoriesSimultaneously() = runTest {
+    fun testDoQueryChildren_updateTwoDirectoriesSimultaneously() = runTest(mainDispatcher) {
         // Create root in database
         val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
         val webDavMount = db.webDavMountDao().getById(mountId)
