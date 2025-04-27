@@ -93,6 +93,13 @@ android {
         generateLocaleConfig = true
     }
 
+    packaging {
+        resources {
+            // multiple (test) dependencies have LICENSE files at same location
+            merges += arrayOf("META-INF/LICENSE*")
+        }
+    }
+
     @Suppress("UnstableApiUsage")
     testOptions {
         managedDevices {
