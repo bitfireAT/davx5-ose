@@ -50,6 +50,7 @@
   <string name="intro_open_source_title">Logiciels open-source</string>
   <string name="intro_open_source_text">Nous sommes heureux que vous utilisiez %s, qui est un logiciel open-source. Le développement, la maintenance et l\'assistance sont un travail difficile. Veuillez envisager de contribuer (il y a plusieurs façons de le faire) ou de faire un don. Ce serait très apprécié !</string>
   <string name="intro_open_source_details">Comment contribuer / donner</string>
+  <string name="intro_open_source_dont_show">Ne me rappelle pas pour</string>
   <string name="intro_next">Suivant</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Autorisations</string>
@@ -124,6 +125,7 @@
   <string name="accounts_sync_all">Synchroniser tous les comptes</string>
   <!--Sync warnings-->
   <string name="sync_warning_no_notification_permission">Notifications désactivées. Vous ne serez pas averti des erreurs de synchronisation.</string>
+  <string name="sync_warning_no_internet">La synchronisation automatique n\'est pas active (aucune connexion Internet vérifiée)</string>
   <string name="sync_warning_manage_connections">Gérer les connexions</string>
   <string name="sync_warning_datasaver_enabled">L\'économiseur de données est activé. La synchronisation en arrière-plan est limitée.</string>
   <string name="sync_warning_manage_datasaver">Gérer l\'économiseur de données</string>
@@ -131,6 +133,8 @@
   <string name="sync_warning_manage_battery_saver">Gérer l\'économiseur de batterie</string>
   <string name="sync_warning_low_storage">Espace de stockage faible. Android ne synchronisera pas les changements locaux immédiatement mais pendant la prochaine synchronisation.</string>
   <string name="sync_warning_manage_storage">Gérer le stockage</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Fournisseur de calendrier manquant</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Avez-vous désactivé l\'application système \'Stockage du calendrier\' ?</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">La détection du service a échoué</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
