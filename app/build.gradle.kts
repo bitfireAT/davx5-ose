@@ -89,12 +89,6 @@ android {
         disable += arrayOf("GoogleAppIndexingWarning", "ImpliedQuantity", "MissingQuantity", "MissingTranslation", "ExtraTranslation", "RtlEnabled", "RtlHardcoded", "Typos")
     }
 
-    packaging {
-        resources {
-            excludes += arrayOf("META-INF/*.md")
-        }
-    }
-
     androidResources {
         generateLocaleConfig = true
     }
@@ -118,18 +112,8 @@ ksp {
 }
 
 aboutLibraries {
+    // exclude timestamps for reproducible builds [https://github.com/bitfireAT/davx5-ose/issues/994]
     excludeFields = arrayOf("generated")
-}
-
-configurations {
-    configureEach {
-        // exclude modules which are in conflict with system libraries
-        exclude(module="commons-logging")
-        exclude(group="org.json", module="json")
-
-        // Groovy requires SDK 26+, and it's not required, so exclude it
-        exclude(group="org.codehaus.groovy")
-    }
 }
 
 dependencies {
