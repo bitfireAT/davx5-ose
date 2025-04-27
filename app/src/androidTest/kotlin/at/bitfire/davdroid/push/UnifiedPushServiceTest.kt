@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.test.rule.ServiceTestRule
+import at.bitfire.davdroid.di.MainDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -18,6 +19,10 @@ import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -26,6 +31,7 @@ import org.unifiedpush.android.connector.PushService
 import org.unifiedpush.android.connector.data.PushEndpoint
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltAndroidTest
 class UnifiedPushServiceTest {
 
@@ -41,6 +47,10 @@ class UnifiedPushServiceTest {
     @Inject
     @ApplicationContext
     lateinit var context: Context
+
+    @Inject
+    @MainDispatcher
+    lateinit var mainDispatcher: CoroutineDispatcher
 
     @RelaxedMockK
     @BindValue
@@ -60,12 +70,13 @@ class UnifiedPushServiceTest {
 
 
     @Test
-    fun testOnNewEndpoint() {
+    fun testOnNewEndpoint() = runTest(mainDispatcher) {
         val endpoint = mockk<PushEndpoint> {
             every { url } returns "https://example.com/12"
         }
         unifiedPushService.onNewEndpoint(endpoint, "12")
 
+        advanceUntilIdle()
         coVerify {
             pushRegistrationManager.processSubscription(12, endpoint)
         }
@@ -73,9 +84,10 @@ class UnifiedPushServiceTest {
     }
 
     @Test
-    fun testOnRegistrationFailed() {
+    fun testOnRegistrationFailed() = runTest(mainDispatcher) {
         unifiedPushService.onRegistrationFailed(FailedReason.INTERNAL_ERROR, "34")
 
+        advanceUntilIdle()
         coVerify {
             pushRegistrationManager.removeSubscription(34)
         }
@@ -83,9 +95,10 @@ class UnifiedPushServiceTest {
     }
 
     @Test
-    fun testOnUnregistered() {
+    fun testOnUnregistered() = runTest(mainDispatcher) {
         unifiedPushService.onRegistrationFailed(FailedReason.INTERNAL_ERROR, "45")
 
+        advanceUntilIdle()
         coVerify {
             pushRegistrationManager.removeSubscription(45)
         }

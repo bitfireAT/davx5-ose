@@ -4,10 +4,10 @@
 
 package at.bitfire.davdroid.push
 
+import at.bitfire.davdroid.di.ApplicationScope
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.unifiedpush.android.connector.FailedReason
 import org.unifiedpush.android.connector.PushService
@@ -25,6 +25,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class UnifiedPushService : PushService() {
 
+    /* Scope to run the requests asynchronously. UnifiedPush binds the service,
+    * sends the message and unbinds one second later. Our operations may take longer,
+    * so the scope should not be bound to the service lifecycle. */
+    @Inject
+    @ApplicationScope
+    lateinit var applicationScope: CoroutineScope
+
     @Inject
     lateinit var logger: Logger
 
@@ -34,18 +41,13 @@ class UnifiedPushService : PushService() {
     @Inject
     lateinit var pushRegistrationManager: Lazy<PushRegistrationManager>
 
-    /* Scope to run the requests asynchronously. UnifiedPush binds the service,
-    * sends the message and unbinds one second later. Our operations may take longer,
-    * so the scope should not be bound to the service lifecycle. */
-    val serviceScope = CoroutineScope(SupervisorJob())
-
 
     override fun onNewEndpoint(endpoint: PushEndpoint, instance: String) {
         val serviceId = instance.toLongOrNull() ?: return
         logger.warning("Got UnifiedPush endpoint for service $serviceId: ${endpoint.url}")
 
         // register new endpoint at CalDAV/CardDAV servers
-        serviceScope.launch {
+        applicationScope.launch {
             pushRegistrationManager.get().processSubscription(serviceId, endpoint)
         }
     }
@@ -55,7 +57,7 @@ class UnifiedPushService : PushService() {
         logger.warning("UnifiedPush registration failed for service $serviceId: $reason")
 
         // unregister subscriptions
-        serviceScope.launch {
+        applicationScope.launch {
             pushRegistrationManager.get().removeSubscription(serviceId)
         }
     }
@@ -64,13 +66,13 @@ class UnifiedPushService : PushService() {
         val serviceId = instance.toLongOrNull() ?: return
         logger.warning("UnifiedPush unregistered for service $serviceId")
 
-        serviceScope.launch {
+        applicationScope.launch {
             pushRegistrationManager.get().removeSubscription(serviceId)
         }
     }
 
     override fun onMessage(message: PushMessage, instance: String) {
-        serviceScope.launch {
+        applicationScope.launch {
             pushMessageHandler.get().processMessage(message, instance)
         }
     }
