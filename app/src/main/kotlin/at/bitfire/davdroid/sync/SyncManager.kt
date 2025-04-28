@@ -26,7 +26,6 @@ import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
-import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -37,6 +36,10 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.sync.SyncManager.Companion.DELAY_UNTIL_DEFAULT
+import at.bitfire.davdroid.sync.SyncManager.Companion.DELAY_UNTIL_MAX
+import at.bitfire.davdroid.sync.SyncManager.Companion.DELAY_UNTIL_MIN
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.Ical4Android
 import at.bitfire.vcard4android.ContactsStorageException
@@ -173,7 +176,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 logger.info("No reason to synchronize, aborting")
                 return
             }
-            syncStatsRepository.logSyncTime(collection.id, authority)
+            syncStatsRepository.logSyncTimeBlocking(collection.id, authority)
 
             logger.info("Querying server capabilities")
             var remoteSyncState = queryCapabilities()

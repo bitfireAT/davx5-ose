@@ -15,7 +15,7 @@ class DavHomeSetRepository @Inject constructor(
     db: AppDatabase
 ) {
 
-    val dao = db.homeSetDao()
+    private val dao = db.homeSetDao()
 
     fun getAddressBookHomeSetsFlow(account: Account) =
         dao.getBindableByAccountAndServiceTypeFlow(account.name, Service.TYPE_CARDDAV)
