@@ -92,7 +92,7 @@ class PushRegistrationManager @Inject constructor(
     }
 
     private suspend fun updateService(serviceId: Long) {
-        val service = serviceRepository.getAsync(serviceId) ?: return
+        val service = serviceRepository.get(serviceId) ?: return
 
         val distributorAvailable = UnifiedPush.getSavedDistributor(context) != null
         if (distributorAvailable)
@@ -118,7 +118,7 @@ class PushRegistrationManager @Inject constructor(
      * Uses the subscription to subscribe to syncable collections, and then unsubscribes from non-syncable collections.
      */
     suspend fun processSubscription(serviceId: Long, endpoint: PushEndpoint) = mutex.withLock {
-        val service = serviceRepository.getAsync(serviceId) ?: return
+        val service = serviceRepository.get(serviceId) ?: return
 
         try {
             // subscribe to collections which are selected for synchronization
@@ -165,7 +165,7 @@ class PushRegistrationManager @Inject constructor(
      * Unsubscribes from all subscribed collections.
      */
     suspend fun removeSubscription(serviceId: Long) = mutex.withLock {
-        val service = serviceRepository.getAsync(serviceId) ?: return
+        val service = serviceRepository.get(serviceId) ?: return
         unsubscribeAll(service)
     }
 

@@ -22,9 +22,9 @@ class DavHomeSetRepository @Inject constructor(
 
     fun getBindableByServiceFlow(serviceId: Long) = dao.getBindableByServiceFlow(serviceId)
 
-    fun getById(id: Long) = dao.getById(id)
+    fun getByIdBlocking(id: Long) = dao.getById(id)
 
-    fun getByService(serviceId: Long) = dao.getByService(serviceId)
+    fun getByServiceBlocking(serviceId: Long) = dao.getByService(serviceId)
 
     fun getCalendarHomeSetsFlow(account: Account) =
         dao.getBindableByAccountAndServiceTypeFlow(account.name, Service.TYPE_CALDAV)
@@ -38,13 +38,13 @@ class DavHomeSetRepository @Inject constructor(
      * @return ID of the row, that has been inserted or updated. -1 If the insert fails due to other reasons.
      */
     @Transaction
-    fun insertOrUpdateByUrl(homeset: HomeSet): Long =
+    fun insertOrUpdateByUrlBlocking(homeset: HomeSet): Long =
         dao.getByUrl(homeset.serviceId, homeset.url.toString())?.let { existingHomeset ->
             dao.update(homeset.copy(id = existingHomeset.id))
             existingHomeset.id
         } ?: dao.insert(homeset)
 
 
-    fun delete(homeSet: HomeSet) = dao.delete(homeSet)
+    fun deleteBlocking(homeSet: HomeSet) = dao.delete(homeSet)
 
 }

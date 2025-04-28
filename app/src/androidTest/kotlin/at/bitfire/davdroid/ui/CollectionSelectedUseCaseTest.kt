@@ -76,13 +76,13 @@ class CollectionSelectedUseCaseTest {
     fun setUp() {
         hiltRule.inject()
 
-        serviceRepository.insertOrReplace(service)
+        serviceRepository.insertOrReplaceBlocking(service)
         collectionRepository.insertOrUpdateByUrl(collection)
     }
 
     @After
     fun tearDown() {
-        serviceRepository.deleteAll()
+        serviceRepository.deleteAllBlocking()
     }
 
 

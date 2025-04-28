@@ -53,7 +53,7 @@ class PushMessageHandler @Inject constructor(
             // Sync all authorities of account that the collection belongs to
             // Later: only sync affected collection and authorities
             collectionRepository.getSyncableByTopic(topic)?.let { collection ->
-                serviceRepository.getAsync(collection.serviceId)?.let { service ->
+                serviceRepository.get(collection.serviceId)?.let { service ->
                     val syncDataTypes = mutableSetOf<SyncDataType>()
                     // If the type is an address book, add the contacts type
                     if (collection.type == TYPE_ADDRESSBOOK)
@@ -78,7 +78,7 @@ class PushMessageHandler @Inject constructor(
 
         } else {
             // fallback when no known topic is present (shouldn't happen)
-            val service = instance.toLongOrNull()?.let { serviceRepository.get(it) }
+            val service = instance.toLongOrNull()?.let { serviceRepository.getBlocking(it) }
             if (service != null) {
                 logger.warning("Got push message without topic and service, syncing all accounts")
                 val account = accountRepository.fromName(service.accountName)

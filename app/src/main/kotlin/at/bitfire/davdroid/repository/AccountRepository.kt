@@ -251,11 +251,11 @@ class AccountRepository @Inject constructor(
     private fun insertService(accountName: String, @ServiceType type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
         // insert service
         val service = Service(0, accountName, type, info.principal)
-        val serviceId = serviceRepository.insertOrReplace(service)
+        val serviceId = serviceRepository.insertOrReplaceBlocking(service)
 
         // insert home sets
         for (homeSet in info.homeSets)
-            homeSetRepository.insertOrUpdateByUrl(HomeSet(0, serviceId, true, homeSet))
+            homeSetRepository.insertOrUpdateByUrlBlocking(HomeSet(0, serviceId, true, homeSet))
 
         // insert collections
         for (collection in info.collections.values) {
