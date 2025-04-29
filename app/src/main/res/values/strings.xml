@@ -230,7 +230,7 @@
     <string name="app_settings_unifiedpush_no_distributor">No push distributor installed</string>
     <string name="app_settings_unifiedpush_no_endpoint">No endpoint configured</string>
     <string name="app_settings_unifiedpush_ready">Ready to receive push messages over %s</string>
-    <string name="app_settings_unifiedpush_distributor_fcm">Google (over FCM)</string>
+    <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
     <string name="app_settings_unifiedpush_encrypted">Push messages are always encrypted.</string>
 
     <!-- AccountScreen -->
