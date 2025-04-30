@@ -20,6 +20,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_READ_ONLY
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
@@ -91,7 +92,7 @@ open class LocalAddressBook @AssistedInject constructor(
     open val groupMethod: GroupMethod by lazy {
         val account = accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
             collectionRepository.get(collectionId)?.let { collection ->
-                serviceRepository.get(collection.serviceId)?.let { service ->
+                serviceRepository.getBlocking(collection.serviceId)?.let { service ->
                     Account(service.accountName, context.getString(R.string.account_type))
                 }
             }
