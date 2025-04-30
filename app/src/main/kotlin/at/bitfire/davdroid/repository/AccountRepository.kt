@@ -255,7 +255,7 @@ class AccountRepository @Inject constructor(
 
         // insert home sets
         for (homeSet in info.homeSets)
-            homeSetRepository.insertOrUpdateByUrl(HomeSet(0, serviceId, true, homeSet))
+            homeSetRepository.insertOrUpdateByUrl(HomeSet(0, serviceId, url = homeSet))
 
         // insert collections
         for (collection in info.collections.values) {

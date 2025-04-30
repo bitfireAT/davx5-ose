@@ -26,10 +26,7 @@ data class HomeSet(
 
     val serviceId: Long,
 
-    /**
-     * Whether this homeset belongs to the [Service.principal] given by [serviceId].
-     */
-    val personal: Boolean,
+    val personal: Boolean? = null,
 
     val url: HttpUrl,
 

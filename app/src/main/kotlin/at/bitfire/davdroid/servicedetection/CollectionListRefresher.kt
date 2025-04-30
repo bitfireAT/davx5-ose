@@ -157,7 +157,6 @@ class CollectionListRefresher @AssistedInject constructor(
 
         // Query the URL
         val principal = DavResource(httpClient, principalUrl)
-        val personal = level == 0
         try {
             principal.propfind(0, *homeSetProperties) { davResponse, _ ->
                 alreadyQueriedPrincipals += davResponse.href
@@ -169,12 +168,7 @@ class CollectionListRefresher @AssistedInject constructor(
                             val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
                             if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
                                 homeSetRepository.insertOrUpdateByUrl(
-                                    // HomeSet is considered personal if this is the outer recursion call,
-                                    // This is because we assume the first call to query the current-user-principal
-                                    // Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by
-                                    // other principals while still being considered "personal" (belonging to the current-user-principal)
-                                    // and an owned home set need not always be personal either.
-                                    HomeSet(0, service.id, personal, resolvedHomeSetUrl)
+                                    HomeSet(0, service.id, url = resolvedHomeSetUrl)
                                 )
                                 alreadySavedHomeSets += resolvedHomeSetUrl
                             }
@@ -182,7 +176,7 @@ class CollectionListRefresher @AssistedInject constructor(
                 }
 
                 // Add related principals to be queried afterwards
-                if (personal) {
+                if (level == 0) {
                     val relatedResourcesTypes = listOf(
                         // current resource is a read/write-proxy for other principals
                         CalendarProxyReadFor::class.java,
@@ -257,11 +251,15 @@ class CollectionListRefresher @AssistedInject constructor(
                     if (!response.isSuccess())
                         return@propfind
 
+                    val ownerHref = response[Owner::class.java]?.href
+                    val personal = ownerHref != null && service.principal.toString().endsWith(ownerHref)
+
                     if (relation == Response.HrefRelation.SELF)
                         // this response is about the home set itself
                         homeSetRepository.insertOrUpdateByUrl(localHomeset.copy(
                             displayName = response[DisplayName::class.java]?.displayName,
-                            privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
+                            privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false,
+                            personal = personal
                         ))
 
                     // in any case, check whether the response is about a usable collection
@@ -270,7 +268,7 @@ class CollectionListRefresher @AssistedInject constructor(
                         serviceId = service.id,
                         homeSetId = localHomeset.id,
                         sync = shouldPreselect(collection, homesets.values),
-                        ownerId = response[Owner::class.java]?.href  // save the principal id (collection owner)
+                        ownerId = ownerHref                          // save the principal id (collection owner)
                             ?.let { response.href.resolve(it) }
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
                             ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
@@ -317,9 +315,10 @@ class CollectionListRefresher @AssistedInject constructor(
                 Collection.fromDavResponse(response)?.let { collection ->
                     if (!isUsableCollection(collection))
                         return@let
+                    val ownerHref = response[Owner::class.java]?.href
                     collectionRepository.insertOrUpdateByUrlAndRememberFlags(collection.copy(
                         serviceId = localCollection.serviceId,          // use same service ID as previous entry
-                        ownerId = response[Owner::class.java]?.href     // save the principal id (collection owner)
+                        ownerId = ownerHref                             // save the principal id (collection owner)
                             ?.let { response.href.resolve(it) }
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
                             ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
@@ -409,7 +408,7 @@ class CollectionListRefresher @AssistedInject constructor(
             Settings.PRESELECT_COLLECTIONS_PERSONAL ->
                 // preselect if is personal (in a personal home-set), but not excluded
                 homeSets
-                    .filter { homeset -> homeset.personal }
+                    .filter { homeset -> homeset.personal == true }
                     .map { homeset -> homeset.id }
                     .contains(collection.homeSetId)
                     && !excluded
