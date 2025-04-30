@@ -33,7 +33,7 @@ class LocalAddressBookStore @Inject constructor(
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
     private val settings: SettingsManager
-): LocalDataStore<LocalAddressBook> {
+) : LocalDataStore<LocalAddressBook> {
 
     override val authority: String
         get() = ContactsContract.AUTHORITY
@@ -42,6 +42,8 @@ class LocalAddressBookStore @Inject constructor(
     val forceAllReadOnly: Boolean
         get() = settings.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
 
+
+    private val accountManager = AccountManager.get(context)
 
     /**
      * Assembles a name for the address book (account) from its corresponding database [Collection].
@@ -116,16 +118,29 @@ class LocalAddressBookStore @Inject constructor(
     }
 
     override fun getAll(account: Account, provider: ContentProviderClient): List<LocalAddressBook> {
-        val accountManager = AccountManager.get(context)
         return accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
                 accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME) == account.name &&
-                accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) == account.type
+                        accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) == account.type
             }
             .map { addressBookAccount ->
                 localAddressBookFactory.create(account, addressBookAccount, provider)
             }
     }
+
+    override fun getByDbCollectionId(account: Account, provider: ContentProviderClient, id: Long): LocalAddressBook? =
+        accountManager.getAccountsByType(
+            context.getString(R.string.account_type_address_book)
+        ).filter { addressBookAccount ->
+            id == accountManager.getUserData(
+                addressBookAccount,
+                LocalAddressBook.USER_DATA_COLLECTION_ID
+            ).toLongOrNull()
+        }
+            .map { addressBookAccount ->
+                localAddressBookFactory.create(account, addressBookAccount, provider)
+            }.firstOrNull()
+
 
     override fun update(provider: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
         var currentAccount = localCollection.addressBookAccount
@@ -140,7 +155,6 @@ class LocalAddressBookStore @Inject constructor(
         }
 
         // Update the account user data
-        val accountManager = AccountManager.get(context)
         accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, localCollection.account.name)
         accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, localCollection.account.type)
         accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_COLLECTION_ID, fromCollection.id.toString())
@@ -166,11 +180,10 @@ class LocalAddressBookStore @Inject constructor(
      * @param newAccount    The new account
      */
     override fun updateAccount(oldAccount: Account, newAccount: Account) {
-        val accountManager = AccountManager.get(context)
         accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
                 accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME) == oldAccount.name &&
-                accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) == oldAccount.type
+                        accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) == oldAccount.type
             }
             .forEach { addressBookAccount ->
                 accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, newAccount.name)
@@ -179,7 +192,6 @@ class LocalAddressBookStore @Inject constructor(
     }
 
     override fun delete(localCollection: LocalAddressBook) {
-        val accountManager = AccountManager.get(context)
         accountManager.removeAccountExplicitly(localCollection.addressBookAccount)
     }
 
@@ -189,7 +201,6 @@ class LocalAddressBookStore @Inject constructor(
      * @param id    [Collection.id] to look for
      */
     fun deleteByCollectionId(id: Long) {
-        val accountManager = AccountManager.get(context)
         val addressBookAccount = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).firstOrNull { account ->
             accountManager.getUserData(account, LocalAddressBook.USER_DATA_COLLECTION_ID)?.toLongOrNull() == id
         }

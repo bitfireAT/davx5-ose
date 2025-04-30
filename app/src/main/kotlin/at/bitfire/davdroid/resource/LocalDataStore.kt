@@ -12,7 +12,7 @@ import at.bitfire.davdroid.db.Collection
  * Represents a local data store for a specific collection type.
  * Manages creation, update, and deletion of collections of the given type.
  */
-interface LocalDataStore<T: LocalCollection<*>> {
+interface LocalDataStore<T : LocalCollection<*>> {
 
     /**
      * Content provider authority for the data store.
@@ -51,6 +51,15 @@ interface LocalDataStore<T: LocalCollection<*>> {
      * @return a list of all local collections
      */
     fun getAll(account: Account, provider: ContentProviderClient): List<T>
+
+    /**
+     * Returns the [LocalCollection] corresponding to given remote [Collection].
+     *
+     * @param account   the account in which to look
+     * @param id        ID of remote collection
+     * @return          the local collection, or `null` if not found
+     */
+    fun getByDbCollectionId(account: Account, provider: ContentProviderClient, id: Long): T?
 
     /**
      * Updates the local collection with the data from the given (remote) collection info.

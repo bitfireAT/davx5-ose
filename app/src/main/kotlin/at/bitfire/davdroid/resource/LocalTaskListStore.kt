@@ -35,7 +35,7 @@ class LocalTaskListStore @AssistedInject constructor(
     @ApplicationContext val context: Context,
     val db: AppDatabase,
     val logger: Logger
-): LocalDataStore<LocalTaskList> {
+) : LocalDataStore<LocalTaskList> {
 
     @AssistedFactory
     interface Factory {
@@ -80,8 +80,10 @@ class LocalTaskListStore @AssistedInject constructor(
     private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
         val values = ContentValues(3)
         values.put(TaskLists._SYNC_ID, info.id.toString())
-        values.put(TaskLists.LIST_NAME,
-            if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
+        values.put(
+            TaskLists.LIST_NAME,
+            if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName
+        )
 
         if (withColor && info.color != null)
             values.put(TaskLists.LIST_COLOR, info.color)
@@ -96,6 +98,16 @@ class LocalTaskListStore @AssistedInject constructor(
 
     override fun getAll(account: Account, provider: ContentProviderClient) =
         DmfsTaskList.find(account, LocalTaskList.Factory, provider, providerName, null, null)
+
+    override fun getByDbCollectionId(account: Account, provider: ContentProviderClient, id: Long): LocalTaskList? =
+        DmfsTaskList.find(
+            account,
+            LocalTaskList.Factory,
+            provider,
+            providerName,
+            "${TaskLists._SYNC_ID}=?",
+            arrayOf(id.toString())
+        ).firstOrNull()
 
     override fun update(provider: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list ${fromCollection.url}", fromCollection)
