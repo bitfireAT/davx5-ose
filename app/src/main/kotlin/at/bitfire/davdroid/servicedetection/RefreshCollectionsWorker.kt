@@ -131,7 +131,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     }
 
     val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
-    val service = serviceRepository.get(serviceId)
+    val service = serviceRepository.getBlocking(serviceId)
     val account = service?.let { service ->
         Account(service.accountName, applicationContext.getString(R.string.account_type))
     }

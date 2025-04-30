@@ -18,8 +18,8 @@ class DavServiceRepository @Inject constructor(
 
     // Read
 
-    fun get(id: Long): Service? = dao.get(id)
-    suspend fun getAsync(id: Long): Service? = dao.getAsync(id)
+    fun getBlocking(id: Long): Service? = dao.get(id)
+    suspend fun get(id: Long): Service? = dao.getAsync(id)
 
     suspend fun getAll(): List<Service> = dao.getAll()
 
@@ -35,7 +35,7 @@ class DavServiceRepository @Inject constructor(
 
     // Create & update
 
-    fun insertOrReplace(service: Service) =
+    fun insertOrReplaceBlocking(service: Service) =
         dao.insertOrReplace(service)
 
     suspend fun renameAccount(oldName: String, newName: String) =
@@ -44,7 +44,7 @@ class DavServiceRepository @Inject constructor(
 
     // Delete
 
-    fun deleteAll() = dao.deleteAll()
+    fun deleteAllBlocking() = dao.deleteAll()
 
     suspend fun deleteByAccount(accountName: String) =
         dao.deleteByAccount(accountName)

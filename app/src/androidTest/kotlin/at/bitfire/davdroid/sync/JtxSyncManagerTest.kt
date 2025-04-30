@@ -83,7 +83,7 @@ class JtxSyncManagerTest {
 
         // Create dummy dependencies
         val service = Service(0, account.name, Service.TYPE_CALDAV, null)
-        val serviceId = serviceRepository.insertOrReplace(service)
+        val serviceId = serviceRepository.insertOrReplaceBlocking(service)
         val dbCollection = Collection(
             0,
             serviceId,
@@ -106,7 +106,7 @@ class JtxSyncManagerTest {
     fun tearDown() {
         if (this::localJtxCollection.isInitialized)
             localJtxCollectionStore.delete(localJtxCollection)
-        serviceRepository.deleteAll()
+        serviceRepository.deleteAllBlocking()
         if (this::provider.isInitialized)
             provider.closeCompat()
         TestAccount.remove(account)
