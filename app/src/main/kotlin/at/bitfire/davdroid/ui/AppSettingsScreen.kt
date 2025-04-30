@@ -605,6 +605,7 @@ private fun PushDistributorSelectionDialog(
 
                 items(pushDistributors.orEmpty()) { (distributor, name, icon) ->
                     val isSelf = distributor == context.packageName
+                    val headline = if (isSelf) stringResource(R.string.app_settings_unifiedpush_distributor_fcm) else name ?: distributor
                     ListItem(
                         leadingContent = {
                             Icon(
@@ -620,20 +621,20 @@ private fun PushDistributorSelectionDialog(
                             if (isSelf)
                                 Image(
                                     painter = painterResource(R.drawable.product_logomark_cloud_messaging_full_color),
-                                    contentDescription = null,
+                                    contentDescription = headline,
                                     modifier = Modifier.size(32.dp)
                                 )
                             else
                                 icon?.let {
                                     Image(
                                         bitmap = icon.toBitmap().asImageBitmap(),
-                                        contentDescription = null,
+                                        contentDescription = headline,
                                         modifier = Modifier.size(32.dp)
                                     )
                                 }
                         },
                         headlineContent = {
-                            Text(if (isSelf) stringResource(R.string.app_settings_unifiedpush_distributor_fcm) else name ?: distributor)
+                            Text(headline)
                         },
                         modifier = Modifier.clickable {
                             selectedDistributor = distributor
