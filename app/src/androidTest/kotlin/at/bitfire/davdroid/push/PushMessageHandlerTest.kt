@@ -28,18 +28,18 @@ class PushMessageHandlerTest {
 
 
     @Test
-    fun testParse_InvalidXml() {
-        Assert.assertNull(handler.parse("Non-XML content"))
+    fun testParse_Topic_InvalidXml() {
+        Assert.assertNull(handler.parse("Non-XML content")?.topic?.topic)
     }
 
     @Test
-    fun testParse_WithXmlDeclAndTopic() {
+    fun testParse_Topic_WithXmlDeclAndTopic() {
         val topic = handler.parse(
             "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
             "<P:push-message xmlns:D=\"DAV:\" xmlns:P=\"https://bitfire.at/webdav-push\">" +
             "  <P:topic>O7M1nQ7cKkKTKsoS_j6Z3w</P:topic>" +
             "</P:push-message>"
-        )
+        )?.topic?.topic
         Assert.assertEquals("O7M1nQ7cKkKTKsoS_j6Z3w", topic)
     }
 
