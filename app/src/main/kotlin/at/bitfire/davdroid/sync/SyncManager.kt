@@ -30,6 +30,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.push.PushSyncManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -134,22 +135,25 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     lateinit var context: Context
 
     @Inject
-    lateinit var logger: Logger
-
-    @Inject
     lateinit var accountRepository: AccountRepository
-
-    @Inject
-    lateinit var syncStatsRepository: DavSyncStatsRepository
-
-    @Inject
-    lateinit var serviceRepository: DavServiceRepository
 
     @Inject
     lateinit var collectionRepository: DavCollectionRepository
 
     @Inject
+    lateinit var logger: Logger
+
+    @Inject
+    lateinit var pushSyncManager: PushSyncManager 
+            
+    @Inject
+    lateinit var serviceRepository: DavServiceRepository
+
+    @Inject
     lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
+
+    @Inject
+    lateinit var syncStatsRepository: DavSyncStatsRepository
 
 
     init {
@@ -171,29 +175,38 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
 
         try {
-            logger.info("Preparing synchronization")
-            if (!prepare()) {
-                logger.info("No reason to synchronize, aborting")
-                return
-            }
-            syncStatsRepository.logSyncTimeBlocking(collection.id, authority)
+            var remoteSyncState: SyncState? = null
+            var modificationsPresent = false
+            try {
+                logger.info("Preparing synchronization")
+                if (!prepare()) {
+                    logger.info("No reason to synchronize, aborting")
+                    return
+                }
+                syncStatsRepository.logSyncTimeBlocking(collection.id, authority)
 
-            logger.info("Querying server capabilities")
-            var remoteSyncState = queryCapabilities()
+                logger.info("Querying server capabilities")
+                remoteSyncState = queryCapabilities()
 
-            logger.info("Processing local deletes/updates")
-            val modificationsPresent =
-                processLocallyDeleted() or uploadDirty()     // bitwise OR guarantees that both expressions are evaluated
+                logger.info("Processing local deletes/updates")
+                // bitwise OR guarantees that both expressions are evaluated
+                modificationsPresent = processLocallyDeleted() or uploadDirty()
 
-            if (extras.contains(Syncer.SYNC_EXTRAS_FULL_RESYNC)) {
-                logger.info("Forcing re-synchronization of all entries")
+                if (extras.contains(Syncer.SYNC_EXTRAS_FULL_RESYNC)) {
+                    logger.info("Forcing re-synchronization of all entries")
 
-                // forget sync state of collection (→ initial sync in case of SyncAlgorithm.COLLECTION_SYNC)
-                localCollection.lastSyncState = null
-                remoteSyncState = null
+                    // forget sync state of collection (→ initial sync in case of SyncAlgorithm.COLLECTION_SYNC)
+                    localCollection.lastSyncState = null
+                    remoteSyncState = null
 
-                // forget sync state of members (→ download all members again and update them locally)
-                localCollection.forgetETags()
+                    // forget sync state of members (→ download all members again and update them locally)
+                    localCollection.forgetETags()
+                }
+            } finally {
+                // Stop ignoring push syncs, now that we finished uploads an start downloading
+                // TODO: Too early? The push messages come in a little bit later ... What to do if the connection
+                //  is very slow or the server takes forever to send the push notification?
+                pushSyncManager.ignorePushSyncs(account, SyncDataType.fromAuthority(authority), false)
             }
 
             if (modificationsPresent || syncRequired(remoteSyncState))
