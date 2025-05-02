@@ -287,7 +287,20 @@ class DavDocumentsProvider(
             runningQueryChildren.remove(parentId)
 
         // Regardless of whether the worker is done, return the children we already have
-        val children = if (sortOrder == null) documentDao.getChildren(parentId) else documentDao.getChildrenOrdered(parentId, sortOrder)
+        val children = if (sortOrder == null) {
+            documentDao.getChildren(parentId)
+        } else {
+            documentDao.getChildrenOrdered(
+                parentId,
+                // Convert the cursor's column name into Room's
+                sortOrder
+                    .replace(Document.COLUMN_DOCUMENT_ID, "id")
+                    .replace(Document.COLUMN_DISPLAY_NAME, "displayName")
+                    .replace(Document.COLUMN_MIME_TYPE, "mimeType")
+                    .replace(Document.COLUMN_SIZE, "size")
+                    .replace(Document.COLUMN_LAST_MODIFIED, "lastModified")
+            )
+        }
         for (child in children) {
             val bundle = child.toBundle(parent)
             result.addRow(bundle)
