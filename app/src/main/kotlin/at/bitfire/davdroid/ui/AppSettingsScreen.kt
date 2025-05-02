@@ -652,7 +652,11 @@ private fun PushDistributorSelectionDialog(
                                 SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline)
                             )
                             pushLink(
-                                LinkAnnotation.Url("https://unifiedpush.org/users/faq/#q-is-unifiedpush-secure")
+                                LinkAnnotation.Url(
+                                    Constants.MANUAL_URL.buildUpon()
+                                        .appendPath(Constants.MANUAL_PATH_WEBDAV_PUSH)
+                                        .build().toString()
+                                )
                             )
                             append(stringResource(R.string.app_settings_unifiedpush_encrypted))
                         },
