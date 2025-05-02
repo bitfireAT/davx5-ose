@@ -287,7 +287,8 @@ class DavDocumentsProvider(
             runningQueryChildren.remove(parentId)
 
         // Regardless of whether the worker is done, return the children we already have
-        for (child in documentDao.getChildren(parentId)) {
+        val children = if (sortOrder == null) documentDao.getChildren(parentId) else documentDao.getChildrenOrdered(parentId, sortOrder)
+        for (child in children) {
             val bundle = child.toBundle(parent)
             result.addRow(bundle)
         }

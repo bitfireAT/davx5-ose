@@ -24,6 +24,9 @@ interface WebDavDocumentDao {
     @Query("SELECT * FROM webdav_document WHERE parentId=:parentId")
     fun getChildren(parentId: Long): List<WebDavDocument>
 
+    @Query("SELECT * FROM webdav_document WHERE parentId=:parentId ORDER BY :orderBy")
+    fun getChildrenOrdered(parentId: Long, orderBy: String): List<WebDavDocument>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrReplace(document: WebDavDocument): Long
 
