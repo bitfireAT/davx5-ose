@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync.worker
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
-import android.provider.CalendarContract
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.Data
@@ -258,10 +257,10 @@ class SyncWorkerManager @Inject constructor(
      * Observes whether >0 sync workers (both [PeriodicSyncWorker] and [OneTimeSyncWorker])
      * exist, belonging to given account and authorities, and which are/is in the given worker state.
      *
-     * @param workStates   list of states of workers to match
-     * @param account      the account which the workers belong to
-     * @param authorities  type of sync work, ie [CalendarContract.AUTHORITY]
-     * @param whichTag     function to generate tag that should be observed for given account and authority
+     * @param workStates    list of states of workers to match
+     * @param account       the account which the workers belong to
+     * @param dataTypes     type of sync work, ie [SyncDataType.EVENTS]
+     * @param whichTag      function to generate tag that should be observed for given account and authority
      *
      * @return flow that emits `true` if at least one worker with matching query was found; `false` otherwise
      */
@@ -283,6 +282,39 @@ class SyncWorkerManager @Inject constructor(
             .map { workInfoList ->
                 workInfoList.isNotEmpty()
             }
+    }
+
+    /**
+     * Checks whether >0 sync workers (both [PeriodicSyncWorker] and [OneTimeSyncWorker])
+     * exist, belonging to given account and authorities, and which are/is in the given worker state.
+     *
+     * @param workStates    list of states of workers to match
+     * @param account       the account which the workers belong to
+     * @param dataTypes     type of sync work, ie [SyncDataType.TASKS]
+     * @param whichTag      function to generate tag that should be observed for given account and authority
+     *
+     * @return flow that emits `true` if at least one worker with matching query was found; `false` otherwise
+     */
+    fun hasAny(
+        workStates: List<WorkInfo.State>,
+        account: Account? = null,
+        dataTypes: Iterable<SyncDataType>? = null,
+        whichTag: (account: Account, dataType: SyncDataType) -> String = { account, dataType ->
+            commonTag(account, dataType)
+        },
+        workerNames: List<String>? = null
+    ): Boolean {
+        val workQuery = WorkQuery.Builder.fromStates(workStates)
+        if (account != null && dataTypes != null)
+            workQuery.addTags(
+                dataTypes.map { dataType -> whichTag(account, dataType) }
+            )
+        if (workerNames != null)
+            workQuery.addUniqueWorkNames(workerNames)
+        return WorkManager.getInstance(context)
+            .getWorkInfos(workQuery.build())
+            .get()
+            .isNotEmpty()
     }
 
 }

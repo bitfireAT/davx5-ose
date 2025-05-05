@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.push
 
 import android.accounts.Account
+import androidx.work.WorkInfo
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Collection.Companion.TYPE_ADDRESSBOOK
 import at.bitfire.davdroid.repository.AccountRepository
@@ -12,6 +13,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import com.google.common.annotations.VisibleForTesting
 import dagger.Lazy
@@ -27,24 +29,12 @@ class PushSyncManager @Inject constructor(
     private val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
-    private var _ignorePushSyncs: Boolean = false
-
-    fun ignorePushSyncs(ignore: Boolean) {
-        _ignorePushSyncs = ignore
-    }
-
     /**
      * Requests a sync for the given collection topic and service ID.
      * @param topic the topic belonging to the collection to sync
      * @param serviceId the ID of the service which the collection belongs to
      */
     suspend fun requestSync(topic: String?, serviceId: Long?) {
-        // If sync is uploading, ignore push message - don't trigger sync
-        if (_ignorePushSyncs) {
-            logger.severe("Ignoring push sync.")
-            return
-        }
-
         // Sync datatypes of account which the collection supports
         // Future: only sync affected collection
         if (topic != null) {
@@ -65,12 +55,12 @@ class PushSyncManager @Inject constructor(
             val service = serviceId?.let { serviceRepository.getBlocking(it) }
             if (service != null) {
                 // Sync account from service with all datatypes
-                logger.warning("Got push message without topic and service, syncing all accounts")
+                logger.warning("Got push message without topic and service, requesting sync for all accounts")
                 val account = accountRepository.fromName(service.accountName)
                 requestSync(account)
             } else {
                 // Sync all accounts
-                logger.warning("Got push message without topic, syncing all accounts")
+                logger.warning("Got push message without topic, requesting sync for all accounts")
                 for (account in accountRepository.getAll())
                     requestSync(account)
             }
@@ -78,16 +68,19 @@ class PushSyncManager @Inject constructor(
     }
 
     /**
-     * Request sync for the given account and sync data types.
+     * Request sync for the given account and sync data types if not pending or active already.
      * @param account the account to sync
      * @param syncDataTypes the sync data types to sync, or an empty set to sync all data types
      */
     private fun requestSync(account: Account, syncDataTypes: Set<SyncDataType> = emptySet()) {
+        if (isSyncPendingOrActive(account, syncDataTypes)) {
+            logger.info("Ignoring push sync, because sync already pending/active for account ${account.name}")
+            return
+        }
         if (syncDataTypes.isNotEmpty()) {
             // Only sync given datatypes
-            for (syncDataType in syncDataTypes) {
+            for (syncDataType in syncDataTypes)
                 syncWorkerManager.enqueueOneTime(account, syncDataType, fromPush = true)
-            }
         } else {
             // Sync all datatypes
             syncWorkerManager.enqueueOneTimeAllAuthorities(account, fromPush = true)
@@ -97,6 +90,24 @@ class PushSyncManager @Inject constructor(
 
     // helpers
 
+    /**
+     * Checks whether a one-time (not periodic) sync is enqueued or running for given account and data types
+     * @param account the account to check
+     * @param dataTypes the data types to check
+     * @return true if a one-time sync is enqueued, false otherwise
+     */
+    fun isSyncPendingOrActive(account: Account, dataTypes: Set<SyncDataType>? = null): Boolean =
+        syncWorkerManager.hasAny(
+            workStates = listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING),
+            account = account,
+            dataTypes = dataTypes,  
+            workerNames = listOf(
+                OneTimeSyncWorker.workerName(account, SyncDataType.CONTACTS),
+                OneTimeSyncWorker.workerName(account, SyncDataType.EVENTS),
+                OneTimeSyncWorker.workerName(account, SyncDataType.TASKS)
+            )
+        )
+    
     /**
      * Returns the sync data types for the given collection.
      * @param collection the collection to get the sync data types for
