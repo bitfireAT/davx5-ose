@@ -25,7 +25,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import androidx.work.WorkRequest
 import at.bitfire.davdroid.push.PushNotificationManager
-import at.bitfire.davdroid.push.PushSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_NAME
@@ -54,7 +53,6 @@ class SyncWorkerManager @Inject constructor(
     @ApplicationContext val context: Context,
     val logger: Logger,
     val pushNotificationManager: PushNotificationManager,
-    val pushSyncManager: Lazy<PushSyncManager>,
     val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
@@ -129,9 +127,6 @@ class SyncWorkerManager @Inject constructor(
         fromPush: Boolean = false
     ): String {
         logger.info("Enqueueing unique worker for account=$account, dataType=$dataType, manual=$manual, resync=$resync, upload=$upload, fromPush=$fromPush")
-
-        pushSyncManager.get().ignorePushSyncs(true)
-        logger.info("Starting to ignore push syncs")
 
         // enqueue and start syncing
         val name = OneTimeSyncWorker.workerName(account, dataType)
@@ -261,11 +256,11 @@ class SyncWorkerManager @Inject constructor(
 
     /**
      * Observes whether >0 sync workers (both [PeriodicSyncWorker] and [OneTimeSyncWorker])
-     * exist, belonging to given account and authorities (sync data type), and which are/is in the given worker state.
+     * exist, belonging to given account and authorities, and which are/is in the given worker state.
      *
      * @param workStates   list of states of workers to match
      * @param account      the account which the workers belong to
-     * @param dataTypes  type of sync work, ie [CalendarContract.AUTHORITY]
+     * @param authorities  type of sync work, ie [CalendarContract.AUTHORITY]
      * @param whichTag     function to generate tag that should be observed for given account and authority
      *
      * @return flow that emits `true` if at least one worker with matching query was found; `false` otherwise
