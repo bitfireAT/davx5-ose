@@ -512,6 +512,8 @@ class SyncManagerTest {
         collection: Collection = mockk<Collection>() {
             every { id } returns 1
             every { url } returns server.url("/")
+            every { pushSubscription } returns ""
+            every { pushSubscriptionExpires } returns 0
         }
     ) = syncManagerFactory.create(
         account,
