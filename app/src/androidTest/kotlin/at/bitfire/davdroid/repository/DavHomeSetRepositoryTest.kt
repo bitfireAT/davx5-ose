@@ -33,7 +33,7 @@ class DavHomeSetRepositoryTest {
     fun setUp() {
         hiltRule.inject()
 
-        serviceId = serviceRepository.insertOrReplace(
+        serviceId = serviceRepository.insertOrReplaceBlocking(
             Service(id=0, accountName="test", type= Service.TYPE_CALDAV, principal = null)
         )
     }
@@ -43,32 +43,32 @@ class DavHomeSetRepositoryTest {
     fun testInsertOrUpdate() {
         // should insert new row or update (upsert) existing row - without changing its key!
         val entry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toHttpUrl())
-        val insertId1 = repository.insertOrUpdateByUrl(entry1)
+        val insertId1 = repository.insertOrUpdateByUrlBlocking(entry1)
         assertEquals(1L, insertId1)
-        assertEquals(entry1.copy(id = 1L), repository.getById(1L))
+        assertEquals(entry1.copy(id = 1L), repository.getByIdBlocking(1L))
 
         val updatedEntry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toHttpUrl(), displayName="Updated Entry")
-        val updateId1 = repository.insertOrUpdateByUrl(updatedEntry1)
+        val updateId1 = repository.insertOrUpdateByUrlBlocking(updatedEntry1)
         assertEquals(1L, updateId1)
-        assertEquals(updatedEntry1.copy(id = 1L), repository.getById(1L))
+        assertEquals(updatedEntry1.copy(id = 1L), repository.getByIdBlocking(1L))
 
         val entry2 = HomeSet(id=0, serviceId=serviceId, personal=true, url= "https://example.com/2".toHttpUrl())
-        val insertId2 = repository.insertOrUpdateByUrl(entry2)
+        val insertId2 = repository.insertOrUpdateByUrlBlocking(entry2)
         assertEquals(2L, insertId2)
-        assertEquals(entry2.copy(id = 2L), repository.getById(2L))
+        assertEquals(entry2.copy(id = 2L), repository.getByIdBlocking(2L))
     }
 
     @Test
-    fun testDelete() {
+    fun testDeleteBlocking() {
         // should delete row with given primary key (id)
         val entry1 = HomeSet(id=1, serviceId=serviceId, personal=true, url= "https://example.com/1".toHttpUrl())
 
-        val insertId1 = repository.insertOrUpdateByUrl(entry1)
+        val insertId1 = repository.insertOrUpdateByUrlBlocking(entry1)
         assertEquals(1L, insertId1)
-        assertEquals(entry1, repository.getById(1L))
+        assertEquals(entry1, repository.getByIdBlocking(1L))
 
-        repository.delete(entry1)
-        assertEquals(null, repository.getById(1L))
+        repository.deleteBlocking(entry1)
+        assertEquals(null, repository.getByIdBlocking(1L))
     }
 
 }
