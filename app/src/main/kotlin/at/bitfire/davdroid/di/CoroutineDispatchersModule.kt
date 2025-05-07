@@ -9,7 +9,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.newFixedThreadPoolContext
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -45,10 +47,19 @@ class CoroutineDispatchersModule {
     @MainDispatcher
     fun mainDispatcher(): CoroutineDispatcher = Dispatchers.Main
 
+    /**
+     * A dispatcher for background sync operations. They're not run on [ioDispatcher] because there can
+     * be many blocking operations at the same time which shouldn't never block other I/O operations
+     * like database access for the UI.
+     *
+     * Currently the sync dispatcher is never closed (bad!), so the sync threads remain even
+     * when all syncs are finished.
+     */
+    @OptIn(DelicateCoroutinesApi::class)
     @Provides
     @Singleton
     @SyncDispatcher
     fun syncDispatcher(): CoroutineDispatcher =
-        Dispatchers.Default.limitedParallelism(Runtime.getRuntime().availableProcessors())
+        newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors(), "syncDispatcher")
 
 }
