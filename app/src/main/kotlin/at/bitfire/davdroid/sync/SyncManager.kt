@@ -1,5 +1,5 @@
 /*
- * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ * Copyright 2023 All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
 package at.bitfire.davdroid.sync
@@ -164,6 +164,20 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     private val syncNotificationManager by lazy {
         syncNotificationManagerFactory.create(account)
+    }
+
+    /**
+     * Push-Dont-Notify header for PROPFIND requests.
+     */
+    private val pushDontNotifyHeader by lazy {
+        val expired = collection.pushSubscriptionExpires?.let { expires ->
+            val now = (Instant.now() + Duration.ofMinutes(1)).epochSecond
+            now >= expires
+        } == true
+        if (!expired && collection.pushSubscription != null)
+            mapOf("Push-Dont-Notify" to collection.pushSubscription)
+        else
+            emptyMap()
     }
 
     fun performSync() {
@@ -374,7 +388,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                             remote.delete(
                                 ifETag = lastETag,
                                 ifScheduleTag = lastScheduleTag,
-                                headers = pushDontNotifyHeader()
+                                headers = pushDontNotifyHeader
                             ) {}
                             numDeleted++
                         } catch (_: HttpException) {
@@ -438,7 +452,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         generateUpload(local),
                         ifNoneMatch = true,
                         callback = readTagsFromResponse,
-                        headers = pushDontNotifyHeader()
+                        headers = pushDontNotifyHeader
                     )
                 }
 
@@ -456,7 +470,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         ifETag = lastETag,
                         ifScheduleTag = lastScheduleTag,
                         callback = readTagsFromResponse,
-                        headers = pushDontNotifyHeader()
+                        headers = pushDontNotifyHeader
                     )
                 }
             }
@@ -742,23 +756,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
         return state
     }
-
-    /**
-     * Adds `Push-Dont-Notify` header to the request if a push subscription exists and has not expired yet.
-     * @return a map containing the header if a push subscription is active, otherwise an empty map.
-     */
-    private fun pushDontNotifyHeader(): Map<String, String> {
-        val expired = collection.pushSubscriptionExpires?.let { expires ->
-            val now = (Instant.now() + Duration.ofMinutes(1)).epochSecond
-            now >= expires
-        } == true
-        return if (!expired && collection.pushSubscription != null)
-            mapOf("Push-Dont-Notify" to collection.pushSubscription)
-        else
-            emptyMap()
-    }
-
-    // notification helpers
 
     /**
      * Logs the exception, updates sync result and shows a notification to the user.
