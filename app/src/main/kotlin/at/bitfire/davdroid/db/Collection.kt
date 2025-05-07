@@ -30,6 +30,8 @@ import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.ical4android.util.DateUtils
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import java.time.Duration
+import java.time.Instant
 
 @Retention(AnnotationRetention.SOURCE)
 @StringDef(
@@ -259,7 +261,26 @@ data class Collection(
     }
 
     // calculated properties
+
     fun title() = displayName ?: url.lastSegment
     fun readOnly() = forceReadOnly || !privWriteContent
 
+    /**
+     * Checks if the push subscription is currently active,
+     * considering a 1 minute buffer before expiry.
+     *
+     * @return true if there is a non-null, not-yet-expired pushSubscription, false otherwise
+     */
+    fun subscriptionActive(): Boolean {
+        // No subscription or expiry? Not active
+        if (pushSubscription == null) return false
+        val expires = pushSubscriptionExpires ?: return false
+
+        // Add a 1-minute buffer to the current time
+        val nowWithBuffer = Instant.now().plus(Duration.ofMinutes(1))
+        val expiryInstant = Instant.ofEpochSecond(expires)
+
+        // The subscription is active only if the current time (plus buffer) is before the expiry
+        return nowWithBuffer.isBefore(expiryInstant)
+    }
 }

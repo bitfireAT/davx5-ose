@@ -53,7 +53,6 @@ import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
-import java.time.Duration
 import java.time.Instant
 import java.util.LinkedList
 import java.util.concurrent.LinkedBlockingQueue
@@ -170,16 +169,11 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * Push-Dont-Notify header for PROPFIND requests.
      */
     private val pushDontNotifyHeader by lazy {
-        val pushSubscription = collection.pushSubscription ?: return@lazy null
-        val expires = collection.pushSubscriptionExpires ?: return@lazy null
-
-        val now = (Instant.now() + Duration.ofMinutes(1)).epochSecond
-        val expired = now >= expires
-
-        if (!expired)
-            mapOf("Push-Dont-Notify" to pushSubscription)
-        else
-            null
+        collection.pushSubscription?.takeIf {
+            collection.subscriptionActive()
+        }?.let { activePushSubscription ->
+            mapOf("Push-Dont-Notify" to activePushSubscription)
+        }
     }
 
     fun performSync() {
