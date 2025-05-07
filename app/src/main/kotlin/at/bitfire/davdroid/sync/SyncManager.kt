@@ -166,11 +166,10 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
     /**
-     * If the collection has an active push subscription, the Push-Dont-Notify header will
-     * be added to PUT and DELETE requests.
+     * Push-Dont-Notify header, added to PUT and DELETE requests if subscription exists.
      */
     private val pushDontNotifyHeader by lazy {
-        collection.getActiveSubscription()?.let { pushSubscription ->
+        collection.pushSubscription?.let { pushSubscription ->
             mapOf("Push-Dont-Notify" to pushSubscription)
         } ?: emptyMap()
     }

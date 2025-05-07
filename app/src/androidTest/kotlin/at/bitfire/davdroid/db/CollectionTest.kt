@@ -204,46 +204,4 @@ class CollectionTest {
         assertEquals("https://example.com/1.ics".toHttpUrl(), info.source)
     }
 
-    @Test
-    @SmallTest
-    fun testGetActiveSubscription_active() {
-        val collection = Collection(
-            serviceId = 0,
-            homeSetId = 0,
-            url = "https://url.com".toHttpUrl(),
-            type = Collection.TYPE_ADDRESSBOOK,
-
-            pushSubscription = "pushSubscription",
-            pushSubscriptionExpires = 64060588800 // 01.01.4000
-        )
-        assertEquals("pushSubscription", collection.getActiveSubscription())
-    }
-
-    @Test
-    @SmallTest
-    fun testGetActiveSubscription_expired() {
-        val collection = Collection(
-            serviceId = 0,
-            homeSetId = 0,
-            url = "https://url.com".toHttpUrl(),
-            type = Collection.TYPE_ADDRESSBOOK,
-
-            pushSubscription = "pushSubscription",
-            pushSubscriptionExpires = 946684800 // 01.01.2000
-        )
-        assertNull(collection.getActiveSubscription())
-    }
-
-    @Test
-    @SmallTest
-    fun testGetActiveSubscription_notSubscribed() {
-        val collection = Collection(
-            serviceId = 0,
-            homeSetId = 0,
-            url = "https://url.com".toHttpUrl(),
-            type = Collection.TYPE_ADDRESSBOOK,
-        )
-        assertNull(collection.getActiveSubscription())
-    }
-
 }
