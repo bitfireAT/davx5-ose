@@ -42,7 +42,6 @@ import at.bitfire.davdroid.sync.SyncManager.Companion.DELAY_UNTIL_MAX
 import at.bitfire.davdroid.sync.SyncManager.Companion.DELAY_UNTIL_MIN
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.ical4android.CalendarStorageException
-import at.bitfire.ical4android.Ical4Android
 import at.bitfire.vcard4android.ContactsStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.coroutineScope
@@ -153,11 +152,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
 
 
-    init {
-        // required for ServiceLoader -> ical4j -> ical4android
-        Ical4Android.checkThreadContextClassLoader()
-    }
-
     protected lateinit var davCollection: RemoteType
 
     protected var hasCollectionSync = false
@@ -178,7 +172,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     fun performSync() {
         // dismiss previous error notifications
         syncNotificationManager.dismissInvalidResource(localCollectionTag = localCollection.tag)
-
 
         try {
             logger.info("Preparing synchronization")

@@ -16,7 +16,6 @@ import androidx.work.Data
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.settings.AccountSettings
@@ -29,6 +28,11 @@ import at.bitfire.davdroid.sync.SyncResult
 import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.FULL_RESYNC
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.NO_RESYNC
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
 import dagger.Lazy
@@ -42,7 +46,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 abstract class BaseSyncWorker(
-    private val context: Context,
+    context: Context,
     private val workerParams: WorkerParameters,
     private val syncDispatcher: CoroutineDispatcher
 ) : CoroutineWorker(context, workerParams) {

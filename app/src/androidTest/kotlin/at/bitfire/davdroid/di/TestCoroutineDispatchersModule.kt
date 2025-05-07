@@ -38,4 +38,8 @@ object TestCoroutineDispatchersModule {
     @MainDispatcher
     fun mainDispatcher(): CoroutineDispatcher = standardTestDispatcher
 
+    @Provides
+    @SyncDispatcher
+    fun syncDispatcher(): CoroutineDispatcher = standardTestDispatcher
+
 }
