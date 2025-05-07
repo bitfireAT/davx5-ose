@@ -12,6 +12,7 @@ import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.MultiResponseCallback
+import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.ConflictException
 import at.bitfire.dav4jvm.exception.DavException
@@ -170,7 +171,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      */
     private val pushDontNotifyHeader by lazy {
         collection.pushSubscription?.let { pushSubscription ->
-            mapOf("Push-Dont-Notify" to pushSubscription)
+            mapOf("Push-Dont-Notify" to QuotedStringUtils.asQuotedString(pushSubscription))
         } ?: emptyMap()
     }
 
