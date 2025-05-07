@@ -231,7 +231,7 @@ class CollectionTest {
             pushSubscription = "pushSubscription",
             pushSubscriptionExpires = 946684800 // 01.01.2000
         )
-        assertEquals("pushSubscription", collection.getActiveSubscription())
+        assertNull(collection.getActiveSubscription())
     }
 
     @Test
