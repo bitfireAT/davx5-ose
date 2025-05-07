@@ -169,10 +169,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * Push-Dont-Notify header for PROPFIND requests.
      */
     private val pushDontNotifyHeader by lazy {
-        collection.pushSubscription?.takeIf {
-            collection.subscriptionActive()
-        }?.let { activePushSubscription ->
-            mapOf("Push-Dont-Notify" to activePushSubscription)
+        collection.getActiveSubscription()?.let { pushSubscription ->
+            mapOf("Push-Dont-Notify" to pushSubscription)
         }
     }
 

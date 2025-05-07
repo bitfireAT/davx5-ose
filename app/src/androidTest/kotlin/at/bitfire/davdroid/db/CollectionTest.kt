@@ -206,7 +206,7 @@ class CollectionTest {
 
     @Test
     @SmallTest
-    fun testSubscriptionActive_active() {
+    fun testGetActiveSubscription_active() {
         val collection = Collection(
             serviceId = 0,
             homeSetId = 0,
@@ -216,12 +216,12 @@ class CollectionTest {
             pushSubscription = "pushSubscription",
             pushSubscriptionExpires = 64060588800 // 01.01.4000
         )
-        assertTrue(collection.subscriptionActive())
+        assertEquals("pushSubscription", collection.getActiveSubscription())
     }
 
     @Test
     @SmallTest
-    fun testSubscriptionActive_expired() {
+    fun testGetActiveSubscription_expired() {
         val collection = Collection(
             serviceId = 0,
             homeSetId = 0,
@@ -231,19 +231,19 @@ class CollectionTest {
             pushSubscription = "pushSubscription",
             pushSubscriptionExpires = 946684800 // 01.01.2000
         )
-        assertFalse(collection.subscriptionActive())
+        assertEquals("pushSubscription", collection.getActiveSubscription())
     }
 
     @Test
     @SmallTest
-    fun testSubscriptionActive_notSubscribed() {
+    fun testGetActiveSubscription_notSubscribed() {
         val collection = Collection(
             serviceId = 0,
             homeSetId = 0,
             url = "https://url.com".toHttpUrl(),
             type = Collection.TYPE_ADDRESSBOOK,
         )
-        assertFalse(collection.subscriptionActive())
+        assertNull(collection.getActiveSubscription())
     }
 
 }

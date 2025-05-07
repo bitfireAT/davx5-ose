@@ -266,21 +266,21 @@ data class Collection(
     fun readOnly() = forceReadOnly || !privWriteContent
 
     /**
-     * Checks if the push subscription is currently active,
-     * considering a 1 minute buffer before expiry.
-     *
-     * @return true if there is a non-null, not-yet-expired pushSubscription, false otherwise
+     * Returns the active push subscription, or null if there is no active subscription.
      */
-    fun subscriptionActive(): Boolean {
+    fun getActiveSubscription(): String? {
         // No subscription or expiry? Not active
-        if (pushSubscription == null) return false
-        val expires = pushSubscriptionExpires ?: return false
+        if (pushSubscription.trimToNull() == null) return null
+        val expires = pushSubscriptionExpires ?: return null
 
-        // Add a 1-minute buffer to the current time
-        val nowWithBuffer = Instant.now().plus(Duration.ofMinutes(1))
+        // The subscription is expired if the current time (plus buffer) is after the expiry
+        val nowWithBuffer = Instant.now().plus(Duration.ofMinutes(1)) // 1 minute buffer
         val expiryInstant = Instant.ofEpochSecond(expires)
+        val expired = nowWithBuffer.isAfter(expiryInstant)
 
-        // The subscription is active only if the current time (plus buffer) is before the expiry
-        return nowWithBuffer.isBefore(expiryInstant)
+        return if (!expired)
+            pushSubscription
+        else
+            null
     }
 }
