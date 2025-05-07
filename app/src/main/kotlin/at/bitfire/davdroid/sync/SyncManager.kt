@@ -12,6 +12,7 @@ import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.MultiResponseCallback
+import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.ConflictException
 import at.bitfire.dav4jvm.exception.DavException
@@ -157,6 +158,15 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     private val syncNotificationManager by lazy {
         syncNotificationManagerFactory.create(account)
+    }
+
+    /**
+     * Push-Dont-Notify header, added to PUT and DELETE requests if subscription exists.
+     */
+    private val pushDontNotifyHeader by lazy {
+        collection.pushSubscription?.let { pushSubscription ->
+            mapOf("Push-Dont-Notify" to QuotedStringUtils.asQuotedString(pushSubscription))
+        } ?: emptyMap()
     }
 
     fun performSync() {
@@ -363,7 +373,11 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     val remote = DavResource(httpClient.okHttpClient, url)
                     SyncException.wrapWithRemoteResource(url) {
                         try {
-                            remote.delete(ifETag = lastETag, ifScheduleTag = lastScheduleTag) {}
+                            remote.delete(
+                                ifETag = lastETag,
+                                ifScheduleTag = lastScheduleTag,
+                                headers = pushDontNotifyHeader,
+                            ) {}
                             numDeleted++
                         } catch (_: HttpException) {
                             logger.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
@@ -422,7 +436,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 val remote = DavResource(httpClient.okHttpClient, uploadUrl)
                 SyncException.wrapWithRemoteResource(uploadUrl) {
                     logger.info("Uploading new record ${local.id} -> $newFileName")
-                    remote.put(generateUpload(local), ifNoneMatch = true, callback = readTagsFromResponse)
+                    remote.put(
+                        generateUpload(local),
+                        ifNoneMatch = true,
+                        callback = readTagsFromResponse,
+                        headers = pushDontNotifyHeader
+                    )
                 }
 
             } else /* existingFileName != null */ {     // updated resource
@@ -434,7 +453,13 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     val lastScheduleTag = local.scheduleTag
                     val lastETag = if (lastScheduleTag == null) local.eTag else null
                     logger.info("Uploading modified record ${local.id} -> $existingFileName (ETag=$lastETag, Schedule-Tag=$lastScheduleTag)")
-                    remote.put(generateUpload(local), ifETag = lastETag, ifScheduleTag = lastScheduleTag, callback = readTagsFromResponse)
+                    remote.put(
+                        generateUpload(local),
+                        ifETag = lastETag,
+                        ifScheduleTag = lastScheduleTag,
+                        callback = readTagsFromResponse,
+                        headers = pushDontNotifyHeader
+                    )
                 }
             }
         } catch (e: SyncException) {
@@ -719,9 +744,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
         return state
     }
-
-
-    // notification helpers
 
     /**
      * Logs the exception, updates sync result and shows a notification to the user.
