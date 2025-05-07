@@ -201,6 +201,8 @@
   <string name="app_settings_unifiedpush_no_distributor">Kein Push-Anbieter installiert</string>
   <string name="app_settings_unifiedpush_no_endpoint">Kein Endpunkt konfiguriert</string>
   <string name="app_settings_unifiedpush_ready">Bereit, Push-Mitteilungen über %s zu empfangen</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">Push-Nachrichten sind immer verschlüsselt.</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
