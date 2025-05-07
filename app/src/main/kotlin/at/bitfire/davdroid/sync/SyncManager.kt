@@ -163,7 +163,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         // dismiss previous error notifications
         syncNotificationManager.dismissInvalidResource(localCollectionTag = localCollection.tag)
 
-
         try {
             logger.info("Preparing synchronization")
             if (!prepare()) {

@@ -10,11 +10,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.asCoroutineDispatcher
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -54,20 +49,13 @@ class CoroutineDispatchersModule {
      * A dispatcher for background sync operations. They're not run on [ioDispatcher] because there can
      * be many long-blocking operations at the same time which shouldn't never block other I/O operations
      * like database access for the UI.
+     *
+     * It uses the I/O dispatcher and limits the number of parallel operations to the number of available processors.
      */
     @Provides
-    @Singleton
     @SyncDispatcher
+    @Singleton
     fun syncDispatcher(): CoroutineDispatcher =
-        ThreadPoolExecutor(
-            /* corePoolSize = */ 0,
-            /* maximumPoolSize = */ Runtime.getRuntime().availableProcessors(),
-            /* keepAliveTime = */ 10,
-            /* unit = */ TimeUnit.SECONDS,
-            /* workQueue = */ LinkedBlockingQueue(),
-            object : ThreadFactory {
-                override fun newThread(r: Runnable?) = Thread(r, "SyncDispatcher")
-            }
-        ).asCoroutineDispatcher()
+        Dispatchers.IO.limitedParallelism(Runtime.getRuntime().availableProcessors())
 
 }
