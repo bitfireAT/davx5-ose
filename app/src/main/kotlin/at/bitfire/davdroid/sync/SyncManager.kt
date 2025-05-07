@@ -170,14 +170,16 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * Push-Dont-Notify header for PROPFIND requests.
      */
     private val pushDontNotifyHeader by lazy {
-        val expired = collection.pushSubscriptionExpires?.let { expires ->
-            val now = (Instant.now() + Duration.ofMinutes(1)).epochSecond
-            now >= expires
-        } == true
-        if (!expired && collection.pushSubscription != null)
-            mapOf("Push-Dont-Notify" to collection.pushSubscription)
+        val pushSubscription = collection.pushSubscription ?: return@lazy null
+        val expires = collection.pushSubscriptionExpires ?: return@lazy null
+
+        val now = (Instant.now() + Duration.ofMinutes(1)).epochSecond
+        val expired = now >= expires
+
+        if (!expired)
+            mapOf("Push-Dont-Notify" to pushSubscription)
         else
-            emptyMap()
+            null
     }
 
     fun performSync() {
@@ -388,7 +390,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                             remote.delete(
                                 ifETag = lastETag,
                                 ifScheduleTag = lastScheduleTag,
-                                headers = pushDontNotifyHeader
+                                headers = pushDontNotifyHeader ?: emptyMap(),
                             ) {}
                             numDeleted++
                         } catch (_: HttpException) {
@@ -452,7 +454,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         generateUpload(local),
                         ifNoneMatch = true,
                         callback = readTagsFromResponse,
-                        headers = pushDontNotifyHeader
+                        headers = pushDontNotifyHeader ?: emptyMap()
                     )
                 }
 
@@ -470,7 +472,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         ifETag = lastETag,
                         ifScheduleTag = lastScheduleTag,
                         callback = readTagsFromResponse,
-                        headers = pushDontNotifyHeader
+                        headers = pushDontNotifyHeader ?: emptyMap()
                     )
                 }
             }
