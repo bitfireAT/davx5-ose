@@ -206,7 +206,7 @@ class CollectionTest {
 
     @Test
     @SmallTest
-    fun testGetActivePushSubscription_active() {
+    fun testSubscriptionActive_active() {
         val collection = Collection(
             serviceId = 0,
             homeSetId = 0,
@@ -221,7 +221,7 @@ class CollectionTest {
 
     @Test
     @SmallTest
-    fun testGetActivePushSubscription_expired() {
+    fun testSubscriptionActive_expired() {
         val collection = Collection(
             serviceId = 0,
             homeSetId = 0,
@@ -236,7 +236,7 @@ class CollectionTest {
 
     @Test
     @SmallTest
-    fun testGetActivePushSubscription_notSubscribed() {
+    fun testSubscriptionActive_notSubscribed() {
         val collection = Collection(
             serviceId = 0,
             homeSetId = 0,
