@@ -166,12 +166,13 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
     /**
-     * Push-Dont-Notify header for PROPFIND requests.
+     * If the collection has an active push subscription, the Push-Dont-Notify header will
+     * be added to PUT and DELETE requests.
      */
     private val pushDontNotifyHeader by lazy {
         collection.getActiveSubscription()?.let { pushSubscription ->
             mapOf("Push-Dont-Notify" to pushSubscription)
-        }
+        } ?: emptyMap()
     }
 
     fun performSync() {
@@ -382,7 +383,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                             remote.delete(
                                 ifETag = lastETag,
                                 ifScheduleTag = lastScheduleTag,
-                                headers = pushDontNotifyHeader ?: emptyMap(),
+                                headers = pushDontNotifyHeader,
                             ) {}
                             numDeleted++
                         } catch (_: HttpException) {
@@ -446,7 +447,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         generateUpload(local),
                         ifNoneMatch = true,
                         callback = readTagsFromResponse,
-                        headers = pushDontNotifyHeader ?: emptyMap()
+                        headers = pushDontNotifyHeader
                     )
                 }
 
@@ -464,7 +465,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         ifETag = lastETag,
                         ifScheduleTag = lastScheduleTag,
                         callback = readTagsFromResponse,
-                        headers = pushDontNotifyHeader ?: emptyMap()
+                        headers = pushDontNotifyHeader
                     )
                 }
             }
