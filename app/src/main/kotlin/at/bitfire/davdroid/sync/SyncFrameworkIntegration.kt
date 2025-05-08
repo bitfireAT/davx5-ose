@@ -8,6 +8,12 @@ import android.accounts.Account
 import android.content.ContentResolver
 import android.provider.CalendarContract
 import androidx.annotation.WorkerThread
+import at.bitfire.davdroid.resource.LocalAddressBookStore
+import dagger.Lazy
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -19,6 +25,7 @@ import javax.inject.Inject
  * Sync requests from the Sync Adapter Framework are handled by [SyncAdapterService].
  */
 class SyncFrameworkIntegration @Inject constructor(
+    private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger
 ) {
 
@@ -132,6 +139,52 @@ class SyncFrameworkIntegration @Inject constructor(
         } else {
             ContentResolver.setSyncAutomatically(account, authority, false)
             /* return */ !ContentResolver.getSyncAutomatically(account, authority)
+        }
+
+    /**
+     * Observe whether any of the given data types is currently pending for sync.
+     *
+     * @param account   account to observe sync status for
+     * @param dataTypes data types to observe sync status for
+     * @return flow emitting true if any of the given data types is currently syncing, false otherwise
+     */
+    fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> =
+        callbackFlow {
+            val accounts = mutableListOf(account).apply {
+                if (dataTypes.contains(SyncDataType.CONTACTS))
+                // Add address book accounts
+                    addAll(localAddressBookStore.get().getAddressBookAccounts(account))
+            }
+            val authorities = dataTypes.flatMap { dataType ->
+                dataType.possibleAuthorities()
+            }
+
+            // Observe sync pending state
+            val listener = ContentResolver.addStatusChangeListener(
+                ContentResolver.SYNC_OBSERVER_TYPE_PENDING
+            ) {
+                trySend(anyPendingSync(accounts, authorities))
+            }
+
+            // Emit initial value
+            trySend(anyPendingSync(accounts, authorities))
+
+            // Clean up listener on close
+            awaitClose { ContentResolver.removeStatusChangeListener(listener) }
+        }.distinctUntilChanged()
+
+    /**
+     * Check if any of the given accounts and authorities have a sync pending.
+     *
+     * @param accounts  accounts to check sync status for
+     * @param authorities authorities to check sync status for
+     * @return true if any of the given accounts and authorities has a sync pending, false otherwise
+     */
+    private fun anyPendingSync(accounts: List<Account>, authorities: List<String>): Boolean =
+        accounts.any { account ->
+            authorities.any { authority ->
+                ContentResolver.isSyncPending(account, authority)
+            }
         }
 
 }
