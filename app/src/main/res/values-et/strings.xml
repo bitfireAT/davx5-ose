@@ -201,6 +201,8 @@
   <string name="app_settings_unifiedpush_no_distributor">Ühtegi tõukesõnumite levitajat pole paigaldatud</string>
   <string name="app_settings_unifiedpush_no_endpoint">Otspunkt on seadistamata</string>
   <string name="app_settings_unifiedpush_ready">Valmis tõuketeadete vastuvõtmiseks %s vahendusel</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">Tõuketeavituste sõnumid on alati krüptitud.</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>

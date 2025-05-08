@@ -200,6 +200,8 @@
   <string name="app_settings_unifiedpush_no_distributor">未安装推送分发程序</string>
   <string name="app_settings_unifiedpush_no_endpoint">未配置端点</string>
   <string name="app_settings_unifiedpush_ready">准备好通过 %s 接收推送消息</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">推送消息始终是加密的</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>

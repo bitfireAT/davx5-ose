@@ -509,7 +509,7 @@ class SyncManagerTest {
     private fun syncManager(
         localCollection: LocalTestCollection,
         syncResult: SyncResult = SyncResult(),
-        collection: Collection = mockk<Collection>() {
+        collection: Collection = mockk<Collection>(relaxed = true) {
             every { id } returns 1
             every { url } returns server.url("/")
         }
