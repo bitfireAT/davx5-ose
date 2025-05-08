@@ -146,13 +146,13 @@ class SyncFrameworkIntegration @Inject constructor(
      *
      * @param account   account to observe sync status for
      * @param dataTypes data types to observe sync status for
-     * @return flow emitting true if any of the given data types is currently syncing, false otherwise
+     * @return flow emitting true if any of the given data types has a sync pending, false otherwise
      */
     fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> =
         callbackFlow {
             val accounts = mutableListOf(account).apply {
+                // Add address book accounts in case we should check contacts
                 if (dataTypes.contains(SyncDataType.CONTACTS))
-                // Add address book accounts
                     addAll(localAddressBookStore.get().getAddressBookAccounts(account))
             }
             val authorities = dataTypes.flatMap { dataType ->
