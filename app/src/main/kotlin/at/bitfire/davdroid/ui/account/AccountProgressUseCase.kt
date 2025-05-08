@@ -10,6 +10,7 @@ import androidx.work.WorkInfo
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -22,9 +23,13 @@ import javax.inject.Inject
 
 class AccountProgressUseCase @Inject constructor(
     @ApplicationContext val context: Context,
+    private val syncFramework: SyncFrameworkIntegration,
     private val syncWorkerManager: SyncWorkerManager
 ) {
 
+    /**
+     * Returns the current sync state of the account.
+     */
     operator fun invoke(
         account: Account,
         serviceFlow: Flow<Service?>,
@@ -32,12 +37,18 @@ class AccountProgressUseCase @Inject constructor(
     ): Flow<AccountProgress> {
         val serviceRefreshing = isServiceRefreshing(serviceFlow)
         val syncPending = isSyncPending(account, dataTypes)
+        val syncPendingInSyncFramework = syncFramework.isSyncPending(account, dataTypes)
         val syncRunning = isSyncRunning(account, dataTypes)
 
-        return combine(serviceRefreshing, syncPending, syncRunning) { refreshing, pending, syncing ->
+        return combine(
+            serviceRefreshing,
+            syncPending,
+            syncPendingInSyncFramework,
+            syncRunning
+        ) { refreshing, pending, pendingInSyncFramework, syncing ->
             when {
                 refreshing || syncing -> AccountProgress.Active
-                pending -> AccountProgress.Pending
+                pending || pendingInSyncFramework -> AccountProgress.Pending
                 else -> AccountProgress.Idle
             }
         }
