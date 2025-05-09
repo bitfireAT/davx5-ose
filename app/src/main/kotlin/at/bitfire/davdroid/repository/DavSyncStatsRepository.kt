@@ -40,7 +40,7 @@ class DavSyncStatsRepository @Inject constructor(
             }
         }
 
-    suspend fun logSyncTimeBlocking(collectionId: Long, authority: String, lastSync: Long = System.currentTimeMillis()) {
+    suspend fun logSyncTime(collectionId: Long, authority: String, lastSync: Long = System.currentTimeMillis()) {
         dao.insertOrReplace(SyncStats(
             id = 0,
             collectionId = collectionId,

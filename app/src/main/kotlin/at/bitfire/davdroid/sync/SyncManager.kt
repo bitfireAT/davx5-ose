@@ -44,7 +44,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import java.io.IOException
@@ -130,7 +130,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         } ?: emptyMap()
     }
 
-    fun performSync() = runBlocking(syncDispatcher) {
+    suspend fun performSync() = withContext(syncDispatcher) {
         // dismiss previous error notifications
         syncNotificationManager.dismissInvalidResource(localCollectionTag = localCollection.tag)
 
@@ -138,9 +138,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             logger.info("Preparing synchronization")
             if (!prepare()) {
                 logger.info("No reason to synchronize, aborting")
-                return@runBlocking
+                return@withContext
             }
-            syncStatsRepository.logSyncTimeBlocking(collection.id, authority)
+            syncStatsRepository.logSyncTime(collection.id, authority)
 
             logger.info("Querying server capabilities")
             var remoteSyncState = queryCapabilities()
@@ -541,6 +541,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
     protected open suspend fun syncRemote(listRemote: (MultiResponseCallback) -> Unit) = coroutineScope {    // structured concurrency
+        val syncRemoteScope = this
+
         // download queue
         val toDownload = LinkedBlockingQueue<HttpUrl>()
         fun download(url: HttpUrl?) {
@@ -551,7 +553,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 while (toDownload.isNotEmpty()) {
                     val bunch = LinkedList<HttpUrl>()
                     toDownload.drainTo(bunch, MAX_MULTIGET_RESOURCES)
-                    launch {
+                    syncRemoteScope.launch {
                         downloadRemote(bunch)
                     }
                 }
@@ -559,6 +561,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
 
         coroutineScope {    // structured concurrency
+            val listRemoteScope = this
+
             listRemote { response, relation ->
                 // ignore non-members
                 if (relation != Response.HrefRelation.MEMBER)
@@ -573,7 +577,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 if (response.isSuccess()) {
                     logger.fine("Found remote resource: $name")
 
-                    launch {
+                    listRemoteScope.launch {
                         val local = localCollection.findByName(name)
                         SyncException.wrapWithLocalResource(local) {
                             if (local == null) {
@@ -598,7 +602,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
                 } else if (response.status?.code == HttpURLConnection.HTTP_NOT_FOUND) {
                     // collection sync: resource has been deleted on remote server
-                    launch {
+                    listRemoteScope.launch {
                         localCollection.findByName(name)?.let { local ->
                             SyncException.wrapWithLocalResource(local) {
                                 logger.info("$name has been deleted on server, deleting locally")
