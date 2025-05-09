@@ -16,7 +16,6 @@ import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.assertWithin
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.di.MainDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.settings.AccountSettings
@@ -29,7 +28,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.test.runTest
 import okhttp3.Protocol
 import okhttp3.internal.http.StatusLine
@@ -59,10 +57,6 @@ class SyncManagerTest {
 
     @Inject @ApplicationContext
     lateinit var context: Context
-
-    @Inject
-    @MainDispatcher
-    lateinit var mainDispatcher: CoroutineDispatcher
 
     @Inject
     lateinit var httpClientBuilder: HttpClient.Builder
@@ -130,7 +124,7 @@ class SyncManagerTest {
 
 
     @Test
-    fun testPerformSync_503RetryAfter_DelaySeconds() = runTest(mainDispatcher) {
+    fun testPerformSync_503RetryAfter_DelaySeconds() = runTest {
         server.enqueue(MockResponse()
             .setResponseCode(503)
             .setHeader("Retry-After", "60"))    // 60 seconds
@@ -147,7 +141,7 @@ class SyncManagerTest {
     }
 
     @Test
-    fun testPerformSync_FirstSync_Empty() = runTest(mainDispatcher) {
+    fun testPerformSync_FirstSync_Empty() = runTest {
         val collection = LocalTestCollection() /* no last known ctag */
         server.enqueue(queryCapabilitiesResponse())
 
@@ -162,7 +156,7 @@ class SyncManagerTest {
     }
 
     @Test
-    fun testPerformSync_UploadNewMember_ETagOnPut() = runTest(mainDispatcher) {
+    fun testPerformSync_UploadNewMember_ETagOnPut() = runTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
             entries += LocalTestResource().apply {
@@ -205,7 +199,7 @@ class SyncManagerTest {
     }
 
     @Test
-    fun testPerformSync_UploadModifiedMember_ETagOnPut() = runTest(mainDispatcher) {
+    fun testPerformSync_UploadModifiedMember_ETagOnPut() = runTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
             entries += LocalTestResource().apply {
@@ -252,7 +246,7 @@ class SyncManagerTest {
     }
 
     @Test
-    fun testPerformSync_UploadModifiedMember_NoETagOnPut() = runTest(mainDispatcher) {
+    fun testPerformSync_UploadModifiedMember_NoETagOnPut() = runTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
             entries += LocalTestResource().apply {
@@ -297,7 +291,7 @@ class SyncManagerTest {
     }
 
     @Test
-    fun testPerformSync_UploadModifiedMember_412PreconditionFailed() = runTest(mainDispatcher) {
+    fun testPerformSync_UploadModifiedMember_412PreconditionFailed() = runTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
             entries += LocalTestResource().apply {
@@ -343,7 +337,7 @@ class SyncManagerTest {
     }
 
     @Test
-    fun testPerformSync_NoopOnMemberWithSameETag() = runTest(mainDispatcher) {
+    fun testPerformSync_NoopOnMemberWithSameETag() = runTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "ctag1")
             entries += LocalTestResource().apply {
@@ -380,7 +374,7 @@ class SyncManagerTest {
     }
 
     @Test
-    fun testPerformSync_DownloadNewMember() = runTest(mainDispatcher) {
+    fun testPerformSync_DownloadNewMember() = runTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
         }
@@ -414,7 +408,7 @@ class SyncManagerTest {
     }
 
     @Test
-    fun testPerformSync_DownloadUpdatedMember() = runTest(mainDispatcher) {
+    fun testPerformSync_DownloadUpdatedMember() = runTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
             entries += LocalTestResource().apply {
@@ -452,7 +446,7 @@ class SyncManagerTest {
     }
 
     @Test
-    fun testPerformSync_RemoveVanishedMember() = runTest(mainDispatcher) {
+    fun testPerformSync_RemoveVanishedMember() = runTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
             entries += LocalTestResource().apply {
@@ -472,7 +466,7 @@ class SyncManagerTest {
     }
 
     @Test
-    fun testPerformSync_CTagDidntChange() = runTest(mainDispatcher) {
+    fun testPerformSync_CTagDidntChange() = runTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "ctag1")
         }
