@@ -9,8 +9,12 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.test.runner.AndroidJUnitRunner
+import at.bitfire.davdroid.di.TestCoroutineDispatchersModule
 import at.bitfire.davdroid.sync.SyncAdapterService
 import dagger.hilt.android.testing.HiltTestApplication
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.setMain
 
 @Suppress("unused")
 class HiltTestRunner : AndroidJUnitRunner() {
@@ -18,6 +22,7 @@ class HiltTestRunner : AndroidJUnitRunner() {
     override fun newApplication(cl: ClassLoader, name: String, context: Context): Application =
         super.newApplication(cl, HiltTestApplication::class.java.name, context)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreate(arguments: Bundle?) {
         super.onCreate(arguments)
 
@@ -27,6 +32,9 @@ class HiltTestRunner : AndroidJUnitRunner() {
 
         // disable sync adapters
         SyncAdapterService.syncActive.set(false)
+
+        // set main dispatcher for tests (especially runTest)
+        Dispatchers.setMain(TestCoroutineDispatchersModule.standardTestDispatcher)
     }
 
 }
