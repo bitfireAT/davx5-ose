@@ -13,6 +13,9 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Singleton
 
+/**
+ * Module that provides verbose logging for tests.
+ */
 @TestInstallIn(
     components = [SingletonComponent::class],
     replaces = [LoggerModule::class]
