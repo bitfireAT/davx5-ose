@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.di
 
+import at.bitfire.davdroid.di.TestCoroutineDispatchersModule.standardTestDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -13,8 +14,10 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
 
 /**
- * If you run tests that switch context to one of these dispatchers, use `runTest(mainDispatcher)`
- * with `mainDispatcher` being an injected [MainDispatcher] instead of plain `runTest`.
+ * Provides test dispatchers to be injected instead of the normal ones.
+ *
+ * The [standardTestDispatcher] is set as main dispatcher in [at.bitfire.davdroid.HiltTestRunner],
+ * so that tests can just use [kotlinx.coroutines.test.runTest] without providing [standardTestDispatcher].
  */
 @Module
 @TestInstallIn(
