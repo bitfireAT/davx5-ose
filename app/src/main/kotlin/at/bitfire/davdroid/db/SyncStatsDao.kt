@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 interface SyncStatsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertOrReplace(syncStats: SyncStats)
+    suspend fun insertOrReplace(syncStats: SyncStats)
 
     @Query("SELECT * FROM syncstats WHERE collectionId=:id")
     fun getByCollectionIdFlow(id: Long): Flow<List<SyncStats>>
