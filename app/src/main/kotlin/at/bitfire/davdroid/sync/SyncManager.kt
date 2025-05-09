@@ -41,6 +41,7 @@ import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.vcard4android.ContactsStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -79,19 +80,13 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     val authority: String,
     val syncResult: SyncResult,
     val localCollection: CollectionType,
-    val collection: Collection
+    val collection: Collection,
+    val syncDispatcher: CoroutineDispatcher
 ) {
 
     enum class SyncAlgorithm {
         PROPFIND_REPORT,
         COLLECTION_SYNC
-    }
-
-    companion object {
-
-        /** Maximum number of resources that are requested with one multiget request. */
-        const val MAX_MULTIGET_RESOURCES = 10
-
     }
 
 
@@ -135,7 +130,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         } ?: emptyMap()
     }
 
-    fun performSync() {
+    fun performSync() = runBlocking(syncDispatcher) {
         // dismiss previous error notifications
         syncNotificationManager.dismissInvalidResource(localCollectionTag = localCollection.tag)
 
@@ -143,7 +138,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             logger.info("Preparing synchronization")
             if (!prepare()) {
                 logger.info("No reason to synchronize, aborting")
-                return
+                return@runBlocking
             }
             syncStatsRepository.logSyncTimeBlocking(collection.id, authority)
 
@@ -770,5 +765,13 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         )
 
     protected abstract fun notifyInvalidResourceTitle(): String
+
+
+    companion object {
+
+        /** Maximum number of resources that are requested with one multiget request. */
+        const val MAX_MULTIGET_RESOURCES = 10
+
+    }
 
 }

@@ -19,6 +19,7 @@ import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.di.SyncDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxICalObject
@@ -29,6 +30,7 @@ import at.bitfire.ical4android.JtxICalObject
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -44,7 +46,8 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalJtxCollection,
-    @Assisted collection: Collection
+    @Assisted collection: Collection,
+    @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(
     account,
     httpClient,
@@ -52,7 +55,8 @@ class JtxSyncManager @AssistedInject constructor(
     authority,
     syncResult,
     localCollection,
-    collection
+    collection,
+    syncDispatcher
 ) {
 
     @AssistedFactory
