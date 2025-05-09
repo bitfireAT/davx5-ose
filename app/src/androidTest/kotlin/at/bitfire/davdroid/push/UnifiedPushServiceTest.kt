@@ -90,7 +90,7 @@ class UnifiedPushServiceTest {
 
     @Test
     fun testOnUnregistered() = runTest {
-        unifiedPushService.onRegistrationFailed(FailedReason.INTERNAL_ERROR, "45")
+        unifiedPushService.onUnregistered("45")
 
         advanceUntilIdle()
         coVerify {
