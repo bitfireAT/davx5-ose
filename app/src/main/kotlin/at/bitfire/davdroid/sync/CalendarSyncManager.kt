@@ -148,7 +148,7 @@ class CalendarSyncManager @AssistedInject constructor(
         return super.processLocallyDeleted()
     }
 
-    override fun uploadDirty(): Boolean {
+    override suspend fun uploadDirty(): Boolean {
         var modified = false
         if (localCollection.readOnly) {
             for (event in localCollection.findDirty()) {

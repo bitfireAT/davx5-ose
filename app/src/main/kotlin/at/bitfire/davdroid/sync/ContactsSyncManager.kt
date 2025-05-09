@@ -232,7 +232,7 @@ class ContactsSyncManager @AssistedInject constructor(
                 // mirror deletions to remote collection (DELETE)
                 super.processLocallyDeleted()
 
-    override fun uploadDirty(): Boolean {
+    override suspend fun uploadDirty(): Boolean {
         var modified = false
 
         if (localCollection.readOnly) {
