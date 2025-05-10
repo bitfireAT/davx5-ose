@@ -21,11 +21,8 @@ interface WebDavDocumentDao {
     @Query("SELECT * FROM webdav_document WHERE mountId=:mountId AND (parentId=:parentId OR (parentId IS NULL AND :parentId IS NULL)) AND name=:name")
     fun getByParentAndName(mountId: Long, parentId: Long?, name: String): WebDavDocument?
 
-    @Query("SELECT * FROM webdav_document WHERE parentId=:parentId")
-    fun getChildren(parentId: Long): List<WebDavDocument>
-
     @Query("SELECT * FROM webdav_document WHERE parentId=:parentId ORDER BY :orderBy")
-    fun getChildrenOrdered(parentId: Long, orderBy: String): List<WebDavDocument>
+    fun getChildren(parentId: Long, orderBy: String = "name ASC"): List<WebDavDocument>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrReplace(document: WebDavDocument): Long

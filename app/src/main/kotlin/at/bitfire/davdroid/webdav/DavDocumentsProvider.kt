@@ -26,6 +26,7 @@ import android.provider.DocumentsContract.buildChildDocumentsUri
 import android.provider.DocumentsContract.buildRootsUri
 import android.provider.DocumentsProvider
 import android.webkit.MimeTypeMap
+import androidx.annotation.VisibleForTesting
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.DavCollection
@@ -126,6 +127,44 @@ class DavDocumentsProvider(
 
         fun notifyMountsChanged(context: Context) {
             context.contentResolver.notifyChange(buildRootsUri(context.getString(R.string.webdav_authority)), null)
+        }
+
+        /**
+         * Contains a map that matches the column names from the documents provider and Room.
+         */
+        private val columnsMap = mapOf(
+            Document.COLUMN_DOCUMENT_ID to "id",
+            Document.COLUMN_DISPLAY_NAME to "displayName",
+            Document.COLUMN_MIME_TYPE to "mimeType",
+            Document.COLUMN_SIZE to "size",
+            Document.COLUMN_LAST_MODIFIED to "lastModified",
+        )
+
+        @VisibleForTesting
+        fun processOrderByQuery(orderBy: String): String? {
+            return orderBy
+                // Split by commas to divide each order column
+                .split(',')
+                // Trim any leading or trailing spaces
+                .map { it.trim() }
+                // Get the column name, and the ordering direction.
+                // Note that the latter one is optional, so set to null if there isn't any space. For example:
+                // `displayName` should return `"displayName" to null`, but
+                // `displayName ASC` should return `"displayName" to "ASC"`.
+                // Also note that we trim it just in case there are multiple spaces between the column and direction.
+                .map { pair ->
+                    pair.substringBefore(' ') to pair.substringAfter(' ').trim().takeIf { pair.contains(' ') }
+                }
+                // Remove all columns not registered in the columns map
+                .filter { (docCol) -> columnsMap.containsKey(docCol) }
+                // Finally, convert the column name from document to room, including the sort direction in
+                // case it's included.
+                .joinToString(", ") { (docCol, dir) ->
+                    val roomCol = columnsMap.getValue(docCol)
+                    dir?.let { "$roomCol $dir" } ?: roomCol
+                }
+                // Return null if the request is empty
+                .takeIf { it.isNotEmpty() }
         }
     }
 
@@ -287,20 +326,11 @@ class DavDocumentsProvider(
             runningQueryChildren.remove(parentId)
 
         // Regardless of whether the worker is done, return the children we already have
-        val children = if (sortOrder == null) {
-            documentDao.getChildren(parentId)
-        } else {
-            documentDao.getChildrenOrdered(
-                parentId,
-                // Convert the cursor's column name into Room's
-                sortOrder
-                    .replace(Document.COLUMN_DOCUMENT_ID, "id")
-                    .replace(Document.COLUMN_DISPLAY_NAME, "displayName")
-                    .replace(Document.COLUMN_MIME_TYPE, "mimeType")
-                    .replace(Document.COLUMN_SIZE, "size")
-                    .replace(Document.COLUMN_LAST_MODIFIED, "lastModified")
-            )
-        }
+        val children = documentDao.getChildren(
+            parentId,
+            // Convert the cursor's column name into Room's
+            sortOrder?.let { processOrderByQuery(it) } ?: "name ASC"
+        )
         for (child in children) {
             val bundle = child.toBundle(parent)
             result.addRow(bundle)
