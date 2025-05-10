@@ -10,8 +10,10 @@ import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.setMain
 
 /**
  * Provides test dispatchers to be injected instead of the normal ones.
@@ -26,8 +28,7 @@ import kotlinx.coroutines.test.TestCoroutineScheduler
 )
 object TestCoroutineDispatchersModule {
 
-    val scheduler = TestCoroutineScheduler()
-    val standardTestDispatcher = StandardTestDispatcher(scheduler)
+    private val standardTestDispatcher = StandardTestDispatcher()
 
     @Provides
     @DefaultDispatcher
@@ -44,5 +45,15 @@ object TestCoroutineDispatchersModule {
     @Provides
     @SyncDispatcher
     fun syncDispatcher(): CoroutineDispatcher = standardTestDispatcher
+
+   /**
+     * Sets the [standardTestDispatcher] as [Dispatchers.Main] so that test dispatchers
+     * created in the future use the same scheduler. See [StandardTestDispatcher] docs
+     * for more information.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun initMainDispatcher() {
+        Dispatchers.setMain(standardTestDispatcher)
+    }
 
 }
