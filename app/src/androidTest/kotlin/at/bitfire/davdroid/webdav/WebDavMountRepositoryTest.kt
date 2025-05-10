@@ -4,10 +4,8 @@
 
 package at.bitfire.davdroid.webdav
 
-import at.bitfire.davdroid.di.MainDispatcher
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -25,10 +23,6 @@ class WebDavMountRepositoryTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
-    @MainDispatcher
-    lateinit var mainDispatcher: CoroutineDispatcher
-
-    @Inject
     lateinit var repository: WebDavMountRepository
 
     @Before
@@ -40,13 +34,13 @@ class WebDavMountRepositoryTest {
     val url = web.url("/")
 
     @Test
-    fun testHasWebDav_NoDavHeader() = runTest(mainDispatcher) {
+    fun testHasWebDav_NoDavHeader() = runTest {
         web.enqueue(MockResponse().setResponseCode(200))
         assertFalse(repository.hasWebDav(url, null))
     }
 
     @Test
-    fun testHasWebDav_DavClass1() = runTest(mainDispatcher) {
+    fun testHasWebDav_DavClass1() = runTest {
         web.enqueue(MockResponse()
             .setResponseCode(200)
             .addHeader("DAV: 1"))
@@ -54,7 +48,7 @@ class WebDavMountRepositoryTest {
     }
 
     @Test
-    fun testHasWebDav_DavClass2() = runTest(mainDispatcher) {
+    fun testHasWebDav_DavClass2() = runTest {
         web.enqueue(MockResponse()
             .setResponseCode(200)
             .addHeader("DAV: 1, 2"))
@@ -62,7 +56,7 @@ class WebDavMountRepositoryTest {
     }
 
     @Test
-    fun testHasWebDav_DavClass3() = runTest(mainDispatcher) {
+    fun testHasWebDav_DavClass3() = runTest {
         web.enqueue(MockResponse()
             .setResponseCode(200)
             .addHeader("DAV: 1, 3"))

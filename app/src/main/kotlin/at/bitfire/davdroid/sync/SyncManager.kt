@@ -12,6 +12,7 @@ import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.MultiResponseCallback
+import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.ConflictException
 import at.bitfire.dav4jvm.exception.DavException
@@ -36,12 +37,8 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.sync.SyncManager.Companion.DELAY_UNTIL_DEFAULT
-import at.bitfire.davdroid.sync.SyncManager.Companion.DELAY_UNTIL_MAX
-import at.bitfire.davdroid.sync.SyncManager.Companion.DELAY_UNTIL_MIN
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.ical4android.CalendarStorageException
-import at.bitfire.ical4android.Ical4Android
 import at.bitfire.vcard4android.ContactsStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.coroutineScope
@@ -53,7 +50,6 @@ import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
-import java.time.Instant
 import java.util.LinkedList
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.logging.Level
@@ -96,38 +92,14 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         /** Maximum number of resources that are requested with one multiget request. */
         const val MAX_MULTIGET_RESOURCES = 10
 
-        const val DELAY_UNTIL_DEFAULT = 15*60L      // 15 min
-        const val DELAY_UNTIL_MIN =      1*60L      // 1 min
-        const val DELAY_UNTIL_MAX =     2*60*60L    // 2 hours
-
-        /**
-         * Returns appropriate sync retry delay in seconds, considering the servers suggestion
-         * ([DELAY_UNTIL_DEFAULT] if no server suggestion).
-         *
-         * Takes current time into account to calculate intervals. Interval
-         * will be restricted to values between [DELAY_UNTIL_MIN] and [DELAY_UNTIL_MAX].
-         *
-         * @param retryAfter   optional server suggestion on how long to wait before retrying
-         * @return until when to wait before sync can be retried
-         */
-        fun getDelayUntil(retryAfter: Instant?): Instant {
-            val now = Instant.now()
-
-            if (retryAfter == null)
-                return now.plusSeconds(DELAY_UNTIL_DEFAULT)
-
-            // take server suggestion, but restricted to plausible min/max values
-            val min = now.plusSeconds(DELAY_UNTIL_MIN)
-            val max = now.plusSeconds(DELAY_UNTIL_MAX)
-            return when {
-                min > retryAfter -> min
-                max < retryAfter -> max
-                else -> retryAfter
-            }
-        }
-
     }
 
+
+    @Inject
+    lateinit var accountRepository: AccountRepository
+
+    @Inject
+    lateinit var collectionRepository: DavCollectionRepository
 
     @Inject
     @ApplicationContext
@@ -137,25 +109,14 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     lateinit var logger: Logger
 
     @Inject
-    lateinit var accountRepository: AccountRepository
-
-    @Inject
     lateinit var syncStatsRepository: DavSyncStatsRepository
 
     @Inject
     lateinit var serviceRepository: DavServiceRepository
 
     @Inject
-    lateinit var collectionRepository: DavCollectionRepository
-
-    @Inject
     lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
 
-
-    init {
-        // required for ServiceLoader -> ical4j -> ical4android
-        Ical4Android.checkThreadContextClassLoader()
-    }
 
     protected lateinit var davCollection: RemoteType
 
@@ -165,10 +126,18 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         syncNotificationManagerFactory.create(account)
     }
 
+    /**
+     * Push-Dont-Notify header, added to PUT and DELETE requests if subscription exists.
+     */
+    private val pushDontNotifyHeader by lazy {
+        collection.pushSubscription?.let { pushSubscription ->
+            mapOf("Push-Dont-Notify" to QuotedStringUtils.asQuotedString(pushSubscription))
+        } ?: emptyMap()
+    }
+
     fun performSync() {
         // dismiss previous error notifications
         syncNotificationManager.dismissInvalidResource(localCollectionTag = localCollection.tag)
-
 
         try {
             logger.info("Preparing synchronization")
@@ -315,7 +284,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 is ServiceUnavailableException -> {
                     logger.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
                     // determine when to retry
-                    syncResult.delayUntil = getDelayUntil(e.retryAfter).epochSecond
+                    syncResult.delayUntil = e.getDelayUntil().epochSecond
                     syncResult.numServiceUnavailableExceptions++ // Indicate a soft error occurred
                 }
 
@@ -370,7 +339,11 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     val remote = DavResource(httpClient.okHttpClient, url)
                     SyncException.wrapWithRemoteResource(url) {
                         try {
-                            remote.delete(ifETag = lastETag, ifScheduleTag = lastScheduleTag) {}
+                            remote.delete(
+                                ifETag = lastETag,
+                                ifScheduleTag = lastScheduleTag,
+                                headers = pushDontNotifyHeader,
+                            ) {}
                             numDeleted++
                         } catch (_: HttpException) {
                             logger.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
@@ -429,7 +402,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 val remote = DavResource(httpClient.okHttpClient, uploadUrl)
                 SyncException.wrapWithRemoteResource(uploadUrl) {
                     logger.info("Uploading new record ${local.id} -> $newFileName")
-                    remote.put(generateUpload(local), ifNoneMatch = true, callback = readTagsFromResponse)
+                    remote.put(
+                        generateUpload(local),
+                        ifNoneMatch = true,
+                        callback = readTagsFromResponse,
+                        headers = pushDontNotifyHeader
+                    )
                 }
 
             } else /* existingFileName != null */ {     // updated resource
@@ -441,7 +419,13 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     val lastScheduleTag = local.scheduleTag
                     val lastETag = if (lastScheduleTag == null) local.eTag else null
                     logger.info("Uploading modified record ${local.id} -> $existingFileName (ETag=$lastETag, Schedule-Tag=$lastScheduleTag)")
-                    remote.put(generateUpload(local), ifETag = lastETag, ifScheduleTag = lastScheduleTag, callback = readTagsFromResponse)
+                    remote.put(
+                        generateUpload(local),
+                        ifETag = lastETag,
+                        ifScheduleTag = lastScheduleTag,
+                        callback = readTagsFromResponse,
+                        headers = pushDontNotifyHeader
+                    )
                 }
             }
         } catch (e: SyncException) {
@@ -726,9 +710,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
         return state
     }
-
-
-    // notification helpers
 
     /**
      * Logs the exception, updates sync result and shows a notification to the user.

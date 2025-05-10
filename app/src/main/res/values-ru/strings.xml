@@ -203,6 +203,8 @@
   <string name="app_settings_unifiedpush_no_distributor">Push-дистрибьютор не установлен</string>
   <string name="app_settings_unifiedpush_no_endpoint">Конечная точка не сконфигурирована</string>
   <string name="app_settings_unifiedpush_ready">Готов получать push-сообщения %s</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">Push-сообщения всегда зашифрованы.</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>

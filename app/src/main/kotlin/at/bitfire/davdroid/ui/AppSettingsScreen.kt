@@ -35,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -53,9 +54,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
@@ -549,6 +555,7 @@ private fun PushDistributorSelectionDialog(
     onDismissRequested: () -> Unit
 ) {
     var selectedDistributor by remember { mutableStateOf(pushDistributor) }
+    val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = onDismissRequested,
@@ -597,6 +604,8 @@ private fun PushDistributorSelectionDialog(
                 }
 
                 items(pushDistributors.orEmpty()) { (distributor, name, icon) ->
+                    val isSelf = distributor == context.packageName
+                    val headline = if (isSelf) stringResource(R.string.app_settings_unifiedpush_distributor_fcm) else name ?: distributor
                     ListItem(
                         leadingContent = {
                             Icon(
@@ -609,16 +618,23 @@ private fun PushDistributorSelectionDialog(
                             )
                         },
                         trailingContent = {
-                            icon?.let {
+                            if (isSelf)
                                 Image(
-                                    bitmap = icon.toBitmap().asImageBitmap(),
-                                    contentDescription = null,
+                                    painter = painterResource(R.drawable.product_logomark_cloud_messaging_full_color),
+                                    contentDescription = headline,
                                     modifier = Modifier.size(32.dp)
                                 )
-                            }
+                            else
+                                icon?.let {
+                                    Image(
+                                        bitmap = icon.toBitmap().asImageBitmap(),
+                                        contentDescription = headline,
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
                         },
                         headlineContent = {
-                            Text(name ?: distributor)
+                            Text(headline)
                         },
                         modifier = Modifier.clickable {
                             selectedDistributor = distributor
@@ -626,6 +642,25 @@ private fun PushDistributorSelectionDialog(
                         colors = ListItemDefaults.colors(
                             containerColor = Color.Transparent
                         )
+                    )
+                }
+
+                item {
+                    Text(
+                        text = buildAnnotatedString {
+                            pushStyle(
+                                SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline)
+                            )
+                            pushLink(
+                                LinkAnnotation.Url(
+                                    Constants.MANUAL_URL.buildUpon()
+                                        .appendPath(Constants.MANUAL_PATH_WEBDAV_PUSH)
+                                        .build().toString()
+                                )
+                            )
+                            append(stringResource(R.string.app_settings_unifiedpush_encrypted))
+                        },
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                 }
             }
