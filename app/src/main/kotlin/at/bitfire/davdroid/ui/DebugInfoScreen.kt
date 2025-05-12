@@ -17,7 +17,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Adb
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Password
+import androidx.compose.material.icons.rounded.PrivacyTip
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -199,7 +199,7 @@ fun DebugInfoScreen(
                 CardWithImage(
                     title = stringResource(R.string.debug_info_credentials_warning_title),
                     message = stringResource(R.string.debug_info_credentials_warning_description),
-                    icon = Icons.Rounded.Password,
+                    icon = Icons.Rounded.PrivacyTip,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                 )
 
