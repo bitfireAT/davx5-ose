@@ -468,7 +468,7 @@
     <string name="debug_info_logs_subtitle">Verbose logs are available</string>
     <string name="debug_info_logs_view">View logs</string>
     <string name="debug_info_credentials_warning_title">Privacy alert!</string>
-    <string name="debug_info_credentials_warning_description">Logs and debug info may contain masked or plain-text credentials. Please, be aware of this when sharing online.</string>
+    <string name="debug_info_credentials_warning_description">Logs and debug info may contain private information. Please be aware of this when sharing publicly.</string>
 
     <!-- ExceptionInfoFragment -->
     <string name="exception">An error has occurred.</string>
