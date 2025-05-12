@@ -541,8 +541,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
     protected open suspend fun syncRemote(listRemote: (MultiResponseCallback) -> Unit) = coroutineScope {    // structured concurrency
-        val syncRemoteScope = this
-
         // download queue
         val toDownload = LinkedBlockingQueue<HttpUrl>()
         fun download(url: HttpUrl?) {
@@ -553,7 +551,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 while (toDownload.isNotEmpty()) {
                     val bunch = LinkedList<HttpUrl>()
                     toDownload.drainTo(bunch, MAX_MULTIGET_RESOURCES)
-                    syncRemoteScope.launch {
+                    launch {
                         downloadRemote(bunch)
                     }
                 }
@@ -561,8 +559,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
 
         coroutineScope {    // structured concurrency
-            val listRemoteScope = this
-
             listRemote { response, relation ->
                 // ignore non-members
                 if (relation != Response.HrefRelation.MEMBER)
@@ -577,7 +573,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 if (response.isSuccess()) {
                     logger.fine("Found remote resource: $name")
 
-                    listRemoteScope.launch {
+                    launch {
                         val local = localCollection.findByName(name)
                         SyncException.wrapWithLocalResource(local) {
                             if (local == null) {
@@ -602,7 +598,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
                 } else if (response.status?.code == HttpURLConnection.HTTP_NOT_FOUND) {
                     // collection sync: resource has been deleted on remote server
-                    listRemoteScope.launch {
+                    launch {
                         localCollection.findByName(name)?.let { local ->
                             SyncException.wrapWithLocalResource(local) {
                                 logger.info("$name has been deleted on server, deleting locally")
