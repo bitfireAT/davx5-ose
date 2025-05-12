@@ -18,6 +18,7 @@ import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.runBlocking
 import java.util.logging.Level
 
 /**
@@ -108,7 +109,9 @@ class AddressBookSyncer @AssistedInject constructor(
                 addressBook,
                 collection
             )
-            syncManager.performSync()
+            runBlocking {
+                syncManager.performSync()
+            }
 
         } catch(e: Exception) {
             logger.log(Level.SEVERE, "Couldn't sync contacts", e)

@@ -16,6 +16,7 @@ import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.runBlocking
 
 /**
  * Sync logic for jtx board
@@ -77,7 +78,9 @@ class JtxSyncer @AssistedInject constructor(
             localCollection,
             remoteCollection
         )
-        syncManager.performSync()
+        runBlocking {
+            syncManager.performSync()
+        }
     }
 
 }

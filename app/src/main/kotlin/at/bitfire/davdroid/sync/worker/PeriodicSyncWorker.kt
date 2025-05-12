@@ -10,12 +10,10 @@ import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.di.SyncDispatcher
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineDispatcher
 
 /**
  * Handles scheduled sync requests.
@@ -36,9 +34,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 @HiltWorker
 class PeriodicSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
-) : BaseSyncWorker(appContext, workerParams, syncDispatcher) {
+    @Assisted workerParams: WorkerParameters
+) : BaseSyncWorker(appContext, workerParams) {
 
     @AssistedFactory
     @VisibleForTesting

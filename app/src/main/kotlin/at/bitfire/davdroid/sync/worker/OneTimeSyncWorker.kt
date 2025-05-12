@@ -12,12 +12,10 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.di.SyncDispatcher
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineDispatcher
 
 /**
  * One-time sync worker.
@@ -29,9 +27,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 @HiltWorker
 class OneTimeSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
-) : BaseSyncWorker(appContext, workerParams, syncDispatcher) {
+    @Assisted workerParams: WorkerParameters
+) : BaseSyncWorker(appContext, workerParams) {
 
     /**
      * Used by WorkManager to show a foreground service notification for expedited jobs on Android <12.

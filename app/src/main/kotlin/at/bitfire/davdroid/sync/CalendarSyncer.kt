@@ -15,6 +15,7 @@ import at.bitfire.ical4android.AndroidCalendar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.runBlocking
 
 /**
  * Sync logic for calendars
@@ -64,7 +65,9 @@ class CalendarSyncer @AssistedInject constructor(
             localCollection,
             remoteCollection
         )
-        syncManager.performSync()
+        runBlocking {
+            syncManager.performSync()
+        }
     }
 
 }
