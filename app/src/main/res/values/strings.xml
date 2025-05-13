@@ -1,4 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?><resources xmlns:tools="http://schemas.android.com/tools">
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- common strings -->
     <string name="app_name" translatable="false">DAVx⁵</string>
@@ -463,6 +467,8 @@
     <string name="debug_info_logs_caption">Logs</string>
     <string name="debug_info_logs_subtitle">Verbose logs are available</string>
     <string name="debug_info_logs_view">View logs</string>
+    <string name="debug_info_privacy_warning_title">Privacy notice</string>
+    <string name="debug_info_privacy_warning_description">Logs and debug info may contain private information. Please be aware of this when sharing publicly.</string>
 
     <!-- ExceptionInfoFragment -->
     <string name="exception">An error has occurred.</string>
