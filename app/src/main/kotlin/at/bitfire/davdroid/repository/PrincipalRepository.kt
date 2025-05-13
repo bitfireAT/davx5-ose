@@ -14,6 +14,6 @@ class PrincipalRepository @Inject constructor(
 
     private val dao = db.principalDao()
 
-    fun get(id: Long): Principal = dao.get(id)
+    fun getBlocking(id: Long): Principal = dao.get(id)
 
 }

@@ -167,7 +167,7 @@ class CollectionListRefresher @AssistedInject constructor(
                         principal.location.resolve(homeSetHref)?.let { homesetUrl ->
                             val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
                             if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
-                                homeSetRepository.insertOrUpdateByUrl(
+                                homeSetRepository.insertOrUpdateByUrlBlocking(
                                     HomeSet(0, service.id, url = resolvedHomeSetUrl)
                                 )
                                 alreadySavedHomeSets += resolvedHomeSetUrl
@@ -234,7 +234,7 @@ class CollectionListRefresher @AssistedInject constructor(
      * and a null value for it's home-set. Refreshing of collections without home-sets is then handled by [refreshHomelessCollections].
      */
     internal fun refreshHomesetsAndTheirCollections() {
-        val homesets = homeSetRepository.getByService(service.id).associateBy { it.url }.toMutableMap()
+        val homesets = homeSetRepository.getByServiceBlocking(service.id).associateBy { it.url }.toMutableMap()
         for((homeSetUrl, localHomeset) in homesets) {
             logger.fine("Listing home set $homeSetUrl")
 
@@ -256,7 +256,7 @@ class CollectionListRefresher @AssistedInject constructor(
 
                     if (relation == Response.HrefRelation.SELF)
                         // this response is about the home set itself
-                        homeSetRepository.insertOrUpdateByUrl(localHomeset.copy(
+                        homeSetRepository.insertOrUpdateByUrlBlocking(localHomeset.copy(
                             displayName = response[DisplayName::class.java]?.displayName,
                             privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false,
                             personal = personal
@@ -285,7 +285,7 @@ class CollectionListRefresher @AssistedInject constructor(
             } catch (e: HttpException) {
                 // delete home set locally if it was not accessible (40x)
                 if (e.code in arrayOf(403, 404, 410))
-                    homeSetRepository.delete(localHomeset)
+                    homeSetRepository.deleteBlocking(localHomeset)
             }
 
             // Mark leftover (not rediscovered) collections from queue as homeless (remove association)

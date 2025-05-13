@@ -9,6 +9,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.test.runner.AndroidJUnitRunner
+import at.bitfire.davdroid.di.TestCoroutineDispatchersModule
 import at.bitfire.davdroid.sync.SyncAdapterService
 import dagger.hilt.android.testing.HiltTestApplication
 
@@ -27,6 +28,9 @@ class HiltTestRunner : AndroidJUnitRunner() {
 
         // disable sync adapters
         SyncAdapterService.syncActive.set(false)
+
+        // set main dispatcher for tests (especially runTest)
+        TestCoroutineDispatchersModule.initMainDispatcher()
     }
 
 }

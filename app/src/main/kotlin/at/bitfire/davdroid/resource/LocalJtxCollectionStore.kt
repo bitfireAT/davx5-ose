@@ -62,7 +62,7 @@ class LocalJtxCollectionStore @Inject constructor(
     }
 
     private fun valuesFromCollection(info: Collection, account: Account, withColor: Boolean): ContentValues {
-        val owner = info.ownerId?.let { principalRepository.get(it) }
+        val owner = info.ownerId?.let { principalRepository.getBlocking(it) }
 
         return ContentValues().apply {
             put(JtxContract.JtxCollection.SYNC_ID, info.id)

@@ -201,6 +201,8 @@
   <string name="app_settings_unifiedpush_no_distributor">Не е инсталиран дистрибутор</string>
   <string name="app_settings_unifiedpush_no_endpoint">Не е настроен сървър</string>
   <string name="app_settings_unifiedpush_ready">В готовност за получаване на съобщения през %s</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">Отдалечено подадените съобщения са винаги шифровани.</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>

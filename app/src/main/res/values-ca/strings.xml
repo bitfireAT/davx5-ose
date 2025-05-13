@@ -201,6 +201,8 @@
   <string name="app_settings_unifiedpush_no_distributor">No s\'ha instal·lat cap distribuïdor de «push» </string>
   <string name="app_settings_unifiedpush_no_endpoint">No s\'ha configurat cap punt final</string>
   <string name="app_settings_unifiedpush_ready">Preparat per a rebre missatges «push» sobre %s</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">Els missatges no notificació automàtica sempre són xifrats.</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>

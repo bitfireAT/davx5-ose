@@ -300,7 +300,7 @@ class LoginScreenModel @AssistedInject constructor(
 
         viewModelScope.launch {
             val account = withContext(Dispatchers.Default) {
-                accountRepository.create(
+                accountRepository.createBlocking(
                     accountDetailsUiState.value.accountName,
                     loginInfo.credentials,
                     foundConfig!!,

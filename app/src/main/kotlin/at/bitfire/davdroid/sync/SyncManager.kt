@@ -12,6 +12,7 @@ import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.MultiResponseCallback
+import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.ConflictException
 import at.bitfire.dav4jvm.exception.DavException
@@ -26,7 +27,6 @@ import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
-import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -37,20 +37,20 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.ical4android.CalendarStorageException
-import at.bitfire.ical4android.Ical4Android
 import at.bitfire.vcard4android.ContactsStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
-import java.time.Instant
 import java.util.LinkedList
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.logging.Level
@@ -80,7 +80,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     val authority: String,
     val syncResult: SyncResult,
     val localCollection: CollectionType,
-    val collection: Collection
+    val collection: Collection,
+    val syncDispatcher: CoroutineDispatcher
 ) {
 
     enum class SyncAlgorithm {
@@ -88,43 +89,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         COLLECTION_SYNC
     }
 
-    companion object {
 
-        /** Maximum number of resources that are requested with one multiget request. */
-        const val MAX_MULTIGET_RESOURCES = 10
+    @Inject
+    lateinit var accountRepository: AccountRepository
 
-        const val DELAY_UNTIL_DEFAULT = 15*60L      // 15 min
-        const val DELAY_UNTIL_MIN =      1*60L      // 1 min
-        const val DELAY_UNTIL_MAX =     2*60*60L    // 2 hours
-
-        /**
-         * Returns appropriate sync retry delay in seconds, considering the servers suggestion
-         * ([DELAY_UNTIL_DEFAULT] if no server suggestion).
-         *
-         * Takes current time into account to calculate intervals. Interval
-         * will be restricted to values between [DELAY_UNTIL_MIN] and [DELAY_UNTIL_MAX].
-         *
-         * @param retryAfter   optional server suggestion on how long to wait before retrying
-         * @return until when to wait before sync can be retried
-         */
-        fun getDelayUntil(retryAfter: Instant?): Instant {
-            val now = Instant.now()
-
-            if (retryAfter == null)
-                return now.plusSeconds(DELAY_UNTIL_DEFAULT)
-
-            // take server suggestion, but restricted to plausible min/max values
-            val min = now.plusSeconds(DELAY_UNTIL_MIN)
-            val max = now.plusSeconds(DELAY_UNTIL_MAX)
-            return when {
-                min > retryAfter -> min
-                max < retryAfter -> max
-                else -> retryAfter
-            }
-        }
-
-    }
-
+    @Inject
+    lateinit var collectionRepository: DavCollectionRepository
 
     @Inject
     @ApplicationContext
@@ -134,25 +104,14 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     lateinit var logger: Logger
 
     @Inject
-    lateinit var accountRepository: AccountRepository
-
-    @Inject
     lateinit var syncStatsRepository: DavSyncStatsRepository
 
     @Inject
     lateinit var serviceRepository: DavServiceRepository
 
     @Inject
-    lateinit var collectionRepository: DavCollectionRepository
-
-    @Inject
     lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
 
-
-    init {
-        // required for ServiceLoader -> ical4j -> ical4android
-        Ical4Android.checkThreadContextClassLoader()
-    }
 
     protected lateinit var davCollection: RemoteType
 
@@ -162,16 +121,24 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         syncNotificationManagerFactory.create(account)
     }
 
-    fun performSync() {
+    /**
+     * Push-Dont-Notify header, added to PUT and DELETE requests if subscription exists.
+     */
+    private val pushDontNotifyHeader by lazy {
+        collection.pushSubscription?.let { pushSubscription ->
+            mapOf("Push-Dont-Notify" to QuotedStringUtils.asQuotedString(pushSubscription))
+        } ?: emptyMap()
+    }
+
+    suspend fun performSync() = withContext(syncDispatcher) {
         // dismiss previous error notifications
         syncNotificationManager.dismissInvalidResource(localCollectionTag = localCollection.tag)
-
 
         try {
             logger.info("Preparing synchronization")
             if (!prepare()) {
                 logger.info("No reason to synchronize, aborting")
-                return
+                return@withContext
             }
             syncStatsRepository.logSyncTime(collection.id, authority)
 
@@ -312,7 +279,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 is ServiceUnavailableException -> {
                     logger.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
                     // determine when to retry
-                    syncResult.delayUntil = getDelayUntil(e.retryAfter).epochSecond
+                    syncResult.delayUntil = e.getDelayUntil().epochSecond
                     syncResult.numServiceUnavailableExceptions++ // Indicate a soft error occurred
                 }
 
@@ -367,7 +334,11 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     val remote = DavResource(httpClient.okHttpClient, url)
                     SyncException.wrapWithRemoteResource(url) {
                         try {
-                            remote.delete(ifETag = lastETag, ifScheduleTag = lastScheduleTag) {}
+                            remote.delete(
+                                ifETag = lastETag,
+                                ifScheduleTag = lastScheduleTag,
+                                headers = pushDontNotifyHeader,
+                            ) {}
                             numDeleted++
                         } catch (_: HttpException) {
                             logger.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
@@ -390,11 +361,10 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      *
      * @return whether local resources have been processed so that a synchronization is always necessary
      */
-    protected open fun uploadDirty(): Boolean {
+    protected open suspend fun uploadDirty(): Boolean {
         var numUploaded = 0
 
-        // upload dirty resources (parallelized)
-        runBlocking {
+        coroutineScope {    // structured concurrency
             for (local in localCollection.findDirty())
                 launch {
                     SyncException.wrapWithLocalResource(local) {
@@ -426,7 +396,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 val remote = DavResource(httpClient.okHttpClient, uploadUrl)
                 SyncException.wrapWithRemoteResource(uploadUrl) {
                     logger.info("Uploading new record ${local.id} -> $newFileName")
-                    remote.put(generateUpload(local), ifNoneMatch = true, callback = readTagsFromResponse)
+                    remote.put(
+                        generateUpload(local),
+                        ifNoneMatch = true,
+                        callback = readTagsFromResponse,
+                        headers = pushDontNotifyHeader
+                    )
                 }
 
             } else /* existingFileName != null */ {     // updated resource
@@ -438,7 +413,13 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     val lastScheduleTag = local.scheduleTag
                     val lastETag = if (lastScheduleTag == null) local.eTag else null
                     logger.info("Uploading modified record ${local.id} -> $existingFileName (ETag=$lastETag, Schedule-Tag=$lastScheduleTag)")
-                    remote.put(generateUpload(local), ifETag = lastETag, ifScheduleTag = lastScheduleTag, callback = readTagsFromResponse)
+                    remote.put(
+                        generateUpload(local),
+                        ifETag = lastETag,
+                        ifScheduleTag = lastScheduleTag,
+                        callback = readTagsFromResponse,
+                        headers = pushDontNotifyHeader
+                    )
                 }
             }
         } catch (e: SyncException) {
@@ -559,80 +540,78 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      *
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
-    protected open fun syncRemote(listRemote: (MultiResponseCallback) -> Unit) {
-        runBlocking {
-            // download queue
-            val toDownload = LinkedBlockingQueue<HttpUrl>()
-            fun download(url: HttpUrl?) {
-                if (url != null)
-                    toDownload += url
+    protected open suspend fun syncRemote(listRemote: (MultiResponseCallback) -> Unit) = coroutineScope {    // structured concurrency
+        // download queue
+        val toDownload = LinkedBlockingQueue<HttpUrl>()
+        fun download(url: HttpUrl?) {
+            if (url != null)
+                toDownload += url
 
-                if (toDownload.size >= MAX_MULTIGET_RESOURCES || url == null) {
-                    while (toDownload.isNotEmpty()) {
-                        val bunch = LinkedList<HttpUrl>()
-                        toDownload.drainTo(bunch, MAX_MULTIGET_RESOURCES)
-                        launch {
-                            downloadRemote(bunch)
-                        }
+            if (toDownload.size >= MAX_MULTIGET_RESOURCES || url == null) {
+                while (toDownload.isNotEmpty()) {
+                    val bunch = LinkedList<HttpUrl>()
+                    toDownload.drainTo(bunch, MAX_MULTIGET_RESOURCES)
+                    launch {
+                        downloadRemote(bunch)
                     }
                 }
             }
-
-            coroutineScope {    // structured concurrency: blocks until all inner coroutines are finished
-                listRemote { response, relation ->
-                    // ignore non-members
-                    if (relation != Response.HrefRelation.MEMBER)
-                        return@listRemote
-
-                    // ignore collections
-                    if (response[at.bitfire.dav4jvm.property.webdav.ResourceType::class.java]?.types?.contains(at.bitfire.dav4jvm.property.webdav.ResourceType.COLLECTION) == true)
-                        return@listRemote
-
-                    val name = response.hrefName()
-
-                    if (response.isSuccess()) {
-                        logger.fine("Found remote resource: $name")
-
-                        launch {
-                            val local = localCollection.findByName(name)
-                            SyncException.wrapWithLocalResource(local) {
-                                if (local == null) {
-                                    logger.info("$name has been added remotely, queueing download")
-                                    download(response.href)
-                                } else {
-                                    val localETag = local.eTag
-                                    val remoteETag = response[GetETag::class.java]?.eTag
-                                        ?: throw DavException("Server didn't provide ETag")
-                                    if (localETag == remoteETag) {
-                                        logger.info("$name has not been changed on server (ETag still $remoteETag)")
-                                    } else {
-                                        logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
-                                        download(response.href)
-                                    }
-
-                                    // mark as remotely present, so that this resource won't be deleted at the end
-                                    local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
-                                }
-                            }
-                        }
-
-                    } else if (response.status?.code == HttpURLConnection.HTTP_NOT_FOUND) {
-                        // collection sync: resource has been deleted on remote server
-                        launch {
-                            localCollection.findByName(name)?.let { local ->
-                                SyncException.wrapWithLocalResource(local) {
-                                    logger.info("$name has been deleted on server, deleting locally")
-                                    local.delete()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // download remaining resources
-            download(null)
         }
+
+        coroutineScope {    // structured concurrency
+            listRemote { response, relation ->
+                // ignore non-members
+                if (relation != Response.HrefRelation.MEMBER)
+                    return@listRemote
+
+                // ignore collections
+                if (response[at.bitfire.dav4jvm.property.webdav.ResourceType::class.java]?.types?.contains(at.bitfire.dav4jvm.property.webdav.ResourceType.COLLECTION) == true)
+                    return@listRemote
+
+                val name = response.hrefName()
+
+                if (response.isSuccess()) {
+                    logger.fine("Found remote resource: $name")
+
+                    launch {
+                        val local = localCollection.findByName(name)
+                        SyncException.wrapWithLocalResource(local) {
+                            if (local == null) {
+                                logger.info("$name has been added remotely, queueing download")
+                                download(response.href)
+                            } else {
+                                val localETag = local.eTag
+                                val remoteETag = response[GetETag::class.java]?.eTag
+                                    ?: throw DavException("Server didn't provide ETag")
+                                if (localETag == remoteETag) {
+                                    logger.info("$name has not been changed on server (ETag still $remoteETag)")
+                                } else {
+                                    logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+                                    download(response.href)
+                                }
+
+                                // mark as remotely present, so that this resource won't be deleted at the end
+                                local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                            }
+                        }
+                    }
+
+                } else if (response.status?.code == HttpURLConnection.HTTP_NOT_FOUND) {
+                    // collection sync: resource has been deleted on remote server
+                    launch {
+                        localCollection.findByName(name)?.let { local ->
+                            SyncException.wrapWithLocalResource(local) {
+                                logger.info("$name has been deleted on server, deleting locally")
+                                local.delete()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // download remaining resources
+        download(null)
     }
 
     protected abstract fun listAllRemote(callback: MultiResponseCallback)
@@ -724,9 +703,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         return state
     }
 
-
-    // notification helpers
-
     /**
      * Logs the exception, updates sync result and shows a notification to the user.
      */
@@ -786,5 +762,13 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         )
 
     protected abstract fun notifyInvalidResourceTitle(): String
+
+
+    companion object {
+
+        /** Maximum number of resources that are requested with one multiget request. */
+        const val MAX_MULTIGET_RESOURCES = 10
+
+    }
 
 }

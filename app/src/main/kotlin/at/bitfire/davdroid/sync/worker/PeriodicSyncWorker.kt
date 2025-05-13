@@ -11,7 +11,6 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.SyncDispatcher
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -35,9 +34,8 @@ import dagger.assisted.AssistedInject
 @HiltWorker
 class PeriodicSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters,
-    syncDispatcher: SyncDispatcher
-) : BaseSyncWorker(appContext, workerParams, syncDispatcher.dispatcher) {
+    @Assisted workerParams: WorkerParameters
+) : BaseSyncWorker(appContext, workerParams) {
 
     @AssistedFactory
     @VisibleForTesting
