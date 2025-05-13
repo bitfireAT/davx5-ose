@@ -9,6 +9,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import androidx.room.Transaction
 import androidx.room.Update
 
@@ -21,8 +23,15 @@ interface WebDavDocumentDao {
     @Query("SELECT * FROM webdav_document WHERE mountId=:mountId AND (parentId=:parentId OR (parentId IS NULL AND :parentId IS NULL)) AND name=:name")
     fun getByParentAndName(mountId: Long, parentId: Long?, name: String): WebDavDocument?
 
-    @Query("SELECT * FROM webdav_document WHERE parentId=:parentId ORDER BY :orderBy")
-    fun getChildren(parentId: Long, orderBy: String = "name ASC"): List<WebDavDocument>
+    @RawQuery
+    fun getChildren(query: RoomRawQuery): List<WebDavDocument>
+
+    fun getChildren(parentId: Long, orderBy: String = "name ASC"): List<WebDavDocument> {
+        val query = RoomRawQuery(
+            "SELECT * FROM webdav_document WHERE parentId = ? ORDER BY $orderBy",
+        ) { it.bindLong(1, parentId) }
+        return getChildren(query)
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrReplace(document: WebDavDocument): Long
