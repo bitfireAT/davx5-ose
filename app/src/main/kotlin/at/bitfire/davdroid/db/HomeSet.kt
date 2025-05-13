@@ -26,7 +26,7 @@ data class HomeSet(
 
     val serviceId: Long,
 
-    val personal: Boolean? = null,
+    val personal: Boolean,
 
     val url: HttpUrl,
 

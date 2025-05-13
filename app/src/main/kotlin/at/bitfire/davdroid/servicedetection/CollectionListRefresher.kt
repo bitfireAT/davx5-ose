@@ -161,6 +161,9 @@ class CollectionListRefresher @AssistedInject constructor(
             principal.propfind(0, *homeSetProperties) { davResponse, _ ->
                 alreadyQueriedPrincipals += davResponse.href
 
+                val ownerHref = davResponse[Owner::class.java]?.href
+                val personal = ownerHref != null && service.principal.toString().endsWith(ownerHref)
+
                 // If response holds home sets, save them
                 davResponse[homeSetClass]?.let { homeSets ->
                     for (homeSetHref in homeSets.hrefs)
@@ -168,7 +171,7 @@ class CollectionListRefresher @AssistedInject constructor(
                             val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
                             if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
                                 homeSetRepository.insertOrUpdateByUrlBlocking(
-                                    HomeSet(0, service.id, url = resolvedHomeSetUrl)
+                                    HomeSet(0, service.id, personal, resolvedHomeSetUrl)
                                 )
                                 alreadySavedHomeSets += resolvedHomeSetUrl
                             }
@@ -408,7 +411,7 @@ class CollectionListRefresher @AssistedInject constructor(
             Settings.PRESELECT_COLLECTIONS_PERSONAL ->
                 // preselect if is personal (in a personal home-set), but not excluded
                 homeSets
-                    .filter { homeset -> homeset.personal == true }
+                    .filter { homeset -> homeset.personal }
                     .map { homeset -> homeset.id }
                     .contains(collection.homeSetId)
                     && !excluded
