@@ -24,6 +24,7 @@ import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.di.SyncDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -44,6 +45,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
+import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
@@ -104,7 +106,8 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     accountSettingsFactory: AccountSettings.Factory,
-    private val httpClientBuilder: HttpClient.Builder
+    private val httpClientBuilder: HttpClient.Builder,
+    @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
     httpClient,
@@ -112,7 +115,8 @@ class ContactsSyncManager @AssistedInject constructor(
     authority,
     syncResult,
     localAddressBook,
-    collection
+    collection,
+    syncDispatcher
 ) {
 
     @AssistedFactory
@@ -228,7 +232,7 @@ class ContactsSyncManager @AssistedInject constructor(
                 // mirror deletions to remote collection (DELETE)
                 super.processLocallyDeleted()
 
-    override fun uploadDirty(): Boolean {
+    override suspend fun uploadDirty(): Boolean {
         var modified = false
 
         if (localCollection.readOnly) {

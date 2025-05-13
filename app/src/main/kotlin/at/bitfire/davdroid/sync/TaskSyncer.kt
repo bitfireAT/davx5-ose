@@ -16,6 +16,7 @@ import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.runBlocking
 
 /**
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
@@ -78,7 +79,9 @@ class TaskSyncer @AssistedInject constructor(
             localCollection,
             remoteCollection
         )
-        syncManager.performSync()
+        runBlocking {
+            syncManager.performSync()
+        }
     }
 
 }
