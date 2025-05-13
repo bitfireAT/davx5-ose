@@ -197,8 +197,8 @@ fun DebugInfoScreen(
                     ProgressBar()
 
                 CardWithImage(
-                    title = stringResource(R.string.debug_info_credentials_warning_title),
-                    message = stringResource(R.string.debug_info_credentials_warning_description),
+                    title = stringResource(R.string.debug_info_privacy_warning_title),
+                    message = stringResource(R.string.debug_info_privacy_warning_description),
                     icon = Icons.Rounded.PrivacyTip,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                 )
