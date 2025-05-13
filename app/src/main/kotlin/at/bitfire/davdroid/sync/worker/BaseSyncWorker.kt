@@ -36,10 +36,8 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
 import dagger.Lazy
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runInterruptible
-import kotlinx.coroutines.withContext
 import java.util.Collections
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -47,8 +45,7 @@ import javax.inject.Inject
 
 abstract class BaseSyncWorker(
     context: Context,
-    private val workerParams: WorkerParameters,
-    private val syncDispatcher: CoroutineDispatcher
+    private val workerParams: WorkerParameters
 ) : CoroutineWorker(context, workerParams) {
 
     @Inject
@@ -142,7 +139,7 @@ abstract class BaseSyncWorker(
         }
     }
 
-    suspend fun doSyncWork(account: Account, dataType: SyncDataType): Result = withContext(syncDispatcher) {
+    suspend fun doSyncWork(account: Account, dataType: SyncDataType): Result {
         logger.info("Running ${javaClass.name}: account=$account, dataType=$dataType")
 
         // pass possibly supplied flags to the selected syncer
@@ -176,7 +173,7 @@ abstract class BaseSyncWorker(
                         taskSyncer.create(account, currentProvider, extras, syncResult)
                     else -> {
                         logger.warning("No valid tasks provider found, aborting sync")
-                        return@withContext Result.failure()
+                        return Result.failure()
                     }
                 }
             }
@@ -208,7 +205,7 @@ abstract class BaseSyncWorker(
                         delay(blockDuration * 1000)
 
                     logger.warning("Retrying on soft error (attempt $runAttemptCount of $MAX_RUN_ATTEMPTS)")
-                    return@withContext Result.retry()
+                    return Result.retry()
                 }
 
                 logger.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
@@ -225,7 +222,7 @@ abstract class BaseSyncWorker(
                 }
 
                 output.putBoolean(OUTPUT_TOO_MANY_RETRIES, true)
-                return@withContext Result.failure(output.build())
+                return Result.failure(output.build())
             }
 
             // If no soft error found, dismiss sync error notification
@@ -239,12 +236,12 @@ abstract class BaseSyncWorker(
             // Note: SyncManager should have notified the user
             if (syncResult.hasHardError()) {
                 logger.log(Level.WARNING, "Hard error while syncing", syncResult)
-                return@withContext Result.failure(output.build())
+                return Result.failure(output.build())
             }
         }
 
         logger.log(Level.INFO, "Sync worker succeeded", syncResult)
-        return@withContext Result.success(output.build())
+        return Result.success(output.build())
     }
 
 

@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.test.rule.ServiceTestRule
-import at.bitfire.davdroid.di.MainDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -19,7 +18,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -48,10 +46,6 @@ class UnifiedPushServiceTest {
     @ApplicationContext
     lateinit var context: Context
 
-    @Inject
-    @MainDispatcher
-    lateinit var mainDispatcher: CoroutineDispatcher
-
     @RelaxedMockK
     @BindValue
     lateinit var pushRegistrationManager: PushRegistrationManager
@@ -70,7 +64,7 @@ class UnifiedPushServiceTest {
 
 
     @Test
-    fun testOnNewEndpoint() = runTest(mainDispatcher) {
+    fun testOnNewEndpoint() = runTest {
         val endpoint = mockk<PushEndpoint> {
             every { url } returns "https://example.com/12"
         }
@@ -84,7 +78,7 @@ class UnifiedPushServiceTest {
     }
 
     @Test
-    fun testOnRegistrationFailed() = runTest(mainDispatcher) {
+    fun testOnRegistrationFailed() = runTest {
         unifiedPushService.onRegistrationFailed(FailedReason.INTERNAL_ERROR, "34")
 
         advanceUntilIdle()
@@ -95,8 +89,8 @@ class UnifiedPushServiceTest {
     }
 
     @Test
-    fun testOnUnregistered() = runTest(mainDispatcher) {
-        unifiedPushService.onRegistrationFailed(FailedReason.INTERNAL_ERROR, "45")
+    fun testOnUnregistered() = runTest {
+        unifiedPushService.onUnregistered("45")
 
         advanceUntilIdle()
         coVerify {

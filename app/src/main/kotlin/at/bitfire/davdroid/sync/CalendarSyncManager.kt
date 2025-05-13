@@ -20,6 +20,7 @@ import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.di.SyncDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
@@ -32,6 +33,7 @@ import at.bitfire.ical4android.util.DateUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineDispatcher
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.property.Action
@@ -56,7 +58,8 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
     @Assisted collection: Collection,
-    private val accountSettingsFactory: AccountSettings.Factory
+    accountSettingsFactory: AccountSettings.Factory,
+    @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
     httpClient,
@@ -64,7 +67,8 @@ class CalendarSyncManager @AssistedInject constructor(
     authority,
     syncResult,
     localCalendar,
-    collection
+    collection,
+    syncDispatcher
 ) {
 
     @AssistedFactory
@@ -144,7 +148,7 @@ class CalendarSyncManager @AssistedInject constructor(
         return super.processLocallyDeleted()
     }
 
-    override fun uploadDirty(): Boolean {
+    override suspend fun uploadDirty(): Boolean {
         var modified = false
         if (localCollection.readOnly) {
             for (event in localCollection.findDirty()) {

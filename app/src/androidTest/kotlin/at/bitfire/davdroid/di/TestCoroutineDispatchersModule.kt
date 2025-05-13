@@ -4,17 +4,22 @@
 
 package at.bitfire.davdroid.di
 
+import at.bitfire.davdroid.di.TestCoroutineDispatchersModule.standardTestDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.setMain
 
 /**
- * If you run tests that switch context to one of these dispatchers, use `runTest(mainDispatcher)`
- * with `mainDispatcher` being an injected [MainDispatcher] instead of plain `runTest`.
+ * Provides test dispatchers to be injected instead of the normal ones.
+ *
+ * The [standardTestDispatcher] is set as main dispatcher in [at.bitfire.davdroid.HiltTestRunner],
+ * so that tests can just use [kotlinx.coroutines.test.runTest] without providing [standardTestDispatcher].
  */
 @Module
 @TestInstallIn(
@@ -23,8 +28,7 @@ import kotlinx.coroutines.test.TestCoroutineScheduler
 )
 object TestCoroutineDispatchersModule {
 
-    val scheduler = TestCoroutineScheduler()
-    val standardTestDispatcher = StandardTestDispatcher(scheduler)
+    private val standardTestDispatcher = StandardTestDispatcher()
 
     @Provides
     @DefaultDispatcher
@@ -41,5 +45,15 @@ object TestCoroutineDispatchersModule {
     @Provides
     @SyncDispatcher
     fun syncDispatcher(): CoroutineDispatcher = standardTestDispatcher
+
+   /**
+     * Sets the [standardTestDispatcher] as [Dispatchers.Main] so that test dispatchers
+     * created in the future use the same scheduler. See [StandardTestDispatcher] docs
+     * for more information.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun initMainDispatcher() {
+        Dispatchers.setMain(standardTestDispatcher)
+    }
 
 }
