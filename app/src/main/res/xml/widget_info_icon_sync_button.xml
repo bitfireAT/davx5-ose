@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:initialLayout="@layout/glance_default_loading_layout"
@@ -8,6 +12,6 @@
     android:targetCellHeight="1"
     android:resizeMode="none"
     android:previewLayout="@layout/widget_preview_icon_sync_button"
-    android:description="@string/widget_icon_sync_description"
+    android:description="@string/widget_sync_description"
     tools:ignore="UnusedAttribute">
 </appwidget-provider>

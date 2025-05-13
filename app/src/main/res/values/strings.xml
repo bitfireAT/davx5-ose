@@ -522,9 +522,8 @@
     <string name="widget_sync_all">Sync all</string>
     <string name="widget_sync_all_accounts">Sync all accounts</string>
     <string name="widget_labeled_sync_label">Labeled Sync Button</string>
-    <string name="widget_labeled_sync_description">A simple button for running synchronization manually with an icon and a label.</string>
     <string name="widget_icon_sync_label">Icon Sync Button</string>
-    <string name="widget_icon_sync_description">A circular button for running synchronization manually.</string>
+    <string name="widget_sync_description">Tap to run synchronization manually.</string>
 
     <!-- cert4android -->
 
