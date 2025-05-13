@@ -107,8 +107,8 @@ class CollectionListRefresherTest {
         val personalHomeset = savedHomesets[1]
         assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL/"), personalHomeset.url)
         assertEquals(service.id, personalHomeset.serviceId)
-        // personal should be true for homesets detected at first query of current-user-principal (Even if they occur in a group principal as well!!!)
-        assertEquals(true, personalHomeset.personal)
+        // Homeset is not personal since DAV:owner is not present on the response
+        assertEquals(false, personalHomeset.personal)
 
         // Home set found in a group principal
         val groupHomeset = savedHomesets[0]
