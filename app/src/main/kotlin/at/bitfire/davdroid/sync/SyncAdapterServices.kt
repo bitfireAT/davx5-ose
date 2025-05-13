@@ -143,13 +143,18 @@ abstract class SyncAdapterService: Service() {
                 return
             }
 
+            // Android 14 and 15 don't handle pending sync state correctly.
+            // Workaround: tell the sync framework to cancel any pending syncs
+            // See: https://github.com/bitfireAT/davx5-ose/issues/1458
+            ContentResolver.cancelSync(account, null)
+
+            // Check sync conditions
             val accountSettings = try {
                 accountSettingsFactory.create(account)
             } catch (e: InvalidAccountException) {
                 logger.log(Level.WARNING, "Account doesn't exist anymore", e)
                 return
             }
-
             val syncConditions = syncConditionsFactory.create(accountSettings)
             // Should we run the sync at all?
             if (!syncConditions.wifiConditionsMet()) {
