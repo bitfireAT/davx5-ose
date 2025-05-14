@@ -91,6 +91,10 @@ class PushRegistrationManager @Inject constructor(
         updatePeriodicWorker()
     }
 
+    /**
+     * Registers or unregisters depending on whether there is a distributor available. Also unsubscribes
+     * if no distributor is available.
+     */
     private suspend fun updateService(serviceId: Long) {
         val service = serviceRepository.get(serviceId) ?: return
 
@@ -123,7 +127,11 @@ class PushRegistrationManager @Inject constructor(
             UnifiedPush.saveDistributor(context, pushDistributor)
         }
 
-        // Update subscriptions
+        // Manually unsubscribe collections
+        for (service in serviceRepository.getAll())
+            unsubscribeAll(service)
+
+        // Update/Recreate subscriptions and worker
         update()
     }
 
