@@ -186,8 +186,6 @@ class SyncFrameworkIntegration @Inject constructor(
             authorities.any { authority ->
                 val isActive = ContentResolver.isSyncActive(account, authority)
                 val isPending = ContentResolver.isSyncPending(account, authority)
-                logger.info("Checking isSyncPending: account=${account.name}, authority=$authority, pending=$isPending")
-                logger.info("Checking isSyncActive: account=${account.name}, authority=$authority, pending=$isActive")
                 isPending || isActive
             }
         }
