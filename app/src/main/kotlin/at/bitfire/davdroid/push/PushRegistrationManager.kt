@@ -111,6 +111,25 @@ class PushRegistrationManager @Inject constructor(
         // will then call processSubscription or removeSubscription.
     }
 
+    /**
+     * Sets or removes (disable push) the distributor and updates the subscriptions + worker.
+     */
+    suspend fun setPushDistributor(pushDistributor: String?) {
+        if (pushDistributor == null) {
+            // Disable UnifiedPush if the distributor given is null
+            UnifiedPush.removeDistributor(context)
+        } else {
+            // If a distributor was passed, store it
+            UnifiedPush.saveDistributor(context, pushDistributor)
+        }
+
+        // Update subscriptions
+        update()
+    }
+
+    fun getDistributor() = UnifiedPush.getSavedDistributor(context)
+
+    fun getDistributors() = UnifiedPush.getDistributors(context)
 
     /**
      * Called by [UnifiedPushService] when a subscription (endpoint) is available for the given service.
