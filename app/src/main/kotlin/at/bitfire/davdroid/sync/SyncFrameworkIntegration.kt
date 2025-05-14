@@ -161,7 +161,8 @@ class SyncFrameworkIntegration @Inject constructor(
 
             // Observe sync pending state
             val listener = ContentResolver.addStatusChangeListener(
-                ContentResolver.SYNC_OBSERVER_TYPE_PENDING
+                ContentResolver.SYNC_OBSERVER_TYPE_PENDING or
+                        ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
             ) {
                 trySend(anyPendingSync(accounts, authorities))
             }
@@ -183,7 +184,11 @@ class SyncFrameworkIntegration @Inject constructor(
     private fun anyPendingSync(accounts: List<Account>, authorities: List<String>): Boolean =
         accounts.any { account ->
             authorities.any { authority ->
-                ContentResolver.isSyncPending(account, authority)
+                val isActive = ContentResolver.isSyncActive(account, authority)
+                val isPending = ContentResolver.isSyncPending(account, authority)
+                logger.info("Checking isSyncPending: account=${account.name}, authority=$authority, pending=$isPending")
+                logger.info("Checking isSyncActive: account=${account.name}, authority=$authority, pending=$isActive")
+                isPending || isActive
             }
         }
 
