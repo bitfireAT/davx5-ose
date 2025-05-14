@@ -184,9 +184,7 @@ class SyncFrameworkIntegration @Inject constructor(
     private fun anyPendingSync(accounts: List<Account>, authorities: List<String>): Boolean =
         accounts.any { account ->
             authorities.any { authority ->
-                val isActive = ContentResolver.isSyncActive(account, authority)
-                val isPending = ContentResolver.isSyncPending(account, authority)
-                isPending || isActive
+                ContentResolver.isSyncPending(account, authority)
             }
         }
 
