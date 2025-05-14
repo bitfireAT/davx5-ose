@@ -143,11 +143,6 @@ abstract class SyncAdapterService: Service() {
                 return
             }
 
-            // Android 14 and 15 don't handle pending sync state correctly.
-            // Workaround: tell the sync framework to cancel any pending syncs
-            // See: https://github.com/bitfireAT/davx5-ose/issues/1458
-            ContentResolver.cancelSync(account, null)
-
             // Check sync conditions
             val accountSettings = try {
                 accountSettingsFactory.create(account)
@@ -164,6 +159,11 @@ abstract class SyncAdapterService: Service() {
 
             logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
             val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), fromUpload = upload)
+
+            // Android 14 and 15 don't handle pending sync state correctly.
+            // Workaround: tell the sync framework to cancel any pending syncs
+            // See: https://github.com/bitfireAT/davx5-ose/issues/1458
+            ContentResolver.cancelSync(account, null)
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
             use it to block the sync adapter. Instead we use a Flow to get notified when the sync
