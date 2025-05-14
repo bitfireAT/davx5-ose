@@ -27,9 +27,9 @@ interface WebDavDocumentDao {
     fun getChildren(query: RoomRawQuery): List<WebDavDocument>
 
     fun getChildren(parentId: Long, orderBy: String = "name ASC"): List<WebDavDocument> {
-        val query = RoomRawQuery(
-            "SELECT * FROM webdav_document WHERE parentId = ? ORDER BY $orderBy",
-        ) { it.bindLong(1, parentId) }
+        val query = RoomRawQuery("SELECT * FROM webdav_document WHERE parentId = ? ORDER BY $orderBy") {
+            it.bindLong(1, parentId)
+        }
         return getChildren(query)
     }
 
@@ -44,7 +44,7 @@ interface WebDavDocumentDao {
 
     @Update
     fun update(document: WebDavDocument)
-    
+
     @Delete
     fun delete(document: WebDavDocument)
 
