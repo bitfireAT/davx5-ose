@@ -46,6 +46,7 @@ import dagger.assisted.AssistedInject
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
@@ -166,25 +167,27 @@ class ContactsSyncManager @AssistedInject constructor(
         return true
     }
 
-    override fun queryCapabilities(): SyncState? {
-        return SyncException.wrapWithRemoteResource(collection.url) {
+    override suspend fun queryCapabilities(): SyncState? {
+        return SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
-            davCollection.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
-                if (relation == Response.HrefRelation.SELF) {
-                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
-                    }
+            runInterruptible {
+                davCollection.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                    if (relation == Response.HrefRelation.SELF) {
+                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                            logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
+                        }
 
-                    response[SupportedAddressData::class.java]?.let { supported ->
-                        hasVCard4 = supported.hasVCard4()
+                        response[SupportedAddressData::class.java]?.let { supported ->
+                            hasVCard4 = supported.hasVCard4()
 
-                        // temporarily disable jCard because of https://github.com/nextcloud/server/issues/29693
-                        // hasJCard = supported.hasJCard()
+                            // temporarily disable jCard because of https://github.com/nextcloud/server/issues/29693
+                            // hasJCard = supported.hasJCard()
+                        }
+                        response[SupportedReportSet::class.java]?.let { supported ->
+                            hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                        }
+                        syncState = syncState(response)
                     }
-                    response[SupportedReportSet::class.java]?.let { supported ->
-                        hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
-                    }
-                    syncState = syncState(response)
                 }
             }
 
@@ -297,9 +300,11 @@ class ContactsSyncManager @AssistedInject constructor(
             return@wrapWithLocalResource os.toByteArray().toRequestBody(mimeType)
         }
 
-    override fun listAllRemote(callback: MultiResponseCallback) =
-        SyncException.wrapWithRemoteResource(collection.url) {
-            davCollection.propfind(1, ResourceType.NAME, GetETag.NAME, callback = callback)
+    override suspend fun listAllRemote(callback: MultiResponseCallback) =
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+            runInterruptible {
+                davCollection.propfind(1, ResourceType.NAME, GetETag.NAME, callback = callback)
+            }
         }
 
     override fun downloadRemote(bunch: List<HttpUrl>) {

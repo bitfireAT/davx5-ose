@@ -34,6 +34,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.property.Action
@@ -99,19 +100,21 @@ class CalendarSyncManager @AssistedInject constructor(
         return true
     }
 
-    override fun queryCapabilities(): SyncState? =
-        SyncException.wrapWithRemoteResource(collection.url) {
+    override suspend fun queryCapabilities(): SyncState? =
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
-            davCollection.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
-                if (relation == Response.HrefRelation.SELF) {
-                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
-                    }
+            runInterruptible {
+                davCollection.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                    if (relation == Response.HrefRelation.SELF) {
+                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                            logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
+                        }
 
-                    response[SupportedReportSet::class.java]?.let { supported ->
-                        hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                        response[SupportedReportSet::class.java]?.let { supported ->
+                            hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                        }
+                        syncState = syncState(response)
                     }
-                    syncState = syncState(response)
                 }
             }
 
@@ -184,15 +187,17 @@ class CalendarSyncManager @AssistedInject constructor(
             os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }
 
-    override fun listAllRemote(callback: MultiResponseCallback) {
+    override suspend fun listAllRemote(callback: MultiResponseCallback) {
         // calculate time range limits
         val limitStart = accountSettings.getTimeRangePastDays()?.let { pastDays ->
             ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
         }
 
-        return SyncException.wrapWithRemoteResource(collection.url) {
+        return SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             logger.info("Querying events since $limitStart")
-            davCollection.calendarQuery(Component.VEVENT, limitStart, null, callback)
+            runInterruptible {
+                davCollection.calendarQuery(Component.VEVENT, limitStart, null, callback)
+            }
         }
     }
 

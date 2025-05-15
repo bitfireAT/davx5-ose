@@ -30,6 +30,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -81,16 +82,18 @@ class TasksSyncManager @AssistedInject constructor(
         return true
     }
 
-    override fun queryCapabilities() =
-        SyncException.wrapWithRemoteResource(collection.url) {
+    override suspend fun queryCapabilities() =
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
-            davCollection.propfind(0, MaxResourceSize.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
-                if (relation == Response.HrefRelation.SELF) {
-                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
-                    }
+            runInterruptible {
+                davCollection.propfind(0, MaxResourceSize.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                    if (relation == Response.HrefRelation.SELF) {
+                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                            logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
+                        }
 
-                    syncState = syncState(response)
+                        syncState = syncState(response)
+                    }
                 }
             }
 
@@ -110,10 +113,12 @@ class TasksSyncManager @AssistedInject constructor(
             os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }
 
-    override fun listAllRemote(callback: MultiResponseCallback) {
-        SyncException.wrapWithRemoteResource(collection.url) {
+    override suspend fun listAllRemote(callback: MultiResponseCallback) {
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             logger.info("Querying tasks")
-            davCollection.calendarQuery("VTODO", null, null, callback)
+            runInterruptible {
+                davCollection.calendarQuery("VTODO", null, null, callback)
+            }
         }
     }
 

@@ -306,7 +306,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      *
      * @return current sync state
      */
-    protected abstract fun queryCapabilities(): SyncState?
+    protected abstract suspend fun queryCapabilities(): SyncState?
 
     /**
      * Processes locally deleted entries. This can mean:
@@ -548,7 +548,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      *
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
-    protected open suspend fun syncRemote(listRemote: (MultiResponseCallback) -> Unit) = coroutineScope {    // structured concurrency
+    protected open suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) = coroutineScope {    // structured concurrency
         // download queue
         val toDownload = LinkedBlockingQueue<HttpUrl>()
         fun download(url: HttpUrl?) {
@@ -622,24 +622,27 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         download(null)
     }
 
-    protected abstract fun listAllRemote(callback: MultiResponseCallback)
+    protected abstract suspend fun listAllRemote(callback: MultiResponseCallback)
 
-    protected open fun listRemoteChanges(syncState: SyncState?, callback: MultiResponseCallback): Pair<SyncToken, Boolean> {
+    protected open suspend fun listRemoteChanges(syncState: SyncState?, callback: MultiResponseCallback): Pair<SyncToken, Boolean> {
         var furtherResults = false
 
-        val report = davCollection.reportChanges(
+        val report = runInterruptible {
+            davCollection.reportChanges(
                 syncState?.takeIf { syncState.type == SyncState.Type.SYNC_TOKEN }?.value,
                 false, null,
-                GetETag.NAME) { response, relation ->
-            when (relation) {
-                Response.HrefRelation.SELF ->
-                    furtherResults = response.status?.code == 507
+                GetETag.NAME
+            ) { response, relation ->
+                when (relation) {
+                    Response.HrefRelation.SELF ->
+                        furtherResults = response.status?.code == 507
 
-                Response.HrefRelation.MEMBER ->
-                    callback.onResponse(response, relation)
+                    Response.HrefRelation.MEMBER ->
+                        callback.onResponse(response, relation)
 
-                else ->
-                    logger.fine("Unexpected sync-collection response: $response")
+                    else ->
+                        logger.fine("Unexpected sync-collection response: $response")
+                }
             }
         }
 
@@ -702,11 +705,13 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 SyncState(SyncState.Type.CTAG, it)
             }
 
-    private fun querySyncState(): SyncState? {
+    private suspend fun querySyncState(): SyncState? {
         var state: SyncState? = null
-        davCollection.propfind(0, GetCTag.NAME, SyncToken.NAME) { response, relation ->
-            if (relation == Response.HrefRelation.SELF)
-                state = syncState(response)
+        runInterruptible {
+            davCollection.propfind(0, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                if (relation == Response.HrefRelation.SELF)
+                    state = syncState(response)
+            }
         }
         return state
     }
