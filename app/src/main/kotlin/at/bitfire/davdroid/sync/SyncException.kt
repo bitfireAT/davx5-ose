@@ -11,13 +11,13 @@ import okhttp3.HttpUrl
  * Exception that wraps another notification together with potential information about
  * a local and/or remote resource that is related to the exception.
  */
-class SyncException(cause: Throwable): Exception(cause) {
+class SyncException(cause: Throwable) : Exception(cause) {
 
     companion object {
 
         // provide lambda wrappers for setting the local/remote resource
 
-        fun<T> wrapWithLocalResource(localResource: LocalResource<*>?, body: () -> T): T {
+        fun <T> wrapWithLocalResource(localResource: LocalResource<*>?, body: () -> T): T {
             try {
                 return body()
             } catch (e: SyncException) {
@@ -25,15 +25,14 @@ class SyncException(cause: Throwable): Exception(cause) {
                     e.setLocalResourceIfNull(localResource)
                 throw e
             } catch (e: Throwable) {
-                throw
-                if (localResource != null)
+                throw if (localResource != null)
                     SyncException(e).setLocalResourceIfNull(localResource)
                 else
                     e
             }
         }
 
-        suspend fun<T> wrapWithLocalResourceSuspending(localResource: LocalResource<*>?, body: suspend () -> T): T {
+        suspend fun <T> wrapWithLocalResourceSuspending(localResource: LocalResource<*>?, body: suspend () -> T): T {
             try {
                 return body()
             } catch (e: SyncException) {
@@ -41,15 +40,14 @@ class SyncException(cause: Throwable): Exception(cause) {
                     e.setLocalResourceIfNull(localResource)
                 throw e
             } catch (e: Throwable) {
-                throw
-                    if (localResource != null)
-                        SyncException(e).setLocalResourceIfNull(localResource)
-                    else
-                        e
+                throw if (localResource != null)
+                    SyncException(e).setLocalResourceIfNull(localResource)
+                else
+                    e
             }
         }
 
-        fun<T> wrapWithRemoteResource(remoteResource: HttpUrl?, body: () -> T): T {
+        fun <T> wrapWithRemoteResource(remoteResource: HttpUrl?, body: () -> T): T {
             try {
                 return body()
             } catch (e: SyncException) {
@@ -57,15 +55,14 @@ class SyncException(cause: Throwable): Exception(cause) {
                     e.setRemoteResourceIfNull(remoteResource)
                 throw e
             } catch (e: Throwable) {
-                throw
-                    if (remoteResource != null)
-                        SyncException(e).setRemoteResourceIfNull(remoteResource)
-                    else
-                        e
+                throw if (remoteResource != null)
+                    SyncException(e).setRemoteResourceIfNull(remoteResource)
+                else
+                    e
             }
         }
 
-        suspend fun<T> wrapWithRemoteResourceSuspending(remoteResource: HttpUrl?, body: suspend () -> T): T {
+        suspend fun <T> wrapWithRemoteResourceSuspending(remoteResource: HttpUrl?, body: suspend () -> T): T {
             try {
                 return body()
             } catch (e: SyncException) {
@@ -73,8 +70,7 @@ class SyncException(cause: Throwable): Exception(cause) {
                     e.setRemoteResourceIfNull(remoteResource)
                 throw e
             } catch (e: Throwable) {
-                throw
-                if (remoteResource != null)
+                throw if (remoteResource != null)
                     SyncException(e).setRemoteResourceIfNull(remoteResource)
                 else
                     e
