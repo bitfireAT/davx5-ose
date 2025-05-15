@@ -276,7 +276,8 @@
         </service>
 
         <!-- Widgets -->
-        <receiver android:name=".ui.widget.SyncButtonWidgetReceiver"
+        <receiver android:name=".ui.widget.LabeledSyncButtonWidgetReceiver"
+            android:label="@string/widget_labeled_sync_label"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -284,7 +285,18 @@
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info_sync_button" />
+                android:resource="@xml/widget_info_labeled_sync_button" />
+        </receiver>
+        <receiver android:name=".ui.widget.IconSyncButtonWidgetReceiver"
+            android:label="@string/widget_icon_sync_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_icon_sync_button" />
         </receiver>
 
     </application>

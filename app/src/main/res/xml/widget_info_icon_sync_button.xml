@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:initialLayout="@layout/glance_default_loading_layout"
-    android:minWidth="100dp"
-    android:minHeight="30dp"
+    android:minWidth="30dp"
+    android:minHeight="50dp"
     android:targetCellWidth="1"
     android:targetCellHeight="1"
-    android:maxResizeWidth="250dp"
-    android:maxResizeHeight="30dp"
-    android:resizeMode="horizontal"
+    android:resizeMode="none"
+    android:previewLayout="@layout/widget_preview_icon_sync_button"
+    android:description="@string/widget_sync_description"
     tools:ignore="UnusedAttribute">
 </appwidget-provider>
