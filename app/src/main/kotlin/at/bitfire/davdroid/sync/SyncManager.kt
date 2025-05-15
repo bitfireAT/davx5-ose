@@ -674,7 +674,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      *      but not a single one (or vice versa). So only one method is more user-friendly.
      *   5. March 2020: iCloud now crashes with HTTP 500 upon CardDAV GET requests.
      */
-    protected abstract fun downloadRemote(bunch: List<HttpUrl>)
+    protected abstract suspend fun downloadRemote(bunch: List<HttpUrl>)
 
     /**
      * Locally deletes entries which are

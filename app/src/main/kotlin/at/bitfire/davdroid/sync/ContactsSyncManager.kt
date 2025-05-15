@@ -307,9 +307,9 @@ class ContactsSyncManager @AssistedInject constructor(
             }
         }
 
-    override fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
         logger.info("Downloading ${bunch.size} vCard(s): $bunch")
-        SyncException.wrapWithRemoteResource(collection.url) {
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             val contentType: String?
             val version: String?
             when {
@@ -326,35 +326,37 @@ class ContactsSyncManager @AssistedInject constructor(
                     version = null     // 3.0 is the default version; don't request 3.0 explicitly because maybe some vCard3-only servers don't understand it
                 }
             }
-            davCollection.multiget(bunch, contentType, version) { response, _ ->
-                // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
-                    if (!response.isSuccess()) {
-                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
-                        return@wrapResource
+            runInterruptible {
+                davCollection.multiget(bunch, contentType, version) { response, _ ->
+                    // See CalendarSyncManager for more information about the multi-get response
+                    SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                        if (!response.isSuccess()) {
+                            logger.warning("Ignoring non-successful multi-get response for ${response.href}")
+                            return@wrapResource
+                        }
+
+                        val card = response[AddressData::class.java]?.card
+                        if (card == null) {
+                            logger.warning("Ignoring multi-get response without address-data")
+                            return@wrapResource
+                        }
+
+                        val eTag = response[GetETag::class.java]?.eTag
+                            ?: throw DavException("Received multi-get response without ETag")
+
+                        var isJCard = hasJCard      // assume that server has sent what we have requested (we ask for jCard only when the server advertises it)
+                        response[GetContentType::class.java]?.type?.let { type ->
+                            isJCard = type.sameTypeAs(DavUtils.MEDIA_TYPE_JCARD)
+                        }
+
+                        processCard(
+                            response.href.lastSegment,
+                            eTag,
+                            StringReader(card),
+                            isJCard,
+                            resourceDownloader
+                        )
                     }
-
-                    val card = response[AddressData::class.java]?.card
-                    if (card == null) {
-                        logger.warning("Ignoring multi-get response without address-data")
-                        return@wrapResource
-                    }
-
-                    val eTag = response[GetETag::class.java]?.eTag
-                        ?: throw DavException("Received multi-get response without ETag")
-
-                    var isJCard = hasJCard      // assume that server has sent what we have requested (we ask for jCard only when the server advertises it)
-                    response[GetContentType::class.java]?.type?.let { type ->
-                        isJCard = type.sameTypeAs(DavUtils.MEDIA_TYPE_JCARD)
-                    }
-
-                    processCard(
-                        response.href.lastSegment,
-                        eTag,
-                        StringReader(card),
-                        isJCard,
-                        resourceDownloader
-                    )
                 }
             }
         }

@@ -37,7 +37,6 @@ import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
 import dagger.Lazy
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runInterruptible
 import java.util.Collections
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -180,9 +179,7 @@ abstract class BaseSyncWorker(
         }
 
         // Start syncing
-        runInterruptible {
-            syncer()
-        }
+        syncer()
 
         // convert SyncResult from Syncers to worker Data
         val output = Data.Builder()

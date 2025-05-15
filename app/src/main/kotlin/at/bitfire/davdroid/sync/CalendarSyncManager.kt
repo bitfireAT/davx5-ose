@@ -201,45 +201,47 @@ class CalendarSyncManager @AssistedInject constructor(
         }
     }
 
-    override fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
-        SyncException.wrapWithRemoteResource(collection.url) {
-            davCollection.multiget(bunch) { response, _ ->
-                /*
-                 * Real-world servers may return:
-                 *
-                 * - unrelated resources
-                 * - the collection itself
-                 * - the requested resources, but with a different collection URL (for instance, `/cal/1.ics` instead of `/shared-cal/1.ics`).
-                 *
-                 * So we:
-                 *
-                 * - ignore unsuccessful responses,
-                 * - ignore responses without requested calendar data (should also ignore collections and hopefully unrelated resources), and
-                 * - take the last segment of the href as the file name and assume that it's in the requested collection.
-                 */
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
-                    if (!response.isSuccess()) {
-                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
-                        return@wrapResource
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+            runInterruptible {
+                davCollection.multiget(bunch) { response, _ ->
+                    /*
+                     * Real-world servers may return:
+                     *
+                     * - unrelated resources
+                     * - the collection itself
+                     * - the requested resources, but with a different collection URL (for instance, `/cal/1.ics` instead of `/shared-cal/1.ics`).
+                     *
+                     * So we:
+                     *
+                     * - ignore unsuccessful responses,
+                     * - ignore responses without requested calendar data (should also ignore collections and hopefully unrelated resources), and
+                     * - take the last segment of the href as the file name and assume that it's in the requested collection.
+                     */
+                    SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                        if (!response.isSuccess()) {
+                            logger.warning("Ignoring non-successful multi-get response for ${response.href}")
+                            return@wrapResource
+                        }
+
+                        val iCal = response[CalendarData::class.java]?.iCalendar
+                        if (iCal == null) {
+                            logger.warning("Ignoring multi-get response without calendar-data")
+                            return@wrapResource
+                        }
+
+                        val eTag = response[GetETag::class.java]?.eTag
+                            ?: throw DavException("Received multi-get response without ETag")
+                        val scheduleTag = response[ScheduleTag::class.java]?.scheduleTag
+
+                        processVEvent(
+                            response.href.lastSegment,
+                            eTag,
+                            scheduleTag,
+                            StringReader(iCal)
+                        )
                     }
-
-                    val iCal = response[CalendarData::class.java]?.iCalendar
-                    if (iCal == null) {
-                        logger.warning("Ignoring multi-get response without calendar-data")
-                        return@wrapResource
-                    }
-
-                    val eTag = response[GetETag::class.java]?.eTag
-                        ?: throw DavException("Received multi-get response without ETag")
-                    val scheduleTag = response[ScheduleTag::class.java]?.scheduleTag
-
-                    processVEvent(
-                        response.href.lastSegment,
-                        eTag,
-                        scheduleTag,
-                        StringReader(iCal)
-                    )
                 }
             }
         }
