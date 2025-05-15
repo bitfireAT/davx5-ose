@@ -124,7 +124,7 @@ class PushRegistrationManager @Inject constructor(
     private suspend fun updateService(serviceId: Long) {
         val service = serviceRepository.get(serviceId) ?: return
 
-        val distributorAvailable = UnifiedPush.getSavedDistributor(context) != null
+        val distributorAvailable = getCurrentDistributor() != null
         if (distributorAvailable)
             try {
                 val vapid = collectionRepository.getVapidKey(serviceId)
