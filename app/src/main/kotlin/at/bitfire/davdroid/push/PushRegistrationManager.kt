@@ -129,18 +129,25 @@ class PushRegistrationManager @Inject constructor(
     private suspend fun updateService(serviceId: Long) {
         val service = serviceRepository.get(serviceId) ?: return
 
+        // use service ID from database as UnifiedPush instance name
+        val instance = serviceId.toString()
+
         val distributorAvailable = getCurrentDistributor() != null
         if (distributorAvailable)
             try {
                 val vapid = collectionRepository.getVapidKey(serviceId)
                 logger.fine("Registering UnifiedPush instance $serviceId (${service.accountName})")
-                UnifiedPush.register(context, serviceId.toString(), service.accountName, vapid)
+
+                // message for distributor
+                val message = "${service.accountName} (${service.type})"
+
+                UnifiedPush.register(context, instance, message, vapid)
             } catch (e: UnifiedPush.VapidNotValidException) {
                 logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
             }
         else {
             logger.fine("Unregistering UnifiedPush instance $serviceId (${service.accountName})")
-            UnifiedPush.unregister(context, serviceId.toString())   // doesn't call UnifiedPushService.onUnregistered
+            UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
             unsubscribeAll(service)
         }
 
