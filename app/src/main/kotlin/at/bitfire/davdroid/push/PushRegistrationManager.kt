@@ -59,6 +59,7 @@ import javax.inject.Provider
  * To update push registrations and subscriptions (for instance after collections have been changed), call [update].
  *
  * Public API calls are protected by [mutex] so that there won't be multiple subscribe/unsubscribe operations at the same time.
+ * If you call other methods than [update], make sure that they don't interfere with other operations.
  */
 class PushRegistrationManager @Inject constructor(
     private val accountRepository: Lazy<AccountRepository>,
@@ -73,23 +74,21 @@ class PushRegistrationManager @Inject constructor(
     /**
      * Sets or removes (disable push) the distributor and updates the subscriptions + worker.
      *
+     * Uses [update] which is protected by [mutex] so creating/deleting subscriptions doesn't
+     * interfere with other operations.
+     *
      * @param pushDistributor  new distributor or `null` to disable Push
      */
     suspend fun setPushDistributor(pushDistributor: String?) {
-        if (pushDistributor == null) {
-            // Disable UnifiedPush if the distributor given is null
-            UnifiedPush.removeDistributor(context)
-        } else {
-            // If a distributor was passed, store it
-            UnifiedPush.saveDistributor(context, pushDistributor)
-        }
-
-        // Manually unsubscribe collections because they're now not valid anymore
-        for (service in serviceRepository.getAll())
-            unsubscribeAll(service)
-
-        // Update/recreate subscriptions and worker
+        // Disable UnifiedPush and remove all subscriptions
+        UnifiedPush.removeDistributor(context)
         update()
+
+        if (pushDistributor != null) {
+            // If a distributor was passed, store it and create/register subscriptions
+            UnifiedPush.saveDistributor(context, pushDistributor)
+            update()
+        }
     }
 
     fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
@@ -102,6 +101,9 @@ class PushRegistrationManager @Inject constructor(
      * working for all database services. If Push is not available, existing subscriptions are unregistered.
      *
      * Also makes sure that the [PushRegistrationWorker] is enabled if there's a Push-enabled collection.
+     *
+     * Acquires [mutex] so that this method can't be called twice at the same time, or at the same time
+     * with [update(serviceId)].
      */
     suspend fun update() = mutex.withLock {
         for (service in serviceRepository.getAll())
@@ -112,6 +114,9 @@ class PushRegistrationManager @Inject constructor(
 
     /**
      * Same as [update], but for a specific database service.
+     *
+     * Acquires [mutex] so that this method can't be called twice at the same time, or at the same time
+     * as [update()].
      */
     suspend fun update(serviceId: Long) = mutex.withLock {
         updateService(serviceId)
@@ -128,11 +133,13 @@ class PushRegistrationManager @Inject constructor(
         if (distributorAvailable)
             try {
                 val vapid = collectionRepository.getVapidKey(serviceId)
+                logger.fine("Registering UnifiedPush instance $serviceId (${service.accountName})")
                 UnifiedPush.register(context, serviceId.toString(), service.accountName, vapid)
             } catch (e: UnifiedPush.VapidNotValidException) {
                 logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
             }
         else {
+            logger.fine("Unregistering UnifiedPush instance $serviceId (${service.accountName})")
             UnifiedPush.unregister(context, serviceId.toString())   // doesn't call UnifiedPushService.onUnregistered
             unsubscribeAll(service)
         }
