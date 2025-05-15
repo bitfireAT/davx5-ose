@@ -26,6 +26,22 @@ class SyncException(cause: Throwable): Exception(cause) {
                 throw e
             } catch (e: Throwable) {
                 throw
+                if (localResource != null)
+                    SyncException(e).setLocalResourceIfNull(localResource)
+                else
+                    e
+            }
+        }
+
+        suspend fun<T> wrapWithLocalResourceSuspending(localResource: LocalResource<*>?, body: suspend () -> T): T {
+            try {
+                return body()
+            } catch (e: SyncException) {
+                if (localResource != null)
+                    e.setLocalResourceIfNull(localResource)
+                throw e
+            } catch (e: Throwable) {
+                throw
                     if (localResource != null)
                         SyncException(e).setLocalResourceIfNull(localResource)
                     else
@@ -46,6 +62,22 @@ class SyncException(cause: Throwable): Exception(cause) {
                         SyncException(e).setRemoteResourceIfNull(remoteResource)
                     else
                         e
+            }
+        }
+
+        suspend fun<T> wrapWithRemoteResourceSuspending(remoteResource: HttpUrl?, body: suspend () -> T): T {
+            try {
+                return body()
+            } catch (e: SyncException) {
+                if (remoteResource != null)
+                    e.setRemoteResourceIfNull(remoteResource)
+                throw e
+            } catch (e: Throwable) {
+                throw
+                if (remoteResource != null)
+                    SyncException(e).setRemoteResourceIfNull(remoteResource)
+                else
+                    e
             }
         }
 

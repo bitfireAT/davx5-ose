@@ -125,7 +125,7 @@ class CalendarSyncManager @AssistedInject constructor(
         else
             SyncAlgorithm.COLLECTION_SYNC
 
-    override fun processLocallyDeleted(): Boolean {
+    override suspend fun processLocallyDeleted(): Boolean {
         if (localCollection.readOnly) {
             var modified = false
             for (event in localCollection.findDeleted()) {

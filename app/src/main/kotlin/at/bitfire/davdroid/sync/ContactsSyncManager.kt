@@ -202,7 +202,7 @@ class ContactsSyncManager @AssistedInject constructor(
         else
             SyncAlgorithm.PROPFIND_REPORT
 
-    override fun processLocallyDeleted() =
+    override suspend fun processLocallyDeleted() =
             if (localCollection.readOnly) {
                 var modified = false
                 for (group in localCollection.findDeletedGroups()) {

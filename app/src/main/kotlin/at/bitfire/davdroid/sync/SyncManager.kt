@@ -44,6 +44,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
@@ -315,14 +316,14 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      *
      * @return whether local resources have been processed so that a synchronization is always necessary
      */
-    protected open fun processLocallyDeleted(): Boolean {
+    protected open suspend fun processLocallyDeleted(): Boolean {
         var numDeleted = 0
 
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
         val localList = localCollection.findDeleted()
         for (local in localList) {
-            SyncException.wrapWithLocalResource(local) {
+            SyncException.wrapWithLocalResourceSuspending(local) {
                 val fileName = local.fileName
                 if (fileName != null) {
                     val lastScheduleTag = local.scheduleTag
@@ -331,13 +332,15 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
                     val url = collection.url.newBuilder().addPathSegment(fileName).build()
                     val remote = DavResource(httpClient.okHttpClient, url)
-                    SyncException.wrapWithRemoteResource(url) {
+                    SyncException.wrapWithRemoteResourceSuspending(url) {
                         try {
-                            remote.delete(
-                                ifETag = lastETag,
-                                ifScheduleTag = lastScheduleTag,
-                                headers = pushDontNotifyHeader,
-                            ) {}
+                            runInterruptible {
+                                remote.delete(
+                                    ifETag = lastETag,
+                                    ifScheduleTag = lastScheduleTag,
+                                    headers = pushDontNotifyHeader,
+                                ) {}
+                            }
                             numDeleted++
                         } catch (_: HttpException) {
                             logger.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
@@ -366,7 +369,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         coroutineScope {    // structured concurrency
             for (local in localCollection.findDirty())
                 launch {
-                    SyncException.wrapWithLocalResource(local) {
+                    SyncException.wrapWithLocalResourceSuspending(local) {
                         uploadDirty(local)
                         numUploaded++
                     }
@@ -376,7 +379,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         return numUploaded > 0
     }
 
-    protected fun uploadDirty(local: ResourceType) {
+    protected suspend fun uploadDirty(local: ResourceType) {
         val existingFileName = local.fileName
 
         var newFileName: String? = null
@@ -393,14 +396,17 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
                 val uploadUrl = collection.url.newBuilder().addPathSegment(newFileName).build()
                 val remote = DavResource(httpClient.okHttpClient, uploadUrl)
-                SyncException.wrapWithRemoteResource(uploadUrl) {
+                SyncException.wrapWithRemoteResourceSuspending(uploadUrl) {
                     logger.info("Uploading new record ${local.id} -> $newFileName")
-                    remote.put(
-                        generateUpload(local),
-                        ifNoneMatch = true,
-                        callback = readTagsFromResponse,
-                        headers = pushDontNotifyHeader
-                    )
+                    val bodyToUpload = generateUpload(local)
+                    runInterruptible {
+                        remote.put(
+                            bodyToUpload,
+                            ifNoneMatch = true,
+                            callback = readTagsFromResponse,
+                            headers = pushDontNotifyHeader
+                        )
+                    }
                 }
 
             } else /* existingFileName != null */ {     // updated resource
@@ -408,17 +414,20 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
                 val uploadUrl = collection.url.newBuilder().addPathSegment(existingFileName).build()
                 val remote = DavResource(httpClient.okHttpClient, uploadUrl)
-                SyncException.wrapWithRemoteResource(uploadUrl) {
+                SyncException.wrapWithRemoteResourceSuspending(uploadUrl) {
                     val lastScheduleTag = local.scheduleTag
                     val lastETag = if (lastScheduleTag == null) local.eTag else null
                     logger.info("Uploading modified record ${local.id} -> $existingFileName (ETag=$lastETag, Schedule-Tag=$lastScheduleTag)")
-                    remote.put(
-                        generateUpload(local),
-                        ifETag = lastETag,
-                        ifScheduleTag = lastScheduleTag,
-                        callback = readTagsFromResponse,
-                        headers = pushDontNotifyHeader
-                    )
+                    val bodyToUpload = generateUpload(local)
+                    runInterruptible {
+                        remote.put(
+                            bodyToUpload,
+                            ifETag = lastETag,
+                            ifScheduleTag = lastScheduleTag,
+                            callback = readTagsFromResponse,
+                            headers = pushDontNotifyHeader
+                        )
+                    }
                 }
             }
         } catch (e: SyncException) {
