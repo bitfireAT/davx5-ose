@@ -165,7 +165,7 @@ abstract class SyncAdapterService: Service() {
             // Workaround: tell the sync framework to cancel any pending syncs
             // See: https://github.com/bitfireAT/davx5-ose/issues/1458
             if (Build.VERSION.SDK_INT in 34..35)
-                ContentResolver.cancelSync(account, null)
+                ContentResolver.cancelSync(account, authority)
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
             use it to block the sync adapter. Instead we use a Flow to get notified when the sync
