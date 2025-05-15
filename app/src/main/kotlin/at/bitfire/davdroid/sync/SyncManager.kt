@@ -48,10 +48,10 @@ import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import java.io.IOException
-import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.util.LinkedList
+import java.util.concurrent.CancellationException
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -260,9 +260,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 is DeadObjectException ->
                     throw e
 
-                // sync was cancelled or account has been removed: re-throw to BaseSyncer
-                is InterruptedException,
-                is InterruptedIOException,
+                // sync was cancelled or account has been removed: re-throw to Syncer
+                is CancellationException,
                 is InvalidAccountException ->
                     throw e
 
