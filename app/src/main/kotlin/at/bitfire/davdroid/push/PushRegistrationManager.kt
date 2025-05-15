@@ -71,8 +71,35 @@ class PushRegistrationManager @Inject constructor(
 ) {
 
     /**
+     * Sets or removes (disable push) the distributor and updates the subscriptions + worker.
+     *
+     * @param pushDistributor  new distributor or `null` to disable Push
+     */
+    suspend fun setPushDistributor(pushDistributor: String?) {
+        if (pushDistributor == null) {
+            // Disable UnifiedPush if the distributor given is null
+            UnifiedPush.removeDistributor(context)
+        } else {
+            // If a distributor was passed, store it
+            UnifiedPush.saveDistributor(context, pushDistributor)
+        }
+
+        // Manually unsubscribe collections because they're now not valid anymore
+        for (service in serviceRepository.getAll())
+            unsubscribeAll(service)
+
+        // Update/recreate subscriptions and worker
+        update()
+    }
+
+    fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
+
+    fun getDistributors() = UnifiedPush.getDistributors(context)
+
+
+    /**
      * Updates all push registrations and subscriptions so that if Push is available, it's up-to-date and
-     * working for all database services.
+     * working for all database services. If Push is not available, existing subscriptions are unregistered.
      *
      * Also makes sure that the [PushRegistrationWorker] is enabled if there's a Push-enabled collection.
      */
@@ -92,8 +119,7 @@ class PushRegistrationManager @Inject constructor(
     }
 
     /**
-     * Registers or unregisters depending on whether there is a distributor available. Also unsubscribes
-     * if no distributor is available.
+     * Registers or unregisters subscriptions depending on whether there is a distributor available.
      */
     private suspend fun updateService(serviceId: Long) {
         val service = serviceRepository.get(serviceId) ?: return
@@ -114,30 +140,6 @@ class PushRegistrationManager @Inject constructor(
         // UnifiedPush has now been called. It will do its work and then asynchronously call back to UnifiedPushService, which
         // will then call processSubscription or removeSubscription.
     }
-
-    /**
-     * Sets or removes (disable push) the distributor and updates the subscriptions + worker.
-     */
-    suspend fun setPushDistributor(pushDistributor: String?) {
-        if (pushDistributor == null) {
-            // Disable UnifiedPush if the distributor given is null
-            UnifiedPush.removeDistributor(context)
-        } else {
-            // If a distributor was passed, store it
-            UnifiedPush.saveDistributor(context, pushDistributor)
-        }
-
-        // Manually unsubscribe collections
-        for (service in serviceRepository.getAll())
-            unsubscribeAll(service)
-
-        // Update/Recreate subscriptions and worker
-        update()
-    }
-
-    fun getDistributor() = UnifiedPush.getSavedDistributor(context)
-
-    fun getDistributors() = UnifiedPush.getDistributors(context)
 
     /**
      * Called by [UnifiedPushService] when a subscription (endpoint) is available for the given service.

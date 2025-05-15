@@ -135,8 +135,8 @@ class AppSettingsModel @Inject constructor(
      * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
      */
     private fun loadPushDistributors() {
-        val savedPushDistributor = pushRegistrationManager.getDistributor()
-        _pushDistributor.value = savedPushDistributor
+        val currentPushDistributor = pushRegistrationManager.getCurrentDistributor()
+        _pushDistributor.value = currentPushDistributor
 
         val pushDistributors = pushRegistrationManager.getDistributors()
             .map { pushDistributor ->
