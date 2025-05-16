@@ -747,9 +747,7 @@ fun AppSettings_Integration(
     val pushAppName = if (pushDistributor == context.packageName) {
         stringResource(R.string.app_settings_unifiedpush_distributor_fcm)
     } else {
-        pushDistributor?.let {
-            pushDistributors?.find { it.packageName == pushDistributor }
-        }?.appName
+        pushDistributors?.find { it.packageName == pushDistributor }?.appName
     }
     Setting(
         name = stringResource(R.string.app_settings_unifiedpush),
