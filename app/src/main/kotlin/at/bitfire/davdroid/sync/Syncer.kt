@@ -27,35 +27,16 @@ import javax.inject.Inject
  * Base class for sync code.
  *
  * Contains generic sync code, equal for all sync authorities.
+ *
+ * @param account       account to synchronize
+ * @param resync        whether re-synchronization is requested (`null` for normal sync)
+ * @param syncResult    synchronization result, to be modified during sync
  */
 abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType: LocalCollection<*>>(
     protected val account: Account,
-    protected val extras: Array<String>,
+    protected val resync: ResyncType?,
     protected val syncResult: SyncResult
 ) {
-
-    companion object {
-
-        /**
-         * Requests a re-synchronization of all entries. For instance, if this extra is
-         * set for a calendar sync, all remote events will be listed and checked for remote
-         * changes again.
-         *
-         * Useful if settings which modify the remote resource list (like the CalDAV setting
-         * "sync events n days in the past") have been changed.
-         */
-        const val SYNC_EXTRAS_RESYNC = "resync"
-
-        /**
-         * Requests a full re-synchronization of all entries. For instance, if this extra is
-         * set for an address book sync, all contacts will be downloaded again and updated in the
-         * local storage.
-         *
-         * Useful if settings which modify parsing/local behavior have been changed.
-         */
-        const val SYNC_EXTRAS_FULL_RESYNC = "full_resync"
-
-    }
 
     abstract val dataStore: StoreType
 
@@ -250,7 +231,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * - handle occurring sync errors
      */
     operator fun invoke() {
-        logger.log(Level.INFO, "${dataStore.authority} sync of $account initiated", extras.joinToString(", "))
+        logger.info("${dataStore.authority} sync of $account initiated (resync=$resync)")
 
         try {
             dataStore.acquireContentProvider()
@@ -294,10 +275,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             } finally {
                 if (httpClient.isInitialized())
                     httpClient.value.close()
-                logger.log(
-                    Level.INFO,
-                    "${dataStore.authority} sync of $account finished",
-                    extras.joinToString(", "))
+                logger.info("${dataStore.authority} sync of $account finished")
             }
         }
     }
