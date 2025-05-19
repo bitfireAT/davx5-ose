@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="150dp"
+    android:layout_height="30dp"
+    android:layout_gravity="center"
+    android:gravity="center_vertical"
+    android:background="@drawable/shape_rounded_primary">
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/widget_sync_all_accounts"
+        android:src="@drawable/ic_sync"
+        android:padding="4dp"
+        app:tint="@android:color/white" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:text="@string/widget_sync_all"/>
+
+</LinearLayout>
