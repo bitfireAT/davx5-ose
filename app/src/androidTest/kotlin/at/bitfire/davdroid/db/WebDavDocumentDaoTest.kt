@@ -52,7 +52,7 @@ class WebDavDocumentDaoTest {
         dao.insertOrReplace(WebDavDocument(id = 0, mountId = mount.id, parentId = root.id, name = "Name 1", displayName = "DisplayName 2"))
         dao.insertOrReplace(WebDavDocument(id = 0, mountId = mount.id, parentId = root.id, name = "Name 2", displayName = "DisplayName 1"))
         try {
-            val result = dao.getChildren(root.id, orderBy = "name DESC")  // also tried "xxx" here
+            val result = dao.getChildren(root.id, orderBy = "name DESC")
             logger.log(Level.INFO, "getChildren Result", result)
 
             assertEquals(listOf(
