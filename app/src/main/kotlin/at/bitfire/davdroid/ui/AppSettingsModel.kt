@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.unifiedpush.android.connector.UnifiedPush
 import javax.inject.Inject
 
 @HiltViewModel
@@ -136,10 +135,10 @@ class AppSettingsModel @Inject constructor(
      * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
      */
     private fun loadPushDistributors() {
-        val savedPushDistributor = UnifiedPush.getSavedDistributor(context)
-        _pushDistributor.value = savedPushDistributor
+        val currentPushDistributor = pushRegistrationManager.getCurrentDistributor()
+        _pushDistributor.value = currentPushDistributor
 
-        val pushDistributors = UnifiedPush.getDistributors(context)
+        val pushDistributors = pushRegistrationManager.getDistributors()
             .map { pushDistributor ->
                 try {
                     val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
@@ -163,16 +162,7 @@ class AppSettingsModel @Inject constructor(
      */
     fun updatePushDistributor(pushDistributor: String?) {
         viewModelScope.launch(ioDispatcher) {
-            if (pushDistributor == null) {
-                // Disable UnifiedPush if the distributor given is null
-                UnifiedPush.removeDistributor(context)
-            } else {
-                // If a distributor was passed, store it
-                UnifiedPush.saveDistributor(context, pushDistributor)
-            }
-
-            // Update subscriptions
-            pushRegistrationManager.update()
+            pushRegistrationManager.setPushDistributor(pushDistributor)
 
             _pushDistributor.value = pushDistributor
         }
