@@ -6,6 +6,9 @@ package at.bitfire.davdroid.sync
 
 /**
  * Used to signal that re-synchronization is requested during a sync.
+ *
+ * Re-synchronization means that synchronization shouldn't skip listing/downloading
+ * the entries even when then `sync-token` (or CTag) didn't change since the last sync.
  */
 enum class ResyncType {
 

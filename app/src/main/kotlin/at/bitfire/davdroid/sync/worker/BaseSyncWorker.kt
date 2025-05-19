@@ -151,8 +151,6 @@ abstract class BaseSyncWorker(
         // Comes in through SyncAdapterService and is used only by ContactsSyncManager for an Android 7 workaround.
         val syncFrameworkUpload = inputData.getBoolean(INPUT_UPLOAD, false)
 
-        // We still use the sync adapter framework's SyncResult to pass the sync results, but this
-        // is only for legacy reasons and can be replaced by our own result class in the future.
         val syncResult = SyncResult()
 
         // What are we going to sync? Select syncer based on authority
