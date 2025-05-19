@@ -37,7 +37,7 @@ class SyncerTest {
 
     @SpyK
     @InjectMockKs
-    var syncer = TestSyncer(mockk(relaxed = true), emptyArray(), SyncResult(), dataStore)
+    var syncer = TestSyncer(mockk(relaxed = true), null, SyncResult(), dataStore)
 
 
     @Test
@@ -155,12 +155,12 @@ class SyncerTest {
 
     // Test helpers
 
-    class TestSyncer (
+    class TestSyncer(
         account: Account,
-        extras: Array<String>,
+        resyncType: ResyncType?,
         syncResult: SyncResult,
         theDataStore: LocalTestStore
-    ) : Syncer<LocalTestStore, LocalTestCollection>(account, extras, syncResult) {
+    ) : Syncer<LocalTestStore, LocalTestCollection>(account, resyncType, syncResult) {
 
         override val dataStore: LocalTestStore =
             theDataStore
