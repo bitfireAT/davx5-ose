@@ -149,7 +149,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             val modificationsPresent =
                 processLocallyDeleted() or uploadDirty()     // bitwise OR guarantees that both expressions are evaluated
 
-            if (resync == ResyncType.FULL_RESYNC) {
+            if (resync == ResyncType.RESYNC_ENTRIES) {
                 logger.info("Forcing re-synchronization of all entries")
 
                 // forget sync state of collection (→ initial sync in case of SyncAlgorithm.COLLECTION_SYNC)

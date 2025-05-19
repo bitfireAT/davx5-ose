@@ -28,9 +28,9 @@ import at.bitfire.davdroid.sync.SyncResult
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.FULL_RESYNC
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.NO_RESYNC
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_ENTRIES
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_LIST
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
@@ -143,8 +143,8 @@ abstract class BaseSyncWorker(
 
         // pass supplied parameters to the selected syncer
         val resyncType: ResyncType? = when (inputData.getInt(INPUT_RESYNC, NO_RESYNC)) {
-            FULL_RESYNC -> ResyncType.FULL_RESYNC
-            RESYNC -> ResyncType.RESYNC
+            RESYNC_ENTRIES -> ResyncType.RESYNC_ENTRIES
+            RESYNC_LIST -> ResyncType.RESYNC_LIST
             else -> null
         }
 
@@ -246,25 +246,25 @@ abstract class BaseSyncWorker(
     companion object {
 
         // common worker input parameters
-        const val INPUT_ACCOUNT_NAME = "accountName"
-        const val INPUT_ACCOUNT_TYPE = "accountType"
-        const val INPUT_DATA_TYPE = "dataType"
+        internal const val INPUT_ACCOUNT_NAME = "accountName"
+        internal const val INPUT_ACCOUNT_TYPE = "accountType"
+        internal const val INPUT_DATA_TYPE = "dataType"
 
         /** set to `true` for user-initiated sync that skips network checks */
-        const val INPUT_MANUAL = "manual"
+        internal const val INPUT_MANUAL = "manual"
 
-        /** set to `true` for syncs that are caused by local changes */
-        const val INPUT_UPLOAD = "upload"
+        /** set to `true` for syncs that are caused because the sync framework notified us about local changes */
+        internal const val INPUT_UPLOAD = "upload"
 
-        /** Whether re-synchronization is requested. One of [NO_RESYNC] (default), [RESYNC] or [FULL_RESYNC]. */
-        const val INPUT_RESYNC = "resync"
-        @IntDef(NO_RESYNC, RESYNC, FULL_RESYNC)
+        /** Whether re-synchronization is requested. One of [NO_RESYNC] (default), [RESYNC_LIST] or [RESYNC_ENTRIES]. */
+        internal const val INPUT_RESYNC = "resync"
+        @IntDef(NO_RESYNC, RESYNC_LIST, RESYNC_ENTRIES)
         annotation class InputResync
-        const val NO_RESYNC = 0
-        /** Re-synchronization is requested. See [Syncer.SYNC_EXTRAS_RESYNC] for details. */
-        const val RESYNC = 1
-        /** Full re-synchronization is requested. See [Syncer.SYNC_EXTRAS_FULL_RESYNC] for details. */
-        const val FULL_RESYNC = 2
+        internal const val NO_RESYNC = 0
+        /** Re-synchronization is requested. See [ResyncType.RESYNC_LIST] for details. */
+        internal const val RESYNC_LIST = 1
+        /** Full re-synchronization is requested. See [ResyncType.RESYNC_ENTRIES] for details. */
+        internal const val RESYNC_ENTRIES = 2
 
         const val OUTPUT_TOO_MANY_RETRIES = "tooManyRetries"
 
