@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.ContentResolver
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavAddressBook
 import at.bitfire.dav4jvm.MultiResponseCallback
@@ -95,16 +94,19 @@ import kotlin.jvm.optionals.getOrNull
  *   are received. This is done by caching the member UIDs of each group in
  *   [LocalGroup.COLUMN_PENDING_MEMBERS]. In [postProcess],
  *   these "pending memberships" are assigned to the actual contacts and then cleaned up.
+ *
+ * @param syncFrameworkUpload   set when this sync is caused by the sync framework and [android.content.ContentResolver.SYNC_EXTRAS_UPLOAD] was set
  */
 class ContactsSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted httpClient: HttpClient,
-    @Assisted extras: Array<String>,
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
     @Assisted localAddressBook: LocalAddressBook,
     @Assisted collection: Collection,
+    @Assisted resync: ResyncType?,
+    @Assisted val syncFrameworkUpload: Boolean,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     accountSettingsFactory: AccountSettings.Factory,
     private val httpClientBuilder: HttpClient.Builder,
@@ -112,11 +114,11 @@ class ContactsSyncManager @AssistedInject constructor(
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
     httpClient,
-    extras,
     authority,
     syncResult,
     localAddressBook,
     collection,
+    resync,
     syncDispatcher
 ) {
 
@@ -125,12 +127,13 @@ class ContactsSyncManager @AssistedInject constructor(
         fun contactsSyncManager(
             account: Account,
             httpClient: HttpClient,
-            extras: Array<String>,
             authority: String,
             syncResult: SyncResult,
             provider: ContentProviderClient,
             localAddressBook: LocalAddressBook,
-            collection: Collection
+            collection: Collection,
+            resync: ResyncType?,
+            syncFrameworkUpload: Boolean
         ): ContactsSyncManager
     }
 
@@ -156,7 +159,7 @@ class ContactsSyncManager @AssistedInject constructor(
     override fun prepare(): Boolean {
         if (dirtyVerifier.isPresent) {
             logger.info("Sync will verify dirty contacts (Android 7.x workaround)")
-            if (!dirtyVerifier.get().prepareAddressBook(localCollection, isUpload = extras.contains(ContentResolver.SYNC_EXTRAS_UPLOAD)))
+            if (!dirtyVerifier.get().prepareAddressBook(localCollection, isUpload = syncFrameworkUpload))
                 return false
         }
 

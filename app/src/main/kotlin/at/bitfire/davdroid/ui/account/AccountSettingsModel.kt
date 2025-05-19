@@ -13,9 +13,9 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
@@ -181,66 +181,62 @@ class AccountSettingsModel @AssistedInject constructor(
         However, if the new setting is "all events", collection sync may/should be used, so
         the last sync-token has to be reset, which is done by setting fullResync=true.
          */
-        resyncCalendars(fullResync = days == null, tasks = false)
+        resyncCalendars(
+            resync = if (days == null) ResyncType.RESYNC_ENTRIES else ResyncType.RESYNC_LIST,
+            tasks = false
+        )
     }
 
     fun updateDefaultAlarm(minBefore: Int?) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.setDefaultAlarm(minBefore)
         reload()
 
-        resyncCalendars(fullResync = true, tasks = false)
+        resyncCalendars(resync = ResyncType.RESYNC_ENTRIES, tasks = false)
     }
 
     fun updateManageCalendarColors(manage: Boolean) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.setManageCalendarColors(manage)
         reload()
 
-        resyncCalendars(fullResync = false, tasks = true)
+        resyncCalendars(resync = ResyncType.RESYNC_LIST, tasks = true)
     }
 
     fun updateEventColors(manageColors: Boolean) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.setEventColors(manageColors)
         reload()
 
-        resyncCalendars(fullResync = true, tasks = false)
+        resyncCalendars(resync = ResyncType.RESYNC_ENTRIES, tasks = false)
     }
 
     fun updateContactGroupMethod(groupMethod: GroupMethod) = CoroutineScope(Dispatchers.Default).launch {
         accountSettings.setGroupMethod(groupMethod)
         reload()
 
-        resync(SyncDataType.CONTACTS, fullResync = true)
+        resync(SyncDataType.CONTACTS, ResyncType.RESYNC_ENTRIES)
     }
 
     /**
      * Initiates calendar re-synchronization.
      *
-     * @param fullResync whether sync shall download all events again
-     * (_true_: sets [BaseSyncWorker.FULL_RESYNC],
-     * _false_: sets [BaseSyncWorker.RESYNC])
-     * @param tasks whether tasks shall be synchronized, too (false: only events, true: events and tasks)
+     * @param resync    whether only the list of entries (resync) or also all entries
+     *                  themselves (full resync) shall be downloaded again
+     * @param tasks     whether tasks shall be synchronized, too (false: only events, true: events and tasks)
      */
-    private fun resyncCalendars(fullResync: Boolean, tasks: Boolean) {
-        resync(SyncDataType.EVENTS, fullResync)
+    private fun resyncCalendars(resync: ResyncType, tasks: Boolean) {
+        resync(SyncDataType.EVENTS, resync)
         if (tasks)
-            resync(SyncDataType.TASKS, fullResync)
+            resync(SyncDataType.TASKS, resync)
     }
 
     /**
      * Initiates re-synchronization for given authority.
      *
-     * @param dataType      type of data to synchronize
-     * @param fullResync    whether sync shall download all events again
-     * (_true_: sets [BaseSyncWorker.FULL_RESYNC],
-     * _false_: sets [BaseSyncWorker.RESYNC])
+     * @param dataType  type of data to synchronize
+     * @param resync    whether only the list of entries (resync) or also all entries
+     *                  themselves (full resync) shall be downloaded again
      */
-    private fun resync(dataType: SyncDataType, fullResync: Boolean) {
-        val resync: Int =
-            if (fullResync)
-                BaseSyncWorker.FULL_RESYNC
-            else
-                BaseSyncWorker.RESYNC
-        syncWorkerManager.enqueueOneTime(account, dataType, resync = resync)
+    private fun resync(dataType: SyncDataType, resync: ResyncType) {
+        syncWorkerManager.enqueueOneTime(account, dataType = dataType, resync = resync)
     }
 
 }

@@ -45,20 +45,20 @@ import java.util.logging.Level
 class TasksSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted httpClient: HttpClient,
-    @Assisted extras: Array<String>,
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTaskList,
     @Assisted collection: Collection,
+    @Assisted resync: ResyncType?,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalTask, LocalTaskList, DavCalendar>(
     account,
     httpClient,
-    extras,
     authority,
     syncResult,
     localCollection,
     collection,
+    resync,
     syncDispatcher
 ) {
 
@@ -67,11 +67,11 @@ class TasksSyncManager @AssistedInject constructor(
         fun tasksSyncManager(
             account: Account,
             httpClient: HttpClient,
-            extras: Array<String>,
             authority: String,
             syncResult: SyncResult,
             localCollection: LocalTaskList,
-            collection: Collection
+            collection: Collection,
+            resync: ResyncType?
         ): TasksSyncManager
     }
 

@@ -53,22 +53,22 @@ import java.util.logging.Level
  */
 class CalendarSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted extras: Array<String>,
     @Assisted httpClient: HttpClient,
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
     @Assisted collection: Collection,
+    @Assisted resync: ResyncType?,
     accountSettingsFactory: AccountSettings.Factory,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
     httpClient,
-    extras,
     authority,
     syncResult,
     localCalendar,
     collection,
+    resync,
     syncDispatcher
 ) {
 
@@ -76,12 +76,12 @@ class CalendarSyncManager @AssistedInject constructor(
     interface Factory {
         fun calendarSyncManager(
             account: Account,
-            extras: Array<String>,
             httpClient: HttpClient,
             authority: String,
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
-            collection: Collection
+            collection: Collection,
+            resync: ResyncType?
         ): CalendarSyncManager
     }
 

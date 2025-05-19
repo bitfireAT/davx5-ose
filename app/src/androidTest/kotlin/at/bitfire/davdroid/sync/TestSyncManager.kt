@@ -26,7 +26,6 @@ import org.junit.Assert.assertEquals
 
 class TestSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted extras: Array<String>,
     @Assisted authority: String,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
@@ -36,11 +35,11 @@ class TestSyncManager @AssistedInject constructor(
 ): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
     account,
     httpClient,
-    extras,
     authority,
     syncResult,
     localCollection,
     collection,
+    resync = null,
     syncDispatcher
 ) {
 
@@ -48,7 +47,6 @@ class TestSyncManager @AssistedInject constructor(
     interface Factory {
         fun create(
             account: Account,
-            extras: Array<String>,
             authority: String,
             httpClient: HttpClient,
             syncResult: SyncResult,

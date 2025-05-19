@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
-import android.content.ContentResolver
 import android.content.Context
 import android.os.Build
 import androidx.annotation.IntDef
@@ -22,16 +21,16 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
 import at.bitfire.davdroid.sync.JtxSyncer
+import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncResult
-import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.FULL_RESYNC
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.NO_RESYNC
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_ENTRIES
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_LIST
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
@@ -141,35 +140,32 @@ abstract class BaseSyncWorker(
     suspend fun doSyncWork(account: Account, dataType: SyncDataType): Result {
         logger.info("Running ${javaClass.name}: account=$account, dataType=$dataType")
 
-        // pass possibly supplied flags to the selected syncer
-        val extrasList = mutableListOf<String>()
-        when (inputData.getInt(INPUT_RESYNC, NO_RESYNC)) {
-            RESYNC ->      extrasList.add(Syncer.SYNC_EXTRAS_RESYNC)
-            FULL_RESYNC -> extrasList.add(Syncer.SYNC_EXTRAS_FULL_RESYNC)
+        // pass supplied parameters to the selected syncer
+        val resyncType: ResyncType? = when (inputData.getInt(INPUT_RESYNC, NO_RESYNC)) {
+            RESYNC_ENTRIES -> ResyncType.RESYNC_ENTRIES
+            RESYNC_LIST -> ResyncType.RESYNC_LIST
+            else -> null
         }
-        if (inputData.getBoolean(INPUT_UPLOAD, false))
-            // Comes in through SyncAdapterService and is used only by ContactsSyncManager for an Android 7 workaround.
-            extrasList.add(ContentResolver.SYNC_EXTRAS_UPLOAD)
-        val extras = extrasList.toTypedArray()
 
-        // We still use the sync adapter framework's SyncResult to pass the sync results, but this
-        // is only for legacy reasons and can be replaced by our own result class in the future.
+        // Comes in through SyncAdapterService and is used only by ContactsSyncManager for an Android 7 workaround.
+        val syncFrameworkUpload = inputData.getBoolean(INPUT_UPLOAD, false)
+
         val syncResult = SyncResult()
 
         // What are we going to sync? Select syncer based on authority
         val syncer = when (dataType) {
             SyncDataType.CONTACTS ->
-                addressBookSyncer.create(account, extras, syncResult)
+                addressBookSyncer.create(account, resyncType, syncFrameworkUpload, syncResult)
             SyncDataType.EVENTS ->
-                calendarSyncer.create(account, extras, syncResult)
+                calendarSyncer.create(account, resyncType, syncResult)
             SyncDataType.TASKS -> {
                 val currentProvider = tasksAppManager.get().currentProvider()
                 when (currentProvider) {
                     TaskProvider.ProviderName.JtxBoard ->
-                        jtxSyncer.create(account, extras, syncResult)
+                        jtxSyncer.create(account, resyncType, syncResult)
                     TaskProvider.ProviderName.OpenTasks,
                     TaskProvider.ProviderName.TasksOrg ->
-                        taskSyncer.create(account, currentProvider, extras, syncResult)
+                        taskSyncer.create(account, currentProvider, resyncType, syncResult)
                     else -> {
                         logger.warning("No valid tasks provider found, aborting sync")
                         return Result.failure()
@@ -245,25 +241,25 @@ abstract class BaseSyncWorker(
     companion object {
 
         // common worker input parameters
-        const val INPUT_ACCOUNT_NAME = "accountName"
-        const val INPUT_ACCOUNT_TYPE = "accountType"
-        const val INPUT_DATA_TYPE = "dataType"
+        internal const val INPUT_ACCOUNT_NAME = "accountName"
+        internal const val INPUT_ACCOUNT_TYPE = "accountType"
+        internal const val INPUT_DATA_TYPE = "dataType"
 
         /** set to `true` for user-initiated sync that skips network checks */
-        const val INPUT_MANUAL = "manual"
+        internal const val INPUT_MANUAL = "manual"
 
-        /** set to `true` for syncs that are caused by local changes */
-        const val INPUT_UPLOAD = "upload"
+        /** set to `true` for syncs that are caused because the sync framework notified us about local changes */
+        internal const val INPUT_UPLOAD = "upload"
 
-        /** Whether re-synchronization is requested. One of [NO_RESYNC] (default), [RESYNC] or [FULL_RESYNC]. */
-        const val INPUT_RESYNC = "resync"
-        @IntDef(NO_RESYNC, RESYNC, FULL_RESYNC)
+        /** Whether re-synchronization is requested. One of [NO_RESYNC] (default), [RESYNC_LIST] or [RESYNC_ENTRIES]. */
+        internal const val INPUT_RESYNC = "resync"
+        @IntDef(NO_RESYNC, RESYNC_LIST, RESYNC_ENTRIES)
         annotation class InputResync
-        const val NO_RESYNC = 0
-        /** Re-synchronization is requested. See [Syncer.SYNC_EXTRAS_RESYNC] for details. */
-        const val RESYNC = 1
-        /** Full re-synchronization is requested. See [Syncer.SYNC_EXTRAS_FULL_RESYNC] for details. */
-        const val FULL_RESYNC = 2
+        internal const val NO_RESYNC = 0
+        /** Re-synchronization is requested. See [ResyncType.RESYNC_LIST] for details. */
+        internal const val RESYNC_LIST = 1
+        /** Full re-synchronization is requested. See [ResyncType.RESYNC_ENTRIES] for details. */
+        internal const val RESYNC_ENTRIES = 2
 
         const val OUTPUT_TOO_MANY_RETRIES = "tooManyRetries"
 
