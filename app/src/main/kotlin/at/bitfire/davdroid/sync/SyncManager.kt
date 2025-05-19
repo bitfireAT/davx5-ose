@@ -71,7 +71,7 @@ import javax.net.ssl.SSLHandshakeException
  * @param syncResult            receiver for result of the synchronization (will be updated by [performSync])
  * @param localCollection       local collection to synchronize (interface to content provider)
  * @param collection            collection info in the database
- * @param resync                whether partial or full re-synchronization is requested
+ * @param resync                whether re-synchronization is requested
  */
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
     val account: Account,

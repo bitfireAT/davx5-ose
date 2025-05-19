@@ -26,13 +26,13 @@ import java.util.logging.Level
  */
 class AddressBookSyncer @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted resyncType: ResyncType?,
+    @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted syncResult: SyncResult,
     addressBookStore: LocalAddressBookStore,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory
-): Syncer<LocalAddressBookStore, LocalAddressBook>(account, resyncType, syncResult) {
+): Syncer<LocalAddressBookStore, LocalAddressBook>(account, resync, syncResult) {
 
     @AssistedFactory
     interface Factory {
@@ -69,8 +69,6 @@ class AddressBookSyncer @AssistedInject constructor(
      * Synchronizes an address book
      *
      * @param addressBook local address book
-     * @param extras Sync specific instructions. IE [Syncer.SYNC_EXTRAS_FULL_RESYNC]
-     * @param httpClient
      * @param provider Content provider to access android contacts
      * @param syncResult Stores hard and soft sync errors
      * @param collection The database collection associated with this address book
@@ -111,7 +109,7 @@ class AddressBookSyncer @AssistedInject constructor(
                 provider,
                 addressBook,
                 collection,
-                resyncType,
+                resync,
                 syncFrameworkUpload
             )
             runBlocking {

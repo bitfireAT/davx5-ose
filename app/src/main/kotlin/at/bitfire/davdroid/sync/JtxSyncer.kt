@@ -23,12 +23,12 @@ import kotlinx.coroutines.runBlocking
  */
 class JtxSyncer @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted resyncType: ResyncType?,
+    @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
     localJtxCollectionStore: LocalJtxCollectionStore,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>
-): Syncer<LocalJtxCollectionStore, LocalJtxCollection>(account, resyncType, syncResult) {
+): Syncer<LocalJtxCollectionStore, LocalJtxCollection>(account, resync, syncResult) {
 
     @AssistedFactory
     interface Factory {
@@ -76,7 +76,7 @@ class JtxSyncer @AssistedInject constructor(
             syncResult,
             localCollection,
             remoteCollection,
-            resyncType
+            resync
         )
         runBlocking {
             syncManager.performSync()

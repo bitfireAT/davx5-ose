@@ -22,12 +22,12 @@ import kotlinx.coroutines.runBlocking
  */
 class CalendarSyncer @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted resyncType: ResyncType?,
+    @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
     calendarStore: LocalCalendarStore,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory
-): Syncer<LocalCalendarStore, LocalCalendar>(account, resyncType, syncResult) {
+): Syncer<LocalCalendarStore, LocalCalendar>(account, resync, syncResult) {
 
     @AssistedFactory
     interface Factory {
@@ -63,7 +63,7 @@ class CalendarSyncer @AssistedInject constructor(
             syncResult,
             localCollection,
             remoteCollection,
-            resyncType
+            resync
         )
         runBlocking {
             syncManager.performSync()
