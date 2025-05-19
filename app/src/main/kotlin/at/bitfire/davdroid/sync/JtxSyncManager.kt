@@ -31,6 +31,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -79,16 +80,18 @@ class JtxSyncManager @AssistedInject constructor(
         return true
     }
 
-    override fun queryCapabilities() =
-        SyncException.wrapWithRemoteResource(collection.url) {
+    override suspend fun queryCapabilities() =
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
-            davCollection.propfind(0, GetCTag.NAME, MaxResourceSize.NAME, SyncToken.NAME) { response, relation ->
-                if (relation == Response.HrefRelation.SELF) {
-                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
-                    }
+            runInterruptible {
+                davCollection.propfind(0, GetCTag.NAME, MaxResourceSize.NAME, SyncToken.NAME) { response, relation ->
+                    if (relation == Response.HrefRelation.SELF) {
+                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                            logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
+                        }
 
-                    syncState = syncState(response)
+                        syncState = syncState(response)
+                    }
                 }
             }
             syncState
@@ -104,42 +107,48 @@ class JtxSyncManager @AssistedInject constructor(
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
-    override fun listAllRemote(callback: MultiResponseCallback) {
-        SyncException.wrapWithRemoteResource(collection.url) {
+    override suspend fun listAllRemote(callback: MultiResponseCallback) {
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             if (localCollection.supportsVTODO) {
                 logger.info("Querying tasks")
-                davCollection.calendarQuery("VTODO", null, null, callback)
+                runInterruptible {
+                    davCollection.calendarQuery("VTODO", null, null, callback)
+                }
             }
 
             if (localCollection.supportsVJOURNAL) {
                 logger.info("Querying journals")
-                davCollection.calendarQuery("VJOURNAL", null, null, callback)
+                runInterruptible {
+                    davCollection.calendarQuery("VJOURNAL", null, null, callback)
+                }
             }
         }
     }
 
-    override fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        SyncException.wrapWithRemoteResource(collection.url) {
-            davCollection.multiget(bunch) { response, _ ->
-                // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
-                    if (!response.isSuccess()) {
-                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
-                        return@wrapResource
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+            runInterruptible {
+                davCollection.multiget(bunch) { response, _ ->
+                    // See CalendarSyncManager for more information about the multi-get response
+                    SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                        if (!response.isSuccess()) {
+                            logger.warning("Ignoring non-successful multi-get response for ${response.href}")
+                            return@wrapResource
+                        }
+
+                        val iCal = response[CalendarData::class.java]?.iCalendar
+                        if (iCal == null) {
+                            logger.warning("Ignoring multi-get response without calendar-data")
+                            return@wrapResource
+                        }
+
+                        val eTag = response[GetETag::class.java]?.eTag
+                            ?: throw DavException("Received multi-get response without ETag")
+
+                        processICalObject(response.href.lastSegment, eTag, StringReader(iCal))
                     }
-
-                    val iCal = response[CalendarData::class.java]?.iCalendar
-                    if (iCal == null) {
-                        logger.warning("Ignoring multi-get response without calendar-data")
-                        return@wrapResource
-                    }
-
-                    val eTag = response[GetETag::class.java]?.eTag
-                        ?: throw DavException("Received multi-get response without ETag")
-
-                    processICalObject(response.href.lastSegment, eTag, StringReader(iCal))
                 }
             }
         }

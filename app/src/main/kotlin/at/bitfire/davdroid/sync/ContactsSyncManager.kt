@@ -46,6 +46,7 @@ import dagger.assisted.AssistedInject
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
@@ -166,25 +167,27 @@ class ContactsSyncManager @AssistedInject constructor(
         return true
     }
 
-    override fun queryCapabilities(): SyncState? {
-        return SyncException.wrapWithRemoteResource(collection.url) {
+    override suspend fun queryCapabilities(): SyncState? {
+        return SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
-            davCollection.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
-                if (relation == Response.HrefRelation.SELF) {
-                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
-                    }
+            runInterruptible {
+                davCollection.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                    if (relation == Response.HrefRelation.SELF) {
+                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                            logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
+                        }
 
-                    response[SupportedAddressData::class.java]?.let { supported ->
-                        hasVCard4 = supported.hasVCard4()
+                        response[SupportedAddressData::class.java]?.let { supported ->
+                            hasVCard4 = supported.hasVCard4()
 
-                        // temporarily disable jCard because of https://github.com/nextcloud/server/issues/29693
-                        // hasJCard = supported.hasJCard()
+                            // temporarily disable jCard because of https://github.com/nextcloud/server/issues/29693
+                            // hasJCard = supported.hasJCard()
+                        }
+                        response[SupportedReportSet::class.java]?.let { supported ->
+                            hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                        }
+                        syncState = syncState(response)
                     }
-                    response[SupportedReportSet::class.java]?.let { supported ->
-                        hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
-                    }
-                    syncState = syncState(response)
                 }
             }
 
@@ -202,7 +205,7 @@ class ContactsSyncManager @AssistedInject constructor(
         else
             SyncAlgorithm.PROPFIND_REPORT
 
-    override fun processLocallyDeleted() =
+    override suspend fun processLocallyDeleted() =
             if (localCollection.readOnly) {
                 var modified = false
                 for (group in localCollection.findDeletedGroups()) {
@@ -297,14 +300,16 @@ class ContactsSyncManager @AssistedInject constructor(
             return@wrapWithLocalResource os.toByteArray().toRequestBody(mimeType)
         }
 
-    override fun listAllRemote(callback: MultiResponseCallback) =
-        SyncException.wrapWithRemoteResource(collection.url) {
-            davCollection.propfind(1, ResourceType.NAME, GetETag.NAME, callback = callback)
+    override suspend fun listAllRemote(callback: MultiResponseCallback) =
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+            runInterruptible {
+                davCollection.propfind(1, ResourceType.NAME, GetETag.NAME, callback = callback)
+            }
         }
 
-    override fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
         logger.info("Downloading ${bunch.size} vCard(s): $bunch")
-        SyncException.wrapWithRemoteResource(collection.url) {
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             val contentType: String?
             val version: String?
             when {
@@ -321,35 +326,37 @@ class ContactsSyncManager @AssistedInject constructor(
                     version = null     // 3.0 is the default version; don't request 3.0 explicitly because maybe some vCard3-only servers don't understand it
                 }
             }
-            davCollection.multiget(bunch, contentType, version) { response, _ ->
-                // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
-                    if (!response.isSuccess()) {
-                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
-                        return@wrapResource
+            runInterruptible {
+                davCollection.multiget(bunch, contentType, version) { response, _ ->
+                    // See CalendarSyncManager for more information about the multi-get response
+                    SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                        if (!response.isSuccess()) {
+                            logger.warning("Ignoring non-successful multi-get response for ${response.href}")
+                            return@wrapResource
+                        }
+
+                        val card = response[AddressData::class.java]?.card
+                        if (card == null) {
+                            logger.warning("Ignoring multi-get response without address-data")
+                            return@wrapResource
+                        }
+
+                        val eTag = response[GetETag::class.java]?.eTag
+                            ?: throw DavException("Received multi-get response without ETag")
+
+                        var isJCard = hasJCard      // assume that server has sent what we have requested (we ask for jCard only when the server advertises it)
+                        response[GetContentType::class.java]?.type?.let { type ->
+                            isJCard = type.sameTypeAs(DavUtils.MEDIA_TYPE_JCARD)
+                        }
+
+                        processCard(
+                            response.href.lastSegment,
+                            eTag,
+                            StringReader(card),
+                            isJCard,
+                            resourceDownloader
+                        )
                     }
-
-                    val card = response[AddressData::class.java]?.card
-                    if (card == null) {
-                        logger.warning("Ignoring multi-get response without address-data")
-                        return@wrapResource
-                    }
-
-                    val eTag = response[GetETag::class.java]?.eTag
-                        ?: throw DavException("Received multi-get response without ETag")
-
-                    var isJCard = hasJCard      // assume that server has sent what we have requested (we ask for jCard only when the server advertises it)
-                    response[GetContentType::class.java]?.type?.let { type ->
-                        isJCard = type.sameTypeAs(DavUtils.MEDIA_TYPE_JCARD)
-                    }
-
-                    processCard(
-                        response.href.lastSegment,
-                        eTag,
-                        StringReader(card),
-                        isJCard,
-                        resourceDownloader
-                    )
                 }
             }
         }

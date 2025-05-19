@@ -63,7 +63,7 @@ class TestSyncManager @AssistedInject constructor(
     }
 
     var didQueryCapabilities = false
-    override fun queryCapabilities(): SyncState? {
+    override suspend fun queryCapabilities(): SyncState? {
         if (didQueryCapabilities)
             throw IllegalStateException("queryCapabilities() must not be called twice")
         didQueryCapabilities = true
@@ -89,7 +89,7 @@ class TestSyncManager @AssistedInject constructor(
 
     var listAllRemoteResult = emptyList<Pair<Response, Response.HrefRelation>>()
     var didListAllRemote = false
-    override fun listAllRemote(callback: MultiResponseCallback) {
+    override suspend fun listAllRemote(callback: MultiResponseCallback) {
         if (didListAllRemote)
             throw IllegalStateException("listAllRemote() must not be called twice")
         didListAllRemote = true
@@ -99,7 +99,7 @@ class TestSyncManager @AssistedInject constructor(
 
     var assertDownloadRemote = emptyMap<HttpUrl, String>()
     var didDownloadRemote = false
-    override fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
         didDownloadRemote = true
         assertEquals(assertDownloadRemote.keys.toList(), bunch)
 
