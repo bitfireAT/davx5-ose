@@ -65,22 +65,22 @@ import javax.net.ssl.SSLHandshakeException
  * @param CollectionType    type of local collection
  * @param RemoteType        type of remote collection
  *
- * @param account           account to synchronize
- * @param httpClient        HTTP client to use for network requests, already authenticated with credentials from [account]
- * @param extras            additional sync parameters
- * @param authority         authority of the content provider the collection shall be synchronized with
- * @param syncResult        receiver for result of the synchronization (will be updated by [performSync])
- * @param localCollection   local collection to synchronize (interface to content provider)
- * @param collection        collection info in the database
+ * @param account               account to synchronize
+ * @param httpClient            HTTP client to use for network requests, already authenticated with credentials from [account]
+ * @param authority             authority of the content provider the collection shall be synchronized with
+ * @param syncResult            receiver for result of the synchronization (will be updated by [performSync])
+ * @param localCollection       local collection to synchronize (interface to content provider)
+ * @param collection            collection info in the database
+ * @param resync                whether partial or full re-synchronization is requested
  */
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
     val account: Account,
     val httpClient: HttpClient,
-    val extras: Array<String>,
     val authority: String,
     val syncResult: SyncResult,
     val localCollection: CollectionType,
     val collection: Collection,
+    val resync: ResyncType?,
     val syncDispatcher: CoroutineDispatcher
 ) {
 
@@ -149,7 +149,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             val modificationsPresent =
                 processLocallyDeleted() or uploadDirty()     // bitwise OR guarantees that both expressions are evaluated
 
-            if (extras.contains(Syncer.SYNC_EXTRAS_FULL_RESYNC)) {
+            if (resync == ResyncType.FULL_RESYNC) {
                 logger.info("Forcing re-synchronization of all entries")
 
                 // forget sync state of collection (→ initial sync in case of SyncAlgorithm.COLLECTION_SYNC)
@@ -485,8 +485,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * [uploadDirty] were true), a sync is always required and this method
      * should *not* be evaluated.
      *
-     * Will return _true_ if [Syncer.SYNC_EXTRAS_RESYNC] and/or
-     * [Syncer.SYNC_EXTRAS_FULL_RESYNC] is set in [extras].
+     * Will return _true_ if [resync] is non-null and thus indicates re-synchronization.
      *
      * @param state remote sync state to compare local sync state with
      *
@@ -494,8 +493,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * sync algorithm is required
      */
     protected open fun syncRequired(state: SyncState?): Boolean {
-        if (extras.contains(Syncer.SYNC_EXTRAS_RESYNC) ||
-            extras.contains(Syncer.SYNC_EXTRAS_FULL_RESYNC))
+        if (resync != null)
             return true
 
         val localState = localCollection.lastSyncState

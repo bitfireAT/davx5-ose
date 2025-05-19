@@ -41,21 +41,21 @@ import java.util.logging.Level
 
 class JtxSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted extras: Array<String>,
     @Assisted httpClient: HttpClient,
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
+    @Assisted resync: ResyncType?,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(
     account,
     httpClient,
-    extras,
     authority,
     syncResult,
     localCollection,
     collection,
+    resync,
     syncDispatcher
 ) {
 
@@ -63,12 +63,12 @@ class JtxSyncManager @AssistedInject constructor(
     interface Factory {
         fun jtxSyncManager(
             account: Account,
-            extras: Array<String>,
             httpClient: HttpClient,
             authority: String,
             syncResult: SyncResult,
             localCollection: LocalJtxCollection,
-            collection: Collection
+            collection: Collection,
+            resync: ResyncType?
         ): JtxSyncManager
     }
 

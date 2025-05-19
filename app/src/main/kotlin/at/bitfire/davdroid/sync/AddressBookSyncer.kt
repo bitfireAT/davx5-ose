@@ -26,16 +26,22 @@ import java.util.logging.Level
  */
 class AddressBookSyncer @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted extras: Array<String>,
+    @Assisted resyncType: ResyncType?,
+    @Assisted val syncFrameworkUpload: Boolean,
     @Assisted syncResult: SyncResult,
     addressBookStore: LocalAddressBookStore,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory
-): Syncer<LocalAddressBookStore, LocalAddressBook>(account, extras, syncResult) {
+): Syncer<LocalAddressBookStore, LocalAddressBook>(account, resyncType, syncResult) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, extras: Array<String>, syncResult: SyncResult): AddressBookSyncer
+        fun create(
+            account: Account,
+            resyncType: ResyncType?,
+            syncFrameworkUpload: Boolean,
+            syncResult: SyncResult
+        ): AddressBookSyncer
     }
 
     override val dataStore = addressBookStore
@@ -52,7 +58,6 @@ class AddressBookSyncer @AssistedInject constructor(
         syncAddressBook(
             account = account,
             addressBook = localCollection,
-            extras = extras,
             httpClient = httpClient,
             provider = provider,
             syncResult = syncResult,
@@ -73,7 +78,6 @@ class AddressBookSyncer @AssistedInject constructor(
     private fun syncAddressBook(
         account: Account,
         addressBook: LocalAddressBook,
-        extras: Array<String>,
         httpClient: Lazy<HttpClient>,
         provider: ContentProviderClient,
         syncResult: SyncResult,
@@ -102,12 +106,13 @@ class AddressBookSyncer @AssistedInject constructor(
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(
                 account,
                 httpClient.value,
-                extras,
                 dataStore.authority,
                 syncResult,
                 provider,
                 addressBook,
-                collection
+                collection,
+                resyncType,
+                syncFrameworkUpload
             )
             runBlocking {
                 syncManager.performSync()

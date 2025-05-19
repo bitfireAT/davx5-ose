@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
-import android.content.ContentResolver
 import android.content.Context
 import android.os.Build
 import androidx.annotation.IntDef
@@ -22,10 +21,10 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
 import at.bitfire.davdroid.sync.JtxSyncer
+import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncResult
-import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -142,16 +141,15 @@ abstract class BaseSyncWorker(
     suspend fun doSyncWork(account: Account, dataType: SyncDataType): Result {
         logger.info("Running ${javaClass.name}: account=$account, dataType=$dataType")
 
-        // pass possibly supplied flags to the selected syncer
-        val extrasList = mutableListOf<String>()
-        when (inputData.getInt(INPUT_RESYNC, NO_RESYNC)) {
-            RESYNC ->      extrasList.add(Syncer.SYNC_EXTRAS_RESYNC)
-            FULL_RESYNC -> extrasList.add(Syncer.SYNC_EXTRAS_FULL_RESYNC)
+        // pass supplied parameters to the selected syncer
+        val resyncType: ResyncType? = when (inputData.getInt(INPUT_RESYNC, NO_RESYNC)) {
+            FULL_RESYNC -> ResyncType.FULL_RESYNC
+            RESYNC -> ResyncType.RESYNC
+            else -> null
         }
-        if (inputData.getBoolean(INPUT_UPLOAD, false))
-            // Comes in through SyncAdapterService and is used only by ContactsSyncManager for an Android 7 workaround.
-            extrasList.add(ContentResolver.SYNC_EXTRAS_UPLOAD)
-        val extras = extrasList.toTypedArray()
+
+        // Comes in through SyncAdapterService and is used only by ContactsSyncManager for an Android 7 workaround.
+        val syncFrameworkUpload = inputData.getBoolean(INPUT_UPLOAD, false)
 
         // We still use the sync adapter framework's SyncResult to pass the sync results, but this
         // is only for legacy reasons and can be replaced by our own result class in the future.
@@ -160,17 +158,17 @@ abstract class BaseSyncWorker(
         // What are we going to sync? Select syncer based on authority
         val syncer = when (dataType) {
             SyncDataType.CONTACTS ->
-                addressBookSyncer.create(account, extras, syncResult)
+                addressBookSyncer.create(account, resyncType, syncFrameworkUpload, syncResult)
             SyncDataType.EVENTS ->
-                calendarSyncer.create(account, extras, syncResult)
+                calendarSyncer.create(account, resyncType, syncResult)
             SyncDataType.TASKS -> {
                 val currentProvider = tasksAppManager.get().currentProvider()
                 when (currentProvider) {
                     TaskProvider.ProviderName.JtxBoard ->
-                        jtxSyncer.create(account, extras, syncResult)
+                        jtxSyncer.create(account, resyncType, syncResult)
                     TaskProvider.ProviderName.OpenTasks,
                     TaskProvider.ProviderName.TasksOrg ->
-                        taskSyncer.create(account, currentProvider, extras, syncResult)
+                        taskSyncer.create(account, currentProvider, resyncType, syncResult)
                     else -> {
                         logger.warning("No valid tasks provider found, aborting sync")
                         return Result.failure()

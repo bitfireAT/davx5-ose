@@ -30,7 +30,7 @@ import javax.inject.Inject
  */
 abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType: LocalCollection<*>>(
     protected val account: Account,
-    protected val extras: Array<String>,
+    protected val resyncType: ResyncType?,
     protected val syncResult: SyncResult
 ) {
 
@@ -250,7 +250,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * - handle occurring sync errors
      */
     operator fun invoke() {
-        logger.log(Level.INFO, "${dataStore.authority} sync of $account initiated", extras.joinToString(", "))
+        logger.info("${dataStore.authority} sync of $account initiated")
 
         try {
             dataStore.acquireContentProvider()
@@ -294,10 +294,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             } finally {
                 if (httpClient.isInitialized())
                     httpClient.value.close()
-                logger.log(
-                    Level.INFO,
-                    "${dataStore.authority} sync of $account finished",
-                    extras.joinToString(", "))
+                logger.info("${dataStore.authority} sync of $account finished")
             }
         }
     }
