@@ -165,7 +165,7 @@ abstract class SyncAdapterService: Service() {
             // Android 14 and 15 don't handle pending sync state correctly.
             // Workaround: Cancel specifically this still pending sync
             // See: https://github.com/bitfireAT/davx5-ose/issues/1458
-            if (Build.VERSION.SDK_INT in 34..35) {
+            if (Build.VERSION.SDK_INT in 34..36) {
                 // Recreate the sync request used to start this sync
                 val syncRequest = SyncRequest.Builder()
                     .setSyncAdapter(account, authority)
