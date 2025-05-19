@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.resource.LocalResource
+import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 
 /**
@@ -17,20 +18,10 @@ class SyncException(cause: Throwable) : Exception(cause) {
 
         // provide lambda wrappers for setting the local/remote resource
 
-        fun <T> wrapWithLocalResource(localResource: LocalResource<*>?, body: () -> T): T {
-            try {
-                return body()
-            } catch (e: SyncException) {
-                if (localResource != null)
-                    e.setLocalResourceIfNull(localResource)
-                throw e
-            } catch (e: Throwable) {
-                throw if (localResource != null)
-                    SyncException(e).setLocalResourceIfNull(localResource)
-                else
-                    e
+        fun <T> wrapWithLocalResource(localResource: LocalResource<*>?, body: () -> T): T =
+            runBlocking {
+                wrapWithLocalResourceSuspending(localResource, body)
             }
-        }
 
         suspend fun <T> wrapWithLocalResourceSuspending(localResource: LocalResource<*>?, body: suspend () -> T): T {
             try {
@@ -47,20 +38,10 @@ class SyncException(cause: Throwable) : Exception(cause) {
             }
         }
 
-        fun <T> wrapWithRemoteResource(remoteResource: HttpUrl?, body: () -> T): T {
-            try {
-                return body()
-            } catch (e: SyncException) {
-                if (remoteResource != null)
-                    e.setRemoteResourceIfNull(remoteResource)
-                throw e
-            } catch (e: Throwable) {
-                throw if (remoteResource != null)
-                    SyncException(e).setRemoteResourceIfNull(remoteResource)
-                else
-                    e
+        fun <T> wrapWithRemoteResource(remoteResource: HttpUrl?, body: () -> T): T =
+            runBlocking {
+                wrapWithRemoteResourceSuspending(remoteResource, body)
             }
-        }
 
         suspend fun <T> wrapWithRemoteResourceSuspending(remoteResource: HttpUrl?, body: suspend () -> T): T {
             try {
