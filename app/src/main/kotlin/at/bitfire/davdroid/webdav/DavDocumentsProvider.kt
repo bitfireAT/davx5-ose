@@ -329,7 +329,7 @@ class DavDocumentsProvider(
         val children = documentDao.getChildren(
             parentId,
             // Convert the cursor's column name into Room's
-            sortOrder?.let { processOrderByQuery(it) } ?: "name ASC"
+            sortOrder?.let { processOrderByQuery(it) } ?: "isDirectory DESC, name ASC"
         )
         for (child in children) {
             val bundle = child.toBundle(parent)
