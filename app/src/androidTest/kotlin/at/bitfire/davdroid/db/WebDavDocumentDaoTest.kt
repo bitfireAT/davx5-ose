@@ -51,14 +51,27 @@ class WebDavDocumentDaoTest {
         dao.insertOrReplace(root)
         dao.insertOrReplace(WebDavDocument(id = 0, mountId = mount.id, parentId = root.id, name = "Name 1", displayName = "DisplayName 2"))
         dao.insertOrReplace(WebDavDocument(id = 0, mountId = mount.id, parentId = root.id, name = "Name 2", displayName = "DisplayName 1"))
+        dao.insertOrReplace(WebDavDocument(id = 0, mountId = mount.id, parentId = root.id, name = "Name 3", displayName = "Directory 1", isDirectory = true))
         try {
-            val result = dao.getChildren(root.id, orderBy = "name DESC")
-            logger.log(Level.INFO, "getChildren Result", result)
+            dao.getChildren(root.id, orderBy = "name DESC").let { result ->
+                logger.log(Level.INFO, "getChildren single sort Result", result)
 
-            assertEquals(listOf(
-                "Name 2",
-                "Name 1"
-            ), result.map { it.name })
+                assertEquals(listOf(
+                    "Name 3",
+                    "Name 2",
+                    "Name 1"
+                ), result.map { it.name })
+            }
+
+            dao.getChildren(root.id, orderBy = "isDirectory DESC, name ASC").let { result ->
+                logger.log(Level.INFO, "getChildren multiple sort Result", result)
+
+                assertEquals(listOf(
+                    "Name 3",
+                    "Name 1",
+                    "Name 2"
+                ), result.map { it.name })
+            }
         } finally {
             mountDao.deleteAsync(mount)
         }
