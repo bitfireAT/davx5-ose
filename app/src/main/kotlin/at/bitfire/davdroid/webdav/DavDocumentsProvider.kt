@@ -140,29 +140,36 @@ class DavDocumentsProvider(
             Document.COLUMN_LAST_MODIFIED to "lastModified",
         )
 
+
         @VisibleForTesting
-        fun processOrderByQuery(orderBy: String): String? {
-            return orderBy
-                // Split by commas to divide each order column
-                .split(',')
-                // Trim any leading or trailing spaces
-                .map { it.trim() }
-                // Get the column name, and the ordering direction.
-                // Note that the latter one is optional, so set to null if there isn't any space. For example:
-                // `displayName` should return `"displayName" to null`, but
-                // `displayName ASC` should return `"displayName" to "ASC"`.
-                // Also note that we trim it just in case there are multiple spaces between the column and direction.
-                .map { pair ->
-                    pair.substringBefore(' ') to pair.substringAfter(' ').trim().takeIf { pair.contains(' ') }
-                }
-                // Remove all columns not registered in the columns map
-                .filter { (docCol) -> columnsMap.containsKey(docCol) }
-                // Finally, convert the column name from document to room, including the sort direction in
-                // case it's included.
-                .joinToString(", ") { (docCol, dir) ->
+        fun processOrderByQuery(orderBy: String, logger: Logger? = null): String? {
+            return mutableListOf<String>().apply {
+                val columns = orderBy
+                    // Split by commas to divide each order column
+                    .split(',')
+                    // Trim any leading or trailing spaces
+                    .map { it.trim() }
+                    // Get the column name, and the ordering direction.
+                    // Note that the latter one is optional, so set to null if there isn't any space. For example:
+                    // `displayName` should return `"displayName" to null`, but
+                    // `displayName ASC` should return `"displayName" to "ASC"`.
+                    // Also note that we trim it just in case there are multiple spaces between the column and direction.
+                    .map { pair ->
+                        pair.substringBefore(' ') to pair.substringAfter(' ').trim().takeIf { pair.contains(' ') }
+                    }
+                for ((docCol, dir) in columns) {
+                    // Remove all columns not registered in the columns map
+                    if (!columnsMap.containsKey(docCol)) {
+                        logger?.warning { "Queried an order by of an unknown column: $docCol" }
+                        continue
+                    }
+
+                    // Finally, convert the column name from document to room, including the sort direction in
+                    // case it's included.
                     val roomCol = columnsMap.getValue(docCol)
-                    dir?.let { "$roomCol $dir" } ?: roomCol
+                    add(dir?.let { "$roomCol $dir" } ?: roomCol)
                 }
+            }.joinToString(", ")
                 // Return null if the request is empty
                 .takeIf { it.isNotEmpty() }
         }
@@ -329,7 +336,7 @@ class DavDocumentsProvider(
         val children = documentDao.getChildren(
             parentId,
             // Convert the cursor's column name into Room's
-            sortOrder?.let { processOrderByQuery(it) } ?: "isDirectory DESC, name ASC"
+            sortOrder?.let { processOrderByQuery(it, logger) } ?: "isDirectory DESC, name ASC"
         )
         for (child in children) {
             val bundle = child.toBundle(parent)
