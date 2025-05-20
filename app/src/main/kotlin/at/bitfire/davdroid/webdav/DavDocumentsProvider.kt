@@ -160,7 +160,7 @@ class DavDocumentsProvider(
                 for ((docCol, dir) in columns) {
                     // Remove all columns not registered in the columns map
                     if (!columnsMap.containsKey(docCol)) {
-                        logger?.warning { "Queried an order by of an unknown column: $docCol" }
+                        logger?.warning("Queried an order by of an unknown column: $docCol")
                         continue
                     }
 
