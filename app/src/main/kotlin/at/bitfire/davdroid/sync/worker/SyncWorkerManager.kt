@@ -147,14 +147,31 @@ class SyncWorkerManager @Inject constructor(
             logger.fine("Showing push sync pending notification for $name")
             pushNotificationManager.notify(account, dataType)
         }
-        WorkManager.getInstance(context).enqueueUniqueWork(
-            name,
+
+        val policy = if (fromPush)
+            /* In case of a push, a new sync should always be appended, even if there's
+            currently a running sync, because it may be possible that the current sync
+            is almost already done and won't detect the new data. */
+            ExistingWorkPolicy.APPEND_OR_REPLACE
+        else
             /* If sync is already running, just continue.
             Existing retried work will not be replaced (for instance when
             PeriodicSyncWorker enqueues another scheduled sync). */
-            ExistingWorkPolicy.KEEP,
+            ExistingWorkPolicy.KEEP
+
+        val workManager = WorkManager.getInstance(context)
+        val op = workManager.enqueueUniqueWork(
+            name,
+            policy,
             request
         )
+        /* wait until op is done */ op.result
+
+        val currentWork = workManager.getWorkInfosForUniqueWork(name).get()
+        logger.info("Enqueued work for $name")
+        for (work in currentWork)
+            logger.info("- ${work.id} ${work.state}")
+
         return name
     }
 
