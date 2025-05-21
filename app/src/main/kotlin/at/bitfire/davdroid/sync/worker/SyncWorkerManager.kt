@@ -52,7 +52,7 @@ import javax.inject.Inject
 class SyncWorkerManager @Inject constructor(
     @ApplicationContext val context: Context,
     val logger: Logger,
-    val pushNotificationManager: PushNotificationManager,
+    val pushNotificationManager: Lazy<PushNotificationManager>,
     val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
@@ -143,18 +143,39 @@ class SyncWorkerManager @Inject constructor(
             resync = resync,
             syncFrameworkUpload = syncFrameworkUpload
         )
+
+        val workManager = WorkManager.getInstance(context)
         if (fromPush) {
-            logger.fine("Showing push sync pending notification for $name")
-            pushNotificationManager.notify(account, dataType)
-        }
-        WorkManager.getInstance(context).enqueueUniqueWork(
-            name,
+            pushNotificationManager.get().notify(account, dataType)
+
+            /* In case of a push, a new sync should always be appended, even if there's
+            currently a running sync, because it may be possible that the current sync
+            is almost already done and won't detect the new data.
+
+            However, we want to append only one work request, regardless of how many
+            push requests came in. So we have to append the work one time, and as soon
+            as there is already a pending appended work, stop adding more work. */
+
+            synchronized(SyncWorkerManager::class.java) {
+                val currentWork = workManager.getWorkInfosForUniqueWork(name).get()
+                val alreadyAppended = currentWork.any {
+                    it.state in setOf(WorkInfo.State.BLOCKED, WorkInfo.State.ENQUEUED)
+                }
+                if (!alreadyAppended) {
+                    val op = workManager.enqueueUniqueWork(name, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+                    // for synchronization: wait until work is actually enqueued
+                    op.result
+                } else
+                    logger.fine("Another one-time sync already waiting, not adding more (name=$name)")
+            }
+
+        } else {
             /* If sync is already running, just continue.
             Existing retried work will not be replaced (for instance when
             PeriodicSyncWorker enqueues another scheduled sync). */
-            ExistingWorkPolicy.KEEP,
-            request
-        )
+            workManager.enqueueUniqueWork(name, ExistingWorkPolicy.KEEP, request)
+        }
+
         return name
     }
 
