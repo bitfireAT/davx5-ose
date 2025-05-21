@@ -158,7 +158,9 @@ class SyncWorkerManager @Inject constructor(
 
             synchronized(SyncWorkerManager::class.java) {
                 val currentWork = workManager.getWorkInfosForUniqueWork(name).get()
-                val alreadyAppended = currentWork.any { it.state == WorkInfo.State.BLOCKED }
+                val alreadyAppended = currentWork.any {
+                    it.state in setOf(WorkInfo.State.BLOCKED, WorkInfo.State.ENQUEUED)
+                }
                 if (!alreadyAppended) {
                     val op = workManager.enqueueUniqueWork(name, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
                     // for synchronization: wait until work is actually enqueued
