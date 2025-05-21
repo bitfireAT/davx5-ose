@@ -22,8 +22,8 @@ class DocumentSortByMapperTest {
         )
         // Valid column with direction
         assertEquals(
-            "displayName ASC",
-            mapper.mapContentProviderToSql("${Document.COLUMN_DISPLAY_NAME} ASC")
+            "displayName DESC",
+            mapper.mapContentProviderToSql("${Document.COLUMN_DISPLAY_NAME} DESC")
         )
         // Valid column with direction and multiple spaces
         assertEquals(
@@ -32,12 +32,12 @@ class DocumentSortByMapperTest {
         )
         // Invalid column without direction
         assertEquals(
-            null,
+            "displayName ASC",
             mapper.mapContentProviderToSql("invalid")
         )
         // Invalid column with direction
         assertEquals(
-            null,
+            "displayName ASC",
             mapper.mapContentProviderToSql("invalid ASC")
         )
         // Valid and invalid columns with and without directions

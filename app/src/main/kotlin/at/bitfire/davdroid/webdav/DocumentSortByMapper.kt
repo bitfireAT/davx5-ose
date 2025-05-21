@@ -6,7 +6,6 @@ package at.bitfire.davdroid.webdav
 
 import android.provider.DocumentsContract.Document
 import at.bitfire.davdroid.db.WebDavDocument
-import at.bitfire.davdroid.util.trimToNull
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -33,7 +32,7 @@ class DocumentSortByMapper @Inject constructor(
      *
      * @return value of the ORDER BY-clause, like "name ASC"
      */
-    fun mapContentProviderToSql(orderBy: String): String? {
+    fun mapContentProviderToSql(orderBy: String): String {
         // Map incoming orderBy to a list of pair of column and direction (true for ASC), like
         // [ Pair("displayName", Boolean), … ]
         val requestedFields = orderBy
@@ -57,6 +56,13 @@ class DocumentSortByMapper @Inject constructor(
             }
         }
 
+        // If displayName doesn't appear in sort order, append it in case that the other criteria generate
+        // the same order. For instance, if files are ordered by ascending size and all have 0 bytes, then
+        // another order by name is useful.
+        if (!requestedCriteria.any { it.first == Document.COLUMN_DISPLAY_NAME })
+            requestedCriteria += Document.COLUMN_DISPLAY_NAME to true
+
+        // Generate SQL
         val sqlSortBy = mutableListOf<String>()     // list of valid SQL ORDER BY elements like "displayName ASC"
         for ((requestedColumn, ascending) in requestedCriteria) {
             // Only take columns that are registered in the columns map
@@ -70,8 +76,6 @@ class DocumentSortByMapper @Inject constructor(
             sqlSortBy += "$sqlFieldName ${if (ascending) "ASC" else "DESC"}"
         }
         return sqlSortBy.joinToString(", ")
-            // Return null if the request is empty
-            .trimToNull()
     }
 
 
