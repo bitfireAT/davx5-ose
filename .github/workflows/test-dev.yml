@@ -1,8 +1,6 @@
 name: Development tests
 on:
-  push:
-    branches:
-      - '*'
+  pull_request
 
 concurrency:
   group: test-dev-${{ github.ref }}
