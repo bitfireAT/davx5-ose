@@ -1,6 +1,9 @@
 name: Development tests
 on:
-  pull_request
+  push:
+    branches:
+      - 'main-ose'
+  pull_request:
 
 concurrency:
   group: test-dev-${{ github.ref }}
