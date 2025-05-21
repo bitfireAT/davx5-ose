@@ -26,7 +26,6 @@ import android.provider.DocumentsContract.buildChildDocumentsUri
 import android.provider.DocumentsContract.buildRootsUri
 import android.provider.DocumentsProvider
 import android.webkit.MimeTypeMap
-import androidx.annotation.VisibleForTesting
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.DavCollection
@@ -96,6 +95,7 @@ class DavDocumentsProvider(
     interface DavDocumentsProviderEntryPoint {
         fun appDatabase(): AppDatabase
         fun davDocumentsActorFactory(): DavDocumentsActor.Factory
+        fun documentSortByMapper(): DocumentSortByMapper
         fun logger(): Logger
         fun randomAccessCallbackWrapperFactory(): RandomAccessCallbackWrapper.Factory
         fun streamingFileDescriptorFactory(): StreamingFileDescriptor.Factory
@@ -129,50 +129,6 @@ class DavDocumentsProvider(
             context.contentResolver.notifyChange(buildRootsUri(context.getString(R.string.webdav_authority)), null)
         }
 
-        /**
-         * Contains a map that matches the column names from the documents provider and Room.
-         */
-        private val columnsMap = mapOf(
-            Document.COLUMN_DOCUMENT_ID to "id",
-            Document.COLUMN_DISPLAY_NAME to "displayName",
-            Document.COLUMN_MIME_TYPE to "mimeType",
-            Document.COLUMN_SIZE to "size",
-            Document.COLUMN_LAST_MODIFIED to "lastModified",
-        )
-
-
-        @VisibleForTesting
-        fun processOrderByQuery(orderBy: String, logger: Logger? = null): String? {
-            return mutableListOf<String>().apply {
-                val columns = orderBy
-                    // Split by commas to divide each order column
-                    .split(',')
-                    // Trim any leading or trailing spaces
-                    .map { it.trim() }
-                    // Get the column name, and the ordering direction.
-                    // Note that the latter one is optional, so set to null if there isn't any space. For example:
-                    // `displayName` should return `"displayName" to null`, but
-                    // `displayName ASC` should return `"displayName" to "ASC"`.
-                    // Also note that we trim it just in case there are multiple spaces between the column and direction.
-                    .map { pair ->
-                        pair.substringBefore(' ') to pair.substringAfter(' ').trim().takeIf { pair.contains(' ') }
-                    }
-                for ((docCol, dir) in columns) {
-                    // Remove all columns not registered in the columns map
-                    if (!columnsMap.containsKey(docCol)) {
-                        logger?.warning("Queried an order by of an unknown column: $docCol")
-                        continue
-                    }
-
-                    // Finally, convert the column name from document to room, including the sort direction in
-                    // case it's included.
-                    val roomCol = columnsMap.getValue(docCol)
-                    add(dir?.let { "$roomCol $dir" } ?: roomCol)
-                }
-            }.joinToString(", ")
-                // Return null if the request is empty
-                .takeIf { it.isNotEmpty() }
-        }
     }
 
     val documentProviderScope = CoroutineScope(SupervisorJob())
@@ -332,12 +288,15 @@ class DavDocumentsProvider(
         else                // remove worker from list if done
             runningQueryChildren.remove(parentId)
 
+        // Prepare SORT BY clause
+        val mapper = globalEntryPoint.documentSortByMapper()
+        val sqlSortBy = if (sortOrder != null)
+            mapper.mapContentProviderToSql(sortOrder) ?: DocumentSortByMapper.DEFAULT_ORDER
+        else
+            DocumentSortByMapper.DEFAULT_ORDER
+
         // Regardless of whether the worker is done, return the children we already have
-        val children = documentDao.getChildren(
-            parentId,
-            // Convert the cursor's column name into Room's
-            sortOrder?.let { processOrderByQuery(it, logger) } ?: "isDirectory DESC, name ASC"
-        )
+        val children = documentDao.getChildren(parentId, sqlSortBy)
         for (child in children) {
             val bundle = child.toBundle(parent)
             result.addRow(bundle)
