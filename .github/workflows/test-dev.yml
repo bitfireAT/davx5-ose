@@ -1,6 +1,6 @@
 name: Development tests
 on:
-  pull_request
+  pull_request    # test when PR is created
 
 concurrency:
   group: test-dev-${{ github.ref }}
