@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
-import android.content.ContentResolver
 import android.content.Context
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -70,7 +69,7 @@ class SyncWorkerManager @Inject constructor(
         dataType: SyncDataType,
         manual: Boolean = false,
         resync: ResyncType? = null,
-        syncFrameworkUpload: Boolean = false
+        fromUpload: Boolean = false
     ): OneTimeWorkRequest {
         // worker arguments
         val argumentsBuilder = Data.Builder()
@@ -87,7 +86,7 @@ class SyncWorkerManager @Inject constructor(
             else -> { /* no explicit re-synchronization */ }
         }
 
-        argumentsBuilder.putBoolean(INPUT_UPLOAD, syncFrameworkUpload)
+        argumentsBuilder.putBoolean(INPUT_UPLOAD, fromUpload)
 
         // build work request
         val constraints = Constraints.Builder()
@@ -115,12 +114,19 @@ class SyncWorkerManager @Inject constructor(
     /**
      * Requests immediate synchronization of an account with a specific authority.
      *
-     * @param account               account to sync
-     * @param dataType              type of data to synchronize
-     * @param manual                user-initiated sync (ignores network checks)
-     * @param resync                whether to request (full) re-synchronization (`null` for normal sync)
-     * @param syncFrameworkUpload   see [ContentResolver.SYNC_EXTRAS_UPLOAD] – only used for contacts sync and Android 7 workaround
-     * @param fromPush              whether this sync is initiated by a push notification
+     * If there's already a one-time sync running, another sync is appended to make sure a complete sync is run
+     * since the moment this method is called.
+     *
+     * Otherwise (no currently running one-time sync), no new sync is appended, so this method just lets the current sync continue.
+     *
+     * When a sync is appended, this method makes sure there's only _one_ further sync in the queue.
+     *
+     * @param account       account to sync
+     * @param dataType      type of data to synchronize
+     * @param manual        user-initiated sync (ignores network checks)
+     * @param resync        whether to request (full) re-synchronization (`null` for normal sync)
+     * @param fromUpload    whether this sync is initiated by a local change
+     * @param fromPush      whether this sync is initiated by a push notification
      *
      * @return existing or newly created worker name
      */
@@ -129,10 +135,10 @@ class SyncWorkerManager @Inject constructor(
         dataType: SyncDataType,
         manual: Boolean = false,
         resync: ResyncType? = null,
-        syncFrameworkUpload: Boolean = false,
+        fromUpload: Boolean = false,
         fromPush: Boolean = false
     ): String {
-        logger.info("Enqueueing unique worker for account=$account, dataType=$dataType, manual=$manual, resync=$resync, upload=$syncFrameworkUpload, fromPush=$fromPush")
+        logger.info("Enqueueing unique worker for account=$account, dataType=$dataType, manual=$manual, resync=$resync, fromUpload=$fromUpload, fromPush=$fromPush")
 
         // enqueue and start syncing
         val name = OneTimeSyncWorker.workerName(account, dataType)
@@ -141,39 +147,28 @@ class SyncWorkerManager @Inject constructor(
             dataType = dataType,
             manual = manual,
             resync = resync,
-            syncFrameworkUpload = syncFrameworkUpload
+            fromUpload = fromUpload
         )
 
-        val workManager = WorkManager.getInstance(context)
-        if (fromPush) {
+        if (fromPush)
             pushNotificationManager.get().notify(account, dataType)
 
-            /* In case of a push, a new sync should always be appended, even if there's
-            currently a running sync, because it may be possible that the current sync
-            is almost already done and won't detect the new data.
+        /* We want to append only one work request, regardless of how many sync requests came in.
+        So we have to append the work one time, and as soon as there is already a pending
+        appended work, stop adding more work. */
 
-            However, we want to append only one work request, regardless of how many
-            push requests came in. So we have to append the work one time, and as soon
-            as there is already a pending appended work, stop adding more work. */
-
-            synchronized(SyncWorkerManager::class.java) {
-                val currentWork = workManager.getWorkInfosForUniqueWork(name).get()
-                val alreadyAppended = currentWork.any {
-                    it.state in setOf(WorkInfo.State.BLOCKED, WorkInfo.State.ENQUEUED)
-                }
-                if (!alreadyAppended) {
-                    val op = workManager.enqueueUniqueWork(name, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
-                    // for synchronization: wait until work is actually enqueued
-                    op.result
-                } else
-                    logger.fine("Another one-time sync already waiting, not adding more (name=$name)")
+        val workManager = WorkManager.getInstance(context)
+        synchronized(SyncWorkerManager::class.java) {
+            val currentWork = workManager.getWorkInfosForUniqueWork(name).get()
+            val alreadyAppended = currentWork.any {
+                it.state in setOf(WorkInfo.State.BLOCKED, WorkInfo.State.ENQUEUED)
             }
-
-        } else {
-            /* If sync is already running, just continue.
-            Existing retried work will not be replaced (for instance when
-            PeriodicSyncWorker enqueues another scheduled sync). */
-            workManager.enqueueUniqueWork(name, ExistingWorkPolicy.KEEP, request)
+            if (!alreadyAppended) {
+                val op = workManager.enqueueUniqueWork(name, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+                // for synchronization: wait until work is actually enqueued
+                op.result
+            } else
+                logger.fine("Another one-time sync already waiting, not adding more of $name")
         }
 
         return name
@@ -189,7 +184,7 @@ class SyncWorkerManager @Inject constructor(
         account: Account,
         manual: Boolean = false,
         resync: ResyncType? = null,
-        syncFrameworkUpload: Boolean = false,
+        fromUpload: Boolean = false,
         fromPush: Boolean = false
     ) {
         for (dataType in SyncDataType.entries)
@@ -198,7 +193,7 @@ class SyncWorkerManager @Inject constructor(
                 dataType = dataType,
                 manual = manual,
                 resync = resync,
-                syncFrameworkUpload = syncFrameworkUpload,
+                fromUpload = fromUpload,
                 fromPush = fromPush
             )
     }
