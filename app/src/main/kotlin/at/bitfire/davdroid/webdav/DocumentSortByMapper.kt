@@ -33,14 +33,14 @@ class DocumentSortByMapper @Inject constructor(
      * @return value of the ORDER BY-clause, like "name ASC"
      */
     fun mapContentProviderToSql(orderBy: String): String {
-        // Map incoming orderBy to a list of pair of column and direction (true for ASC), like
-        // [ Pair("displayName", Boolean), … ]
         val requestedFields = orderBy
             // Split by commas to divide each order column
             .split(',')
             // Trim any leading or trailing spaces
             .map { it.trim() }
 
+        // Map incoming orderBy fields to a list of pairs of column and direction (true for ASC), like
+        // [ Pair("displayName", Boolean), … ]
         val requestedCriteria = mutableListOf<Pair<String, Boolean>>()
         for (field in requestedFields) {
             val idx = field.indexOfFirst { it == ' ' }

@@ -97,7 +97,8 @@ interface WebDavDocumentDao {
     companion object {
 
         /**
-         * Default ORDER BY value to use when content provider doesn't specify a sort order.
+         * Default ORDER BY value to use when content provider doesn't specify a sort order:
+         * _sort by name (directories first)_
          */
         const val DEFAULT_ORDER = "isDirectory DESC, name ASC"
 
