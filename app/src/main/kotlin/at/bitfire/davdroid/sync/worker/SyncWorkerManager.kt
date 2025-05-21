@@ -114,12 +114,11 @@ class SyncWorkerManager @Inject constructor(
     /**
      * Requests immediate synchronization of an account with a specific authority.
      *
-     * If there's already a one-time sync running, another sync is appended to make sure a complete sync is run
-     * since the moment this method is called.
+     * If there is no currently running one-time sync, the sync is enqueued normally.
      *
-     * Otherwise (no currently running one-time sync), no new sync is appended, so this method just lets the current sync continue.
-     *
-     * When a sync is appended, this method makes sure there's only _one_ further sync in the queue.
+     * If there is a currently running one-time sync, another sync is appended to make sure
+     * a complete sync is run. This method makes however sure that there's only _one_
+     * further sync in the queue.
      *
      * @param account       account to sync
      * @param dataType      type of data to synchronize
