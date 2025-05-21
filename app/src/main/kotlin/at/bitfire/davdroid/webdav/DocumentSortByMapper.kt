@@ -34,34 +34,42 @@ class DocumentSortByMapper @Inject constructor(
      * @return value of the ORDER BY-clause, like "name ASC"
      */
     fun mapContentProviderToSql(orderBy: String): String? {
-        val requestedColumns = orderBy
+        // Map incoming orderBy to a list of pair of column and direction (true for ASC), like
+        // [ Pair("displayName", Boolean), … ]
+        val requestedFields = orderBy
             // Split by commas to divide each order column
             .split(',')
             // Trim any leading or trailing spaces
             .map { it.trim() }
-            // Get the column name, and the ordering direction.
-            // Note that the latter one is optional, so set to null if there isn't any space. For example:
-            // `displayName` should return `"displayName" to null`, but
-            // `displayName ASC` should return `"displayName" to "ASC"`.
-            // Also note that we trim it just in case there are multiple spaces between the column and direction.
-            .map { pair ->
-                pair.substringBefore(' ') to pair.substringAfter(' ').trim().takeIf { pair.contains(' ') }
-            }
 
-        val sqlElements = mutableListOf<String>()
-        for ((docCol, dir) in requestedColumns) {
-            // Remove all columns not registered in the columns map
-            if (!columnsMap.containsKey(docCol)) {
-                logger.warning("Queried an order by of an unknown column: $docCol")
+        val requestedCriteria = mutableListOf<Pair<String, Boolean>>()
+        for (field in requestedFields) {
+            val idx = field.indexOfFirst { it == ' ' }
+            if (idx == -1)
+                // no whitespace, only name → use ASC as default, like in SQL
+                requestedCriteria += field to true
+            else {
+                // whitespace, name and sort order
+                val name = field.substring(0, idx)
+                val directionStr = field.substring(idx).trim()
+                val ascending = directionStr.equals("ASC", true)
+                requestedCriteria += name to ascending
+            }
+        }
+
+        val sqlSortBy = mutableListOf<String>()     // list of valid SQL ORDER BY elements like "displayName ASC"
+        for ((requestedColumn, ascending) in requestedCriteria) {
+            // Only take columns that are registered in the columns map
+            val sqlFieldName = columnsMap[requestedColumn]
+            if (sqlFieldName == null) {
+                logger.warning("Ignoring unknown column in sortOrder: $requestedColumn")
                 continue
             }
 
-            // Finally, convert the column name from document to room, including the sort direction in
-            // case it's included.
-            val roomCol = columnsMap.getValue(docCol)
-            sqlElements += dir?.let { "$roomCol $dir" } ?: roomCol
+            // Finally, convert the column name from document to room, including the sort direction.
+            sqlSortBy += "$sqlFieldName ${if (ascending) "ASC" else "DESC"}"
         }
-        return sqlElements.joinToString(", ")
+        return sqlSortBy.joinToString(", ")
             // Return null if the request is empty
             .trimToNull()
     }

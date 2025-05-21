@@ -17,7 +17,7 @@ class DocumentSortByMapperTest {
     fun test_MapContentProviderToSql() {
         // Valid column without direction
         assertEquals(
-            "displayName",
+            "displayName ASC",
             mapper.mapContentProviderToSql(Document.COLUMN_DISPLAY_NAME)
         )
         // Valid column with direction
@@ -42,9 +42,9 @@ class DocumentSortByMapperTest {
         )
         // Valid and invalid columns with and without directions
         assertEquals(
-            "displayName, mimeType ASC",
+            "displayName ASC, mimeType DESC",
             mapper.mapContentProviderToSql(
-                "${Document.COLUMN_DISPLAY_NAME}, invalid DESC, ${Document.COLUMN_MIME_TYPE} ASC"
+                "${Document.COLUMN_DISPLAY_NAME}, invalid DESC, ${Document.COLUMN_MIME_TYPE} DESC"
             )
         )
     }
