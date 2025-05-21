@@ -39,7 +39,7 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
                 onFinish = { newAccount ->
                     finish()
 
-                    if (newAccount != null) {
+                    newAccount?.let { newAccount ->
                         val intent = Intent(this, AccountActivity::class.java)
                         intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
                         startActivity(intent)
