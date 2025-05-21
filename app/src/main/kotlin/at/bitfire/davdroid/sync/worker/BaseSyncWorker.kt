@@ -93,10 +93,6 @@ abstract class BaseSyncWorker(
             return Result.success()
         }
 
-        // FIXME
-        logger.warning("Delaying sync for 2min")
-        delay(120000)
-
         // Dismiss any pending push notification
         pushNotificationManager.dismiss(account, dataType)
 

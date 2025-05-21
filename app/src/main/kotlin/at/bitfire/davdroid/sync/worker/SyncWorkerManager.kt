@@ -154,7 +154,7 @@ class SyncWorkerManager @Inject constructor(
 
             However, we want to append only one work request, regardless of how many
             push requests came in. So we have to append the work one time, and as soon
-            as there is already a pending appended work, don't add more work. */
+            as there is already a pending appended work, stop adding more work. */
 
             synchronized(SyncWorkerManager::class.java) {
                 val currentWork = workManager.getWorkInfosForUniqueWork(name).get()
