@@ -78,14 +78,4 @@ class DocumentSortByMapper @Inject constructor(
         return sqlSortBy.joinToString(", ")
     }
 
-
-    companion object {
-
-        /**
-         * Default ORDER BY value to use when content provider doesn't specify a sort order.
-         */
-        const val DEFAULT_ORDER = "isDirectory DESC, name ASC"
-
-    }
-
 }

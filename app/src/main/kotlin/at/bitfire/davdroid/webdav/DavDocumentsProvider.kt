@@ -44,6 +44,7 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
+import at.bitfire.davdroid.db.WebDavDocumentDao
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.network.MemoryCookieStore
@@ -291,9 +292,9 @@ class DavDocumentsProvider(
         // Prepare SORT BY clause
         val mapper = globalEntryPoint.documentSortByMapper()
         val sqlSortBy = if (sortOrder != null)
-            mapper.mapContentProviderToSql(sortOrder) ?: DocumentSortByMapper.DEFAULT_ORDER
+            mapper.mapContentProviderToSql(sortOrder)
         else
-            DocumentSortByMapper.DEFAULT_ORDER
+            WebDavDocumentDao.DEFAULT_ORDER
 
         // Regardless of whether the worker is done, return the children we already have
         val children = documentDao.getChildren(parentId, sqlSortBy)
