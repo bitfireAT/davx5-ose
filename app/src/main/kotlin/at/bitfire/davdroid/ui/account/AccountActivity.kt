@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui.account
 import AccountScreen
 import android.accounts.Account
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -26,8 +27,12 @@ class AccountActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
-
+        val account: Account? = if (Build.VERSION.SDK_INT >= 33) {
+            intent.getParcelableExtra(EXTRA_ACCOUNT, Account::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
+        }
         // If account is null, log and redirect to accounts overview
         if (account == null) {
             logger.warning("Account not found in intent extras. Redirecting to accounts overview.")
