@@ -38,10 +38,15 @@ class AccountActivity : AppCompatActivity() {
             intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
         }
 
-        // If account is not passed or does not exist, log and redirect to accounts overview
+        // If account is not passed or does not exist, log warning and redirect to accounts overview
         if (account == null || !accountRepository.exists(account.name)) {
             logger.warning("Account \"${account?.name}\" not found in intent extras or does not exist. Redirecting to accounts overview.")
-            Toast.makeText(this, R.string.account_account_missing, Toast.LENGTH_LONG).show()
+
+            // Show toast message to user
+            val toastMessage = getString(R.string.account_account_missing, account?.name ?: "null")
+            Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show()
+
+            // Redirect to accounts overview activity
             val intent = Intent(this, AccountsActivity::class.java).apply {
                 // Create a new root activity, do not allow going back.
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
