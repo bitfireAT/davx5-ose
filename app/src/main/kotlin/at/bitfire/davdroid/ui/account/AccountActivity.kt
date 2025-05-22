@@ -7,13 +7,11 @@ package at.bitfire.davdroid.ui.account
 import AccountScreen
 import android.accounts.Account
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.ui.AccountsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.logging.Logger
@@ -23,28 +21,18 @@ import javax.inject.Inject
 class AccountActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var accountRepository: AccountRepository
-
-    @Inject
     lateinit var logger: Logger
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val account: Account? = if (Build.VERSION.SDK_INT >= 33) {
-            intent.getParcelableExtra(EXTRA_ACCOUNT, Account::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
-        }
+        val account =
+            IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java) ?:
+            intent.getStringExtra(EXTRA_ACCOUNT)?.let { Account(it, getString(R.string.account_type)) }
 
-        // If account is not passed or does not exist, log warning and redirect to accounts overview
-        if (account == null || !accountRepository.exists(account.name)) {
-            logger.warning("Account \"${account?.name}\" not found in intent extras or does not exist. Redirecting to accounts overview.")
-
-            // Show toast message to user
-            val toastMessage = getString(R.string.account_account_missing, account?.name ?: "null")
-            Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show()
+        // If account is not passed, log warning and redirect to accounts overview
+        if (account == null) {
+            logger.warning("AccountActivity requires EXTRA_ACCOUNT")
 
             // Redirect to accounts overview activity
             val intent = Intent(this, AccountsActivity::class.java).apply {

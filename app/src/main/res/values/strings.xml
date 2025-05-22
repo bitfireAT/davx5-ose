@@ -237,10 +237,8 @@
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
     <string name="app_settings_unifiedpush_encrypted">Push messages are always encrypted.</string>
 
-    <!-- AccountActivity -->
-    <string name="account_account_missing">Account does not exist: %s</string>
-
     <!-- AccountScreen -->
+    <string name="account_invalid_account">Account doesn\'t exist</string>
     <string name="account_carddav">CardDAV</string>
     <string name="account_caldav">CalDAV</string>
     <string name="account_webcal">Webcal</string>

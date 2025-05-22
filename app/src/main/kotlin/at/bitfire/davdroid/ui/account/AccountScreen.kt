@@ -7,6 +7,7 @@ import android.Manifest
 import android.accounts.Account
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -200,8 +201,10 @@ fun AccountScreen(
         val context = LocalContext.current
         val scope = rememberCoroutineScope()
 
-        if (invalidAccount)
+        if (invalidAccount) {
+            Toast.makeText(LocalContext.current, R.string.account_invalid_account, Toast.LENGTH_LONG).show()
             onFinish()
+        }
 
         val snackbarHostState = remember { SnackbarHostState() }
         LaunchedEffect(error) {
