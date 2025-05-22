@@ -8,7 +8,7 @@ import net.openid.appauth.AuthState
 
 data class Credentials(
     val username: String? = null,
-    val password: String? = null,
+    val password: CharArray? = null,
 
     val certificateAlias: String? = null,
 

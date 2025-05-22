@@ -549,7 +549,7 @@ fun AuthenticationSettings(
                         initialValue = null, // Do not show the existing password
                         passwordField = true,
                         onValueEntered = { newValue ->
-                            onUpdateCredentials(credentials.copy(password = newValue))
+                            onUpdateCredentials(credentials.copy(password = newValue.toCharArray()))
                         },
                         onDismiss = { showPasswordDialog = false }
                     )
@@ -740,7 +740,7 @@ fun AccountSettingsScreen_Preview() {
             onUpdateIgnoreVpns = {},
 
             // Authentication Settings
-            credentials = Credentials(username = "test", password = "test"),
+            credentials = Credentials(username = "test", password = "test".toCharArray()),
             onUpdateCredentials = {},
             isCredentialsUpdateAllowed = true,
 
