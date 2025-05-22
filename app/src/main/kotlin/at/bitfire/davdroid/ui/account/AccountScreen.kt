@@ -201,9 +201,11 @@ fun AccountScreen(
         val context = LocalContext.current
         val scope = rememberCoroutineScope()
 
-        if (invalidAccount) {
-            Toast.makeText(LocalContext.current, R.string.account_invalid_account, Toast.LENGTH_LONG).show()
-            onFinish()
+        LaunchedEffect(invalidAccount) {
+            if (invalidAccount) {
+                Toast.makeText(context, R.string.account_invalid_account, Toast.LENGTH_LONG).show()
+                onFinish()
+            }
         }
 
         val snackbarHostState = remember { SnackbarHostState() }
