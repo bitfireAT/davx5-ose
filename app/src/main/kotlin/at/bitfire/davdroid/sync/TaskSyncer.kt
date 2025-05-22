@@ -24,7 +24,7 @@ import kotlinx.coroutines.runBlocking
 class TaskSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted val providerName: TaskProvider.ProviderName,
-    @Assisted resync: ResyncType,
+    @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
     localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>,
