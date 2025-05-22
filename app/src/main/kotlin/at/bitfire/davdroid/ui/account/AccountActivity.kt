@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.ui.AccountsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.logging.Logger
@@ -20,6 +21,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var accountRepository: AccountRepository
 
     @Inject
     lateinit var logger: Logger
@@ -33,9 +37,10 @@ class AccountActivity : AppCompatActivity() {
             @Suppress("DEPRECATION")
             intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
         }
-        // If account is null, log and redirect to accounts overview
-        if (account == null) {
-            logger.warning("Account not found in intent extras. Redirecting to accounts overview.")
+
+        // If account is not passed or does not exist, log and redirect to accounts overview
+        if (account == null || !accountRepository.exists(account.name)) {
+            logger.warning("Account \"${account?.name}\" not found in intent extras or does not exist. Redirecting to accounts overview.")
             Toast.makeText(this, R.string.account_account_missing, Toast.LENGTH_LONG).show()
             val intent = Intent(this, AccountsActivity::class.java).apply {
                 // Create a new root activity, do not allow going back.
