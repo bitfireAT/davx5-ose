@@ -15,10 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class AccountActivity : AppCompatActivity() {
 
-    companion object {
-        const val EXTRA_ACCOUNT = "account"
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,6 +49,10 @@ class AccountActivity : AppCompatActivity() {
                 onFinish = ::finish
             )
         }
+    }
+
+    companion object {
+        const val EXTRA_ACCOUNT = "account"
     }
 
 }
