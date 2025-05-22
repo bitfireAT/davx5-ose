@@ -8,18 +8,38 @@ import AccountScreen
 import android.accounts.Account
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.AccountsActivity
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.logging.Logger
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var logger: Logger
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
-            ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
+
+        // If account is null, log and redirect to accounts overview
+        if (account == null) {
+            logger.warning("Account not found in intent extras. Redirecting to accounts overview.")
+            Toast.makeText(this, R.string.account_account_missing, Toast.LENGTH_LONG).show()
+            val intent = Intent(this, AccountsActivity::class.java).apply {
+                // Create a new root activity, do not allow going back.
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+            finish()
+            return
+        }
 
         setContent {
             AccountScreen(
