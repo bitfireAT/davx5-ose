@@ -70,10 +70,10 @@ androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-
 androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-junit" }
 androidx-work-base = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
-bitfire-cert4android = { module = "com.github.bitfireAT:cert4android", version.ref = "bitfire-cert4android" }
-bitfire-dav4jvm = { module = "com.github.bitfireAT:dav4jvm", version.ref = "bitfire-dav4jvm" }
-bitfire-ical4android = { module = "com.github.bitfireAT:ical4android", version.ref = "bitfire-ical4android" }
-bitfire-vcard4android = { module = "com.github.bitfireAT:vcard4android", version.ref = "bitfire-vcard4android" }
+bitfire-cert4android = { module = "com.github.bitfireat:cert4android", version.ref = "bitfire-cert4android" }
+bitfire-dav4jvm = { module = "com.github.bitfireat:dav4jvm", version.ref = "bitfire-dav4jvm" }
+bitfire-ical4android = { module = "com.github.bitfireat:ical4android", version.ref = "bitfire-ical4android" }
+bitfire-vcard4android = { module = "com.github.bitfireat:vcard4android", version.ref = "bitfire-vcard4android" }
 commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
