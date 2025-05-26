@@ -7,6 +7,7 @@ package at.bitfire.davdroid.webdav
 import at.bitfire.davdroid.db.Credentials
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
@@ -29,7 +30,7 @@ class CredentialsStoreTest {
     }
 
     @Test
-    fun testSetGetDelete() {
+    fun testSetGetDelete() = runTest {
         store.setCredentials(0, Credentials(username = "myname", password = "12345"))
         assertEquals(Credentials(username = "myname", password = "12345"), store.getCredentials(0))
 

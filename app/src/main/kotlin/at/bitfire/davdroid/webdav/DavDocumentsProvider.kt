@@ -68,6 +68,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
@@ -765,7 +766,7 @@ class DavDocumentsProvider(
          * @param mountId    ID of the mount to access
          * @param logBody    whether to log the body of HTTP requests (disable for potentially large files)
          */
-        internal fun httpClient(mountId: Long, logBody: Boolean = true): HttpClient {
+        internal suspend fun httpClient(mountId: Long, logBody: Boolean = true): HttpClient = withContext(Dispatchers.IO) {
             val builder = httpClientBuilder.get()
                 .loggerInterceptorLevel(if (logBody) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.HEADERS)
                 .setCookieStore(
@@ -776,7 +777,7 @@ class DavDocumentsProvider(
                 builder.authenticate(host = null, credentials = credentials)
             }
 
-            return builder.build()
+            builder.build()
         }
 
         internal fun notifyFolderChanged(parentDocumentId: Long?) {
