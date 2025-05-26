@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
 
     alias(libs.plugins.mikepenz.aboutLibraries)
@@ -144,6 +145,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.base)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.paging)
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.preference)
@@ -154,6 +158,7 @@ dependencies {
     implementation(libs.compose.accompanist.permissions)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.material3)
+    implementation(libs.compose.material3.navigation3)
     implementation(libs.compose.materialIconsExtended)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.toolingPreview)
@@ -176,6 +181,10 @@ dependencies {
     }
     implementation(libs.bitfire.ical4android)
     implementation(libs.bitfire.vcard4android)
+
+    // Serialization (for navigation)
+    implementation(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
 
     // third-party libs
     @Suppress("RedundantSuppression")
