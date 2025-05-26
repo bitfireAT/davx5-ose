@@ -54,6 +54,7 @@ import java.util.logging.Logger
 class AccountsModel @AssistedInject constructor(
     @Assisted private val syncAccountsOnInit: Boolean,
     private val accountRepository: AccountRepository,
+    internal val accountsDrawerHandler: AccountsDrawerHandler,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     introPageFactory: IntroPageFactory,

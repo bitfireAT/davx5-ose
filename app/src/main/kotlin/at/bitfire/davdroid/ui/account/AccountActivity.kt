@@ -12,7 +12,7 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.AccountsActivity
+import at.bitfire.davdroid.ui.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -35,7 +35,7 @@ class AccountActivity : AppCompatActivity() {
             logger.warning("AccountActivity requires EXTRA_ACCOUNT")
 
             // Redirect to accounts overview activity
-            val intent = Intent(this, AccountsActivity::class.java).apply {
+            val intent = Intent(this, MainActivity::class.java).apply {
                 // Create a new root activity, do not allow going back.
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
             }

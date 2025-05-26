@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
           android:installLocation="internalOnly">
@@ -63,7 +67,7 @@
 
         <activity android:name=".ui.intro.IntroActivity" />
         <activity
-            android:name=".ui.AccountsActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -74,12 +78,12 @@
         <activity
             android:name=".ui.AboutActivity"
             android:label="@string/navigation_drawer_about"
-            android:parentActivityName=".ui.AccountsActivity"/>
+            android:parentActivityName=".ui.MainActivity"/>
 
         <activity
             android:name=".ui.AppSettingsActivity"
             android:label="@string/app_settings"
-            android:parentActivityName=".ui.AccountsActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES"/>
@@ -107,7 +111,7 @@
 
         <activity
             android:name=".ui.setup.LoginActivity"
-            android:parentActivityName=".ui.AccountsActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
@@ -135,7 +139,7 @@
 
         <activity
             android:name=".ui.account.AccountActivity"
-            android:parentActivityName=".ui.AccountsActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:exported="true">
         </activity>
         <activity
@@ -157,7 +161,7 @@
         <activity
             android:name=".ui.webdav.WebdavMountsActivity"
             android:exported="true"
-            android:parentActivityName=".ui.AccountsActivity" />
+            android:parentActivityName=".ui.MainActivity" />
         <activity
             android:name=".ui.webdav.AddWebdavMountActivity"
             android:parentActivityName=".ui.webdav.WebdavMountsActivity"

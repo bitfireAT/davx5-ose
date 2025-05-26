@@ -11,6 +11,8 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -74,9 +76,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
+import at.bitfire.davdroid.ui.intro.IntroActivity
+import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -84,10 +89,37 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
+fun AccountsScreen(initialSyncAccounts: Boolean) {
+    val context = LocalContext.current
+    val activity = LocalActivity.current
+
+    val introActivityLauncher = rememberLauncherForActivityResult(IntroActivity.Contract) { cancelled ->
+        if (cancelled) activity?.finish()
+    }
+
+    AccountsScreen(
+        initialSyncAccounts = initialSyncAccounts,
+        onShowAppIntro = {
+            introActivityLauncher.launch(null)
+        },
+        onAddAccount = {
+            context.startActivity(Intent(context, LoginActivity::class.java))
+        },
+        onShowAccount = { account ->
+            val intent = Intent(context, AccountActivity::class.java)
+            intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+            context.startActivity(intent)
+        },
+        onManagePermissions = {
+            context.startActivity(Intent(context, PermissionsActivity::class.java))
+        }
+    )
+}
+
+@Composable
 fun AccountsScreen(
     initialSyncAccounts: Boolean,
     onShowAppIntro: () -> Unit,
-    accountsDrawerHandler: AccountsDrawerHandler,
     onAddAccount: () -> Unit,
     onShowAccount: (Account) -> Unit,
     onManagePermissions: () -> Unit,
@@ -112,7 +144,7 @@ fun AccountsScreen(
     }
 
     AccountsScreen(
-        accountsDrawerHandler = accountsDrawerHandler,
+        accountsDrawerHandler = model.accountsDrawerHandler,
         accounts = accounts,
         showSyncAll = showSyncAll,
         onSyncAll = { model.syncAllAccounts() },
