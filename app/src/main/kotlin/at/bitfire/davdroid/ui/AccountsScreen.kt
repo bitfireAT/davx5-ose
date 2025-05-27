@@ -10,7 +10,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
@@ -180,13 +179,7 @@ fun AccountsScreen(
     contactsStorageDisabled: Boolean = false
 ) {
     val scope = rememberCoroutineScope()
-
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    BackHandler(drawerState.isOpen) {
-        scope.launch {
-            drawerState.close()
-        }
-    }
 
     var isRefreshing by remember { mutableStateOf(false) }
     LaunchedEffect(isRefreshing) {
@@ -201,7 +194,7 @@ fun AccountsScreen(
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                ModalDrawerSheet {
+                ModalDrawerSheet(drawerState) {
                     accountsDrawerHandler.AccountsDrawer(
                         snackbarHostState = snackbarHostState,
                         onCloseDrawer = {
