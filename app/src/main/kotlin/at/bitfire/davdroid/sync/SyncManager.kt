@@ -141,7 +141,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 logger.info("No reason to synchronize, aborting")
                 return@withContext
             }
-            syncStatsRepository.logSyncTime(collection.id, authority)
+            syncStatsRepository.logSyncTime(collection.id, SyncDataType.fromAuthority(authority))
 
             logger.info("Querying server capabilities")
             var remoteSyncState = queryCapabilities()

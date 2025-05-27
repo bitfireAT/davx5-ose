@@ -273,7 +273,7 @@ fun CollectionScreen(
 
                             for (lastSync in lastSynced) {
                                 Text(
-                                    text = stringResource(R.string.collection_last_sync, lastSync.appName),
+                                    text = stringResource(R.string.collection_last_sync, lastSync.dataType),
                                     style = MaterialTheme.typography.titleMedium
                                 )
 
@@ -361,7 +361,7 @@ fun CollectionScreen_Preview() {
         owner = "Some One",
         lastSynced = listOf(
             DavSyncStatsRepository.LastSynced(
-                appName = "Some Content Provider",
+                dataType = "Some Sync Data Type",
                 lastSynced = 1234567890
             )
         ),
