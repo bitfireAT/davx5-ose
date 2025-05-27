@@ -15,6 +15,7 @@ import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.sync.SyncDataType
 import com.google.common.base.Ascii
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.HttpUrl
@@ -38,8 +39,8 @@ class DebugInfoActivity : AppCompatActivity() {
         /** [android.accounts.Account] (as [android.os.Parcelable]) related to problem */
         private const val EXTRA_ACCOUNT = "account"
 
-        /** sync authority name related to problem */
-        private const val EXTRA_AUTHORITY = "authority"
+        /** sync data type related to problem */
+        private const val EXTRA_SYNC_DATA_TYPE = "syncDataType"
 
         /** serialized [Throwable] that causes the problem */
         private const val EXTRA_CAUSE = "cause"
@@ -64,7 +65,7 @@ class DebugInfoActivity : AppCompatActivity() {
         setContent { 
             DebugInfoScreen(
                 account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
-                authority = extras?.getString(EXTRA_AUTHORITY),
+                syncDataType = IntentCompat.getSerializableExtra(intent, EXTRA_SYNC_DATA_TYPE, SyncDataType::class.java),
                 cause = IntentCompat.getParcelableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE),
                 remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
@@ -151,9 +152,9 @@ class DebugInfoActivity : AppCompatActivity() {
             return this
         }
 
-        fun withAuthority(authority: String?): IntentBuilder {
-            if (authority != null)
-                intent.putExtra(EXTRA_AUTHORITY, authority)
+        fun withSyncDataType(dataType: SyncDataType?): IntentBuilder {
+            if (dataType != null)
+                intent.putExtra(EXTRA_SYNC_DATA_TYPE, dataType)
             return this
         }
 

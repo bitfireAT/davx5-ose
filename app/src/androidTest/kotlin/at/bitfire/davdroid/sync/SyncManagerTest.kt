@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.Context
-import android.provider.CalendarContract
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.dav4jvm.PropStat
@@ -495,7 +494,6 @@ class SyncManagerTest {
         }
     ) = syncManagerFactory.create(
         account,
-        CalendarContract.AUTHORITY,
         httpClientBuilder.build(),
         syncResult,
         localCollection,

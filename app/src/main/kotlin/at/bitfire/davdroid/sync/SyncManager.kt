@@ -68,7 +68,7 @@ import javax.net.ssl.SSLHandshakeException
  *
  * @param account               account to synchronize
  * @param httpClient            HTTP client to use for network requests, already authenticated with credentials from [account]
- * @param authority             authority of the content provider the collection shall be synchronized with
+ * @param dataType              data type to synchronize
  * @param syncResult            receiver for result of the synchronization (will be updated by [performSync])
  * @param localCollection       local collection to synchronize (interface to content provider)
  * @param collection            collection info in the database
@@ -77,7 +77,7 @@ import javax.net.ssl.SSLHandshakeException
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
     val account: Account,
     val httpClient: HttpClient,
-    val authority: String,
+    val dataType: SyncDataType,
     val syncResult: SyncResult,
     val localCollection: CollectionType,
     val collection: Collection,
@@ -141,8 +141,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 logger.info("No reason to synchronize, aborting")
                 return@withContext
             }
-            val syncDataType = SyncDataType.fromAuthority(authority)
-            syncStatsRepository.logSyncTime(collection.id, syncDataType)
+            syncStatsRepository.logSyncTime(collection.id, dataType)
 
             logger.info("Querying server capabilities")
             var remoteSyncState = queryCapabilities()
@@ -753,7 +752,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
 
         syncNotificationManager.notifyException(
-            authority,
+            dataType,
             localCollection.tag,
             message,
             localCollection,
@@ -765,7 +764,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     protected fun notifyInvalidResource(e: Throwable, fileName: String) =
         syncNotificationManager.notifyInvalidResource(
-            authority,
+            dataType,
             localCollection.tag,
             collection,
             e,

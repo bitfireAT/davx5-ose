@@ -54,7 +54,6 @@ import java.util.logging.Level
 class CalendarSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted httpClient: HttpClient,
-    @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
     @Assisted collection: Collection,
@@ -64,7 +63,7 @@ class CalendarSyncManager @AssistedInject constructor(
 ): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
     httpClient,
-    authority,
+    SyncDataType.EVENTS,
     syncResult,
     localCalendar,
     collection,
@@ -77,7 +76,6 @@ class CalendarSyncManager @AssistedInject constructor(
         fun calendarSyncManager(
             account: Account,
             httpClient: HttpClient,
-            authority: String,
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
             collection: Collection,

@@ -104,6 +104,7 @@ class SyncNotificationManager @AssistedInject constructor(
      * Tries to inform the user that an exception occurred during synchronization. Includes the affected
      * local resource, its collection, the URL, the exception and a user message.
      *
+     * @param syncDataType      The type of data which was synced.
      * @param notificationTag   The tag to use for the notification.
      * @param message           The message to show to the user.
      * @param localCollection   The affected local collection.
@@ -112,7 +113,7 @@ class SyncNotificationManager @AssistedInject constructor(
      * @param remote            The remote URL that caused the exception.
      */
     fun notifyException(
-        authority: String,
+        syncDataType: SyncDataType,
         notificationTag: String,
         message: String,
         localCollection: LocalCollection<*>,
@@ -129,7 +130,7 @@ class SyncNotificationManager @AssistedInject constructor(
                 account
             )
         } else {
-            contentIntent = buildDebugInfoIntent(authority, e, local, remote)
+            contentIntent = buildDebugInfoIntent(syncDataType, e, local, remote)
             if (local != null)
                 viewItemAction = buildViewItemActionForLocalResource(local)
         }
@@ -171,13 +172,14 @@ class SyncNotificationManager @AssistedInject constructor(
      * sync has been scheduled, but it still has not run.
      * Use [dismissInvalidResource] to dismiss the notification.
      *
+     * @param dataType          The type of data which was synced.
      * @param notificationTag   The tag to use for the notification.
      * @param collection        The affected collection.
      * @param fileName          The name of the file containing the invalid resource.
      * @param title             The title of the notification.
      */
     fun notifyInvalidResource(
-        authority: String,
+        dataType: SyncDataType,
         notificationTag: String,
         collection: Collection,
         e: Throwable,
@@ -185,7 +187,7 @@ class SyncNotificationManager @AssistedInject constructor(
         title: String
     ) {
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_INVALID_RESOURCE, tag = notificationTag) {
-            val intent = buildDebugInfoIntent(authority, e, null, collection.url.resolve(fileName))
+            val intent = buildDebugInfoIntent(dataType, e, null, collection.url.resolve(fileName))
 
             val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_WARNINGS)
             builder.setSmallIcon(R.drawable.ic_warning_notify)
@@ -225,14 +227,14 @@ class SyncNotificationManager @AssistedInject constructor(
      * Builds intent to go to debug information with the given exception, resource and remote address.
      */
     private fun buildDebugInfoIntent(
-        authority: String,
+        dataType: SyncDataType,
         e: Throwable,
         local: LocalResource<*>?,
         remote: HttpUrl?
     ): Intent {
         val builder = DebugInfoActivity.IntentBuilder(context)
             .withAccount(account)
-            .withAuthority(authority)
+            .withSyncDataType(dataType)
             .withCause(e)
 
         if (local != null)
