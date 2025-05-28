@@ -6,6 +6,7 @@ package at.bitfire.davdroid.db
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "syncstats",
@@ -13,7 +14,7 @@ import androidx.room.PrimaryKey
         ForeignKey(childColumns = arrayOf("collectionId"), entity = Collection::class, parentColumns = arrayOf("id"), onDelete = ForeignKey.CASCADE)
     ],
     indices = [
-        androidx.room.Index(value = ["collectionId", "dataType"], unique = true)
+        Index(value = ["collectionId", "dataType"], unique = true)
     ]
 )
 data class SyncStats(

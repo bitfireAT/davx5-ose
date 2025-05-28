@@ -22,7 +22,7 @@ class AutoMigration18Test : DatabaseMigrationTest(toVersion = 18) {
                     arrayOf(id, 1, "https://example.com/$id", 1, 1, 1, 0, 1)
                 )
             }
-            // Insert a some syncstats with authorities and lastSync times
+            // Insert some syncstats with authorities and lastSync times
             val syncstats = listOf(
                 Entry(1, 1, "com.android.contacts", 1000),
                 Entry(2, 1, "com.android.calendar", 1000),
@@ -56,7 +56,7 @@ class AutoMigration18Test : DatabaseMigrationTest(toVersion = 18) {
                         )
                 }
 
-                // Expect one TASKS row per collection (collections 1, 2, 3), and the others
+                // Expect one TASKS row per collection (collections 1, 2, 3)
                 assertEquals(
                     listOf(
                         Entry(1, 1, "CONTACTS"),

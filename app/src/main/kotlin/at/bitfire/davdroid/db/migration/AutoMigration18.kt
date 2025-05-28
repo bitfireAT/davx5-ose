@@ -27,11 +27,13 @@ import javax.inject.Inject
 class AutoMigration18 @Inject constructor() : AutoMigrationSpec {
 
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
+        // Drop old unique index
         db.execSQL("DROP INDEX IF EXISTS index_syncstats_collectionId_authority")
 
         val seen = mutableSetOf<Pair<Long, String>>() // (collectionId, dataType)
-
-        db.query("SELECT id, collectionId, dataType, lastSync FROM syncstats ORDER BY lastSync DESC").use { cursor ->
+        db.query(
+            "SELECT id, collectionId, dataType, lastSync FROM syncstats ORDER BY lastSync DESC"
+        ).use { cursor ->
             val idIndex = cursor.getColumnIndex("id")
             val collectionIdIndex = cursor.getColumnIndex("collectionId")
             val authorityIndex = cursor.getColumnIndex("dataType")
@@ -54,12 +56,13 @@ class AutoMigration18 @Inject constructor() : AutoMigrationSpec {
                 if (seen.contains(keyValue)) {
                     db.execSQL("DELETE FROM syncstats WHERE id = ?", arrayOf(id))
                 } else {
-                    db.execSQL("UPDATE syncstats SET dataType = ? WHERE id = ?", arrayOf(dataType, id))
+                    db.execSQL("UPDATE syncstats SET dataType = ? WHERE id = ?", arrayOf<Any>(dataType, id))
                     seen.add(keyValue)
                 }
             }
         }
 
+        // Create new unique index
         db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_syncstats_collectionId_dataType ON syncstats (collectionId, dataType)")
     }
 
