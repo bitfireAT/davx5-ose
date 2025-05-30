@@ -13,15 +13,15 @@
     <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">Du hast dir Abzeichen verdient, danke!</item>
-        <item quantity="other">Du hast dir %d Abzeichen verdient, danke!</item>
+        <item quantity="other">Sie haben sich %d Abzeichen verdient, vielen Dank!</item>
     </plurals>
     <string name="available_badges">Verfügbare Abzeichen</string>
-    <string name="available_badges_empty">Tut mir leid, ich konnte keine Abzeichen laden. Bist du im Play Store eingeloggt?</string>
+    <string name="available_badges_empty">Tut mir leid, ich konnte keine Abzeichen laden. Sind Sie im Play Store eingeloggt?</string>
     <string name="what_are_badges">Was sind Abzeichen?</string>
     <string name="what_are_badges_title">Was sind Abzeichen?</string>
-    <string name="what_are_badges_body">Abzeichen sind einfache In-App-Zahlungen, die nur einmalig fällig werden. Du verdienst dir ein nettes kleines Abzeichen und kannst uns damit über einen längeren Zeitraum unterstützen.</string>
+    <string name="what_are_badges_body">Abzeichen sind einfache In-App-Zahlungen, die nur einmalig fällig werden. Sie verdienen sich ein nettes kleines Abzeichen und können uns damit über einen längeren Zeitraum unterstützen.</string>
     <string name="why_badges_title">Warum bietet DAVx5 funktionslose Abzeichen an?</string>
-    <string name="why_badges_body">DAVx5 ist im Laufe der Jahre wirklich gewachsen! Wir entwickeln immer noch aktiv neue Funktionen, bieten Support und aktualisieren die App immer für kommende Android-Versionen. Diese Badges sind einmalige Zahlungen, mit denen du einfach deine Unterstützung zeigen kannst, indem du uns einen Kaffee kaufst, oder zwei&#8230; oder 10 :-) Wir wollen so offen wie möglich sein, daher wird es niemals neue Dinge geben, die an die In-App-Zahlung gebunden sind.</string>
+    <string name="why_badges_body">DAVx5 ist im Laufe der Jahre wirklich gewachsen! Wir entwickeln immer noch aktiv neue Funktionen, bieten Support und aktualisieren die App immer für kommende Android-Versionen. Diese Badges sind einmalige Zahlungen, mit denen Sie uns einfach Ihre Unterstützung zeigen können, indem Sie uns einen Kaffee kaufen, oder zwei&#8230; oder 10 :-) Wir wollen so offen wie möglich sein, daher wird es niemals neue Dinge geben, die an die In-App-Zahlung gebunden sind.</string>
     <string name="button_buy_badge_free">GRATIS</string>
     <string name="button_buy_badge_bought">Danke!</string>
     <string name="earn_badges">Sammle Abzeichen, um uns zu unterstützen!</string>
