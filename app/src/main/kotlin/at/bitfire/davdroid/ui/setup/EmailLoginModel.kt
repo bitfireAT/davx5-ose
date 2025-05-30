@@ -38,7 +38,7 @@ class EmailLoginModel @AssistedInject constructor(
                 baseUri = uri,
                 credentials = Credentials(
                     username = email,
-                    password = password
+                    password = password.toCharArray()
                 )
             )
         }
@@ -50,7 +50,7 @@ class EmailLoginModel @AssistedInject constructor(
     init {
         uiState = uiState.copy(
             email = initialLoginInfo.credentials?.username ?: "",
-            password = initialLoginInfo.credentials?.password ?: ""
+            password = initialLoginInfo.credentials?.password?.concatToString() ?: ""
         )
     }
 

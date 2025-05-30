@@ -107,7 +107,12 @@ class HttpClient(
 
             } else if (credentials.username != null && credentials.password != null) {
                 // basic/digest auth
-                val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.username, credentials.password, insecurePreemptive = true)
+                val authHandler = BasicDigestAuthHandler(
+                    domain = UrlUtils.hostToDomain(host),
+                    username = credentials.username,
+                    password = credentials.password,
+                    insecurePreemptive = true
+                )
                 authenticationInterceptor = authHandler
                 authenticator = authHandler
             }

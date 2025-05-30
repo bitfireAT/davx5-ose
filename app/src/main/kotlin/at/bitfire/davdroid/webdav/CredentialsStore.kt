@@ -47,7 +47,7 @@ class CredentialsStore @Inject constructor(
 
         return Credentials(
             prefs.getString(keyName(mountId, USER_NAME), null),
-            prefs.getString(keyName(mountId, PASSWORD), null),
+            prefs.getString(keyName(mountId, PASSWORD), null)?.toCharArray(),
             prefs.getString(keyName(mountId, CERTIFICATE_ALIAS), null)
         )
     }
@@ -57,7 +57,7 @@ class CredentialsStore @Inject constructor(
             if (credentials != null)
                 putBoolean(keyName(mountId, HAS_CREDENTIALS), true)
                     .putString(keyName(mountId, USER_NAME), credentials.username)
-                    .putString(keyName(mountId, PASSWORD), credentials.password)
+                    .putString(keyName(mountId, PASSWORD), credentials.password?.concatToString())
                     .putString(keyName(mountId, CERTIFICATE_ALIAS), credentials.certificateAlias)
             else
                 remove(keyName(mountId, HAS_CREDENTIALS))
