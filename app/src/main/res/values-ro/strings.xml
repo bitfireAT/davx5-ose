@@ -202,7 +202,10 @@
   <string name="app_settings_unifiedpush_no_distributor">Nu este instalat un distribuitor push</string>
   <string name="app_settings_unifiedpush_no_endpoint">Niciun punct final configurat</string>
   <string name="app_settings_unifiedpush_ready">Gata să primească mesaje push peste %s</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">Mesajele push sunt întotdeauna criptate.</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">Contul nu există</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -414,6 +417,8 @@
   <string name="debug_info_logs_caption">Jurnale</string>
   <string name="debug_info_logs_subtitle">Jurnalele detaliate sunt disponibile</string>
   <string name="debug_info_logs_view">Vezi jurnalele</string>
+  <string name="debug_info_privacy_warning_title">Notificare de confidențialitate</string>
+  <string name="debug_info_privacy_warning_description">Jurnalele și informațiile de depanare pot conține informații private. Fii conștient de acest lucru atunci când îl publici.</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">A avut loc o eroare.</string>
   <string name="exception_httpexception">A apărut o eroare HTTP.</string>
@@ -461,5 +466,8 @@
   <!--widgets-->
   <string name="widget_sync_all">Sincronizează tot</string>
   <string name="widget_sync_all_accounts">Sincronizează toate conturile</string>
+  <string name="widget_labeled_sync_label">Eticheta butonului de sincronizare</string>
+  <string name="widget_icon_sync_label">Pictograma butonului de sincronizare</string>
+  <string name="widget_sync_description">Atinge pentru a rula sincronizarea manual.</string>
   <!--cert4android-->
 </resources>

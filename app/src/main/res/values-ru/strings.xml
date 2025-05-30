@@ -206,6 +206,7 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">Push-сообщения всегда зашифрованы.</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">Аккаунт не существует</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">WebСal</string>
@@ -419,6 +420,8 @@
   <string name="debug_info_logs_caption">Логи</string>
   <string name="debug_info_logs_subtitle">Доступны подробные логи</string>
   <string name="debug_info_logs_view">Просмотр логов</string>
+  <string name="debug_info_privacy_warning_title"> Предупреждение о конфиденциальности</string>
+  <string name="debug_info_privacy_warning_description">Журналы и отладочная информация могут содержать конфиденциальную информацию. Пожалуйста, помните об этом при публичном использовании.</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Произошла ошибка.</string>
   <string name="exception_httpexception">Произошла ошибка HTTP</string>
@@ -466,5 +469,8 @@
   <!--widgets-->
   <string name="widget_sync_all">Синхронизировать все</string>
   <string name="widget_sync_all_accounts">Синхронизировать все аккаунты</string>
+  <string name="widget_labeled_sync_label">Ярлык кнопки синхронизации</string>
+  <string name="widget_icon_sync_label">Значок кнопки синхронизации</string>
+  <string name="widget_sync_description">Нажмите для запуска синхронизации вручную.</string>
   <!--cert4android-->
 </resources>
