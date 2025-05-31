@@ -18,6 +18,7 @@ import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.runBlocking
 import java.util.logging.Level
 
 /**
@@ -25,16 +26,22 @@ import java.util.logging.Level
  */
 class AddressBookSyncer @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted extras: Array<String>,
+    @Assisted resync: ResyncType?,
+    @Assisted val syncFrameworkUpload: Boolean,
     @Assisted syncResult: SyncResult,
     addressBookStore: LocalAddressBookStore,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory
-): Syncer<LocalAddressBookStore, LocalAddressBook>(account, extras, syncResult) {
+): Syncer<LocalAddressBookStore, LocalAddressBook>(account, resync, syncResult) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, extras: Array<String>, syncResult: SyncResult): AddressBookSyncer
+        fun create(
+            account: Account,
+            resyncType: ResyncType?,
+            syncFrameworkUpload: Boolean,
+            syncResult: SyncResult
+        ): AddressBookSyncer
     }
 
     override val dataStore = addressBookStore
@@ -51,7 +58,6 @@ class AddressBookSyncer @AssistedInject constructor(
         syncAddressBook(
             account = account,
             addressBook = localCollection,
-            extras = extras,
             httpClient = httpClient,
             provider = provider,
             syncResult = syncResult,
@@ -63,8 +69,6 @@ class AddressBookSyncer @AssistedInject constructor(
      * Synchronizes an address book
      *
      * @param addressBook local address book
-     * @param extras Sync specific instructions. IE [Syncer.SYNC_EXTRAS_FULL_RESYNC]
-     * @param httpClient
      * @param provider Content provider to access android contacts
      * @param syncResult Stores hard and soft sync errors
      * @param collection The database collection associated with this address book
@@ -72,7 +76,6 @@ class AddressBookSyncer @AssistedInject constructor(
     private fun syncAddressBook(
         account: Account,
         addressBook: LocalAddressBook,
-        extras: Array<String>,
         httpClient: Lazy<HttpClient>,
         provider: ContentProviderClient,
         syncResult: SyncResult,
@@ -101,14 +104,17 @@ class AddressBookSyncer @AssistedInject constructor(
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(
                 account,
                 httpClient.value,
-                extras,
                 dataStore.authority,
                 syncResult,
                 provider,
                 addressBook,
-                collection
+                collection,
+                resync,
+                syncFrameworkUpload
             )
-            syncManager.performSync()
+            runBlocking {
+                syncManager.performSync()
+            }
 
         } catch(e: Exception) {
             logger.log(Level.SEVERE, "Couldn't sync contacts", e)

@@ -13,7 +13,6 @@ import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.exception.UnauthorizedException
-import at.bitfire.dav4jvm.property.*
 import at.bitfire.dav4jvm.property.caldav.CalendarColor
 import at.bitfire.dav4jvm.property.caldav.CalendarDescription
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
@@ -43,7 +42,7 @@ import java.io.InterruptedIOException
 import java.net.SocketTimeoutException
 import java.net.URI
 import java.net.URISyntaxException
-import java.util.*
+import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
 

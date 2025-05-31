@@ -11,11 +11,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.DavUtils.lastSegment
+import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -31,10 +33,12 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = CollectionScreenModel.Factory::class)
 class CollectionScreenModel @AssistedInject constructor(
+    private val accountRepository: AccountRepository,
     @Assisted val collectionId: Long,
     db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
-    private val settings: SettingsManager,
+    private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
+    settings: SettingsManager,
     syncStatsRepository: DavSyncStatsRepository
 ): ViewModel() {
 
@@ -126,12 +130,14 @@ class CollectionScreenModel @AssistedInject constructor(
     fun setForceReadOnly(forceReadOnly: Boolean) {
         viewModelScope.launch {
             collectionRepository.setForceReadOnly(collectionId, forceReadOnly)
+            collectionSelectedUseCase.get().handleWithDelay(collectionId)
         }
     }
 
     fun setSync(sync: Boolean) {
         viewModelScope.launch {
             collectionRepository.setSync(collectionId, sync)
+            collectionSelectedUseCase.get().handleWithDelay(collectionId)
         }
     }
 

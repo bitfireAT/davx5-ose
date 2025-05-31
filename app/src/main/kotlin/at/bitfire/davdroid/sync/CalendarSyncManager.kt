@@ -20,6 +20,7 @@ import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.di.SyncDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
@@ -32,6 +33,8 @@ import at.bitfire.ical4android.util.DateUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.property.Action
@@ -50,33 +53,35 @@ import java.util.logging.Level
  */
 class CalendarSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted extras: Array<String>,
     @Assisted httpClient: HttpClient,
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
     @Assisted collection: Collection,
-    private val accountSettingsFactory: AccountSettings.Factory
+    @Assisted resync: ResyncType?,
+    accountSettingsFactory: AccountSettings.Factory,
+    @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
     httpClient,
-    extras,
     authority,
     syncResult,
     localCalendar,
-    collection
+    collection,
+    resync,
+    syncDispatcher
 ) {
 
     @AssistedFactory
     interface Factory {
         fun calendarSyncManager(
             account: Account,
-            extras: Array<String>,
             httpClient: HttpClient,
             authority: String,
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
-            collection: Collection
+            collection: Collection,
+            resync: ResyncType?
         ): CalendarSyncManager
     }
 
@@ -95,19 +100,21 @@ class CalendarSyncManager @AssistedInject constructor(
         return true
     }
 
-    override fun queryCapabilities(): SyncState? =
-        SyncException.wrapWithRemoteResource(collection.url) {
+    override suspend fun queryCapabilities(): SyncState? =
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
-            davCollection.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
-                if (relation == Response.HrefRelation.SELF) {
-                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
-                    }
+            runInterruptible {
+                davCollection.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                    if (relation == Response.HrefRelation.SELF) {
+                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                            logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
+                        }
 
-                    response[SupportedReportSet::class.java]?.let { supported ->
-                        hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                        response[SupportedReportSet::class.java]?.let { supported ->
+                            hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                        }
+                        syncState = syncState(response)
                     }
-                    syncState = syncState(response)
                 }
             }
 
@@ -121,7 +128,7 @@ class CalendarSyncManager @AssistedInject constructor(
         else
             SyncAlgorithm.COLLECTION_SYNC
 
-    override fun processLocallyDeleted(): Boolean {
+    override suspend fun processLocallyDeleted(): Boolean {
         if (localCollection.readOnly) {
             var modified = false
             for (event in localCollection.findDeleted()) {
@@ -144,7 +151,7 @@ class CalendarSyncManager @AssistedInject constructor(
         return super.processLocallyDeleted()
     }
 
-    override fun uploadDirty(): Boolean {
+    override suspend fun uploadDirty(): Boolean {
         var modified = false
         if (localCollection.readOnly) {
             for (event in localCollection.findDirty()) {
@@ -180,57 +187,61 @@ class CalendarSyncManager @AssistedInject constructor(
             os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }
 
-    override fun listAllRemote(callback: MultiResponseCallback) {
+    override suspend fun listAllRemote(callback: MultiResponseCallback) {
         // calculate time range limits
         val limitStart = accountSettings.getTimeRangePastDays()?.let { pastDays ->
             ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
         }
 
-        return SyncException.wrapWithRemoteResource(collection.url) {
+        return SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             logger.info("Querying events since $limitStart")
-            davCollection.calendarQuery(Component.VEVENT, limitStart, null, callback)
+            runInterruptible {
+                davCollection.calendarQuery(Component.VEVENT, limitStart, null, callback)
+            }
         }
     }
 
-    override fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
-        SyncException.wrapWithRemoteResource(collection.url) {
-            davCollection.multiget(bunch) { response, _ ->
-                /*
-                 * Real-world servers may return:
-                 *
-                 * - unrelated resources
-                 * - the collection itself
-                 * - the requested resources, but with a different collection URL (for instance, `/cal/1.ics` instead of `/shared-cal/1.ics`).
-                 *
-                 * So we:
-                 *
-                 * - ignore unsuccessful responses,
-                 * - ignore responses without requested calendar data (should also ignore collections and hopefully unrelated resources), and
-                 * - take the last segment of the href as the file name and assume that it's in the requested collection.
-                 */
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
-                    if (!response.isSuccess()) {
-                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
-                        return@wrapResource
+        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+            runInterruptible {
+                davCollection.multiget(bunch) { response, _ ->
+                    /*
+                     * Real-world servers may return:
+                     *
+                     * - unrelated resources
+                     * - the collection itself
+                     * - the requested resources, but with a different collection URL (for instance, `/cal/1.ics` instead of `/shared-cal/1.ics`).
+                     *
+                     * So we:
+                     *
+                     * - ignore unsuccessful responses,
+                     * - ignore responses without requested calendar data (should also ignore collections and hopefully unrelated resources), and
+                     * - take the last segment of the href as the file name and assume that it's in the requested collection.
+                     */
+                    SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                        if (!response.isSuccess()) {
+                            logger.warning("Ignoring non-successful multi-get response for ${response.href}")
+                            return@wrapResource
+                        }
+
+                        val iCal = response[CalendarData::class.java]?.iCalendar
+                        if (iCal == null) {
+                            logger.warning("Ignoring multi-get response without calendar-data")
+                            return@wrapResource
+                        }
+
+                        val eTag = response[GetETag::class.java]?.eTag
+                            ?: throw DavException("Received multi-get response without ETag")
+                        val scheduleTag = response[ScheduleTag::class.java]?.scheduleTag
+
+                        processVEvent(
+                            response.href.lastSegment,
+                            eTag,
+                            scheduleTag,
+                            StringReader(iCal)
+                        )
                     }
-
-                    val iCal = response[CalendarData::class.java]?.iCalendar
-                    if (iCal == null) {
-                        logger.warning("Ignoring multi-get response without calendar-data")
-                        return@wrapResource
-                    }
-
-                    val eTag = response[GetETag::class.java]?.eTag
-                        ?: throw DavException("Received multi-get response without ETag")
-                    val scheduleTag = response[ScheduleTag::class.java]?.scheduleTag
-
-                    processVEvent(
-                        response.href.lastSegment,
-                        eTag,
-                        scheduleTag,
-                        StringReader(iCal)
-                    )
                 }
             }
         }

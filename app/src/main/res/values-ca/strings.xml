@@ -7,6 +7,7 @@
   <string name="dialog_delete">Eliminar</string>
   <string name="dialog_remove">Elimina</string>
   <string name="dialog_deny">Cancel·la</string>
+  <string name="dialog_enable">Activa</string>
   <string name="field_required">Cal aquest camp</string>
   <string name="help">Ajuda</string>
   <string name="navigate_up">Navega cap amunt</string>
@@ -50,6 +51,11 @@
   <string name="intro_open_source_title">Programari de codi obert</string>
   <string name="intro_open_source_text">Ens alegra saber que utilitzes %s, que és programari de codi obert. El desenvolupament, manteniment i suport requereixen un gran treball. Si us plau, considera contribuir (hi ha moltes formes) o realitzar una donació. Seria molt apreciat!</string>
   <string name="intro_open_source_details">Com contribuir/donar</string>
+  <string name="intro_open_source_dont_show">No m\'ho recordis durant</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d mes</item>
+    <item quantity="other">%d mesos</item>
+  </plurals>
   <string name="intro_next">Següent</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisos</string>
@@ -119,21 +125,24 @@
   <string name="navigation_drawer_support_project">Doneu suport al projecte</string>
   <string name="navigation_drawer_contribute">Com col·laborar</string>
   <string name="navigation_drawer_privacy_policy">Política de privacitat</string>
-  <string name="account_list_no_notification_permission">Notificacions desactivades. No es notificaran els errors de sincronització.</string>
-  <string name="account_list_no_internet">La sincronització automàtica no està activa (no hi ha cap connexió a Internet verificada).</string>
-  <string name="account_list_manage_connections">Gestiona les connexions</string>
-  <string name="account_list_datasaver_enabled">S\'ha activat l\'estalviador de dades. La sincronització en segon pla està restringida.</string>
-  <string name="account_list_manage_datasaver">Gestió de l\'estalviador de dades</string>
-  <string name="account_list_battery_saver_enabled">S\'ha habilitat l\'estalvi de bateria. Es podria restringir la sincronització.</string>
-  <string name="account_list_manage_battery_saver">Gestiona l\'estalvi de bateria</string>
-  <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no sincronitzarà els canvis locals immediatament, sinó durant la pròxima sincronització normal.</string>
-  <string name="account_list_manage_storage">Gestiona l\'emmagatzematge</string>
-  <string name="account_list_calendar_storage_disabled">Falta el proveïdor del calendari. Heu desactivat l\'aplicació del sistema «Emmagatzematge de calendari»?</string>
-  <string name="account_list_contacts_storage_disabled">Falta el proveïdor dels contactes. Heu desactivat l\'aplicació del sistema «Emmagatzematge de contactes»?</string>
-  <string name="account_list_manage_apps">Gestioneu les aplicacions</string>
   <string name="account_list_welcome">Us donem la benvinguda al DAVx⁵!</string>
   <string name="account_list_empty">Connecteu-vos al vostre servidor i mantingueu els calendaris i contactes sincronitzats.</string>
   <string name="accounts_sync_all">Sincronitza tots els comptes</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Notificacions desactivades. No es notificaran els errors de sincronització.</string>
+  <string name="sync_warning_no_internet">La sincronització automàtica no està activa (no hi ha cap connexió a Internet verificada).</string>
+  <string name="sync_warning_manage_connections">Gestiona les connexions</string>
+  <string name="sync_warning_datasaver_enabled">S\'ha activat l\'estalviador de dades. La sincronització en segon pla està restringida.</string>
+  <string name="sync_warning_manage_datasaver">Gestió de l\'estalviador de dades</string>
+  <string name="sync_warning_battery_saver_enabled">S\'ha habilitat l\'estalvi de bateria. Es podria restringir la sincronització.</string>
+  <string name="sync_warning_manage_battery_saver">Gestiona l\'estalvi de bateria</string>
+  <string name="sync_warning_low_storage">Espai d\'emmagatzematge baix. L\'Android no sincronitzarà els canvis locals immediatament, sinó durant la pròxima sincronització normal.</string>
+  <string name="sync_warning_manage_storage">Gestiona l\'emmagatzematge</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Manca el proveïdor de calendari</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Heu desactivat l\'aplicació del sistema «Emmagatzematge de calendari»?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Manca el proveïdor de contactes</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Heu desactivat l\'aplicació del sistema «Emmagatzematge de contactes»?</string>
+  <string name="sync_warning_manage_apps">Gestioneu les aplicacions</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Ha fallat la detecció del servei</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">No s\'ha pogut actualitzar la llista de col·leccions</string>
@@ -167,6 +176,7 @@
   <string name="app_settings_distrust_system_certs">Desconfia dels certificats del sistema</string>
   <string name="app_settings_distrust_system_certs_on">No es confiarà en les CA del sistema ni les afegides per l\'usuari</string>
   <string name="app_settings_distrust_system_certs_off">Es confiarà en les CA del sistema i les afegides per l\'usuari (recomanat)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Si aquest paràmetre està actiu, els certificats del sistema no es consideren fiables. Això vol dir que haureu d\'acceptar manualment cada certificat (també quan el servidor renovi el seu certificat) o la configuració del compte i la sincronització no funcionaran.</string>
   <string name="app_settings_reset_certificates">Restableix els certificats de (des)confiança</string>
   <string name="app_settings_reset_certificates_summary">Restableix la confiança de tots els certificats personalitzats</string>
   <string name="app_settings_reset_certificates_success">Neteja tots els certificats personalitzats</string>
@@ -191,6 +201,8 @@
   <string name="app_settings_unifiedpush_no_distributor">No s\'ha instal·lat cap distribuïdor de «push» </string>
   <string name="app_settings_unifiedpush_no_endpoint">No s\'ha configurat cap punt final</string>
   <string name="app_settings_unifiedpush_ready">Preparat per a rebre missatges «push» sobre %s</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">Els missatges no notificació automàtica sempre són xifrats.</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -413,7 +425,7 @@
   <string name="webdav_mounts_unmount">Desmunta</string>
   <string name="webdav_add_mount_title">Afegeix un muntatge WebDAV</string>
   <string name="webdav_mounts_empty">Accediu directament als fitxers en el núvol afegint un muntatge WebDAV!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Vegeu el manual quant a <a href="%1$s">com funcionen els muntatges WebDAV</a>.</string>]]></string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Vegeu el manual per a conèixer <a href="%1$s">com funcionen els muntatges WebDAV</a>.]]></string>
   <string name="webdav_add_mount_display_name">Nom a mostrar</string>
   <string name="webdav_add_mount_url">URL del WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL no vàlid</string>

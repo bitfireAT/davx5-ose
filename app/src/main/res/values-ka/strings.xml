@@ -114,15 +114,16 @@
   <string name="navigation_drawer_support_project">პროექტის მხარდაჭერა</string>
   <string name="navigation_drawer_contribute">როგორ შევიტანო ღვაწლი</string>
   <string name="navigation_drawer_privacy_policy">პირადულობის პოლიტიკა</string>
-  <string name="account_list_no_notification_permission">შეტყობინებები გათიშული. თქვენ არ მიიღებთ შეტყობინებებს სიქნრონიზაციის შეცდომების შესახებ.</string>
-  <string name="account_list_manage_connections">კავშირების მართვა</string>
-  <string name="account_list_datasaver_enabled">გააქტიურებულია მონაცემთა შემნახველი. ფონური სინქრონიზაცია შეზღუდულია.</string>
-  <string name="account_list_manage_datasaver">მონაცემთა შემნახველის მართვა</string>
-  <string name="account_list_battery_saver_enabled">გფააქტიურებულია კვების ელემენტის შემნახველი. სინქრონიზაცია შეიძლება შეზღუდულ იქნას.</string>
-  <string name="account_list_manage_battery_saver">კვების ელემენტის შემნახველის მართვა</string>
-  <string name="account_list_low_storage">მეხსიერება ცოტა დარჩა. Android არ დაასინქრონიზირებს ადგილობრივ ცვლილებებს დაუყონებლივ, ხოლო დაასინქრონიზირებს შემდეგი რეგულარული სინქრონიზაციის დროს.</string>
-  <string name="account_list_manage_storage">მეხსიერების მართვა</string>
   <string name="accounts_sync_all">ყველა ანგარიშის სინქრონიზაცია</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">შეტყობინებები გათიშული. თქვენ არ მიიღებთ შეტყობინებებს სიქნრონიზაციის შეცდომების შესახებ.</string>
+  <string name="sync_warning_manage_connections">კავშირების მართვა</string>
+  <string name="sync_warning_datasaver_enabled">გააქტიურებულია მონაცემთა შემნახველი. ფონური სინქრონიზაცია შეზღუდულია.</string>
+  <string name="sync_warning_manage_datasaver">მონაცემთა შემნახველის მართვა</string>
+  <string name="sync_warning_battery_saver_enabled">გფააქტიურებულია კვების ელემენტის შემნახველი. სინქრონიზაცია შეიძლება შეზღუდულ იქნას.</string>
+  <string name="sync_warning_manage_battery_saver">კვების ელემენტის შემნახველის მართვა</string>
+  <string name="sync_warning_low_storage">მეხსიერება ცოტა დარჩა. Android არ დაასინქრონიზირებს ადგილობრივ ცვლილებებს დაუყონებლივ, ხოლო დაასინქრონიზირებს შემდეგი რეგულარული სინქრონიზაციის დროს.</string>
+  <string name="sync_warning_manage_storage">მეხსიერების მართვა</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">სერვისის აღმოჩენა ჩაიშალა</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">კოლექციათა სიის განახლება ვერ მოხერხდა</string>
@@ -389,7 +390,6 @@
   <string name="webdav_mounts_unmount">მიბმის გათიშვა</string>
   <string name="webdav_add_mount_title">WebDAV-ის მიბმის დამატება</string>
   <string name="webdav_mounts_empty">პირდაპირ იქონიეთ წვდომა თქვენი ღრუბლის ფაილებზე WebDAV-ის მიბმის დამატებით!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[იხილეთ ინსტრუქცია, თუ <a href="%1$s">როგორ მოქმედებს WebDAV-ის მიბმები</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">ნაჩვენები სახელი</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">არასწორი URL</string>

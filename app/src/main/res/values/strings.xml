@@ -1,4 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?><resources xmlns:tools="http://schemas.android.com/tools">
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- common strings -->
     <string name="app_name" translatable="false">DAVx⁵</string>
@@ -230,8 +234,11 @@
     <string name="app_settings_unifiedpush_no_distributor">No push distributor installed</string>
     <string name="app_settings_unifiedpush_no_endpoint">No endpoint configured</string>
     <string name="app_settings_unifiedpush_ready">Ready to receive push messages over %s</string>
+    <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+    <string name="app_settings_unifiedpush_encrypted">Push messages are always encrypted.</string>
 
     <!-- AccountScreen -->
+    <string name="account_invalid_account">Account doesn\'t exist</string>
     <string name="account_carddav">CardDAV</string>
     <string name="account_caldav">CalDAV</string>
     <string name="account_webcal">Webcal</string>
@@ -461,6 +468,8 @@
     <string name="debug_info_logs_caption">Logs</string>
     <string name="debug_info_logs_subtitle">Verbose logs are available</string>
     <string name="debug_info_logs_view">View logs</string>
+    <string name="debug_info_privacy_warning_title">Privacy notice</string>
+    <string name="debug_info_privacy_warning_description">Logs and debug info may contain private information. Please be aware of this when sharing publicly.</string>
 
     <!-- ExceptionInfoFragment -->
     <string name="exception">An error has occurred.</string>
@@ -476,7 +485,7 @@
     <string name="webdav_mounts_unmount">Unmount</string>
     <string name="webdav_add_mount_title">Add WebDAV mount</string>
     <string name="webdav_mounts_empty">Directly access your cloud files by adding a WebDAV mount!</string>
-    <string name="webdav_add_mount_empty_more_info"><![CDATA[See the manual for <a href="%1$s">how WebDAV mounts work</a>.</string>]]></string>
+    <string name="webdav_add_mount_empty_more_info"><![CDATA[See the manual for <a href="%1$s">how WebDAV mounts work</a>.]]></string>
     <string name="webdav_add_mount_display_name">Display name</string>
     <string name="webdav_add_mount_url">WebDAV URL</string>
     <string name="webdav_add_mount_url_invalid">Invalid URL</string>
@@ -513,6 +522,9 @@
     <!-- widgets -->
     <string name="widget_sync_all">Sync all</string>
     <string name="widget_sync_all_accounts">Sync all accounts</string>
+    <string name="widget_labeled_sync_label">Labeled Sync Button</string>
+    <string name="widget_icon_sync_label">Icon Sync Button</string>
+    <string name="widget_sync_description">Tap to run synchronization manually.</string>
 
     <!-- cert4android -->
 

@@ -6,6 +6,7 @@
   <string name="dialog_delete">Διαγραφή</string>
   <string name="dialog_remove">Αφαίρεση</string>
   <string name="dialog_deny">Ακύρωση</string>
+  <string name="dialog_enable">Ενεργοποίηση</string>
   <string name="field_required">Αυτό το πεδίο είναι απαραίτητο </string>
   <string name="help">Βοήθεια</string>
   <string name="navigate_up">Πλοήγηση προς τα πάνω</string>
@@ -114,15 +115,16 @@
   <string name="navigation_drawer_support_project">Υποστηρίξτε το έργο</string>
   <string name="navigation_drawer_contribute">Πώς να συνεισφέρετε</string>
   <string name="navigation_drawer_privacy_policy">Πολιτική απορρήτου</string>
-  <string name="account_list_no_notification_permission">Οι ειδοποιήσεις είναι απενεργοποιημένες. Δεν θα λαμβάνετε ειδοποιήσεις για σφάλματα συγχρονισμού.</string>
-  <string name="account_list_manage_connections">Διαχείριση συνδέσεων</string>
-  <string name="account_list_datasaver_enabled">Ενεργοποίηση της εξοικονόμησης δεδομένων. Ο συγχρονισμός στο παρασκήνιο είναι περιορισμένος.</string>
-  <string name="account_list_manage_datasaver">Διαχείριση εξοικονόμησης δεδομένων</string>
-  <string name="account_list_battery_saver_enabled">Ενεργοποιημένη εξοικονόμηση μπαταρίας. Ο συγχρονισμός μπορεί να είναι περιορισμένος.</string>
-  <string name="account_list_manage_battery_saver">Διαχείριση εξοικονόμησης μπαταρίας</string>
-  <string name="account_list_low_storage">Χαμηλός αποθηκευτικός χώρος. Το Android δεν θα συγχρονίσει τις τοπικές αλλαγές αμέσως, αλλά κατά τη διάρκεια του επόμενου τακτικού συγχρονισμού.</string>
-  <string name="account_list_manage_storage">Διαχείριση αποθηκευτικού χώρου</string>
   <string name="accounts_sync_all">Συγχρονισμός όλων των λογαριασμών</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Οι ειδοποιήσεις είναι απενεργοποιημένες. Δεν θα λαμβάνετε ειδοποιήσεις για σφάλματα συγχρονισμού.</string>
+  <string name="sync_warning_manage_connections">Διαχείριση συνδέσεων</string>
+  <string name="sync_warning_datasaver_enabled">Ενεργοποίηση της εξοικονόμησης δεδομένων. Ο συγχρονισμός στο παρασκήνιο είναι περιορισμένος.</string>
+  <string name="sync_warning_manage_datasaver">Διαχείριση εξοικονόμησης δεδομένων</string>
+  <string name="sync_warning_battery_saver_enabled">Ενεργοποιημένη εξοικονόμηση μπαταρίας. Ο συγχρονισμός μπορεί να είναι περιορισμένος.</string>
+  <string name="sync_warning_manage_battery_saver">Διαχείριση εξοικονόμησης μπαταρίας</string>
+  <string name="sync_warning_low_storage">Χαμηλός αποθηκευτικός χώρος. Το Android δεν θα συγχρονίσει τις τοπικές αλλαγές αμέσως, αλλά κατά τη διάρκεια του επόμενου τακτικού συγχρονισμού.</string>
+  <string name="sync_warning_manage_storage">Διαχείριση αποθηκευτικού χώρου</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Αποτυχία ανίχνευσης υπηρεσίας</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Αδυναμία ανανέωσης της λίστας συλλογής</string>
@@ -389,7 +391,6 @@
   <string name="webdav_mounts_unmount">Αποπροσάρτηση</string>
   <string name="webdav_add_mount_title">Προσθήκη βάσης WebDAV</string>
   <string name="webdav_mounts_empty">Απευθείας πρόσβαση στα αρχεία σας στο cloud δημιουργώντας μία προσάρτηση WebDAV</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Ανατρέξτε στο εγχειρίδιο για <a href="%1$s"> το πώς λειτουργούν οι προσαρτήσεις WebDAV </a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Εμφανιζόμενο όνομα</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Μη έγκυρο URL</string>

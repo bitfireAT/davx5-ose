@@ -12,9 +12,10 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
+import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
@@ -23,8 +24,9 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 class WebDavMountRepository @Inject constructor(
-    @ApplicationContext val context: Context,
-    val db: AppDatabase,
+    @ApplicationContext private val context: Context,
+    private val db: AppDatabase,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val httpClientBuilder: Provider<HttpClient.Builder>
 ) {
 
@@ -47,9 +49,9 @@ class WebDavMountRepository @Inject constructor(
         url: HttpUrl,
         displayName: String,
         credentials: Credentials?
-    ): Boolean = withContext(Dispatchers.IO) {
+    ): Boolean {
         if (!hasWebDav(url, credentials))
-            return@withContext false
+            return false
 
         // create in database
         val mount = WebDavMount(
@@ -65,7 +67,7 @@ class WebDavMountRepository @Inject constructor(
         // notify content URI listeners
         DavDocumentsProvider.notifyMountsChanged(context)
 
-        true
+        return true
     }
 
     suspend fun delete(mount: WebDavMount) {
@@ -86,7 +88,7 @@ class WebDavMountRepository @Inject constructor(
     suspend fun refreshAllQuota() {
         val resolver = context.contentResolver
 
-        withContext(Dispatchers.Default) {
+        withContext(ioDispatcher) {
             // query root document of each mount to refresh quota
             mountDao.getAll().forEach { mount ->
                 documentDao.getOrCreateRoot(mount).let { root ->
@@ -112,7 +114,7 @@ class WebDavMountRepository @Inject constructor(
     internal suspend fun hasWebDav(
         url: HttpUrl,
         credentials: Credentials?
-    ): Boolean = withContext(Dispatchers.IO) {
+    ): Boolean = withContext(ioDispatcher) {
         val validVersions = arrayOf("1", "2", "3")
 
         val builder = httpClientBuilder.get()

@@ -70,7 +70,7 @@ class DavResourceFinderTest {
             start()
         }
 
-        val credentials = Credentials("mock", "12345")
+        val credentials = Credentials(username = "mock", password = "12345".toCharArray())
         client = httpClientBuilder
                 .authenticate(host = null, credentials = credentials)
                 .build()

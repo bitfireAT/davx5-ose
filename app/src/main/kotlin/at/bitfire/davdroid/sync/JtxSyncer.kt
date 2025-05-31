@@ -16,22 +16,23 @@ import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.runBlocking
 
 /**
  * Sync logic for jtx board
  */
 class JtxSyncer @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted extras: Array<String>,
+    @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
     localJtxCollectionStore: LocalJtxCollectionStore,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>
-): Syncer<LocalJtxCollectionStore, LocalJtxCollection>(account, extras, syncResult) {
+): Syncer<LocalJtxCollectionStore, LocalJtxCollection>(account, resync, syncResult) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, extras: Array<String>, syncResult: SyncResult): JtxSyncer
+        fun create(account: Account, resyncType: ResyncType?, syncResult: SyncResult): JtxSyncer
     }
 
     override val dataStore = localJtxCollectionStore
@@ -70,14 +71,16 @@ class JtxSyncer @AssistedInject constructor(
 
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(
             account,
-            extras,
             httpClient.value,
             dataStore.authority,
             syncResult,
             localCollection,
-            remoteCollection
+            remoteCollection,
+            resync
         )
-        syncManager.performSync()
+        runBlocking {
+            syncManager.performSync()
+        }
     }
 
 }

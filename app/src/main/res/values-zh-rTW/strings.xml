@@ -3,6 +3,7 @@
   <!--common strings-->
   <string name="account_invalid">帳號（已）不存在</string>
   <string name="account_title_address_book">DAVx⁵ 通訊錄</string>
+  <string name="dialog_enable">啟用</string>
   <string name="field_required">此為必填欄位</string>
   <string name="help">幫助</string>
   <string name="share">分享</string>
@@ -39,8 +40,10 @@
   <string name="permissions_opentasks_title">OpenTasks 權限</string>
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
+  <string name="about_translations">翻譯</string>
   <string name="about_libraries">函式庫</string>
   <string name="about_version">版本號 %1$s（%2$d）</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) 與其他貢獻者</string>
   <string name="about_license_info_no_warranty">我們｢完全不保證｣本程式無瑕疵。這是個自由軟體，歡迎您在符合公用授權條款的情況下任意散布它。</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">無法創建事項記錄文檔</string>
@@ -51,11 +54,13 @@
   <string name="install_browser">請安裝一個瀏覽器程式</string>
   <string name="navigation_drawer_settings">設定</string>
   <string name="navigation_drawer_news_updates">新聞 &amp; 更新</string>
+  <string name="navigation_drawer_tools">工具</string>
   <string name="navigation_drawer_external_links">外部連結</string>
   <string name="navigation_drawer_website">我們的網站</string>
   <string name="navigation_drawer_manual">使用説明書</string>
   <string name="navigation_drawer_faq">常見問答</string>
   <string name="navigation_drawer_privacy_policy">隱私權政策</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">未發現遠端服務</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">無法更新清單</string>
@@ -187,14 +192,33 @@
   <string name="collection_description">描述</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">除錯訊息</string>
+  <string name="debug_info_archive_caption">ZIP 壓縮檔</string>
+  <string name="debug_info_http_error">HTTP 錯誤</string>
+  <string name="debug_info_server_error">伺服器錯誤</string>
+  <string name="debug_info_webdav_error">WebDAV 錯誤</string>
+  <string name="debug_info_io_error">讀寫錯誤</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">發生錯誤</string>
   <string name="exception_httpexception">HTTP 發生錯誤</string>
   <string name="exception_ioexception">讀寫錯誤</string>
   <string name="exception_show_details">顯示細節</string>
   <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">WebDAV 掛載</string>
+  <string name="webdav_mounts_unmount">取消掛載</string>
+  <string name="webdav_add_mount_title">新增 WebDAV 掛載</string>
+  <string name="webdav_mounts_empty">只要新增對應的 WebDAV 掛載就可以直接存取你的雲端檔案！</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[關於 <a href="%1$s">WebDAV 如何運作</a>請見文件。]]></string>
+  <string name="webdav_add_mount_display_name">顯示名稱</string>
+  <string name="webdav_add_mount_url">WebDAV 網址</string>
   <string name="webdav_add_mount_username">使用者帳號</string>
   <string name="webdav_add_mount_password">密碼</string>
+  <string name="webdav_add_mount_add">新增掛載</string>
+  <string name="webdav_add_mount_no_support">此網址沒有 WebDAV 服務</string>
+  <string name="webdav_remove_mount_title">移除掛點點</string>
+  <string name="webdav_notification_access">正在存取 WebDAV 檔案</string>
+  <string name="webdav_notification_download">正在下載 WebDAV 檔案</string>
+  <string name="webdav_notification_upload">正在上傳檔案至 WebDAV</string>
+  <string name="webdav_provider_root_title">WebDAV 掛載</string>
   <!--sync-->
   <string name="sync_error_permissions">DAVx⁵ 權限</string>
   <string name="sync_error_permissions_text">需要額外的權限</string>

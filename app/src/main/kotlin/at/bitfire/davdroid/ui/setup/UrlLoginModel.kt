@@ -47,7 +47,7 @@ class UrlLoginModel @AssistedInject constructor(
                 baseUri = uri,
                 credentials = Credentials(
                     username = username.trimToNull(),
-                    password = password.text.toString().trimToNull()
+                    password = password.text.toString().trimToNull()?.toCharArray()
                 )
             )
 
@@ -60,7 +60,7 @@ class UrlLoginModel @AssistedInject constructor(
         uiState = UiState(
             url = initialLoginInfo.baseUri?.toString()?.removePrefix("https://") ?: "",
             username = initialLoginInfo.credentials?.username ?: "",
-            password = TextFieldState(initialLoginInfo.credentials?.password ?: "")
+            password = TextFieldState(initialLoginInfo.credentials?.password?.concatToString() ?: "")
         )
     }
 

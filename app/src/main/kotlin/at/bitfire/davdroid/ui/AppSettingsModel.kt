@@ -14,6 +14,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -24,20 +26,21 @@ import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.unifiedpush.android.connector.UnifiedPush
 import javax.inject.Inject
 
 @HiltViewModel
 class AppSettingsModel @Inject constructor(
-    @ApplicationContext val context: Context,
-    private val preference: PreferenceRepository,
+    @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val preferences: PreferenceRepository,
+    private val pushRegistrationManager: PushRegistrationManager,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -46,13 +49,14 @@ class AppSettingsModel @Inject constructor(
     // debugging
 
     private val powerManager = context.getSystemService<PowerManager>()!!
-    val batterySavingExempted = broadcastReceiverFlow(context, IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED), immediate = true)
-        .map { powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    val batterySavingExempted =
+        broadcastReceiverFlow(context, IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED), immediate = true)
+            .map { powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
-    fun verboseLogging() = preference.logToFileFlow()
+    fun verboseLogging() = preferences.logToFileFlow()
     fun updateVerboseLogging(verbose: Boolean) {
-        preference.logToFile(verbose)
+        preferences.logToFile(verbose)
     }
 
 
@@ -130,11 +134,11 @@ class AppSettingsModel @Inject constructor(
      * - If there's only one push distributor available, and none is selected, it's selected automatically.
      * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
      */
-    private suspend fun loadPushDistributors() {
-        val savedPushDistributor = UnifiedPush.getSavedDistributor(context)
-        _pushDistributor.value = savedPushDistributor
+    private fun loadPushDistributors() {
+        val currentPushDistributor = pushRegistrationManager.getCurrentDistributor()
+        _pushDistributor.value = currentPushDistributor
 
-        val pushDistributors = UnifiedPush.getDistributors(context)
+        val pushDistributors = pushRegistrationManager.getDistributors()
             .map { pushDistributor ->
                 try {
                     val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
@@ -157,23 +161,16 @@ class AppSettingsModel @Inject constructor(
      * @param pushDistributor The package name of the push distributor, _null_ to disable push.
      */
     fun updatePushDistributor(pushDistributor: String?) {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (pushDistributor == null) {
-                // Disable UnifiedPush if the distributor given is null
-                UnifiedPush.safeRemoveDistributor(context)
-                UnifiedPush.unregisterApp(context)
-            } else {
-                // If a distributor was passed, store it and register the app
-                UnifiedPush.saveDistributor(context, pushDistributor)
-                UnifiedPush.registerApp(context)
-            }
+        viewModelScope.launch(ioDispatcher) {
+            pushRegistrationManager.setPushDistributor(pushDistributor)
+
             _pushDistributor.value = pushDistributor
         }
     }
 
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             loadPushDistributors()
         }
     }

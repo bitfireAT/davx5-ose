@@ -20,7 +20,9 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -46,6 +48,7 @@ class AccountScreenModel @AssistedInject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext val context: Context,
+    private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
     getBindableHomesetsFromService: GetBindableHomeSetsFromServiceUseCase,
     getServiceCollectionPager: GetServiceCollectionPagerUseCase,
     private val logger: Logger,
@@ -62,7 +65,13 @@ class AccountScreenModel @AssistedInject constructor(
     /**
      * Only acquire account settings on a worker thread!
      */
-    private val accountSettings by lazy { accountSettingsFactory.create(account) }
+    private val accountSettings: AccountSettings? by lazy {
+        try {
+            accountSettingsFactory.create(account)
+        } catch (_: InvalidAccountException) {
+            null
+        }
+    }
 
     /** whether the account is invalid and the screen shall be closed */
     val invalidAccount = accountRepository.getAllFlow().map { accounts ->
@@ -75,11 +84,13 @@ class AccountScreenModel @AssistedInject constructor(
     private val _showOnlyPersonal = MutableStateFlow(false)
     val showOnlyPersonal = _showOnlyPersonal.asStateFlow()
     private suspend fun reloadShowOnlyPersonal() = withContext(Dispatchers.Default) {
-        _showOnlyPersonal.value = accountSettings.getShowOnlyPersonal()
+        accountSettings?.let {
+            _showOnlyPersonal.value = it.getShowOnlyPersonal()
+        }
     }
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
         viewModelScope.launch {
-            accountSettings.setShowOnlyPersonal(showOnlyPersonal)
+            accountSettings?.setShowOnlyPersonal(showOnlyPersonal)
             reloadShowOnlyPersonal()
         }
     }
@@ -90,7 +101,9 @@ class AccountScreenModel @AssistedInject constructor(
     private var _showOnlyPersonalLocked = MutableStateFlow(false)
     val showOnlyPersonalLocked = _showOnlyPersonalLocked.asStateFlow()
     private suspend fun reloadShowOnlyPersonalLocked() = withContext(Dispatchers.Default) {
-        _showOnlyPersonalLocked.value = accountSettings.getShowOnlyPersonalLocked()
+        accountSettings?.let {
+            _showOnlyPersonalLocked.value = it.getShowOnlyPersonalLocked()
+        }
     }
 
     init {
@@ -185,6 +198,7 @@ class AccountScreenModel @AssistedInject constructor(
     fun setCollectionSync(id: Long, sync: Boolean) {
         viewModelScope.launch {
             collectionRepository.setSync(id, sync)
+            collectionSelectedUseCase.get().handleWithDelay(id)
         }
     }
 

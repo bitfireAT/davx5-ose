@@ -32,6 +32,7 @@ import java.time.Instant
         Index("parentId")
     ]
 )
+// If any column name is modified, also change it in [DavDocumentsProvider$queryChildDocuments]
 data class WebDavDocument(
 
     @PrimaryKey(autoGenerate = true)
@@ -110,7 +111,7 @@ data class WebDavDocument(
         return bundle
     }
 
-    fun toHttpUrl(db: AppDatabase): HttpUrl {
+    suspend fun toHttpUrl(db: AppDatabase): HttpUrl {
         val mount = db.webDavMountDao().getById(mountId)
 
         val segments = mutableListOf(name)

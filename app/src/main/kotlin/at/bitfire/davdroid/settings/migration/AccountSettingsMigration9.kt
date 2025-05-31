@@ -15,6 +15,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.runBlocking
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -27,7 +28,7 @@ class AccountSettingsMigration9 @Inject constructor(
     private val logger: Logger
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override fun migrate(account: Account) = runBlocking {
         val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
         if (!hasCalDAV && ContentResolver.getIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority) != 0) {
             logger.info("Disabling OpenTasks sync for $account")

@@ -22,7 +22,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
 import io.mockk.mockkObject
 import io.mockk.verify
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -62,7 +62,7 @@ class PeriodicSyncWorkerTest {
 
 
     @Test
-    fun doWork_cancelsItselfOnInvalidAccount() {
+    fun doWork_cancelsItselfOnInvalidAccount() = runTest {
         val invalidAccount = Account("invalid", context.getString(R.string.account_type))
 
         // Run PeriodicSyncWorker as TestWorker
@@ -83,9 +83,7 @@ class PeriodicSyncWorkerTest {
                     syncWorkerFactory.create(appContext, workerParameters)
             })
             .build()
-        val result = runBlocking {
-            testWorker.doWork()
-        }
+        val result = testWorker.doWork()
         assertTrue(result is ListenableWorker.Result.Failure)
 
         // verify that worker called WorkManager.cancelWorkById(<its ID>)

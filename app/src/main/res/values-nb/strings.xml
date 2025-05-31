@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_title_address_book">DAVx⁵-adressebok</string>
+  <string name="dialog_enable">Skru på</string>
   <string name="help">Hjelp</string>
   <string name="notification_channel_debugging">Feilsøking</string>
   <string name="notification_channel_general">Andre viktige beskjeder</string>
@@ -33,6 +34,7 @@
   <string name="navigation_drawer_website">Nettside</string>
   <string name="navigation_drawer_manual">Manuell</string>
   <string name="navigation_drawer_faq">O-S-S</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Tjenesteoppdagelse mislyktes</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Kunne ikke gjenoppfriske innsamlingsliste</string>

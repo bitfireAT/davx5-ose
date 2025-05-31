@@ -66,7 +66,7 @@ class LocalAddressBookStore @Inject constructor(
 
         // Add the actual account name to the address book account name
         val sb = StringBuilder(name)
-        serviceRepository.get(info.serviceId)?.let { service ->
+        serviceRepository.getBlocking(info.serviceId)?.let { service ->
             sb.append(" (${service.accountName})")
         }
         // Add the collection ID for uniqueness
@@ -78,7 +78,7 @@ class LocalAddressBookStore @Inject constructor(
         context.contentResolver.acquireContentProviderClient(authority)
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalAddressBook? {
-        val service = serviceRepository.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
+        val service = serviceRepository.getBlocking(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
         val name = accountName(fromCollection)

@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
-import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
@@ -23,6 +22,7 @@ import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.vcard4android.GroupMethod
@@ -44,7 +44,7 @@ import javax.inject.Inject
  */
 class AccountRepository @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
-    private val automaticSyncManager: AutomaticSyncManager,
+    private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val collectionRepository: DavCollectionRepository,
     private val homeSetRepository: DavHomeSetRepository,
@@ -52,7 +52,7 @@ class AccountRepository @Inject constructor(
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
-    private val syncWorkerManager: SyncWorkerManager,
+    private val syncWorkerManager: Lazy<SyncWorkerManager>,
     private val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
@@ -70,7 +70,7 @@ class AccountRepository @Inject constructor(
      *
      * @return account if account creation was successful; null otherwise (for instance because an account with this name already exists)
      */
-    fun create(accountName: String, credentials: Credentials?, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): Account? {
+    fun createBlocking(accountName: String, credentials: Credentials?, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): Account? {
         val account = fromName(accountName)
 
         // create Android account
@@ -104,7 +104,7 @@ class AccountRepository @Inject constructor(
             }
 
             // set up automatic sync (processes inserted services)
-            automaticSyncManager.updateAutomaticSync(account)
+            automaticSyncManager.get().updateAutomaticSync(account)
 
         } catch(e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Couldn't access account settings", e)
@@ -206,11 +206,11 @@ class AccountRepository @Inject constructor(
             }
 
             // account renamed, cancel maybe running synchronization of old account
-            syncWorkerManager.cancelAllWork(oldAccount)
+            syncWorkerManager.get().cancelAllWork(oldAccount)
 
             // disable periodic syncs for old account
             for (dataType in SyncDataType.entries)
-                syncWorkerManager.disablePeriodic(oldAccount, dataType)
+                syncWorkerManager.get().disablePeriodic(oldAccount, dataType)
 
             // update account name references in database
             serviceRepository.renameAccount(oldName, newName)
@@ -238,7 +238,7 @@ class AccountRepository @Inject constructor(
             }
 
             // update automatic sync
-            automaticSyncManager.updateAutomaticSync(newAccount)
+            automaticSyncManager.get().updateAutomaticSync(newAccount)
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()
@@ -251,11 +251,11 @@ class AccountRepository @Inject constructor(
     private fun insertService(accountName: String, @ServiceType type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
         // insert service
         val service = Service(0, accountName, type, info.principal)
-        val serviceId = serviceRepository.insertOrReplace(service)
+        val serviceId = serviceRepository.insertOrReplaceBlocking(service)
 
         // insert home sets
         for (homeSet in info.homeSets)
-            homeSetRepository.insertOrUpdateByUrl(HomeSet(0, serviceId, true, homeSet))
+            homeSetRepository.insertOrUpdateByUrlBlocking(HomeSet(0, serviceId, true, homeSet))
 
         // insert collections
         for (collection in info.collections.values) {

@@ -14,6 +14,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
+import kotlinx.coroutines.test.runTest
 import okhttp3.CookieJar
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -85,7 +86,7 @@ class DavDocumentsProviderTest {
 
 
     @Test
-    fun testDoQueryChildren_insert() {
+    fun testDoQueryChildren_insert() = runTest {
         // Create parent and root in database
         val id = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
         val webDavMount = db.webDavMountDao().getById(id)
@@ -100,13 +101,13 @@ class DavDocumentsProviderTest {
 
         // Assert new children were inserted into db
         assertEquals(3, db.webDavDocumentDao().getChildren(parent.id).size)
-        assertEquals("Secret_Document.pages", db.webDavDocumentDao().getChildren(parent.id)[0].displayName)
+        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[0].displayName)
         assertEquals("MeowMeow_Cats.docx", db.webDavDocumentDao().getChildren(parent.id)[1].displayName)
-        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[2].displayName)
+        assertEquals("Secret_Document.pages", db.webDavDocumentDao().getChildren(parent.id)[2].displayName)
     }
 
     @Test
-    fun testDoQueryChildren_update() {
+    fun testDoQueryChildren_update() = runTest {
         // Create parent and root in database
         val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
         val webDavMount = db.webDavMountDao().getById(mountId)
@@ -136,13 +137,13 @@ class DavDocumentsProviderTest {
 
         // Assert parent and children were updated in database
         assertEquals("Cats WebDAV", db.webDavDocumentDao().get(parent.id)!!.displayName)
-        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[2].name)
-        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[2].displayName)
+        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[0].name)
+        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[0].displayName)
 
     }
 
     @Test
-    fun testDoQueryChildren_delete() {
+    fun testDoQueryChildren_delete() = runTest {
         // Create parent and root in database
         val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
         val webDavMount = db.webDavMountDao().getById(mountId)
@@ -166,7 +167,7 @@ class DavDocumentsProviderTest {
     }
 
     @Test
-    fun testDoQueryChildren_updateTwoDirectoriesSimultaneously() {
+    fun testDoQueryChildren_updateTwoDirectoriesSimultaneously() = runTest {
         // Create root in database
         val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
         val webDavMount = db.webDavMountDao().getById(mountId)

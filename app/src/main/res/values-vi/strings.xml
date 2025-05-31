@@ -5,6 +5,7 @@
   <string name="account_title_address_book">Sổ địa chỉ của DAVx⁵</string>
   <string name="dialog_remove">Xóa</string>
   <string name="dialog_deny">Hủy</string>
+  <string name="dialog_enable">Bật</string>
   <string name="field_required">Trường này là bắt buộc</string>
   <string name="help">Trợ giúp</string>
   <string name="share">Chia sẻ</string>
@@ -101,6 +102,7 @@
   <string name="navigation_drawer_community">Cộng đồng</string>
   <string name="navigation_drawer_privacy_policy">Chính sách riêng tư</string>
   <string name="accounts_sync_all">Đồng bộ tất cả tài khoản</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Dò tìm dịch vụ thất bại</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Không thể làm mới danh sách bộ sưu tập</string>
@@ -298,7 +300,6 @@
   <string name="webdav_mounts_unmount">Bỏ gắn</string>
   <string name="webdav_add_mount_title">Thêm nơi gắn WebDAV</string>
   <string name="webdav_mounts_empty">Truy cập trực tiếp các tệp trên đám mây bằng cách thêm nơi gắn WebDAV!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Hãy xem hướng dẫn để biết <a href="%1$s">cách nơi gắn WebDAV hoạt động</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Tên hiển thị</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL không hợp lệ</string>

@@ -7,6 +7,7 @@ package at.bitfire.davdroid.settings
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.TextTable
 import dagger.Binds
@@ -39,7 +40,9 @@ class SharedPreferencesProvider @Inject constructor(
         if (version == -1) {
             // first call, check whether to migrate from SQLite database (DAVdroid <1.9)
             firstCall()
-            meta.edit().putInt(META_VERSION, CURRENT_VERSION).apply()
+            meta.edit {
+                putInt(META_VERSION, CURRENT_VERSION)
+            }
         }
 
         preferences.registerOnSharedPreferenceChangeListener(this)
@@ -90,9 +93,9 @@ class SharedPreferencesProvider @Inject constructor(
             remove(key)
         else {
             logger.fine("Writing setting $key = $value")
-            val edit = preferences.edit()
-            writer(edit, value)
-            edit.apply()
+            preferences.edit {
+                writer(this, value)
+            }
         }
     }
 
@@ -110,7 +113,9 @@ class SharedPreferencesProvider @Inject constructor(
 
     override fun remove(key: String) {
         logger.fine("Removing setting $key")
-        preferences.edit().remove(key).apply()
+        preferences.edit {
+            remove(key)
+        }
     }
 
 
@@ -129,12 +134,12 @@ class SharedPreferencesProvider @Inject constructor(
 
     private fun firstCall() {
         // remove possible artifacts from DAVdroid <1.9
-        val edit = preferences.edit()
-        edit.remove("override_proxy")
-        edit.remove("proxy_host")
-        edit.remove("proxy_port")
-        edit.remove("log_to_external_storage")
-        edit.apply()
+        preferences.edit {
+            remove("override_proxy")
+            remove("proxy_host")
+            remove("proxy_port")
+            remove("log_to_external_storage")
+        }
     }
 
 

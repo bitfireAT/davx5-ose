@@ -6,6 +6,7 @@
   <string name="dialog_delete">Odstranit</string>
   <string name="dialog_remove">Odebrat</string>
   <string name="dialog_deny">Storno</string>
+  <string name="dialog_enable">Zapnout</string>
   <string name="field_required">Tuto kolonku je třeba vyplnit</string>
   <string name="help">Pomoc</string>
   <string name="navigate_up">Navigovat nahoru</string>
@@ -115,15 +116,16 @@
   <string name="navigation_drawer_support_project">Podpořit projekt</string>
   <string name="navigation_drawer_contribute">Jak přispět</string>
   <string name="navigation_drawer_privacy_policy">Ochrana soukromí</string>
-  <string name="account_list_no_notification_permission">Upozornění vypnuta. Nebudete upozorněni na chyby při synchronizaci.</string>
-  <string name="account_list_manage_connections">Spravovat spojení</string>
-  <string name="account_list_datasaver_enabled">Spořič dat povolen. Synchronizace na pozadí je omezena.</string>
-  <string name="account_list_manage_datasaver">Spravovat spořič dat</string>
-  <string name="account_list_battery_saver_enabled">Spořič baterie je povolen. Synchronizace může být omezena.</string>
-  <string name="account_list_manage_battery_saver">Spravovat spořič baterie</string>
-  <string name="account_list_low_storage">Málo volného místa v úložišti. Android nebude synchronizovat místní změny okamžitě, ale při další běžné synchronizaci.</string>
-  <string name="account_list_manage_storage">Spravovat úložiště</string>
   <string name="accounts_sync_all">Synchronizovat všechny účty</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Upozornění vypnuta. Nebudete upozorněni na chyby při synchronizaci.</string>
+  <string name="sync_warning_manage_connections">Spravovat spojení</string>
+  <string name="sync_warning_datasaver_enabled">Spořič dat povolen. Synchronizace na pozadí je omezena.</string>
+  <string name="sync_warning_manage_datasaver">Spravovat spořič dat</string>
+  <string name="sync_warning_battery_saver_enabled">Spořič baterie je povolen. Synchronizace může být omezena.</string>
+  <string name="sync_warning_manage_battery_saver">Spravovat spořič baterie</string>
+  <string name="sync_warning_low_storage">Málo volného místa v úložišti. Android nebude synchronizovat místní změny okamžitě, ale při další běžné synchronizaci.</string>
+  <string name="sync_warning_manage_storage">Spravovat úložiště</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Vyhledání služby se nezdařilo</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Nedaří se znovu načíst seznam sady</string>
@@ -390,7 +392,6 @@
   <string name="webdav_mounts_unmount">Odpojit</string>
   <string name="webdav_add_mount_title">Přidat WebDAV připojení</string>
   <string name="webdav_mounts_empty">Přímo přistupujte ke svým souborům v cloudu přidáním WebDAV připojení!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Viz příručka <a href="%1$s">jak fungují WebDAV připojení</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Zobrazovaný název</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Neplatná URL</string>

@@ -11,13 +11,14 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.di.SyncDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -25,27 +26,27 @@ import org.junit.Assert.assertEquals
 
 class TestSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted extras: Array<String>,
     @Assisted authority: String,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTestCollection,
-    @Assisted collection: Collection
+    @Assisted collection: Collection,
+    @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
     account,
     httpClient,
-    extras,
     authority,
     syncResult,
     localCollection,
-    collection
+    collection,
+    resync = null,
+    syncDispatcher
 ) {
 
     @AssistedFactory
     interface Factory {
         fun create(
             account: Account,
-            extras: Array<String>,
             authority: String,
             httpClient: HttpClient,
             syncResult: SyncResult,
@@ -60,7 +61,7 @@ class TestSyncManager @AssistedInject constructor(
     }
 
     var didQueryCapabilities = false
-    override fun queryCapabilities(): SyncState? {
+    override suspend fun queryCapabilities(): SyncState? {
         if (didQueryCapabilities)
             throw IllegalStateException("queryCapabilities() must not be called twice")
         didQueryCapabilities = true
@@ -86,7 +87,7 @@ class TestSyncManager @AssistedInject constructor(
 
     var listAllRemoteResult = emptyList<Pair<Response, Response.HrefRelation>>()
     var didListAllRemote = false
-    override fun listAllRemote(callback: MultiResponseCallback) {
+    override suspend fun listAllRemote(callback: MultiResponseCallback) {
         if (didListAllRemote)
             throw IllegalStateException("listAllRemote() must not be called twice")
         didListAllRemote = true
@@ -96,7 +97,7 @@ class TestSyncManager @AssistedInject constructor(
 
     var assertDownloadRemote = emptyMap<HttpUrl, String>()
     var didDownloadRemote = false
-    override fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
         didDownloadRemote = true
         assertEquals(assertDownloadRemote.keys.toList(), bunch)
 

@@ -5,6 +5,7 @@
   <string name="account_title_address_book">DAVx⁵ دفتر عناوين</string>
   <string name="dialog_remove">أزل</string>
   <string name="dialog_deny">ألغِ</string>
+  <string name="dialog_enable">تفعيل</string>
   <string name="field_required">يجب ملء هذا الحقل</string>
   <string name="help">مساعدة</string>
   <string name="navigate_up">العودة</string>
@@ -64,6 +65,7 @@
   <string name="navigation_drawer_website">موقع الويب</string>
   <string name="navigation_drawer_manual">دليل الاستخدام</string>
   <string name="navigation_drawer_faq">الأسئلة الشائعة</string>
+  <!--Sync warnings-->
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">فشل اكتشاف الخدمة</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">لم يتمكن التطبيق من تجديد قائمة المجموعة</string>

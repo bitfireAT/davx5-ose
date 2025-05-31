@@ -41,7 +41,7 @@ class LocalCalendarStore @Inject constructor(
         context.contentResolver.acquireContentProviderClient(authority)
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalCalendar? {
-        val service = serviceRepository.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
+        val service = serviceRepository.getBlocking(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
         // If the collection doesn't have a color, use a default color.

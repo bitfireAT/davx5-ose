@@ -16,6 +16,7 @@ import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.runBlocking
 
 /**
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
@@ -23,16 +24,16 @@ import dagger.assisted.AssistedInject
 class TaskSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted val providerName: TaskProvider.ProviderName,
-    @Assisted extras: Array<String>,
+    @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
     localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
-): Syncer<LocalTaskListStore, LocalTaskList>(account, extras, syncResult) {
+): Syncer<LocalTaskListStore, LocalTaskList>(account, resync, syncResult) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, providerName: TaskProvider.ProviderName, extras: Array<String>, syncResult: SyncResult): TaskSyncer
+        fun create(account: Account, providerName: TaskProvider.ProviderName, resyncType: ResyncType?, syncResult: SyncResult): TaskSyncer
     }
 
     override val dataStore = localTaskListStoreFactory.create(providerName)
@@ -72,13 +73,15 @@ class TaskSyncer @AssistedInject constructor(
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
             account,
             httpClient.value,
-            extras,
             dataStore.authority,
             syncResult,
             localCollection,
-            remoteCollection
+            remoteCollection,
+            resync
         )
-        syncManager.performSync()
+        runBlocking {
+            syncManager.performSync()
+        }
     }
 
 }

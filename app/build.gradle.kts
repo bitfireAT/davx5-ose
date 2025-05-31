@@ -1,14 +1,15 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 plugins {
-    alias(libs.plugins.mikepenz.aboutLibraries)
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+
+    alias(libs.plugins.mikepenz.aboutLibraries)
 }
 
 // Android configuration
@@ -18,8 +19,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 404070002
-        versionName = "4.4.7"
+        versionCode = 404110004
+        versionName = "4.4.11"
 
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
@@ -85,17 +86,18 @@ android {
     }
 
     lint {
-        disable += arrayOf("GoogleAppIndexingWarning", "ImpliedQuantity", "MissingQuantity", "MissingTranslation", "ExtraTranslation", "RtlEnabled", "RtlHardcoded", "Typos", "NullSafeMutableLiveData")
-    }
-
-    packaging {
-        resources {
-            excludes += arrayOf("META-INF/*.md")
-        }
+        disable += arrayOf("GoogleAppIndexingWarning", "ImpliedQuantity", "MissingQuantity", "MissingTranslation", "ExtraTranslation", "RtlEnabled", "RtlHardcoded", "Typos")
     }
 
     androidResources {
         generateLocaleConfig = true
+    }
+
+    packaging {
+        resources {
+            // multiple (test) dependencies have LICENSE files at same location
+            merges += arrayOf("META-INF/LICENSE*")
+        }
     }
 
     @Suppress("UnstableApiUsage")
@@ -117,18 +119,8 @@ ksp {
 }
 
 aboutLibraries {
+    // exclude timestamps for reproducible builds [https://github.com/bitfireAT/davx5-ose/issues/994]
     excludeFields = arrayOf("generated")
-}
-
-configurations {
-    configureEach {
-        // exclude modules which are in conflict with system libraries
-        exclude(module="commons-logging")
-        exclude(group="org.json", module="json")
-
-        // Groovy requires SDK 26+, and it's not required, so exclude it
-        exclude(group="org.codehaus.groovy")
-    }
 }
 
 dependencies {
@@ -163,7 +155,6 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.material3)
     implementation(libs.compose.materialIconsExtended)
-    implementation(libs.compose.runtime.livedata)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.toolingPreview)
 
@@ -181,6 +172,7 @@ dependencies {
     implementation(libs.bitfire.cert4android)
     implementation(libs.bitfire.dav4jvm) {
         exclude(group="junit")
+        exclude(group="org.ogce", module="xpp3")    // Android has its own XmlPullParser implementation
     }
     implementation(libs.bitfire.ical4android)
     implementation(libs.bitfire.vcard4android)
@@ -195,7 +187,17 @@ dependencies {
     implementation(libs.okhttp.brotli)
     implementation(libs.okhttp.logging)
     implementation(libs.openid.appauth)
-    implementation(libs.unifiedpush)
+    implementation(libs.unifiedpush) {
+        // UnifiedPush connector seems to be using a workaround by importing this library.
+        // Will be removed after https://github.com/tink-crypto/tink-java-apps/pull/5 is merged.
+        // See: https://codeberg.org/UnifiedPush/android-connector/src/commit/28cb0d622ed0a972996041ab9cc85b701abc48c6/connector/build.gradle#L56-L59
+        exclude(group = "com.google.crypto.tink", module = "tink")
+    }
+    implementation(libs.unifiedpush.fcm)
+
+    // force some versions for compatibility with our minSdk level (see version catalog for details)
+    implementation(libs.commons.codec)
+    implementation(libs.commons.lang)
 
     // for tests
     androidTestImplementation(libs.androidx.arch.core.testing)
@@ -206,10 +208,12 @@ dependencies {
     androidTestImplementation(libs.androidx.work.testing)
     androidTestImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(libs.room.testing)
 
+    testImplementation(libs.bitfire.dav4jvm)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.okhttp.mockwebserver)

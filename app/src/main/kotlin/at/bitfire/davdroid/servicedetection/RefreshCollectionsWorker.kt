@@ -23,10 +23,12 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.exception.UnauthorizedException
-import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
@@ -64,6 +66,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     private val httpClientBuilder: HttpClient.Builder,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry,
+    private val pushRegistrationManager: PushRegistrationManager,
     serviceRepository: DavServiceRepository
 ): CoroutineWorker(appContext, workerParams) {
 
@@ -128,7 +131,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     }
 
     val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
-    val service = serviceRepository.get(serviceId)
+    val service = serviceRepository.getBlocking(serviceId)
     val account = service?.let { service ->
         Account(service.accountName, applicationContext.getString(R.string.account_type))
     }
@@ -198,6 +201,9 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             )
             return Result.failure()
         }
+
+        // update push registrations
+        pushRegistrationManager.update(serviceId)
 
         // Success
         return Result.success()

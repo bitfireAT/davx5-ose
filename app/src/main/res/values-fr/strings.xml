@@ -7,6 +7,7 @@
   <string name="dialog_delete">Supprimer</string>
   <string name="dialog_remove">Retirer</string>
   <string name="dialog_deny">Annuler</string>
+  <string name="dialog_enable">Activer</string>
   <string name="field_required">Ce champ est requis</string>
   <string name="help">Aide</string>
   <string name="navigate_up">Revenir en haut</string>
@@ -49,6 +50,7 @@
   <string name="intro_open_source_title">Logiciels open-source</string>
   <string name="intro_open_source_text">Nous sommes heureux que vous utilisiez %s, qui est un logiciel open-source. Le développement, la maintenance et l\'assistance sont un travail difficile. Veuillez envisager de contribuer (il y a plusieurs façons de le faire) ou de faire un don. Ce serait très apprécié !</string>
   <string name="intro_open_source_details">Comment contribuer / donner</string>
+  <string name="intro_open_source_dont_show">Ne me rappelle pas pour</string>
   <string name="intro_next">Suivant</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Autorisations</string>
@@ -118,17 +120,21 @@
   <string name="navigation_drawer_support_project">Soutenir le projet</string>
   <string name="navigation_drawer_contribute">Comment contribuer</string>
   <string name="navigation_drawer_privacy_policy">Politique de confidentialité</string>
-  <string name="account_list_no_notification_permission">Notifications désactivées. Vous ne serez pas averti des erreurs de synchronisation.</string>
-  <string name="account_list_manage_connections">Gérer les connexions</string>
-  <string name="account_list_datasaver_enabled">L\'économiseur de données est activé. La synchronisation en arrière-plan est limitée.</string>
-  <string name="account_list_manage_datasaver">Gérer l\'économiseur de données</string>
-  <string name="account_list_battery_saver_enabled">L\'économiseur de batterie est activé. La synchronisation risque d\'être limitée.</string>
-  <string name="account_list_manage_battery_saver">Gérer l\'économiseur de batterie</string>
-  <string name="account_list_low_storage">Espace de stockage faible. Android ne synchronisera pas les changements locaux immédiatement mais pendant la prochaine synchronisation.</string>
-  <string name="account_list_manage_storage">Gérer le stockage</string>
   <string name="account_list_welcome">Bienvenue sur DAVx⁵!</string>
   <string name="account_list_empty">Connectez-vous à votre serveur pour garder vos calendriers et contacts synchronisés.</string>
   <string name="accounts_sync_all">Synchroniser tous les comptes</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Notifications désactivées. Vous ne serez pas averti des erreurs de synchronisation.</string>
+  <string name="sync_warning_no_internet">La synchronisation automatique n\'est pas active (aucune connexion Internet vérifiée)</string>
+  <string name="sync_warning_manage_connections">Gérer les connexions</string>
+  <string name="sync_warning_datasaver_enabled">L\'économiseur de données est activé. La synchronisation en arrière-plan est limitée.</string>
+  <string name="sync_warning_manage_datasaver">Gérer l\'économiseur de données</string>
+  <string name="sync_warning_battery_saver_enabled">L\'économiseur de batterie est activé. La synchronisation risque d\'être limitée.</string>
+  <string name="sync_warning_manage_battery_saver">Gérer l\'économiseur de batterie</string>
+  <string name="sync_warning_low_storage">Espace de stockage faible. Android ne synchronisera pas les changements locaux immédiatement mais pendant la prochaine synchronisation.</string>
+  <string name="sync_warning_manage_storage">Gérer le stockage</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Fournisseur de calendrier manquant</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Avez-vous désactivé l\'application système \'Stockage du calendrier\' ?</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">La détection du service a échoué</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
@@ -405,7 +411,6 @@
   <string name="webdav_mounts_unmount">Démonter</string>
   <string name="webdav_add_mount_title">Ajouter un point de montage WebDAV</string>
   <string name="webdav_mounts_empty">Accédez directement à vos fichiers du cloud en ajoutant un point de montage WebDAV !</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Consultez le manuel pour voir <a href="%1$s">comment fonctionnent les points de montage WebDAV</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Nom affiché</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL incorrecte</string>

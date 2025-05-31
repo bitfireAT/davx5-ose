@@ -7,6 +7,7 @@
   <string name="dialog_delete">Удалить</string>
   <string name="dialog_remove">Удалить</string>
   <string name="dialog_deny">Отмена</string>
+  <string name="dialog_enable">Включить</string>
   <string name="field_required">Это поле является обязательным</string>
   <string name="help">Помощь</string>
   <string name="navigate_up">Перейти наверх</string>
@@ -126,21 +127,24 @@
   <string name="navigation_drawer_support_project">Поддержать проект</string>
   <string name="navigation_drawer_contribute">Как внести свой вклад</string>
   <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
-  <string name="account_list_no_notification_permission">Уведомления отключены. Вы не будете получать уведомления об ошибках синхронизации.</string>
-  <string name="account_list_no_internet">Автоматическая синхронизация не активна (нет проверенного подключения к интернету).</string>
-  <string name="account_list_manage_connections">Управление подключениями</string>
-  <string name="account_list_datasaver_enabled">Экономия трафика включена. Фоновая синхронизация ограничена.</string>
-  <string name="account_list_manage_datasaver">Экономия трафика</string>
-  <string name="account_list_battery_saver_enabled">Включена экономия заряда батареи. Синхронизация может быть ограничена.</string>
-  <string name="account_list_manage_battery_saver">Управлять экономией заряда батареи</string>
-  <string name="account_list_low_storage">Недостаточно памяти для хранения данных. Android будет синхронизировать локальные изменения не сразу, а во время следующей регулярной синхронизации.</string>
-  <string name="account_list_manage_storage">Управление хранилищем</string>
-  <string name="account_list_calendar_storage_disabled">Провайдер календаря отсутствует. Было ли отключено системное приложение Хранилище календаря?</string>
-  <string name="account_list_contacts_storage_disabled">Провайдер контактов отсутствует. Было ли отключено системное приложение Хранилище контактов?</string>
-  <string name="account_list_manage_apps">Управление приложениями</string>
   <string name="account_list_welcome">Добро пожаловать в DAVx⁵!</string>
   <string name="account_list_empty">Подключитесь к вашему серверу и синхронизируйте календари и контакты.</string>
   <string name="accounts_sync_all">Синхронизировать все аккаунты</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Уведомления отключены. Вы не будете получать уведомления об ошибках синхронизации.</string>
+  <string name="sync_warning_no_internet">Автоматическая синхронизация не активна (нет проверенного подключения к интернету).</string>
+  <string name="sync_warning_manage_connections">Управление подключениями</string>
+  <string name="sync_warning_datasaver_enabled">Экономия трафика включена. Фоновая синхронизация ограничена.</string>
+  <string name="sync_warning_manage_datasaver">Экономия трафика</string>
+  <string name="sync_warning_battery_saver_enabled">Включена экономия заряда батареи. Синхронизация может быть ограничена.</string>
+  <string name="sync_warning_manage_battery_saver">Управлять экономией заряда батареи</string>
+  <string name="sync_warning_low_storage">Недостаточно памяти для хранения данных. Android будет синхронизировать локальные изменения не сразу, а во время следующей регулярной синхронизации.</string>
+  <string name="sync_warning_manage_storage">Управление хранилищем</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Отсутствует провайдер календаря</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Вы отключили системное приложение \"Хранилище календаря\"?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Отсутствует провайдер контактов</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Вы отключили системное приложение \"Хранилище контактов\"?</string>
+  <string name="sync_warning_manage_apps">Управление приложениями</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Не удалось обнаружить службу</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
@@ -174,6 +178,7 @@
   <string name="app_settings_distrust_system_certs">Сертификаты системы</string>
   <string name="app_settings_distrust_system_certs_on">Не доверять системным и пользовательским CA</string>
   <string name="app_settings_distrust_system_certs_off">Доверять системным и пользовательским CA (рекомендуется)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Если этот параметр активен, системные сертификаты считаются не надежными. Это означает, что вам придется вручную принимать каждый сертификат (в том числе когда сервер обновляет свой сертификат), иначе настройка и синхронизация учетных записей работать не будут.</string>
   <string name="app_settings_reset_certificates">Сброс сертификатов</string>
   <string name="app_settings_reset_certificates_summary">Отменяет доверие ко всем пользовательским сертификатам</string>
   <string name="app_settings_reset_certificates_success">Все пользовательские сертификаты были удалены</string>
@@ -198,7 +203,10 @@
   <string name="app_settings_unifiedpush_no_distributor">Push-дистрибьютор не установлен</string>
   <string name="app_settings_unifiedpush_no_endpoint">Конечная точка не сконфигурирована</string>
   <string name="app_settings_unifiedpush_ready">Готов получать push-сообщения %s</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">Push-сообщения всегда зашифрованы.</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">Аккаунт не существует</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">WebСal</string>
@@ -412,6 +420,8 @@
   <string name="debug_info_logs_caption">Логи</string>
   <string name="debug_info_logs_subtitle">Доступны подробные логи</string>
   <string name="debug_info_logs_view">Просмотр логов</string>
+  <string name="debug_info_privacy_warning_title"> Предупреждение о конфиденциальности</string>
+  <string name="debug_info_privacy_warning_description">Журналы и отладочная информация могут содержать конфиденциальную информацию. Пожалуйста, помните об этом при публичном использовании.</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Произошла ошибка.</string>
   <string name="exception_httpexception">Произошла ошибка HTTP</string>
@@ -424,7 +434,7 @@
   <string name="webdav_mounts_unmount">Отмонтировать</string>
   <string name="webdav_add_mount_title">Добавление точки монтирования WebDAV</string>
   <string name="webdav_mounts_empty">Прямой доступ к вашим облачным файлам с помощью точки монтирования WebDAV!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Ознакомьтесь с руководством, чтобы узнать <a href="%1$s">как работают точки монтирования WebDAV</a>.</string>]]></string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Ознакомьтесь с руководством, чтобы узнать <a href="%1$s">как работают точки монтирования WebDAV</a>.]]></string>
   <string name="webdav_add_mount_display_name">Отображаемое имя</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Некорректный URL</string>
@@ -459,5 +469,8 @@
   <!--widgets-->
   <string name="widget_sync_all">Синхронизировать все</string>
   <string name="widget_sync_all_accounts">Синхронизировать все аккаунты</string>
+  <string name="widget_labeled_sync_label">Ярлык кнопки синхронизации</string>
+  <string name="widget_icon_sync_label">Значок кнопки синхронизации</string>
+  <string name="widget_sync_description">Нажмите для запуска синхронизации вручную.</string>
   <!--cert4android-->
 </resources>

@@ -3,9 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">A felhasználói fiók (már) nem létezik</string>
   <string name="account_title_address_book">DAVx⁵ címjegyzék</string>
+  <string name="account_prefs_use_app">Itt ne változtassa meg a fiókot! Használja közvetlenül az alkalmazást a fiókok kezeléséhez.</string>
+  <string name="dialog_delete">Törlés</string>
   <string name="dialog_remove">Eltávolítás</string>
   <string name="dialog_deny">Mégse</string>
-  <string name="field_required">Ennek e mezőnek a megadása kötelező</string>
+  <string name="dialog_enable">Bekapcsolás</string>
+  <string name="field_required">A mező megadása kötelező</string>
   <string name="help">Súgó</string>
   <string name="navigate_up">Navigáció felfelé</string>
   <string name="optional_label">* nem kötelező</string>
@@ -38,15 +41,21 @@
   <string name="intro_tasks_jtx">jtx Board</string>
   <string name="intro_tasks_jtx_info"><![CDATA[Feladatok, naplóbejegyzések és jegyzetek szinkronizálásának támogatása.]]></string>
   <string name="intro_tasks_title">Feladatok támogatása</string>
-  <string name="intro_tasks_text1">Ha a szerver támogatja a feladatokat, akkor a következő feladat alkalmazásokkal lehet szinkronizálni őket:</string>
+  <string name="intro_tasks_text1">Ha a kiszolgáló támogatja a feladatokat, akkor a következő feladatalkalmazásokkal lehet szinkronizálni őket:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">A fejlesztése leállt – nem ajánlott.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Egyes funkciók <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nem támogatottak</a>.]]></string>
   <string name="intro_tasks_no_app_store">Nincs elérhető alkalmazás-áruház</string>
   <string name="intro_tasks_dont_show">Nincs szükségem a feladatok támogatására.*</string>
   <string name="intro_open_source_title">Nyílt forráskódú szoftver</string>
   <string name="intro_open_source_text">Nagyon örülünk, hogy a %s felhasználói közé tartozik, amely nyílt forráskódú szoftver.  A fejlesztés, karbantartás és támogatás ugyanakkor kemény munkát igényel.  Fontolja meg, hogy ezt pénzzel, vagy valamilyen más módon támogassa (több lehetőség közül is választhat). Nagyon megköszönnénk!</string>
   <string name="intro_open_source_details">A hozzájárulás lehetőségei</string>
+  <string name="intro_open_source_dont_show">Ne emlékeztessen</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="one">%d hónapig</item>
+    <item quantity="other">%d hónapig</item>
+  </plurals>
   <string name="intro_next">Tovább</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Engedélyek</string>
@@ -56,20 +65,20 @@
   <string name="permissions_all_status_on">Az összes engedély megadva</string>
   <string name="permissions_contacts_title">Névjegyengedélyek</string>
   <string name="permissions_contacts_status_off">A címtárak szinkronizálásának mellőzése (nem javasolt)</string>
-  <string name="permissions_contacts_status_on">A névjegyek szinkronizálása (javasolt)</string>
+  <string name="permissions_contacts_status_on">A névjegy-szinkronizálás lehetséges</string>
   <string name="permissions_calendar_title">Naptárengedélyek</string>
   <string name="permissions_calendar_status_off">A naptárak szinkronizálásának mellőzése (nem javasolt)</string>
-  <string name="permissions_calendar_status_on">A naptárak szinkronizálása (javasolt)</string>
-  <string name="permissions_notification_title">Értesítések engedélyezése</string>
-  <string name="permissions_notification_status_off">Az értesítések tiltása (nem ajánlott)</string>
+  <string name="permissions_calendar_status_on">A naptárak szinkronizálása lehetséges</string>
+  <string name="permissions_notification_title">Értesítési engedély</string>
+  <string name="permissions_notification_status_off">Az értesítések tiltása (nem javasolt)</string>
   <string name="permissions_notification_status_on">Értesítések engedélyezése</string>
   <string name="permissions_jtx_title">jtx Board engedélyek</string>
   <string name="permissions_opentasks_title">OpenTasks engedélyek</string>
-  <string name="permissions_tasksorg_title">Feladat engedélyek</string>
+  <string name="permissions_tasksorg_title">Feladatok engedélyek</string>
   <string name="permissions_tasks_status_off">Nincs feladatszinkronizálás</string>
   <string name="permissions_tasks_status_on">A feladatlisták szinkronizálása lehetséges</string>
   <string name="permissions_autoreset_title">Engedélyek megtartása</string>
-  <string name="permissions_autoreset_status_off">Az engedélyek automatikusan visszaállhatnak az alapértelmezettre (nem ajánlott)</string>
+  <string name="permissions_autoreset_status_off">Az engedélyek automatikusan visszaállhatnak az alapértelmezettre (nem javasolt)</string>
   <string name="permissions_autoreset_status_on">Az engedélyek nem fognak visszaállni az alapértelmezettre automatikusan</string>
   <string name="permissions_autoreset_instruction">Kattintson az Engedélyekre &gt; vegy ki a pipát az „Engedélyek eltávolítása, ha nem használja az alkalmazást” mellől</string>
   <string name="permissions_app_settings_hint">Ha a kapcsolók nem működnek, használja az alkalmazásbeállításokat.</string>
@@ -84,6 +93,8 @@
   <string name="wifi_permissions_background_location_permission_label">Engedélyezés mindig</string>
   <string name="wifi_permissions_background_location_permission_on">A Helyadatok engedély erre van állítva: %s</string>
   <string name="wifi_permissions_background_location_permission_off">A Helyadatok engedély nincs erre állítva: %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">A %s csak arra használ helyadatokat (a WiFi SSID-t), hogy a szinkronizációt egy konkrét WiFi SSID-ra korlátozza. Ez akkor is megtörténik, ha a szinkronizáció a háttérben fut.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Az összes helyadat (csak a WiFi SSID) csak helyben lesz használva, és nem lesz sehová sem elküldve</string>
   <string name="wifi_permissions_location_enabled">A helyadatok mindig engedélyezve vannak</string>
   <string name="wifi_permissions_location_enabled_on">A helyadat-szolgáltatás bekapcsolva</string>
   <string name="wifi_permissions_location_enabled_off">A helyadat-szolgáltatás kikapcsolva</string>
@@ -95,8 +106,8 @@
   <string name="about_license_info_no_warranty">Ehhez a program SEMMIFÉLE GARANCIA NEM JÁR. Szabad szoftver, amely bizonyos feltételek mellett szabadon terjeszthető.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">A naplófájl létrehozása nem sikerült</string>
-  <string name="logging_notification_text">Mostantól %s minden művelete naplózásra kerül</string>
-  <string name="logging_notification_view_share">Nézet/megosztás</string>
+  <string name="logging_notification_text">Mostantól a %s minden művelete naplózásra kerül</string>
+  <string name="logging_notification_view_share">Megtekintés/megosztás</string>
   <string name="logging_notification_disable">Kikapcsolás</string>
   <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV szinkronizációs adapter</string>
@@ -113,27 +124,38 @@
   <string name="navigation_drawer_community">Közösség</string>
   <string name="navigation_drawer_support_project">A projekt támogatása</string>
   <string name="navigation_drawer_contribute">A közreműködés lehetőségei</string>
-  <string name="navigation_drawer_privacy_policy">Adatvédelmi irányelv</string>
-  <string name="account_list_no_notification_permission">Az értesítések tiltva vannak.  A szinkronizálási hibákról nem fog értesítést kapni.</string>
-  <string name="account_list_manage_connections">Kapcsolatok kezelése</string>
-  <string name="account_list_datasaver_enabled">Az adatcsökkentés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
-  <string name="account_list_manage_datasaver">Adatcsökkentés kezelése</string>
-  <string name="account_list_battery_saver_enabled">Az akkumulátorkímélés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
-  <string name="account_list_manage_battery_saver">Akkumulátorkímélés kezelése</string>
-  <string name="account_list_low_storage">A rendelkezésre álló tárhely kevés.  Az Android nem fogja a helyi erőforrásokat azonnal szinkronizálni, csak a következő rendes alkalommal.</string>
-  <string name="account_list_manage_storage">Tárhely kezelése</string>
+  <string name="navigation_drawer_privacy_policy">Adatvédelmi irányelvek</string>
+  <string name="account_list_welcome">Üdvzöli a DAVx⁵!</string>
+  <string name="account_list_empty">Kapcsolódjon a kiszolgálójához, és tartsa szinkronban a naptárait és névjegyeit.</string>
   <string name="accounts_sync_all">Az összes fiók szinkronizálása</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Az értesítések tiltva vannak.  A szinkronizálási hibákról nem fog értesítést kapni.</string>
+  <string name="sync_warning_no_internet">Az automatikus szinkronizálás nem aktív (nincs megerősített internetkapcsolat)</string>
+  <string name="sync_warning_manage_connections">Kapcsolatok kezelése</string>
+  <string name="sync_warning_datasaver_enabled">Az adatcsökkentés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
+  <string name="sync_warning_manage_datasaver">Adatcsökkentés kezelése</string>
+  <string name="sync_warning_battery_saver_enabled">Az akkumulátorkímélés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
+  <string name="sync_warning_manage_battery_saver">Akkumulátorkímélés kezelése</string>
+  <string name="sync_warning_low_storage">A rendelkezésre álló tárhely kevés.  Az Android nem fogja a helyi erőforrásokat azonnal szinkronizálni, csak a következő rendes alkalommal.</string>
+  <string name="sync_warning_manage_storage">Tárhely kezelése</string>
+  <string name="sync_warning_calendar_storage_disabled_title">A naptárszolgáltató hiányzik</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Letiltotta a „Naptártároló” rendszeralkalmazást?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">A névjegyszolgáltató hiányzik</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Letiltotta a „Névjegytároló” rendszeralkalmazást?</string>
+  <string name="sync_warning_manage_apps">Alkalmazások kezelése</string>
   <!--RefreshCollectionsWorker-->
-  <string name="refresh_collections_worker_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
-  <string name="refresh_collections_worker_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
+  <string name="refresh_collections_worker_refresh_failed">A szolgáltatások felderítése nem sikerült</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">A gyűjteménylista frissítése nem sikerült</string>
   <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Futás előtérben</string>
-  <string name="foreground_service_notify_text">Egyes eszközökön erre szükség van az automatikus szinkronizáció működéséhez</string>
+  <string name="foreground_service_notify_text">Egyes eszközökön szükséges az automatikus szinkronizáció működéséhez</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Beállítások</string>
   <string name="app_settings_debug">Hibakeresés</string>
   <string name="app_settings_show_debug_info">Hibakeresési információ megtekintése</string>
+  <string name="app_settings_show_debug_info_details">A beállítások részleteinek és a naplók megtekintése/megosztása</string>
   <string name="app_settings_logging">Részletes naplózás</string>
+  <string name="app_settings_logging_on">A naplózás aktív. A naplókat a hibakeresési információk részeként tekintheti meg.</string>
   <string name="app_settings_logging_off">Naplózás kikapcsolva</string>
   <string name="app_settings_battery_optimization">Akkumulátorhasználat optimalizálása</string>
   <string name="app_settings_battery_optimization_exempted">Az alkalmazás kivétel alóla (ajánlott)</string>
@@ -154,6 +176,7 @@
   <string name="app_settings_distrust_system_certs">A rendszertanúsítványok elfogadása</string>
   <string name="app_settings_distrust_system_certs_on">A rendszer által kezelt, előre vagy felhasználó által telepített tanúsítványok figyelmen kívül lesznek hagyva</string>
   <string name="app_settings_distrust_system_certs_off">A rendszer által kezelt, előre vagy felhasználó által telepített tanúsítványok megbízhatóak (javasolt)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Ha ez a beállítás aktív, akkor a rendszertanúsítványok nem lesznek megbízhatónak tekintve. Ez azt jelenti, hogy minden tanúsítványt kézileg kell elfogadnia (akkor is, ha a kiszolgáló megújítja a tanúsítványát), különben a fiókbeállítások és a szinkronizáció nem fog működni.</string>
   <string name="app_settings_reset_certificates">A tanúsítványok megbízhatóságának törlésére</string>
   <string name="app_settings_reset_certificates_summary">A tanúsítványok megbízhatóságával kapcsolatos beállítások törlésére</string>
   <string name="app_settings_reset_certificates_success">A tanúsítványok megbízhatóságával kapcsolatos beállítások törölve</string>
@@ -172,6 +195,12 @@
   <string name="app_settings_integration">Integráció</string>
   <string name="app_settings_tasks_provider">Feladatok alkalmazás</string>
   <string name="app_settings_tasks_provider_none">Nem található kompatibilis feladatalkalmazás</string>
+  <string name="app_settings_unifiedpush">UnifiedPush (kísérleti)</string>
+  <string name="app_settings_unifiedpush_disable">Nincs (leküldés letiltása)</string>
+  <string name="app_settings_unifiedpush_choose_distributor">Válasszon egy disztribútort</string>
+  <string name="app_settings_unifiedpush_no_distributor">Nincs leküldésdisztribútor telepítve</string>
+  <string name="app_settings_unifiedpush_no_endpoint">Nincs végpont beállítva</string>
+  <string name="app_settings_unifiedpush_ready">Készen áll a leküldéses üzenetek fogadására innen: %s</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -192,13 +221,17 @@
   <string name="account_synchronize_this_collection">a gyűjtemény szinkronizálása</string>
   <string name="account_read_only">csak olvasható</string>
   <string name="account_calendar">naptár</string>
+  <string name="account_contacts">névjegyek</string>
   <string name="account_journal">napló</string>
+  <string name="account_task_list">feladatok</string>
   <string name="account_only_personal">Csak a személyesek megjelenítése</string>
+  <string name="account_refresh_collections">Lista frissítése</string>
   <string name="account_webcal_external_app">A Webcal feliratkozások külső alkalmazásokkal szinkronizálhatók.</string>
   <string name="account_no_webcal_handler_found">Nem található Webcal-képes alkalmazás</string>
   <string name="account_install_icsx5">ICSx⁵ telepítése</string>
   <!--AddAccountActivity-->
   <string name="login_title">Fiók hozzáadása</string>
+  <string name="login_privacy_hint"><![CDATA[Az adatok csak a kiszolgáló és az eszköze között lesznek átvíve. A %1$s máshová nem küldi el. Lásd az <a href="%2$s">adatvédelmi nyilatkozatot</a>.]]></string>
   <string name="login_generic_login">Általános bejelentkezés</string>
   <string name="login_provider_login">Szolgáltatófüggő bejelentkezés</string>
   <string name="login_continue">Folytatás</string>
@@ -224,6 +257,8 @@
   <string name="login_account_contact_group_method">A csoportok kezelésének módja:</string>
   <string name="login_account_name_required">A fióknév kötelező</string>
   <string name="login_account_name_already_taken">A fióknév már használatban van</string>
+  <string name="login_account_not_added">A fiók hozzáadása nem sikerült</string>
+  <string name="login_finish">Befejezés</string>
   <string name="login_type_advanced">Speciális bejelentkezés</string>
   <string name="login_no_client_certificate_optional">Nincs klienstanúsítvány*</string>
   <string name="login_client_certificate_selected">Klienstanúsítvány: %s</string>
@@ -249,6 +284,7 @@
   <string name="login_querying_server">Várjon, a kiszolgáló lekérdezése…</string>
   <string name="login_no_service">Nem található CalDAV vagy CardDAV szolgáltatás.</string>
   <string name="login_no_service_info">Ez az alapwebcím nem tűnik elérhető CalDAV/CardDAV webcímnek, és a szolgáltatásfelderítés nem sikerült.</string>
+  <string name="login_see_tested_services"><![CDATA[Ellenőrizze a szolgáltatója leírását, az <a href="%s">általunk tesztelt szolgáltatások listáját</a>, és az alapwebcímeiket.]]></string>
   <string name="login_check_credentials">Ellenőrizze a hitelesítő adatok is (általában a felhasználónevet és a jelszót).</string>
   <string name="login_logs_available">További műszaki információk érhetők el a naplókban.</string>
   <string name="login_view_logs">Naplóbejegyzések megtekintése</string>
@@ -317,32 +353,51 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Címjegyzék létrehozása</string>
+  <string name="create_addressbook_maybe_not_supported">A címjegyzék CardDAV-on keresztüli létrehozását nem biztos, hogy támogatja a kiszolgáló.</string>
   <string name="create_calendar">Naptár létrehozása</string>
+  <string name="create_calendar_time_zone_optional">Alapértelmezett időzóna*</string>
+  <string name="create_calendar_time_zone_none">–</string>
   <string name="create_calendar_type">Lehetséges naptárbejegyzések</string>
   <string name="create_calendar_type_vevent">Események</string>
   <string name="create_calendar_type_vtodo">Feladatok</string>
   <string name="create_calendar_type_vjournal">Jegyzetek/napló</string>
+  <string name="create_calendar_maybe_not_supported">A naptár CalDAV-on keresztüli létrehozását nem biztos, hogy támogatja a kiszolgáló.</string>
   <string name="create_collection_color">Szín</string>
   <string name="create_collection_display_name">Cím</string>
   <string name="create_collection_home_set">Tárhely</string>
+  <string name="create_collection_description_optional">Leírás*</string>
   <string name="create_collection_create">Létrehozás</string>
   <string name="create_collection_optional">* nem kötelező</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Gyűjtemény törlése</string>
-  <string name="collection_synchronization">Szinkronizáció</string>
+  <string name="collection_delete_warning">A gyűjtemény (%s) és a hozzá tartozó adatok véglegesen törölve lesznek, helyben és a kiszolgálóról is.</string>
+  <string name="collection_synchronization">Szinkronizálás</string>
+  <string name="collection_synchronization_on">Szinkronizálás bekapcsolva</string>
+  <string name="collection_synchronization_off">Szinkronizálás kikapcsolva</string>
+  <string name="collection_read_only">Csak olvasható</string>
+  <string name="collection_read_only_by_server">Csak olvasható (kiszolgálón)</string>
+  <string name="collection_read_only_by_setting">Csak olvasható (házirend szerint)</string>
+  <string name="collection_read_only_forced">Csak olvasható (csak helyben)</string>
+  <string name="collection_read_write">Olvasás/írás</string>
   <string name="collection_title">Cím</string>
   <string name="collection_description">Leírás</string>
+  <string name="collection_owner">Tulajdonos</string>
+  <string name="collection_push_support">Leküldés támogatása</string>
+  <string name="collection_push_web_push">A kiszolgáló a leküldés támogatását hirdeti</string>
+  <string name="collection_push_subscribed_at">Feliratkozva: %1$s, lejár: %2$s</string>
+  <string name="collection_last_sync">Utolsó szinkronizálás (%s)</string>
+  <string name="collection_url">Webcím</string>
   <!--debugging and DebugInfoActivity-->
-  <string name="debug_info_title">Hibakeresési információ</string>
+  <string name="debug_info_title">Hibakeresési információk</string>
   <string name="debug_info_archive_caption">ZIP archívum</string>
   <string name="debug_info_archive_subtitle">Hibakeresési információkat tartalmaz</string>
-  <string name="debug_info_archive_text">Az archívum megosztásával lehetőség van egy másik számítógépre áthelyezni, e-mail formájában elküldeni vagy egy hibabejelentéshez becsatolni.</string>
+  <string name="debug_info_archive_text">Az archívum megosztásával lehetőség van egy másik számítógépre áthelyezni, e-mail formájában elküldeni vagy egy hibabejelentéshez mellékelni.</string>
   <string name="debug_info_archive_share">Archívum megosztása</string>
   <string name="debug_info_attached">Hibakeresési információ csatolása ehhez az üzenethez (ha a fogadó alkalmazás támogatja a mellékleteket).</string>
   <string name="debug_info_http_error">HTTP hiba</string>
   <string name="debug_info_server_error">Kiszolgálóhiba</string>
   <string name="debug_info_webdav_error">WebDAV hiba</string>
-  <string name="debug_info_io_error">I/O hiba</string>
+  <string name="debug_info_io_error">Ki-/bemeneti hiba</string>
   <string name="debug_info_http_403_description">A kérés megtagadva.  Ellenőrizze az érintett erőforrásokat és a hibakeresési információkat a további részletekért.</string>
   <string name="debug_info_http_404_description">A kért erőforrás (már) nem létezik. A további részletekért ellenőrizze az érintett erőforrásokat és a hibakeresési információkat.</string>
   <string name="debug_info_http_5xx_description">Kiszolgálóoldali hiba történt.  Vegye fel a kapcsolatot a kiszolgáló üzemeltetőjével.</string>
@@ -359,7 +414,7 @@
   <!--ExceptionInfoFragment-->
   <string name="exception">Hiba történt.</string>
   <string name="exception_httpexception">HTTP hiba történt.</string>
-  <string name="exception_ioexception">I/O hiba történt.</string>
+  <string name="exception_ioexception">Ki-/bemeneti hiba történt.</string>
   <string name="exception_show_details">Részletek megjelenítése</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV kötetek</string>
@@ -368,7 +423,7 @@
   <string name="webdav_mounts_unmount">Leválasztás</string>
   <string name="webdav_add_mount_title">WebDAV kötet hozzáadása</string>
   <string name="webdav_mounts_empty">Közvetlenül hozzáférhet a felhőben tárolt fájlokhoz egy WebDAV kötet hozzáadásával!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Nézze meg a leírásban <a href="%1$s">hogyan lehet WebDAV köteteket használni</a>.</string>]]></string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Nézze meg a leírásban, hogy <a href="%1$s">a WebDAV kötetek hogyan működnek</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Megjelenítendő név</string>
   <string name="webdav_add_mount_url">WebDAV webcím</string>
   <string name="webdav_add_mount_url_invalid">Érvénytelen webcím</string>
@@ -379,7 +434,7 @@
   <string name="webdav_add_mount_no_support">Ezen a webcímen nincs WebDAV szolgáltatás</string>
   <string name="webdav_remove_mount_title">WebDAV kötet leválasztása</string>
   <string name="webdav_remove_mount_text">A kapcsolat beállításai elvesznek, de maguk a fájlok nem.</string>
-  <string name="webdav_notification_access">Hozzáférés WebDAV fájlhoz</string>
+  <string name="webdav_notification_access">Hozzáférés a WebDAV fájlhoz</string>
   <string name="webdav_notification_download">WebDAV fájl letöltése</string>
   <string name="webdav_notification_upload">WebDAV fájl feltöltése</string>
   <string name="webdav_provider_root_title">WebDAV kötetek</string>
@@ -389,15 +444,17 @@
   <string name="sync_error_tasks_too_old">%s túl régi</string>
   <string name="sync_error_tasks_required_version">Legalacsonyabb szükséges verzió: %1$s</string>
   <string name="sync_error_authentication_failed">A hitelesítés nem sikerült (ellenőrizze a hitelesítési adatokat)</string>
-  <string name="sync_error_io">Hálózati vagy I/O hiba – %s</string>
-  <string name="sync_error_http_dav">HTTP kiszolgálóhiba - %s</string>
-  <string name="sync_error_local_storage">Tárhelyhiba - %s</string>
+  <string name="sync_error_io">Hálózati vagy ki-/bemeneti hiba – %s</string>
+  <string name="sync_error_http_dav">HTTP kiszolgálóhiba – %s</string>
+  <string name="sync_error_local_storage">Helyi tárhelyhiba –%s</string>
   <string name="sync_error_retry_limit_reached">Nem végzetes hiba (az újrapróbálkozások száma elérte a maximumot)</string>
   <string name="sync_error_view_item">Elem megtekintése</string>
   <string name="sync_invalid_contact">A kiszolgáló érvénytelen névjegyet küldött</string>
   <string name="sync_invalid_event">A kiszolgáló érvénytelen eseményt küldött</string>
   <string name="sync_invalid_task">A kiszolgáló érvénytelen feladatot küldött</string>
   <string name="sync_invalid_resources_ignoring">Egy vagy több érvénytelen erőforrás kihagyva</string>
+  <string name="sync_notification_pending_push_title">Szinkronizálás függőben</string>
+  <string name="sync_notification_pending_push_message">A távoli adatok megváltoztak</string>
   <!--widgets-->
   <string name="widget_sync_all">Az összes szinkronizálása</string>
   <string name="widget_sync_all_accounts">Az összes fiók szinkronizálása</string>

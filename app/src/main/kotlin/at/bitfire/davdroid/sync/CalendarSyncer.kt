@@ -15,22 +15,23 @@ import at.bitfire.ical4android.AndroidCalendar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.runBlocking
 
 /**
  * Sync logic for calendars
  */
 class CalendarSyncer @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted extras: Array<String>,
+    @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
     calendarStore: LocalCalendarStore,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory
-): Syncer<LocalCalendarStore, LocalCalendar>(account, extras, syncResult) {
+): Syncer<LocalCalendarStore, LocalCalendar>(account, resync, syncResult) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, extras: Array<String>, syncResult: SyncResult): CalendarSyncer
+        fun create(account: Account, resyncType: ResyncType?, syncResult: SyncResult): CalendarSyncer
     }
 
     override val dataStore = calendarStore
@@ -57,14 +58,16 @@ class CalendarSyncer @AssistedInject constructor(
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
             account,
-            extras,
             httpClient.value,
             dataStore.authority,
             syncResult,
             localCollection,
-            remoteCollection
+            remoteCollection,
+            resync
         )
-        syncManager.performSync()
+        runBlocking {
+            syncManager.performSync()
+        }
     }
 
 }

@@ -47,7 +47,7 @@ class AdvancedLoginModel @AssistedInject constructor(
             baseUri = uri,
             credentials = Credentials(
                 username = username.trimToNull(),
-                password = password.text.toString().trimToNull(),
+                password = password.text.toString().trimToNull()?.toCharArray(),
                 certificateAlias = certAlias.trimToNull()
             )
         )
@@ -61,7 +61,7 @@ class AdvancedLoginModel @AssistedInject constructor(
         uiState = uiState.copy(
             url = initialLoginInfo.baseUri?.toString()?.removePrefix("https://") ?: "",
             username = initialLoginInfo.credentials?.username ?: "",
-            password = TextFieldState(initialLoginInfo.credentials?.password ?: ""),
+            password = TextFieldState(initialLoginInfo.credentials?.password?.concatToString() ?: ""),
             certAlias = initialLoginInfo.credentials?.certificateAlias ?: ""
         )
     }

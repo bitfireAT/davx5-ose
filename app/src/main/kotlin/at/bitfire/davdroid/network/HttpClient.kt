@@ -6,15 +6,19 @@ package at.bitfire.davdroid.network
 
 import android.accounts.Account
 import android.content.Context
+import androidx.annotation.WorkerThread
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.ForegroundTracker
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import okhttp3.Authenticator
@@ -64,6 +68,7 @@ class HttpClient(
         private val authorizationServiceProvider: Provider<AuthorizationService>,
         @ApplicationContext private val context: Context,
         defaultLogger: Logger,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
         private val keyManagerFactory: ClientCertKeyManager.Factory,
         private val settingsManager: SettingsManager
     ) {
@@ -102,7 +107,12 @@ class HttpClient(
 
             } else if (credentials.username != null && credentials.password != null) {
                 // basic/digest auth
-                val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.username, credentials.password, insecurePreemptive = true)
+                val authHandler = BasicDigestAuthHandler(
+                    domain = UrlUtils.hostToDomain(host),
+                    username = credentials.username,
+                    password = credentials.password,
+                    insecurePreemptive = true
+                )
                 authenticationInterceptor = authHandler
                 authenticator = authHandler
             }
@@ -141,9 +151,14 @@ class HttpClient(
         /**
          * Takes authentication (basic/digest or OAuth and client certificate) from a given account.
          *
+         * **Must not be run on main thread, because it creates [AccountSettings]!** Use [fromAccountAsync] if possible.
+         *
          * @param account   the account to take authentication from
          * @param onlyHost  if set: only authenticate for this host name
+         *
+         * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
          */
+        @WorkerThread
         fun fromAccount(account: Account, onlyHost: String? = null): Builder {
             val accountSettings = accountSettingsFactory.create(account)
             authenticate(
@@ -154,6 +169,15 @@ class HttpClient(
                 }
             )
             return this
+        }
+
+        /**
+         * Same as [fromAccount], but can be called on any thread.
+         *
+         * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
+         */
+        suspend fun fromAccountAsync(account: Account, onlyHost: String? = null): Builder = withContext(ioDispatcher) {
+            fromAccount(account, onlyHost)
         }
 
 
@@ -169,7 +193,7 @@ class HttpClient(
                 .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
 
                 // don't allow redirects by default because it would break PROPFIND handling
-                .followRedirects(false)
+                .followRedirects(followRedirects)
 
                 // add User-Agent to every request
                 .addInterceptor(UserAgentInterceptor)

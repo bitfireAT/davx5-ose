@@ -33,7 +33,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Before
@@ -110,7 +110,7 @@ class SyncAdapterServicesTest {
 
 
     @Test
-    fun testSyncAdapter_onPerformSync_cancellation() {
+    fun testSyncAdapter_onPerformSync_cancellation() = runTest {
         val syncWorkerManager = mockk<SyncWorkerManager>()
         val syncAdapter = syncAdapter(syncWorkerManager = syncWorkerManager)
         val workManager = WorkManager.getInstance(context)
@@ -122,17 +122,15 @@ class SyncAdapterServicesTest {
             // assume worker takes a long time
             every { workManager.getWorkInfosForUniqueWorkFlow("TheSyncWorker") } just Awaits
 
-            runBlocking {
-                val sync = launch {
-                    syncAdapter.onPerformSync(account, Bundle(), CalendarContract.AUTHORITY, mockk(), SyncResult())
-                }
-
-                // simulate incoming cancellation from sync framework
-                syncAdapter.onSyncCanceled()
-
-                // wait for sync to finish (should happen immediately)
-                sync.join()
+            val sync = launch {
+                syncAdapter.onPerformSync(account, Bundle(), CalendarContract.AUTHORITY, mockk(), SyncResult())
             }
+
+            // simulate incoming cancellation from sync framework
+            syncAdapter.onSyncCanceled()
+
+            // wait for sync to finish (should happen immediately)
+            sync.join()
         }
     }
 

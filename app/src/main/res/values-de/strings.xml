@@ -7,6 +7,7 @@
   <string name="dialog_delete">Löschen</string>
   <string name="dialog_remove">Entfernen</string>
   <string name="dialog_deny">Abbrechen</string>
+  <string name="dialog_enable">Aktivieren</string>
   <string name="field_required">Feld wird benötigt</string>
   <string name="help">Hilfe</string>
   <string name="navigate_up">Aufwärts navigieren</string>
@@ -124,21 +125,24 @@
   <string name="navigation_drawer_support_project">Projekt unterstützen</string>
   <string name="navigation_drawer_contribute">Einen Beitrag leisten</string>
   <string name="navigation_drawer_privacy_policy">Datenschutzerklärung</string>
-  <string name="account_list_no_notification_permission">Benachrichtigungen deaktiviert. Sie werden nicht über Fehler bei der Synchronisierung informiert.</string>
-  <string name="account_list_no_internet">Automatische Synchronisation nicht aktiv (keine überprüfte Internetverbindung).</string>
-  <string name="account_list_manage_connections">Verbindungen steuern</string>
-  <string name="account_list_datasaver_enabled">Datensparen aktiviert. Hintergrundsynchronisierung ist eingeschränkt.</string>
-  <string name="account_list_manage_datasaver">Datensparen verwalten</string>
-  <string name="account_list_battery_saver_enabled">Akkusparen aktiviert. Synchronisierung kann eingeschränkt sein.</string>
-  <string name="account_list_manage_battery_saver">Akkusparen verwalten</string>
-  <string name="account_list_low_storage">Wenig Speicherplatz. Android wird lokale Änderungen nicht sofort synchronisieren, sondern bei der nächsten regulären Synchronisierung.</string>
-  <string name="account_list_manage_storage">Speicherplatz verwalten</string>
-  <string name="account_list_calendar_storage_disabled">Kalender-Provider fehlt. Haben Sie die System-App „Kalender” deaktiviert?</string>
-  <string name="account_list_contacts_storage_disabled">Kontakte-Provider fehlt. Haben Sie die System-App „Kontakte” deaktiviert?</string>
-  <string name="account_list_manage_apps">Apps verwalten</string>
   <string name="account_list_welcome">Willkommen bei DAVx⁵!</string>
-  <string name="account_list_empty">Verbinden Sie sich mit Ihrem Server und synchronisieren Ihre Kalender und Kontakte .</string>
+  <string name="account_list_empty">Verbinden Sie sich mit Ihrem Server und synchronisieren Sie Ihre Kalender und Kontakte.</string>
   <string name="accounts_sync_all">Alle Konten synchronisieren</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Benachrichtigungen deaktiviert. Sie werden nicht über Fehler bei der Synchronisierung informiert.</string>
+  <string name="sync_warning_no_internet">Automatische Synchronisation nicht aktiv (keine überprüfte Internetverbindung).</string>
+  <string name="sync_warning_manage_connections">Verbindungen steuern</string>
+  <string name="sync_warning_datasaver_enabled">Datensparen aktiviert. Hintergrundsynchronisierung ist eingeschränkt.</string>
+  <string name="sync_warning_manage_datasaver">Datensparen verwalten</string>
+  <string name="sync_warning_battery_saver_enabled">Akkusparen aktiviert. Synchronisierung kann eingeschränkt sein.</string>
+  <string name="sync_warning_manage_battery_saver">Akkusparen verwalten</string>
+  <string name="sync_warning_low_storage">Wenig Speicherplatz. Android wird lokale Änderungen nicht sofort synchronisieren, sondern bei der nächsten regulären Synchronisierung.</string>
+  <string name="sync_warning_manage_storage">Speicherplatz verwalten</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Kalender-Provider fehlt</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Haben Sie die »Kalender«-System-App deaktiviert?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Kontakte-Provider fehlt</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Haben Sie die »Kontakte«-System-App deaktiviert?</string>
+  <string name="sync_warning_manage_apps">Apps verwalten</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Diensterkennung fehlgeschlagen</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
@@ -172,6 +176,7 @@
   <string name="app_settings_distrust_system_certs">Systemzertifikaten nicht vertrauen</string>
   <string name="app_settings_distrust_system_certs_on">System- und installierten CAs wird nicht vertraut</string>
   <string name="app_settings_distrust_system_certs_off">System- und installierten CAs wird vertraut (empfohlen)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Wenn diese Einstellung aktiv ist, werden Systemzertifikate als nicht vertrauenswürdig erachtet. Das bedeutet, dass Sie jedes Zertifikat (auch wenn der Server sein Zertifikat auffrischt) von Hand akzeptieren müssen oder die Kontoeinrichtung und Synchronisation werden nicht funktionieren.</string>
   <string name="app_settings_reset_certificates">Zertifikat-Vertrauen zurücksetzen</string>
   <string name="app_settings_reset_certificates_summary">Setzt angenommene/abgelehnte Zertifikate zurück</string>
   <string name="app_settings_reset_certificates_success">Angenommene/abgelehnte Zertifikate zurückgesetzt</string>
@@ -196,7 +201,10 @@
   <string name="app_settings_unifiedpush_no_distributor">Kein Push-Anbieter installiert</string>
   <string name="app_settings_unifiedpush_no_endpoint">Kein Endpunkt konfiguriert</string>
   <string name="app_settings_unifiedpush_ready">Bereit, Push-Mitteilungen über %s zu empfangen</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">Push-Nachrichten sind immer verschlüsselt.</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">Konto gibt es nicht</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -379,7 +387,7 @@
   <string name="collection_owner">Besitzer</string>
   <string name="collection_push_support">Push-Unterstützung</string>
   <string name="collection_push_web_push">Server wirbt mit Push-Unterstützung</string>
-  <string name="collection_push_subscribed_at">Um %1$s angemeldet, läuft aus um %2$s</string>
+  <string name="collection_push_subscribed_at">Um %1$s angemeldet, läuft ab %2$s</string>
   <string name="collection_last_sync">Letzte Synchronisierung (%s)</string>
   <string name="collection_url">Adresse (URL)</string>
   <!--debugging and DebugInfoActivity-->
@@ -406,6 +414,8 @@
   <string name="debug_info_logs_caption">Protokoll</string>
   <string name="debug_info_logs_subtitle">Ausführliches Protokoll verfügbar</string>
   <string name="debug_info_logs_view">Logs anzeigen</string>
+  <string name="debug_info_privacy_warning_title">Datenschutzhinweis</string>
+  <string name="debug_info_privacy_warning_description">Protokolle und Debug-Informationen können private Daten enthalten. Seien Sie sich dessen bewusst, wenn Sie diese öffentlich weitergeben.</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ein Fehler ist aufgetreten.</string>
   <string name="exception_httpexception">Ein HTTP-Fehler ist aufgetreten.</string>
@@ -418,7 +428,7 @@
   <string name="webdav_mounts_unmount">Aushängen</string>
   <string name="webdav_add_mount_title">WebDAV-Zugang hinzufügen</string>
   <string name="webdav_mounts_empty">Greifen Sie mit einem WebDAV-Zugang direkt auf Ihre Cloud-Dateien zu!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[In der Anleitung erfahren Sie mehr darüber, <a href="%1$s">wie WebDAV-Zugänge funktionieren</a>.</string>]]></string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[In der Anleitung erfahren Sie mehr darüber, <a href="%1$s">wie WebDAV-Zugänge funktionieren</a>.]]></string>
   <string name="webdav_add_mount_display_name">Anzeigename</string>
   <string name="webdav_add_mount_url">WebDAV-Adresse</string>
   <string name="webdav_add_mount_url_invalid">Ungültige Adresse</string>
@@ -453,5 +463,8 @@
   <!--widgets-->
   <string name="widget_sync_all">Alles synchronisieren</string>
   <string name="widget_sync_all_accounts">Alle Konten synchronisieren</string>
+  <string name="widget_labeled_sync_label">Beschriftete Sync-Taste</string>
+  <string name="widget_icon_sync_label">Sync-Taste-Symbol</string>
+  <string name="widget_sync_description">Antippen, um die Synchronisierung manuell durchzuführen.</string>
   <!--cert4android-->
 </resources>

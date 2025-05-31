@@ -6,6 +6,7 @@
   <string name="dialog_delete">Eliminar</string>
   <string name="dialog_remove">Eliminar</string>
   <string name="dialog_deny">Cancelar</string>
+  <string name="dialog_enable">Activar</string>
   <string name="field_required">Este campo es requerido</string>
   <string name="help">Ayuda</string>
   <string name="navigate_up">Navegar hacia arriba</string>
@@ -115,15 +116,16 @@
   <string name="navigation_drawer_support_project">Da soporte al proyecto</string>
   <string name="navigation_drawer_contribute">Cómo contribuir o donar</string>
   <string name="navigation_drawer_privacy_policy">Reglamento de privacidad</string>
-  <string name="account_list_no_notification_permission">Notificaciones deshabilitadas. No serás notificado de errores de sincronización.</string>
-  <string name="account_list_manage_connections">Administrar conexiones</string>
-  <string name="account_list_datasaver_enabled">Ahorro de datos habilitado. Sincronización en segundo plano restringida.</string>
-  <string name="account_list_manage_datasaver">Administrar ahorro de datos</string>
-  <string name="account_list_battery_saver_enabled">Ahorro de batería habilitado. La sincronización puede estar restringida.</string>
-  <string name="account_list_manage_battery_saver">Administrar ahorro de batería</string>
-  <string name="account_list_low_storage">Poco espacio de almacenamiento disponible. Android no sincronizará los cambios hechos localmente de manera inmediata, pero sí lo hará en la siguiente sincronización programada.</string>
-  <string name="account_list_manage_storage">Administrar almacenamiento</string>
   <string name="accounts_sync_all">Sincronizar todas las cuentas</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Notificaciones deshabilitadas. No serás notificado de errores de sincronización.</string>
+  <string name="sync_warning_manage_connections">Administrar conexiones</string>
+  <string name="sync_warning_datasaver_enabled">Ahorro de datos habilitado. Sincronización en segundo plano restringida.</string>
+  <string name="sync_warning_manage_datasaver">Administrar ahorro de datos</string>
+  <string name="sync_warning_battery_saver_enabled">Ahorro de batería habilitado. La sincronización puede estar restringida.</string>
+  <string name="sync_warning_manage_battery_saver">Administrar ahorro de batería</string>
+  <string name="sync_warning_low_storage">Poco espacio de almacenamiento disponible. Android no sincronizará los cambios hechos localmente de manera inmediata, pero sí lo hará en la siguiente sincronización programada.</string>
+  <string name="sync_warning_manage_storage">Administrar almacenamiento</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Falló la detección del servicio</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">No se pudo refrescar lista de colección</string>
@@ -392,7 +394,6 @@
   <string name="webdav_mounts_unmount">Desmontar</string>
   <string name="webdav_add_mount_title">Agregar montaje WebDAV</string>
   <string name="webdav_mounts_empty">Accede directamente a tus archivos en la nube agregando un punto de montaje WebDAV</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Mira el manual para <a href="%1$s">cómo funcionan los puntos de montaje WebDAV</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Mostrar nombre</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL inválida</string>

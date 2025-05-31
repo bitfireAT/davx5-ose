@@ -7,6 +7,7 @@
   <string name="dialog_delete">Verwijderen</string>
   <string name="dialog_remove">Verwijder</string>
   <string name="dialog_deny">Annuleer</string>
+  <string name="dialog_enable">Inschakelen</string>
   <string name="field_required">Dit veld is verplicht</string>
   <string name="help">Hulp</string>
   <string name="navigate_up">Navigeer omhoog</string>
@@ -124,21 +125,24 @@
   <string name="navigation_drawer_support_project">Ondersteun het project</string>
   <string name="navigation_drawer_contribute">Hoe bijdragen</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
-  <string name="account_list_no_notification_permission">Meldingen uitgeschakeld. U krijgt geen meldingen over synchronisatiefouten.</string>
-  <string name="account_list_no_internet">Automatische synchronisatie niet actief (geen geverifieerde internetverbinding).</string>
-  <string name="account_list_manage_connections">Verbindingen beheren</string>
-  <string name="account_list_datasaver_enabled">Gegevensbesparing ingeschakeld. Synchronisatie op de achtergrond is beperkt.</string>
-  <string name="account_list_manage_datasaver">Beheer van gegevensbesparing</string>
-  <string name="account_list_battery_saver_enabled">Batterijbesparing ingeschakeld. Synchronisatie kan beperkt zijn.</string>
-  <string name="account_list_manage_battery_saver">Batterijbesparing beheren</string>
-  <string name="account_list_low_storage">Weinig opslagruimte. Android zal lokale wijzigingen niet onmiddellijk synchroniseren, maar tijdens de volgende reguliere synchronisatie.</string>
-  <string name="account_list_manage_storage">Opslag beheren</string>
-  <string name="account_list_calendar_storage_disabled">Agenda-aanbieder ontbreekt. Heb je de systeemapp “Agenda-opslag” uitgeschakeld?</string>
-  <string name="account_list_contacts_storage_disabled">Contacten provider ontbreekt. Heb je de systeemapp “Contacten opslaan” uitgeschakeld?</string>
-  <string name="account_list_manage_apps">Apps beheren</string>
   <string name="account_list_welcome">Welkom bij DAVx⁵!</string>
   <string name="account_list_empty">Maak verbinding met je server en houd je agenda\'s en contactpersonen gesynchroniseerd.</string>
   <string name="accounts_sync_all">Alle accounts synchroniseren</string>
+  <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">Meldingen uitgeschakeld. U krijgt geen meldingen over synchronisatiefouten.</string>
+  <string name="sync_warning_no_internet">Automatische synchronisatie niet actief (geen geverifieerde internetverbinding).</string>
+  <string name="sync_warning_manage_connections">Verbindingen beheren</string>
+  <string name="sync_warning_datasaver_enabled">Gegevensbesparing ingeschakeld. Synchronisatie op de achtergrond is beperkt.</string>
+  <string name="sync_warning_manage_datasaver">Beheer van gegevensbesparing</string>
+  <string name="sync_warning_battery_saver_enabled">Batterijbesparing ingeschakeld. Synchronisatie kan beperkt zijn.</string>
+  <string name="sync_warning_manage_battery_saver">Batterijbesparing beheren</string>
+  <string name="sync_warning_low_storage">Weinig opslagruimte. Android zal lokale wijzigingen niet onmiddellijk synchroniseren, maar tijdens de volgende reguliere synchronisatie.</string>
+  <string name="sync_warning_manage_storage">Opslag beheren</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Aanbieder voor Kalender ontbreekt</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Heb je de systeemapp \"Kalenderopslag\" uitgeschakeld?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Aanbieder voor Contactpersonen ontbreekt</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Heb je de systeemapp \"Contactenopslag\" uitgeschakeld?</string>
+  <string name="sync_warning_manage_apps">Apps beheren</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Service herkenning is mislukt</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">De collectielijst is niet bijgewerkt</string>
@@ -172,6 +176,7 @@
   <string name="app_settings_distrust_system_certs">Wantrouw systeemcertificaten</string>
   <string name="app_settings_distrust_system_certs_on">Door systeem en gebruiker toegevoegde CA certificaten niet vertrouwen</string>
   <string name="app_settings_distrust_system_certs_off">Door systeem en gebruiker toegevoegde CA certificaten vertrouwen (aanbevolen)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Als deze instelling actief is, worden systeemcertificaten niet als betrouwbaar beschouwd. Dit betekent dat je elk certificaat handmatig moet accepteren (ook wanneer de server zijn certificaat vernieuwt) anders werken accountinstelling en synchronisatie niet.</string>
   <string name="app_settings_reset_certificates">(Niet-)vertrouwde certificaten terugzetten</string>
   <string name="app_settings_reset_certificates_summary">Herstelt het vertrouwen van alle aangepaste certificaten</string>
   <string name="app_settings_reset_certificates_success">Alle aangepaste certificaten zijn gewist</string>
@@ -196,7 +201,10 @@
   <string name="app_settings_unifiedpush_no_distributor">Geen push distributeur geïnstalleerd</string>
   <string name="app_settings_unifiedpush_no_endpoint">Geen eindpunt geconfigureerd</string>
   <string name="app_settings_unifiedpush_ready">Klaar om pushberichten te ontvangen via %s</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">Pushberichten zijn altijd versleuteld.</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">Account bestaat niet</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -406,6 +414,8 @@
   <string name="debug_info_logs_caption">Logboeken</string>
   <string name="debug_info_logs_subtitle">Uitgebreide logboeken zijn beschikbaar</string>
   <string name="debug_info_logs_view">Details bekijken</string>
+  <string name="debug_info_privacy_warning_title">Privacyverklaring</string>
+  <string name="debug_info_privacy_warning_description">Logboeken en foutopsporingsgegevens kunnen privé-informatie bevatten. Houd hier rekening mee als u ze openbaar deelt.</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Er is een fout opgetreden.</string>
   <string name="exception_httpexception">Een HTTP-fout is opgetreden.</string>
@@ -418,7 +428,7 @@
   <string name="webdav_mounts_unmount">Ontkoppelen</string>
   <string name="webdav_add_mount_title">WebDAV-koppeling toevoegen</string>
   <string name="webdav_mounts_empty">Verkrijg directe toegang tot cloudbestanden met een WebDAV-koppeling!</string>
-  <string name="webdav_add_mount_empty_more_info"><![CDATA[Zie de handleiding over <a href="%1$s"> het koppelen van WebDAV</a>.</string>]]></string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Zie de handleiding voor <a href="%1$s">hoe WebDAV-mounts werken</a>.]]></string>
   <string name="webdav_add_mount_display_name">Weergavenaam</string>
   <string name="webdav_add_mount_url">WebDAV-URL</string>
   <string name="webdav_add_mount_url_invalid">Ongeldige URL</string>
@@ -453,5 +463,8 @@
   <!--widgets-->
   <string name="widget_sync_all">Alles synchroniseren</string>
   <string name="widget_sync_all_accounts">Alle accounts synchroniseren</string>
+  <string name="widget_labeled_sync_label">Gelabelde synchronisatieknop</string>
+  <string name="widget_icon_sync_label">Pictogram synchronisatieknop</string>
+  <string name="widget_sync_description">Tik om de synchronisatie handmatig uit te voeren.</string>
   <!--cert4android-->
 </resources>

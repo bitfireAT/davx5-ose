@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
+import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.property.webdav.GetETag
@@ -25,6 +26,7 @@ data class HeadResponse(
 
     companion object {
 
+        @WorkerThread
         fun fromUrl(client: HttpClient, url: HttpUrl): HeadResponse {
             var size: Long? = null
             var eTag: String? = null
