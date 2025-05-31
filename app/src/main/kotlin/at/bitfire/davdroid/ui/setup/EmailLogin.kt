@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -81,6 +82,9 @@ fun EmailLoginScreen(
     canContinue: Boolean,
     onLogin: () -> Unit = {}
 ) {
+    val emailFocusRequester = remember { FocusRequester() }
+    val passwordFocusRequester = remember { FocusRequester() }
+
     Assistant(
         nextLabel = stringResource(R.string.login_login),
         nextEnabled = canContinue,
@@ -95,7 +99,6 @@ fun EmailLoginScreen(
                     .padding(vertical = 8.dp)
             )
 
-            val focusRequester = remember { FocusRequester() }
             OutlinedTextField(
                 value = email,
                 onValueChange = onSetEmail,
@@ -110,11 +113,12 @@ fun EmailLoginScreen(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(focusRequester)
+                    .focusRequester(emailFocusRequester)
+                    .focusProperties {
+                        next = passwordFocusRequester
+                        down = next
+                    }
             )
-            LaunchedEffect(Unit) {
-                focusRequester.requestFocus()
-            }
 
             val manualUrl = Constants.MANUAL_URL.buildUpon()
                 .appendPath(Constants.MANUAL_PATH_ACCOUNTS_COLLECTIONS)
@@ -143,9 +147,19 @@ fun EmailLoginScreen(
                 keyboardActions = KeyboardActions(
                     onDone = { if (canContinue) onLogin() }
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(passwordFocusRequester)
+                    .focusProperties {
+                        previous = emailFocusRequester
+                        up = previous
+                    }
             )
         }
+    }
+
+    LaunchedEffect(Unit) {
+        emailFocusRequester.requestFocus()
     }
 }
 
