@@ -201,7 +201,10 @@
   <string name="app_settings_unifiedpush_no_distributor">Geen push distributeur geïnstalleerd</string>
   <string name="app_settings_unifiedpush_no_endpoint">Geen eindpunt geconfigureerd</string>
   <string name="app_settings_unifiedpush_ready">Klaar om pushberichten te ontvangen via %s</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">Pushberichten zijn altijd versleuteld.</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">Account bestaat niet</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -411,6 +414,8 @@
   <string name="debug_info_logs_caption">Logboeken</string>
   <string name="debug_info_logs_subtitle">Uitgebreide logboeken zijn beschikbaar</string>
   <string name="debug_info_logs_view">Details bekijken</string>
+  <string name="debug_info_privacy_warning_title">Privacyverklaring</string>
+  <string name="debug_info_privacy_warning_description">Logboeken en foutopsporingsgegevens kunnen privé-informatie bevatten. Houd hier rekening mee als u ze openbaar deelt.</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Er is een fout opgetreden.</string>
   <string name="exception_httpexception">Een HTTP-fout is opgetreden.</string>
@@ -458,5 +463,8 @@
   <!--widgets-->
   <string name="widget_sync_all">Alles synchroniseren</string>
   <string name="widget_sync_all_accounts">Alle accounts synchroniseren</string>
+  <string name="widget_labeled_sync_label">Gelabelde synchronisatieknop</string>
+  <string name="widget_icon_sync_label">Pictogram synchronisatieknop</string>
+  <string name="widget_sync_description">Tik om de synchronisatie handmatig uit te voeren.</string>
   <!--cert4android-->
 </resources>

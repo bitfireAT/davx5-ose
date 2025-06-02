@@ -6,12 +6,12 @@ package at.bitfire.davdroid.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,7 +31,7 @@ class AppSettingsActivity: AppCompatActivity() {
                     startActivity(
                         Intent(
                             Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                            Uri.parse("package:" + BuildConfig.APPLICATION_ID)
+                            ("package:" + BuildConfig.APPLICATION_ID).toUri()
                         )
                     )
                 },

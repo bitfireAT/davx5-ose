@@ -106,7 +106,7 @@ class NextcloudLoginFlow @Inject constructor(
             baseUri = URI(serverUrl).resolve(DAV_PATH),
             credentials = Credentials(
                 username = json.getString("loginName"),
-                password = json.getString("appPassword")
+                password = json.getString("appPassword").toCharArray()
             ),
             suggestedGroupMethod = GroupMethod.CATEGORIES
         )

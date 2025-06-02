@@ -1,7 +1,7 @@
 # Comments apply to next line
 
 [versions]
-android-agp = "8.10.0"
+android-agp = "8.10.1"
 android-desugaring = "2.1.5"
 androidx-activityCompose = "1.10.1"
 androidx-appcompat = "1.7.0"
@@ -19,7 +19,7 @@ androidx-test-rules = "1.6.1"
 androidx-test-junit = "1.2.1"
 androidx-work = "2.10.1"
 bitfire-cert4android = "b67ba86d31"
-bitfire-dav4jvm = "ec6264d427"
+bitfire-dav4jvm = "05fb8ecda6"
 bitfire-ical4android = "240f756bab"
 bitfire-vcard4android = "59eb998f29"
 compose-accompanist = "0.37.3"

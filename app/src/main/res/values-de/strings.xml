@@ -126,7 +126,7 @@
   <string name="navigation_drawer_contribute">Einen Beitrag leisten</string>
   <string name="navigation_drawer_privacy_policy">Datenschutzerklärung</string>
   <string name="account_list_welcome">Willkommen bei DAVx⁵!</string>
-  <string name="account_list_empty">Verbinden Sie sich mit Ihrem Server und synchronisieren Ihre Kalender und Kontakte .</string>
+  <string name="account_list_empty">Verbinden Sie sich mit Ihrem Server und synchronisieren Sie Ihre Kalender und Kontakte.</string>
   <string name="accounts_sync_all">Alle Konten synchronisieren</string>
   <!--Sync warnings-->
   <string name="sync_warning_no_notification_permission">Benachrichtigungen deaktiviert. Sie werden nicht über Fehler bei der Synchronisierung informiert.</string>
@@ -204,6 +204,7 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">Push-Nachrichten sind immer verschlüsselt.</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">Konto gibt es nicht</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -386,7 +387,7 @@
   <string name="collection_owner">Besitzer</string>
   <string name="collection_push_support">Push-Unterstützung</string>
   <string name="collection_push_web_push">Server wirbt mit Push-Unterstützung</string>
-  <string name="collection_push_subscribed_at">Um %1$s angemeldet, läuft aus um %2$s</string>
+  <string name="collection_push_subscribed_at">Um %1$s angemeldet, läuft ab %2$s</string>
   <string name="collection_last_sync">Letzte Synchronisierung (%s)</string>
   <string name="collection_url">Adresse (URL)</string>
   <!--debugging and DebugInfoActivity-->
@@ -413,6 +414,8 @@
   <string name="debug_info_logs_caption">Protokoll</string>
   <string name="debug_info_logs_subtitle">Ausführliches Protokoll verfügbar</string>
   <string name="debug_info_logs_view">Logs anzeigen</string>
+  <string name="debug_info_privacy_warning_title">Datenschutzhinweis</string>
+  <string name="debug_info_privacy_warning_description">Protokolle und Debug-Informationen können private Daten enthalten. Seien Sie sich dessen bewusst, wenn Sie diese öffentlich weitergeben.</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ein Fehler ist aufgetreten.</string>
   <string name="exception_httpexception">Ein HTTP-Fehler ist aufgetreten.</string>
@@ -460,5 +463,8 @@
   <!--widgets-->
   <string name="widget_sync_all">Alles synchronisieren</string>
   <string name="widget_sync_all_accounts">Alle Konten synchronisieren</string>
+  <string name="widget_labeled_sync_label">Beschriftete Sync-Taste</string>
+  <string name="widget_icon_sync_label">Sync-Taste-Symbol</string>
+  <string name="widget_sync_description">Antippen, um die Synchronisierung manuell durchzuführen.</string>
   <!--cert4android-->
 </resources>

@@ -411,6 +411,7 @@
   <string name="debug_info_logs_caption">Loggar</string>
   <string name="debug_info_logs_subtitle">Utförliga loggar finns tillgängliga</string>
   <string name="debug_info_logs_view">Visa loggar</string>
+  <string name="debug_info_privacy_warning_title">Integritetspolicy</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ett fel har uppstått.</string>
   <string name="exception_httpexception">Ett HTTP-fel har uppstått.</string>
@@ -457,5 +458,6 @@
   <!--widgets-->
   <string name="widget_sync_all">Synkronisera alla</string>
   <string name="widget_sync_all_accounts">Synkronisera alla konton</string>
+  <string name="widget_sync_description">Tryck för att köra synkronisering manuellt.</string>
   <!--cert4android-->
 </resources>

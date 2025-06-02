@@ -18,13 +18,14 @@ object SystemAccountUtils {
      * @param context  operating context
      * @param account  account to create
      * @param userData user data to set
+     * @param password password to set
      *
      * @return whether the account has been created
      *
      * @throws IllegalArgumentException when user data contains non-String values
      * @throws IllegalStateException if user data can't be set
      */
-    fun createAccount(context: Context, account: Account, userData: Bundle, password: String? = null): Boolean {
+    fun createAccount(context: Context, account: Account, userData: Bundle, password: CharArray? = null): Boolean {
         // validate user data
         for (key in userData.keySet()) {
             userData.get(key)?.let { entry ->
@@ -35,7 +36,7 @@ object SystemAccountUtils {
 
         // create account
         val manager = AccountManager.get(context)
-        if (!manager.addAccountExplicitly(account, password, userData))
+        if (!manager.addAccountExplicitly(account, password?.concatToString(), userData))
             return false
 
         // Android seems to lose the initial user data sometimes, so make sure that the values are set
