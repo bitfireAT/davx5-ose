@@ -24,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -119,13 +118,12 @@ fun UrlLoginScreen(
                     keyboardType = KeyboardType.Uri,
                     imeAction = ImeAction.Next
                 ),
+                keyboardActions = KeyboardActions {
+                    usernameFocusRequester.requestFocus()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(urlFocusRequester)
-                    .focusProperties {
-                        next = usernameFocusRequester
-                        down = next
-                    }
             )
 
             val manualUrl = Constants.MANUAL_URL.buildUpon()
@@ -153,15 +151,12 @@ fun UrlLoginScreen(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
                 ),
+                keyboardActions = KeyboardActions {
+                    passwordFocusRequester.requestFocus()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(usernameFocusRequester)
-                    .focusProperties {
-                        previous = urlFocusRequester
-                        up = previous
-                        next = passwordFocusRequester
-                        down = next
-                    }
             )
 
             PasswordTextField(
@@ -175,16 +170,12 @@ fun UrlLoginScreen(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-                keyboardActions = KeyboardActions(
-                    onDone = { onLogin() }
-                ),
+                keyboardActions = KeyboardActions {
+                    if (canContinue) onLogin()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(passwordFocusRequester)
-                    .focusProperties {
-                        previous = usernameFocusRequester
-                        up = previous
-                    }
             )
         }
     }

@@ -23,7 +23,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -111,13 +110,12 @@ fun EmailLoginScreen(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
                 ),
+                keyboardActions = KeyboardActions {
+                    passwordFocusRequester.requestFocus()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(emailFocusRequester)
-                    .focusProperties {
-                        next = passwordFocusRequester
-                        down = next
-                    }
             )
 
             val manualUrl = Constants.MANUAL_URL.buildUpon()
@@ -144,16 +142,12 @@ fun EmailLoginScreen(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-                keyboardActions = KeyboardActions(
-                    onDone = { if (canContinue) onLogin() }
-                ),
+                keyboardActions = KeyboardActions {
+                    if (canContinue) onLogin()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(passwordFocusRequester)
-                    .focusProperties {
-                        previous = emailFocusRequester
-                        up = previous
-                    }
             )
         }
     }
