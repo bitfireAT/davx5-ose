@@ -367,7 +367,8 @@
     <string name="settings_ignore_vpns_off">VPN without underlying validated Internet connection is enough to run synchronization</string>
     <string name="settings_authentication">Authentication</string>
     <string name="settings_username">User name</string>
-    <string name="settings_password">Password</string>
+    <string name="settings_password">Password or app password</string>
+    <string name="settings_app_password_hint"><![CDATA[You may want to use an app password. <a href="%1$s">Learn more</a>]]></string>
     <string name="settings_new_password">New password</string>
     <string name="settings_password_summary">Update the password according to your server.</string>
     <string name="settings_certificate_alias">Client certificate</string>
