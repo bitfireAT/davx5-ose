@@ -10,12 +10,12 @@ import android.app.TaskStackBuilder
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.net.toUri
 import at.bitfire.dav4jvm.exception.UnauthorizedException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
@@ -135,7 +135,7 @@ class SyncNotificationManager @AssistedInject constructor(
         }
 
         // to make the PendingIntent unique
-        contentIntent.data = Uri.parse("davdroid:exception/${e.hashCode()}")
+        contentIntent.data = "davdroid:exception/${e.hashCode()}".toUri()
 
         val channel: String
         val priority: Int
