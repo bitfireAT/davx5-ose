@@ -65,7 +65,7 @@ class DebugInfoActivity : AppCompatActivity() {
         setContent { 
             DebugInfoScreen(
                 account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
-                syncDataType = IntentCompat.getSerializableExtra(intent, EXTRA_SYNC_DATA_TYPE, SyncDataType::class.java),
+                syncDataType = extras?.getString(EXTRA_SYNC_DATA_TYPE),
                 cause = IntentCompat.getParcelableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE),
                 remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
@@ -154,7 +154,7 @@ class DebugInfoActivity : AppCompatActivity() {
 
         fun withSyncDataType(dataType: SyncDataType?): IntentBuilder {
             if (dataType != null)
-                intent.putExtra(EXTRA_SYNC_DATA_TYPE, dataType)
+                intent.putExtra(EXTRA_SYNC_DATA_TYPE, dataType.name)
             return this
         }
 

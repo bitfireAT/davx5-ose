@@ -45,7 +45,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import java.io.File
@@ -55,7 +54,7 @@ import java.io.IOException
 @Composable
 fun DebugInfoScreen(
     account: Account?,
-    syncDataType: SyncDataType?,
+    syncDataType: String?,
     cause: Throwable?,
     localResource: String?,
     remoteResource: String?,

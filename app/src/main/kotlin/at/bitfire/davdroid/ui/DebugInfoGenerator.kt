@@ -76,7 +76,7 @@ class DebugInfoGenerator @Inject constructor(
 
     operator fun invoke(
         syncAccount: Account?,
-        syncDataType: SyncDataType?,
+        syncDataType: String?,
         cause: Throwable?,
         localResource: String?,
         remoteResource: String?,
