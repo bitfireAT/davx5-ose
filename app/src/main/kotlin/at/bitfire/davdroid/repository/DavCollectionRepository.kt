@@ -9,6 +9,9 @@ import android.content.Context
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
+import at.bitfire.dav4jvm.exception.GoneException
+import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.exception.NotFoundException
 import at.bitfire.dav4jvm.property.caldav.CalendarColor
 import at.bitfire.dav4jvm.property.caldav.CalendarDescription
 import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
@@ -44,6 +47,7 @@ import net.fortuna.ical4j.model.property.Version
 import okhttp3.HttpUrl
 import java.io.StringWriter
 import java.util.UUID
+import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -53,6 +57,7 @@ import javax.inject.Provider
 class DavCollectionRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
+    private val logger: Logger,
     private val httpClientBuilder: Provider<HttpClient.Builder>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val serviceRepository: DavServiceRepository
@@ -167,17 +172,23 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.getBlocking(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        httpClientBuilder.get()
-            .fromAccount(account)
-            .build()
-            .use { httpClient ->
-                runInterruptible(ioDispatcher) {
+        httpClientBuilder.get().fromAccount(account).build().use { httpClient ->
+            runInterruptible(ioDispatcher) {
+                try {
                     DavResource(httpClient.okHttpClient, collection.url).delete {
                         // success, otherwise an exception would have been thrown → delete locally, too
                         delete(collection)
                     }
+                } catch (e: HttpException) {
+                    if (e is NotFoundException || e is GoneException) {
+                        // HTTP 404 Not Found or 410 Gone (collection is not there anymore) -> delete locally, too
+                        logger.info("Collection ${collection.url} not found on server, deleting locally")
+                        delete(collection)
+                    } else
+                        throw e
                 }
             }
+        }
     }
 
     suspend fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
