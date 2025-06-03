@@ -25,13 +25,14 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.CollectionType
 import at.bitfire.davdroid.db.HomeSet
+import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.ICalendar
 import at.bitfire.ical4android.util.DateUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
@@ -53,6 +54,7 @@ class DavCollectionRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val httpClientBuilder: Provider<HttpClient.Builder>,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val serviceRepository: DavServiceRepository
 ) {
 
@@ -169,7 +171,7 @@ class DavCollectionRepository @Inject constructor(
             .fromAccount(account)
             .build()
             .use { httpClient ->
-                runInterruptible(Dispatchers.IO) {
+                runInterruptible(ioDispatcher) {
                     DavResource(httpClient.okHttpClient, collection.url).delete {
                         // success, otherwise an exception would have been thrown → delete locally, too
                         delete(collection)
@@ -280,7 +282,7 @@ class DavCollectionRepository @Inject constructor(
             .fromAccount(account)
             .build()
             .use { httpClient ->
-                runInterruptible(Dispatchers.IO) {
+                runInterruptible(ioDispatcher) {
                     DavResource(httpClient.okHttpClient, url).mkCol(
                         xmlBody = xmlBody,
                         method = method
