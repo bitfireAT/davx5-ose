@@ -277,7 +277,7 @@ fun CollectionScreen(
                                     SyncDataType.EVENTS.name -> stringResource(R.string.datatype_events)
                                     SyncDataType.TASKS.name -> stringResource(R.string.datatype_tasks)
                                     SyncDataType.CONTACTS.name -> stringResource(R.string.datatype_contacts)
-                                    else -> stringResource(R.string.datatype_unknown)
+                                    else -> lastSync.dataType
                                 }
                                 Text(
                                     text = stringResource(R.string.collection_last_sync, dataType),

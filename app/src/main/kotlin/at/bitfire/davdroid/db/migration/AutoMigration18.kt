@@ -49,7 +49,10 @@ class AutoMigration18 @Inject constructor() : AutoMigrationSpec {
                     TaskProvider.ProviderName.JtxBoard.authority,
                     TaskProvider.ProviderName.TasksOrg.authority,
                     TaskProvider.ProviderName.OpenTasks.authority -> SyncDataType.TASKS.name
-                    else -> "UNKNOWN"
+                    else -> {
+                        db.execSQL("DELETE FROM syncstats WHERE id = ?", arrayOf(id))
+                        continue
+                    }
                 }
 
                 val keyValue = collectionId to dataType

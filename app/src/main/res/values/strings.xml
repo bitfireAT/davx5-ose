@@ -30,7 +30,6 @@
     <string name="datatype_contacts">contacts</string>
     <string name="datatype_events">events</string>
     <string name="datatype_tasks">tasks</string>
-    <string name="datatype_unknown">unknown datatype</string>
 
     <string name="notification_channel_debugging">Debugging</string>
     <string name="notification_channel_general">Other important messages</string>
