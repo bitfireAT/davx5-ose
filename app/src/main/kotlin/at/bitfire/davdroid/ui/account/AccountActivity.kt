@@ -10,20 +10,39 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.AccountsActivity
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.logging.Logger
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountActivity : AppCompatActivity() {
 
-    companion object {
-        const val EXTRA_ACCOUNT = "account"
-    }
+    @Inject
+    lateinit var logger: Logger
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
-            ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
+        val account =
+            IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java) ?:
+            intent.getStringExtra(EXTRA_ACCOUNT)?.let { Account(it, getString(R.string.account_type)) }
+
+        // If account is not passed, log warning and redirect to accounts overview
+        if (account == null) {
+            logger.warning("AccountActivity requires EXTRA_ACCOUNT")
+
+            // Redirect to accounts overview activity
+            val intent = Intent(this, AccountsActivity::class.java).apply {
+                // Create a new root activity, do not allow going back.
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+            finish()
+            return
+        }
 
         setContent {
             AccountScreen(
@@ -53,6 +72,10 @@ class AccountActivity : AppCompatActivity() {
                 onFinish = ::finish
             )
         }
+    }
+
+    companion object {
+        const val EXTRA_ACCOUNT = "account"
     }
 
 }

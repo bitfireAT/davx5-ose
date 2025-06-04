@@ -1,3 +1,7 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
 package at.bitfire.davdroid.ui.setup
 
 import android.content.Intent
@@ -17,7 +21,7 @@ class LoginActivityTest {
         val loginInfo = LoginActivity.loginInfoFromIntent(intent)
         assertEquals("https://example.com/nextcloud", loginInfo.baseUri.toString())
         assertEquals("user", loginInfo.credentials!!.username)
-        assertEquals("password", loginInfo.credentials.password)
+        assertEquals("password", loginInfo.credentials.password?.concatToString())
     }
 
     @Test
@@ -30,7 +34,7 @@ class LoginActivityTest {
         val loginInfo = LoginActivity.loginInfoFromIntent(intent)
         assertEquals("https://example.com:444/nextcloud", loginInfo.baseUri.toString())
         assertEquals("user", loginInfo.credentials!!.username)
-        assertEquals("password", loginInfo.credentials.password)
+        assertEquals("password", loginInfo.credentials.password?.concatToString())
     }
 
     @Test
@@ -39,7 +43,7 @@ class LoginActivityTest {
         val loginInfo = LoginActivity.loginInfoFromIntent(intent)
         assertEquals("https://example.com/path", loginInfo.baseUri.toString())
         assertEquals("user", loginInfo.credentials!!.username)
-        assertEquals("password", loginInfo.credentials.password)
+        assertEquals("password", loginInfo.credentials.password?.concatToString())
     }
 
     @Test
@@ -48,7 +52,7 @@ class LoginActivityTest {
         val loginInfo = LoginActivity.loginInfoFromIntent(intent)
         assertEquals("https://example.com:0/path", loginInfo.baseUri.toString())
         assertEquals("user", loginInfo.credentials!!.username)
-        assertEquals("password", loginInfo.credentials.password)
+        assertEquals("password", loginInfo.credentials.password?.concatToString())
     }
 
     @Test
@@ -57,7 +61,7 @@ class LoginActivityTest {
         val loginInfo = LoginActivity.loginInfoFromIntent(intent)
         assertEquals(null, loginInfo.baseUri)
         assertEquals("user@example.com", loginInfo.credentials!!.username)
-        assertEquals(null, loginInfo.credentials.password)
+        assertEquals(null, loginInfo.credentials.password?.concatToString())
     }
     
 }

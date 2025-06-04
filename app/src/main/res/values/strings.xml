@@ -238,6 +238,7 @@
     <string name="app_settings_unifiedpush_encrypted">Push messages are always encrypted.</string>
 
     <!-- AccountScreen -->
+    <string name="account_invalid_account">Account doesn\'t exist</string>
     <string name="account_carddav">CardDAV</string>
     <string name="account_caldav">CalDAV</string>
     <string name="account_webcal">Webcal</string>
@@ -366,7 +367,8 @@
     <string name="settings_ignore_vpns_off">VPN without underlying validated Internet connection is enough to run synchronization</string>
     <string name="settings_authentication">Authentication</string>
     <string name="settings_username">User name</string>
-    <string name="settings_password">Password</string>
+    <string name="settings_password">Password or app password</string>
+    <string name="settings_app_password_hint"><![CDATA[You may prefer to use an <a href="%1$s">app password</a>.]]></string>
     <string name="settings_new_password">New password</string>
     <string name="settings_password_summary">Update the password according to your server.</string>
     <string name="settings_certificate_alias">Client certificate</string>
@@ -423,6 +425,9 @@
     <string name="create_collection_optional">* optional</string>
 
     <!-- CollectionScreen -->
+    <string name="collection_datatype_contacts">contacts</string>
+    <string name="collection_datatype_events">events</string>
+    <string name="collection_datatype_tasks">tasks</string>
     <string name="collection_delete">Delete collection</string>
     <string name="collection_delete_warning">This collection (%s) and all its data will be removed permanently, both locally and on the server.</string>
     <string name="collection_synchronization">Synchronization</string>

@@ -9,6 +9,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import androidx.room.Transaction
 import androidx.room.Update
 
@@ -21,8 +23,23 @@ interface WebDavDocumentDao {
     @Query("SELECT * FROM webdav_document WHERE mountId=:mountId AND (parentId=:parentId OR (parentId IS NULL AND :parentId IS NULL)) AND name=:name")
     fun getByParentAndName(mountId: Long, parentId: Long?, name: String): WebDavDocument?
 
-    @Query("SELECT * FROM webdav_document WHERE parentId=:parentId")
-    fun getChildren(parentId: Long): List<WebDavDocument>
+    @RawQuery
+    fun query(query: RoomRawQuery): List<WebDavDocument>
+
+    /**
+     * Gets all the child documents from a given parent id.
+     *
+     * @param parentId The id of the parent document to get the documents from.
+     * @param orderBy If desired, a SQL clause to specify how to order the results.
+     *                **The caller is responsible for the correct formatting of this argument. Syntax won't be validated!**
+     */
+    fun getChildren(parentId: Long, orderBy: String = DEFAULT_ORDER): List<WebDavDocument> {
+        return query(
+            RoomRawQuery("SELECT * FROM webdav_document WHERE parentId = ? ORDER BY $orderBy") {
+                it.bindLong(1, parentId)
+            }
+        )
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrReplace(document: WebDavDocument): Long
@@ -35,7 +52,7 @@ interface WebDavDocumentDao {
 
     @Update
     fun update(document: WebDavDocument)
-    
+
     @Delete
     fun delete(document: WebDavDocument)
 
@@ -74,6 +91,17 @@ interface WebDavDocumentDao {
         )
         val id = insertOrReplace(newDoc)
         return newDoc.copy(id = id)
+    }
+
+
+    companion object {
+
+        /**
+         * Default ORDER BY value to use when content provider doesn't specify a sort order:
+         * _sort by name (directories first)_
+         */
+        const val DEFAULT_ORDER = "isDirectory DESC, name ASC"
+
     }
 
 }

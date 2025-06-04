@@ -14,18 +14,18 @@ plugins {
 
 // Android configuration
 android {
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 404110000
-        versionName = "4.4.11-alpha.1"
+        versionCode = 404110004
+        versionName = "4.4.11"
 
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
         minSdk = 24        // Android 7.0
-        targetSdk = 35     // Android 15
+        targetSdk = 36     // Android 16
 
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
     }
@@ -106,7 +106,7 @@ android {
             localDevices {
                 create("virtual") {
                     device = "Pixel 3"
-                    apiLevel = 34
+                    apiLevel = 35
                     systemImageSource = "aosp-atd"
                 }
             }

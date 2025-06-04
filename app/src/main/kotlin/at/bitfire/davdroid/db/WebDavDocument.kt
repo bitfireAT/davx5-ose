@@ -32,6 +32,7 @@ import java.time.Instant
         Index("parentId")
     ]
 )
+// If any column name is modified, also change it in [DavDocumentsProvider$queryChildDocuments]
 data class WebDavDocument(
 
     @PrimaryKey(autoGenerate = true)

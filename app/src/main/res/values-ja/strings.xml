@@ -200,6 +200,8 @@
   <string name="app_settings_unifiedpush_no_distributor">プッシュのディストリビューターがインストールされていません</string>
   <string name="app_settings_unifiedpush_no_endpoint">エンドポイントが設定されていません</string>
   <string name="app_settings_unifiedpush_ready">%s 経由でプッシュメッセージを受信できます</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">プッシュメッセージは常に暗号化されます。</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -408,6 +410,8 @@
   <string name="debug_info_logs_caption">ログ</string>
   <string name="debug_info_logs_subtitle">詳細なログが利用できます</string>
   <string name="debug_info_logs_view">ログを表示</string>
+  <string name="debug_info_privacy_warning_title">プライバシー通知</string>
+  <string name="debug_info_privacy_warning_description">ログやデバッグ情報はプライベートな情報を含むことがあります。共有する場合には、注意して取り扱ってください。</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">エラーが発生しました</string>
   <string name="exception_httpexception">HTTP エラーが発生しました</string>
@@ -455,5 +459,8 @@
   <!--widgets-->
   <string name="widget_sync_all">すべて同期</string>
   <string name="widget_sync_all_accounts">すべてのアカウントを同期</string>
+  <string name="widget_labeled_sync_label">同期ボタン (ラベル)</string>
+  <string name="widget_icon_sync_label">同期ボタン (アイコン)</string>
+  <string name="widget_sync_description">手動で同期したいときにタップしてください。</string>
   <!--cert4android-->
 </resources>

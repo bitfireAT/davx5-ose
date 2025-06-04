@@ -743,9 +743,12 @@ fun AppSettings_Integration(
         ) { showingDistributorDialog = false }
     }
 
-    val pushAppName = pushDistributor?.let {
-        pushDistributors?.find { it.packageName == pushDistributor }
-    }?.appName
+    val context = LocalContext.current
+    val pushAppName = if (pushDistributor == context.packageName) {
+        stringResource(R.string.app_settings_unifiedpush_distributor_fcm)
+    } else {
+        pushDistributors?.find { it.packageName == pushDistributor }?.appName
+    }
     Setting(
         name = stringResource(R.string.app_settings_unifiedpush),
         summary = if (pushDistributor != null)

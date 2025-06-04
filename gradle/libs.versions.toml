@@ -1,7 +1,7 @@
 # Comments apply to next line
 
 [versions]
-android-agp = "8.10.0"
+android-agp = "8.10.1"
 android-desugaring = "2.1.5"
 androidx-activityCompose = "1.10.1"
 androidx-appcompat = "1.7.0"
@@ -19,11 +19,11 @@ androidx-test-rules = "1.6.1"
 androidx-test-junit = "1.2.1"
 androidx-work = "2.10.1"
 bitfire-cert4android = "b67ba86d31"
-bitfire-dav4jvm = "ec6264d427"
+bitfire-dav4jvm = "05fb8ecda6"
 bitfire-ical4android = "240f756bab"
 bitfire-vcard4android = "59eb998f29"
 compose-accompanist = "0.37.3"
-compose-bom = "2025.05.00"
+compose-bom = "2025.05.01"
 dnsjava = "3.6.2"
 glance = "1.1.1"
 guava = "33.4.8-android"
@@ -70,10 +70,10 @@ androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-
 androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-junit" }
 androidx-work-base = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
-bitfire-cert4android = { module = "com.github.bitfireAT:cert4android", version.ref = "bitfire-cert4android" }
-bitfire-dav4jvm = { module = "com.github.bitfireAT:dav4jvm", version.ref = "bitfire-dav4jvm" }
-bitfire-ical4android = { module = "com.github.bitfireAT:ical4android", version.ref = "bitfire-ical4android" }
-bitfire-vcard4android = { module = "com.github.bitfireAT:vcard4android", version.ref = "bitfire-vcard4android" }
+bitfire-cert4android = { module = "com.github.bitfireat:cert4android", version.ref = "bitfire-cert4android" }
+bitfire-dav4jvm = { module = "com.github.bitfireat:dav4jvm", version.ref = "bitfire-dav4jvm" }
+bitfire-ical4android = { module = "com.github.bitfireat:ical4android", version.ref = "bitfire-ical4android" }
+bitfire-vcard4android = { module = "com.github.bitfireat:vcard4android", version.ref = "bitfire-vcard4android" }
 commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }

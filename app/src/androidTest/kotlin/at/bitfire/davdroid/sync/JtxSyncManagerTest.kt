@@ -93,12 +93,11 @@ class JtxSyncManagerTest {
         localJtxCollection = localJtxCollectionStore.create(provider, dbCollection)!!
         syncManager = jtxSyncManagerFactory.jtxSyncManager(
             account = account,
-            extras = arrayOf(),
             httpClient = httpClientBuilder.build(),
-            authority = JtxContract.AUTHORITY,
             syncResult = SyncResult(),
             localCollection = localJtxCollection,
-            collection = dbCollection
+            collection = dbCollection,
+            resync = null
         )
     }
 

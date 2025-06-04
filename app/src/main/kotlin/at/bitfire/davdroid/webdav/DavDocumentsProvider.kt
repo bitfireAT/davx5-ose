@@ -44,6 +44,7 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
+import at.bitfire.davdroid.db.WebDavDocumentDao
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.network.MemoryCookieStore
@@ -95,6 +96,7 @@ class DavDocumentsProvider(
     interface DavDocumentsProviderEntryPoint {
         fun appDatabase(): AppDatabase
         fun davDocumentsActorFactory(): DavDocumentsActor.Factory
+        fun documentSortByMapper(): DocumentSortByMapper
         fun logger(): Logger
         fun randomAccessCallbackWrapperFactory(): RandomAccessCallbackWrapper.Factory
         fun streamingFileDescriptorFactory(): StreamingFileDescriptor.Factory
@@ -127,6 +129,7 @@ class DavDocumentsProvider(
         fun notifyMountsChanged(context: Context) {
             context.contentResolver.notifyChange(buildRootsUri(context.getString(R.string.webdav_authority)), null)
         }
+
     }
 
     val documentProviderScope = CoroutineScope(SupervisorJob())
@@ -286,8 +289,16 @@ class DavDocumentsProvider(
         else                // remove worker from list if done
             runningQueryChildren.remove(parentId)
 
+        // Prepare SORT BY clause
+        val mapper = globalEntryPoint.documentSortByMapper()
+        val sqlSortBy = if (sortOrder != null)
+            mapper.mapContentProviderToSql(sortOrder)
+        else
+            WebDavDocumentDao.DEFAULT_ORDER
+
         // Regardless of whether the worker is done, return the children we already have
-        for (child in documentDao.getChildren(parentId)) {
+        val children = documentDao.getChildren(parentId, sqlSortBy)
+        for (child in children) {
             val bundle = child.toBundle(parent)
             result.addRow(bundle)
         }

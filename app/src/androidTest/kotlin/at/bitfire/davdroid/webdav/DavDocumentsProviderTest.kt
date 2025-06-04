@@ -101,9 +101,9 @@ class DavDocumentsProviderTest {
 
         // Assert new children were inserted into db
         assertEquals(3, db.webDavDocumentDao().getChildren(parent.id).size)
-        assertEquals("Secret_Document.pages", db.webDavDocumentDao().getChildren(parent.id)[0].displayName)
+        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[0].displayName)
         assertEquals("MeowMeow_Cats.docx", db.webDavDocumentDao().getChildren(parent.id)[1].displayName)
-        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[2].displayName)
+        assertEquals("Secret_Document.pages", db.webDavDocumentDao().getChildren(parent.id)[2].displayName)
     }
 
     @Test
@@ -137,8 +137,8 @@ class DavDocumentsProviderTest {
 
         // Assert parent and children were updated in database
         assertEquals("Cats WebDAV", db.webDavDocumentDao().get(parent.id)!!.displayName)
-        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[2].name)
-        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[2].displayName)
+        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[0].name)
+        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[0].displayName)
 
     }
 

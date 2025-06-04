@@ -7,10 +7,8 @@ package at.bitfire.davdroid.ui
 import android.Manifest
 import android.accounts.Account
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -70,6 +68,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.BuildConfig
@@ -148,13 +147,7 @@ fun AccountsScreen(
     contactsStorageDisabled: Boolean = false
 ) {
     val scope = rememberCoroutineScope()
-
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    BackHandler(drawerState.isOpen) {
-        scope.launch {
-            drawerState.close()
-        }
-    }
 
     var isRefreshing by remember { mutableStateOf(false) }
     LaunchedEffect(isRefreshing) {
@@ -169,7 +162,7 @@ fun AccountsScreen(
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                ModalDrawerSheet {
+                ModalDrawerSheet(drawerState) {
                     accountsDrawerHandler.AccountsDrawer(
                         snackbarHostState = snackbarHostState,
                         onCloseDrawer = {
@@ -286,7 +279,7 @@ fun AccountsScreen(
                                 onManageDataSaver = {
                                     val intent = Intent(
                                         /* action = */ Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS,
-                                        /* uri = */ Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                                        /* uri = */ "package:${BuildConfig.APPLICATION_ID}".toUri()
                                     )
                                     if (intent.resolveActivity(context.packageManager) != null)
                                         context.startActivity(intent)

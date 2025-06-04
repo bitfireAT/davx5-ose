@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.network
 
-import android.net.Uri
+import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.db.Credentials
 import kotlinx.coroutines.CompletableDeferred
@@ -49,18 +49,18 @@ class GoogleLogin(
             URI("https", "apidata.googleusercontent.com", "/caldav/v2/$googleAccount/user", null)
 
         private val serviceConfig = AuthorizationServiceConfiguration(
-            Uri.parse("https://accounts.google.com/o/oauth2/v2/auth"),
-            Uri.parse("https://oauth2.googleapis.com/token")
+            "https://accounts.google.com/o/oauth2/v2/auth".toUri(),
+            "https://oauth2.googleapis.com/token".toUri()
         )
 
     }
 
     fun signIn(email: String, customClientId: String?, locale: String?): AuthorizationRequest {
         val builder = AuthorizationRequest.Builder(
-            GoogleLogin.serviceConfig,
+            serviceConfig,
             customClientId ?: CLIENT_ID,
             ResponseTypeValues.CODE,
-            Uri.parse(BuildConfig.APPLICATION_ID + ":/oauth2/redirect")
+            (BuildConfig.APPLICATION_ID + ":/oauth2/redirect").toUri()
         )
         return builder
             .setScopes(*SCOPES)

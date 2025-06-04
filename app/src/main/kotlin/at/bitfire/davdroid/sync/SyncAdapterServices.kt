@@ -158,7 +158,7 @@ abstract class SyncAdapterService: Service() {
             }
 
             logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
-            val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), upload = upload)
+            val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), fromUpload = upload)
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
             use it to block the sync adapter. Instead we use a Flow to get notified when the sync
