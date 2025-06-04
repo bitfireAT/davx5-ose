@@ -39,7 +39,8 @@ object OAuthIntegration {
                     // success, save authState (= refresh token)
                     authState.update(tokenResponse, refreshTokenException)
                     credentials.complete(Credentials(authState = authState))
-                }
+                } else if (refreshTokenException != null)
+                    credentials.completeExceptionally(refreshTokenException)
             }
         }
 
