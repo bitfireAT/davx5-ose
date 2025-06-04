@@ -45,7 +45,6 @@ import java.util.logging.Level
 class TasksSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted httpClient: HttpClient,
-    @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTaskList,
     @Assisted collection: Collection,
@@ -54,7 +53,7 @@ class TasksSyncManager @AssistedInject constructor(
 ): SyncManager<LocalTask, LocalTaskList, DavCalendar>(
     account,
     httpClient,
-    authority,
+    SyncDataType.TASKS,
     syncResult,
     localCollection,
     collection,
@@ -67,7 +66,6 @@ class TasksSyncManager @AssistedInject constructor(
         fun tasksSyncManager(
             account: Account,
             httpClient: HttpClient,
-            authority: String,
             syncResult: SyncResult,
             localCollection: LocalTaskList,
             collection: Collection,
