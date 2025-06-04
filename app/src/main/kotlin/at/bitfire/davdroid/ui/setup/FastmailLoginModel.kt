@@ -96,7 +96,7 @@ class FastmailLoginModel @AssistedInject constructor(
                     )
                 )
             } catch (e: Exception) {
-                logger.log(Level.WARNING, "Google authentication failed", e)
+                logger.log(Level.WARNING, "Fastmail authentication failed", e)
                 uiState = uiState.copy(error = e.message)
             }
         }

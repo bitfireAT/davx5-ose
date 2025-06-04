@@ -7,6 +7,7 @@ package at.bitfire.davdroid.network
 import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.network.OAuthIntegration.redirectUri
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,11 +22,13 @@ import net.openid.appauth.TokenResponse
  */
 object OAuthIntegration {
 
-    // registered in Manifest
+    /** redirect URI, must be registered in Manifest */
     val redirectUri =
         (BuildConfig.APPLICATION_ID + ":/oauth2/redirect").toUri()
 
-
+    /**
+     * Called by the authorization service when the login is finished and [redirectUri] is launched.
+     */
     suspend fun authenticate(authService: AuthorizationService, authResponse: AuthorizationResponse): Credentials {
         val authState = AuthState(authResponse, null)       // authorization code must not be stored; exchange it to refresh token
         val credentials = CompletableDeferred<Credentials>()
