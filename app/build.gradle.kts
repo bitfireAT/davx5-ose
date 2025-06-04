@@ -106,7 +106,7 @@ android {
             localDevices {
                 create("virtual") {
                     device = "Pixel 3"
-                    apiLevel = 34
+                    apiLevel = 36
                     systemImageSource = "aosp-atd"
                 }
             }
