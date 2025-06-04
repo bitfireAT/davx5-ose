@@ -15,11 +15,11 @@ class AutoMigration18Test : DatabaseMigrationTest(toVersion = 18) {
     fun testMigration_AllAuthorities() = testMigration(
         prepare = { db ->
             // Insert service and collection to respect relation constraints
-            db.execSQL("INSERT INTO service (id, accountName, type) VALUES (?, ?, ?)", arrayOf(1, "test", 1))
+            db.execSQL("INSERT INTO service (id, accountName, type) VALUES (?, ?, ?)", arrayOf<Any?>(1, "test", 1))
             listOf(1L, 2L, 3L).forEach { id ->
                 db.execSQL(
                     "INSERT INTO collection (id, serviceId, url, type, privWriteContent, privUnbind, forceReadOnly, sync) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    arrayOf(id, 1, "https://example.com/$id", 1, 1, 1, 0, 1)
+                    arrayOf<Any?>(id, 1, "https://example.com/$id", 1, 1, 1, 0, 1)
                 )
             }
             // Insert some syncstats with authorities and lastSync times
@@ -39,7 +39,7 @@ class AutoMigration18Test : DatabaseMigrationTest(toVersion = 18) {
             syncstats.forEach { (id, collectionId, authority, lastSync) ->
                 db.execSQL(
                     "INSERT INTO syncstats (id, collectionId, authority, lastSync) VALUES (?, ?, ?, ?)",
-                    arrayOf(id, collectionId, authority, lastSync)
+                    arrayOf<Any?>(id, collectionId, authority, lastSync)
                 )
             }
         },
