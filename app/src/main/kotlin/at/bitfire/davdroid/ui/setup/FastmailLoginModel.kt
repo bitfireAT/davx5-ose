@@ -13,7 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.network.FastmailLogin
+import at.bitfire.davdroid.network.OAuthFastmail
+import at.bitfire.davdroid.network.OAuthIntegration
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -39,8 +40,6 @@ class FastmailLoginModel @AssistedInject constructor(
     interface Factory {
         fun create(loginInfo: LoginInfo): FastmailLoginModel
     }
-
-    val fastmailLogin = FastmailLogin(authService)
 
     override fun onCleared() {
         authService.dispose()
@@ -74,7 +73,7 @@ class FastmailLoginModel @AssistedInject constructor(
     }
 
     fun signIn() =
-        fastmailLogin.signIn(
+        OAuthFastmail.signIn(
             email = uiState.emailWithDomain,
             locale = Locale.getDefault().toLanguageTag()
         )
@@ -86,12 +85,12 @@ class FastmailLoginModel @AssistedInject constructor(
     fun authenticate(authResponse: AuthorizationResponse) {
         viewModelScope.launch {
             try {
-                val credentials = fastmailLogin.authenticate(authResponse)
+                val credentials = OAuthIntegration.authenticate(authService, authResponse)
 
                 // success, provide login info to continue
                 uiState = uiState.copy(
                     result = LoginInfo(
-                        baseUri = FastmailLogin.fastmailBaseUri,
+                        baseUri = OAuthFastmail.baseUri,
                         credentials = credentials,
                         suggestedAccountName = uiState.emailWithDomain
                     )

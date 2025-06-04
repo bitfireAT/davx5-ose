@@ -14,7 +14,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.network.GoogleLogin
+import at.bitfire.davdroid.network.OAuthGoogle
+import at.bitfire.davdroid.network.OAuthIntegration
 import at.bitfire.davdroid.util.trimToNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -41,8 +42,6 @@ class GoogleLoginModel @AssistedInject constructor(
     interface Factory {
         fun create(loginInfo: LoginInfo): GoogleLoginModel
     }
-
-    val googleLogin = GoogleLogin(authService)
 
     override fun onCleared() {
         authService.dispose()
@@ -81,7 +80,7 @@ class GoogleLoginModel @AssistedInject constructor(
     }
 
     fun signIn() =
-        googleLogin.signIn(
+        OAuthGoogle.signIn(
             email = uiState.emailWithDomain,
             customClientId = uiState.customClientId.trimToNull(),
             locale = Locale.getDefault().toLanguageTag()
@@ -94,12 +93,12 @@ class GoogleLoginModel @AssistedInject constructor(
     fun authenticate(authResponse: AuthorizationResponse) {
         viewModelScope.launch {
             try {
-                val credentials = googleLogin.authenticate(authResponse)
+                val credentials = OAuthIntegration.authenticate(authService, authResponse)
 
                 // success, provide login info to continue
                 uiState = uiState.copy(
                     result = LoginInfo(
-                        baseUri = GoogleLogin.googleBaseUri(uiState.emailWithDomain),
+                        baseUri = OAuthGoogle.baseUri(uiState.emailWithDomain),
                         credentials = credentials,
                         suggestedAccountName = uiState.emailWithDomain
                     )
