@@ -14,7 +14,7 @@ import androidx.room.PrimaryKey
         ForeignKey(childColumns = arrayOf("collectionId"), entity = Collection::class, parentColumns = arrayOf("id"), onDelete = ForeignKey.CASCADE)
     ],
     indices = [
-        Index("collectionId", "authority", unique = true),
+        Index(value = ["collectionId", "dataType"], unique = true)
     ]
 )
 data class SyncStats(
@@ -22,7 +22,7 @@ data class SyncStats(
     val id: Long,
 
     val collectionId: Long,
-    val authority: String,
+    val dataType: String,
 
     val lastSync: Long
 )

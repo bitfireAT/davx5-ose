@@ -43,7 +43,6 @@ import java.util.logging.Level
 class JtxSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted httpClient: HttpClient,
-    @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
@@ -52,7 +51,7 @@ class JtxSyncManager @AssistedInject constructor(
 ): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(
     account,
     httpClient,
-    authority,
+    SyncDataType.TASKS,
     syncResult,
     localCollection,
     collection,
@@ -65,7 +64,6 @@ class JtxSyncManager @AssistedInject constructor(
         fun jtxSyncManager(
             account: Account,
             httpClient: HttpClient,
-            authority: String,
             syncResult: SyncResult,
             localCollection: LocalJtxCollection,
             collection: Collection,

@@ -53,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
 import at.bitfire.davdroid.ui.composable.ProgressBar
@@ -272,8 +273,14 @@ fun CollectionScreen(
                             val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
 
                             for (lastSync in lastSynced) {
+                                val dataType = when (lastSync.dataType) {
+                                    SyncDataType.EVENTS.name -> stringResource(R.string.collection_datatype_events)
+                                    SyncDataType.TASKS.name -> stringResource(R.string.collection_datatype_tasks)
+                                    SyncDataType.CONTACTS.name -> stringResource(R.string.collection_datatype_contacts)
+                                    else -> lastSync.dataType
+                                }
                                 Text(
-                                    text = stringResource(R.string.collection_last_sync, lastSync.appName),
+                                    text = stringResource(R.string.collection_last_sync, dataType),
                                     style = MaterialTheme.typography.titleMedium
                                 )
 
@@ -361,7 +368,7 @@ fun CollectionScreen_Preview() {
         owner = "Some One",
         lastSynced = listOf(
             DavSyncStatsRepository.LastSynced(
-                appName = "Some Content Provider",
+                dataType = "Some Sync Data Type",
                 lastSynced = 1234567890
             )
         ),

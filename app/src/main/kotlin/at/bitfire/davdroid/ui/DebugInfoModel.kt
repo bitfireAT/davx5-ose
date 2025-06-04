@@ -12,6 +12,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.log.LogFileHandler
+import at.bitfire.davdroid.ui.DebugInfoModel.Companion.FILE_DEBUG_INFO
+import at.bitfire.davdroid.ui.DebugInfoModel.Companion.FILE_LOGS
 import com.google.common.io.ByteStreams
 import com.google.common.io.Files
 import dagger.assisted.Assisted
@@ -38,7 +40,7 @@ class DebugInfoModel @AssistedInject constructor(
 
     data class DebugInfoDetails(
         val account: Account?,
-        val authority: String?,
+        val syncDataType: String?,
         val cause: Throwable?,
         val localResource: String?,
         val remoteResource: String?,
@@ -100,7 +102,7 @@ class DebugInfoModel @AssistedInject constructor(
             )
             generateDebugInfo(
                 syncAccount = details.account,
-                syncAuthority = details.authority,
+                syncDataType = details.syncDataType,
                 cause = details.cause,
                 localResource = details.localResource,
                 remoteResource = details.remoteResource,
@@ -116,7 +118,7 @@ class DebugInfoModel @AssistedInject constructor(
      */
     private fun generateDebugInfo(
         syncAccount: Account?,
-        syncAuthority: String?,
+        syncDataType: String?,
         cause: Throwable?,
         localResource: String?,
         remoteResource: String?,
@@ -126,7 +128,7 @@ class DebugInfoModel @AssistedInject constructor(
         debugInfoFile.printWriter().use { writer ->
             debugInfoGenerator(
                 syncAccount = syncAccount,
-                syncAuthority = syncAuthority,
+                syncDataType = syncDataType,
                 cause = cause,
                 localResource = localResource,
                 remoteResource = remoteResource,

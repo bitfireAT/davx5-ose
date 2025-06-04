@@ -494,7 +494,6 @@ class SyncManagerTest {
         }
     ) = syncManagerFactory.create(
         account,
-        "TestAuthority",
         httpClientBuilder.build(),
         syncResult,
         localCollection,

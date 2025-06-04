@@ -9,7 +9,6 @@ import android.accounts.Account
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -148,13 +147,7 @@ fun AccountsScreen(
     contactsStorageDisabled: Boolean = false
 ) {
     val scope = rememberCoroutineScope()
-
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    BackHandler(drawerState.isOpen) {
-        scope.launch {
-            drawerState.close()
-        }
-    }
 
     var isRefreshing by remember { mutableStateOf(false) }
     LaunchedEffect(isRefreshing) {
@@ -169,7 +162,7 @@ fun AccountsScreen(
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                ModalDrawerSheet {
+                ModalDrawerSheet(drawerState) {
                     accountsDrawerHandler.AccountsDrawer(
                         snackbarHostState = snackbarHostState,
                         onCloseDrawer = {

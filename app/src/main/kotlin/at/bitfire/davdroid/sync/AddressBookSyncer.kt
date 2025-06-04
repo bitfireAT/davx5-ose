@@ -104,7 +104,6 @@ class AddressBookSyncer @AssistedInject constructor(
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(
                 account,
                 httpClient.value,
-                dataStore.authority,
                 syncResult,
                 provider,
                 addressBook,
