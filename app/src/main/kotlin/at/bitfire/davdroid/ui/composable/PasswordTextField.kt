@@ -4,7 +4,10 @@
 
 package at.bitfire.davdroid.ui.composable
 
+import android.net.Uri
 import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -25,7 +28,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 
 @Composable
 fun PasswordTextField(
@@ -42,32 +49,50 @@ fun PasswordTextField(
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
-    OutlinedTextField(
-        value = password,
-        onValueChange = onPasswordChange,
-        label = labelText?.let { { Text(it) } },
-        leadingIcon = leadingIcon,
-        isError = isError,
-        singleLine = true,
-        enabled = enabled,
-        readOnly = readOnly,
-        modifier = modifier.focusGroup(),
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = {
-            IconButton(
-                enabled = enabled,
-                onClick = { passwordVisible = !passwordVisible }
-            ) {
-                if (passwordVisible)
-                    Icon(Icons.Default.VisibilityOff, stringResource(R.string.login_password_hide))
-                else
-                    Icon(Icons.Default.Visibility, stringResource(R.string.login_password_show))
+    Column {
+        OutlinedTextField(
+            value = password,
+            onValueChange = onPasswordChange,
+            label = labelText?.let { { Text(it) } },
+            leadingIcon = leadingIcon,
+            isError = isError,
+            singleLine = true,
+            enabled = enabled,
+            readOnly = readOnly,
+            modifier = modifier.focusGroup(),
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(
+                    enabled = enabled,
+                    onClick = { passwordVisible = !passwordVisible }
+                ) {
+                    if (passwordVisible)
+                        Icon(Icons.Default.VisibilityOff, stringResource(R.string.login_password_hide))
+                    else
+                        Icon(Icons.Default.Visibility, stringResource(R.string.login_password_show))
+                }
             }
-        }
-    )
+        )
+        Text(
+            modifier = Modifier.padding(vertical = 8.dp),
+            text = HtmlCompat.fromHtml(
+                stringResource(
+                    R.string.settings_app_password_hint,
+                    appPasswordHelpUrl().toString()
+                ),
+                0
+            ).toAnnotatedString()
+        )
+    }
 }
+
+fun appPasswordHelpUrl(): Uri = Constants.MANUAL_URL.buildUpon()
+    .appendPath(Constants.MANUAL_PATH_INTRODUCTION)
+    .fragment(Constants.MANUAL_FRAGMENT_AUTHENTICATION_METHODS)
+    .build()
+
 
 @Composable
 @Preview

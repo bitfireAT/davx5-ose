@@ -26,12 +26,14 @@ object Constants {
     const val MANUAL_PATH_ACCOUNTS_COLLECTIONS = "accounts_collections.html"
     const val MANUAL_FRAGMENT_SERVICE_DISCOVERY = "how-does-service-discovery-work"
 
+    const val MANUAL_PATH_INTRODUCTION = "introduction.html"
+    const val MANUAL_FRAGMENT_AUTHENTICATION_METHODS = "authentication-methods"
+
     const val MANUAL_PATH_SETTINGS = "settings.html"
     const val MANUAL_FRAGMENT_APP_SETTINGS = "app-wide-settings"
     const val MANUAL_FRAGMENT_ACCOUNT_SETTINGS = "account-settings"
 
     const val MANUAL_PATH_WEBDAV_PUSH = "webdav_push.html"
-
     const val MANUAL_PATH_WEBDAV_MOUNTS = "webdav_mounts.html"
 
     val COMMUNITY_URL = "https://github.com/bitfireAT/davx5-ose/discussions".toUri()
