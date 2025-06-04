@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import androidx.core.net.toUri
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.Response
@@ -161,8 +162,7 @@ class CollectionListRefresher @AssistedInject constructor(
             principal.propfind(0, *homeSetProperties) { davResponse, _ ->
                 alreadyQueriedPrincipals += davResponse.href
 
-                val ownerHref = davResponse[Owner::class.java]?.href
-                val personal = ownerHref != null && service.principal.toString().endsWith(ownerHref)
+                val personal = isHomeSetPersonal(davResponse)
 
                 // If response holds home sets, save them
                 davResponse[homeSetClass]?.let { homeSets ->
@@ -255,7 +255,7 @@ class CollectionListRefresher @AssistedInject constructor(
                         return@propfind
 
                     val ownerHref = response[Owner::class.java]?.href
-                    val personal = ownerHref != null && service.principal.toString().endsWith(ownerHref)
+                    val personal = isHomeSetPersonal(response)
 
                     if (relation == Response.HrefRelation.SELF)
                         // this response is about the home set itself
@@ -419,5 +419,14 @@ class CollectionListRefresher @AssistedInject constructor(
             else -> // don't preselect
                 false
         }
+    }
+
+    private fun isHomeSetPersonal(davResponse: Response): Boolean {
+        // Owner must be set in order to check if the home set is personal
+        println("Checking if HomeSet is personal...")
+        val ownerHref = davResponse[Owner::class.java]?.href?.toUri() ?: return false
+        println("Owner:     ${ownerHref.encodedPath}\nPrincipal: ${service.principal?.encodedPath}")
+        // If Owner is set, check if the paths match. Owner is relative, doesn't contain the full URL, so we have to partially check it
+        return ownerHref.encodedPath == service.principal?.encodedPath
     }
 }
