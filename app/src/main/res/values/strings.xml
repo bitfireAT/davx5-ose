@@ -27,10 +27,6 @@
     <string name="database_destructive_migration_title">Database corrupted</string>
     <string name="database_destructive_migration_text">All accounts have been removed locally.</string>
 
-    <string name="datatype_contacts">contacts</string>
-    <string name="datatype_events">events</string>
-    <string name="datatype_tasks">tasks</string>
-
     <string name="notification_channel_debugging">Debugging</string>
     <string name="notification_channel_general">Other important messages</string>
     <string name="notification_channel_status">Low-priority status messages</string>
@@ -428,6 +424,9 @@
     <string name="create_collection_optional">* optional</string>
 
     <!-- CollectionScreen -->
+    <string name="collection_datatype_contacts">contacts</string>
+    <string name="collection_datatype_events">events</string>
+    <string name="collection_datatype_tasks">tasks</string>
     <string name="collection_delete">Delete collection</string>
     <string name="collection_delete_warning">This collection (%s) and all its data will be removed permanently, both locally and on the server.</string>
     <string name="collection_synchronization">Synchronization</string>
