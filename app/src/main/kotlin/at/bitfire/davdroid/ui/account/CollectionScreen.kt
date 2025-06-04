@@ -274,9 +274,9 @@ fun CollectionScreen(
 
                             for (lastSync in lastSynced) {
                                 val dataType = when (lastSync.dataType) {
-                                    SyncDataType.EVENTS.name -> stringResource(R.string.datatype_events)
-                                    SyncDataType.TASKS.name -> stringResource(R.string.datatype_tasks)
-                                    SyncDataType.CONTACTS.name -> stringResource(R.string.datatype_contacts)
+                                    SyncDataType.EVENTS.name -> stringResource(R.string.collection_datatype_events)
+                                    SyncDataType.TASKS.name -> stringResource(R.string.collection_datatype_tasks)
+                                    SyncDataType.CONTACTS.name -> stringResource(R.string.collection_datatype_contacts)
                                     else -> lastSync.dataType
                                 }
                                 Text(
