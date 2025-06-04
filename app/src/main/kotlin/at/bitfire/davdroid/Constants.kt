@@ -34,7 +34,7 @@ object Constants {
 
     const val MANUAL_PATH_WEBDAV_MOUNTS = "webdav_mounts.html"
 
-    const val MANUAL_PATH_FIRST_STEPS = "introduction.html#first-steps"
+    const val MANUAL_PATH_INTRODUCTION_FIRST_STEPS = "introduction.html#first-steps"
 
     val COMMUNITY_URL = "https://github.com/bitfireAT/davx5-ose/discussions".toUri()
 
