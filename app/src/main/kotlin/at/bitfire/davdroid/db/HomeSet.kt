@@ -26,6 +26,9 @@ data class HomeSet(
 
     val serviceId: Long,
 
+    /**
+     * Whether this homeset is personal or not. This is checked with the `DAV:owner` property.
+     */
     val personal: Boolean,
 
     val url: HttpUrl,
