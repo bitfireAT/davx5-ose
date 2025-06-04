@@ -94,7 +94,6 @@ class JtxSyncManagerTest {
         syncManager = jtxSyncManagerFactory.jtxSyncManager(
             account = account,
             httpClient = httpClientBuilder.build(),
-            authority = JtxContract.AUTHORITY,
             syncResult = SyncResult(),
             localCollection = localJtxCollection,
             collection = dbCollection,

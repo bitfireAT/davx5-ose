@@ -33,7 +33,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.db.AppDatabase
@@ -43,6 +42,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract
@@ -76,7 +76,7 @@ class DebugInfoGenerator @Inject constructor(
 
     operator fun invoke(
         syncAccount: Account?,
-        syncAuthority: String?,
+        syncDataType: String?,
         cause: Throwable?,
         localResource: String?,
         remoteResource: String?,
@@ -97,12 +97,12 @@ class DebugInfoGenerator @Inject constructor(
         }
 
         // continue with most specific information
-        if (syncAccount != null || syncAuthority != null) {
+        if (syncAccount != null || syncDataType != null) {
             writer.append("SYNCHRONIZATION INFO\n")
             if (syncAccount != null)
                 writer.append("Account: $syncAccount\n")
-            if (syncAuthority != null)
-                writer.append("Authority: $syncAuthority\n")
+            if (syncDataType != null)
+                writer.append("SyncDataType: $syncDataType\n")
             writer.append("\n")
         }
 

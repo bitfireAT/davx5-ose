@@ -72,7 +72,6 @@ class JtxSyncer @AssistedInject constructor(
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(
             account,
             httpClient.value,
-            dataStore.authority,
             syncResult,
             localCollection,
             remoteCollection,
