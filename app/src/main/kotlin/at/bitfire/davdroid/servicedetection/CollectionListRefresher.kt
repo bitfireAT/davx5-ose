@@ -257,13 +257,15 @@ class CollectionListRefresher @AssistedInject constructor(
                     val ownerHref = response[Owner::class.java]?.href
                     val personal = isHomeSetPersonal(response)
 
-                    if (relation == Response.HrefRelation.SELF)
+                    val newHomeset = if (relation == Response.HrefRelation.SELF)
                         // this response is about the home set itself
-                        homeSetRepository.insertOrUpdateByUrlBlocking(localHomeset.copy(
+                        localHomeset.copy(
                             displayName = response[DisplayName::class.java]?.displayName,
-                            privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false,
-                            personal = personal
-                        ))
+                            privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
+                        )
+                    else
+                        localHomeset.copy(personal = personal)
+                    homeSetRepository.insertOrUpdateByUrlBlocking(newHomeset)
 
                     // in any case, check whether the response is about a usable collection
                     var collection = Collection.fromDavResponse(response) ?: return@propfind
@@ -423,9 +425,7 @@ class CollectionListRefresher @AssistedInject constructor(
 
     private fun isHomeSetPersonal(davResponse: Response): Boolean {
         // Owner must be set in order to check if the home set is personal
-        println("Checking if HomeSet is personal...")
         val ownerHref = davResponse[Owner::class.java]?.href?.toUri() ?: return false
-        println("Owner:     ${ownerHref.encodedPath}\nPrincipal: ${service.principal?.encodedPath}")
         // If Owner is set, check if the paths match. Owner is relative, doesn't contain the full URL, so we have to partially check it
         return ownerHref.encodedPath == service.principal?.encodedPath
     }

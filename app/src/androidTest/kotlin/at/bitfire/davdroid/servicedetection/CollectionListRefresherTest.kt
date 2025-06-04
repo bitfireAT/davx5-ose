@@ -20,6 +20,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.test.runTest
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -97,7 +98,14 @@ class CollectionListRefresherTest {
         val baseUrl = mockServer.url(PATH_CARDDAV + SUBPATH_PRINCIPAL)
 
         // Query home sets
-        refresherFactory.create(service, client.okHttpClient).discoverHomesets(baseUrl)
+        refresherFactory.create(
+            // Set a principal in service in order to check for Owner
+            service.copy(principal = "http://localhost$PATH_CARDDAV$SUBPATH_PRINCIPAL".toHttpUrl()),
+            client.okHttpClient
+        ).apply {
+            discoverHomesets(baseUrl)
+            refreshHomesetsAndTheirCollections()
+        }
 
         // Check home set has been saved correctly to database
         val savedHomesets = db.homeSetDao().getByService(service.id)
@@ -107,8 +115,8 @@ class CollectionListRefresherTest {
         val personalHomeset = savedHomesets[1]
         assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL/"), personalHomeset.url)
         assertEquals(service.id, personalHomeset.serviceId)
-        // Homeset is not personal since DAV:owner is not present on the response
-        assertEquals(false, personalHomeset.personal)
+        // Homeset is personal since the home set's principal matches with the owner
+        assertEquals(true, personalHomeset.personal)
 
         // Home set found in a group principal
         val groupHomeset = savedHomesets[0]
@@ -688,7 +696,7 @@ class CollectionListRefresherTest {
                         "<displayname>Freds Contacts (not mine)</displayname>" +
                         "<CARD:addressbook-description>Not personal contacts</CARD:addressbook-description>" +
                         "<owner>" +
-                        "   <href>${PATH_CARDDAV + SUBPATH_PRINCIPAL}</href>" + // OK, user is allowed to own non-personal contacts
+                        "   <href>${PATH_CARDDAV + SUBPATH_PRINCIPAL}0</href>" + // change the principal so it's not the correct owner
                         "</owner>"
 
                     PATH_CALDAV + SUBPATH_PRINCIPAL ->
