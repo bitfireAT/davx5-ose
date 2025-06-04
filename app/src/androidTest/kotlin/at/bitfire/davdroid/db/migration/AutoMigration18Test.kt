@@ -29,7 +29,7 @@ class AutoMigration18Test : DatabaseMigrationTest(toVersion = 18) {
                 Entry(3, 1, "org.dmfs.tasks", 1000),
                 Entry(4, 1, "org.tasks.opentasks", 2000),
                 Entry(5, 1, "at.techbee.jtx.provider", 3000), // highest lastSync for collection 1
-                Entry(6, 1, "unknown.authority", 1000),
+                Entry(6, 1, "unknown.authority", 1000),  // ignored
 
                 Entry(7, 2, "org.dmfs.tasks", 1000),
                 Entry(8, 2, "org.tasks.opentasks", 2000), // highest lastSync for collection 2
@@ -62,7 +62,6 @@ class AutoMigration18Test : DatabaseMigrationTest(toVersion = 18) {
                         Entry(1, 1, "CONTACTS"),
                         Entry(2, 1, "EVENTS"),
                         Entry(5, 1, "TASKS"),   // highest lastSync TASK for collection 1 is JTX Board
-                        Entry(6, 1, "UNKNOWN"),
                         Entry(8, 2, "TASKS"),   // highest lastSync TASK for collection 2
                         Entry(9, 3, "TASKS"),   // only TASK for collection 3
                     ), found
