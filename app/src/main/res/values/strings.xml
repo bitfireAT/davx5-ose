@@ -302,6 +302,9 @@
     <string name="login_client_certificate_selected">Client certificate: %s</string>
     <string name="login_no_certificate_found">No certificate found</string>
     <string name="login_install_certificate">Install certificate</string>
+    <string name="login_fastmail">Fastmail</string>
+    <string name="login_fastmail_account">Fastmail account</string>
+    <string name="login_fastmail_sign_in">Sign in with Fastmail</string>
     <string name="login_type_google">Google Contacts / Calendar</string>
     <string name="login_google_see_tested_with">Please see our \"Tested with Google\" page for up-to-date information.</string>
     <string name="login_google_unexpected_warnings">You may experience unexpected warnings and/or have to create your own client ID.</string>

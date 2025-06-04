@@ -7,23 +7,16 @@ package at.bitfire.davdroid.ui.setup
 import android.content.ActivityNotFoundException
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -37,39 +30,29 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
-import at.bitfire.davdroid.ui.setup.GoogleLogin.GOOGLE_POLICY_URL
-import at.bitfire.davdroid.ui.setup.GoogleLogin.helpUrl
 import java.util.logging.Level
 import java.util.logging.Logger
 
-object GoogleLogin : LoginType {
+object FastmailLogin : LoginType {
 
     override val title: Int
-        get() = R.string.login_type_google
+        get() = R.string.login_fastmail
 
     override val helpUrl: Uri
         get() = Constants.HOMEPAGE_URL.buildUpon()
             .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
-            .appendPath("google")
-            .withStatParams("LoginTypeGoogle")
+            .appendPath("fastmail")
+            .withStatParams("LoginTypeFastmail")
             .build()
-
-
-    // Google API Services User Data Policy
-    const val GOOGLE_POLICY_URL =
-        "https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes"
 
 
     @Composable
@@ -78,8 +61,8 @@ object GoogleLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model: GoogleLoginModel = hiltViewModel(
-            creationCallback = { factory: GoogleLoginModel.Factory ->
+        val model: FastmailLoginModel = hiltViewModel(
+            creationCallback = { factory: FastmailLoginModel.Factory ->
                 factory.create(loginInfo = initialLoginInfo)
             }
         )
@@ -105,11 +88,9 @@ object GoogleLogin : LoginType {
                 model.authCodeFailed()
         }
 
-        GoogleLoginScreen(
+        FastmailLoginScreen(
             email = uiState.email,
             onSetEmail = model::setEmail,
-            customClientId = uiState.customClientId,
-            onSetCustomClientId = model::setCustomClientId,
             canContinue = uiState.canContinue,
             onLogin = {
                 if (uiState.canContinue) {
@@ -128,11 +109,9 @@ object GoogleLogin : LoginType {
 }
 
 @Composable
-fun GoogleLoginScreen(
+fun FastmailLoginScreen(
     email: String,
     onSetEmail: (String) -> Unit = {},
-    customClientId: String,
-    onSetCustomClientId: (String) -> Unit = {},
     canContinue: Boolean,
     onLogin: () -> Unit = {}
 ) {
@@ -145,35 +124,10 @@ fun GoogleLoginScreen(
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            stringResource(R.string.login_type_google),
+            stringResource(R.string.login_fastmail),
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(vertical = 8.dp)
         )
-
-        Card(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(8.dp)) {
-                Row {
-                    Text(
-                        stringResource(R.string.login_google_see_tested_with),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-                Text(
-                    stringResource(R.string.login_google_unexpected_warnings),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-                Button(
-                    onClick = {
-                        uriHandler.openUri(helpUrl.toString())
-                    },
-                    colors = ButtonDefaults.outlinedButtonColors(),
-                    modifier = Modifier.wrapContentSize()
-                ) {
-                    Text(stringResource(R.string.intro_more_info))
-                }
-            }
-        }
 
         val focusRequester = remember { FocusRequester() }
         OutlinedTextField(
@@ -183,8 +137,8 @@ fun GoogleLoginScreen(
             leadingIcon = {
                 Icon(Icons.Default.Email, null)
             },
-            label = { Text(stringResource(R.string.login_google_account)) },
-            placeholder = { Text("example@gmail.com") },
+            label = { Text(stringResource(R.string.login_fastmail_account)) },
+            placeholder = { Text("example@fastmail.com") },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
@@ -199,24 +153,6 @@ fun GoogleLoginScreen(
                 focusRequester.requestFocus()
         }
 
-        OutlinedTextField(
-            customClientId,
-            singleLine = true,
-            onValueChange = onSetCustomClientId,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { onLogin() }
-            ),
-            label = { Text(stringResource(R.string.login_google_client_id)) },
-            placeholder = { Text("[...].apps.googleusercontent.com") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp)
-        )
-
         Button(
             enabled = canContinue,
             onClick = { onLogin() },
@@ -224,62 +160,25 @@ fun GoogleLoginScreen(
                 .padding(top = 8.dp)
                 .wrapContentSize()
         ) {
-            Image(
-                painter = painterResource(R.drawable.google_g_logo),
-                contentDescription = stringResource(R.string.login_google),
-                modifier = Modifier.size(18.dp)
-            )
-            Text(
-                text = stringResource(R.string.login_google),
-                modifier = Modifier.padding(start = 12.dp)
-            )
+            Text(stringResource(R.string.login_fastmail_sign_in))
         }
-
-        Spacer(Modifier.padding(8.dp))
-
-        val privacyPolicyUrl = Constants.HOMEPAGE_URL.buildUpon()
-            .appendPath(Constants.HOMEPAGE_PATH_PRIVACY)
-            .withStatParams("GoogleLoginFragment")
-            .build()
-        val privacyPolicyNote = HtmlCompat.fromHtml(
-            stringResource(
-                R.string.login_google_client_privacy_policy,
-                context.getString(R.string.app_name),
-                privacyPolicyUrl.toString()
-            ), 0
-        ).toAnnotatedString()
-        Text(
-            text = privacyPolicyNote,
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        val limitedUseNote = HtmlCompat.fromHtml(
-            stringResource(R.string.login_google_client_limited_use, context.getString(R.string.app_name), GOOGLE_POLICY_URL), 0
-        ).toAnnotatedString()
-        Text(
-            text = limitedUseNote,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 12.dp)
-        )
     }
 }
 
 @Composable
 @Preview(showBackground = true)
-fun GoogleLoginScreen_Preview_Empty() {
-    GoogleLoginScreen(
+fun FastmailLoginScreen_Preview_Empty() {
+    FastmailLoginScreen(
         email = "",
-        customClientId = "",
         canContinue = false
     )
 }
 
 @Composable
 @Preview(showBackground = true)
-fun GoogleLoginScreen_Preview_WithDefaultEmail() {
-    GoogleLoginScreen(
+fun FastmailLoginScreen_Preview_WithDefaultEmail() {
+    FastmailLoginScreen(
         email = "example@gmail.com",
-        customClientId = "some-client-id",
         canContinue = true
     )
 }

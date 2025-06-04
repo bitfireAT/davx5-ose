@@ -51,10 +51,10 @@ class FastmailLogin(
 
     }
 
-    fun signIn(email: String, customClientId: String?, locale: String?): AuthorizationRequest {
+    fun signIn(email: String, locale: String?): AuthorizationRequest {
         val builder = AuthorizationRequest.Builder(
             serviceConfig,
-            customClientId ?: CLIENT_ID,
+            CLIENT_ID,
             ResponseTypeValues.CODE,
             (BuildConfig.APPLICATION_ID + ":/oauth2/redirect").toUri()
         )
