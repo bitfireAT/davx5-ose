@@ -89,7 +89,8 @@ fun PasswordTextField(
 }
 
 fun appPasswordHelpUrl(): Uri = Constants.MANUAL_URL.buildUpon()
-    .appendEncodedPath(Constants.MANUAL_PATH_INTRODUCTION_FIRST_STEPS)
+    .appendPath(Constants.MANUAL_PATH_INTRODUCTION)
+    .fragment(Constants.MANUAL_FRAGMENT_AUTHENTICATION_METHODS)
     .build()
 
 
