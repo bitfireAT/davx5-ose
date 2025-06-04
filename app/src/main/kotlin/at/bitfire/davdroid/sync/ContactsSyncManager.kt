@@ -100,7 +100,6 @@ import kotlin.jvm.optionals.getOrNull
 class ContactsSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted httpClient: HttpClient,
-    @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
     @Assisted localAddressBook: LocalAddressBook,
@@ -114,7 +113,7 @@ class ContactsSyncManager @AssistedInject constructor(
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
     httpClient,
-    authority,
+    SyncDataType.CONTACTS,
     syncResult,
     localAddressBook,
     collection,
@@ -127,7 +126,6 @@ class ContactsSyncManager @AssistedInject constructor(
         fun contactsSyncManager(
             account: Account,
             httpClient: HttpClient,
-            authority: String,
             syncResult: SyncResult,
             provider: ContentProviderClient,
             localAddressBook: LocalAddressBook,

@@ -124,7 +124,7 @@
   <string name="navigation_drawer_community">Kogukond</string>
   <string name="navigation_drawer_support_project">Toeta projekti</string>
   <string name="navigation_drawer_contribute">Osalemise viisid</string>
-  <string name="navigation_drawer_privacy_policy">Privaatsuspoliitika</string>
+  <string name="navigation_drawer_privacy_policy">Privaatsusreeglid</string>
   <string name="account_list_welcome">Tere tulemast kasutama rakendust DAVx⁵!</string>
   <string name="account_list_empty">Loo ühendus oma serveriga ja hoia kalendrid ning kontaktid sünkroniseerituna.</string>
   <string name="accounts_sync_all">Sünkroniseeri kõik kasutajakontod</string>
@@ -204,6 +204,7 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">Tõuketeavituste sõnumid on alati krüptitud.</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">Kasutajakontot pole olemas</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -233,7 +234,7 @@
   <string name="account_install_icsx5">Paigalda ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Lisa kasutajakonto</string>
-  <string name="login_privacy_hint"><![CDATA[Kõik andmed liiguvad vaid sinu serveri ja sinu nutiseadme vahel. %1$s ei saada neid mitte kuhugile mujale. Lisateavet leiad <a href="%2$s">meie privaatsuspoliitikast</a>.]]></string>
+  <string name="login_privacy_hint"><![CDATA[Kõik andmed liiguvad vaid sinu serveri ja sinu nutiseadme vahel. %1$s ei saada neid mitte kuhugile mujale. Lisateavet leiad <a href="%2$s">meie Privaatsusreeglitest</a>.]]></string>
   <string name="login_generic_login">Üldine sisselogimine</string>
   <string name="login_provider_login">Teenusepakkujakohane sisselogimine</string>
   <string name="login_continue">Jätka</string>
@@ -272,7 +273,7 @@
   <string name="login_google_account">Google\'i kasutajakonto</string>
   <string name="login_google">Logi sisse Google\'i kasutajakontoga</string>
   <string name="login_google_client_id">Klienditunnus (kui soovid lisada)</string>
-  <string name="login_google_client_privacy_policy"><![CDATA[%1$s teisaldab sinu Google\'i kontaktide ja kalendri andmeid vaid sünkroniseerimiseks selles seadmes. Lisateavet leiad meie <a href="%2$s">Privaatsuspoliitikast</a>.]]></string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s teisaldab sinu Google\'i kontaktide ja kalendri andmeid vaid sünkroniseerimiseks selles seadmes. Lisateavet leiad meie <a href="%2$s">Privaatsusreeglitest</a>.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s järgib <a href="%2$s">Google\'i API teenuste kasutajaandmete poliitikat</a>, sealhulgas piiratud kasutuse nõudeid.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Autoriseerimiskoodi saamine polnud võimalik</string>
   <string name="login_type_nextcloud">Nextcloud</string>
@@ -413,6 +414,8 @@
   <string name="debug_info_logs_caption">Logid</string>
   <string name="debug_info_logs_subtitle">Saadaval on üksikasjalikud logid</string>
   <string name="debug_info_logs_view">Vaata logisid</string>
+  <string name="debug_info_privacy_warning_title">Privaatsusteade</string>
+  <string name="debug_info_privacy_warning_description">Logid ja veaotsingu teave võivad sisaldada privaatset teavet. Nende andmete avalikul jagamisel palun arvesta sellega.</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Tekkis viga.</string>
   <string name="exception_httpexception">Tekkis http-viga.</string>
@@ -460,5 +463,8 @@
   <!--widgets-->
   <string name="widget_sync_all">Sünkroniseeri kõik</string>
   <string name="widget_sync_all_accounts">Sünkroniseeri kõik kasutajakontod</string>
+  <string name="widget_labeled_sync_label">Sildiga sünkroniseerimisnupp</string>
+  <string name="widget_icon_sync_label">Ikooniga sünkroniseerimisnupp</string>
+  <string name="widget_sync_description">Klõpsi sünkroniseerimise käsitsi käivitamiseks.</string>
   <!--cert4android-->
 </resources>

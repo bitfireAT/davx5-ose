@@ -54,7 +54,7 @@ import java.io.IOException
 @Composable
 fun DebugInfoScreen(
     account: Account?,
-    authority: String?,
+    syncDataType: String?,
     cause: Throwable?,
     localResource: String?,
     remoteResource: String?,
@@ -68,7 +68,7 @@ fun DebugInfoScreen(
         creationCallback = { factory: DebugInfoModel.Factory ->
             factory.createWithDetails(DebugInfoModel.DebugInfoDetails(
                 account = account,
-                authority = authority,
+                syncDataType = syncDataType,
                 cause = cause,
                 localResource = localResource,
                 remoteResource = remoteResource,

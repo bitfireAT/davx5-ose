@@ -139,7 +139,7 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
                 },
                 credentials = Credentials(
                     username = givenUsername,
-                    password = givenPassword
+                    password = givenPassword?.toCharArray()
                 )
             )
         }

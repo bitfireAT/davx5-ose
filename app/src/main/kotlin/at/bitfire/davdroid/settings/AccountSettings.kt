@@ -107,7 +107,7 @@ class AccountSettings @AssistedInject constructor(
 
     fun credentials() = Credentials(
         accountManager.getUserData(account, KEY_USERNAME),
-        accountManager.getPassword(account),
+        accountManager.getPassword(account)?.toCharArray(),
 
         accountManager.getUserData(account, KEY_CERTIFICATE_ALIAS),
 
@@ -119,7 +119,7 @@ class AccountSettings @AssistedInject constructor(
     fun credentials(credentials: Credentials) {
         // Basic/Digest auth
         accountManager.setAndVerifyUserData(account, KEY_USERNAME, credentials.username)
-        accountManager.setPassword(account, credentials.password)
+        accountManager.setPassword(account, credentials.password?.concatToString())
 
         // client certificate
         accountManager.setAndVerifyUserData(account, KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)

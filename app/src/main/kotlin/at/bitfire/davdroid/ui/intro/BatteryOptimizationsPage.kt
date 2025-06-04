@@ -7,9 +7,9 @@ package at.bitfire.davdroid.ui.intro
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.Composable
+import androidx.core.net.toUri
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel.Companion.HINT_BATTERY_OPTIMIZATIONS
@@ -46,7 +46,7 @@ class BatteryOptimizationsPage @Inject constructor(
         override fun createIntent(context: Context, input: String): Intent {
             return Intent(
                 android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                Uri.parse("package:$input")
+                "package:$input".toUri()
             )
         }
 

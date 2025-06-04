@@ -6,7 +6,6 @@
 import android.Manifest
 import android.accounts.Account
 import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
@@ -64,6 +63,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
@@ -131,7 +131,7 @@ fun AccountScreen(
         onUpdateCollectionSync = model::setCollectionSync,
         onSubscribe = { collection ->
             // subscribe
-            var uri = Uri.parse(collection.source.toString())
+            var uri = collection.source.toString().toUri()
             when {
                 uri.scheme.equals("http", true) -> uri = uri.buildUpon().scheme("webcal").build()
                 uri.scheme.equals("https", true) -> uri = uri.buildUpon().scheme("webcals").build()
@@ -405,7 +405,7 @@ fun AccountScreen(
                                             ) {
                                                 val installIntent = Intent(
                                                     Intent.ACTION_VIEW,
-                                                    Uri.parse("market://details?id=at.bitfire.icsdroid")
+                                                    "market://details?id=at.bitfire.icsdroid".toUri()
                                                 )
                                                 if (context.packageManager.resolveActivity(installIntent, 0) != null)
                                                     context.startActivity(installIntent)
