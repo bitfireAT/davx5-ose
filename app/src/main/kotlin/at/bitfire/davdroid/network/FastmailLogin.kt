@@ -19,13 +19,41 @@ import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import net.openid.appauth.TokenResponse
 import java.net.URI
-import java.util.logging.Logger
 
 class FastmailLogin(
     val authService: AuthorizationService
 ) {
 
-    private val logger: Logger = Logger.getGlobal()
+    fun signIn(email: String, locale: String?): AuthorizationRequest {
+        val builder = AuthorizationRequest.Builder(
+            serviceConfig,
+            CLIENT_ID,
+            ResponseTypeValues.CODE,
+            (BuildConfig.APPLICATION_ID + ":/oauth2/redirect").toUri()
+        )
+        return builder
+            .setScopes(*SCOPES)
+            .setLoginHint(email)
+            .setUiLocales(locale)
+            .build()
+    }
+
+    suspend fun authenticate(authResponse: AuthorizationResponse): Credentials {
+        val authState = AuthState(authResponse, null)       // authorization code must not be stored; exchange it to refresh token
+        val credentials = CompletableDeferred<Credentials>()
+
+        withContext(Dispatchers.IO) {
+            authService.performTokenRequest(authResponse.createTokenExchangeRequest()) { tokenResponse: TokenResponse?, refreshTokenException: AuthorizationException? ->
+                if (tokenResponse != null) {
+                    // success, save authState (= refresh token)
+                    authState.update(tokenResponse, refreshTokenException)
+                    credentials.complete(Credentials(authState = authState))
+                }
+            }
+        }
+
+        return credentials.await()
+    }
 
 
     companion object {
@@ -49,39 +77,6 @@ class FastmailLogin(
             "https://api.fastmail.com/oauth/refresh".toUri()
         )
 
-    }
-
-    fun signIn(email: String, locale: String?): AuthorizationRequest {
-        val builder = AuthorizationRequest.Builder(
-            serviceConfig,
-            CLIENT_ID,
-            ResponseTypeValues.CODE,
-            (BuildConfig.APPLICATION_ID + ":/oauth2/redirect").toUri()
-        )
-        return builder
-            .setScopes(*SCOPES)
-            .setLoginHint(email)
-            .setUiLocales(locale)
-            .build()
-    }
-
-    suspend fun authenticate(authResponse: AuthorizationResponse): Credentials {
-        val authState = AuthState(authResponse, null)       // authorization code must not be stored; exchange it to refresh token
-        val credentials = CompletableDeferred<Credentials>()
-
-        withContext(Dispatchers.IO) {
-            authService.performTokenRequest(authResponse.createTokenExchangeRequest()) { tokenResponse: TokenResponse?, refreshTokenException: AuthorizationException? ->
-                logger.info("Refresh token response: ${tokenResponse?.jsonSerializeString()}")
-
-                if (tokenResponse != null) {
-                    // success, save authState (= refresh token)
-                    authState.update(tokenResponse, refreshTokenException)
-                    credentials.complete(Credentials(authState = authState))
-                }
-            }
-        }
-
-        return credentials.await()
     }
 
 }
