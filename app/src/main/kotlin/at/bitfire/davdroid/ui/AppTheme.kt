@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -52,7 +53,7 @@ fun AppTheme(
             else
                 M3ColorScheme.darkScheme,
         ) {
-            Box(Modifier.windowInsetsPadding(windowInsets)) {
+            Box(Modifier.windowInsetsPadding(windowInsets).clipToBounds()) {
                 content()
             }
         }

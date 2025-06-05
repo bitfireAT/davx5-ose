@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.accounts.AccountManager
 import android.content.Context
 import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContract
@@ -14,9 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.network.OAuthGoogle
+import at.bitfire.davdroid.network.OAuthFastmail
 import at.bitfire.davdroid.network.OAuthIntegration
-import at.bitfire.davdroid.util.trimToNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -30,17 +28,17 @@ import java.util.Locale
 import java.util.logging.Level
 import java.util.logging.Logger
 
-@HiltViewModel(assistedFactory = GoogleLoginModel.Factory::class)
-class GoogleLoginModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = FastmailLoginModel.Factory::class)
+class FastmailLoginModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
     private val logger: Logger
-): ViewModel() {
+) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun create(loginInfo: LoginInfo): GoogleLoginModel
+        fun create(loginInfo: LoginInfo): FastmailLoginModel
     }
 
     override fun onCleared() {
@@ -50,14 +48,13 @@ class GoogleLoginModel @AssistedInject constructor(
 
     data class UiState(
         val email: String = "",
-        val customClientId: String = "",
         val error: String? = null,
 
         /** login info (set after successful login) */
         val result: LoginInfo? = null
     ) {
         val canContinue = email.isNotEmpty()
-        val emailWithDomain = if (email.contains("@")) email else "$email@gmail.com"
+        val emailWithDomain = if (email.contains("@")) email else "$email@fastmail.com"
     }
 
     var uiState by mutableStateOf(UiState())
@@ -65,7 +62,7 @@ class GoogleLoginModel @AssistedInject constructor(
 
     init {
         uiState = uiState.copy(
-            email = initialLoginInfo.credentials?.username ?: findGoogleAccount() ?: "",
+            email = initialLoginInfo.credentials?.username ?: "",
             error = null,
             result = null
         )
@@ -75,14 +72,9 @@ class GoogleLoginModel @AssistedInject constructor(
         uiState = uiState.copy(email = email)
     }
 
-    fun setCustomClientId(clientId: String) {
-        uiState = uiState.copy(customClientId = clientId)
-    }
-
     fun signIn() =
-        OAuthGoogle.signIn(
+        OAuthFastmail.signIn(
             email = uiState.emailWithDomain,
-            customClientId = uiState.customClientId.trimToNull(),
             locale = Locale.getDefault().toLanguageTag()
         )
 
@@ -98,13 +90,13 @@ class GoogleLoginModel @AssistedInject constructor(
                 // success, provide login info to continue
                 uiState = uiState.copy(
                     result = LoginInfo(
-                        baseUri = OAuthGoogle.baseUri(uiState.emailWithDomain),
+                        baseUri = OAuthFastmail.baseUri,
                         credentials = credentials,
                         suggestedAccountName = uiState.emailWithDomain
                     )
                 )
             } catch (e: Exception) {
-                logger.log(Level.WARNING, "Google authentication failed", e)
+                logger.log(Level.WARNING, "Fastmail authentication failed", e)
                 uiState = uiState.copy(error = e.message)
             }
         }
@@ -116,14 +108,6 @@ class GoogleLoginModel @AssistedInject constructor(
 
     fun resetResult() {
         uiState = uiState.copy(result = null)
-    }
-
-    private fun findGoogleAccount(): String? {
-        val accountManager = AccountManager.get(context)
-        return accountManager
-            .getAccountsByType("com.google")
-            .map { it.name }
-            .firstOrNull()
     }
 
 
