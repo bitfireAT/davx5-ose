@@ -23,6 +23,7 @@ class StandardLoginTypesProvider @Inject constructor(
         )
 
         val specificLoginTypes = listOf(
+            FastmailLogin,
             GoogleLogin,
             NextcloudLogin
         )
