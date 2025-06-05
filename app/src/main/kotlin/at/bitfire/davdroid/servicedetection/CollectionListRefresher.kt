@@ -253,7 +253,7 @@ class CollectionListRefresher @AssistedInject constructor(
                     if (!response.isSuccess())
                         return@propfind
 
-                    val ownerHref = response[Owner::class.java]?.href
+                    val ownerHref = response[Owner::class.java]
                     val personal = isHomeSetPersonal(response)
 
                     val newHomeset = if (relation == Response.HrefRelation.SELF)
@@ -272,7 +272,7 @@ class CollectionListRefresher @AssistedInject constructor(
                         serviceId = service.id,
                         homeSetId = localHomeset.id,
                         sync = shouldPreselect(collection, homesets.values),
-                        ownerId = ownerHref                          // save the principal id (collection owner)
+                        ownerId = ownerHref?.href                          // save the principal id (collection owner)
                             ?.let { response.href.resolve(it) }
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
                             ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
