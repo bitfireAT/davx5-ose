@@ -30,7 +30,7 @@ fun StandardLoginTypePage(
     selectedLoginType: LoginType,
     onSelectLoginType: (LoginType) -> Unit,
 
-    @Suppress("UNUSED_PARAMETER")   // for build variants
+    @Suppress("unused")   // for build variants
     setInitialLoginInfo: (LoginInfo) -> Unit,
     
     onContinue: () -> Unit = {}
