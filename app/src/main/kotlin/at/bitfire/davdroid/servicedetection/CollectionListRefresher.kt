@@ -136,12 +136,11 @@ class CollectionListRefresher @AssistedInject constructor(
      * Starting at given principal URL, tries to recursively find and save all user relevant home sets.
      *
      * @param principalUrl              URL of principal to query (user-provided principal or current-user-principal)
-     * @param level                     Current recursion level (limited to 0, 1 or 2):
-     *   - 0: We assume found home sets belong to the current-user-principal
-     *   - 1 or 2: We assume found home sets don't directly belong to the current-user-principal
+     * @param level                     Current recursion level (limited to 0, 1 or 2). Determines whether this iteration is from the
+     * root element of the full relation tree.
      * @param alreadyQueriedPrincipals  The HttpUrls of principals which have been queried already, to avoid querying principals more than once.
      * @param alreadySavedHomeSets      The HttpUrls of home sets which have been saved to database already, to avoid saving home sets
-     * more than once, which could overwrite the already set "personal" flag with `false`.
+     * more than once.
      *
      * @throws java.io.IOException                          on I/O errors
      * @throws HttpException                                on HTTP errors
@@ -385,7 +384,7 @@ class CollectionListRefresher @AssistedInject constructor(
      * settings [Settings.PRESELECT_COLLECTIONS] (see there for allowed values) and
      * [Settings.PRESELECT_COLLECTIONS_EXCLUDED].
      *
-     * A collection is considered _personal_ if it is found in one of the current-user-principal's home-sets.
+     * A collection is considered _personal_ if it has an [Owner] attribute that matches its principal.
      *
      * Before a collection is pre-selected, we check whether its URL matches the regexp in
      * [Settings.PRESELECT_COLLECTIONS_EXCLUDED], in which case *false* is returned.
