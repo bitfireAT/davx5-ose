@@ -222,6 +222,7 @@ class HttpClient(
             // add network logging, if requested
             if (logger.isLoggable(Level.FINEST)) {
                 val loggingInterceptor = HttpLoggingInterceptor { message -> logger.finest(message) }
+                loggingInterceptor.redactHeader("Authorization")
                 loggingInterceptor.level = loggerInterceptorLevel
                 okBuilder.addNetworkInterceptor(loggingInterceptor)
             }
