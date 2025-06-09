@@ -174,8 +174,7 @@ dependencies {
         exclude(group="junit")
         exclude(group="org.ogce", module="xpp3")    // Android has its own XmlPullParser implementation
     }
-    implementation(libs.bitfire.ical4android)
-    implementation(libs.bitfire.vcard4android)
+    implementation(libs.bitfire.synctools)
 
     // third-party libs
     @Suppress("RedundantSuppression")
