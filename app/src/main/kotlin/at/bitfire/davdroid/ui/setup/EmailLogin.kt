@@ -19,11 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -81,9 +77,6 @@ fun EmailLoginScreen(
     canContinue: Boolean,
     onLogin: () -> Unit = {}
 ) {
-    val emailFocusRequester = remember { FocusRequester() }
-    val passwordFocusRequester = remember { FocusRequester() }
-
     Assistant(
         nextLabel = stringResource(R.string.login_login),
         nextEnabled = canContinue,
@@ -110,12 +103,7 @@ fun EmailLoginScreen(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
                 ),
-                keyboardActions = KeyboardActions {
-                    passwordFocusRequester.requestFocus()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(emailFocusRequester)
+                modifier = Modifier.fillMaxWidth()
             )
 
             val manualUrl = Constants.MANUAL_URL.buildUpon()
@@ -145,15 +133,9 @@ fun EmailLoginScreen(
                 keyboardActions = KeyboardActions {
                     if (canContinue) onLogin()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(passwordFocusRequester)
+                modifier = Modifier.fillMaxWidth()
             )
         }
-    }
-
-    LaunchedEffect(Unit) {
-        emailFocusRequester.requestFocus()
     }
 }
 

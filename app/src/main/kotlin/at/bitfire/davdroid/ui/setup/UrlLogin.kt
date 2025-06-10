@@ -87,9 +87,7 @@ fun UrlLoginScreen(
     canContinue: Boolean,
     onLogin: () -> Unit = {}
 ) {
-    val urlFocusRequester = remember { FocusRequester() }
-    val usernameFocusRequester = remember { FocusRequester() }
-    val passwordFocusRequester = remember { FocusRequester() }
+    val focusRequester = remember { FocusRequester() }
 
     Assistant(
         nextLabel = stringResource(R.string.login_login),
@@ -118,12 +116,9 @@ fun UrlLoginScreen(
                     keyboardType = KeyboardType.Uri,
                     imeAction = ImeAction.Next
                 ),
-                keyboardActions = KeyboardActions {
-                    usernameFocusRequester.requestFocus()
-                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(urlFocusRequester)
+                    .focusRequester(focusRequester)
             )
 
             val manualUrl = Constants.MANUAL_URL.buildUpon()
@@ -151,12 +146,7 @@ fun UrlLoginScreen(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
                 ),
-                keyboardActions = KeyboardActions {
-                    passwordFocusRequester.requestFocus()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(usernameFocusRequester)
+                modifier = Modifier.fillMaxWidth()
             )
 
             PasswordTextField(
@@ -173,15 +163,13 @@ fun UrlLoginScreen(
                 keyboardActions = KeyboardActions {
                     if (canContinue) onLogin()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(passwordFocusRequester)
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
 
     LaunchedEffect(Unit) {
-        urlFocusRequester.requestFocus()
+        focusRequester.requestFocus()
     }
 }
 

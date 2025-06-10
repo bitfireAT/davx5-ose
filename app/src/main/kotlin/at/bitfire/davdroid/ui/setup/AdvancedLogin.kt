@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -27,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -97,11 +95,7 @@ fun AdvancedLoginScreen(
     canContinue: Boolean,
     onLogin: () -> Unit = {}
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    val urlFocusRequester = remember { FocusRequester() }
-    val usernameFocusRequester = remember { FocusRequester() }
-    val passwordFocusRequester = remember { FocusRequester() }
+    val focusRequester = remember { FocusRequester() }
 
     Assistant(
         nextLabel = stringResource(R.string.login_login),
@@ -130,12 +124,9 @@ fun AdvancedLoginScreen(
                     keyboardType = KeyboardType.Uri,
                     imeAction = ImeAction.Next
                 ),
-                keyboardActions = KeyboardActions {
-                    usernameFocusRequester.requestFocus()
-                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(urlFocusRequester)
+                    .focusRequester(focusRequester)
             )
 
             val manualUrl = Constants.MANUAL_URL.buildUpon()
@@ -161,14 +152,9 @@ fun AdvancedLoginScreen(
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Next
                 ),
-                keyboardActions = KeyboardActions {
-                    passwordFocusRequester.requestFocus()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(usernameFocusRequester)
+                modifier = Modifier.fillMaxWidth()
             )
 
             PasswordTextField(
@@ -182,12 +168,7 @@ fun AdvancedLoginScreen(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-                keyboardActions = KeyboardActions {
-                    keyboardController?.hide()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(passwordFocusRequester)
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -208,7 +189,7 @@ fun AdvancedLoginScreen(
     }
 
     LaunchedEffect(Unit) {
-        urlFocusRequester.requestFocus()
+        focusRequester.requestFocus()
     }
 }
 
