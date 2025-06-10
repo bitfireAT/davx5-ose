@@ -81,7 +81,7 @@ class CollectionListRefresherTest {
 
         // insert test service
         val serviceId = db.serviceDao().insertOrReplace(
-            Service(id = 0, accountName = "test", type = Service.TYPE_CARDDAV, principal = null)
+            Service(id = 0, accountName = "test", type = Service.TYPE_CARDDAV, principal = "http://localhost$PATH_CARDDAV$SUBPATH_PRINCIPAL".toHttpUrl())
         )
         service = db.serviceDao().get(serviceId)!!
     }
@@ -98,11 +98,7 @@ class CollectionListRefresherTest {
         val baseUrl = mockServer.url(PATH_CARDDAV + SUBPATH_PRINCIPAL)
 
         // Query home sets
-        refresherFactory.create(
-            // Set a principal in service in order to check for Owner
-            service.copy(principal = "http://localhost$PATH_CARDDAV$SUBPATH_PRINCIPAL".toHttpUrl()),
-            client.okHttpClient
-        ).apply {
+        refresherFactory.create(service, client.okHttpClient).apply {
             discoverHomesets(baseUrl)
             refreshHomesetsAndTheirCollections()
         }
