@@ -122,7 +122,7 @@ class CollectionListRefresherTest {
         val groupHomeset = savedHomesets[0]
         assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_NON_PERSONAL/"), groupHomeset.url)
         assertEquals(service.id, groupHomeset.serviceId)
-        // personal should be false for homesets not detected at the first query of current-user-principal (IE. in groups)
+        // personal should be false for homesets whose owner is not present or doesn't match the principal
         assertEquals(false, groupHomeset.personal)
     }
 
