@@ -162,10 +162,10 @@ abstract class SyncAdapterService: Service() {
             logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
             val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), fromUpload = upload)
 
-            // Android 14 and 15 don't handle pending sync state correctly.
+            // Android 14+ does not handle pending sync state correctly.
             // Workaround: Cancel specifically this still pending sync
             // See: https://github.com/bitfireAT/davx5-ose/issues/1458
-            if (Build.VERSION.SDK_INT in 34..36) {
+            if (Build.VERSION.SDK_INT >= 34) {
                 // Recreate the sync request used to start this sync
                 val syncRequest = SyncRequest.Builder()
                     .setSyncAdapter(account, authority)
