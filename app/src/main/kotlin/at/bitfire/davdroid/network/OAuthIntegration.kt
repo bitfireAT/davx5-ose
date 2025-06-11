@@ -13,9 +13,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
+import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.TokenResponse
+import java.util.Locale
 
 /**
  * Integration with OpenID AppAuth (Android)
@@ -45,6 +48,16 @@ object OAuthIntegration {
         }
 
         return credentials.await()
+    }
+
+    fun newAuthorizeRequest(authConfig: AuthorizationServiceConfiguration): AuthorizationRequest? {
+        val authHost = authConfig.authorizationEndpoint.host.toString()
+        val locale = Locale.getDefault().toLanguageTag()
+        return when {
+            authHost.contains("fastmail.com") -> OAuthFastmail.signIn(null, locale)
+            authHost.contains("google.com") -> OAuthGoogle.signIn(null, null, locale)
+            else -> return null
+        }
     }
 
 }

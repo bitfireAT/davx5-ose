@@ -36,7 +36,7 @@ object OAuthGoogle {
     )
 
 
-    fun signIn(email: String, customClientId: String?, locale: String?): AuthorizationRequest {
+    fun signIn(email: String?, customClientId: String?, locale: String?): AuthorizationRequest {
         val builder = AuthorizationRequest.Builder(
             serviceConfig,
             customClientId ?: CLIENT_ID,
