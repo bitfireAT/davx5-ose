@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.Service
@@ -30,6 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthorizationRequest
@@ -59,6 +61,8 @@ class AccountSettingsModel @AssistedInject constructor(
 
     // settings
     data class UiState(
+        val status: String? = null,
+
         val hasContactsSync: Boolean = false,
         val syncIntervalContacts: Long? = null,
         val hasCalendarsSync: Boolean = false,
@@ -190,22 +194,28 @@ class AccountSettingsModel @AssistedInject constructor(
     }
 
     fun authenticate(authResponse: AuthorizationResponse) {
-        viewModelScope.launch(defaultDispatcher) {
+        CoroutineScope(defaultDispatcher).launch {
             try {
+                // save new credentials
                 val credentials = OAuthIntegration.authenticate(authService, authResponse)
                 accountSettings.credentials(credentials)
-                // uiState = uiState.copy(status = "Success")
+
+                _uiState.update {
+                    it.copy(status = context.getString(R.string.settings_reauthorize_oauth_success))
+                }
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Authentication failed", e)
-                // TODO
-                //uiState = uiState.copy(error = e.message)
+                _uiState.update {
+                    it.copy(status = e.localizedMessage)
+                }
             }
         }
     }
 
     fun authCodeFailed() {
-        // TODO
-        //uiState = uiState.copy(error = context.getString(R.string.login_oauth_couldnt_obtain_auth_code))
+        _uiState.update {
+            it.copy(status = context.getString(R.string.login_oauth_couldnt_obtain_auth_code))
+        }
     }
 
     fun updateCredentials(credentials: Credentials) = CoroutineScope(defaultDispatcher).launch {

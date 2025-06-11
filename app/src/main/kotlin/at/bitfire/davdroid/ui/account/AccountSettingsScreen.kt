@@ -37,6 +37,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,7 +73,7 @@ import kotlinx.coroutines.launch
 fun AccountSettingsScreen(
     onNavUp: () -> Unit,
     account: Account,
-    onNavWifiPermissionsScreen: () -> Unit,
+    onNavWifiPermissionsScreen: () -> Unit
 ) {
     val model = hiltViewModel { factory: AccountSettingsModel.Factory ->
         factory.create(account)
@@ -81,7 +82,6 @@ fun AccountSettingsScreen(
     val canAccessWifiSsid by PermissionUtils.rememberCanAccessWifiSsid()
 
     // contract to open the browser for re-authentication
-    val context = LocalContext.current
     val authRequestContract = rememberLauncherForActivityResult(model.authorizationContract()) { authResponse ->
         if (authResponse != null)
             model.authenticate(authResponse)
@@ -93,6 +93,7 @@ fun AccountSettingsScreen(
         AccountSettingsScreen(
             accountName = account.name,
             onNavUp = onNavUp,
+            status = uiState.status,
 
             // Sync settings
             canAccessWifiSsid = canAccessWifiSsid,
@@ -145,6 +146,7 @@ fun AccountSettingsScreen(
 fun AccountSettingsScreen(
     onNavUp: () -> Unit,
     accountName: String,
+    status: String? = null,
 
     // Sync settings
     canAccessWifiSsid: Boolean,
@@ -187,6 +189,11 @@ fun AccountSettingsScreen(
 ) {
     val uriHandler = LocalUriHandler.current
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(status) {
+        if (status != null)
+            snackbarHostState.showSnackbar(status)
+    }
 
     Scaffold(
         topBar = {
@@ -580,8 +587,8 @@ fun AuthenticationSettings(
             if (credentials.authState != null) {
                 Setting(
                     icon = Icons.Default.Password,
-                    name = "Re-authenticate",
-                    summary = "Log in over OAuth again",
+                    name = stringResource(R.string.settings_reauthorize_oauth),
+                    summary = stringResource(R.string.settings_reauthorize_oauth_summary),
                     enabled = isEnabled,
                     onClick = onAuthenticateOAuth
                 )
@@ -751,6 +758,7 @@ fun AccountSettingsScreen_Preview() {
         AccountSettingsScreen(
             accountName = "Account Name Here",
             onNavUp = {},
+            status = "Some Status",
 
             // Sync settings
             canAccessWifiSsid = true,
