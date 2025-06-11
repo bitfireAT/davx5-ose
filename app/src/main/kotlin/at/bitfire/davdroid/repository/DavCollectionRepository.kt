@@ -9,6 +9,9 @@ import android.content.Context
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
+import at.bitfire.dav4jvm.exception.GoneException
+import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.exception.NotFoundException
 import at.bitfire.dav4jvm.property.caldav.CalendarColor
 import at.bitfire.dav4jvm.property.caldav.CalendarDescription
 import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
@@ -25,13 +28,14 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.CollectionType
 import at.bitfire.davdroid.db.HomeSet
+import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.ICalendar
 import at.bitfire.ical4android.util.DateUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
@@ -43,6 +47,7 @@ import net.fortuna.ical4j.model.property.Version
 import okhttp3.HttpUrl
 import java.io.StringWriter
 import java.util.UUID
+import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -52,7 +57,9 @@ import javax.inject.Provider
 class DavCollectionRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
+    private val logger: Logger,
     private val httpClientBuilder: Provider<HttpClient.Builder>,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val serviceRepository: DavServiceRepository
 ) {
 
@@ -165,17 +172,23 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.getBlocking(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        httpClientBuilder.get()
-            .fromAccount(account)
-            .build()
-            .use { httpClient ->
-                runInterruptible(Dispatchers.IO) {
+        httpClientBuilder.get().fromAccount(account).build().use { httpClient ->
+            runInterruptible(ioDispatcher) {
+                try {
                     DavResource(httpClient.okHttpClient, collection.url).delete {
                         // success, otherwise an exception would have been thrown → delete locally, too
                         delete(collection)
                     }
+                } catch (e: HttpException) {
+                    if (e is NotFoundException || e is GoneException) {
+                        // HTTP 404 Not Found or 410 Gone (collection is not there anymore) -> delete locally, too
+                        logger.info("Collection ${collection.url} not found on server, deleting locally")
+                        delete(collection)
+                    } else
+                        throw e
                 }
             }
+        }
     }
 
     suspend fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
@@ -280,7 +293,7 @@ class DavCollectionRepository @Inject constructor(
             .fromAccount(account)
             .build()
             .use { httpClient ->
-                runInterruptible(Dispatchers.IO) {
+                runInterruptible(ioDispatcher) {
                     DavResource(httpClient.okHttpClient, url).mkCol(
                         xmlBody = xmlBody,
                         method = method
