@@ -34,6 +34,9 @@ object OAuthIntegration {
 
     /**
      * Called by the authorization service when the login is finished and [redirectUri] is launched.
+     *
+     * @param authService   authorization service
+     * @param authResponse  response from the server (coming over the Intent from the browser / [AuthorizationContract])
      */
     suspend fun authenticate(authService: AuthorizationService, authResponse: AuthorizationResponse): Credentials {
         val authState = AuthState(authResponse, null)       // authorization code must not be stored; exchange it to refresh token
@@ -53,9 +56,19 @@ object OAuthIntegration {
         return credentials.await()
     }
 
+    /**
+     * Creates a new authorization request from a known configuration. Typically used to re-authorize
+     * from a given configuration.
+     *
+     * @param authConfig    current authorization config that shall be replaced
+     * @return authorization request, or `null` if the current config doesn't contain a known provider
+     */
     fun newAuthorizeRequest(authConfig: AuthorizationServiceConfiguration): AuthorizationRequest? {
         val authHost = authConfig.authorizationEndpoint.host.toString()
         val locale = Locale.getDefault().toLanguageTag()
+
+        // If more OAuth providers become added, this should be rewritten so that all providers
+        // are checked automatically.
         return when {
             authHost.contains("fastmail.com") -> OAuthFastmail.signIn(null, locale)
             authHost.contains("google.com") -> OAuthGoogle.signIn(null, null, locale)

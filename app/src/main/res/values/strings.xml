@@ -374,8 +374,8 @@
     <string name="settings_app_password_hint"><![CDATA[You may prefer to use an <a href="%1$s">app password</a>.]]></string>
     <string name="settings_new_password">New password</string>
     <string name="settings_password_summary">Update the password according to your server.</string>
-    <string name="settings_reauthorize_oauth">Re-authorize</string>
-    <string name="settings_reauthorize_oauth_summary">Authorize using OAuth again</string>
+    <string name="settings_reauthorize_oauth">Authorize again (OAuth)</string>
+    <string name="settings_reauthorize_oauth_summary">Use when access has been revoked</string>
     <string name="settings_reauthorize_oauth_success">Authorization successful</string>
     <string name="settings_certificate_alias">Client certificate</string>
     <string name="settings_certificate_alias_empty">No certificate available or selected</string>
