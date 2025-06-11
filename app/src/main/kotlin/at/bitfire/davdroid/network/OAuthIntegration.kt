@@ -4,6 +4,9 @@
 
 package at.bitfire.davdroid.network
 
+import android.content.Context
+import android.content.Intent
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.db.Credentials
@@ -58,6 +61,17 @@ object OAuthIntegration {
             authHost.contains("google.com") -> OAuthGoogle.signIn(null, null, locale)
             else -> return null
         }
+    }
+
+
+    class AuthorizationContract(
+        private val authService: AuthorizationService
+    ) : ActivityResultContract<AuthorizationRequest, AuthorizationResponse?>() {
+        override fun createIntent(context: Context, input: AuthorizationRequest) =
+            authService.getAuthorizationRequestIntent(input)
+
+        override fun parseResult(resultCode: Int, intent: Intent?): AuthorizationResponse? =
+            intent?.let { AuthorizationResponse.fromIntent(it) }
     }
 
 }

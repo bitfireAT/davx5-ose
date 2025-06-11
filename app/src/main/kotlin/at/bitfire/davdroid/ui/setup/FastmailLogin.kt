@@ -81,7 +81,7 @@ object FastmailLogin : LoginType {
         }
 
         // contract to open the browser for authentication
-        val authRequestContract = rememberLauncherForActivityResult(contract = model.AuthorizationContract()) { authResponse ->
+        val authRequestContract = rememberLauncherForActivityResult(model.authorizationContract()) { authResponse ->
             if (authResponse != null)
                 model.authenticate(authResponse)
             else

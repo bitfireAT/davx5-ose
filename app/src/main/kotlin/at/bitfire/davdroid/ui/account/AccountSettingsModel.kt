@@ -6,8 +6,6 @@ package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.content.Context
-import android.content.Intent
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.db.AppDatabase
@@ -181,6 +179,8 @@ class AccountSettingsModel @AssistedInject constructor(
     }
 
 
+    fun authorizationContract() = OAuthIntegration.AuthorizationContract(authService)
+
     fun newAuthorizationRequest(): AuthorizationRequest? {
         val authState = accountSettings.credentials().authState ?: return null
 
@@ -282,12 +282,4 @@ class AccountSettingsModel @AssistedInject constructor(
         syncWorkerManager.enqueueOneTime(account, dataType = dataType, resync = resync)
     }
 
-
-    inner class AuthorizationContract() : ActivityResultContract<AuthorizationRequest, AuthorizationResponse?>() {
-        override fun createIntent(context: Context, input: AuthorizationRequest) =
-            authService.getAuthorizationRequestIntent(input)
-
-        override fun parseResult(resultCode: Int, intent: Intent?): AuthorizationResponse? =
-            intent?.let { AuthorizationResponse.fromIntent(it) }
-    }
 }

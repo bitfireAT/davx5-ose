@@ -81,7 +81,8 @@ fun AccountSettingsScreen(
     val canAccessWifiSsid by PermissionUtils.rememberCanAccessWifiSsid()
 
     // contract to open the browser for re-authentication
-    val authRequestContract = rememberLauncherForActivityResult(contract = model.AuthorizationContract()) { authResponse ->
+    val context = LocalContext.current
+    val authRequestContract = rememberLauncherForActivityResult(model.authorizationContract()) { authResponse ->
         if (authResponse != null)
             model.authenticate(authResponse)
         else
