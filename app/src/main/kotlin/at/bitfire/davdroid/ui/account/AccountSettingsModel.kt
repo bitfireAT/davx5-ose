@@ -8,9 +8,12 @@ import android.accounts.Account
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.di.DefaultDispatcher
+import at.bitfire.davdroid.network.OAuthIntegration
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.ResyncType
@@ -23,20 +26,29 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.openid.appauth.AuthorizationRequest
+import net.openid.appauth.AuthorizationResponse
+import net.openid.appauth.AuthorizationService
+import java.util.logging.Level
+import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountSettingsModel.Factory::class)
 class AccountSettingsModel @AssistedInject constructor(
     @Assisted val account: Account,
     private val accountSettingsFactory: AccountSettings.Factory,
+    private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
     db: AppDatabase,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    private val logger: Logger,
     private val settings: SettingsManager,
     private val syncWorkerManager: SyncWorkerManager,
     private val tasksAppManager: TasksAppManager
@@ -49,6 +61,8 @@ class AccountSettingsModel @AssistedInject constructor(
 
     // settings
     data class UiState(
+        val status: String? = null,
+
         val hasContactsSync: Boolean = false,
         val syncIntervalContacts: Long? = null,
         val hasCalendarsSync: Boolean = false,
@@ -92,7 +106,7 @@ class AccountSettingsModel @AssistedInject constructor(
     }
 
     override fun onCleared() {
-        super.onCleared()
+        authService.dispose()
         settings.removeOnChangeListener(this)
     }
 
@@ -102,7 +116,7 @@ class AccountSettingsModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun reload() = withContext(Dispatchers.Default) {
+    private suspend fun reload() = withContext(defaultDispatcher) {
         val hasContactsSync = serviceDao.getByAccountAndType(account.name, Service.TYPE_CARDDAV) != null
         val hasCalendarSync = serviceDao.getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
         val hasTasksSync = hasCalendarSync && tasksProvider != null
@@ -131,48 +145,86 @@ class AccountSettingsModel @AssistedInject constructor(
         )
     }
 
+
     fun updateContactsSyncInterval(syncInterval: Long) {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(defaultDispatcher).launch {
             accountSettings.setSyncInterval(SyncDataType.CONTACTS, syncInterval.takeUnless { it == -1L })
             reload()
         }
     }
 
     fun updateCalendarSyncInterval(syncInterval: Long) {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(defaultDispatcher).launch {
             accountSettings.setSyncInterval(SyncDataType.EVENTS, syncInterval.takeUnless { it == -1L })
             reload()
         }
     }
 
     fun updateTasksSyncInterval(syncInterval: Long) {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(defaultDispatcher).launch {
             accountSettings.setSyncInterval(SyncDataType.TASKS, syncInterval.takeUnless { it == -1L })
             reload()
         }
     }
 
-    fun updateSyncWifiOnly(wifiOnly: Boolean) = CoroutineScope(Dispatchers.Default).launch {
+    fun updateSyncWifiOnly(wifiOnly: Boolean) = CoroutineScope(defaultDispatcher).launch {
         accountSettings.setSyncWiFiOnly(wifiOnly)
         reload()
     }
 
-    fun updateSyncWifiOnlySSIDs(ssids: List<String>?) = CoroutineScope(Dispatchers.Default).launch {
+    fun updateSyncWifiOnlySSIDs(ssids: List<String>?) = CoroutineScope(defaultDispatcher).launch {
         accountSettings.setSyncWifiOnlySSIDs(ssids)
         reload()
     }
 
-    fun updateIgnoreVpns(ignoreVpns: Boolean) = CoroutineScope(Dispatchers.Default).launch {
+    fun updateIgnoreVpns(ignoreVpns: Boolean) = CoroutineScope(defaultDispatcher).launch {
         accountSettings.setIgnoreVpns(ignoreVpns)
         reload()
     }
 
-    fun updateCredentials(credentials: Credentials) = CoroutineScope(Dispatchers.Default).launch {
+
+    fun authorizationContract() = OAuthIntegration.AuthorizationContract(authService)
+
+    fun newAuthorizationRequest(): AuthorizationRequest? {
+        val authState = accountSettings.credentials().authState ?: return null
+
+        // create new authorization request
+        val authConfig = authState.authorizationServiceConfiguration ?: return null
+        return OAuthIntegration.newAuthorizeRequest(authConfig)
+    }
+
+    fun authenticate(authResponse: AuthorizationResponse) {
+        CoroutineScope(defaultDispatcher).launch {
+            try {
+                // save new credentials
+                val credentials = OAuthIntegration.authenticate(authService, authResponse)
+                accountSettings.credentials(credentials)
+
+                _uiState.update {
+                    it.copy(status = context.getString(R.string.settings_reauthorize_oauth_success))
+                }
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Authentication failed", e)
+                _uiState.update {
+                    it.copy(status = e.localizedMessage)
+                }
+            }
+        }
+    }
+
+    fun authCodeFailed() {
+        _uiState.update {
+            it.copy(status = context.getString(R.string.login_oauth_couldnt_obtain_auth_code))
+        }
+    }
+
+    fun updateCredentials(credentials: Credentials) = CoroutineScope(defaultDispatcher).launch {
         accountSettings.credentials(credentials)
         reload()
     }
 
-    fun updateTimeRangePastDays(days: Int?) = CoroutineScope(Dispatchers.Default).launch {
+
+    fun updateTimeRangePastDays(days: Int?) = CoroutineScope(defaultDispatcher).launch {
         accountSettings.setTimeRangePastDays(days)
         reload()
 
@@ -187,28 +239,29 @@ class AccountSettingsModel @AssistedInject constructor(
         )
     }
 
-    fun updateDefaultAlarm(minBefore: Int?) = CoroutineScope(Dispatchers.Default).launch {
+    fun updateDefaultAlarm(minBefore: Int?) = CoroutineScope(defaultDispatcher).launch {
         accountSettings.setDefaultAlarm(minBefore)
         reload()
 
         resyncCalendars(resync = ResyncType.RESYNC_ENTRIES, tasks = false)
     }
 
-    fun updateManageCalendarColors(manage: Boolean) = CoroutineScope(Dispatchers.Default).launch {
+    fun updateManageCalendarColors(manage: Boolean) = CoroutineScope(defaultDispatcher).launch {
         accountSettings.setManageCalendarColors(manage)
         reload()
 
         resyncCalendars(resync = ResyncType.RESYNC_LIST, tasks = true)
     }
 
-    fun updateEventColors(manageColors: Boolean) = CoroutineScope(Dispatchers.Default).launch {
+    fun updateEventColors(manageColors: Boolean) = CoroutineScope(defaultDispatcher).launch {
         accountSettings.setEventColors(manageColors)
         reload()
 
         resyncCalendars(resync = ResyncType.RESYNC_ENTRIES, tasks = false)
     }
 
-    fun updateContactGroupMethod(groupMethod: GroupMethod) = CoroutineScope(Dispatchers.Default).launch {
+
+    fun updateContactGroupMethod(groupMethod: GroupMethod) = CoroutineScope(defaultDispatcher).launch {
         accountSettings.setGroupMethod(groupMethod)
         reload()
 

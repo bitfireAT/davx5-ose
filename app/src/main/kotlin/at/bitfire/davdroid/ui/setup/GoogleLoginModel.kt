@@ -6,8 +6,6 @@ package at.bitfire.davdroid.ui.setup
 
 import android.accounts.AccountManager
 import android.content.Context
-import android.content.Intent
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -23,7 +21,6 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
-import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import java.util.Locale
@@ -79,6 +76,9 @@ class GoogleLoginModel @AssistedInject constructor(
         uiState = uiState.copy(customClientId = clientId)
     }
 
+
+    fun authorizationContract() = OAuthIntegration.AuthorizationContract(authService)
+
     fun signIn() =
         OAuthGoogle.signIn(
             email = uiState.emailWithDomain,
@@ -124,15 +124,6 @@ class GoogleLoginModel @AssistedInject constructor(
             .getAccountsByType("com.google")
             .map { it.name }
             .firstOrNull()
-    }
-
-
-    inner class AuthorizationContract() : ActivityResultContract<AuthorizationRequest, AuthorizationResponse?>() {
-        override fun createIntent(context: Context, input: AuthorizationRequest) =
-            authService.getAuthorizationRequestIntent(input)
-
-        override fun parseResult(resultCode: Int, intent: Intent?): AuthorizationResponse? =
-            intent?.let { AuthorizationResponse.fromIntent(it) }
     }
 
 }
