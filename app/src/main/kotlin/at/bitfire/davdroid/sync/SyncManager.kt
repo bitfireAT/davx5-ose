@@ -38,8 +38,7 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.ical4android.CalendarStorageException
-import at.bitfire.vcard4android.ContactsStorageException
+import at.bitfire.synctools.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
@@ -738,7 +737,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 message = context.getString(R.string.sync_error_http_dav, e.localizedMessage)
             }
 
-            is CalendarStorageException, is ContactsStorageException, is RemoteException -> {
+            is LocalStorageException, is RemoteException -> {
                 logger.log(Level.SEVERE, "Couldn't access local storage", e)
                 syncResult.localStorageError = true
                 message = context.getString(R.string.sync_error_local_storage, e.localizedMessage)
