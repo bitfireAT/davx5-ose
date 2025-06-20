@@ -45,7 +45,7 @@
     <string name="intro_battery_text">For synchronization at regular intervals, %s must be allowed to run in the background. Otherwise, Android may pause synchronization at any time.</string>
     <string name="intro_battery_dont_show">I don\'t need regular sync intervals.*</string>
     <string name="intro_autostart_title">%s compatibility</string>
-    <string name="intro_autostart_text">This device probably blocks synchronization. If you\'re affected, you can only resolve this manually.</string>
+    <string name="intro_autostart_text">Vendor-specific firmware may block synchronization. If you\'re affected, you can only resolve this manually.</string>
     <string name="intro_autostart_dont_show">I have done the required settings. Don\'t remind me anymore.*</string>
     <string name="intro_leave_unchecked">* Leave unchecked to be reminded later. Can be reset in app settings / %s.</string>
     <string name="intro_more_info">More information</string>
