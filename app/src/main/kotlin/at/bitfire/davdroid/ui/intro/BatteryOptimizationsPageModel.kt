@@ -56,7 +56,7 @@ class BatteryOptimizationsPageModel @Inject constructor(
          * See https://github.com/jaredrummler/AndroidDeviceNames/blob/master/json/ for manufacturer values.
          */
         private val evilManufacturers = arrayOf("asus", "huawei", "lenovo", "letv", "meizu", "nokia",
-            "oneplus", "oppo", "samsung", "sony", "vivo", "wiko", "xiaomi", "zte")
+            "oneplus", "oppo", "sony", "vivo", "wiko", "xiaomi", "zte")
 
         /**
          * Whether the device has been produced by an evil manufacturer.
