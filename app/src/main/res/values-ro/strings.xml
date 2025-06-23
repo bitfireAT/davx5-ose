@@ -34,7 +34,6 @@
   <string name="intro_battery_text">Pentru sincronizare la intervale regulate, %s trebuie să aibă voie să ruleze în fundal. În caz contrar, Android poate întrerupe sincronizarea în orice moment.</string>
   <string name="intro_battery_dont_show">Nu am nevoie de intervale regulate de sincronizare.*</string>
   <string name="intro_autostart_title">Compatibilitate %s </string>
-  <string name="intro_autostart_text">Acest dispozitiv probabil blochează sincronizarea. Dacă ești afectat, poți rezolva acest lucru numai manual.</string>
   <string name="intro_autostart_dont_show">Am făcut setările necesare. Nu-mi mai aminti.*</string>
   <string name="intro_leave_unchecked">* Lasă nebifat pentru a fi reamintit mai târziu. Poate fi resetat în setările aplicației / %s.</string>
   <string name="intro_more_info">Mai multe informații</string>
@@ -268,6 +267,9 @@
   <string name="login_client_certificate_selected">Certificat de client: %s</string>
   <string name="login_no_certificate_found">Nu a fost găsit niciun certificat</string>
   <string name="login_install_certificate">Instalare certificat</string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Cont Fastmail</string>
+  <string name="login_fastmail_sign_in">Conectează-te cu Fastmail</string>
   <string name="login_type_google">Contacte Google / Calendar</string>
   <string name="login_google_see_tested_with">Consultă pagina noastră „Testat cu Google” pentru informații actualizate.</string>
   <string name="login_google_unexpected_warnings">Este posibil să ai avertismente neașteptate și/sau să fii nevoit să creezi propriul ID de client.</string>
@@ -322,9 +324,13 @@
   <string name="settings_ignore_vpns_off">VPN fără conexiune validată la Internet este suficient pentru a rula sincronizarea</string>
   <string name="settings_authentication">Autentificare</string>
   <string name="settings_username">Nume de utilizator</string>
-  <string name="settings_password">Parolă</string>
+  <string name="settings_password">Parolă sau parola aplicației</string>
+  <string name="settings_app_password_hint"><![CDATA[Poate preferi să utilizezi <a href="%1$s">parola aplicației</a>.]]></string>
   <string name="settings_new_password">Parolă nouă</string>
   <string name="settings_password_summary">Actualizează parola în funcție de server.</string>
+  <string name="settings_reauthorize_oauth">Autorizează din nou (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">Utilizează atunci când accesul a fost revocat</string>
+  <string name="settings_reauthorize_oauth_success">Autorizare cu succes</string>
   <string name="settings_certificate_alias">Certificat de client</string>
   <string name="settings_certificate_alias_empty">Niciun certificat disponibil sau selectat</string>
   <string name="settings_certificate_install">Instalare certificat</string>
@@ -375,6 +381,9 @@
   <string name="create_collection_create">Crează</string>
   <string name="create_collection_optional">* opțional</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">contacte</string>
+  <string name="collection_datatype_events">evenimente</string>
+  <string name="collection_datatype_tasks">sarcini</string>
   <string name="collection_delete">Șterge colecția</string>
   <string name="collection_delete_warning">Această colecție (%s) și toate datele sale vor fi șterse definitiv, atât local, cât și de pe server.</string>
   <string name="collection_synchronization">Sincronizare</string>

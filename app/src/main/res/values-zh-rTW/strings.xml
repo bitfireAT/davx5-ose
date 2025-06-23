@@ -3,10 +3,12 @@
   <!--common strings-->
   <string name="account_invalid">帳號（已）不存在</string>
   <string name="account_title_address_book">DAVx⁵ 通訊錄</string>
+  <string name="dialog_deny">取消</string>
   <string name="dialog_enable">啟用</string>
   <string name="field_required">此為必填欄位</string>
   <string name="help">幫助</string>
   <string name="share">分享</string>
+  <string name="sync_started">同步已開始或排入佇列</string>
   <string name="database_destructive_migration_title">資料庫損毀</string>
   <string name="database_destructive_migration_text">所有帳號已在本地刪除</string>
   <string name="notification_channel_debugging">除錯</string>
@@ -26,15 +28,17 @@
   <string name="intro_battery_text">為了定期進行同步，必須允許 %s 在背景運行，否則 Android 可能會隨時暫停同步。</string>
   <string name="intro_battery_dont_show">我不需要定期同步間隔*</string>
   <string name="intro_autostart_title">%s 相容性</string>
-  <string name="intro_autostart_text">該裝置可能阻擋了同步，若您受到影響，只能手動解決。</string>
   <string name="intro_autostart_dont_show">所需設定已完成，不用再提醒我*</string>
   <string name="intro_leave_unchecked">* 取消勾選則稍後會再次提醒，可於設定中重置 / %s</string>
   <string name="intro_more_info">更多資訊</string>
   <string name="intro_tasks_jtx_info"><![CDATA[支持任務、日記及筆記同步]]></string>
   <string name="intro_tasks_title">待辦事項支援</string>
   <string name="intro_tasks_text1">如果你的服務器支持任務，它們可以與支援任務的app同步:</string>
+  <string name="intro_tasks_opentasks_info">似乎已不再繼續開發 - 不建議使用。</string>
   <string name="intro_tasks_no_app_store">沒有應用商店可用</string>
+  <string name="intro_open_source_title">開源軟體</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">權限</string>
   <string name="permissions_contacts_title">通訊錄權限</string>
   <string name="permissions_calendar_title">行事曆權限</string>
   <string name="permissions_opentasks_title">OpenTasks 權限</string>
@@ -151,7 +155,6 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
   <string name="settings_authentication">認證</string>
   <string name="settings_username">使用者帳號</string>
-  <string name="settings_password">密碼</string>
   <string name="settings_password_summary">您在伺服器上使用中的密碼</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">過去活動的時間限制</string>

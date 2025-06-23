@@ -34,7 +34,7 @@
   <string name="intro_battery_text">Zur Synchronisierung in regelmäßigen Intervallen muss %s im Hintergrund laufen dürfen; ansonsten kann Android die Synchronisierung jederzeit aussetzen.</string>
   <string name="intro_battery_dont_show">Ich brauche keine regelmäßigen Sync-Intervalle.*</string>
   <string name="intro_autostart_title">%s-Kompatibilität</string>
-  <string name="intro_autostart_text">Dieses Gerät blockiert die Synchronisierung wahrscheinlich. Dies kann nur manuell behoben werden.</string>
+  <string name="intro_autostart_text">Anwenderspezifische Firmware blockiert möglicherweise die Synchronisation. Wenn Sie davon betroffen sind, können Sie dies nur von Hand lösen.</string>
   <string name="intro_autostart_dont_show">Ich habe die Einstellungen gemacht, nicht mehr erinnern.*</string>
   <string name="intro_leave_unchecked">* Nicht anwählen, um später erinnert zu werden. Kann unter App-Einstellungen / %s zurückgesetzt werden.</string>
   <string name="intro_more_info">Mehr Infos</string>
@@ -93,8 +93,8 @@
   <string name="wifi_permissions_background_location_permission_label">Immer zulassen</string>
   <string name="wifi_permissions_background_location_permission_on">Standort-Zugriff eingestellt auf: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Standort-Zugriff nicht eingestellt auf: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s benutzt die Positionsdaten (nur WLAN SSID) nur, um die Synchronisierung auf ein bestimmtes WLAN zu beschränken. Das passiert auch, wenn die Synchronisierung im Hintergrund läuft.</string>
-  <string name="wifi_permissions_background_location_disclaimer2">Alle Positionsdaten (nur W-LAN SSID) werden nur lokal genutzt und nirgendwo hin gesendet.</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s benutzt Standortdaten (nur WLAN-SSID) ausschließlich, um die Synchronisierung auf ein bestimmtes WLAN zu beschränken. Dies geschieht auch dann, wenn die Synchronisierung im Hintergrund ausgeführt wird.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Alle Standortdaten (nur WLAN-SSID) werden nur lokal verwendet und nicht an Dritte weitergegeben.</string>
   <string name="wifi_permissions_location_enabled">Standort-Dienst immer aktiviert</string>
   <string name="wifi_permissions_location_enabled_on">Standort-Dienst aktiv</string>
   <string name="wifi_permissions_location_enabled_off">Standort-Dienst inaktiv</string>
@@ -204,7 +204,7 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">Push-Nachrichten sind immer verschlüsselt.</string>
   <!--AccountScreen-->
-  <string name="account_invalid_account">Konto gibt es nicht</string>
+  <string name="account_invalid_account">Konto nicht vorhanden</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -267,6 +267,9 @@
   <string name="login_client_certificate_selected">Client-Zertifikat: %s</string>
   <string name="login_no_certificate_found">Kein Zertifikat gefunden</string>
   <string name="login_install_certificate">Zertifikat installieren </string>
+  <string name="login_fastmail">Fastmail&lt;br&gt;</string>
+  <string name="login_fastmail_account">Fastmail-Konto&lt;br&gt;</string>
+  <string name="login_fastmail_sign_in">Mit Fastmail anmelden&lt;br&gt;</string>
   <string name="login_type_google">Google-Kontakte / -Kalender</string>
   <string name="login_google_see_tested_with">Siehe unsere \"Getestet mit Google\"-Seite für neuere Informationen.</string>
   <string name="login_google_unexpected_warnings">Sie werden unerwartete Warnungen erhalten und/oder müssen eine eigene Client-ID erstellen.</string>
@@ -321,9 +324,13 @@
   <string name="settings_ignore_vpns_off">VPN ohne zugrundeliegende überprüfte Internetverbindung reicht für Synchronisierung aus</string>
   <string name="settings_authentication">Anmeldeinformationen</string>
   <string name="settings_username">Benutzername</string>
-  <string name="settings_password">Passwort</string>
+  <string name="settings_password">Passwort oder App-Passwort</string>
+  <string name="settings_app_password_hint"><![CDATA[Vielleicht möchten Sie <a href="%1$s">app password</a>. verwenden.]]></string>
   <string name="settings_new_password">Neues Passwort</string>
   <string name="settings_password_summary">Aktualisieren Sie Ihr Passwort gemäß den Server-Einstellungen.</string>
+  <string name="settings_reauthorize_oauth">Erneut authentifizieren (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">Verwenden, wenn der Zugriff widerrufen wurde</string>
+  <string name="settings_reauthorize_oauth_success">Authentifizierung erfolgreich</string>
   <string name="settings_certificate_alias">Client-Zertifikat</string>
   <string name="settings_certificate_alias_empty">Kein Zertifikat verfügbar oder ausgewählt</string>
   <string name="settings_certificate_install">Zertifikat installieren </string>
@@ -372,6 +379,9 @@
   <string name="create_collection_create">Erstellen</string>
   <string name="create_collection_optional">* optional</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">Kontakte</string>
+  <string name="collection_datatype_events">Ereignisse&lt;br&gt;</string>
+  <string name="collection_datatype_tasks">Aufgaben</string>
   <string name="collection_delete">Ordner löschen</string>
   <string name="collection_delete_warning">Dieser Ordner (%s) und alle enthaltenen Daten werden dauerhaft entfernt, sowohl lokal als auch auf dem Server.</string>
   <string name="collection_synchronization">Synchronisierung</string>

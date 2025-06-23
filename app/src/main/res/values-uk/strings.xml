@@ -171,7 +171,6 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">Керувати</string>
   <string name="settings_authentication">Автентифікація</string>
   <string name="settings_username">Ім\'я користувача</string>
-  <string name="settings_password">Пароль</string>
   <string name="settings_password_summary">Оновити пароль, згідно налаштувань Вашого сервера.</string>
   <string name="settings_certificate_install">Встановити сертифікат</string>
   <string name="settings_caldav">CalDAV</string>
@@ -213,6 +212,8 @@
   <string name="create_collection_home_set">Розташування сховища</string>
   <string name="create_collection_create">Створити</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">контакти</string>
+  <string name="collection_datatype_tasks">завдання</string>
   <string name="collection_delete">Видалити колекцію</string>
   <string name="collection_synchronization">Синхронізація</string>
   <string name="collection_title">Заголовок</string>

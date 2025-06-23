@@ -119,7 +119,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Kommainndelte navn (SSID-er) på tillatte Wi-Fi -nettverk (la stå tomt for alle)</string>
   <string name="settings_authentication">Identitetsbekreftelse</string>
   <string name="settings_username">Brukernavn</string>
-  <string name="settings_password">Passord</string>
   <string name="settings_password_summary">Oppdater passordet i henhold til din tjener.</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tidsgrense for tidligere hendelser</string>

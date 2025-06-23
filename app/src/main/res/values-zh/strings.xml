@@ -34,7 +34,7 @@
   <string name="intro_battery_text">为了定期进行同步，必须允许%s在后台运行。否则，Android可能会随时暂停同步。</string>
   <string name="intro_battery_dont_show">我不需要定期的同步。*</string>
   <string name="intro_autostart_title">%s兼容性</string>
-  <string name="intro_autostart_text">该设备可能会阻止同步。如果您受到影响，则只能手动解决。</string>
+  <string name="intro_autostart_text">特定厂商的固件可能会阻止同步。如果你受到影响，你只能手动解决这一问题。</string>
   <string name="intro_autostart_dont_show">我已完成所需的设置。不再提醒我。*</string>
   <string name="intro_leave_unchecked">*取消选中以供稍后提醒。可以在应用设置中重置/%s。</string>
   <string name="intro_more_info">更多信息</string>
@@ -266,6 +266,9 @@
   <string name="login_client_certificate_selected">客户端证书：%s</string>
   <string name="login_no_certificate_found">没有找到证书</string>
   <string name="login_install_certificate">安装证书</string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Fastmail 账户</string>
+  <string name="login_fastmail_sign_in">使用 Fastmail 登录</string>
   <string name="login_type_google">Google 联系人/日历</string>
   <string name="login_google_see_tested_with">请参阅我们的“Tested with”页面的 Google 部分获得最新信息。</string>
   <string name="login_google_unexpected_warnings">你可能遇到意外的警告和/或者不得不创建自己的 client ID。</string>
@@ -320,9 +323,13 @@
   <string name="settings_ignore_vpns_off">没有底层验证的互联网连接的 VPN 足以运行同步了</string>
   <string name="settings_authentication">认证</string>
   <string name="settings_username">用户名</string>
-  <string name="settings_password">密码</string>
+  <string name="settings_password">密码或应用密码</string>
+  <string name="settings_app_password_hint"><![CDATA[你可能偏好使用 <a href="%1$s">应用密码</a>.]]></string>
   <string name="settings_new_password">新密码</string>
   <string name="settings_password_summary">修改服务器密码</string>
+  <string name="settings_reauthorize_oauth">再次授权 (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">当访问权被撤销时使用</string>
+  <string name="settings_reauthorize_oauth_success">授权成功</string>
   <string name="settings_certificate_alias">客户端证书</string>
   <string name="settings_certificate_alias_empty">无证书可用或未选择证书</string>
   <string name="settings_certificate_install">安装证书</string>
@@ -369,6 +376,9 @@
   <string name="create_collection_create">创建</string>
   <string name="create_collection_optional">* 可选</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">联系人</string>
+  <string name="collection_datatype_events">活动</string>
+  <string name="collection_datatype_tasks">任务</string>
   <string name="collection_delete">删除集合</string>
   <string name="collection_delete_warning">此集合(%s)及其所有数据将从本地和服务器被永久删除</string>
   <string name="collection_synchronization">同步</string>
