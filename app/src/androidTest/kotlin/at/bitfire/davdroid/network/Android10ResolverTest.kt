@@ -18,7 +18,6 @@ class Android10ResolverTest {
 
     val FQDN_DAVX5 = "www.davx5.com"
 
-    /* FIXME https://github.com/bitfireAT/davx5-ose/issues/1525
     @Test
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
     fun testResolveA() {
@@ -32,6 +31,5 @@ class Android10ResolverTest {
         val result = resultGeneric.first() as ARecord
         assertEquals(www, result.address)
     }
-    */
 
 }
