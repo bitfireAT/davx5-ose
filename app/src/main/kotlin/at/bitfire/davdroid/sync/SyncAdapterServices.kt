@@ -13,6 +13,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import androidx.work.WorkInfo
@@ -142,6 +143,12 @@ abstract class SyncAdapterService: Service() {
                 logger.warning("Address book account $accountOrAddressBookAccount doesn't have an associated collection")
                 return
             }
+
+            // Android 14+ does not handle pending sync state correctly.
+            // Workaround: Cancel all authorities for this account
+            // See: https://github.com/bitfireAT/davx5-ose/issues/1458
+            if (Build.VERSION.SDK_INT >= 34)
+                ContentResolver.cancelSync(account, null)
 
             // Check sync conditions
             val accountSettings = try {
