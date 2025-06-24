@@ -6,18 +6,16 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentResolver
+import android.os.Build
 import android.provider.CalendarContract
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import dagger.Lazy
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -152,29 +150,36 @@ class SyncFrameworkIntegration @Inject constructor(
      * @param dataTypes data types to observe sync status for
      * @return flow emitting true if any of the given data types has a sync pending, false otherwise
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
-        val authorities = dataTypes.flatMap { it.possibleAuthorities() }
-
-        val baseAccountsFlow = if (dataTypes.contains(SyncDataType.CONTACTS))
-            localAddressBookStore.get()
-                .getAddressBookAccountsFlow(account)
-                .map { addressBookAccounts -> listOf(account) + addressBookAccounts }
-        else
-            flowOf(listOf(account))
-
-        return baseAccountsFlow.flatMapLatest { accounts ->
+    fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> =
+        if (Build.VERSION.SDK_INT >= 34) {
+            // On Android 14+ pending sync checks always return true (bug), so we don't need to check.
+            // See: https://github.com/bitfireAT/davx5-ose/issues/1458
+            flowOf(false)
+        } else
             callbackFlow {
+                val accounts = mutableListOf(account).apply {
+                    // Add address book accounts in case we should check contacts
+                    if (dataTypes.contains(SyncDataType.CONTACTS))
+                        addAll(localAddressBookStore.get().getAddressBookAccounts(account))
+                }
+                val authorities = dataTypes.flatMap { dataType ->
+                    dataType.possibleAuthorities()
+                }
+
+                // Observe sync pending state
                 val listener = ContentResolver.addStatusChangeListener(
-                    ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
+                    ContentResolver.SYNC_OBSERVER_TYPE_PENDING or
+                            ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
                 ) {
                     trySend(anyPendingSync(accounts, authorities))
                 }
-                trySend(anyPendingSync(accounts, authorities)) // Emit initial value
+
+                // Emit initial value
+                trySend(anyPendingSync(accounts, authorities))
+
+                // Clean up listener on close
                 awaitClose { ContentResolver.removeStatusChangeListener(listener) }
-            }
-        }.distinctUntilChanged()
-    }
+            }.distinctUntilChanged()
 
     /**
      * Check if any of the given accounts and authorities have a sync pending.
