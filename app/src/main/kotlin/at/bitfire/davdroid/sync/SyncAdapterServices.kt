@@ -145,23 +145,6 @@ abstract class SyncAdapterService: Service() {
                 return
             }
 
-            // Android 14+ does not handle pending sync state correctly.
-            // As a defensive workaround, we can cancel specifically this still pending sync only
-            // See: https://github.com/bitfireAT/davx5-ose/issues/1458
-            if (Build.VERSION.SDK_INT >= 34) {
-                // Recreate the sync request used to start this sync
-                val syncRequest = SyncRequest.Builder()
-                    .setSyncAdapter(account, authority)
-                    .setExtras(Bundle().apply {
-                        if (upload)
-                            putBoolean(ContentResolver.SYNC_EXTRAS_UPLOAD, true)
-                    })
-                    .syncOnce()
-                    .build()
-                // Cancel it
-                ContentResolver.cancelSync(syncRequest)
-            }
-
             // Check sync conditions
             val accountSettings = try {
                 accountSettingsFactory.create(account)
@@ -178,6 +161,24 @@ abstract class SyncAdapterService: Service() {
 
             logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
             val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), fromUpload = upload)
+
+            // Android 14+ does not handle pending sync state correctly.
+            // As a defensive workaround, we can cancel specifically this still pending sync only
+            // See: https://github.com/bitfireAT/davx5-ose/issues/1458
+            if (Build.VERSION.SDK_INT >= 34) {
+                // Recreate the sync request used to start this sync
+                val syncRequest = SyncRequest.Builder()
+                    .setSyncAdapter(account, authority)
+                    .setExtras(Bundle().apply {
+                        if (upload)
+                            putBoolean(ContentResolver.SYNC_EXTRAS_UPLOAD, true)
+                    })
+                    .syncOnce()
+                    .build()
+                // Cancel it
+                logger.fine("Android 14+ bug: Canceling sync adapter framework sync request for $account and $authority with request $syncRequest")
+                ContentResolver.cancelSync(syncRequest)
+            }
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
             use it to block the sync adapter. Instead we use a Flow to get notified when the sync
