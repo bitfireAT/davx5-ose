@@ -152,7 +152,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Z vejico ločena imena (SSID) dovoljenih WiFi omrežij (pusti prazno za vse)</string>
   <string name="settings_authentication">Avtentikacija</string>
   <string name="settings_username">Uporabniško ime</string>
-  <string name="settings_password">Geslo</string>
   <string name="settings_password_summary">Posodobi geslo ustrezajoč strežniku.</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Pretekli dogodek časovna omejitev</string>

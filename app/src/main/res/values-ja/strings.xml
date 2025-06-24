@@ -34,7 +34,6 @@
   <string name="intro_battery_text">一定の間隔で同期するには、%s のバックグラウンドでの動作を許可する必要があります。許可しない場合、Android によって同期が停止されることがあります。</string>
   <string name="intro_battery_dont_show">一定間隔での同期は不要です*</string>
   <string name="intro_autostart_title">%s 適合性</string>
-  <string name="intro_autostart_text">このデバイスが同期をブロックしている可能性があります。もし影響を受けている場合、この手順で解決できます。</string>
   <string name="intro_autostart_dont_show">必要な設定は完了したのでリマインダーは不要です*</string>
   <string name="intro_leave_unchecked">* 未チェックのままにすると後でリマインドします。アプリの設定 / %s でリセットできます</string>
   <string name="intro_more_info">追加情報</string>
@@ -319,7 +318,6 @@
   <string name="settings_ignore_vpns_off">検証されたインターネット接続のない VPN でも同期を実行します</string>
   <string name="settings_authentication">認証</string>
   <string name="settings_username">ユーザー名</string>
-  <string name="settings_password">パスワード</string>
   <string name="settings_new_password">新しいパスワード</string>
   <string name="settings_password_summary">ご利用のサーバーに従ってパスワードを更新します。</string>
   <string name="settings_certificate_alias">クライアント証明書</string>
@@ -368,6 +366,8 @@
   <string name="create_collection_create">作成</string>
   <string name="create_collection_optional">* オプション</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">連絡先</string>
+  <string name="collection_datatype_tasks">ToDo リスト</string>
   <string name="collection_delete">コレクションを削除</string>
   <string name="collection_delete_warning">このコレクション (%s) とコレクション内のすべてのデータが、ローカルとサーバーから永久に削除されます。</string>
   <string name="collection_synchronization">同期</string>

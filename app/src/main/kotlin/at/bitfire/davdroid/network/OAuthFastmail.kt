@@ -32,7 +32,7 @@ object OAuthFastmail {
     )
 
 
-    fun signIn(email: String, locale: String?): AuthorizationRequest {
+    fun signIn(email: String?, locale: String?): AuthorizationRequest {
         val builder = AuthorizationRequest.Builder(
             serviceConfig,
             CLIENT_ID,

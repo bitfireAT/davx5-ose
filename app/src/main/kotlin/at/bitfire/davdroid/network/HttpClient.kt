@@ -16,6 +16,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.ForegroundTracker
+import com.google.common.net.HttpHeaders
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -222,6 +223,10 @@ class HttpClient(
             // add network logging, if requested
             if (logger.isLoggable(Level.FINEST)) {
                 val loggingInterceptor = HttpLoggingInterceptor { message -> logger.finest(message) }
+                loggingInterceptor.redactHeader(HttpHeaders.AUTHORIZATION)
+                loggingInterceptor.redactHeader(HttpHeaders.COOKIE)
+                loggingInterceptor.redactHeader(HttpHeaders.SET_COOKIE)
+                loggingInterceptor.redactHeader(HttpHeaders.SET_COOKIE2)
                 loggingInterceptor.level = loggerInterceptorLevel
                 okBuilder.addNetworkInterceptor(loggingInterceptor)
             }

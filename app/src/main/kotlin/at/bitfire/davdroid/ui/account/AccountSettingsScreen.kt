@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui.account
 import android.accounts.Account
 import android.app.Activity
 import android.security.KeyChain
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,7 +73,7 @@ import kotlinx.coroutines.launch
 fun AccountSettingsScreen(
     onNavUp: () -> Unit,
     account: Account,
-    onNavWifiPermissionsScreen: () -> Unit,
+    onNavWifiPermissionsScreen: () -> Unit
 ) {
     val model = hiltViewModel { factory: AccountSettingsModel.Factory ->
         factory.create(account)
@@ -79,10 +81,19 @@ fun AccountSettingsScreen(
     val uiState by model.uiState.collectAsState()
     val canAccessWifiSsid by PermissionUtils.rememberCanAccessWifiSsid()
 
+    // contract to open the browser for re-authentication
+    val authRequestContract = rememberLauncherForActivityResult(model.authorizationContract()) { authResponse ->
+        if (authResponse != null)
+            model.authenticate(authResponse)
+        else
+            model.authCodeFailed()
+    }
+
     AppTheme {
         AccountSettingsScreen(
             accountName = account.name,
             onNavUp = onNavUp,
+            status = uiState.status,
 
             // Sync settings
             canAccessWifiSsid = canAccessWifiSsid,
@@ -106,6 +117,11 @@ fun AccountSettingsScreen(
             // Authentication Settings
             credentials = uiState.credentials,
             onUpdateCredentials = model::updateCredentials,
+            onAuthenticateOAuth = {
+                val request = model.newAuthorizationRequest()
+                if (request != null)
+                    authRequestContract.launch(request)
+            },
             isCredentialsUpdateAllowed = uiState.allowCredentialsChange,
 
             // CalDav Settings
@@ -130,6 +146,7 @@ fun AccountSettingsScreen(
 fun AccountSettingsScreen(
     onNavUp: () -> Unit,
     accountName: String,
+    status: String? = null,
 
     // Sync settings
     canAccessWifiSsid: Boolean,
@@ -153,6 +170,7 @@ fun AccountSettingsScreen(
     // Authentication Settings
     credentials: Credentials?,
     onUpdateCredentials: (Credentials) -> Unit = {},
+    onAuthenticateOAuth: () -> Unit = {},
     isCredentialsUpdateAllowed: Boolean,
 
     // CalDav Settings
@@ -171,6 +189,11 @@ fun AccountSettingsScreen(
 ) {
     val uriHandler = LocalUriHandler.current
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(status) {
+        if (status != null)
+            snackbarHostState.showSnackbar(status)
+    }
 
     Scaffold(
         topBar = {
@@ -229,6 +252,7 @@ fun AccountSettingsScreen(
                 // Authentication Settings
                 credentials = credentials,
                 onUpdateCredentials = onUpdateCredentials,
+                onAuthenticateOAuth = onAuthenticateOAuth,
                 isCredentialsUpdateAllowed = isCredentialsUpdateAllowed,
 
                 // CalDav Settings
@@ -275,6 +299,7 @@ fun AccountSettings_FromModel(
     // Authentication Settings
     credentials: Credentials?,
     onUpdateCredentials: (Credentials) -> Unit = {},
+    onAuthenticateOAuth: () -> Unit = {},
     isCredentialsUpdateAllowed: Boolean,
 
     // CalDav Settings
@@ -317,7 +342,8 @@ fun AccountSettings_FromModel(
                 snackbarHostState = snackbarHostState,
                 credentials = credentials,
                 isEnabled = isCredentialsUpdateAllowed,
-                onUpdateCredentials = onUpdateCredentials
+                onUpdateCredentials = onUpdateCredentials,
+                onAuthenticateOAuth = onAuthenticateOAuth
             )
         }
 
@@ -500,7 +526,8 @@ fun AuthenticationSettings(
     credentials: Credentials,
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
     isEnabled: Boolean = true,
-    onUpdateCredentials: (Credentials) -> Unit = {}
+    onUpdateCredentials: (Credentials) -> Unit = {},
+    onAuthenticateOAuth: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -511,6 +538,7 @@ fun AuthenticationSettings(
                 Text(stringResource(R.string.settings_authentication))
             }
 
+            // username/password
             if (credentials.username != null || credentials.password != null) {
                 var showUsernameDialog by remember { mutableStateOf(false) }
                 Setting(
@@ -553,6 +581,17 @@ fun AuthenticationSettings(
                         },
                         onDismiss = { showPasswordDialog = false }
                     )
+            }
+
+            // OAuth
+            if (credentials.authState != null) {
+                Setting(
+                    icon = Icons.Default.Password,
+                    name = stringResource(R.string.settings_reauthorize_oauth),
+                    summary = stringResource(R.string.settings_reauthorize_oauth_summary),
+                    enabled = isEnabled,
+                    onClick = onAuthenticateOAuth
+                )
             }
 
             // client certificate
@@ -719,6 +758,7 @@ fun AccountSettingsScreen_Preview() {
         AccountSettingsScreen(
             accountName = "Account Name Here",
             onNavUp = {},
+            status = "Some Status",
 
             // Sync settings
             canAccessWifiSsid = true,

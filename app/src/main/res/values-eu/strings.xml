@@ -34,7 +34,6 @@
   <string name="intro_battery_text">Sinkronizazioa tarte erregularretan ahalbidetzeko, %s atzeko planoan exekutatzen utzi behar da. Bestela, Androidek sinkronizazioa gelditu dezake edozein unean.</string>
   <string name="intro_battery_dont_show">Ez ditut sinkronizazio tarte erregularrak behar.*</string>
   <string name="intro_autostart_title">%s bateragarritasuna</string>
-  <string name="intro_autostart_text">Gailu honek ziurrenik sinkronizazioa blokeatzen du. Hau jasaten baduzu, eskuz konpondu dezakezu soilik.</string>
   <string name="intro_autostart_dont_show">Beharrezko ezarpenak bukatu ditut. Ez gogorarazi berriro.*</string>
   <string name="intro_leave_unchecked">* Utzi aktibatu gabe gero gogorarazteko. Aplikazioaren ezarpenetan berrezarri daiteke / %s</string>
   <string name="intro_more_info">Informazio gehiago</string>
@@ -139,6 +138,10 @@
   <string name="sync_warning_manage_battery_saver">Kudeatu bateria-arrezpena</string>
   <string name="sync_warning_low_storage">Biltegiratze lekua baxua. Android-ek ez ditu tokiko aldaketak berehala sinkronizatuko, hurrengo sinkronizazio arruntean baizik.</string>
   <string name="sync_warning_manage_storage">Kudeatu biltegia</string>
+  <string name="sync_warning_calendar_storage_disabled_title">Egutegiaren hornitzailea falta da</string>
+  <string name="sync_warning_calendar_storage_disabled_description">\"Egutegiaren biltegia\" sistemaren aplikazioa desgaitu al duzu?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Kontaktuen hornitzailea falta da</string>
+  <string name="sync_warning_contacts_storage_disabled_description">\"Kontaktuen biltegia\" sistemaren aplikazioa desgaitu al duzu?</string>
   <string name="sync_warning_manage_apps">Kudeatu aplikazioak</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Zerbitzuaren detekzioak huts egin du</string>
@@ -173,6 +176,7 @@
   <string name="app_settings_distrust_system_certs">Mesfidatu sistemaren ziurtagiritaz</string>
   <string name="app_settings_distrust_system_certs_on">Sistemako eta erabiltzaileak gehitutako CAk ez dira fidagarritzat hartuko</string>
   <string name="app_settings_distrust_system_certs_off">Sistemako eta erabiltzaileak gehitutako CAk fidagarritzat hartuko dira (gomendatuta)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Ezarpen hau aktibo badago, sistemaren ziurtagiriak ez dira fidagarritzat hartzen. Horrek esan nahi du ziurtagiri guztiak eskuz onartu beharko dituzula (zerbitzariak ziurtagiria berritzen duenean ere bai) baita kontuaren konfigurazioa  eta sinkronizazioak ez duela funtzionatuko.</string>
   <string name="app_settings_reset_certificates">Berezarri (mes)fidatutako ziurtagiriak</string>
   <string name="app_settings_reset_certificates_summary">Ziurtagiri pertsonalizatu guztien fidagarritasuna berezartzen du</string>
   <string name="app_settings_reset_certificates_success">Ziurtagiri pertsonalizatu guztiak garbitu dira</string>
@@ -197,7 +201,10 @@
   <string name="app_settings_unifiedpush_no_distributor">Ez dago push banatzailerik instalatuta</string>
   <string name="app_settings_unifiedpush_no_endpoint">Ez da amaiera punturik konfiguratu</string>
   <string name="app_settings_unifiedpush_ready">Push jakinarazpenak %s(r)en bidez jasotzeko prest</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">Bultzatutako mezuak beti zifratzen dira.</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">Kontua ez da existitzen</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -260,6 +267,9 @@
   <string name="login_client_certificate_selected">Bezeroaren ziurtagiria: %s</string>
   <string name="login_no_certificate_found">Ez da ziurtagiririk aurkitu</string>
   <string name="login_install_certificate">Instalatu ziurtagiria</string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Fastmail kontua</string>
+  <string name="login_fastmail_sign_in">Ireki saioa Fastmail-ekin</string>
   <string name="login_type_google">Google Kontaktuak / Egutegia</string>
   <string name="login_google_see_tested_with">Mesedez, ikusi gure \"Google-ekin probatuta\" orria informazio eguneraturako.</string>
   <string name="login_google_unexpected_warnings">Oharrak jaso edo zure bezero ID sortzea beharrezkoa izatea gertatu daiteke.</string>
@@ -314,9 +324,13 @@
   <string name="settings_ignore_vpns_off">Interneterako konexio balioztatu gabeko VPN nahikoa da sinkronizazioa exekutatzeko</string>
   <string name="settings_authentication">Autentifikazioa</string>
   <string name="settings_username">Erabiltzaile izena</string>
-  <string name="settings_password">Pasahitza</string>
+  <string name="settings_password">Pasahitza edo aplikazioaren pasahitza</string>
+  <string name="settings_app_password_hint"><![CDATA[Nahiago duzu  <a href="%1$s">aplikazio pasahitza</a>erabili .]]></string>
   <string name="settings_new_password">Pasahitz berria</string>
   <string name="settings_password_summary">Eguneratu pasahitza zure zerbitzariaren arabera</string>
+  <string name="settings_reauthorize_oauth">Baimendu berriro (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">Erabili sarbidea ukatu denean</string>
+  <string name="settings_reauthorize_oauth_success">Baimena eskuratu da</string>
   <string name="settings_certificate_alias">Bezeroaren ziurtagiria</string>
   <string name="settings_certificate_alias_empty">Ez dago ziurtagiririk eskuragarri edo hautaturik</string>
   <string name="settings_certificate_install">Instalatu ziurtagiria</string>
@@ -365,6 +379,9 @@
   <string name="create_collection_create">Sortu</string>
   <string name="create_collection_optional">* aukeran</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">kontaktuak</string>
+  <string name="collection_datatype_events">gertakizunak</string>
+  <string name="collection_datatype_tasks">zereginak</string>
   <string name="collection_delete">Ezabatu kolekzioa</string>
   <string name="collection_delete_warning">Bilduma hau (%s) eta bere datu guztiak behin betiko kenduko dira, bai lokaletik bai zerbitzaritik.</string>
   <string name="collection_synchronization">Sinkronizazioa</string>
@@ -407,6 +424,8 @@
   <string name="debug_info_logs_caption">Egunkariak</string>
   <string name="debug_info_logs_subtitle">Erregistro xehetuak eskuragarri daude</string>
   <string name="debug_info_logs_view">Ikusi egunkariak</string>
+  <string name="debug_info_privacy_warning_title">Pribatutasun oharra</string>
+  <string name="debug_info_privacy_warning_description">Erregistroek eta arazketa-informazioak informazio pribatua izan dezakete. Kontuan izan hau publikoki partekatzerakoan.</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Errore bat gertatu da</string>
   <string name="exception_httpexception">HTTP errore bat gertatu da.</string>
@@ -419,6 +438,7 @@
   <string name="webdav_mounts_unmount">Desmuntatu</string>
   <string name="webdav_add_mount_title">Gehitu WebDAV muntaia</string>
   <string name="webdav_mounts_empty">Atzitu zure cloud fitxategiak zuzenean WebDAV muntaia bat gehitzen!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Ikusi <a href="%1$s">nola funtzionatzen du WebDAVek</a>.]]></string>
   <string name="webdav_add_mount_display_name">Bistaratze-izena</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">URL baliogabea</string>
@@ -453,5 +473,8 @@
   <!--widgets-->
   <string name="widget_sync_all">Sinkronizatu guztiak</string>
   <string name="widget_sync_all_accounts">Sinkronizatu kontu guztiak</string>
+  <string name="widget_labeled_sync_label">Etiketatutako sinkronizazio botoia</string>
+  <string name="widget_icon_sync_label">Ikonotu Sinkronizatu botoia</string>
+  <string name="widget_sync_description">Sakatu sinkronizazioa eskuz exekutatzeko.</string>
   <!--cert4android-->
 </resources>

@@ -17,13 +17,12 @@ androidx-test-core = "1.6.1"
 androidx-test-runner = "1.6.2"
 androidx-test-rules = "1.6.1"
 androidx-test-junit = "1.2.1"
-androidx-work = "2.10.1"
+androidx-work = "2.10.2"
 bitfire-cert4android = "b67ba86d31"
 bitfire-dav4jvm = "05fb8ecda6"
-bitfire-ical4android = "240f756bab"
-bitfire-vcard4android = "59eb998f29"
+bitfire-synctools = "c37ecc25c1"
 compose-accompanist = "0.37.3"
-compose-bom = "2025.06.00"
+compose-bom = "2025.06.01"
 dnsjava = "3.6.2"
 glance = "1.1.1"
 guava = "33.4.8-android"
@@ -33,16 +32,16 @@ kotlin = "2.1.20"
 kotlinx-coroutines = "1.10.2"
 # see https://github.com/google/ksp/releases for version numbers
 ksp = "2.1.20-2.0.0"
-mikepenz-aboutLibraries = "12.1.2"
+mikepenz-aboutLibraries = "12.2.3"
 nsk90-kstatemachine = "0.33.0"
-mockk = "1.14.2"
+mockk = "1.14.4"
 okhttp = "4.12.0"
 openid-appauth = "0.11.1"
-room = "2.7.1"
-unifiedpush = "3.0.9"
+room = "2.7.2"
+unifiedpush = "3.0.10"
 unifiedpush-fcm = "3.0.0"
 
-# Other libraries, especially ical4android/ical4j, require Apache Commons. Some recent versions of Apache
+# Other libraries, especially ical4j, require Apache Commons. Some recent versions of Apache
 # Commons require a newer Java version than our minSdk provides. So we require these strict versions here:
 commons-codec = { strictly = "1.17.1" }
 commons-lang = { strictly = "3.15.0" }
@@ -72,8 +71,7 @@ androidx-work-base = { module = "androidx.work:work-runtime-ktx", version.ref = 
 androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
 bitfire-cert4android = { module = "com.github.bitfireat:cert4android", version.ref = "bitfire-cert4android" }
 bitfire-dav4jvm = { module = "com.github.bitfireat:dav4jvm", version.ref = "bitfire-dav4jvm" }
-bitfire-ical4android = { module = "com.github.bitfireat:ical4android", version.ref = "bitfire-ical4android" }
-bitfire-vcard4android = { module = "com.github.bitfireat:vcard4android", version.ref = "bitfire-vcard4android" }
+bitfire-synctools = { module = "com.github.bitfireat:synctools", version.ref = "bitfire-synctools" }
 commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }

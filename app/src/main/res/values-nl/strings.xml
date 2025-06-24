@@ -34,7 +34,7 @@
   <string name="intro_battery_text">Om op gezette tijden te synchroniseren moet %s zonder beperking op de achtergrond kunnen draaien. Anders kan Android het synchroniseren op elk moment onderbreken.</string>
   <string name="intro_battery_dont_show">Synchroniseren op gezette tijden is niet nodig.*</string>
   <string name="intro_autostart_title">%s compatibiliteit</string>
-  <string name="intro_autostart_text">Waarschijnlijk blokkeert dit toestel het synchroniseren. In dat geval is dit alleen handmatig op te lossen.</string>
+  <string name="intro_autostart_text">Leverancierspecifieke firmware kan de synchronisatie blokkeren. Als je hier last van hebt, kan dit alleen handmatig worden opgelost.</string>
   <string name="intro_autostart_dont_show">De vereiste instellingen zijn verricht. Er aan herinneren is niet meer nodig.*</string>
   <string name="intro_leave_unchecked">* Niet aanvinken om later herinnerd te worden. Kan teruggezet in app instellingen / %s.</string>
   <string name="intro_more_info">Meer informatie</string>
@@ -267,6 +267,9 @@
   <string name="login_client_certificate_selected">Cliëntcertificaat: %s</string>
   <string name="login_no_certificate_found">Geen certificaat gevonden</string>
   <string name="login_install_certificate">Certificaat installeren</string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Fastmail account</string>
+  <string name="login_fastmail_sign_in">Inloggen met Fastmail</string>
   <string name="login_type_google">Google Contacten / Kalender</string>
   <string name="login_google_see_tested_with">Raadpleeg onze pagina \"Getest met Google\" voor actuele informatie.</string>
   <string name="login_google_unexpected_warnings">Het kan zijn dat je onverwachte waarschuwingen krijgt en/of je eigen client-ID moet aanmaken.</string>
@@ -321,9 +324,13 @@
   <string name="settings_ignore_vpns_off">VPN zonder onderliggende gevalideerde internetverbinding is voldoende om synchronisatie uit te voeren</string>
   <string name="settings_authentication">Authenticatie</string>
   <string name="settings_username">Gebruikersnaam</string>
-  <string name="settings_password">Wachtwoord</string>
+  <string name="settings_password">Wachtwoord of app-wachtwoord</string>
+  <string name="settings_app_password_hint"><![CDATA[Misschien gebruik je liever een <a href="%1$s">app-wachtwoord</a>.]]></string>
   <string name="settings_new_password">Nieuw wachtwoord</string>
   <string name="settings_password_summary">Gebruik het zelfde wachtwoord als op de server.</string>
+  <string name="settings_reauthorize_oauth">Opnieuw autoriseren (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">Gebruiken wanneer de toegang is ingetrokken</string>
+  <string name="settings_reauthorize_oauth_success">Autorisatie geslaagd</string>
   <string name="settings_certificate_alias">Cliëntcertificaat</string>
   <string name="settings_certificate_alias_empty">Geen certificaat beschikbaar of geselecteerd</string>
   <string name="settings_certificate_install">Certificaat installeren</string>
@@ -372,6 +379,9 @@
   <string name="create_collection_create">Aanmaken</string>
   <string name="create_collection_optional">*optioneel</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">contacten</string>
+  <string name="collection_datatype_events">gebeurtenissen</string>
+  <string name="collection_datatype_tasks">taken</string>
   <string name="collection_delete">Collectie verwijderen</string>
   <string name="collection_delete_warning">Deze collectie (%s) en alle gegevens worden permanent verwijderd, zowel lokaal als op de server.</string>
   <string name="collection_synchronization">Synchroniseren</string>

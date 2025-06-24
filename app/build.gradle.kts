@@ -19,8 +19,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 404120000
-        versionName = "4.4.12-alpha.1"
+        versionCode = 405000000
+        versionName = "4.5"
 
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
@@ -106,7 +106,9 @@ android {
             localDevices {
                 create("virtual") {
                     device = "Pixel 3"
-                    apiLevel = 35
+                    // TBD: API level 35 and higher causes network tests to fail sometimes, see https://github.com/bitfireAT/davx5-ose/issues/1525
+                    // Suspected reason: https://developer.android.com/about/versions/15/behavior-changes-all#background-network-access
+                    apiLevel = 34
                     systemImageSource = "aosp-atd"
                 }
             }
@@ -174,8 +176,7 @@ dependencies {
         exclude(group="junit")
         exclude(group="org.ogce", module="xpp3")    // Android has its own XmlPullParser implementation
     }
-    implementation(libs.bitfire.ical4android)
-    implementation(libs.bitfire.vcard4android)
+    implementation(libs.bitfire.synctools)
 
     // third-party libs
     @Suppress("RedundantSuppression")

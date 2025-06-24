@@ -33,7 +33,6 @@
   <string name="intro_battery_text">Para sincronizar a intervalos regulares, se tiene que permitir a %sejecutarse como tarea de fondo. En caso contrario, Android podría pausar la sincronización en cualquier instante. </string>
   <string name="intro_battery_dont_show">No necesito la sincronización a intervalos regulares.*</string>
   <string name="intro_autostart_title">Compatibilidad %s</string>
-  <string name="intro_autostart_text">Este dispositivo bloquea la sincronización. Si está afectado, sólo lo puede resolver manualmente.</string>
   <string name="intro_autostart_dont_show">No tengo los ajustes requeridos. No volver a recordar.*</string>
   <string name="intro_leave_unchecked">* Déjelo desmarcado para que se le recuerde más tarde. Se puede reconfigurar en los ajustes de la aplicación / %s</string>
   <string name="intro_more_info">Información adicional</string>
@@ -289,7 +288,6 @@
   <string name="settings_ignore_vpns_off">VPN sin una conexión a Internet válida es suficiente para ejecutar la sincronización.</string>
   <string name="settings_authentication">Autenticación</string>
   <string name="settings_username">Nombre de usuario</string>
-  <string name="settings_password">Contraseña</string>
   <string name="settings_new_password">Nueva contraseña</string>
   <string name="settings_password_summary">Actualiza la contraseña de acuerdo a tu servidor.</string>
   <string name="settings_certificate_alias">Certificado de cliente</string>
@@ -342,6 +340,8 @@
   <string name="create_collection_create">Crear</string>
   <string name="create_collection_optional">* opcional</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">contactos</string>
+  <string name="collection_datatype_tasks">tareas</string>
   <string name="collection_delete">Eliminar colección</string>
   <string name="collection_delete_warning">La colección (%s) y todos sus datos serán eliminadas permanentemente, tanto localmente como del servidor.</string>
   <string name="collection_synchronization">Sincronización</string>

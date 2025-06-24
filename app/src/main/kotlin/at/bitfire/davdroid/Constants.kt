@@ -36,6 +36,8 @@ object Constants {
     const val MANUAL_PATH_WEBDAV_PUSH = "webdav_push.html"
     const val MANUAL_PATH_WEBDAV_MOUNTS = "webdav_mounts.html"
 
+    const val MANAGED_PATH = "organizations"
+
     val COMMUNITY_URL = "https://github.com/bitfireAT/davx5-ose/discussions".toUri()
 
     val FEDIVERSE_HANDLE = "@davx5app@fosstodon.org"

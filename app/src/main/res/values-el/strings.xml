@@ -33,7 +33,6 @@
   <string name="intro_battery_text">Για συγχρονισμό σε τακτικά διαστήματα, πρέπει να επιτραπεί στο %s να λειτουργεί στο παρασκήνιο. Αλλιώς, το Android μπορεί να παύση τον συγχρονισμό ανά πάσα στιγμή.</string>
   <string name="intro_battery_dont_show">Δεν χρειάζομαι τακτικά διαστήματα συγχρονισμού.*</string>
   <string name="intro_autostart_title">%s Συμβατότητα</string>
-  <string name="intro_autostart_text">Αυτή η συσκευή πιθανόν δεν επιτρέπει τον συγχρονισμό. Εάν αυτό σας επηρεάζει αρνητικά, μπορείτε να το λύσετε μόνο χειροκίνητα.</string>
   <string name="intro_autostart_dont_show">Έχω κάνει τις απαιτούμενες ρυθμίσεις. Δεν θέλω άλλες υπενθυμίσεις.*</string>
   <string name="intro_leave_unchecked">Άφησε απενεργοποιημένες τις υπενθυμίσεις. Μπορούν να επαναφερθούν στις ρυθμίσεις εφαρμογών / %s.</string>
   <string name="intro_more_info">Περισσότερες πληροφορίες</string>
@@ -288,7 +287,6 @@
   <string name="settings_ignore_vpns_off">Το VPN χωρίς υποκείμενη επικυρωμένη σύνδεση στο διαδίκτυο είναι αρκετό για την εκτέλεση του συγχρονισμού</string>
   <string name="settings_authentication">Πιστοποίηση</string>
   <string name="settings_username">Όνομα χρήστη</string>
-  <string name="settings_password">Συνθηματικό</string>
   <string name="settings_new_password">Νέο συνθηματικό</string>
   <string name="settings_password_summary">Ενημερώστε το συνθηματικό σύμφωνα με τον διακομιστή σας.</string>
   <string name="settings_certificate_alias">Πιστοποιητικό πελάτη</string>
@@ -339,6 +337,8 @@
   <string name="create_collection_create">Δημιουργία</string>
   <string name="create_collection_optional">* προαιρετικό</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">επαφές</string>
+  <string name="collection_datatype_tasks">εργασίες</string>
   <string name="collection_delete">Διαγραφή συλλογής</string>
   <string name="collection_delete_warning">Αυτή η συλλογή (%s) και όλα τα δεδομένα της θα διαγραφούν μόνιμα, τόσο τοπικά όσο και από τον διακομιστή.</string>
   <string name="collection_synchronization">Συγχρονισμός</string>

@@ -23,7 +23,6 @@
   <string name="intro_battery_text">Za sinkronizaciju u redovitim intervalima, %s mora imati omogućen rad u pozadini. Inače, Android može zaustaviti sinkronizaciju u bilo kojem trenutku.</string>
   <string name="intro_battery_dont_show">Ne trebam redovita sinkroniziranja.</string>
   <string name="intro_autostart_title">%s kompatibilnost</string>
-  <string name="intro_autostart_text">Ovaj uređaj vjerojatno blokira sinkronizaciju. Ukoliko ste zahvaćeni ovim problemom, morati ćete ga riješiti ručno sami.</string>
   <string name="intro_autostart_dont_show">Tražene izmjene su napravljene. Ne podsjećaj me više.</string>
   <string name="intro_leave_unchecked">* Ostavi neoznačeno za podsjetnik kasnije. Moguće je resetirati u aplikacijskim postavkama / %s.</string>
   <string name="intro_more_info">Više informacija</string>
@@ -190,7 +189,6 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">Upravljaj</string>
   <string name="settings_authentication">Autentifkacija</string>
   <string name="settings_username">Korisničko ime</string>
-  <string name="settings_password">Lozinka</string>
   <string name="settings_password_summary">Ažurirajte lozinku vezanu uz vaš poslužitelj.</string>
   <string name="settings_certificate_install">Instaliraj certifikat</string>
   <string name="settings_caldav">CalDAV</string>

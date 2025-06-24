@@ -34,7 +34,7 @@
   <string name="intro_battery_text">Selleks, et sünkroniseerimine soovitud ajavahemike järel toimiks taustateenusena, vajab %s õigust töötada taustal. Vastasel juhul võib Android igal ajal sünkroniseerimise peatada.</string>
   <string name="intro_battery_dont_show">Ma ei soovi kasutada regulaarset sünkroniseerimisvälpa. *</string>
   <string name="intro_autostart_title">%s ühilduvus</string>
-  <string name="intro_autostart_text">Ilmselt see nutiseade blokeerib sünkroniseerimist. Kui see sinu tegevust mõjutab, siis saad olukorra lahendada käsitsi.</string>
+  <string name="intro_autostart_text">Nutiseadme tootja poolt lisatud püsivara võib blokeerida sünkroniseerimist. Kui see sinu tegevust mõjutab, siis saad olukorra lahendada käsitsi.</string>
   <string name="intro_autostart_dont_show">Ma juba kasutan nõutavaid seadistusi. Ära enam tuleta seda mulle meelde.*</string>
   <string name="intro_leave_unchecked">* Kui soovid hilisemat meeldetuletust, jäta see märkimata. Lisaks saad seada muuta rakenduse seadistustest / %s.</string>
   <string name="intro_more_info">Lisateave</string>
@@ -267,6 +267,9 @@
   <string name="login_client_certificate_selected">Kliendi sertifikaat: %s</string>
   <string name="login_no_certificate_found">Kliendisertifikaati ei leidunud</string>
   <string name="login_install_certificate">Paigalda sertifikaat</string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Fastmaili kasutajakonto</string>
+  <string name="login_fastmail_sign_in">Logi sisse Fastmaili kasutajakontoga</string>
   <string name="login_type_google">Google\'i Kontaktid / Kalender</string>
   <string name="login_google_see_tested_with">Uuendatud teavet leiad meie „Tested with Google“ lehelt.</string>
   <string name="login_google_unexpected_warnings">Võib tekkida ootamatuid vigu ja/või sa pead looma oma klienditunnuse.</string>
@@ -321,9 +324,13 @@
   <string name="settings_ignore_vpns_off">VPN ilma toimiva ja kontrollitud internetiühenduseta on sünkroniseerimiseks piisav</string>
   <string name="settings_authentication">Autentimine</string>
   <string name="settings_username">Kasutajanimi</string>
-  <string name="settings_password">Salasõna</string>
+  <string name="settings_password">Salasõna või rakenduse salasõna</string>
+  <string name="settings_app_password_hint"><![CDATA[<a href="%1$s">Rakenduse salasõna</a> kasutamine peaks olema esimene eelistus.]]></string>
   <string name="settings_new_password">Uus salasõna</string>
   <string name="settings_password_summary">Uuenda salasõna vastavalt oma serveri juhendile.</string>
+  <string name="settings_reauthorize_oauth">Autoriseeri uuesti (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">Kasuta olukorras, kus ligipääs on tühistatud</string>
+  <string name="settings_reauthorize_oauth_success">Autoriseerimine õnnestus</string>
   <string name="settings_certificate_alias">Kliendi sertifikaat</string>
   <string name="settings_certificate_alias_empty">Sertifikaati pole saadaval või paigaldatud</string>
   <string name="settings_certificate_install">Paigalda sertifikaat</string>
@@ -372,6 +379,9 @@
   <string name="create_collection_create">Loo</string>
   <string name="create_collection_optional">* valikuline</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">kontaktid</string>
+  <string name="collection_datatype_events">sündmust</string>
+  <string name="collection_datatype_tasks">ülesanded</string>
   <string name="collection_delete">Kustuta kogumik</string>
   <string name="collection_delete_warning">See kogumik (%s) koos oma kõikide andmetega kustutatakse nüüd jäädavalt nii serverist, kui kohalikust nutiseadmest.</string>
   <string name="collection_synchronization">Sünkroniseerimine</string>
