@@ -88,6 +88,7 @@ fun UrlLoginScreen(
     onLogin: () -> Unit = {}
 ) {
     val focusRequester = remember { FocusRequester() }
+
     Assistant(
         nextLabel = stringResource(R.string.login_login),
         nextEnabled = canContinue,
@@ -100,6 +101,19 @@ fun UrlLoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
+            )
+
+            val manualUrl = Constants.MANUAL_URL.buildUpon()
+                .appendPath(Constants.MANUAL_PATH_ACCOUNTS_COLLECTIONS)
+                .fragment(Constants.MANUAL_FRAGMENT_SERVICE_DISCOVERY)
+                .build()
+            val urlInfo = HtmlCompat.fromHtml(stringResource(R.string.login_base_url_info, manualUrl), HtmlCompat.FROM_HTML_MODE_COMPACT)
+            Text(
+                text = urlInfo.toAnnotatedString(),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, bottom = 16.dp)
             )
 
             OutlinedTextField(
@@ -118,19 +132,6 @@ fun UrlLoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
-            )
-
-            val manualUrl = Constants.MANUAL_URL.buildUpon()
-                .appendPath(Constants.MANUAL_PATH_ACCOUNTS_COLLECTIONS)
-                .fragment(Constants.MANUAL_FRAGMENT_SERVICE_DISCOVERY)
-                .build()
-            val urlInfo = HtmlCompat.fromHtml(stringResource(R.string.login_base_url_info, manualUrl), HtmlCompat.FROM_HTML_MODE_COMPACT)
-            Text(
-                text = urlInfo.toAnnotatedString(),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 16.dp)
             )
 
             OutlinedTextField(
@@ -159,9 +160,9 @@ fun UrlLoginScreen(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-                keyboardActions = KeyboardActions(
-                    onDone = { onLogin() }
-                ),
+                keyboardActions = KeyboardActions {
+                    if (canContinue) onLogin()
+                },
                 modifier = Modifier.fillMaxWidth()
             )
         }
