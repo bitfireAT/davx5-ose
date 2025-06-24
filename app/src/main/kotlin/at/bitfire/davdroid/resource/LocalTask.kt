@@ -6,11 +6,11 @@ package at.bitfire.davdroid.resource
 
 import android.content.ContentValues
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.BatchOperation
 import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.DmfsTaskFactory
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.Task
+import at.bitfire.synctools.storage.BatchOperation
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.UUID
 

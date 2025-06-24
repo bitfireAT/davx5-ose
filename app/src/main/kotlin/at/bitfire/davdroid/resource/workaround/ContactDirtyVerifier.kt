@@ -7,7 +7,7 @@ package at.bitfire.davdroid.resource.workaround
 import android.content.ContentValues
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.vcard4android.BatchOperation
+import at.bitfire.synctools.storage.ContactsBatchOperation
 
 /**
  * Only required for [Android7DirtyVerifier]. If that class is removed because the minimum SDK is raised to Android 8,
@@ -49,6 +49,6 @@ interface ContactDirtyVerifier {
     /**
       Sets the [LocalContact.COLUMN_HASHCODE] field of the contact to the hash code of the contact data in a content provider batch operation.
      */
-    fun updateHashCode(contact: LocalContact, batch: BatchOperation)
+    fun updateHashCode(contact: LocalContact, batch: ContactsBatchOperation)
 
 }

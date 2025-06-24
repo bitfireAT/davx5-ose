@@ -14,8 +14,9 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
-import at.bitfire.ical4android.BatchOperation
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
+import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.CalendarBatchOperation
 import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -123,13 +124,13 @@ class LocalCalendar private constructor(
         provider.query(Events.CONTENT_URI.asSyncAdapter(account), arrayOf(Events._ID),
                 "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND ${LocalEvent.COLUMN_FLAGS}=?",
                 arrayOf(id.toString(), flags.toString()), null)?.use { cursor ->
-            val batch = BatchOperation(provider)
+            val batch = CalendarBatchOperation(provider)
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(0)
                 // delete event and possible exceptions (content provider doesn't delete exceptions itself)
-                batch.enqueue(BatchOperation.CpoBuilder
-                        .newDelete(Events.CONTENT_URI.asSyncAdapter(account))
-                        .withSelection("${Events._ID}=? OR ${Events.ORIGINAL_ID}=?", arrayOf(id.toString(), id.toString())))
+                batch += BatchOperation.CpoBuilder
+                    .newDelete(Events.CONTENT_URI.asSyncAdapter(account))
+                    .withSelection("${Events._ID}=? OR ${Events.ORIGINAL_ID}=?", arrayOf(id.toString(), id.toString()))
             }
             deleted = batch.commit()
         }
@@ -156,7 +157,7 @@ class LocalCalendar private constructor(
                 val id = cursor.getLong(0)             // can't be null (by definition)
                 val originalID = cursor.getLong(1)     // can't be null (by query)
 
-                val batch = BatchOperation(provider)
+                val batch = CalendarBatchOperation(provider)
 
                 // get original event's SEQUENCE
                 provider.query(
@@ -168,15 +169,15 @@ class LocalCalendar private constructor(
                         val originalSequence = if (cursor2.isNull(0)) 0 else cursor2.getInt(0)
 
                         // re-schedule original event and set it to DIRTY
-                        batch.enqueue(BatchOperation.CpoBuilder
-                                .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, originalID).asSyncAdapter(account))
-                                .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
-                                .withValue(Events.DIRTY, 1))
+                        batch += BatchOperation.CpoBuilder
+                            .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, originalID).asSyncAdapter(account))
+                            .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
+                            .withValue(Events.DIRTY, 1)
                     }
                 }
 
                 // completely remove deleted exception
-                batch.enqueue(BatchOperation.CpoBuilder.newDelete(ContentUris.withAppendedId(Events.CONTENT_URI, id).asSyncAdapter(account)))
+                batch += BatchOperation.CpoBuilder.newDelete(ContentUris.withAppendedId(Events.CONTENT_URI, id).asSyncAdapter(account))
                 batch.commit()
             }
         }
@@ -194,16 +195,16 @@ class LocalCalendar private constructor(
                 val originalID = cursor.getLong(1)     // can't be null (by query)
                 val sequence = if (cursor.isNull(2)) 0 else cursor.getInt(2)
 
-                val batch = BatchOperation(provider)
+                val batch = CalendarBatchOperation(provider)
                 // original event to DIRTY
-                batch.enqueue(BatchOperation.CpoBuilder
-                        .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, originalID).asSyncAdapter(account))
-                        .withValue(Events.DIRTY, 1))
+                batch += BatchOperation.CpoBuilder
+                    .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, originalID).asSyncAdapter(account))
+                    .withValue(Events.DIRTY, 1)
                 // increase SEQUENCE and set DIRTY to 0
-                batch.enqueue(BatchOperation.CpoBuilder
-                        .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, id).asSyncAdapter(account))
-                        .withValue(LocalEvent.COLUMN_SEQUENCE, sequence + 1)
-                        .withValue(Events.DIRTY, 0))
+                batch += BatchOperation.CpoBuilder
+                    .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, id).asSyncAdapter(account))
+                    .withValue(LocalEvent.COLUMN_SEQUENCE, sequence + 1)
+                    .withValue(Events.DIRTY, 0)
                 batch.commit()
             }
         }

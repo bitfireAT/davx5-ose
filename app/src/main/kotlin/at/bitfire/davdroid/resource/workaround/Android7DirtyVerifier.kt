@@ -9,7 +9,8 @@ import android.os.Build
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalContact.Companion.COLUMN_HASHCODE
-import at.bitfire.vcard4android.BatchOperation
+import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.ContactsBatchOperation
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -129,12 +130,12 @@ class Android7DirtyVerifier @Inject constructor(
         addressBook.provider!!.update(contact.rawContactSyncURI(), values, null, null)
     }
 
-    override fun updateHashCode(contact: LocalContact, batch: BatchOperation) {
+    override fun updateHashCode(contact: LocalContact, batch: ContactsBatchOperation) {
         val hashCode = contactDataHashCode(contact)
 
-        batch.enqueue(BatchOperation.CpoBuilder
+        batch += BatchOperation.CpoBuilder
             .newUpdate(contact.rawContactSyncURI())
-            .withValue(COLUMN_HASHCODE, hashCode))
+            .withValue(COLUMN_HASHCODE, hashCode)
     }
 
 

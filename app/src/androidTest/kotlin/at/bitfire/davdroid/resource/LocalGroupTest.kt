@@ -14,7 +14,7 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.vcard4android.BatchOperation
+import at.bitfire.synctools.storage.ContactsBatchOperation
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
@@ -115,7 +115,7 @@ class LocalGroupTest {
             val group = newGroup(ab)
 
             // add contact1 to group
-            val batch = BatchOperation(ab.provider!!)
+            val batch = ContactsBatchOperation(ab.provider!!)
             contact1.addToGroup(batch, group.id!!)
             batch.commit()
 
@@ -223,7 +223,7 @@ class LocalGroupTest {
                 LocalContact(ab, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
             contact1.add()
 
-            val batch = BatchOperation(ab.provider!!)
+            val batch = ContactsBatchOperation(ab.provider!!)
             contact1.addToGroup(batch, group.id!!)
             batch.commit()
 

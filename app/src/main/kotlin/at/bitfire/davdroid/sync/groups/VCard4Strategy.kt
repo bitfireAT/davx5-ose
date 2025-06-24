@@ -9,7 +9,8 @@ import android.provider.ContactsContract
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.sync.ContactsSyncManager.Companion.disjunct
-import at.bitfire.vcard4android.BatchOperation
+import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.ContactsBatchOperation
 import at.bitfire.vcard4android.Contact
 import java.io.FileNotFoundException
 import java.util.logging.Logger
@@ -26,7 +27,7 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
            3. Mark groups which have been added to/removed from the contact as dirty so that they will be uploaded.
            4. Successful upload will reset dirty flag and update cached group memberships.
          */
-        val batch = BatchOperation(addressBook.provider!!)
+        val batch = ContactsBatchOperation(addressBook.provider!!)
         for (contact in addressBook.findDirtyContacts())
             try {
                 logger.fine("Looking for changed group memberships of contact ${contact.fileName}")
@@ -34,9 +35,9 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
                 val currentGroups = contact.getGroupMemberships()
                 for (groupID in cachedGroups disjunct currentGroups) {
                     logger.fine("Marking group as dirty: $groupID")
-                    batch.enqueue(BatchOperation.CpoBuilder
-                            .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(ContactsContract.Groups.CONTENT_URI, groupID)))
-                            .withValue(ContactsContract.Groups.DIRTY, 1))
+                    batch += BatchOperation.CpoBuilder
+                        .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(ContactsContract.Groups.CONTENT_URI, groupID)))
+                        .withValue(ContactsContract.Groups.DIRTY, 1)
                 }
             } catch(_: FileNotFoundException) {
             }

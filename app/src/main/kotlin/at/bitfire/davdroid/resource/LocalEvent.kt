@@ -16,11 +16,11 @@ import at.bitfire.davdroid.resource.LocalEvent.Companion.numInstances
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.AndroidEventFactory
-import at.bitfire.ical4android.BatchOperation
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.ICalendar
 import at.bitfire.ical4android.ical4jVersion
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
+import at.bitfire.synctools.storage.BatchOperation
 import net.fortuna.ical4j.model.property.ProdId
 import java.util.UUID
 
