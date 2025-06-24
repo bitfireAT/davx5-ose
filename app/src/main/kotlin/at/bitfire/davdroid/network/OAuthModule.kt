@@ -19,6 +19,12 @@ import java.net.URL
 @InstallIn(SingletonComponent::class)
 object OAuthModule {
 
+    /**
+     * Creates an [AuthorizationService].
+     *
+     * **Note: The caller (who receives the [AuthorizationService]) is still responsible for closing it
+     * with [AuthorizationService.dispose]!**
+     */
     @Provides
     fun authorizationService(@ApplicationContext context: Context): AuthorizationService =
         AuthorizationService(context,

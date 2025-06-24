@@ -21,7 +21,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
-import net.openid.appauth.AuthorizationService
 import okhttp3.Authenticator
 import okhttp3.Cache
 import okhttp3.ConnectionSpec
@@ -32,24 +31,25 @@ import okhttp3.Protocol
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
+import java.io.Closeable
 import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.util.LinkedList
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.inject.Provider
 import javax.net.ssl.KeyManager
 import javax.net.ssl.SSLContext
 
 class HttpClient(
     val okHttpClient: OkHttpClient,
-    private val authorizationService: AuthorizationService? = null
+    private val closeables: List<Closeable>
 ): AutoCloseable {
 
     override fun close() {
-        authorizationService?.dispose()
+        closeables.forEach { it.close() }
         okHttpClient.cache?.close()
     }
 
@@ -66,12 +66,12 @@ class HttpClient(
      */
     class Builder @Inject constructor(
         private val accountSettingsFactory: AccountSettings.Factory,
-        private val authorizationServiceProvider: Provider<AuthorizationService>,
         @ApplicationContext private val context: Context,
         defaultLogger: Logger,
         @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
         private val keyManagerFactory: ClientCertKeyManager.Factory,
-        private val settingsManager: SettingsManager
+        private val settingsManager: SettingsManager,
+        private val oAuthInterceptorFactory: OAuthInterceptor.Factory
     ) {
 
         // property setters/getters
@@ -97,14 +97,14 @@ class HttpClient(
 
         private var authenticationInterceptor: Interceptor? = null
         private var authenticator: Authenticator? = null
-        private var authorizationService: AuthorizationService? = null
         private var certificateAlias: String? = null
-        fun authenticate(host: String?, credentials: Credentials, authStateCallback: BearerAuthInterceptor.AuthStateUpdateCallback? = null): Builder {
+        private val closeables = LinkedList<Closeable>()
+        fun authenticate(host: String?, credentials: Credentials, authStateCallback: OAuthInterceptor.AuthStateUpdateCallback? = null): Builder {
             if (credentials.authState != null) {
                 // OAuth
-                val authService = authorizationServiceProvider.get()
-                authenticationInterceptor = BearerAuthInterceptor.fromAuthState(authService, credentials.authState, authStateCallback)
-                authorizationService = authService
+                val oAuthInterceptor = oAuthInterceptorFactory.create(credentials.authState, authStateCallback)
+                closeables += oAuthInterceptor      // the interceptor must be closed with the HttpClient
+                authenticationInterceptor = oAuthInterceptor
 
             } else if (credentials.username != null && credentials.password != null) {
                 // basic/digest auth
@@ -233,7 +233,7 @@ class HttpClient(
 
             return HttpClient(
                 okHttpClient = okBuilder.build(),
-                authorizationService = authorizationService
+                closeables = closeables
             )
         }
 
