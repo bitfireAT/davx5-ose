@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.resource.contactrow
 
 import android.net.Uri
-import at.bitfire.vcard4android.BatchOperation
+import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.contactrow.DataRowBuilder
 import java.util.LinkedList

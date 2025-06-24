@@ -26,10 +26,11 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
+import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.ContactsBatchOperation
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidGroup
-import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -198,17 +199,15 @@ open class LocalAddressBook @AssistedInject constructor(
             return false
 
         // move contacts and groups to new account
-        val batch = BatchOperation(provider!!)
-        batch.enqueue(BatchOperation.CpoBuilder
+        val batch = ContactsBatchOperation(provider!!)
+        batch += BatchOperation.CpoBuilder
             .newUpdate(groupsSyncUri())
             .withSelection(Groups.ACCOUNT_NAME + "=? AND " + Groups.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
             .withValue(Groups.ACCOUNT_NAME, newAccount.name)
-        )
-        batch.enqueue(BatchOperation.CpoBuilder
+        batch += BatchOperation.CpoBuilder
             .newUpdate(rawContactsSyncUri())
             .withSelection(RawContacts.ACCOUNT_NAME + "=? AND " + RawContacts.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
             .withValue(RawContacts.ACCOUNT_NAME, newAccount.name)
-        )
         batch.commit()
 
         // update AndroidAddressBook.account
