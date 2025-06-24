@@ -12,6 +12,7 @@ import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.content.SyncRequest
 import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
@@ -145,10 +146,21 @@ abstract class SyncAdapterService: Service() {
             }
 
             // Android 14+ does not handle pending sync state correctly.
-            // Workaround: Cancel all authorities for this account
+            // As a defensive workaround, we can cancel specifically this still pending sync only
             // See: https://github.com/bitfireAT/davx5-ose/issues/1458
-            if (Build.VERSION.SDK_INT >= 34)
-                ContentResolver.cancelSync(account, null)
+            if (Build.VERSION.SDK_INT >= 34) {
+                // Recreate the sync request used to start this sync
+                val syncRequest = SyncRequest.Builder()
+                    .setSyncAdapter(account, authority)
+                    .setExtras(Bundle().apply {
+                        if (upload)
+                            putBoolean(ContentResolver.SYNC_EXTRAS_UPLOAD, true)
+                    })
+                    .syncOnce()
+                    .build()
+                // Cancel it
+                ContentResolver.cancelSync(syncRequest)
+            }
 
             // Check sync conditions
             val accountSettings = try {
