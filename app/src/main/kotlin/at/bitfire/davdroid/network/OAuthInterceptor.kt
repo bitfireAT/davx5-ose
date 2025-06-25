@@ -36,9 +36,11 @@ class OAuthInterceptor @AssistedInject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val rq = chain.request().newBuilder()
 
-        provideAccessToken()?.let { accessToken ->
+        val accessToken = provideAccessToken()
+        if (accessToken != null)
             rq.header("Authorization", "Bearer $accessToken")
-        }
+        else
+            logger.warning("No access token available, won't authenticate")
 
         return chain.proceed(rq.build())
     }
@@ -47,22 +49,15 @@ class OAuthInterceptor @AssistedInject constructor(
     fun provideAccessToken(): String? {
         val authStateStrBefore = authState.jsonSerializeString()
 
-        // FIXME remove
-        logger.log(Level.FINE, "AuthState before", authStateStrBefore)
-
         val accessTokenFuture = CompletableFuture<String>()
         authState.performActionWithFreshTokens(authService) { accessToken: String?, _: String?, ex: AuthorizationException? ->
             if (ex != null)
                 accessTokenFuture.completeExceptionally(ex)
             else if (accessToken != null) {
                 val authStateStrAfter = authState.jsonSerializeString()
-                if (authStateStrBefore != authStateStrAfter) {
-                    // FIXME remove
-                    logger.log(Level.FINE, "AuthState after", authStateStrAfter)
-
+                if (authStateStrBefore != authStateStrAfter)
                     // persist updated AuthState
                     onAuthStateUpdate?.onUpdate(authState)
-                }
 
                 // emit access token
                 accessTokenFuture.complete(accessToken)
