@@ -102,12 +102,17 @@ class AccountsModel @AssistedInject constructor(
             if (accounts.isEmpty())
                 flowOf(emptyList())
             else {
+                // For each account, create a Flow<Boolean> emitting the state on whether it has a pending sync.
                 val pendingSyncCheckFlows: List<Flow<Account?>> = accounts.map { account ->
                     syncFrameWork.isSyncPending(account, SyncDataType.entries)
                         .map { hasPendingSync ->
+                            // Map this boolean answer to its Account if it is pending, or null if not.
                             if (hasPendingSync) account else null
                         }
                 }
+                // Combine all account flows Flow<Account?> into a single flow emitting a list of accounts with
+                // pending sync. The null values which we filter out are the non-pending accounts.
+                // Now, whenever any account's pending state changes, the combined flow emits the updated list.
                 combine(pendingSyncCheckFlows) { it.filterNotNull() }
             }
         }
