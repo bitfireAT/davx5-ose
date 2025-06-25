@@ -143,13 +143,13 @@ abstract class SyncAdapterService: Service() {
                 return
             }
 
+            // Check sync conditions
             val accountSettings = try {
                 accountSettingsFactory.create(account)
             } catch (e: InvalidAccountException) {
                 logger.log(Level.WARNING, "Account doesn't exist anymore", e)
                 return
             }
-
             val syncConditions = syncConditionsFactory.create(accountSettings)
             // Should we run the sync at all?
             if (!syncConditions.wifiConditionsMet()) {
@@ -159,6 +159,7 @@ abstract class SyncAdapterService: Service() {
 
             logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
             val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), fromUpload = upload)
+
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
             use it to block the sync adapter. Instead we use a Flow to get notified when the sync
