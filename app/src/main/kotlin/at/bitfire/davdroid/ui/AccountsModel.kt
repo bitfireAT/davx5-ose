@@ -102,18 +102,26 @@ class AccountsModel @AssistedInject constructor(
             if (accounts.isEmpty())
                 flowOf(emptyList())
             else {
-                // For each account, create a Flow<Boolean> emitting the state on whether it has a pending sync.
-                val pendingSyncCheckFlows: List<Flow<Account?>> = accounts.map { account ->
-                    syncFrameWork.isSyncPending(account, SyncDataType.entries)
-                        .map { hasPendingSync ->
-                            // Map this boolean answer to its Account if it is pending, or null if not.
-                            if (hasPendingSync) account else null
-                        }
-                }
-                // Combine all account flows Flow<Account?> into a single flow emitting a list of accounts with
-                // pending sync. The null values which we filter out are the non-pending accounts.
+                // To create the Flow<List<Account?>> that emits the accounts with pending sync,
+                val pendingSyncAccountsFlows: List<Flow<Account?>> =
+                    // for each existing account with unknown sync pending state ...
+                    accounts.map { account ->
+                        // ... create a Flow<Boolean> which emits the sync pending state
+                        syncFrameWork.isSyncPending(account, SyncDataType.entries)
+                            .map { hasPendingSync ->
+                                // ... and map this boolean answer back to its Account if it is pending, or null if not.
+                                if (hasPendingSync) account else null
+                            }
+                    }
+                // Combine all account flows Flow<Account?> in the list into a single flow, emitting a list of
+                // accounts with pending sync. The null values which we filter out are the non-pending accounts.
                 // Now, whenever any account's pending state changes, the combined flow emits the updated list.
-                combine(pendingSyncCheckFlows) { it.filterNotNull() }
+                combine(pendingSyncAccountsFlows) { combinedAccounts ->
+                    // combinedAccounts is an Array<Account?> of the most recently emitted values of the
+                    // pendingSyncCheckFlows, with one entry for every pendingSyncCheckFlow that is either
+                    // the account name (sync pending) or null (no sync pending).
+                    combinedAccounts.filterNotNull()
+                }
             }
         }
 
