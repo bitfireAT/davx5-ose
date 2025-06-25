@@ -16,10 +16,11 @@ import at.bitfire.davdroid.resource.contactrow.GroupMembershipBuilder
 import at.bitfire.davdroid.resource.contactrow.GroupMembershipHandler
 import at.bitfire.davdroid.resource.contactrow.UnknownPropertiesBuilder
 import at.bitfire.davdroid.resource.contactrow.UnknownPropertiesHandler
+import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.ContactsBatchOperation
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidContactFactory
-import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import ezvcard.Ezvcard
@@ -133,30 +134,29 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
 
-    fun addToGroup(batch: BatchOperation, groupID: Long) {
-        batch.enqueue(BatchOperation.CpoBuilder
-                .newInsert(dataSyncURI())
-                .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
-                .withValue(GroupMembership.RAW_CONTACT_ID, id)
-                .withValue(GroupMembership.GROUP_ROW_ID, groupID))
+    fun addToGroup(batch: ContactsBatchOperation, groupID: Long) {
+        batch += BatchOperation.CpoBuilder
+            .newInsert(dataSyncURI())
+            .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
+            .withValue(GroupMembership.RAW_CONTACT_ID, id)
+            .withValue(GroupMembership.GROUP_ROW_ID, groupID)
         groupMemberships += groupID
 
-        batch.enqueue(BatchOperation.CpoBuilder
-                .newInsert(dataSyncURI())
-                .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
-                .withValue(CachedGroupMembership.GROUP_ID, groupID)
-        )
+        batch += BatchOperation.CpoBuilder
+            .newInsert(dataSyncURI())
+            .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+            .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
+            .withValue(CachedGroupMembership.GROUP_ID, groupID)
         cachedGroupMemberships += groupID
     }
 
     fun removeGroupMemberships(batch: BatchOperation) {
-        batch.enqueue(BatchOperation.CpoBuilder
-                .newDelete(dataSyncURI())
-                .withSelection(
-                        "${Data.RAW_CONTACT_ID}=? AND ${Data.MIMETYPE} IN (?,?)",
-                        arrayOf(id.toString(), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                ))
+        batch += BatchOperation.CpoBuilder
+            .newDelete(dataSyncURI())
+            .withSelection(
+                "${Data.RAW_CONTACT_ID}=? AND ${Data.MIMETYPE} IN (?,?)",
+                arrayOf(id.toString(), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+            )
         groupMemberships.clear()
         cachedGroupMemberships.clear()
     }
