@@ -142,10 +142,10 @@ class LocalEvent : AndroidEvent, LocalResource<Event> {
 
 
     constructor(calendar: AndroidCalendar<*>, event: Event, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int)
-            : super(calendar, event, fileName, eTag, scheduleTag, flags)
+        : super(calendar, event, fileName, eTag, scheduleTag, flags)
 
     private constructor(calendar: AndroidCalendar<*>, values: ContentValues)
-            : super(calendar, values)
+        : super(calendar, values)
 
 
     /**

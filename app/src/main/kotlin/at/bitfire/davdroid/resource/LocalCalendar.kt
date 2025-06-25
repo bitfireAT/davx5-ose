@@ -34,8 +34,6 @@ class LocalCalendar private constructor(
 
     companion object {
 
-        private const val COLUMN_SYNC_STATE = Calendars.CAL_SYNC1
-
         private val logger: Logger
             get() = Logger.getGlobal()
 
@@ -54,15 +52,9 @@ class LocalCalendar private constructor(
         get() = accessLevel?.let { it <= Calendars.CAL_ACCESS_READ } ?: false
 
     override var lastSyncState: SyncState?
-        get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_SYNC_STATE), null, null, null)?.use { cursor ->
-                    if (cursor.moveToNext())
-                        return SyncState.fromString(cursor.getString(0))
-                    else
-                        null
-                }
+        get() = readSyncState()?.let { SyncState.fromString(it) }
         set(state) {
-            val values = contentValuesOf(COLUMN_SYNC_STATE to state.toString())
-            provider.update(calendarSyncURI(), values, null, null)
+            writeSyncState(state.toString())
         }
 
 
