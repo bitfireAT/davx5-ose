@@ -97,7 +97,7 @@ class AccountsModel @AssistedInject constructor(
     private val runningWorkers = workManager.getWorkInfosFlow(WorkQuery.fromStates(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val accountsPendingInSyncFramework: Flow<List<Account>> =
+    private val accountsSyncPending: Flow<List<Account>> =
         accounts.flatMapLatest { accounts ->
             if (accounts.isEmpty())
                 flowOf(emptyList())
@@ -121,8 +121,8 @@ class AccountsModel @AssistedInject constructor(
     val accountInfos: Flow<List<AccountInfo>> = combine(
         accounts,
         runningWorkers,
-        accountsPendingInSyncFramework
-    ) { accounts, workInfos, accountsPendingInSyncFramework ->
+        accountsSyncPending
+    ) { accounts, workInfos, accountsSyncPending ->
         val collator = Collator.getInstance()
 
         accounts
@@ -146,7 +146,7 @@ class AccountsModel @AssistedInject constructor(
                         }
                     } -> AccountProgress.Pending
 
-                    account in accountsPendingInSyncFramework
+                    account in accountsSyncPending
                         -> AccountProgress.Pending
 
                     else -> AccountProgress.Idle
