@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.SyncRequest
 import android.provider.CalendarContract
 import androidx.test.filters.LargeTest
-import at.bitfire.davdroid.di.DefaultDispatcher
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -21,7 +20,6 @@ import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.runs
 import junit.framework.TestCase.assertTrue
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
@@ -31,6 +29,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
+import kotlin.time.Duration
 
 @HiltAndroidTest
 class AndroidSyncFrameworkTest {
@@ -38,10 +37,6 @@ class AndroidSyncFrameworkTest {
     @Inject
     @ApplicationContext
     lateinit var context: Context
-
-    @Inject
-    @DefaultDispatcher
-    lateinit var defaultDispatcher: CoroutineDispatcher
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -73,17 +68,22 @@ class AndroidSyncFrameworkTest {
 
     @LargeTest
     @Test
-    fun testOnPerformSync_syncAlwaysPending() = runTest {
-        // This test is expected to fail on Android 13 and below (needs cold boot, or longer run time otherwise).
-        // It succeeds on Android 14+ where the sync framework always pending bug is present and hopefully fails
-        // as soon as the bug is fixed in a future android version.
+    fun testOnPerformSync_syncAlwaysPending() = runTest(
+        // The test is expected to run for a long time, so we increase the timeout
+        timeout = Duration.parse("70s")
+    ) {
+        // This test is expected to fail on Android 13 and below and usually does so (sometimes only after
+        // a cold boot). It succeeds on Android 14+, however, where the sync framework always pending bug
+        // is present and hopefully fails as soon as the bug is fixed in a future android version.
         // See https://github.com/bitfireAT/davx5-ose/issues/1458
 
-        // Disable the workaround we put in place
+        // Disable the workaround we put in place for Android 14+
         mockkStatic(ContentResolver::class)
         every { ContentResolver.cancelSync(any()) } just runs
 
-        withContext(Dispatchers.Default.limitedParallelism(1)) {
+        // The test does not run on the injectable default dispatcher as to not forward virtual time
+        withContext(Dispatchers.Default) {
+
             // Request calendar sync
             ContentResolver.requestSync(
                 SyncRequest.Builder()
@@ -92,10 +92,17 @@ class AndroidSyncFrameworkTest {
                     .build()
             )
 
-            // Verify the sync keeps being pending for the next 55 seconds
-            repeat(55) {
+            // Based on my observations the sync framework usually takes 40-63 seconds
+            // to start the sync (could be up to several minutes) and change the sync
+            // pending state (only on Android 13 and below).
+            // On Android 14+ it will run the sync but remain in pending state forever.
+            // To verify this, we can wait for around a minute and if the sync is still
+            // pending, we can assume that the bug is still present.
+
+            // Verify the sync keeps being pending "forever" (65 seconds in this test)
+            repeat(65) {
                 assertTrue(ContentResolver.isSyncPending(account, CalendarContract.AUTHORITY))
-                delay(1000) // wait a bit before checking again
+                delay(1000)
             }
         }
     }
