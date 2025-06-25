@@ -51,6 +51,7 @@ class AndroidSyncFrameworkTest {
 
     lateinit var account: Account
 
+    private var masterSyncStateBeforeTest = ContentResolver.getMasterSyncAutomatically()
 
     @Before
     fun setUp() {
@@ -58,7 +59,7 @@ class AndroidSyncFrameworkTest {
 
         account = TestAccount.create()
 
-        
+        ContentResolver.setMasterSyncAutomatically(true)
         ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true)
         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
     }
@@ -66,6 +67,7 @@ class AndroidSyncFrameworkTest {
     @After
     fun tearDown() {
         TestAccount.remove(account)
+        ContentResolver.setMasterSyncAutomatically(masterSyncStateBeforeTest)
     }
 
 
