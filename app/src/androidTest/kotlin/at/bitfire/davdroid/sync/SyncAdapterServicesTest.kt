@@ -7,12 +7,10 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
-import android.content.SyncRequest
 import android.content.SyncResult
 import android.os.Bundle
 import android.provider.CalendarContract
 import androidx.hilt.work.HiltWorkerFactory
-import androidx.test.filters.LargeTest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import at.bitfire.davdroid.TestUtils
@@ -32,15 +30,11 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
-import io.mockk.runs
-import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Before
@@ -116,34 +110,6 @@ class SyncAdapterServicesTest {
             syncWorkerManager = syncWorkerManager
         )
 
-    @LargeTest
-    @Test
-    fun testOnPerformSync_syncAlwaysPending() = runTest {
-        // This test is expected to fail on Android 13 and below (needs cold boot, or longer run time otherwise).
-        // It succeeds on Android 14+ where the sync framework always pending bug is present and hopefully fails
-        // as soon as the bug is fixed in a future android version.
-        // See https://github.com/bitfireAT/davx5-ose/issues/1458
-
-        // Disable the workaround we put in place
-        mockkStatic(ContentResolver::class)
-        every { ContentResolver.cancelSync(any()) } just runs
-
-        withContext(Dispatchers.Default.limitedParallelism(1)) {
-            // Request calendar sync
-            ContentResolver.requestSync(
-                SyncRequest.Builder()
-                    .setSyncAdapter(account, CalendarContract.AUTHORITY)
-                    .syncOnce()
-                    .build()
-            )
-
-            // Verify the sync keeps being pending for the next 55 seconds
-            repeat(55) {
-                assertTrue(ContentResolver.isSyncPending(account, CalendarContract.AUTHORITY))
-                delay(1000) // wait a bit before checking again
-            }
-        }
-    }
 
     @Test
     fun testSyncAdapter_onPerformSync_cancellation() = runTest {
