@@ -17,6 +17,7 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.ForegroundTracker
 import com.google.common.net.HttpHeaders
+import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -39,7 +40,6 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.inject.Provider
 import javax.net.ssl.KeyManager
 import javax.net.ssl.SSLContext
 
@@ -66,7 +66,7 @@ class HttpClient(
      */
     class Builder @Inject constructor(
         private val accountSettingsFactory: AccountSettings.Factory,
-        private val authorizationServiceProvider: Provider<AuthorizationService>,
+        private val authorizationServiceProvider: Lazy<AuthorizationService>,
         @ApplicationContext private val context: Context,
         defaultLogger: Logger,
         @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
@@ -103,7 +103,7 @@ class HttpClient(
         fun authenticate(host: String?, credentials: Credentials, authStateCallback: OAuthInterceptor.AuthStateUpdateCallback? = null): Builder {
             if (credentials.authState != null) {
                 // OAuth
-                val authService = authorizationService ?: authorizationServiceProvider.get()
+                val authService = authorizationServiceProvider.get()
                 authenticationInterceptor = oAuthInterceptorFactory.create(authService, credentials.authState, authStateCallback)
                 authorizationService = authService
 
