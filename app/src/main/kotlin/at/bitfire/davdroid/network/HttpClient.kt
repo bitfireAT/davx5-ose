@@ -71,6 +71,7 @@ class HttpClient(
         defaultLogger: Logger,
         @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
         private val keyManagerFactory: ClientCertKeyManager.Factory,
+        private val oAuthInterceptorFactory: OAuthInterceptor.Factory,
         private val settingsManager: SettingsManager
     ) {
 
@@ -99,11 +100,11 @@ class HttpClient(
         private var authenticator: Authenticator? = null
         private var authorizationService: AuthorizationService? = null
         private var certificateAlias: String? = null
-        fun authenticate(host: String?, credentials: Credentials, authStateCallback: BearerAuthInterceptor.AuthStateUpdateCallback? = null): Builder {
+        fun authenticate(host: String?, credentials: Credentials, authStateCallback: OAuthInterceptor.AuthStateUpdateCallback? = null): Builder {
             if (credentials.authState != null) {
                 // OAuth
-                val authService = authorizationServiceProvider.get()
-                authenticationInterceptor = BearerAuthInterceptor.fromAuthState(authService, credentials.authState, authStateCallback)
+                val authService = authorizationService ?: authorizationServiceProvider.get()
+                authenticationInterceptor = oAuthInterceptorFactory.create(authService, credentials.authState, authStateCallback)
                 authorizationService = authService
 
             } else if (credentials.username != null && credentials.password != null) {
