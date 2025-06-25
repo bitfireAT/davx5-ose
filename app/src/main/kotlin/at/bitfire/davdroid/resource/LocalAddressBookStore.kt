@@ -225,8 +225,11 @@ class LocalAddressBookStore @Inject constructor(
         val listener = OnAccountsUpdateListener { accounts ->
             trySend(getAddressBookAccounts(account))
         }
-        accountManager.addOnAccountsUpdatedListener(listener, null, true)
-        listener.onAccountsUpdated(accountManager.accounts)
+        accountManager.addOnAccountsUpdatedListener(
+            /* listener = */ listener,
+            /* handler = */ null,
+            /* updateImmediately = */ true
+        )
         awaitClose { accountManager.removeOnAccountsUpdatedListener(listener) }
     }
 
