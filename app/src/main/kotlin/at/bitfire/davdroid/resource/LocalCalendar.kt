@@ -32,12 +32,9 @@ class LocalCalendar private constructor(
     id: Long
 ): AndroidCalendar<LocalEvent>(account, provider, LocalEvent.Factory, id), LocalCollection<LocalEvent> {
 
-    companion object {
+    private val logger: Logger
+        get() = Logger.getLogger(javaClass.name)
 
-        private val logger: Logger
-            get() = Logger.getGlobal()
-
-    }
 
     override val dbCollectionId: Long?
         get() = syncId?.toLongOrNull()

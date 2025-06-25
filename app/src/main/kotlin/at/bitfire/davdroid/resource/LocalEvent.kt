@@ -25,6 +25,93 @@ import java.util.UUID
 
 class LocalEvent : AndroidEvent, LocalResource<Event> {
 
+    override var fileName: String?
+        get() = syncId
+        private set(value) {
+            syncId = value
+        }
+
+    val weAreOrganizer
+        get() = event!!.isOrganizer == true
+
+
+    constructor(calendar: AndroidCalendar<*>, event: Event, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int)
+        : super(calendar, event, fileName, eTag, scheduleTag, flags)
+
+    private constructor(calendar: AndroidCalendar<*>, values: ContentValues)
+        : super(calendar, values)
+
+
+    /**
+     * Creates and sets a new UID in the calendar provider, if no UID is already set.
+     * It also returns the desired file name for the event for further processing in the sync algorithm.
+     *
+     * @return file name to use at upload
+     */
+    override fun prepareForUpload(): String {
+        // make sure that UID is set
+        val uid: String = event!!.uid ?: run {
+            // generate new UID
+            val newUid = UUID.randomUUID().toString()
+
+            // update in calendar provider
+            val values = contentValuesOf(Events.UID_2445 to newUid)
+            calendar.provider.update(eventSyncURI(), values, null, null)
+
+            // update this event
+            event?.uid = newUid
+
+            newUid
+        }
+
+        val uidIsGoodFilename = uid.all { char ->
+            // see RFC 2396 2.2
+            char.isLetterOrDigit() || arrayOf(                  // allow letters and digits
+                ';', ':', '@', '&', '=', '+', '$', ',',         // allow reserved characters except '/' and '?'
+                '-', '_', '.', '!', '~', '*', '\'', '(', ')'    // allow unreserved characters
+            ).contains(char)
+        }
+        return if (uidIsGoodFilename)
+            "$uid.ics"                      // use UID as file name
+        else
+            "${UUID.randomUUID()}.ics"      // UID would be dangerous as file name, use random UUID instead
+    }
+
+
+    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
+        val values = ContentValues(5)
+        if (fileName != null)
+            values.put(Events._SYNC_ID, fileName)
+        values.put(COLUMN_ETAG, eTag)
+        values.put(COLUMN_SCHEDULE_TAG, scheduleTag)
+        values.put(COLUMN_SEQUENCE, event!!.sequence)
+        values.put(Events.DIRTY, 0)
+        calendar.provider.update(eventSyncURI(), values, null, null)
+
+        if (fileName != null)
+            this.fileName = fileName
+        this.eTag = eTag
+        this.scheduleTag = scheduleTag
+    }
+
+    override fun updateFlags(flags: Int) {
+        val values = contentValuesOf(COLUMN_FLAGS to flags)
+        calendar.provider.update(eventSyncURI(), values, null, null)
+
+        this.flags = flags
+    }
+
+    override fun resetDeleted() {
+        val values = contentValuesOf(Events.DELETED to 0)
+        calendar.provider.update(eventSyncURI(), values, null, null)
+    }
+
+    object Factory : AndroidEventFactory<LocalEvent> {
+        override fun fromProvider(calendar: AndroidCalendar<*>, values: ContentValues) =
+            LocalEvent(calendar, values)
+    }
+
+
     companion object {
         init {
             ICalendar.prodId = ProdId("DAVx5/${BuildConfig.VERSION_NAME} ical4j/" + ical4jVersion)
@@ -130,91 +217,4 @@ class LocalEvent : AndroidEvent, LocalResource<Event> {
         }
 
     }
-
-    override var fileName: String?
-        get() = syncId
-        private set(value) {
-            syncId = value
-        }
-
-    val weAreOrganizer
-        get() = event!!.isOrganizer == true
-
-
-    constructor(calendar: AndroidCalendar<*>, event: Event, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int)
-        : super(calendar, event, fileName, eTag, scheduleTag, flags)
-
-    private constructor(calendar: AndroidCalendar<*>, values: ContentValues)
-        : super(calendar, values)
-
-
-    /**
-     * Creates and sets a new UID in the calendar provider, if no UID is already set.
-     * It also returns the desired file name for the event for further processing in the sync algorithm.
-     *
-     * @return file name to use at upload
-     */
-    override fun prepareForUpload(): String {
-        // make sure that UID is set
-        val uid: String = event!!.uid ?: run {
-            // generate new UID
-            val newUid = UUID.randomUUID().toString()
-
-            // update in calendar provider
-            val values = contentValuesOf(Events.UID_2445 to newUid)
-            calendar.provider.update(eventSyncURI(), values, null, null)
-
-            // update this event
-            event?.uid = newUid
-
-            newUid
-        }
-
-        val uidIsGoodFilename = uid.all { char ->
-            // see RFC 2396 2.2
-            char.isLetterOrDigit() || arrayOf(                  // allow letters and digits
-                ';', ':', '@', '&', '=', '+', '$', ',',         // allow reserved characters except '/' and '?'
-                '-', '_', '.', '!', '~', '*', '\'', '(', ')'    // allow unreserved characters
-            ).contains(char)
-        }
-        return if (uidIsGoodFilename)
-            "$uid.ics"                      // use UID as file name
-        else
-            "${UUID.randomUUID()}.ics"      // UID would be dangerous as file name, use random UUID instead
-    }
-
-
-    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
-        val values = ContentValues(5)
-        if (fileName != null)
-            values.put(Events._SYNC_ID, fileName)
-        values.put(COLUMN_ETAG, eTag)
-        values.put(COLUMN_SCHEDULE_TAG, scheduleTag)
-        values.put(COLUMN_SEQUENCE, event!!.sequence)
-        values.put(Events.DIRTY, 0)
-        calendar.provider.update(eventSyncURI(), values, null, null)
-
-        if (fileName != null)
-            this.fileName = fileName
-        this.eTag = eTag
-        this.scheduleTag = scheduleTag
-    }
-
-    override fun updateFlags(flags: Int) {
-        val values = contentValuesOf(COLUMN_FLAGS to flags)
-        calendar.provider.update(eventSyncURI(), values, null, null)
-
-        this.flags = flags
-    }
-
-    override fun resetDeleted() {
-        val values = contentValuesOf(Events.DELETED to 0)
-        calendar.provider.update(eventSyncURI(), values, null, null)
-    }
-
-    object Factory : AndroidEventFactory<LocalEvent> {
-        override fun fromProvider(calendar: AndroidCalendar<*>, values: ContentValues) =
-            LocalEvent(calendar, values)
-    }
-
 }
