@@ -223,17 +223,7 @@ class LocalAddressBookStore @Inject constructor(
     fun getAddressBookAccountsFlow(account: Account): Flow<List<Account>> = callbackFlow {
         val accountManager = AccountManager.get(context)
         val listener = OnAccountsUpdateListener { accounts ->
-            val addressBookAccounts = accounts.filter { abAccount ->
-                abAccount.type == context.getString(
-                    R.string.account_type_address_book
-                ) && account.name == accountManager.getUserData(
-                    abAccount,
-                    LocalAddressBook.USER_DATA_ACCOUNT_NAME
-                ) && account.type == accountManager.getUserData(
-                    abAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE
-                )
-            }
-            trySend(addressBookAccounts)
+            trySend(getAddressBookAccounts(account))
         }
         accountManager.addOnAccountsUpdatedListener(listener, null, true)
         listener.onAccountsUpdated(accountManager.accounts)
