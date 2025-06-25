@@ -161,7 +161,7 @@ class SyncFrameworkIntegration @Inject constructor(
         } else {
             val authorities = dataTypes.flatMap { it.possibleAuthorities() }
 
-            // Add address book accounts if needed
+            // Use address book accounts if needed
             val accountsFlow = if (dataTypes.contains(SyncDataType.CONTACTS))
                 localAddressBookStore.get().getAddressBookAccountsFlow(account)
             else
