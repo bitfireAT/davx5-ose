@@ -172,7 +172,7 @@ class SyncFrameworkIntegration @Inject constructor(
                 callbackFlow {
                     // Observe sync pending state
                     val listener = ContentResolver.addStatusChangeListener(
-                        ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
+                        ContentResolver.SYNC_OBSERVER_TYPE_PENDING
                     ) {
                         trySend(anyPendingSync(accounts, authorities))
                     }
