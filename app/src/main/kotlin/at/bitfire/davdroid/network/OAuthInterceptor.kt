@@ -17,24 +17,24 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.inject.Provider
 
 /**
  * Sends an OAuth Bearer token authorization as described in RFC 6750.
  *
- * @param authService           authorization service (this class won't close it, so this remains the responsibility of the caller)
  * @param authState             authorization state of the specific account/server
  * @param onAuthStateUpdate     called to persist a new authorization state
  */
 class OAuthInterceptor @AssistedInject constructor(
-    @Assisted private val authService: AuthorizationService,
     @Assisted private val authState: AuthState,
     @Assisted private val onAuthStateUpdate: AuthStateUpdateCallback?,
+    private val authServiceProvider: Provider<AuthorizationService>,
     private val logger: Logger
 ): Interceptor {
 
     @AssistedFactory
     interface Factory {
-        fun create(authService: AuthorizationService, authState: AuthState, onAuthStateUpdate: AuthStateUpdateCallback?): OAuthInterceptor
+        fun create(authState: AuthState, onAuthStateUpdate: AuthStateUpdateCallback?): OAuthInterceptor
     }
 
 
@@ -56,13 +56,12 @@ class OAuthInterceptor @AssistedInject constructor(
      *
      * This method is synchronized / thread-safe so that it can be called for multiple HTTP requests at the same time.
      *
-     * @return  access token or `null` if no valid access token is available (usually because of an error during refresh)
+     * @return access token or `null` if no valid access token is available (usually because of an error during refresh)
      */
-    @Synchronized
-    fun provideAccessToken(): String? {
+    fun provideAccessToken(): String? = synchronized(javaClass) {
         // if possible, use cached access token
         if (authState.isAuthorized && authState.accessToken != null && !authState.needsTokenRefresh) {
-            if (BuildConfig.DEBUG)
+            if (BuildConfig.DEBUG)      // log sensitive information (refresh/access token) only in debug builds
                 logger.log(Level.FINEST, "Using cached AuthState", authState.jsonSerializeString())
             return authState.accessToken
         }
@@ -70,27 +69,28 @@ class OAuthInterceptor @AssistedInject constructor(
         // request fresh access token
         logger.fine("Requesting fresh access token")
         val accessTokenFuture = CompletableFuture<String>()
-        authState.performActionWithFreshTokens(authService) { accessToken: String?, _: String?, ex: AuthorizationException? ->
-            // appauth internally fetches the new token over HttpURLConnection in an AsyncTask
-            if (BuildConfig.DEBUG)
-                logger.log(Level.FINEST, "Got new AuthState", authState.jsonSerializeString())
+        val authService = authServiceProvider.get()
+        try {
+            authState.performActionWithFreshTokens(authService) { accessToken: String?, _: String?, ex: AuthorizationException? ->
+                // appauth internally fetches the new token over HttpURLConnection in an AsyncTask
+                if (BuildConfig.DEBUG)
+                    logger.log(Level.FINEST, "Got new AuthState", authState.jsonSerializeString())
 
-            // persist updated AuthState
-            onAuthStateUpdate?.onUpdate(authState)
+                // persist updated AuthState
+                onAuthStateUpdate?.onUpdate(authState)
 
-            if (ex != null)
-                accessTokenFuture.completeExceptionally(ex)
-            else if (accessToken != null)
-                accessTokenFuture.complete(accessToken)
-            else
-                accessTokenFuture.cancel(false)
-        }
+                if (ex != null)
+                    accessTokenFuture.completeExceptionally(ex)
+                else if (accessToken != null)
+                    accessTokenFuture.complete(accessToken)
+            }
 
-        return try {
             accessTokenFuture.join()
-        } catch (e: Exception) {
-            logger.log(Level.SEVERE, "Couldn't obtain access token", if (e is CompletionException) e.cause else e)
+        } catch (e: CompletionException) {
+            logger.log(Level.SEVERE, "Couldn't obtain access token", e.cause)
             null
+        } finally {
+            authService.dispose()
         }
     }
 

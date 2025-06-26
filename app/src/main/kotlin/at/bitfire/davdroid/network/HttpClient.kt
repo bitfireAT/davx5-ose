@@ -17,12 +17,10 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.ForegroundTracker
 import com.google.common.net.HttpHeaders
-import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
-import net.openid.appauth.AuthorizationService
 import okhttp3.Authenticator
 import okhttp3.Cache
 import okhttp3.ConnectionSpec
@@ -44,12 +42,10 @@ import javax.net.ssl.KeyManager
 import javax.net.ssl.SSLContext
 
 class HttpClient(
-    val okHttpClient: OkHttpClient,
-    private val authorizationService: AuthorizationService? = null
+    val okHttpClient: OkHttpClient
 ): AutoCloseable {
 
     override fun close() {
-        authorizationService?.dispose()
         okHttpClient.cache?.close()
     }
 
@@ -66,7 +62,6 @@ class HttpClient(
      */
     class Builder @Inject constructor(
         private val accountSettingsFactory: AccountSettings.Factory,
-        private val authorizationServiceProvider: Lazy<AuthorizationService>,
         @ApplicationContext private val context: Context,
         defaultLogger: Logger,
         @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
@@ -98,14 +93,11 @@ class HttpClient(
 
         private var authenticationInterceptor: Interceptor? = null
         private var authenticator: Authenticator? = null
-        private var authorizationService: AuthorizationService? = null
         private var certificateAlias: String? = null
         fun authenticate(host: String?, credentials: Credentials, authStateCallback: OAuthInterceptor.AuthStateUpdateCallback? = null): Builder {
             if (credentials.authState != null) {
                 // OAuth
-                val authService = authorizationServiceProvider.get()
-                authenticationInterceptor = oAuthInterceptorFactory.create(authService, credentials.authState, authStateCallback)
-                authorizationService = authService
+                authenticationInterceptor = oAuthInterceptorFactory.create(credentials.authState, authStateCallback)
 
             } else if (credentials.username != null && credentials.password != null) {
                 // basic/digest auth
@@ -232,10 +224,7 @@ class HttpClient(
                 okBuilder.addNetworkInterceptor(loggingInterceptor)
             }
 
-            return HttpClient(
-                okHttpClient = okBuilder.build(),
-                authorizationService = authorizationService
-            )
+            return HttpClient(okBuilder.build())
         }
 
         private fun buildAuthentication(okBuilder: OkHttpClient.Builder) {
