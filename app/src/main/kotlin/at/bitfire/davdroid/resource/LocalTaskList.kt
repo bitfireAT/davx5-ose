@@ -110,7 +110,7 @@ class LocalTaskList private constructor(
                     arrayOf(id.toString(), flags.toString()))
 
     override fun forgetETags() {
-        val values = contentValuesOf(LocalEvent.COLUMN_ETAG to null)
+        val values = contentValuesOf(LocalTask.COLUMN_ETAG to null)
         provider.update(tasksSyncUri(), values, "${Tasks.LIST_ID}=?",
                 arrayOf(id.toString()))
     }

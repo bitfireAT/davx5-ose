@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid
 
+import androidx.test.filters.SdkSuppress
 import at.bitfire.davdroid.network.HttpClient
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -29,6 +30,7 @@ class OkhttpClientTest {
 
 
     @Test
+    @SdkSuppress(maxSdkVersion = 34)
     fun testIcloudWithSettings() {
         httpClientBuilder.build().use { client ->
             client.okHttpClient

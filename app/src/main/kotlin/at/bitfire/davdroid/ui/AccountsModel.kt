@@ -26,6 +26,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -40,11 +41,14 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.text.Collator
@@ -58,14 +62,14 @@ class AccountsModel @AssistedInject constructor(
     private val db: AppDatabase,
     introPageFactory: IntroPageFactory,
     private val logger: Logger,
-    private val syncWorkerManager: SyncWorkerManager
+    private val syncWorkerManager: SyncWorkerManager,
+    private val syncFrameWork: SyncFrameworkIntegration
 ): ViewModel() {
 
     @AssistedFactory
     interface Factory {
         fun create(syncAccountsOnInit: Boolean): AccountsModel
     }
-
 
     // Accounts UI state
 
@@ -92,7 +96,41 @@ class AccountsModel @AssistedInject constructor(
     private val workManager = WorkManager.getInstance(context)
     private val runningWorkers = workManager.getWorkInfosFlow(WorkQuery.fromStates(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
 
-    val accountInfos: Flow<List<AccountInfo>> = combine(accounts, runningWorkers) { accounts, workInfos ->
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val accountsSyncPending: Flow<List<Account>> =
+        accounts.flatMapLatest { accounts ->
+            if (accounts.isEmpty())
+                flowOf(emptyList())
+            else {
+                // To create the Flow<List<Account?>> that emits the accounts with pending sync,
+                val pendingSyncAccountsFlows: List<Flow<Account?>> =
+                    // for each existing account with unknown sync pending state ...
+                    accounts.map { account ->
+                        // ... create a Flow<Boolean> which emits the sync pending state
+                        syncFrameWork.isSyncPending(account, SyncDataType.entries)
+                            .map { hasPendingSync ->
+                                // ... and map this boolean answer back to its Account if it is pending, or null if not.
+                                if (hasPendingSync) account else null
+                            }
+                    }
+                // Combine all account flows Flow<Account?> in the list into a single flow, emitting a list of
+                // accounts with pending sync. The null values which we filter out are the non-pending accounts.
+                // Now, whenever any account's pending state changes, the combined flow emits the updated list.
+                combine(pendingSyncAccountsFlows) { combinedAccounts ->
+                    // combinedAccounts is an Array<Account?> of the most recently emitted values of the
+                    // pendingSyncCheckFlows, with one entry for every pendingSyncCheckFlow that is either
+                    // the account name (sync pending) or null (no sync pending).
+                    combinedAccounts.filterNotNull()
+                }
+            }
+        }
+
+
+    val accountInfos: Flow<List<AccountInfo>> = combine(
+        accounts,
+        runningWorkers,
+        accountsSyncPending
+    ) { accounts, workInfos, accountsSyncPending ->
         val collator = Collator.getInstance()
 
         accounts
@@ -115,6 +153,9 @@ class AccountsModel @AssistedInject constructor(
                             info.tags.contains(OneTimeSyncWorker.workerName(account, dataType))
                         }
                     } -> AccountProgress.Pending
+
+                    account in accountsSyncPending
+                        -> AccountProgress.Pending
 
                     else -> AccountProgress.Idle
                 }

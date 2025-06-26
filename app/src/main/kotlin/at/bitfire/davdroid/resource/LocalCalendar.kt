@@ -7,13 +7,13 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
-import android.content.ContentValues
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
+import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.CalendarBatchOperation
@@ -32,14 +32,9 @@ class LocalCalendar private constructor(
     id: Long
 ): AndroidCalendar<LocalEvent>(account, provider, LocalEvent.Factory, id), LocalCollection<LocalEvent> {
 
-    companion object {
+    private val logger: Logger
+        get() = Logger.getLogger(javaClass.name)
 
-        private const val COLUMN_SYNC_STATE = Calendars.CAL_SYNC1
-
-        private val logger: Logger
-            get() = Logger.getGlobal()
-
-    }
 
     override val dbCollectionId: Long?
         get() = syncId?.toLongOrNull()
@@ -50,27 +45,14 @@ class LocalCalendar private constructor(
     override val title: String
         get() = displayName ?: id.toString()
 
-    private var accessLevel: Int = Calendars.CAL_ACCESS_OWNER   // assume full access if not specified
     override val readOnly
-        get() = accessLevel <= Calendars.CAL_ACCESS_READ
+        get() = accessLevel?.let { it <= Calendars.CAL_ACCESS_READ } ?: false
 
     override var lastSyncState: SyncState?
-        get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_SYNC_STATE), null, null, null)?.use { cursor ->
-                    if (cursor.moveToNext())
-                        return SyncState.fromString(cursor.getString(0))
-                    else
-                        null
-                }
+        get() = readSyncState()?.let { SyncState.fromString(it) }
         set(state) {
-            val values = contentValuesOf(COLUMN_SYNC_STATE to state.toString())
-            provider.update(calendarSyncURI(), values, null, null)
+            writeSyncState(state.toString())
         }
-
-
-    override fun populate(info: ContentValues) {
-        super.populate(info)
-        accessLevel = info.getAsInteger(Calendars.CALENDAR_ACCESS_LEVEL) ?: Calendars.CAL_ACCESS_OWNER
-    }
 
 
     override fun findDeleted() =
@@ -112,7 +94,7 @@ class LocalCalendar private constructor(
 
 
     override fun markNotDirty(flags: Int): Int {
-        val values = contentValuesOf(LocalEvent.COLUMN_FLAGS to flags)
+        val values = contentValuesOf(AndroidEvent.COLUMN_FLAGS to flags)
         return provider.update(Events.CONTENT_URI.asSyncAdapter(account), values,
                 "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL",
                 arrayOf(id.toString()))
@@ -122,7 +104,7 @@ class LocalCalendar private constructor(
         var deleted = 0
         // list all non-dirty events with the given flags and delete every row + its exceptions
         provider.query(Events.CONTENT_URI.asSyncAdapter(account), arrayOf(Events._ID),
-                "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND ${LocalEvent.COLUMN_FLAGS}=?",
+            "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND ${AndroidEvent.COLUMN_FLAGS}=?",
                 arrayOf(id.toString(), flags.toString()), null)?.use { cursor ->
             val batch = CalendarBatchOperation(provider)
             while (cursor.moveToNext()) {
@@ -138,7 +120,7 @@ class LocalCalendar private constructor(
     }
 
     override fun forgetETags() {
-        val values = contentValuesOf(LocalEvent.COLUMN_ETAG to null)
+        val values = contentValuesOf(AndroidEvent.COLUMN_ETAG to null)
         provider.update(Events.CONTENT_URI.asSyncAdapter(account), values, "${Events.CALENDAR_ID}=?",
                 arrayOf(id.toString()))
     }
@@ -149,7 +131,7 @@ class LocalCalendar private constructor(
         logger.info("Processing deleted exceptions")
         provider.query(
                 Events.CONTENT_URI.asSyncAdapter(account),
-                arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
+            arrayOf(Events._ID, Events.ORIGINAL_ID, AndroidEvent.COLUMN_SEQUENCE),
                 "${Events.CALENDAR_ID}=? AND ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NOT NULL",
                 arrayOf(id.toString()), null)?.use { cursor ->
             while (cursor.moveToNext()) {
@@ -162,7 +144,7 @@ class LocalCalendar private constructor(
                 // get original event's SEQUENCE
                 provider.query(
                         ContentUris.withAppendedId(Events.CONTENT_URI, originalID).asSyncAdapter(account),
-                        arrayOf(LocalEvent.COLUMN_SEQUENCE),
+                    arrayOf(AndroidEvent.COLUMN_SEQUENCE),
                         null, null, null)?.use { cursor2 ->
                     if (cursor2.moveToNext()) {
                         // original event is available
@@ -171,7 +153,7 @@ class LocalCalendar private constructor(
                         // re-schedule original event and set it to DIRTY
                         batch += BatchOperation.CpoBuilder
                             .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, originalID).asSyncAdapter(account))
-                            .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
+                            .withValue(AndroidEvent.COLUMN_SEQUENCE, originalSequence + 1)
                             .withValue(Events.DIRTY, 1)
                     }
                 }
@@ -186,7 +168,7 @@ class LocalCalendar private constructor(
         logger.info("Processing dirty exceptions")
         provider.query(
                 Events.CONTENT_URI.asSyncAdapter(account),
-                arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
+            arrayOf(Events._ID, Events.ORIGINAL_ID, AndroidEvent.COLUMN_SEQUENCE),
                 "${Events.CALENDAR_ID}=? AND ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NOT NULL",
                 arrayOf(id.toString()), null)?.use { cursor ->
             while (cursor.moveToNext()) {
@@ -203,7 +185,7 @@ class LocalCalendar private constructor(
                 // increase SEQUENCE and set DIRTY to 0
                 batch += BatchOperation.CpoBuilder
                     .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, id).asSyncAdapter(account))
-                    .withValue(LocalEvent.COLUMN_SEQUENCE, sequence + 1)
+                    .withValue(AndroidEvent.COLUMN_SEQUENCE, sequence + 1)
                     .withValue(Events.DIRTY, 0)
                 batch.commit()
             }
