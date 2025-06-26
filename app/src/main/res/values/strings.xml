@@ -307,8 +307,6 @@
     <string name="login_fastmail_account">Fastmail account</string>
     <string name="login_fastmail_sign_in">Sign in with Fastmail</string>
     <string name="login_type_google">Google Contacts / Calendar</string>
-    <string name="login_google_see_tested_with">Please see our \"Tested with Google\" page for up-to-date information.</string>
-    <string name="login_google_unexpected_warnings">You may experience unexpected warnings and/or have to create your own client ID.</string>
     <string name="login_google_account">Google account</string>
     <string name="login_google">Sign in with Google</string>
     <string name="login_google_client_id">Client ID (optional)</string>
