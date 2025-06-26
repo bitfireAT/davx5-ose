@@ -68,7 +68,7 @@ class AndroidSyncFrameworkTest {
 
     @LargeTest
     @Test
-    fun testOnPerformSync_syncAlwaysPending() = runTest(
+    fun testVerifySyncAlwaysPending() = runTest(
         // The test is expected to run for a long time, so we increase the timeout
         timeout = Duration.parse("70s")
     ) {
