@@ -101,7 +101,10 @@ class AndroidSyncFrameworkTest {
 
             // Verify the sync keeps being pending "forever" (65 seconds in this test)
             repeat(65) {
-                assertTrue(ContentResolver.isSyncPending(account, CalendarContract.AUTHORITY))
+                assertTrue(
+                "Sync was no longer pending at second ${it + 1}",
+                ContentResolver.isSyncPending(account, CalendarContract.AUTHORITY)
+            )
                 delay(1000)
             }
         }
