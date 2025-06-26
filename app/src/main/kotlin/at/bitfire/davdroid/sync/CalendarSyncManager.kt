@@ -17,6 +17,7 @@ import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -180,7 +181,7 @@ class CalendarSyncManager @AssistedInject constructor(
             logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
             val os = ByteArrayOutputStream()
-            event.write(os)
+            event.write(os, Constants.iCalProdId)
 
             os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }

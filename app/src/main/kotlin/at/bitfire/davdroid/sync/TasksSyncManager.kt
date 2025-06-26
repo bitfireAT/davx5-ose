@@ -15,6 +15,7 @@ import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -106,7 +107,7 @@ class TasksSyncManager @AssistedInject constructor(
             logger.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
 
             val os = ByteArrayOutputStream()
-            task.write(os)
+            task.write(os, Constants.iCalProdId)
 
             os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }

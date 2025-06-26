@@ -11,16 +11,12 @@ import android.content.ContentValues
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.resource.LocalEvent.Companion.numInstances
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.AndroidEventFactory
 import at.bitfire.ical4android.Event
-import at.bitfire.ical4android.ICalendar
-import at.bitfire.ical4android.ical4jVersion
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
-import net.fortuna.ical4j.model.property.ProdId
 import java.util.UUID
 
 class LocalEvent : AndroidEvent, LocalResource<Event> {
@@ -113,9 +109,6 @@ class LocalEvent : AndroidEvent, LocalResource<Event> {
 
 
     companion object {
-        init {
-            ICalendar.prodId = ProdId("DAVx5/${BuildConfig.VERSION_NAME} ical4j/" + ical4jVersion)
-        }
 
         /**
          * Marks the event as deleted

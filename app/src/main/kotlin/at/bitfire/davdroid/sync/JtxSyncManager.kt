@@ -16,6 +16,7 @@ import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -99,7 +100,7 @@ class JtxSyncManager @AssistedInject constructor(
         SyncException.wrapWithLocalResource(resource) {
             logger.log(Level.FINE, "Preparing upload of icalobject ${resource.fileName}", resource)
             val os = ByteArrayOutputStream()
-            resource.write(os)
+            resource.write(os, Constants.iCalProdId)
             os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }
 
