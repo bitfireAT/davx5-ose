@@ -5,6 +5,9 @@ package at.bitfire.davdroid
 
 import android.net.Uri
 import androidx.core.net.toUri
+import at.bitfire.ical4android.ical4jVersion
+import ezvcard.Ezvcard
+import net.fortuna.ical4j.model.property.ProdId
 
 /**
  * Brand-specific constants like (non-theme) colors, homepage URLs etc.
@@ -40,8 +43,14 @@ object Constants {
 
     val COMMUNITY_URL = "https://github.com/bitfireAT/davx5-ose/discussions".toUri()
 
-    val FEDIVERSE_HANDLE = "@davx5app@fosstodon.org"
+    const val FEDIVERSE_HANDLE = "@davx5app@fosstodon.org"
     val FEDIVERSE_URL = "https://fosstodon.org/@davx5app".toUri()
+
+
+    // product IDs for iCalendar/vCard
+
+    val iCalProdId = ProdId("DAVx5/${BuildConfig.VERSION_NAME} ical4j/$ical4jVersion")
+    const val vCardProdId = "+//IDN bitfire.at//DAVx5/${BuildConfig.VERSION_NAME} ez-vcard/${Ezvcard.VERSION}"
 
     /**
      * Appends query parameters for anonymized usage statistics (app ID, version).
