@@ -19,7 +19,6 @@ import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
-import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.TokenResponse
 import java.util.Locale
 
@@ -60,18 +59,23 @@ object OAuthIntegration {
      * Creates a new authorization request from a known configuration. Typically used to re-authorize
      * from a given configuration.
      *
-     * @param authConfig    current authorization config that shall be replaced
+     * @param authState    current authorization state that shall be replaced
      * @return authorization request, or `null` if the current config doesn't contain a known provider
      */
-    fun newAuthorizeRequest(authConfig: AuthorizationServiceConfiguration): AuthorizationRequest? {
+    fun newAuthorizeRequest(authState: AuthState): AuthorizationRequest? {
+        val authConfig = authState.authorizationServiceConfiguration ?: return null
         val authHost = authConfig.authorizationEndpoint.host.toString()
         val locale = Locale.getDefault().toLanguageTag()
 
         // If more OAuth providers become added, this should be rewritten so that all providers
         // are checked automatically.
         return when {
-            authHost.contains("fastmail.com") -> OAuthFastmail.signIn(null, locale)
-            authHost.contains("google.com") -> OAuthGoogle.signIn(null, null, locale)
+            authHost.contains("fastmail.com") ->
+                OAuthFastmail.signIn(null, locale)
+
+            authHost.contains("google.com") ->
+                OAuthGoogle.signIn(null, authState.lastAuthorizationResponse?.request?.clientId, locale)
+
             else -> return null
         }
     }

@@ -189,8 +189,7 @@ class AccountSettingsModel @AssistedInject constructor(
         val authState = accountSettings.credentials().authState ?: return null
 
         // create new authorization request
-        val authConfig = authState.authorizationServiceConfiguration ?: return null
-        return OAuthIntegration.newAuthorizeRequest(authConfig)
+        return OAuthIntegration.newAuthorizeRequest(authState)
     }
 
     fun authenticate(authResponse: AuthorizationResponse) {
