@@ -21,7 +21,9 @@ import javax.inject.Provider
 
 /**
  * Sends an OAuth Bearer token authorization as described in RFC 6750.
- * @param onAuthStateUpdate     called to persist a new authorization state
+ *
+ * @param readAuthState     callback that fetches an up-to-date authorization state
+ * @param writeAuthState    callback that persists a new authorization state
  */
 class OAuthInterceptor @AssistedInject constructor(
     @Assisted private val readAuthState: () -> AuthState?,
@@ -38,6 +40,13 @@ class OAuthInterceptor @AssistedInject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val rq = chain.request().newBuilder()
+
+        /** Syntax for the "Authorization" header [RFC 6750 2.1]:
+         *
+         *      b64token    = 1*( ALPHA / DIGIT /
+         *                        "-" / "." / "_" / "~" / "+" / "/" ) *"="
+         *      credentials = "Bearer" 1*SP b64token
+         */
 
         val accessToken = provideAccessToken()
         if (accessToken != null)
