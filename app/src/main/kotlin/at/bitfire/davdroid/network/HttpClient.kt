@@ -10,9 +10,9 @@ import androidx.annotation.WorkerThread
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
-import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.ForegroundTracker
@@ -100,6 +100,8 @@ class HttpClient(
                 // OAuth
                 authenticationInterceptor = oAuthInterceptorFactory.create(
                     readAuthState = {
+                        // We don't use the "credentials" object from above because it may contain an outdated access token
+                        // when readAuthState is called. Instead, we fetch the up-to-date auth-state.
                         getCredentials().authState
                     },
                     writeAuthState = { authState ->
@@ -168,7 +170,7 @@ class HttpClient(
                 host = onlyHost,
                 getCredentials = {
                     accountSettings.credentials()
-                                 },
+                },
                 updateAuthState = { authState ->
                     accountSettings.updateAuthState(authState)
                 }

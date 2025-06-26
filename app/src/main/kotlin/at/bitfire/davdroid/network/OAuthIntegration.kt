@@ -9,8 +9,8 @@ import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.network.OAuthIntegration.redirectUri
+import at.bitfire.davdroid.settings.Credentials
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
