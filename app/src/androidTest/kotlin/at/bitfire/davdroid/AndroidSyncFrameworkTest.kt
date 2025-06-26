@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.SyncRequest
 import android.provider.CalendarContract
 import androidx.test.filters.LargeTest
+import androidx.test.filters.SdkSuppress
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -66,15 +67,17 @@ class AndroidSyncFrameworkTest {
     }
 
 
+    @SdkSuppress(minSdkVersion = 34)
     @LargeTest
     @Test
     fun testVerifySyncAlwaysPending() = runTest(
         // The test is expected to run for a long time, so we increase the timeout
         timeout = Duration.parse("70s")
     ) {
-        // This test is expected to fail on Android 13 and below and usually does so (sometimes only after
-        // a cold boot). It succeeds on Android 14+, however, where the sync framework always pending bug
-        // is present and hopefully fails as soon as the bug is fixed in a future android version.
+        // This test is expected to fail on Android 13 (API lvl 33) and below and usually does so
+        // (sometimes only after a cold boot). It succeeds on Android 14+ (API lvl 34), however,
+        // where the sync framework always pending bug is present and hopefully fails as soon as
+        // the bug is fixed in a future android version. 
         // See https://github.com/bitfireAT/davx5-ose/issues/1458
 
         // Disable the workaround we put in place for Android 14+ in [SyncAdapter.onPerformSync]
