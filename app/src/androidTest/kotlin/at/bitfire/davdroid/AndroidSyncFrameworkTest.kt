@@ -77,7 +77,7 @@ class AndroidSyncFrameworkTest {
         // is present and hopefully fails as soon as the bug is fixed in a future android version.
         // See https://github.com/bitfireAT/davx5-ose/issues/1458
 
-        // Disable the workaround we put in place for Android 14+
+        // Disable the workaround we put in place for Android 14+ in [SyncAdapter.onPerformSync]
         mockkStatic(ContentResolver::class)
         every { ContentResolver.cancelSync(any()) } just runs
 
