@@ -21,20 +21,18 @@ import javax.inject.Provider
 
 /**
  * Sends an OAuth Bearer token authorization as described in RFC 6750.
- *
- * @param authState             authorization state of the specific account/server
  * @param onAuthStateUpdate     called to persist a new authorization state
  */
 class OAuthInterceptor @AssistedInject constructor(
-    @Assisted private val authState: AuthState,
-    @Assisted private val onAuthStateUpdate: AuthStateUpdateCallback?,
+    @Assisted private val readAuthState: () -> AuthState?,
+    @Assisted private val writeAuthState: (AuthState) -> Unit,
     private val authServiceProvider: Provider<AuthorizationService>,
     private val logger: Logger
 ): Interceptor {
 
     @AssistedFactory
     interface Factory {
-        fun create(authState: AuthState, onAuthStateUpdate: AuthStateUpdateCallback?): OAuthInterceptor
+        fun create(readAuthState: () -> AuthState?, writeAuthState: (AuthState) -> Unit): OAuthInterceptor
     }
 
 
@@ -60,6 +58,8 @@ class OAuthInterceptor @AssistedInject constructor(
      */
     fun provideAccessToken(): String? = synchronized(javaClass) {
         // if possible, use cached access token
+        val authState = readAuthState() ?: return null
+
         if (authState.isAuthorized && authState.accessToken != null && !authState.needsTokenRefresh) {
             if (BuildConfig.DEBUG)      // log sensitive information (refresh/access token) only in debug builds
                 logger.log(Level.FINEST, "Using cached AuthState", authState.jsonSerializeString())
@@ -77,7 +77,7 @@ class OAuthInterceptor @AssistedInject constructor(
                     logger.log(Level.FINEST, "Got new AuthState", authState.jsonSerializeString())
 
                 // persist updated AuthState
-                onAuthStateUpdate?.onUpdate(authState)
+                writeAuthState(authState)
 
                 if (ex != null)
                     accessTokenFuture.completeExceptionally(ex)
@@ -92,11 +92,6 @@ class OAuthInterceptor @AssistedInject constructor(
         } finally {
             authService.dispose()
         }
-    }
-
-
-    fun interface AuthStateUpdateCallback {
-        fun onUpdate(authState: AuthState)
     }
 
 }

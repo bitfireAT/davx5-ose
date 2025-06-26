@@ -125,7 +125,13 @@ class AccountSettings @AssistedInject constructor(
         accountManager.setAndVerifyUserData(account, KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
 
         // OAuth
-        accountManager.setAndVerifyUserData(account, KEY_AUTH_STATE, credentials.authState?.jsonSerializeString())
+        credentials.authState?.let { authState ->
+            updateAuthState(authState)
+        }
+    }
+
+    fun updateAuthState(authState: AuthState) {
+        accountManager.setAndVerifyUserData(account, KEY_AUTH_STATE, authState.jsonSerializeString())
     }
 
     /**

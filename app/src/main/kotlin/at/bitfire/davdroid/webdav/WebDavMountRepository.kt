@@ -122,7 +122,7 @@ class WebDavMountRepository @Inject constructor(
         if (credentials != null)
             builder.authenticate(
                 host = null,
-                credentials = credentials
+                getCredentials = { credentials }
             )
 
         var supported = false

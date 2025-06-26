@@ -94,10 +94,19 @@ class HttpClient(
         private var authenticationInterceptor: Interceptor? = null
         private var authenticator: Authenticator? = null
         private var certificateAlias: String? = null
-        fun authenticate(host: String?, credentials: Credentials, authStateCallback: OAuthInterceptor.AuthStateUpdateCallback? = null): Builder {
+        fun authenticate(host: String?, getCredentials: () -> Credentials, updateAuthState: ((AuthState) -> Unit)? = null): Builder {
+            val credentials = getCredentials()
             if (credentials.authState != null) {
                 // OAuth
-                authenticationInterceptor = oAuthInterceptorFactory.create(credentials.authState, authStateCallback)
+                authenticationInterceptor = oAuthInterceptorFactory.create(
+                    readAuthState = {
+                        getCredentials().authState
+                    },
+                    writeAuthState = { authState ->
+                        updateAuthState?.invoke(authState)
+                    }
+
+                )
 
             } else if (credentials.username != null && credentials.password != null) {
                 // basic/digest auth
@@ -157,9 +166,11 @@ class HttpClient(
             val accountSettings = accountSettingsFactory.create(account)
             authenticate(
                 host = onlyHost,
-                credentials = accountSettings.credentials(),
-                authStateCallback = { authState: AuthState ->
-                    accountSettings.credentials(Credentials(authState = authState))
+                getCredentials = {
+                    accountSettings.credentials()
+                                 },
+                updateAuthState = { authState ->
+                    accountSettings.updateAuthState(authState)
                 }
             )
             return this
