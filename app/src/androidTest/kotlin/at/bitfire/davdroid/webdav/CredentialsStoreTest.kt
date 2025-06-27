@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
-import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.settings.Credentials
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals

@@ -8,7 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
 import at.bitfire.davdroid.util.trimToNull
 import dagger.assisted.Assisted

@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.OAuthGoogle
 import at.bitfire.davdroid.network.OAuthIntegration
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.util.trimToNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -93,7 +94,7 @@ class GoogleLoginModel @AssistedInject constructor(
     fun authenticate(authResponse: AuthorizationResponse) {
         viewModelScope.launch {
             try {
-                val credentials = OAuthIntegration.authenticate(authService, authResponse)
+                val credentials = Credentials(authState = OAuthIntegration.authenticate(authService, authResponse))
 
                 // success, provide login info to continue
                 uiState = uiState.copy(

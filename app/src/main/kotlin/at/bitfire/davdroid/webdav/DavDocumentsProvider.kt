@@ -773,7 +773,7 @@ class DavDocumentsProvider(
                 )
 
             credentialsStore.getCredentials(mountId)?.let { credentials ->
-                builder.authenticate(host = null, credentials = credentials)
+                builder.authenticate(host = null, getCredentials = { credentials })
             }
 
             return builder.build()

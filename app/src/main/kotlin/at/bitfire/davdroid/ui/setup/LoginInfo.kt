@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.vcard4android.GroupMethod
 import java.net.URI
 
