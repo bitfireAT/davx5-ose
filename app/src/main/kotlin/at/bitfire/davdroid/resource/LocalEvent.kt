@@ -50,13 +50,6 @@ class LocalEvent(
         get() = androidEvent.event!!.isOrganizer == true
 
 
-    /*constructor()
-        : super(calendar, event, fileName, eTag, scheduleTag, flags)
-
-    private constructor(calendar: AndroidCalendar<*>, values: ContentValues)
-        : super(calendar, values)*/
-
-
     /**
      * Creates and sets a new UID in the calendar provider, if no UID is already set.
      * It also returns the desired file name for the event for further processing in the sync algorithm.

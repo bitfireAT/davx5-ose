@@ -14,6 +14,7 @@ import android.provider.CalendarContract.Events
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.InitCalendarProviderRule
 import at.bitfire.ical4android.AndroidCalendar
+import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
@@ -96,7 +97,7 @@ class LocalCalendarTest {
                 status = Status.VEVENT_CANCELLED
             })
         }
-        val localEvent = LocalEvent(calendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
+        val localEvent = AndroidEvent(calendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
         localEvent.add()
         val eventId = localEvent.id!!
 
@@ -126,7 +127,7 @@ class LocalCalendarTest {
             summary = "Event with 3 instances"
             rRules.add(RRule("FREQ=DAILY;COUNT=3"))
         }
-        val localEvent = LocalEvent(calendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
+        val localEvent = AndroidEvent(calendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
         localEvent.add()
         val eventId = localEvent.id!!
 

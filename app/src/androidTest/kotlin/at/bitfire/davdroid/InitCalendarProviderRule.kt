@@ -14,8 +14,8 @@ import android.provider.CalendarContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.resource.LocalCalendar
-import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.ical4android.AndroidCalendar
+import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.RRule
@@ -86,9 +86,9 @@ class InitCalendarProviderRule private constructor(): ExternalResource() {
                 dtStart = DtStart("20220120T010203Z")
                 summary = "Event with 1 instance"
             }
-            val normalLocalEvent = LocalEvent(calendar, normalEvent, null, null, null, 0)
+            val normalLocalEvent = AndroidEvent(calendar, normalEvent, null, null, null, 0)
             normalLocalEvent.add()
-            LocalEvent.numInstances(provider, account, normalLocalEvent.id!!)
+            AndroidEvent.numInstances(provider, account, normalLocalEvent.id!!)
 
             // recurring event init
             val recurringEvent = Event().apply {
@@ -96,9 +96,9 @@ class InitCalendarProviderRule private constructor(): ExternalResource() {
                 summary = "Event over 22 years"
                 rRules.add(RRule("FREQ=YEARLY;UNTIL=20740119T010203Z"))     // year needs to be  >2074 (not supported by Android <11 Calendar Storage)
             }
-            val localRecurringEvent = LocalEvent(calendar, recurringEvent, null, null, null, 0)
+            val localRecurringEvent = AndroidEvent(calendar, recurringEvent, null, null, null, 0)
             localRecurringEvent.add()
-            LocalEvent.numInstances(provider, account, localRecurringEvent.id!!)
+            AndroidEvent.numInstances(provider, account, localRecurringEvent.id!!)
         } finally {
             calendar.delete()
         }
