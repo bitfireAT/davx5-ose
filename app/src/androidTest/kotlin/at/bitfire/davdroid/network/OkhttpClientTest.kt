@@ -2,10 +2,9 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid
+package at.bitfire.davdroid.network
 
 import androidx.test.filters.SdkSuppress
-import at.bitfire.davdroid.network.HttpClient
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.Request
@@ -34,10 +33,12 @@ class OkhttpClientTest {
     fun testIcloudWithSettings() {
         httpClientBuilder.build().use { client ->
             client.okHttpClient
-                .newCall(Request.Builder()
-                .get()
-                .url("https://icloud.com")
-                .build())
+                .newCall(
+                    Request.Builder()
+                        .get()
+                        .url("https://icloud.com")
+                        .build()
+                )
                 .execute()
         }
     }
