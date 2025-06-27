@@ -6,8 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
 import android.content.Context
-import androidx.test.rule.GrantPermissionRule
-import at.bitfire.davdroid.CatchExceptionsRule
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
@@ -18,6 +16,7 @@ import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
+import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -60,10 +59,7 @@ class JtxSyncManagerTest {
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule
-    val permissionRule = CatchExceptionsRule(
-        GrantPermissionRule.grant(*TaskProvider.PERMISSIONS_JTX),
-        SecurityException::class
-    )
+    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.PERMISSIONS_JTX.toSet())
 
     private val account = TestAccount.create()
 
