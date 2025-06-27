@@ -28,6 +28,7 @@ import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.util.DateUtils
@@ -177,7 +178,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalEvent): RequestBody =
         SyncException.wrapWithLocalResource(resource) {
-            val event = requireNotNull(resource.event)
+            val event = requireNotNull(resource.androidEvent.event)
             logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
             val os = ByteArrayOutputStream()
@@ -286,7 +287,7 @@ class CalendarSyncManager @AssistedInject constructor(
                     local.update(event)
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local calendar", event)
-                    val newLocal = LocalEvent(localCollection, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                    val newLocal = LocalEvent(AndroidEvent(localCollection, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT))
                     SyncException.wrapWithLocalResource(newLocal) {
                         newLocal.add()
                     }

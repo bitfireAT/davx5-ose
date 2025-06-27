@@ -30,7 +30,7 @@ class LocalCalendar private constructor(
     account: Account,
     provider: ContentProviderClient,
     id: Long
-): AndroidCalendar<LocalEvent>(account, provider, LocalEvent.Factory, id), LocalCollection<LocalEvent> {
+): AndroidCalendar(account, provider, id), LocalCollection<LocalEvent> {
 
     private val logger: Logger
         get() = Logger.getLogger(javaClass.name)
@@ -57,6 +57,7 @@ class LocalCalendar private constructor(
 
     override fun findDeleted() =
         queryEvents("${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null)
+            .map { LocalEvent(it) }
 
     override fun findDirty(): List<LocalEvent> {
         val dirty = LinkedList<LocalEvent>()
@@ -66,9 +67,10 @@ class LocalCalendar private constructor(
          * When a calendar component is created, its sequence number is 0. It is monotonically incremented by the "Organizer's"
          * CUA each time the "Organizer" makes a significant revision to the calendar component.
          */
-        for (localEvent in queryEvents("${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null)) {
+        for (androidEvent in queryEvents("${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null)) {
+            val localEvent = LocalEvent(androidEvent)
             try {
-                val event = requireNotNull(localEvent.event)
+                val event = requireNotNull(androidEvent.event)
 
                 val nonGroupScheduled = event.attendees.isEmpty()
                 val weAreOrganizer = localEvent.weAreOrganizer
@@ -90,7 +92,7 @@ class LocalCalendar private constructor(
     }
 
     override fun findByName(name: String) =
-            queryEvents("${Events._SYNC_ID}=?", arrayOf(name)).firstOrNull()
+        queryEvents("${Events._SYNC_ID}=?", arrayOf(name)).firstOrNull()?.let { LocalEvent(it) }
 
 
     override fun markNotDirty(flags: Int): Int {
@@ -208,12 +210,12 @@ class LocalCalendar private constructor(
                 val eventID = cursor.getLong(0)
 
                 // get number of instances
-                val numEventInstances = LocalEvent.numInstances(provider, account, eventID)
+                val numEventInstances = AndroidEvent.numInstances(provider, account, eventID)
 
                 // delete event if there are no instances
                 if (numEventInstances == 0) {
                     logger.info("Marking event #$eventID without instances as deleted")
-                    LocalEvent.markAsDeleted(provider, account, eventID)
+                    AndroidEvent.markAsDeleted(provider, account, eventID)
                 }
             }
         }
