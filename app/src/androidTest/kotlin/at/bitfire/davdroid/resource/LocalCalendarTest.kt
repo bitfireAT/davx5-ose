@@ -62,12 +62,12 @@ class LocalCalendarTest {
     @Before
     fun setUp() {
         val uri = AndroidCalendar.create(account, provider, ContentValues())
-        calendar = AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
+        calendar = LocalCalendar(AndroidCalendar.findByID(account, provider, ContentUris.parseId(uri)))
     }
 
     @After
     fun tearDown() {
-        calendar.delete()
+        calendar.androidCalendar.delete()
     }
 
 
@@ -97,7 +97,7 @@ class LocalCalendarTest {
                 status = Status.VEVENT_CANCELLED
             })
         }
-        val localEvent = AndroidEvent(calendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
+        val localEvent = AndroidEvent(calendar.androidCalendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
         localEvent.add()
         val eventId = localEvent.id!!
 
@@ -127,7 +127,7 @@ class LocalCalendarTest {
             summary = "Event with 3 instances"
             rRules.add(RRule("FREQ=DAILY;COUNT=3"))
         }
-        val localEvent = AndroidEvent(calendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
+        val localEvent = AndroidEvent(calendar.androidCalendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
         localEvent.add()
         val eventId = localEvent.id!!
 

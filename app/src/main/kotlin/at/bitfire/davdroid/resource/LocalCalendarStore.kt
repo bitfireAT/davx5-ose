@@ -70,18 +70,19 @@ class LocalCalendarStore @Inject constructor(
 
         logger.log(Level.INFO, "Adding local calendar", values)
         val uri = AndroidCalendar.create(account, provider, values)
-        return AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
+        return LocalCalendar(AndroidCalendar.findByID(account, provider, ContentUris.parseId(uri)))
     }
 
     override fun getAll(account: Account, provider: ContentProviderClient) =
-        AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${Calendars.SYNC_EVENTS}!=0", null)
+        AndroidCalendar.find(account, provider, "${Calendars.SYNC_EVENTS}!=0", null)
+            .map { LocalCalendar(it) }
 
     override fun update(provider: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
-        val accountSettings = accountSettingsFactory.create(localCollection.account)
+        val accountSettings = accountSettingsFactory.create(localCollection.androidCalendar.account)
         val values = valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors())
 
         logger.log(Level.FINE, "Updating local calendar ${fromCollection.url}", values)
-        localCollection.update(values)
+        localCollection.androidCalendar.update(values)
     }
 
     private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
@@ -120,7 +121,7 @@ class LocalCalendarStore @Inject constructor(
 
     override fun delete(localCollection: LocalCalendar) {
         logger.log(Level.INFO, "Deleting local calendar", localCollection)
-        localCollection.delete()
+        localCollection.androidCalendar.delete()
     }
 
 }

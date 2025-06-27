@@ -37,12 +37,12 @@ class LocalEventTest {
     @Before
     fun setUp() {
         val uri = AndroidCalendar.create(account, provider, ContentValues())
-        calendar = AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
+        calendar = LocalCalendar(AndroidCalendar.findByID(account, provider, ContentUris.parseId(uri)))
     }
 
     @After
     fun removeCalendar() {
-        calendar.delete()
+        calendar.androidCalendar.delete()
     }
 
 
@@ -53,7 +53,7 @@ class LocalEventTest {
             dtStart = DtStart("20220120T010203Z")
             summary = "Event without uid"
         }
-        val localEvent = LocalEvent(AndroidEvent(calendar, event, null))
+        val localEvent = LocalEvent(AndroidEvent(calendar.androidCalendar, event, null))
         localEvent.add()    // save it to calendar storage
 
         // prepare for upload - this should generate a new random uuid, returned as filename
@@ -81,7 +81,7 @@ class LocalEventTest {
             summary = "Event with normal uid"
             uid = "some-event@hostname.tld"     // old UID format, UUID would be new format
         }
-        val localEvent = LocalEvent(AndroidEvent(calendar, event, null))
+        val localEvent = LocalEvent(AndroidEvent(calendar.androidCalendar, event, null))
         localEvent.add() // save it to calendar storage
 
         // prepare for upload - this should use the UID for the file name
@@ -108,7 +108,7 @@ class LocalEventTest {
             summary = "Event with funny uid"
             uid = "https://www.example.com/events/asdfewfe-cxyb-ewrws-sadfrwerxyvser-asdfxye-"
         }
-        val localEvent = LocalEvent(AndroidEvent(calendar, event, null))
+        val localEvent = LocalEvent(AndroidEvent(calendar.androidCalendar, event, null))
         localEvent.add() // save it to calendar storage
 
         // prepare for upload - this should generate a new random uuid, returned as filename
@@ -160,7 +160,7 @@ class LocalEventTest {
                 status = Status.VEVENT_CANCELLED
             })
         }
-        val localEvent = LocalEvent(AndroidEvent(calendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT))
+        val localEvent = LocalEvent(AndroidEvent(calendar.androidCalendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT))
         localEvent.add()
         val eventId = localEvent.id!!
 
@@ -189,7 +189,7 @@ class LocalEventTest {
             summary = "Event with 3 instances"
             rRules.add(RRule("FREQ=DAILY;COUNT=3"))
         }
-        val localEvent = LocalEvent(AndroidEvent(calendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT))
+        val localEvent = LocalEvent(AndroidEvent(calendar.androidCalendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT))
         localEvent.add()
         val eventId = localEvent.id!!
 

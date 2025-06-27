@@ -87,11 +87,12 @@ class AccountSettingsMigration20 @Inject constructor(
             null
         }?.use { provider ->
             for (calendar in calendarStore.getAll(account, provider))
-                provider.query(calendar.calendarSyncURI(), arrayOf(Calendars.NAME), null, null, null)?.use { cursor ->
+                provider.query(calendar.androidCalendar.calendarSyncURI(), arrayOf(Calendars.NAME), null, null, null)?.use { cursor ->
                     if (cursor.moveToFirst())
                         cursor.getString(0)?.let { url ->
                             collectionRepository.getByServiceAndUrl(calDavServiceId, url)?.let { collection ->
-                                calendar.update(contentValuesOf(
+                                calendar.androidCalendar.update(
+                                    contentValuesOf(
                                     Calendars._SYNC_ID to collection.id
                                 ))
                             }

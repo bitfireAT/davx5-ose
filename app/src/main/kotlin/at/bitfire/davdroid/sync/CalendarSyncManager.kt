@@ -287,7 +287,7 @@ class CalendarSyncManager @AssistedInject constructor(
                     local.update(event)
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local calendar", event)
-                    val newLocal = LocalEvent(AndroidEvent(localCollection, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT))
+                    val newLocal = LocalEvent(AndroidEvent(localCollection.androidCalendar, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT))
                     SyncException.wrapWithLocalResource(newLocal) {
                         newLocal.add()
                     }
