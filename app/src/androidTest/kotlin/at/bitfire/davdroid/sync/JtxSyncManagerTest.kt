@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.sync
 
+import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
 import at.bitfire.davdroid.db.Collection
@@ -24,6 +25,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assume.assumeNotNull
 import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
@@ -61,7 +63,7 @@ class JtxSyncManagerTest {
     @get:Rule
     val permissionRule = GrantPermissionOrSkipRule(TaskProvider.PERMISSIONS_JTX.toSet())
 
-    private val account = TestAccount.create()
+    lateinit var account: Account
 
     private lateinit var provider: ContentProviderClient
     private lateinit var syncManager: JtxSyncManager
@@ -75,7 +77,11 @@ class JtxSyncManagerTest {
         assumeTrue(PermissionUtils.havePermissions(context, TaskProvider.PERMISSIONS_JTX))
 
         // Acquire the jtx content provider
-        provider = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)!!
+        val providerOrNull = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)
+        assumeNotNull(providerOrNull)
+        provider = providerOrNull!!
+
+        account = TestAccount.create()
 
         // Create dummy dependencies
         val service = Service(0, account.name, Service.TYPE_CALDAV, null)
@@ -102,9 +108,12 @@ class JtxSyncManagerTest {
         if (this::localJtxCollection.isInitialized)
             localJtxCollectionStore.delete(localJtxCollection)
         serviceRepository.deleteAllBlocking()
+
         if (this::provider.isInitialized)
             provider.closeCompat()
-        TestAccount.remove(account)
+
+        if (this::account.isInitialized)
+            TestAccount.remove(account)
     }
 
 
