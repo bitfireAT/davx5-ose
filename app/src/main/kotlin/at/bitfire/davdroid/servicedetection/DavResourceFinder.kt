@@ -27,10 +27,10 @@ import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.HrefListProperty
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.StringHandler
 import at.bitfire.davdroid.network.DnsRecordResolver
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.settings.Credentials
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -88,7 +88,7 @@ class DavResourceFinder @AssistedInject constructor(
             if (credentials != null)
                 authenticate(
                     host = null,
-                    credentials = credentials
+                    getCredentials = { credentials }
                 )
             }
         .build()

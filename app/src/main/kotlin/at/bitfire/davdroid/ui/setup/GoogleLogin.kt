@@ -9,7 +9,6 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,8 +21,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -36,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -50,7 +46,6 @@ import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.setup.GoogleLogin.GOOGLE_POLICY_URL
-import at.bitfire.davdroid.ui.setup.GoogleLogin.helpUrl
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -137,7 +132,6 @@ fun GoogleLoginScreen(
     onLogin: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val uriHandler = LocalUriHandler.current
 
     Column(
         Modifier
@@ -149,31 +143,6 @@ fun GoogleLoginScreen(
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(vertical = 8.dp)
         )
-
-        Card(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(8.dp)) {
-                Row {
-                    Text(
-                        stringResource(R.string.login_google_see_tested_with),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-                Text(
-                    stringResource(R.string.login_google_unexpected_warnings),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-                Button(
-                    onClick = {
-                        uriHandler.openUri(helpUrl.toString())
-                    },
-                    colors = ButtonDefaults.outlinedButtonColors(),
-                    modifier = Modifier.wrapContentSize()
-                ) {
-                    Text(stringResource(R.string.intro_more_info))
-                }
-            }
-        }
 
         val focusRequester = remember { FocusRequester() }
         OutlinedTextField(

@@ -10,11 +10,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.DefaultDispatcher
 import at.bitfire.davdroid.network.OAuthIntegration
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncDataType
@@ -185,20 +185,15 @@ class AccountSettingsModel @AssistedInject constructor(
 
     fun authorizationContract() = OAuthIntegration.AuthorizationContract(authService)
 
-    fun newAuthorizationRequest(): AuthorizationRequest? {
-        val authState = accountSettings.credentials().authState ?: return null
-
-        // create new authorization request
-        val authConfig = authState.authorizationServiceConfiguration ?: return null
-        return OAuthIntegration.newAuthorizeRequest(authConfig)
-    }
+    fun newAuthorizationRequest(): AuthorizationRequest? =
+        accountSettings.credentials().authState?.lastAuthorizationResponse?.request
 
     fun authenticate(authResponse: AuthorizationResponse) {
         CoroutineScope(defaultDispatcher).launch {
             try {
                 // save new credentials
-                val credentials = OAuthIntegration.authenticate(authService, authResponse)
-                accountSettings.credentials(credentials)
+                val authState = OAuthIntegration.authenticate(authService, authResponse)
+                accountSettings.updateAuthState(authState)
 
                 _uiState.update {
                     it.copy(status = context.getString(R.string.settings_reauthorize_oauth_success))

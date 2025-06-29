@@ -9,7 +9,7 @@ import at.bitfire.dav4jvm.XmlUtils
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class Dav4jvm {
+class Dav4jvmTest {
 
     @Test
     fun test_Dav4jvm_XmlUtils_NewPullParser_RelaxedParsing() {

@@ -8,9 +8,9 @@ import android.security.NetworkSecurityPolicy
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
 import at.bitfire.dav4jvm.property.webdav.ResourceType
-import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
+import at.bitfire.davdroid.settings.Credentials
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.mockwebserver.Dispatcher
@@ -72,7 +72,7 @@ class DavResourceFinderTest {
 
         val credentials = Credentials(username = "mock", password = "12345".toCharArray())
         client = httpClientBuilder
-                .authenticate(host = null, credentials = credentials)
+                .authenticate(host = null, getCredentials = { credentials })
                 .build()
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
 

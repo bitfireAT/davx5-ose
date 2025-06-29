@@ -9,7 +9,7 @@ import androidx.annotation.StringDef
 import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.settings.Credentials
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

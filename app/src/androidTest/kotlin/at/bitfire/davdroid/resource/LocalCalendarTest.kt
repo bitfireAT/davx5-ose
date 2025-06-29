@@ -12,11 +12,12 @@ import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.davdroid.InitCalendarProviderRule
 import at.bitfire.ical4android.AndroidCalendar
+import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
+import at.bitfire.synctools.test.InitCalendarProviderRule
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RecurrenceId
@@ -61,12 +62,12 @@ class LocalCalendarTest {
     @Before
     fun setUp() {
         val uri = AndroidCalendar.create(account, provider, ContentValues())
-        calendar = AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
+        calendar = LocalCalendar(AndroidCalendar.findByID(account, provider, ContentUris.parseId(uri)))
     }
 
     @After
     fun tearDown() {
-        calendar.delete()
+        calendar.androidCalendar.delete()
     }
 
 
@@ -96,7 +97,7 @@ class LocalCalendarTest {
                 status = Status.VEVENT_CANCELLED
             })
         }
-        val localEvent = LocalEvent(calendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
+        val localEvent = AndroidEvent(calendar.androidCalendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
         localEvent.add()
         val eventId = localEvent.id!!
 
@@ -126,7 +127,7 @@ class LocalCalendarTest {
             summary = "Event with 3 instances"
             rRules.add(RRule("FREQ=DAILY;COUNT=3"))
         }
-        val localEvent = LocalEvent(calendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
+        val localEvent = AndroidEvent(calendar.androidCalendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
         localEvent.add()
         val eventId = localEvent.id!!
 

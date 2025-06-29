@@ -19,8 +19,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 405000000
-        versionName = "4.5"
+        versionCode = 405010000
+        versionName = "4.5.1-alpha.1"
 
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
@@ -176,7 +176,10 @@ dependencies {
         exclude(group="junit")
         exclude(group="org.ogce", module="xpp3")    // Android has its own XmlPullParser implementation
     }
-    implementation(libs.bitfire.synctools)
+    implementation(libs.bitfire.synctools) {
+        exclude(group="androidx.test")              // synctools declares test rules, but we don't want them in non-test code
+        exclude(group = "junit")
+    }
 
     // third-party libs
     @Suppress("RedundantSuppression")

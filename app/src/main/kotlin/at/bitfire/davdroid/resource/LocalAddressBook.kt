@@ -204,10 +204,12 @@ open class LocalAddressBook @AssistedInject constructor(
             .newUpdate(groupsSyncUri())
             .withSelection(Groups.ACCOUNT_NAME + "=? AND " + Groups.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
             .withValue(Groups.ACCOUNT_NAME, newAccount.name)
+            .withValue(Groups.ACCOUNT_TYPE, newAccount.type)
         batch += BatchOperation.CpoBuilder
             .newUpdate(rawContactsSyncUri())
             .withSelection(RawContacts.ACCOUNT_NAME + "=? AND " + RawContacts.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
             .withValue(RawContacts.ACCOUNT_NAME, newAccount.name)
+            .withValue(RawContacts.ACCOUNT_TYPE, newAccount.type)
         batch.commit()
 
         // update AndroidAddressBook.account

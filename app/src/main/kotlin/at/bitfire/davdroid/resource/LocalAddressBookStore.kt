@@ -6,6 +6,7 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.accounts.OnAccountsUpdateListener
 import android.content.ContentProviderClient
 import android.content.Context
 import android.provider.ContactsContract
@@ -23,6 +24,9 @@ import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import com.google.common.base.CharMatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -115,17 +119,10 @@ class LocalAddressBookStore @Inject constructor(
         return addressBookAccount
     }
 
-    override fun getAll(account: Account, provider: ContentProviderClient): List<LocalAddressBook> {
-        val accountManager = AccountManager.get(context)
-        return accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
-            .filter { addressBookAccount ->
-                accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME) == account.name &&
-                accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) == account.type
-            }
-            .map { addressBookAccount ->
-                localAddressBookFactory.create(account, addressBookAccount, provider)
-            }
-    }
+    override fun getAll(account: Account, provider: ContentProviderClient): List<LocalAddressBook> =
+        getAddressBookAccounts(account).map { addressBookAccount ->
+            localAddressBookFactory.create(account, addressBookAccount, provider)
+        }
 
     override fun update(provider: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
         var currentAccount = localCollection.addressBookAccount
@@ -195,6 +192,45 @@ class LocalAddressBookStore @Inject constructor(
         }
         if (addressBookAccount != null)
             accountManager.removeAccountExplicitly(addressBookAccount)
+    }
+
+    /**
+     * Returns all address book accounts that belong to the given account.
+     *
+     * @param account    Account which has the address books.
+     * @return List of address book accounts.
+     */
+    fun getAddressBookAccounts(account: Account): List<Account> =
+        AccountManager.get(context).let { accountManager ->
+            accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
+                .filter { addressBookAccount ->
+                    account.name == accountManager.getUserData(
+                        addressBookAccount,
+                        LocalAddressBook.USER_DATA_ACCOUNT_NAME
+                    ) && account.type == accountManager.getUserData(
+                        addressBookAccount,
+                        LocalAddressBook.USER_DATA_ACCOUNT_TYPE
+                    )
+                }
+        }
+
+    /**
+     * Returns all address book accounts that belong to the given account in a flow.
+     *
+     * @param account    Account which has the address books.
+     * @return List of address book accounts as flow.
+     */
+    fun getAddressBookAccountsFlow(account: Account): Flow<List<Account>> = callbackFlow {
+        val accountManager = AccountManager.get(context)
+        val listener = OnAccountsUpdateListener { accounts ->
+            trySend(getAddressBookAccounts(account))
+        }
+        accountManager.addOnAccountsUpdatedListener(
+            /* listener = */ listener,
+            /* handler = */ null,
+            /* updateImmediately = */ true
+        )
+        awaitClose { accountManager.removeOnAccountsUpdatedListener(listener) }
     }
 
 
