@@ -30,8 +30,8 @@ jobs:
         run: echo ${{ secrets.android_keystore_base64 }} | base64 -d >$GITHUB_WORKSPACE/keystore.jks
 
       - name: Build signed package
-        # Make sure that caches are disabled to generate reproducible release builds
-        run: ./gradlew --no-build-cache --no-configuration-cache --no-daemon app:assembleRelease
+        # Use build cache to speed up building of build variants, but clean caches from previous tests before
+        run: ./gradlew --build-cache --configuration-cache --no-daemon app:clean app:assembleRelease
         env:
           ANDROID_KEYSTORE: ${{ github.workspace }}/keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
