@@ -251,8 +251,6 @@
   <string name="login_no_certificate_found">Aucun certificat trouvé</string>
   <string name="login_install_certificate">Installer un certificat</string>
   <string name="login_type_google">Google Contacts / Agenda</string>
-  <string name="login_google_see_tested_with">Merci de vous référer à la page \"Testé avec Google\" pour des informations à jour.</string>
-  <string name="login_google_unexpected_warnings">Vous risquez de rencontrer des avertissements inattendus et/ou vous devez créer votre propre ID client.</string>
   <string name="login_google_account">Compte Google</string>
   <string name="login_google">Se connecter avec Google</string>
   <string name="login_google_client_id">ID client (optionnel)</string>

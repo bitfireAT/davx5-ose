@@ -264,8 +264,6 @@
   <string name="login_no_certificate_found">Nem található tanúsítvány</string>
   <string name="login_install_certificate">Tanúsítvány telepítése</string>
   <string name="login_type_google">Google Névjegyek / Naptár</string>
-  <string name="login_google_see_tested_with">Friss információkért tekintse meg a „Google-lel tesztelve” oldalunkat.</string>
-  <string name="login_google_unexpected_warnings">Nem zárhatók ki a váratlan figyelmeztetések, és lehet, hogy szükség lesz egy saját kliensazonosító létrehozására is.</string>
   <string name="login_google_account">Google-fiók</string>
   <string name="login_google">Bejelenetezés a Google használatával</string>
   <string name="login_google_client_id">Kliensazonosító (nem kötelező)</string>

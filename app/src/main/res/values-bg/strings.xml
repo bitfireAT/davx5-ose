@@ -121,6 +121,7 @@
   <string name="navigation_drawer_website">Страница</string>
   <string name="navigation_drawer_manual">Ръководство</string>
   <string name="navigation_drawer_faq">Често задавани въпроси</string>
+  <string name="navigation_drawer_managed">За организации</string>
   <string name="navigation_drawer_community">Общност</string>
   <string name="navigation_drawer_support_project">Подкрепа за проекта</string>
   <string name="navigation_drawer_contribute">Как да допринеса</string>
@@ -271,8 +272,6 @@
   <string name="login_fastmail_account">Профил във Fastmail</string>
   <string name="login_fastmail_sign_in">Вход с Fastmail</string>
   <string name="login_type_google">Google Contacts / Calendar</string>
-  <string name="login_google_see_tested_with">Погледнете страницата „Проверено с Гугъл“ за последната информация.</string>
-  <string name="login_google_unexpected_warnings">Може да получите неочаквани предупреждения и/или да се наложи да създадете собствен клиентски инентификатор.</string>
   <string name="login_google_account">Профил в Гугъл</string>
   <string name="login_google">Вход с Гугъл</string>
   <string name="login_google_client_id">Идентификатор на клиент (по желание)</string>

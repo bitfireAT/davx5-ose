@@ -269,8 +269,6 @@
   <string name="login_fastmail_account">Fastmail 계정</string>
   <string name="login_fastmail_sign_in">Fastmail로 로그인</string>
   <string name="login_type_google">구글 주소록 / 캘린더</string>
-  <string name="login_google_see_tested_with">최신 정보는 \"Tested with Google\" 페이지를 참조하시기 바랍니다.</string>
-  <string name="login_google_unexpected_warnings">예기치 않은 경고가 발생할 수 있으며, 직접 클라이언트 ID를 생성해야 할 수도 있습니다.</string>
   <string name="login_google_account">구글 계정</string>
   <string name="login_google">구글로 로그인</string>
   <string name="login_google_client_id">클라이언트 ID (선택)</string>

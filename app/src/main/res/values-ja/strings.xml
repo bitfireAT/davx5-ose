@@ -265,8 +265,6 @@
   <string name="login_no_certificate_found">証明書が見つかりませんでした</string>
   <string name="login_install_certificate">証明書をインストール</string>
   <string name="login_type_google">Google コンタクト / カレンダー</string>
-  <string name="login_google_see_tested_with">最新情報は \"Tested with Google\" のページをご確認ください。</string>
-  <string name="login_google_unexpected_warnings">未知のエラーに遭遇したり、クライアント ID を作成するように求められたりする場合があります。</string>
   <string name="login_google_account">Google アカウント</string>
   <string name="login_google">Google でログイン</string>
   <string name="login_google_client_id">クライアント ID (オプション)</string>
