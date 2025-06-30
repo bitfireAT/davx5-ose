@@ -166,18 +166,8 @@ abstract class SyncAdapterService: Service() {
             // As a defensive workaround, we can cancel specifically this still pending sync only
             // See: https://github.com/bitfireAT/davx5-ose/issues/1458
             if (Build.VERSION.SDK_INT >= 34) {
-                // Recreate the sync request used to start this sync
-                val syncRequest = SyncRequest.Builder()
-                    .setSyncAdapter(account, authority)
-                    .setExtras(Bundle().apply {
-                        if (upload)
-                            putBoolean(ContentResolver.SYNC_EXTRAS_UPLOAD, true)
-                    })
-                    .syncOnce()
-                    .build()
-                // Cancel it
-                logger.fine("Android 14+ bug: Canceling sync adapter framework sync request for $account and $authority with request $syncRequest")
-                ContentResolver.cancelSync(syncRequest)
+                logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for account=$account authority=$authority upload=$upload")
+                cancelSyncInSyncFramework(account, authority, upload)
             }
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
@@ -227,6 +217,35 @@ abstract class SyncAdapterService: Service() {
         }
 
         override fun onSyncCanceled(thread: Thread) = onSyncCanceled()
+
+
+        // helper methods
+
+        /**
+         * Cancels the sync request in the Sync Framework for Android 14+.
+         * This is a workaround for the bug that the sync framework does not handle pending syncs correctly
+         * on Android 14+ (API level 34+).
+         *
+         * See: https://github.com/bitfireAT/davx5-ose/issues/1458
+         *
+         * @param account The account for which the sync request should be canceled.
+         * @param authority The authority for which the sync request should be canceled.
+         * @param upload Whether the sync request is for an upload operation.
+         */
+        private fun cancelSyncInSyncFramework(account: Account, authority: String, upload: Boolean) {
+            // Recreate the sync request used to start this sync
+            val syncRequest = SyncRequest.Builder()
+                .setSyncAdapter(account, authority)
+                .setExtras(Bundle().apply {
+                    if (upload)
+                        putBoolean(ContentResolver.SYNC_EXTRAS_UPLOAD, true)
+                })
+                .syncOnce()
+                .build()
+
+            // Cancel it
+            ContentResolver.cancelSync(syncRequest)
+        }
 
     }
 
