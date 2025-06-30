@@ -21,7 +21,6 @@ import io.mockk.junit4.MockKRule
 import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.runs
-import io.mockk.unmockkAll
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
@@ -102,7 +101,6 @@ class AndroidSyncFrameworkTest {
 
     @After
     fun tearDown() {
-        unmockkAll()
         TestAccount.remove(account)
         ContentResolver.setMasterSyncAutomatically(masterSyncStateBeforeTest)
         stateChangeListener?.let { ContentResolver.removeStatusChangeListener(it) }
