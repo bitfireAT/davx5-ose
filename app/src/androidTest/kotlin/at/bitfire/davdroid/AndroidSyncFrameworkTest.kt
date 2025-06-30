@@ -67,9 +67,11 @@ class AndroidSyncFrameworkTest {
         account = TestAccount.create()
 
         // Enable sync globally and for the test account
+        ContentResolver.setMasterSyncAutomatically(false)
         ContentResolver.setMasterSyncAutomatically(true)
         ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true)
         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
+        ContentResolver.removePeriodicSync(account, CalendarContract.AUTHORITY, Bundle())
 
         // Sync request to be used in the tests
         syncRequest = SyncRequest.Builder()
@@ -102,10 +104,14 @@ class AndroidSyncFrameworkTest {
     @After
     fun tearDown() {
         TestAccount.remove(account)
+        ContentResolver.setMasterSyncAutomatically(false)
         ContentResolver.setMasterSyncAutomatically(masterSyncStateBeforeTest)
         stateChangeListener?.let { ContentResolver.removeStatusChangeListener(it) }
         recordedStates.clear()
         ContentResolver.cancelSync(null, null) // Cancel any pending or ongoing syncs
+        ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, false)
+        ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
+        ContentResolver.removePeriodicSync(account, CalendarContract.AUTHORITY, Bundle())
     }
 
 
@@ -198,15 +204,10 @@ class AndroidSyncFrameworkTest {
     @Test
     fun testVerifySyncAlwaysPending_wrongBehaviour_android15() =
         verifyRecordedStatesMatchWith(
-            // Only works on first run on a clean new emulator instance
             listOf(
                 States(pending = true, active = false),
                 States(pending = false, active = false),
                 States(pending = true, active = true),
-                States(pending = true, active = false)
-            ),
-            // Expected behaviour on subsequent runs
-            listOf(
                 States(pending = true, active = false)
             )
         )
@@ -217,6 +218,8 @@ class AndroidSyncFrameworkTest {
     fun testVerifySyncAlwaysPending_wrongBehaviour_android16() =
         verifyRecordedStatesMatchWith(
             listOf(
+                States(pending = true, active = false),
+                States(pending = true, active = true),
                 States(pending = true, active = false)
             )
         )
@@ -260,7 +263,7 @@ class AndroidSyncFrameworkTest {
     /**
      * Verifies that the given expected states match the recorded states.
      */
-    private fun verifyRecordedStatesMatchWith(vararg expectedStatesLists: List<States>) =
+    private fun verifyRecordedStatesMatchWith(expectedStatesLists: List<States>) =
         runBlocking {
             // We use runBlocking for these tests because it uses the default dispatcher
             // which does not auto-advance virtual time and we need real system time to
@@ -273,7 +276,7 @@ class AndroidSyncFrameworkTest {
             withTimeout(15.seconds) { // Usually takes less than 10 seconds
                 ContentResolver.requestSync(syncRequest)
                 while (true) {
-                    if (recordedStates in expectedStatesLists)
+                    if (recordedStates == expectedStatesLists)
                         break
                     delay(500) // avoid busy-waiting
                 }
