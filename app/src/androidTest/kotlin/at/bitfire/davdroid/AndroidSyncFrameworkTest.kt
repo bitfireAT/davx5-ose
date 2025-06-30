@@ -127,6 +127,32 @@ class AndroidSyncFrameworkTest {
             )
         )
 
+    @SdkSuppress(minSdkVersion = 29, maxSdkVersion = 29)
+    @LargeTest
+    @Test
+    fun testVerifySyncAlwaysPending_correctBehaviour_android10() =
+        verifyRecordedStatesMatchWith(
+            listOf(
+                States(pending = true, active = false),
+                States(pending = true, active = true),
+                States(pending = false, active = true),
+                States(pending = false, active = false)
+            )
+        )
+
+    @SdkSuppress(minSdkVersion = 30, maxSdkVersion = 30)
+    @LargeTest
+    @Test
+    fun testVerifySyncAlwaysPending_correctBehaviour_android11() =
+        verifyRecordedStatesMatchWith(
+            listOf(
+                States(pending = true, active = false),
+                States(pending = true, active = true),
+                States(pending = false, active = true),
+                States(pending = false, active = false),
+            )
+        )
+
     @SdkSuppress(minSdkVersion = 31, maxSdkVersion = 32)
     @LargeTest
     @Test
