@@ -7,7 +7,6 @@ package at.bitfire.davdroid.settings.migration
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
-import android.provider.CalendarContract.Calendars
 import androidx.annotation.OpenForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.db.Service
@@ -86,7 +85,8 @@ class AccountSettingsMigration20 @Inject constructor(
             // no contacts permission
             null
         }?.use { provider ->
-            for (calendar in calendarStore.getAll(account, provider))
+            // FIXME
+            /*for (calendar in calendarStore.getAll(account, provider))
                 provider.query(calendar.androidCalendar.calendarSyncURI(), arrayOf(Calendars.NAME), null, null, null)?.use { cursor ->
                     if (cursor.moveToFirst())
                         cursor.getString(0)?.let { url ->
@@ -97,7 +97,7 @@ class AccountSettingsMigration20 @Inject constructor(
                                 ))
                             }
                         }
-                }
+                }*/
         }
     }
 
