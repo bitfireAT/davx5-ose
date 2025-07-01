@@ -62,7 +62,7 @@ import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.widget.CalendarColorPickerDialog
-import at.bitfire.ical4android.Css3Color
+import at.bitfire.synctools.icalendar.Css3Color
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Composable

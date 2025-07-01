@@ -25,7 +25,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import at.bitfire.ical4android.Css3Color
+import at.bitfire.synctools.icalendar.Css3Color
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

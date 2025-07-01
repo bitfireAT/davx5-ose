@@ -41,7 +41,7 @@ class LocalCalendar(
         get() = androidCalendar.displayName ?: androidCalendar.id.toString()
 
     override val readOnly
-        get() = androidCalendar.accessLevel?.let { it <= Calendars.CAL_ACCESS_READ } ?: false
+        get() = androidCalendar.accessLevel <= Calendars.CAL_ACCESS_READ
 
     override var lastSyncState: SyncState?
         get() = androidCalendar.provider.readCalendarSyncState(androidCalendar.id)?.let {
