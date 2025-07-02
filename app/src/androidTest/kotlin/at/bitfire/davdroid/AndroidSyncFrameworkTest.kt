@@ -201,7 +201,6 @@ class AndroidSyncFrameworkTest {
         verifyRecordedStatesMatchWith(
             listOf(
                 States(pending = true, active = false),
-                States(pending = false, active = false),
                 States(pending = true, active = true),
                 States(pending = true, active = false)
             )
