@@ -12,7 +12,6 @@ import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.content.SyncRequest
 import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
@@ -28,6 +27,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import at.bitfire.davdroid.util.SyncFrameworkUtils
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -167,7 +167,7 @@ abstract class SyncAdapterService: Service() {
             // See: https://github.com/bitfireAT/davx5-ose/issues/1458
             if (Build.VERSION.SDK_INT >= 34) {
                 logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for account=$account authority=$authority upload=$upload")
-                cancelSyncInSyncFramework(account, authority, upload)
+                SyncFrameworkUtils.cancelSyncInSyncFramework(account, authority, upload)
             }
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
@@ -217,35 +217,6 @@ abstract class SyncAdapterService: Service() {
         }
 
         override fun onSyncCanceled(thread: Thread) = onSyncCanceled()
-
-
-        // helper methods
-
-        /**
-         * Cancels the sync request in the Sync Framework for Android 14+.
-         * This is a workaround for the bug that the sync framework does not handle pending syncs correctly
-         * on Android 14+ (API level 34+).
-         *
-         * See: https://github.com/bitfireAT/davx5-ose/issues/1458
-         *
-         * @param account The account for which the sync request should be canceled.
-         * @param authority The authority for which the sync request should be canceled.
-         * @param upload Whether the sync request is for an upload operation.
-         */
-        private fun cancelSyncInSyncFramework(account: Account, authority: String, upload: Boolean) {
-            // Recreate the sync request used to start this sync
-            val syncRequest = SyncRequest.Builder()
-                .setSyncAdapter(account, authority)
-                .setExtras(Bundle().apply {
-                    if (upload)
-                        putBoolean(ContentResolver.SYNC_EXTRAS_UPLOAD, true)
-                })
-                .syncOnce()
-                .build()
-
-            // Cancel it
-            ContentResolver.cancelSync(syncRequest)
-        }
 
     }
 
