@@ -44,16 +44,17 @@ class LocalCalendar(
         get() = androidCalendar.accessLevel <= Calendars.CAL_ACCESS_READ
 
     override var lastSyncState: SyncState?
-        get() = androidCalendar.provider.readCalendarSyncState(androidCalendar.id)?.let {
+        get() = androidCalendar.readSyncState(androidCalendar.id)?.let {
             SyncState.fromString(it)
         }
         set(state) {
-            androidCalendar.provider.writeCalendarSyncState(androidCalendar.id, state.toString())
+            androidCalendar.writeSyncState(androidCalendar.id, state.toString())
         }
 
 
     override fun findDeleted() =
-        androidCalendar.findEvents("${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null)
+        androidCalendar
+            .findEvents("${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null)
             .map { LocalEvent(it) }
 
     override fun findDirty(): List<LocalEvent> {
