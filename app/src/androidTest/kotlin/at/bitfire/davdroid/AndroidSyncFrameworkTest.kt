@@ -13,14 +13,13 @@ import android.provider.CalendarContract
 import androidx.test.filters.LargeTest
 import androidx.test.filters.SdkSuppress
 import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.davdroid.util.SyncFrameworkUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
 import io.mockk.junit4.MockKRule
-import io.mockk.just
-import io.mockk.mockkStatic
-import io.mockk.runs
+import io.mockk.mockkObject
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
@@ -67,7 +66,6 @@ class AndroidSyncFrameworkTest {
         account = TestAccount.create()
 
         // Enable sync globally and for the test account
-        ContentResolver.setMasterSyncAutomatically(false)
         ContentResolver.setMasterSyncAutomatically(true)
         ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true)
         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
@@ -97,21 +95,18 @@ class AndroidSyncFrameworkTest {
 
         // Disable the workaround we put in place for Android 14+ present in
         // [SyncAdapterService.SyncAdapter.onPerformSync]
-        mockkStatic(ContentResolver::class)
-        every { ContentResolver.cancelSync(syncRequest) } just runs
+        mockkObject(SyncFrameworkUtils)
+        every {
+            SyncFrameworkUtils.cancelSyncInSyncFramework(any(), any(), any())
+        } returns Unit
     }
 
     @After
     fun tearDown() {
         TestAccount.remove(account)
-        ContentResolver.setMasterSyncAutomatically(false)
         ContentResolver.setMasterSyncAutomatically(masterSyncStateBeforeTest)
         stateChangeListener?.let { ContentResolver.removeStatusChangeListener(it) }
         recordedStates.clear()
-        ContentResolver.cancelSync(null, null) // Cancel any pending or ongoing syncs
-        ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, false)
-        ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
-        ContentResolver.removePeriodicSync(account, CalendarContract.AUTHORITY, Bundle())
     }
 
 
