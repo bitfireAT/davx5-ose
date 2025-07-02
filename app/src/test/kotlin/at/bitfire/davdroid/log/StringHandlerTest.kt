@@ -4,7 +4,8 @@
 
 package at.bitfire.davdroid.log
 
-import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.logging.Formatter
 import java.util.logging.Level
@@ -18,8 +19,8 @@ class StringHandlerTest {
         handler.publish(LogRecord(Level.INFO, "Line 1"))
         handler.publish(LogRecord(Level.FINEST, "Line 2"))
         val str = handler.toString()
-        Assert.assertTrue(str.contains("Line 1\n"))
-        Assert.assertTrue(str.contains("Line 2\n"))
+        assertTrue(str.contains("Line 1\n"))
+        assertTrue(str.contains("Line 2\n"))
     }
 
     @Test
@@ -33,8 +34,8 @@ class StringHandlerTest {
         handler.publish(LogRecord(Level.FINEST, "Line 2"))
 
         val str = handler.toString()
-        Assert.assertEquals(10, handler.toString().length)
-        Assert.assertEquals("Line [...]", str)
+        assertEquals(10, handler.toString().length)
+        assertEquals("Line [...]", str)
     }
 
 }

@@ -46,7 +46,7 @@ class AccountSettingsMigration10 @Inject constructor(
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
             context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
                 provider.update(
-                    CalendarContract.Calendars.CONTENT_URI.asSyncAdapter(account),
+                    Calendars.CONTENT_URI.asSyncAdapter(account),
                     contentValuesOf(
                         Calendars.ALLOWED_REMINDERS to arrayOf(
                             Reminders.METHOD_DEFAULT,

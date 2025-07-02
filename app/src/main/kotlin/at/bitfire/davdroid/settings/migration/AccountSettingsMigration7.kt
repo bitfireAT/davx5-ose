@@ -10,6 +10,7 @@ import android.content.Context
 import android.provider.CalendarContract
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
+import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -25,9 +26,9 @@ class AccountSettingsMigration7 @Inject constructor(
 
     override fun migrate(account: Account) {
         // add calendar colors
-        context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
-            // FIXME
-            //AndroidCalendar.insertColors(provider, account)
+        context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { client ->
+            val provider = AndroidCalendarProvider(account, client)
+            provider.provideCss3ColorIndices()
         }
 
         // update allowed WiFi settings key
