@@ -12,10 +12,10 @@ import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
+import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.RRule
@@ -36,8 +36,8 @@ class LocalEventTest {
 
     @Before
     fun setUp() {
-        val uri = AndroidCalendar.create(account, provider, ContentValues())
-        calendar = LocalCalendar(AndroidCalendar.findByID(account, provider, ContentUris.parseId(uri)))
+        val provider = AndroidCalendarProvider(account, client)
+        calendar = LocalCalendar(provider.createAndGetCalendar(ContentValues()))
     }
 
     @After
@@ -64,7 +64,7 @@ class LocalEventTest {
         UUID.fromString(fileName)
 
         // UID in calendar storage should be the same as file name
-        provider.query(
+        client.query(
             ContentUris.withAppendedId(Events.CONTENT_URI, localEvent.id!!).asSyncAdapter(account),
             arrayOf(Events.UID_2445), null, null, null
         )!!.use { cursor ->
@@ -91,7 +91,7 @@ class LocalEventTest {
         assertEquals(event.uid, fileName)
 
         // UID in calendar storage should still be set, too
-        provider.query(
+        client.query(
             ContentUris.withAppendedId(Events.CONTENT_URI, localEvent.id!!).asSyncAdapter(account),
             arrayOf(Events.UID_2445), null, null, null
         )!!.use { cursor ->
@@ -119,7 +119,7 @@ class LocalEventTest {
         UUID.fromString(fileName)
 
         // UID in calendar storage shouldn't have been changed
-        provider.query(
+        client.query(
             ContentUris.withAppendedId(Events.CONTENT_URI, localEvent.id!!).asSyncAdapter(account),
             arrayOf(Events.UID_2445), null, null, null
         )!!.use { cursor ->
@@ -165,7 +165,7 @@ class LocalEventTest {
         val eventId = localEvent.id!!
 
         // set event as dirty
-        provider.update(ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId), ContentValues(1).apply {
+        client.update(ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId), ContentValues(1).apply {
             put(Events.DIRTY, 1)
         }, null, null)
 
@@ -173,7 +173,7 @@ class LocalEventTest {
         calendar.deleteDirtyEventsWithoutInstances()
 
         // verify that event is now marked as deleted
-        provider.query(
+        client.query(
             ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId),
             arrayOf(Events.DELETED), null, null, null
         )!!.use { cursor ->
@@ -194,7 +194,7 @@ class LocalEventTest {
         val eventId = localEvent.id!!
 
         // set event as dirty
-        provider.update(ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId), ContentValues(1).apply {
+        client.update(ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId), ContentValues(1).apply {
             put(Events.DIRTY, 1)
         }, null, null)
 
@@ -202,7 +202,7 @@ class LocalEventTest {
         calendar.deleteDirtyEventsWithoutInstances()
 
         // verify that event is not marked as deleted
-        provider.query(
+        client.query(
             ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId),
             arrayOf(Events.DELETED), null, null, null
         )!!.use { cursor ->
@@ -214,19 +214,19 @@ class LocalEventTest {
 
     companion object {
 
-        private lateinit var provider: ContentProviderClient
+        private lateinit var client: ContentProviderClient
 
         @BeforeClass
         @JvmStatic
         fun setUpClass() {
             val context = InstrumentationRegistry.getInstrumentation().targetContext
-            provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+            client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
         }
 
         @AfterClass
         @JvmStatic
         fun tearDownClass() {
-            provider.closeCompat()
+            client.closeCompat()
         }
 
     }

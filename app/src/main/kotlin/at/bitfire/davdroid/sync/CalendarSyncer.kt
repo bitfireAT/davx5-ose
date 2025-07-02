@@ -46,9 +46,9 @@ class CalendarSyncer @AssistedInject constructor(
 
         val calendarProvider = AndroidCalendarProvider(account, provider)
         if (accountSettings.getEventColors())
-            calendarProvider.provideCss3Colors()
+            calendarProvider.provideCss3ColorIndices()
         else
-            calendarProvider.removeCss3Colors()
+            calendarProvider.removeColorIndices()
         return true
     }
 

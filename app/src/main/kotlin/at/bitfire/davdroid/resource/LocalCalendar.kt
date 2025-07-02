@@ -44,11 +44,11 @@ class LocalCalendar(
         get() = androidCalendar.accessLevel <= Calendars.CAL_ACCESS_READ
 
     override var lastSyncState: SyncState?
-        get() = androidCalendar.readSyncState(androidCalendar.id)?.let {
+        get() = androidCalendar.readSyncState()?.let {
             SyncState.fromString(it)
         }
         set(state) {
-            androidCalendar.writeSyncState(androidCalendar.id, state.toString())
+            androidCalendar.writeSyncState(state.toString())
         }
 
 
