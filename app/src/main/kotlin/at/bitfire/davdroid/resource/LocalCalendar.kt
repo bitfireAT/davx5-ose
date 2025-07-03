@@ -9,10 +9,11 @@ import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.ical4android.AndroidEvent
+import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
+import at.bitfire.synctools.storage.calendar.AndroidEvent
 import at.bitfire.synctools.storage.calendar.CalendarBatchOperation
 import java.util.LinkedList
 import java.util.logging.Level
@@ -25,11 +26,13 @@ import java.util.logging.Logger
  */
 class LocalCalendar(
     val androidCalendar: AndroidCalendar
-) : LocalCollection<LocalEvent> {
+) : LocalCollection<LocalEvent, Event> {
 
     private val logger: Logger
         get() = Logger.getLogger(javaClass.name)
 
+
+    // LocalCollection implementation
 
     override val dbCollectionId: Long?
         get() = androidCalendar.syncId?.toLongOrNull()
@@ -51,6 +54,21 @@ class LocalCalendar(
             androidCalendar.writeSyncState(state.toString())
         }
 
+    override fun addFromDataObject(
+        data: Event,
+        syncId: String?,
+        eTag: String?,
+        scheduleTag: String?,
+        flags: Int
+    ) {
+        androidCalendar.createEventFromDataObject(
+            event = data,
+            syncId = syncId,
+            eTag = eTag,
+            scheduleTag = scheduleTag,
+            flags = flags
+        )
+    }
 
     override fun findDeleted() =
         androidCalendar
@@ -125,6 +143,8 @@ class LocalCalendar(
         )
     }
 
+
+    // other methods
 
     fun processDirtyExceptions() {
         // process deleted exceptions
@@ -201,7 +221,7 @@ class LocalCalendar(
             val eventID = values.getAsLong(Events._ID)
 
             // get number of instances
-            val numEventInstances = AndroidEvent.numInstances(androidCalendar.client, androidCalendar.account, eventID)
+            val numEventInstances = androidCalendar.numInstances(eventID)
 
             // delete event if there are no instances
             if (numEventInstances == 0) {

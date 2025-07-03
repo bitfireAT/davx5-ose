@@ -28,6 +28,10 @@ class LocalJtxICalObject(
         this.scheduleTag = scheduleTag
     }
 
+    override fun updateFromDataObject(data: JtxICalObject, eTag: String?, scheduleTag: String?) {
+        TODO("Not yet implemented")
+    }
+
 
     object Factory : JtxICalObjectFactory<LocalJtxICalObject> {
 

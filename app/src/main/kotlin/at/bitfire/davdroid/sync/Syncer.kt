@@ -32,7 +32,7 @@ import javax.inject.Inject
  * @param resync        whether re-synchronization is requested (`null` for normal sync)
  * @param syncResult    synchronization result, to be modified during sync
  */
-abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType: LocalCollection<*>>(
+abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType: LocalCollection<*, *>>(
     protected val account: Account,
     protected val resync: ResyncType?,
     protected val syncResult: SyncResult

@@ -216,6 +216,10 @@ class LocalGroup: AndroidGroup, LocalAddress {
         addressBook.provider!!.update(groupSyncUri(), values, null, null)
     }
 
+    override fun updateFromDataObject(data: Contact, eTag: String?, scheduleTag: String?) {
+        TODO("Not yet implemented")
+    }
+
     override fun updateFlags(flags: Int) {
         val values = contentValuesOf(COLUMN_FLAGS to flags)
         addressBook.provider!!.update(groupSyncUri(), values, null, null)

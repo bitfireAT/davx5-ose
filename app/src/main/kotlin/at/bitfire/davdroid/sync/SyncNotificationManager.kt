@@ -116,7 +116,7 @@ class SyncNotificationManager @AssistedInject constructor(
         syncDataType: SyncDataType,
         notificationTag: String,
         message: String,
-        localCollection: LocalCollection<*>,
+        localCollection: LocalCollection<*, *>,
         e: Throwable,
         local: LocalResource<*>?,
         remote: HttpUrl?

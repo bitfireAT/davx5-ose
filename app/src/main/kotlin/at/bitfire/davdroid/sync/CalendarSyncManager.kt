@@ -28,7 +28,6 @@ import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.synctools.exception.InvalidRemoteResourceException
@@ -62,7 +61,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted resync: ResyncType?,
     accountSettingsFactory: AccountSettings.Factory,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
-): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
+): SyncManager<LocalCalendar, LocalEvent, Event, DavCalendar>(
     account,
     httpClient,
     SyncDataType.EVENTS,
@@ -277,20 +276,22 @@ class CalendarSyncManager @AssistedInject constructor(
                 event.alarms += alarm
             }
 
-            // update local event, if it exists
+            // update/add local event
             val local = localCollection.findByName(fileName)
             SyncException.wrapWithLocalResource(local) {
                 if (local != null) {
                     logger.log(Level.INFO, "Updating $fileName in local calendar", event)
-                    local.eTag = eTag
-                    local.scheduleTag = scheduleTag
-                    local.update(event)
+                    local.updateFromDataObject(event, eTag, scheduleTag)
+
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local calendar", event)
-                    val newLocal = LocalEvent(AndroidEvent(localCollection.androidCalendar, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT))
-                    SyncException.wrapWithLocalResource(newLocal) {
-                        newLocal.add()
-                    }
+                    localCollection.addFromDataObject(
+                        data = event,
+                        syncId = fileName,
+                        eTag = eTag,
+                        scheduleTag = scheduleTag,
+                        flags = LocalResource.FLAG_REMOTELY_PRESENT
+                    )
                 }
             }
         } else

@@ -120,6 +120,10 @@ class LocalContact: AndroidContact, LocalAddress {
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
+    override fun updateFromDataObject(data: Contact, eTag: String?, scheduleTag: String?) {
+        TODO("Not yet implemented")
+    }
+
     override fun updateFlags(flags: Int) {
         val values = contentValuesOf(COLUMN_FLAGS to flags)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)

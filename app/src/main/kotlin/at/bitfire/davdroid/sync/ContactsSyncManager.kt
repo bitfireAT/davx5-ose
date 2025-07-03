@@ -111,7 +111,7 @@ class ContactsSyncManager @AssistedInject constructor(
     accountSettingsFactory: AccountSettings.Factory,
     private val httpClientBuilder: HttpClient.Builder,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
-): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
+): SyncManager<LocalAddressBook, LocalAddress, Contact, DavAddressBook>(
     account,
     httpClient,
     SyncDataType.CONTACTS,

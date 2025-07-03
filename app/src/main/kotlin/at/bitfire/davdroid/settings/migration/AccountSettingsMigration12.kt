@@ -12,8 +12,8 @@ import android.provider.CalendarContract
 import android.util.Base64
 import androidx.core.content.ContextCompat
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.AndroidEvent
-import at.bitfire.ical4android.UnknownProperty
+import at.bitfire.synctools.storage.calendar.AndroidEvent
+import at.bitfire.synctools.storage.calendar.UnknownProperty
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.Binds
 import dagger.Module

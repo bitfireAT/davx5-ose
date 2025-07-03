@@ -73,7 +73,12 @@ import javax.net.ssl.SSLHandshakeException
  * @param collection            collection info in the database
  * @param resync                whether re-synchronization is requested
  */
-abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
+abstract class SyncManager<
+    CollectionType: LocalCollection<ResourceType, DataObjectType>,
+    ResourceType: LocalResource<DataObjectType>,
+    DataObjectType,
+    RemoteType: DavCollection
+>(
     val account: Account,
     val httpClient: HttpClient,
     val dataType: SyncDataType,
@@ -246,11 +251,11 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 logger.info("Remote collection didn't change, no reason to sync")
 
         } catch (potentiallyWrappedException: Throwable) {
-            var local: LocalResource<*>? = null
+            var local: ResourceType? = null
             var remote: HttpUrl? = null
 
             val e = SyncException.unwrap(potentiallyWrappedException) {
-                local = it.localResource
+                // FIXME local = it.localResource
                 remote = it.remoteResource
             }
 
@@ -716,7 +721,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     /**
      * Logs the exception, updates sync result and shows a notification to the user.
      */
-    private fun handleException(e: Throwable, local: LocalResource<*>?, remote: HttpUrl?) {
+    private fun handleException(e: Throwable, local: ResourceType?, remote: HttpUrl?) {
         var message: String
         when (e) {
             is IOException -> {

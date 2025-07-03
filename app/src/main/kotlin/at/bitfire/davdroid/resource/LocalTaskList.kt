@@ -11,6 +11,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.DmfsTaskListFactory
+import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.TaskLists
@@ -28,7 +29,7 @@ class LocalTaskList private constructor(
     provider: ContentProviderClient,
     providerName: TaskProvider.ProviderName,
     id: Long
-): DmfsTaskList<LocalTask>(account, provider, providerName, LocalTask.Factory, id), LocalCollection<LocalTask> {
+): DmfsTaskList<LocalTask>(account, provider, providerName, LocalTask.Factory, id), LocalCollection<LocalTask, Task> {
 
     private val logger = Logger.getGlobal()
 
@@ -67,6 +68,9 @@ class LocalTaskList private constructor(
             provider.update(taskListSyncUri(), values, null, null)
         }
 
+    override fun addFromDataObject(data: Task, syncId: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        TODO("Not yet implemented")
+    }
 
     override fun populate(values: ContentValues) {
         super.populate(values)

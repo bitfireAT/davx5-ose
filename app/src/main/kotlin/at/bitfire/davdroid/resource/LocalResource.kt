@@ -4,19 +4,10 @@
 
 package at.bitfire.davdroid.resource
 
-import android.net.Uri
+import at.bitfire.davdroid.resource.LocalResource.Companion.FLAG_REMOTELY_PRESENT
 
-interface LocalResource<in TData: Any> {
 
-    companion object {
-        /**
-         * Resource is present on remote server. This flag is used to identify resources
-         * which are not present on the remote server anymore and can be deleted at the end
-         * of the synchronization.
-         */
-        const val FLAG_REMOTELY_PRESENT = 1
-    }
-
+interface LocalResource<DataObjectType> {
 
     /**
      * Unique ID which identifies the resource in the local storage. May be null if the
@@ -40,6 +31,24 @@ interface LocalResource<in TData: Any> {
     /** bitfield of flags; currently either [FLAG_REMOTELY_PRESENT] or 0 */
     val flags: Int
 
+
+    /**
+     * Unsets the /dirty/ field of the resource. Typically used after successfully uploading a
+     * locally modified resource.
+     *
+     * @param fileName If this argument is not *null*, [LocalResource.fileName] will be set to its value.
+     * @param eTag ETag of the uploaded resource as returned by the server (null if the server didn't return one)
+     * @param scheduleTag CalDAV Schedule-Tag of the uploaded resource as returned by the server (null if not applicable or if the server didn't return one)
+     */
+    fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String? = null)
+
+    /**
+     * Deletes the local resource from the content provider.
+     *
+     * @return number of affected rows
+     */
+    fun delete(): Int
+
     /**
      * Prepares the resource for uploading:
      *
@@ -53,14 +62,14 @@ interface LocalResource<in TData: Any> {
     fun prepareForUpload(): String
 
     /**
-     * Unsets the /dirty/ field of the resource. Typically used after successfully uploading a
-     * locally modified resource.
-     *
-     * @param fileName If this argument is not *null*, [LocalResource.fileName] will be set to its value.
-     * @param eTag ETag of the uploaded resource as returned by the server (null if the server didn't return one)
-     * @param scheduleTag CalDAV Schedule-Tag of the uploaded resource as returned by the server (null if not applicable or if the server didn't return one)
+     * Undoes deletion of the data object from the content provider.
      */
-    fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String? = null)
+    fun resetDeleted()
+
+    /**
+     * Updates the data object in the content provider and ensures that the dirty flag is clear.
+     */
+    fun updateFromDataObject(data: DataObjectType, eTag: String?, scheduleTag: String?)
 
     /**
      * Sets (local) flags of the resource. At the moment, the only allowed values are
@@ -69,30 +78,13 @@ interface LocalResource<in TData: Any> {
     fun updateFlags(flags: Int)
 
 
-    /**
-     * Adds the data object to the content provider and ensures that the dirty flag is clear.
-     *
-     * @return content URI of the created row (e.g. event URI)
-     */
-    fun add(): Uri
-
-    /**
-     * Updates the data object in the content provider and ensures that the dirty flag is clear.
-     *
-     * @return content URI of the updated row (e.g. event URI)
-     */
-    fun update(data: TData): Uri
-
-    /**
-     * Deletes the data object from the content provider.
-     *
-     * @return number of affected rows
-     */
-    fun delete(): Int
-
-    /**
-     * Undoes deletion of the data object from the content provider.
-     */
-    fun resetDeleted()
+    companion object {
+        /**
+         * Resource is present on remote server. This flag is used to identify resources
+         * which are not present on the remote server anymore and can be deleted at the end
+         * of the synchronization.
+         */
+        const val FLAG_REMOTELY_PRESENT = 1
+    }
 
 }

@@ -18,7 +18,7 @@ import at.bitfire.ical4android.JtxICalObject
  */
 class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Long):
     JtxCollection<JtxICalObject>(account, client, LocalJtxICalObject.Factory, id),
-    LocalCollection<LocalJtxICalObject>{
+    LocalCollection<LocalJtxICalObject, JtxICalObject>{
 
     override val readOnly: Boolean
         get() = throw NotImplementedError()
@@ -36,6 +36,9 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
         get() = SyncState.fromString(syncstate)
         set(value) { syncstate = value.toString() }
 
+    override fun addFromDataObject(data: JtxICalObject, syncId: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        TODO("Not yet implemented")
+    }
 
     override fun findDeleted(): List<LocalJtxICalObject> {
         val values = queryDeletedICalObjects()

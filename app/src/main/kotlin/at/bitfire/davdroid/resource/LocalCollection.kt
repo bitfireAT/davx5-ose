@@ -6,7 +6,7 @@ package at.bitfire.davdroid.resource
 
 import at.bitfire.davdroid.db.SyncState
 
-interface LocalCollection<out T: LocalResource<*>> {
+interface LocalCollection<LocalResourceType: LocalResource<DataObjectType>, DataObjectType> {
 
     /** a tag that uniquely identifies the collection (DAVx5-wide) */
     val tag: String
@@ -26,12 +26,23 @@ interface LocalCollection<out T: LocalResource<*>> {
     val readOnly: Boolean
 
     /**
+     * Adds the data object to the content provider and ensures that the dirty flag is clear.
+     */
+    fun addFromDataObject(
+        data: DataObjectType,
+        syncId: String?,
+        eTag: String?,
+        scheduleTag: String?,
+        flags: Int
+    )
+
+    /**
      * Finds local resources of this collection which have been marked as *deleted* by the user
      * or an app acting on their behalf.
      *
      * @return list of resources marked as *deleted*
      */
-    fun findDeleted(): List<T>
+    fun findDeleted(): List<LocalResourceType>
 
     /**
      * Finds local resources of this collection which have been marked as *dirty*, i.e. resources
@@ -39,7 +50,7 @@ interface LocalCollection<out T: LocalResource<*>> {
      *
      * @return list of resources marked as *dirty*
      */
-    fun findDirty(): List<T>
+    fun findDirty(): List<LocalResourceType>
 
     /**
      * Finds a local resource of this collection with a given file name. (File names are assigned
@@ -48,8 +59,13 @@ interface LocalCollection<out T: LocalResource<*>> {
      * @param name file name to look for
      * @return resource with the given name, or null if none
      */
-    fun findByName(name: String): T?
+    fun findByName(name: String): LocalResourceType?
 
+
+    /**
+     * Forgets the ETags of all members so that they will be reloaded from the server during sync.
+     */
+    fun forgetETags()
 
     /**
      * Sets the [LocalEvent.COLUMN_FLAGS] value for entries which are not dirty ([Events.DIRTY] is 0)
@@ -71,11 +87,5 @@ interface LocalCollection<out T: LocalResource<*>> {
      * @return         number of removed entries
      */
     fun removeNotDirtyMarked(flags: Int): Int
-
-
-    /**
-     * Forgets the ETags of all members so that they will be reloaded from the server during sync.
-     */
-    fun forgetETags()
 
 }

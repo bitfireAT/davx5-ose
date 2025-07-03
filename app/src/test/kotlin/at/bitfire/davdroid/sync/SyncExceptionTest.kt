@@ -16,8 +16,8 @@ class SyncExceptionTest {
 
     @Test
     fun testWrapWithLocalResource_LocalResource_Exception() {
-        val outer = mockk<LocalResource<*>>()
-        val inner = mockk<LocalResource<*>>()
+        val outer = mockk<LocalResource>()
+        val inner = mockk<LocalResource>()
         val e = Exception()
 
         val result = assertSyncException {
@@ -34,8 +34,8 @@ class SyncExceptionTest {
 
     @Test
     fun testWrapWithLocalResource_LocalResource_SyncException() {
-        val outer = mockk<LocalResource<*>>()
-        val inner = mockk<LocalResource<*>>()
+        val outer = mockk<LocalResource>()
+        val inner = mockk<LocalResource>()
         val e = SyncException(Exception())
 
         val result = assertSyncException {
@@ -52,7 +52,7 @@ class SyncExceptionTest {
 
     @Test
     fun testWrapWithLocalResource_RemoteResource_Exception() {
-        val local = mockk<LocalResource<*>>()
+        val local = mockk<LocalResource>()
         val remote = mockk<HttpUrl>()
         val e = Exception()
 
@@ -71,7 +71,7 @@ class SyncExceptionTest {
 
     @Test
     fun testWrapWithLocalResource_RemoteResource_SyncException() {
-        val local = mockk<LocalResource<*>>()
+        val local = mockk<LocalResource>()
         val remote = mockk<HttpUrl>()
         val e = SyncException(Exception())
 
@@ -92,7 +92,7 @@ class SyncExceptionTest {
     @Test
     fun testWrapWithRemoteResource_LocalResource_Exception() {
         val remote = mockk<HttpUrl>()
-        val local = mockk<LocalResource<*>>()
+        val local = mockk<LocalResource>()
         val e = Exception()
 
         val result = assertSyncException {
@@ -111,7 +111,7 @@ class SyncExceptionTest {
     @Test
     fun testWrapWithRemoteResource_LocalResource_SyncException() {
         val remote = mockk<HttpUrl>()
-        val local = mockk<LocalResource<*>>()
+        val local = mockk<LocalResource>()
         val e = SyncException(Exception())
 
         val result = assertSyncException {

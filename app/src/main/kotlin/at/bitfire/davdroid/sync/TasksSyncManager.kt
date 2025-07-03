@@ -51,7 +51,7 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
-): SyncManager<LocalTask, LocalTaskList, DavCalendar>(
+): SyncManager<LocalTaskList, LocalTask, Task, DavCalendar>(
     account,
     httpClient,
     SyncDataType.TASKS,

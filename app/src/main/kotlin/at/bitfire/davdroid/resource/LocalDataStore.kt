@@ -12,7 +12,7 @@ import at.bitfire.davdroid.db.Collection
  * Represents a local data store for a specific collection type.
  * Manages creation, update, and deletion of collections of the given type.
  */
-interface LocalDataStore<T: LocalCollection<*>> {
+interface LocalDataStore<T: LocalCollection<*, *>> {
 
     /**
      * Content provider authority for the data store.

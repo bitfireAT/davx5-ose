@@ -49,7 +49,7 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
-): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(
+): SyncManager<LocalJtxCollection, LocalJtxICalObject, JtxICalObject, DavCalendar>(
     account,
     httpClient,
     SyncDataType.TASKS,

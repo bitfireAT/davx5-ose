@@ -93,6 +93,10 @@ class LocalTask: DmfsTask, LocalResource<Task> {
         this.eTag = eTag
     }
 
+    override fun updateFromDataObject(data: Task, eTag: String?, scheduleTag: String?) {
+        TODO("Not yet implemented")
+    }
+
     override fun updateFlags(flags: Int) {
         if (id != null) {
             val values = contentValuesOf(COLUMN_FLAGS to flags)

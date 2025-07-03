@@ -4,11 +4,10 @@
 
 package at.bitfire.davdroid.resource
 
-import android.content.ContentValues
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
+import at.bitfire.synctools.storage.calendar.AndroidEvent
 import java.util.UUID
 
 class LocalEvent(
@@ -17,48 +16,41 @@ class LocalEvent(
 
     // LocalResource implementation
 
-    override val id: Long?
+    override val id: Long
         get() = androidEvent.id
 
-    override var fileName: String?
+    override val fileName: String?
         get() = androidEvent.syncId
-        private set(value) {
-            androidEvent.syncId = value
-        }
 
     override var eTag: String?
         get() = androidEvent.eTag
-        set(value) { androidEvent.eTag = value }
+        set(value) = TODO()
 
     override var scheduleTag: String?
         get() = androidEvent.scheduleTag
-        set(value) { androidEvent.scheduleTag = value }
+        set(value) = TODO()
 
     override val flags: Int
         get() = androidEvent.flags
 
-    override fun add() = androidEvent.add()
 
-    override fun update(data: Event) = androidEvent.update(data)
+    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
+        val values = contentValuesOf(
+            AndroidEvent.COLUMN_ETAG to eTag,
+            AndroidEvent.COLUMN_SCHEDULE_TAG to scheduleTag,
+            AndroidEvent.COLUMN_SEQUENCE to androidEvent.event.sequence,   // why?
+        )
+        values.put(Events.DIRTY, 0)
+        if (fileName != null)
+            values.put(Events._SYNC_ID, fileName)
+        androidEvent.update(values)
+    }
 
     override fun delete() = androidEvent.delete()
 
-
-    // other methods
-
-    val weAreOrganizer
-        get() = androidEvent.event!!.isOrganizer == true
-
-
-    /**
-     * Creates and sets a new UID in the calendar provider, if no UID is already set.
-     * It also returns the desired file name for the event for further processing in the sync algorithm.
-     *
-     * @return file name to use at upload
-     */
     override fun prepareForUpload(): String {
         // make sure that UID is set
-        val uid: String = androidEvent.event!!.uid ?: run {
+        val uid: String = androidEvent.event.uid ?: run {
             // generate new UID
             val newUid = UUID.randomUUID().toString()
 
@@ -67,7 +59,7 @@ class LocalEvent(
             androidEvent.update(values)
 
             // update this event
-            androidEvent.event?.uid = newUid
+            androidEvent.event.uid = newUid
 
             newUid
         }
@@ -85,33 +77,34 @@ class LocalEvent(
             "${UUID.randomUUID()}.ics"      // UID would be dangerous as file name, use random UUID instead
     }
 
-
-    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
-        val values = ContentValues(5)
-        if (fileName != null)
-            values.put(Events._SYNC_ID, fileName)
-        values.put(AndroidEvent.COLUMN_ETAG, eTag)
-        values.put(AndroidEvent.COLUMN_SCHEDULE_TAG, scheduleTag)
-        values.put(AndroidEvent.COLUMN_SEQUENCE, androidEvent.event!!.sequence)
-        values.put(Events.DIRTY, 0)
-        androidEvent.update(values)
-
-        if (fileName != null)
-            this.fileName = fileName
-        this.eTag = eTag
-        this.scheduleTag = scheduleTag
+    override fun resetDeleted() {
+        androidEvent.update(contentValuesOf(
+            Events.DELETED to 0
+        ))
     }
 
     override fun updateFlags(flags: Int) {
-        val values = contentValuesOf(AndroidEvent.COLUMN_FLAGS to flags)
-        androidEvent.update(values)
-
-        androidEvent.flags = flags
+        androidEvent.update(contentValuesOf(
+            AndroidEvent.COLUMN_FLAGS to flags
+        ))
     }
 
-    override fun resetDeleted() {
-        val values = contentValuesOf(Events.DELETED to 0)
-        androidEvent.update(values)
+    override fun updateFromDataObject(data: Event, eTag: String?, scheduleTag: String?) {
+        androidEvent.calendar.updateEventFromDataObject(
+            event = data,
+            id = id,
+            syncId = androidEvent.syncId,
+            eTag = eTag,
+            scheduleTag = scheduleTag,
+            flags = flags
+        )
     }
+
+
+
+    // other methods
+
+    val weAreOrganizer
+        get() = androidEvent.event.isOrganizer == true
 
 }

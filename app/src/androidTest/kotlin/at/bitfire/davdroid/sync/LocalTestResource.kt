@@ -6,7 +6,7 @@ package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.resource.LocalResource
 
-class LocalTestResource: LocalResource<Any> {
+class LocalTestResource: LocalResource {
 
     override val id: Long? = null
     override var fileName: String? = null

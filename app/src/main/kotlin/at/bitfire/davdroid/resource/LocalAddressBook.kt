@@ -31,6 +31,7 @@ import at.bitfire.synctools.storage.ContactsBatchOperation
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidGroup
+import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -64,7 +65,8 @@ open class LocalAddressBook @AssistedInject constructor(
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
     private val syncFramework: SyncFrameworkIntegration
-): AndroidAddressBook<LocalContact, LocalGroup>(_addressBookAccount, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
+): AndroidAddressBook<LocalContact, LocalGroup>(_addressBookAccount, provider, LocalContact.Factory, LocalGroup.Factory),
+    LocalCollection<LocalAddress, Contact> {
 
     @AssistedFactory
     interface Factory {
@@ -148,6 +150,11 @@ open class LocalAddressBook @AssistedInject constructor(
         set(state) {
             syncState = state?.toString()?.toByteArray()
         }
+
+
+    override fun addFromDataObject(data: Contact, syncId: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        TODO("Not yet implemented")
+    }
 
 
     /* operations on the collection (address book) itself */
