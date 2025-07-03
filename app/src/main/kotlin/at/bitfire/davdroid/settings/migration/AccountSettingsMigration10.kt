@@ -8,10 +8,11 @@ import android.accounts.Account
 import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.CalendarContract
+import android.provider.CalendarContract.Calendars
+import android.provider.CalendarContract.Reminders
 import androidx.core.content.ContextCompat
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.resource.LocalTask
-import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.Binds
@@ -45,8 +46,14 @@ class AccountSettingsMigration10 @Inject constructor(
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
             context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
                 provider.update(
-                    CalendarContract.Calendars.CONTENT_URI.asSyncAdapter(account),
-                    AndroidCalendar.calendarBaseValues, null, null)
+                    Calendars.CONTENT_URI.asSyncAdapter(account),
+                    contentValuesOf(
+                        Calendars.ALLOWED_REMINDERS to arrayOf(
+                            Reminders.METHOD_DEFAULT,
+                            Reminders.METHOD_ALERT,
+                            Reminders.METHOD_EMAIL
+                        ).joinToString(",") { it.toString() }
+                    ), null, null)
             }
     }
 
