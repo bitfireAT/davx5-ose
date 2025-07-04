@@ -4,11 +4,11 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import androidx.core.net.toUri
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
+import at.bitfire.dav4jvm.equalsForWebDAV
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.caldav.CalendarColor
 import at.bitfire.dav4jvm.property.caldav.CalendarDescription
@@ -43,6 +43,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -161,7 +162,8 @@ class CollectionListRefresher @AssistedInject constructor(
             principal.propfind(0, *homeSetProperties) { davResponse, _ ->
                 alreadyQueriedPrincipals += davResponse.href
 
-                val personal = isHomeSetPersonal(davResponse)
+                // If no personal URL is given, or Owner is not set, the home set is not personal
+                val personal = isPersonal(davResponse) ?: false
 
                 // If response holds home sets, save them
                 davResponse[homeSetClass]?.let { homeSets ->
@@ -254,7 +256,8 @@ class CollectionListRefresher @AssistedInject constructor(
                         return@propfind
 
                     val ownerHref = response[Owner::class.java]
-                    val personal = isHomeSetPersonal(response)
+                    // If no personal URL is given, or Owner is not set, the home set is not personal
+                    val personal = isPersonal(response) ?: false
 
                     if (relation == Response.HrefRelation.SELF)
                         // this response is about the home set itself
@@ -422,10 +425,26 @@ class CollectionListRefresher @AssistedInject constructor(
         }
     }
 
-    private fun isHomeSetPersonal(davResponse: Response): Boolean {
+    /**
+     * Evaluates whether a response if personal or not.
+     * It takes the [Owner] property from the response, and compares its value against [service]'s [Service.principal].
+     *
+     * If either one of those is not set (`null`), this function returns `null`.
+     * @param davResponse The response to process.
+     * @return
+     * - `true` if the owner matches a principal.
+     * - `false` is the owner doesn't match a principal.
+     * - `null` if the owner and/or principal is not set / unknown.
+     */
+    private fun isPersonal(davResponse: Response): Boolean? {
         // Owner must be set in order to check if the home set is personal
-        val ownerHref = davResponse[Owner::class.java]?.href?.toUri() ?: return false
-        // If Owner is set, check if the paths match. Owner is relative, doesn't contain the full URL, so we have to partially check it
-        return ownerHref.encodedPath == service.principal?.encodedPath
+        val ownerHref = davResponse[Owner::class.java]?.href?.toHttpUrlOrNull()
+        val principal = service.principal
+
+        // If either Owner or principal is not set, return null
+        if (ownerHref == null || principal == null) return null
+
+        // If both fields are set, compare them
+        return ownerHref.equalsForWebDAV(principal)
     }
 }
