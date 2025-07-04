@@ -270,8 +270,6 @@
   <string name="login_fastmail_account">Fastmail konto</string>
   <string name="login_fastmail_sign_in">Logga in med Fastmail</string>
   <string name="login_type_google">Google Kontakter / Kalender</string>
-  <string name="login_google_see_tested_with">Se vår sida \"Testad med Google\" för uppdaterad information.</string>
-  <string name="login_google_unexpected_warnings">Du kan uppleva oväntade varningar och/eller behöva skapa ditt egna klient-ID.</string>
   <string name="login_google_account">Google-konto</string>
   <string name="login_google">Logga in med Google</string>
   <string name="login_google_client_id">Klient-ID (valfritt)</string>

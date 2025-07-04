@@ -34,6 +34,7 @@
   <string name="intro_battery_text">Per la sincronització en intervals regulars, cal que %s tingui permís per a executar-se en segon pla. En cas contrari, Android podria aturar la sincronització en qualsevol moment.</string>
   <string name="intro_battery_dont_show">No necessito intervals de sincronització regulars.*</string>
   <string name="intro_autostart_title">Compatibilitat amb %s</string>
+  <string name="intro_autostart_text">El microprogramari específic dels proveïdors pot bloquejar la sincronització. Si us afecta, només podeu resoldre-ho manualment.</string>
   <string name="intro_autostart_dont_show">He fet els ajustaments requerits. No m\'ho recordis més.*</string>
   <string name="intro_leave_unchecked">* Deixar desmarcat per un recordatori més tard. Pot ser reinicialitzat a ajustaments /%s.</string>
   <string name="intro_more_info">Més informació</string>
@@ -120,6 +121,7 @@
   <string name="navigation_drawer_website">Pàgina web</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Preguntes més freqüents</string>
+  <string name="navigation_drawer_managed">Per a organitzacions</string>
   <string name="navigation_drawer_community">Comunitat</string>
   <string name="navigation_drawer_support_project">Doneu suport al projecte</string>
   <string name="navigation_drawer_contribute">Com col·laborar</string>
@@ -270,8 +272,6 @@
   <string name="login_fastmail_account">Compte de Fastmail</string>
   <string name="login_fastmail_sign_in">Inici de sessió amb el Fastmail</string>
   <string name="login_type_google">Contactes / Calendari de Google</string>
-  <string name="login_google_see_tested_with">Vegeu la nostra guia «Tested with Google» per a obtenir informació actualitzada.</string>
-  <string name="login_google_unexpected_warnings">És possible que sorgeixin advertències inesperades, en aquest cas hauràs de crear el teu propi ID de client.</string>
   <string name="login_google_account">Compte de Google</string>
   <string name="login_google">Inicia la sessió amb Google</string>
   <string name="login_google_client_id">ID de Client (opcional)</string>

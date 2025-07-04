@@ -233,8 +233,6 @@
   <string name="login_no_certificate_found">სერტიფიკატი ვერ მოიძებნა</string>
   <string name="login_install_certificate">სერტიფიკატის დაყენება</string>
   <string name="login_type_google">Google კონტაქტები / კალენდარი</string>
-  <string name="login_google_see_tested_with">გთხოვთ, იხილოთ ჩვენი \"ტესტირებულია Google-თან\" გვერდი ბოლო ინფორმაციისთვის.</string>
-  <string name="login_google_unexpected_warnings">შეიძლება გქონდეთ მოულოდნელი გაფრთხილებები ან/და მოგიწიოთ შექმნათ თქვენი პირადი კლიენტის ID.</string>
   <string name="login_google_account">Google ანგარიში</string>
   <string name="login_google">Google-ით შესვლა</string>
   <string name="login_google_client_id">კლიენტის ID (aრასავალდებულო)</string>

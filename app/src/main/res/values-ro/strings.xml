@@ -271,8 +271,6 @@
   <string name="login_fastmail_account">Cont Fastmail</string>
   <string name="login_fastmail_sign_in">Conectează-te cu Fastmail</string>
   <string name="login_type_google">Contacte Google / Calendar</string>
-  <string name="login_google_see_tested_with">Consultă pagina noastră „Testat cu Google” pentru informații actualizate.</string>
-  <string name="login_google_unexpected_warnings">Este posibil să ai avertismente neașteptate și/sau să fii nevoit să creezi propriul ID de client.</string>
   <string name="login_google_account">Cont Google</string>
   <string name="login_google">Conectează-te cu Google</string>
   <string name="login_google_client_id">ID client (opțional)</string>

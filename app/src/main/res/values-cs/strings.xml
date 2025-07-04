@@ -232,8 +232,6 @@
   <string name="login_no_certificate_found">Nenalezen žádný certifikát</string>
   <string name="login_install_certificate">Instalovat certifikát</string>
   <string name="login_type_google">Google kontakty/kalendář</string>
-  <string name="login_google_see_tested_with">Prosíme, podívejte se na naši stránku \"Testováno s Google\" pro aktuální informace.</string>
-  <string name="login_google_unexpected_warnings">Můžete se setkat s nečekanými varováními anebo budete muset vytvořit vaše vlastní klientské ID.</string>
   <string name="login_google_account">Google účet</string>
   <string name="login_google">Přihlásit se Googlem</string>
   <string name="login_google_client_id">Identif. klienta (volitelné)</string>
