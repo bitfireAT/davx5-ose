@@ -98,10 +98,7 @@ class CollectionListRefresherTest {
         val baseUrl = mockServer.url(PATH_CARDDAV + SUBPATH_PRINCIPAL)
 
         // Query home sets
-        refresherFactory.create(service, client.okHttpClient).apply {
-            discoverHomesets(baseUrl)
-            refreshHomesetsAndTheirCollections()
-        }
+        refresherFactory.create(service, client.okHttpClient).discoverHomesets(baseUrl)
 
         // Check home set has been saved correctly to database
         val savedHomesets = db.homeSetDao().getByService(service.id)

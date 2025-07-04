@@ -43,7 +43,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -162,17 +161,20 @@ class CollectionListRefresher @AssistedInject constructor(
             principal.propfind(0, *homeSetProperties) { davResponse, _ ->
                 alreadyQueriedPrincipals += davResponse.href
 
-                // If no personal URL is given, or Owner is not set, the home set is not personal
-                val personal = isPersonal(davResponse) ?: false
-
                 // If response holds home sets, save them
                 davResponse[homeSetClass]?.let { homeSets ->
                     for (homeSetHref in homeSets.hrefs)
                         principal.location.resolve(homeSetHref)?.let { homesetUrl ->
                             val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
+                            var isHomeSetPersonal = false
+                            // Query the actual home set personal status
+                            DavResource(httpClient, homesetUrl).propfind(1, Owner.NAME) { response, _ ->
+                                if (!response.isSuccess()) return@propfind
+                                isHomeSetPersonal = isPersonal(response) ?: false
+                            }
                             if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
                                 homeSetRepository.insertOrUpdateByUrlBlocking(
-                                    HomeSet(0, service.id, personal, resolvedHomeSetUrl)
+                                    HomeSet(0, service.id, isHomeSetPersonal, resolvedHomeSetUrl)
                                 )
                                 alreadySavedHomeSets += resolvedHomeSetUrl
                             }
@@ -438,13 +440,17 @@ class CollectionListRefresher @AssistedInject constructor(
      */
     private fun isPersonal(davResponse: Response): Boolean? {
         // Owner must be set in order to check if the home set is personal
-        val ownerHref = davResponse[Owner::class.java]?.href?.toHttpUrlOrNull()
+        val ownerHref = davResponse[Owner::class.java]?.href
         val principal = service.principal
 
         // If either Owner or principal is not set, return null
         if (ownerHref == null || principal == null) return null
 
+        // Try to resolve the owner href
+        val ownerResolvedHref = principal.resolve(ownerHref)
+        if (ownerResolvedHref == null) return null
+
         // If both fields are set, compare them
-        return ownerHref.equalsForWebDAV(principal)
+        return ownerResolvedHref.equalsForWebDAV(principal)
     }
 }
