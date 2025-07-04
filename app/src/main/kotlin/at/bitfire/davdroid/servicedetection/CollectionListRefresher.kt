@@ -256,15 +256,15 @@ class CollectionListRefresher @AssistedInject constructor(
                     val ownerHref = response[Owner::class.java]
                     val personal = isHomeSetPersonal(response)
 
-                    val newHomeset = if (relation == Response.HrefRelation.SELF)
+                    if (relation == Response.HrefRelation.SELF)
                         // this response is about the home set itself
-                        localHomeset.copy(
-                            displayName = response[DisplayName::class.java]?.displayName,
-                            privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
+                        homeSetRepository.insertOrUpdateByUrlBlocking(
+                            localHomeset.copy(
+                                displayName = response[DisplayName::class.java]?.displayName,
+                                privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false,
+                                personal = personal
+                            )
                         )
-                    else
-                        localHomeset.copy(personal = personal)
-                    homeSetRepository.insertOrUpdateByUrlBlocking(newHomeset)
 
                     // in any case, check whether the response is about a usable collection
                     var collection = Collection.fromDavResponse(response) ?: return@propfind
