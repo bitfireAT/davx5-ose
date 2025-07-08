@@ -41,14 +41,15 @@ class AutomaticSyncManager @Inject constructor(
     private fun disableAutomaticSync(account: Account, dataType: SyncDataType) {
         workerManager.disablePeriodic(account, dataType)
 
-        for (authority in dataType.possibleAuthorities())
+        for (authority in dataType.possibleAuthorities()) {
             syncFramework.disableSyncAbility(account, authority)
-        // no need to disable content-triggered sync, as it can't be active without sync-ability enabled
+            // no need to disable content-triggered sync, as it can't be active when sync-ability is disabled
+        }
     }
 
     /**
-     * Enables automatic synchronization for the given account and data type and sets it to the given interval,
-     * if enabled by user int the account settings:
+     * Enables/Disables automatic synchronization for the given account and data type and sets it to the given interval,
+     * based on sync interval setting in account settings:
      *
      * 1. Enables/Disables periodic sync worker for the given data type with the given interval.
      * 2. Enables/Disables sync in the sync framework and enables or disables content-triggered syncs for the given data type
@@ -73,12 +74,12 @@ class AutomaticSyncManager @Inject constructor(
         val possibleAuthorities = dataType.possibleAuthorities()
         val authority: String? = when (dataType) {
             SyncDataType.CONTACTS -> {
-                // Content triggered sync of contacts is handled per address book account
+                // Automatic sync of contacts is handled per address book account
                 localAddressBookStore.acquireContentProvider()?.let { provider ->
                     for (addressBookAccount in localAddressBookStore.getAll(account, provider))
                         addressBookAccount.updateAutomaticSync()
                 }
-                null // disable content-triggered sync for contacts, as it is handled per address book account
+                null // disable here, as it is handled per address book account
             }
             SyncDataType.EVENTS -> CalendarContract.AUTHORITY
             SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
@@ -110,8 +111,8 @@ class AutomaticSyncManager @Inject constructor(
     /**
      * Updates automatic synchronization of the given account and data type according to the account services and settings.
      *
-     * If there's a [Service] for the given account and data type, automatic sync is enabled (with details from [AccountSettings],
-     * so it may actually still be set to manual and not active by the user even though enabled here).
+     * If there's a [Service] for the given account and data type, automatic sync may be enabled if sync interval is set
+     * in [AccountSettings].
      * Otherwise, automatic synchronization is disabled.
      *
      * @param account   account for which automatic synchronization shall be updated

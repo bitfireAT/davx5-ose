@@ -225,13 +225,13 @@ open class LocalAddressBook @AssistedInject constructor(
 
     /**
      * Enables or disables automatic synchronization (periodic and on content changes) for the address book account
-     * based on the current account setting.
+     * based on the current sync interval account setting.
      */
     fun updateAutomaticSync() {
         val accountSettings = accountSettingsFactory.create(account)
         val syncInterval = accountSettings.getSyncInterval(SyncDataType.CONTACTS)
 
-        // Enable/Disable sync-ability of contacts and content-triggered syncs
+        // Enable/Disable sync-ability and content triggered syncs of contacts authority for the address book account.
         if (syncInterval != null) {
             syncFramework.enableSyncAbility(addressBookAccount, ContactsContract.AUTHORITY)
             syncFramework.enableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
