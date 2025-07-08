@@ -75,7 +75,7 @@ class AutomaticSyncManager @Inject constructor(
         val authority: String? = when (dataType) {
             SyncDataType.CONTACTS -> {
                 // Automatic sync of contacts is handled per address book account
-                localAddressBookStore.acquireContentProvider()?.let { provider ->
+                localAddressBookStore.acquireContentProvider()?.use { provider ->
                     for (addressBookAccount in localAddressBookStore.getAll(account, provider))
                         addressBookAccount.updateAutomaticSync()
                 }
