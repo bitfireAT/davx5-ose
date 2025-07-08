@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.provider.CalendarContract
+import android.provider.ContactsContract
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBookStore
@@ -63,36 +64,44 @@ class AutomaticSyncManager @Inject constructor(
     ) {
         val accountSettings = accountSettingsFactory.create(account)
         val syncInterval = accountSettings.getSyncInterval(dataType)
+
+        // 1. Update sync workers (needs already updated sync interval in AccountSettings).
         if (syncInterval != null) {
-            // update sync workers (needs already updated sync interval in AccountSettings)
             val wifiOnly = accountSettings.getSyncWifiOnly()
             workerManager.enablePeriodic(account, dataType, syncInterval, wifiOnly)
         } else
             workerManager.disablePeriodic(account, dataType)
 
-        // also enable/disable content-triggered syncs
-        val possibleAuthorities = dataType.possibleAuthorities()
-        val authority: String? = when (dataType) {
-            SyncDataType.CONTACTS -> {
-                // Automatic sync of contacts is handled per address book account
-                localAddressBookStore.acquireContentProvider()?.use { provider ->
-                    for (addressBookAccount in localAddressBookStore.getAll(account, provider))
-                        addressBookAccount.updateAutomaticSync()
-                }
-                null // disable here, as it is handled per address book account
+        // 2. Enable/disable content-triggered syncs.
+        if (dataType == SyncDataType.CONTACTS) {
+            // Contact updates are handled by their respective address book accounts, so we must always
+            // disable the content-triggered sync for the main account.
+            syncFramework.disableSyncAbility(account, ContactsContract.AUTHORITY)
+
+            // pass through request to update all existing address books
+            localAddressBookStore.acquireContentProvider()?.use { provider ->
+                for (addressBookAccount in localAddressBookStore.getAll(account, provider))
+                    addressBookAccount.updateAutomaticSync()
             }
-            SyncDataType.EVENTS -> CalendarContract.AUTHORITY
-            SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
+
+        } else {
+            // everything but contacts
+            val possibleAuthorities = dataType.possibleAuthorities()
+            val authority: String? = when (dataType) {
+                SyncDataType.CONTACTS -> throw IllegalStateException()  // handled above
+                SyncDataType.EVENTS -> CalendarContract.AUTHORITY
+                SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
+            }
+            if (authority != null && syncInterval != null) {
+                // enable given authority, but completely disable all other possible authorities
+                // (for instance, tasks apps which are not the current task app)
+                syncFramework.enableSyncOnContentChange(account, authority)
+                for (disableAuthority in possibleAuthorities - authority)
+                    syncFramework.disableSyncAbility(account, disableAuthority)
+            } else
+                for (authority in possibleAuthorities)
+                    syncFramework.disableSyncOnContentChange(account, authority)
         }
-        if (authority != null && syncInterval != null) {
-            // enable given authority, but completely disable all other possible authorities
-            // (for instance, tasks apps which are not the current task app)
-            syncFramework.enableSyncOnContentChange(account, authority)
-            for (disableAuthority in possibleAuthorities - authority)
-                syncFramework.disableSyncAbility(account, disableAuthority)
-        } else
-            for (authority in possibleAuthorities)
-                syncFramework.disableSyncOnContentChange(account, authority)
     }
 
     /**

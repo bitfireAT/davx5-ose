@@ -232,13 +232,10 @@ open class LocalAddressBook @AssistedInject constructor(
         val syncInterval = accountSettings.getSyncInterval(SyncDataType.CONTACTS)
 
         // Enable/Disable sync-ability and content triggered syncs of contacts authority for the address book account.
-        if (syncInterval != null) {
-            syncFramework.enableSyncAbility(addressBookAccount, ContactsContract.AUTHORITY)
+        if (syncInterval != null)
             syncFramework.enableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
-        } else {
+        else
             syncFramework.disableSyncAbility(addressBookAccount, ContactsContract.AUTHORITY)
-            syncFramework.disableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
-        }
     }
 
 
