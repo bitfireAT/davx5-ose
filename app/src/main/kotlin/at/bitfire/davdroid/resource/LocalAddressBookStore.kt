@@ -95,7 +95,7 @@ class LocalAddressBookStore @Inject constructor(
         val addressBook = localAddressBookFactory.create(account, addressBookAccount, provider)
 
         // update settings
-        addressBook.updateSyncFrameworkSettings()
+        addressBook.updateAutomaticSync()
         addressBook.settings = contactsProviderSettings
         addressBook.readOnly = shouldBeReadOnly(fromCollection, forceAllReadOnly)
 
@@ -152,8 +152,8 @@ class LocalAddressBookStore @Inject constructor(
             localCollection.readOnly = nowReadOnly
         }
 
-        // make sure it will still be synchronized when contacts are updated
-        localCollection.updateSyncFrameworkSettings()
+        // update content-triggered syncs
+        localCollection.updateAutomaticSync()
     }
 
     /**

@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.provider.CalendarContract
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import kotlinx.coroutines.runBlocking
@@ -27,6 +28,7 @@ import javax.inject.Provider
  */
 class AutomaticSyncManager @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
+    private val localAddressBookStore: LocalAddressBookStore,
     private val serviceRepository: DavServiceRepository,
     private val syncFramework: SyncFrameworkIntegration,
     private val tasksAppManager: Provider<TasksAppManager>,
@@ -41,13 +43,15 @@ class AutomaticSyncManager @Inject constructor(
 
         for (authority in dataType.possibleAuthorities())
             syncFramework.disableSyncAbility(account, authority)
+        // no need to disable content-triggered sync, as it can't be active without sync-ability enabled
     }
 
     /**
-     * Enables automatic synchronization for the given account and data type and sets it to the given interval:
+     * Enables automatic synchronization for the given account and data type and sets it to the given interval,
+     * if enabled by user int the account settings:
      *
-     * 1. Sets up periodic sync for the given data type with the given interval.
-     * 2. Enables sync in the sync framework for the given data type and sets up periodic sync with the given interval.
+     * 1. Enables/Disables periodic sync worker for the given data type with the given interval.
+     * 2. Enables/Disables sync in the sync framework and enables or disables content-triggered syncs for the given data type
      *
      * @param account   the account to synchronize
      * @param dataType  the data type to synchronize
@@ -68,9 +72,14 @@ class AutomaticSyncManager @Inject constructor(
         // also enable/disable content-triggered syncs
         val possibleAuthorities = dataType.possibleAuthorities()
         val authority: String? = when (dataType) {
-            // Content triggered sync of contacts is handled per address book account in
-            // [LocalAddressBook.updateSyncFrameworkSettings()]
-            SyncDataType.CONTACTS -> null
+            SyncDataType.CONTACTS -> {
+                // Content triggered sync of contacts is handled per address book account
+                localAddressBookStore.acquireContentProvider()?.let { provider ->
+                    for (addressBookAccount in localAddressBookStore.getAll(account, provider))
+                        addressBookAccount.updateAutomaticSync()
+                }
+                null // disable content-triggered sync for contacts, as it is handled per address book account
+            }
             SyncDataType.EVENTS -> CalendarContract.AUTHORITY
             SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
         }
@@ -101,7 +110,8 @@ class AutomaticSyncManager @Inject constructor(
     /**
      * Updates automatic synchronization of the given account and data type according to the account services and settings.
      *
-     * If there's a [Service] for the given account and data type, automatic sync is enabled (with details from [AccountSettings]).
+     * If there's a [Service] for the given account and data type, automatic sync is enabled (with details from [AccountSettings],
+     * so it may actually still be set to manual and not active by the user even though enabled here).
      * Otherwise, automatic synchronization is disabled.
      *
      * @param account   account for which automatic synchronization shall be updated
