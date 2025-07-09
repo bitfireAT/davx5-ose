@@ -95,7 +95,7 @@ class LocalAddressBookStore @Inject constructor(
         val addressBook = localAddressBookFactory.create(account, addressBookAccount, provider)
 
         // update settings
-        addressBook.updateAutomaticSync()
+        addressBook.updateSyncFrameworkSettings()
         addressBook.settings = contactsProviderSettings
         addressBook.readOnly = shouldBeReadOnly(fromCollection, forceAllReadOnly)
 
@@ -153,7 +153,7 @@ class LocalAddressBookStore @Inject constructor(
         }
 
         // Update automatic synchronization
-        localCollection.updateAutomaticSync()
+        localCollection.updateSyncFrameworkSettings()
     }
 
     /**
