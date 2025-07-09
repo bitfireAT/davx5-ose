@@ -43,7 +43,7 @@ class LocalEventTest {
     val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
 
     @Inject
-    lateinit var localcalendarFactory: LocalCalendar.Factory
+    lateinit var localCalendarFactory: LocalCalendar.Factory
 
     private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
     private lateinit var client: ContentProviderClient
@@ -57,7 +57,7 @@ class LocalEventTest {
         client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
 
         val provider = AndroidCalendarProvider(account, client)
-        calendar = localcalendarFactory.create(provider.createAndGetCalendar(ContentValues()))
+        calendar = localCalendarFactory.create(provider.createAndGetCalendar(ContentValues()))
     }
 
     @After
