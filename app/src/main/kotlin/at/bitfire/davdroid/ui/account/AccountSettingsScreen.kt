@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.settings.AccountSettings.Companion.SYNC_INTERVAL_MANUALLY
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.ActionCard
@@ -505,7 +506,7 @@ fun SyncIntervalSetting(
         MultipleChoiceInputDialog(
             title = stringResource(name),
             namesAndValues = syncIntervalNames.zip(syncIntervalSeconds),
-            initialValue = syncInterval.toString(),
+            initialValue = (syncInterval ?: SYNC_INTERVAL_MANUALLY).toString(),
             onValueSelected = { newValue ->
                 try {
                     val seconds = newValue.toLong()

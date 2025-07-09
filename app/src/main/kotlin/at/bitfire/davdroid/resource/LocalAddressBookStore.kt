@@ -152,7 +152,7 @@ class LocalAddressBookStore @Inject constructor(
             localCollection.readOnly = nowReadOnly
         }
 
-        // make sure it will still be synchronized when contacts are updated
+        // Update automatic synchronization
         localCollection.updateSyncFrameworkSettings()
     }
 

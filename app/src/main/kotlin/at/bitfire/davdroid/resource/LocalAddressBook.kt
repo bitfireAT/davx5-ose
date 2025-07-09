@@ -23,6 +23,7 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_READ_ONLY
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
@@ -223,15 +224,18 @@ open class LocalAddressBook @AssistedInject constructor(
 
 
     /**
-     * Makes contacts of this address book available to be synced and activates synchronization upon
-     * contact data changes.
+     * Enables or disables sync on content changes for the address book account based on the current sync
+     * interval account setting.
      */
     fun updateSyncFrameworkSettings() {
-        // Enable sync-ability of contacts
-        syncFramework.enableSyncAbility(addressBookAccount, ContactsContract.AUTHORITY)
+        val accountSettings = accountSettingsFactory.create(account)
+        val syncInterval = accountSettings.getSyncInterval(SyncDataType.CONTACTS)
 
-        // Changes in contact data should trigger syncs
-        syncFramework.enableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
+        // Enable/Disable content triggered syncs for the address book account.
+        if (syncInterval != null)
+            syncFramework.enableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
+        else
+            syncFramework.disableSyncAbility(addressBookAccount, ContactsContract.AUTHORITY)
     }
 
 
