@@ -31,6 +31,7 @@ import javax.inject.Inject
 class LocalCalendarStore @Inject constructor(
     @ApplicationContext private val context: Context,
     private val accountSettingsFactory: AccountSettings.Factory,
+    private val localCalendarFactory: LocalCalendar.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
 ): LocalDataStore<LocalCalendar> {
@@ -71,13 +72,13 @@ class LocalCalendarStore @Inject constructor(
 
         logger.log(Level.INFO, "Adding local calendar", values)
         val provider = AndroidCalendarProvider(account, client)
-        return LocalCalendar(provider.createAndGetCalendar(values))
+        return localCalendarFactory.create(provider.createAndGetCalendar(values))
     }
 
     override fun getAll(account: Account, client: ContentProviderClient) =
         AndroidCalendarProvider(account, client)
             .findCalendars("${Calendars.SYNC_EVENTS}!=0", null)
-            .map { LocalCalendar(it) }
+            .map { localCalendarFactory.create(it) }
 
     override fun update(client: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
         val accountSettings = accountSettingsFactory.create(localCollection.androidCalendar.account)

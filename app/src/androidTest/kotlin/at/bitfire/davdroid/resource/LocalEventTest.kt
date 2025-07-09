@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.resource
 
+import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
@@ -12,37 +13,57 @@ import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.techbee.jtx.JtxContract.asSyncAdapter
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Status
 import org.junit.After
-import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.BeforeClass
+import org.junit.Rule
 import org.junit.Test
 import java.util.UUID
+import javax.inject.Inject
 
+@HiltAndroidTest
 class LocalEventTest {
 
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
+
+    @Inject
+    lateinit var localcalendarFactory: LocalCalendar.Factory
+
     private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
+    private lateinit var client: ContentProviderClient
     private lateinit var calendar: LocalCalendar
 
     @Before
     fun setUp() {
+        hiltRule.inject()
+
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+
         val provider = AndroidCalendarProvider(account, client)
-        calendar = LocalCalendar(provider.createAndGetCalendar(ContentValues()))
+        calendar = localcalendarFactory.create(provider.createAndGetCalendar(ContentValues()))
     }
 
     @After
-    fun removeCalendar() {
+    fun tearDown() {
         calendar.androidCalendar.delete()
+        client.closeCompat()
     }
 
 
@@ -209,26 +230,6 @@ class LocalEventTest {
             cursor.moveToNext()
             assertEquals(0, cursor.getInt(0))
         }
-    }
-
-
-    companion object {
-
-        private lateinit var client: ContentProviderClient
-
-        @BeforeClass
-        @JvmStatic
-        fun setUpClass() {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
-            client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun tearDownClass() {
-            client.closeCompat()
-        }
-
     }
 
 }

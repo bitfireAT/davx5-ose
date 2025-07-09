@@ -14,6 +14,9 @@ import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.CalendarBatchOperation
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -23,12 +26,15 @@ import java.util.logging.Logger
  *
  * [Calendars._SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
-class LocalCalendar(
-    val androidCalendar: AndroidCalendar
+class LocalCalendar @AssistedInject constructor(
+    @Assisted val androidCalendar: AndroidCalendar,
+    private val logger: Logger
 ) : LocalCollection<LocalEvent> {
 
-    private val logger: Logger
-        get() = Logger.getLogger(javaClass.name)
+    @AssistedFactory
+    interface Factory {
+        fun create(androidCalendar: AndroidCalendar): LocalCalendar
+    }
 
 
     override val dbCollectionId: Long?
