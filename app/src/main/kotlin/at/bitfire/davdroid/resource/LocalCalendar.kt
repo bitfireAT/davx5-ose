@@ -198,15 +198,15 @@ class LocalCalendar(
             "${Events.DIRTY} AND NOT ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL",
             null
         ) { values ->
-            val eventID = values.getAsLong(Events._ID)
+            val eventId = values.getAsLong(Events._ID)
 
             // get number of instances
-            val numEventInstances = AndroidEvent.numInstances(androidCalendar.client, androidCalendar.account, eventID)
+            val numEventInstances = androidCalendar.numInstances(eventId)
 
             // delete event if there are no instances
             if (numEventInstances == 0) {
-                logger.fine("Marking event #$eventID without instances as deleted")
-                AndroidEvent.markAsDeleted(androidCalendar.client, androidCalendar.account, eventID)
+                logger.fine("Marking event #$eventId without instances as deleted")
+                androidCalendar.updateEvent(eventId, contentValuesOf(Events.DELETED to 1))
             }
         }
     }
