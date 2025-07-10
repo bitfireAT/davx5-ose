@@ -67,7 +67,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.AppSettingsModel.PushDistributorInfo
@@ -186,9 +185,9 @@ fun AppSettingsScreen(
                 title = { Text(stringResource(R.string.app_settings)) },
                 actions = {
                     IconButton(onClick = {
-                        val settingsUri = Constants.MANUAL_URL.buildUpon()
-                            .appendPath(Constants.MANUAL_PATH_SETTINGS)
-                            .fragment(Constants.MANUAL_FRAGMENT_APP_SETTINGS)
+                        val settingsUri = ExternalUris.Manual.baseUrl.buildUpon()
+                            .appendPath(ExternalUris.Manual.PATH_SETTINGS)
+                            .fragment(ExternalUris.Manual.FRAGMENT_APP_SETTINGS)
                             .build()
                         uriHandler.openUri(settingsUri.toString())
                     }) {
@@ -653,8 +652,8 @@ private fun PushDistributorSelectionDialog(
                             )
                             pushLink(
                                 LinkAnnotation.Url(
-                                    Constants.MANUAL_URL.buildUpon()
-                                        .appendPath(Constants.MANUAL_PATH_WEBDAV_PUSH)
+                                    ExternalUris.Manual.baseUrl.buildUpon()
+                                        .appendPath(ExternalUris.Manual.PATH_WEBDAV_PUSH)
                                         .build().toString()
                                 )
                             )

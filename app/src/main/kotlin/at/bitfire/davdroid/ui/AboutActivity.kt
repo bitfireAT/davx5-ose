@@ -48,10 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.composable.PixelBoxes
 import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
@@ -110,7 +109,7 @@ class AboutActivity: AppCompatActivity() {
                             },
                             actions = {
                                 IconButton(onClick = {
-                                    uriHandler.openUri(Constants.HOMEPAGE_URL
+                                    uriHandler.openUri(ExternalUris.Homepage.baseUrl
                                         .buildUpon()
                                         .withStatParams("AboutActivity")
                                         .build().toString())

@@ -41,9 +41,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.ExternalUris
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.setup.GoogleLogin.GOOGLE_POLICY_URL
 import java.util.logging.Level
@@ -55,8 +55,8 @@ object GoogleLogin : LoginType {
         get() = R.string.login_type_google
 
     override val helpUrl: Uri
-        get() = Constants.HOMEPAGE_URL.buildUpon()
-            .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
+        get() = ExternalUris.Homepage.baseUrl.buildUpon()
+            .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
             .appendPath("google")
             .withStatParams("LoginTypeGoogle")
             .build()
@@ -206,8 +206,8 @@ fun GoogleLoginScreen(
 
         Spacer(Modifier.padding(8.dp))
 
-        val privacyPolicyUrl = Constants.HOMEPAGE_URL.buildUpon()
-            .appendPath(Constants.HOMEPAGE_PATH_PRIVACY)
+        val privacyPolicyUrl = ExternalUris.Homepage.baseUrl.buildUpon()
+            .appendPath(ExternalUris.Homepage.PATH_PRIVACY)
             .withStatParams("GoogleLoginFragment")
             .build()
         val privacyPolicyNote = HtmlCompat.fromHtml(

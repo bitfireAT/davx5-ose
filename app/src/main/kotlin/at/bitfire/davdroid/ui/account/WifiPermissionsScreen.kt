@@ -10,9 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -40,10 +38,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.ExternalUris
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
 
@@ -88,9 +86,9 @@ fun WifiPermissionsScreen(
                         val uriHandler = LocalUriHandler.current
                         IconButton(onClick = {
                             uriHandler.openUri(
-                                Constants.HOMEPAGE_URL.buildUpon()
-                                    .appendPath(Constants.HOMEPAGE_PATH_FAQ)
-                                    .appendPath(Constants.HOMEPAGE_PATH_FAQ_LOCATION_PERMISSION)
+                                ExternalUris.Homepage.baseUrl.buildUpon()
+                                    .appendPath(ExternalUris.Homepage.PATH_FAQ)
+                                    .appendPath(ExternalUris.Homepage.PATH_FAQ_LOCATION_PERMISSION)
                                     .withStatParams("WifiPermissionsActivity")
                                     .build().toString()
                             )

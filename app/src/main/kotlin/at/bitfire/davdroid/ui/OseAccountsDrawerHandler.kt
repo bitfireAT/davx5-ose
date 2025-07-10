@@ -19,12 +19,10 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.COMMUNITY_URL
-import at.bitfire.davdroid.Constants.FEDIVERSE_URL
-import at.bitfire.davdroid.Constants.MANUAL_URL
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.ExternalUris.Homepage
+import at.bitfire.davdroid.ui.ExternalUris.Social
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import javax.inject.Inject
 
 open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler() {
@@ -46,9 +44,9 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
         MenuHeading(R.string.navigation_drawer_news_updates)
         MenuEntry(
             icon = painterResource(R.drawable.mastodon),
-            title = Constants.FEDIVERSE_HANDLE,
+            title = Social.fediverseHandle,
             onClick = {
-                uriHandler.openUri(FEDIVERSE_URL.toString())
+                uriHandler.openUri(Social.fediverseUrl.toString())
             }
         )
 
@@ -59,8 +57,8 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
         MenuHeading(R.string.navigation_drawer_support_project)
         Contribute(onContribute = {
             uriHandler.openUri(
-                Constants.HOMEPAGE_URL.buildUpon()
-                    .appendPath(Constants.HOMEPAGE_PATH_OPEN_SOURCE)
+                Homepage.baseUrl.buildUpon()
+                    .appendPath(Homepage.PATH_OPEN_SOURCE)
                     .withStatParams(WEB_CONTEXT)
                     .build().toString()
             )
@@ -69,7 +67,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
             icon = Icons.Default.Forum,
             title = stringResource(R.string.navigation_drawer_community),
             onClick = {
-                uriHandler.openUri(COMMUNITY_URL.toString())
+                uriHandler.openUri(Social.discussionsUrl.toString())
             }
         )
 
@@ -80,7 +78,8 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
             icon = Icons.Default.Home,
             title = stringResource(R.string.navigation_drawer_website),
             onClick = {
-                uriHandler.openUri(Constants.HOMEPAGE_URL
+                uriHandler.openUri(
+                    Homepage.baseUrl
                     .buildUpon()
                     .withStatParams(WEB_CONTEXT)
                     .build().toString())
@@ -90,7 +89,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
             icon = Icons.Default.Info,
             title = stringResource(R.string.navigation_drawer_manual),
             onClick = {
-                uriHandler.openUri(MANUAL_URL.toString())
+                uriHandler.openUri(ExternalUris.Manual.baseUrl.toString())
             }
         )
         MenuEntry(
@@ -98,8 +97,8 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
             title = stringResource(R.string.navigation_drawer_faq),
             onClick = {
                 uriHandler.openUri(
-                    Constants.HOMEPAGE_URL.buildUpon()
-                        .appendPath(Constants.HOMEPAGE_PATH_FAQ)
+                    Homepage.baseUrl.buildUpon()
+                        .appendPath(Homepage.PATH_FAQ)
                         .withStatParams(WEB_CONTEXT)
                         .build().toString()
                 )
@@ -110,8 +109,8 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
             title = stringResource(R.string.navigation_drawer_managed),
             onClick = {
                 uriHandler.openUri(
-                    Constants.HOMEPAGE_URL.buildUpon()
-                        .appendPath(Constants.MANAGED_PATH)
+                    Homepage.baseUrl.buildUpon()
+                        .appendPath(Homepage.PATH_MANAGED)
                         .withStatParams(WEB_CONTEXT)
                         .build().toString()
                 )
@@ -122,8 +121,8 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
             title = stringResource(R.string.navigation_drawer_privacy_policy),
             onClick = {
                 uriHandler.openUri(
-                    Constants.HOMEPAGE_URL.buildUpon()
-                        .appendPath(Constants.HOMEPAGE_PATH_PRIVACY)
+                    Homepage.baseUrl.buildUpon()
+                        .appendPath(Homepage.PATH_PRIVACY)
                         .withStatParams(WEB_CONTEXT)
                         .build().toString()
                 )

@@ -36,9 +36,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.ExternalUris
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -48,8 +48,8 @@ object FastmailLogin : LoginType {
         get() = R.string.login_fastmail
 
     override val helpUrl: Uri
-        get() = Constants.HOMEPAGE_URL.buildUpon()
-            .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
+        get() = ExternalUris.Homepage.baseUrl.buildUpon()
+            .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
             .appendPath("fastmail")
             .withStatParams("LoginTypeFastmail")
             .build()
