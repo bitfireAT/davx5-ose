@@ -27,10 +27,6 @@ import javax.inject.Inject
 
 open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler() {
 
-    companion object {
-        const val WEB_CONTEXT = "AccountsDrawerHandler"
-    }
-
     @Composable
     override fun MenuEntries(
         snackbarHostState: SnackbarHostState
@@ -59,7 +55,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
             uriHandler.openUri(
                 Homepage.baseUrl.buildUpon()
                     .appendPath(Homepage.PATH_OPEN_SOURCE)
-                    .withStatParams(WEB_CONTEXT)
+                    .withStatParams(javaClass.simpleName)
                     .build().toString()
             )
         })
@@ -81,7 +77,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
                 uriHandler.openUri(
                     Homepage.baseUrl
                     .buildUpon()
-                    .withStatParams(WEB_CONTEXT)
+                    .withStatParams(javaClass.simpleName)
                     .build().toString())
             }
         )
@@ -99,7 +95,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
                 uriHandler.openUri(
                     Homepage.baseUrl.buildUpon()
                         .appendPath(Homepage.PATH_FAQ)
-                        .withStatParams(WEB_CONTEXT)
+                        .withStatParams(javaClass.simpleName)
                         .build().toString()
                 )
             }
@@ -110,8 +106,9 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
             onClick = {
                 uriHandler.openUri(
                     Homepage.baseUrl.buildUpon()
-                        .appendPath(Homepage.PATH_MANAGED)
-                        .withStatParams(WEB_CONTEXT)
+                        .appendPath(Homepage.PATH_ORGANIZATIONS)
+                        .appendPath(Homepage.PATH_ORGANIZATIONS_MANAGED)
+                        .withStatParams(javaClass.simpleName)
                         .build().toString()
                 )
             }
@@ -123,7 +120,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
                 uriHandler.openUri(
                     Homepage.baseUrl.buildUpon()
                         .appendPath(Homepage.PATH_PRIVACY)
-                        .withStatParams(WEB_CONTEXT)
+                        .withStatParams(javaClass.simpleName)
                         .build().toString()
                 )
             }

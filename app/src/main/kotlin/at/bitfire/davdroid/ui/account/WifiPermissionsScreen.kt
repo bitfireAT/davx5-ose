@@ -89,7 +89,7 @@ fun WifiPermissionsScreen(
                                 ExternalUris.Homepage.baseUrl.buildUpon()
                                     .appendPath(ExternalUris.Homepage.PATH_FAQ)
                                     .appendPath(ExternalUris.Homepage.PATH_FAQ_LOCATION_PERMISSION)
-                                    .withStatParams("WifiPermissionsActivity")
+                                    .withStatParams("WifiPermissionsScreen")
                                     .build().toString()
                             )
                         }) {

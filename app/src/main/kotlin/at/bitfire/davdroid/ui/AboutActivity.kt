@@ -111,7 +111,7 @@ class AboutActivity: AppCompatActivity() {
                                 IconButton(onClick = {
                                     uriHandler.openUri(ExternalUris.Homepage.baseUrl
                                         .buildUpon()
-                                        .withStatParams("AboutActivity")
+                                        .withStatParams(javaClass.simpleName)
                                         .build().toString())
                                 }) {
                                     Icon(

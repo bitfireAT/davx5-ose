@@ -92,7 +92,7 @@ fun LoginScreenContent(
                         val uriHandler = LocalUriHandler.current
                         val specificHelpUri = helpUri ?: ExternalUris.Homepage.baseUrl.buildUpon()
                             .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
-                            .withStatParams("LoginActivity")
+                            .withStatParams("LoginScreen")
                             .build()
                         IconButton(onClick = {
                             // show tested-with page
