@@ -30,6 +30,8 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
+import at.bitfire.ical4android.EventReader
+import at.bitfire.ical4android.EventWriter
 import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.synctools.exception.InvalidRemoteResourceException
 import dagger.assisted.Assisted
@@ -43,9 +45,9 @@ import net.fortuna.ical4j.model.property.Action
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
+import java.io.StringWriter
 import java.time.Duration
 import java.time.ZonedDateTime
 import java.util.logging.Level
@@ -181,10 +183,10 @@ class CalendarSyncManager @AssistedInject constructor(
             val event = requireNotNull(resource.androidEvent.event)
             logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
-            val os = ByteArrayOutputStream()
-            event.write(os, Constants.iCalProdId)
-
-            os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+            // write iCalendar to string and convert to request body
+            val iCalWriter = StringWriter()
+            EventWriter(Constants.iCalProdId).write(event, iCalWriter)
+            iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
@@ -255,7 +257,7 @@ class CalendarSyncManager @AssistedInject constructor(
     private fun processVEvent(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
         val events: List<Event>
         try {
-            events = Event.eventsFromReader(reader)
+            events = EventReader().readEvents(reader)
         } catch (e: InvalidRemoteResourceException) {
             logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
