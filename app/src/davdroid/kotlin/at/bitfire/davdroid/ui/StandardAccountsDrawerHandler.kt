@@ -19,19 +19,13 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.COMMUNITY_URL
-import at.bitfire.davdroid.Constants.FEDIVERSE_URL
-import at.bitfire.davdroid.Constants.MANUAL_URL
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.ExternalUris.Homepage
+import at.bitfire.davdroid.ui.ExternalUris.Social
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import javax.inject.Inject
 
 open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler() {
-
-    companion object {
-        const val WEB_CONTEXT = "AccountsDrawerHandler"
-    }
 
     @Composable
     override fun MenuEntries(
@@ -46,9 +40,9 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
         MenuHeading(R.string.navigation_drawer_news_updates)
         MenuEntry(
             icon = painterResource(R.drawable.mastodon),
-            title = Constants.FEDIVERSE_HANDLE,
+            title = Social.fediverseHandle,
             onClick = {
-                uriHandler.openUri(FEDIVERSE_URL.toString())
+                uriHandler.openUri(Social.fediverseUrl.toString())
             }
         )
 
@@ -59,9 +53,9 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
         MenuHeading(R.string.navigation_drawer_support_project)
         Contribute(onContribute = {
             uriHandler.openUri(
-                Constants.HOMEPAGE_URL.buildUpon()
-                    .appendPath(Constants.HOMEPAGE_PATH_OPEN_SOURCE)
-                    .withStatParams(WEB_CONTEXT)
+                Homepage.baseUrl.buildUpon()
+                    .appendPath(Homepage.PATH_OPEN_SOURCE)
+                    .withStatParams(javaClass.simpleName)
                     .build().toString()
             )
         })
@@ -69,7 +63,7 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
             icon = Icons.Default.Forum,
             title = stringResource(R.string.navigation_drawer_community),
             onClick = {
-                uriHandler.openUri(COMMUNITY_URL.toString())
+                uriHandler.openUri(Social.discussionsUrl.toString())
             }
         )
 
@@ -80,9 +74,10 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
             icon = Icons.Default.Home,
             title = stringResource(R.string.navigation_drawer_website),
             onClick = {
-                uriHandler.openUri(Constants.HOMEPAGE_URL
+                uriHandler.openUri(
+                    Homepage.baseUrl
                     .buildUpon()
-                    .withStatParams(WEB_CONTEXT)
+                    .withStatParams(javaClass.simpleName)
                     .build().toString())
             }
         )
@@ -90,7 +85,7 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
             icon = Icons.Default.Info,
             title = stringResource(R.string.navigation_drawer_manual),
             onClick = {
-                uriHandler.openUri(MANUAL_URL.toString())
+                uriHandler.openUri(ExternalUris.Manual.baseUrl.toString())
             }
         )
         MenuEntry(
@@ -98,9 +93,9 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
             title = stringResource(R.string.navigation_drawer_faq),
             onClick = {
                 uriHandler.openUri(
-                    Constants.HOMEPAGE_URL.buildUpon()
-                        .appendPath(Constants.HOMEPAGE_PATH_FAQ)
-                        .withStatParams(WEB_CONTEXT)
+                    Homepage.baseUrl.buildUpon()
+                        .appendPath(Homepage.PATH_FAQ)
+                        .withStatParams(javaClass.simpleName)
                         .build().toString()
                 )
             }
@@ -110,9 +105,10 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
             title = stringResource(R.string.navigation_drawer_managed),
             onClick = {
                 uriHandler.openUri(
-                    Constants.HOMEPAGE_URL.buildUpon()
-                        .appendPath(Constants.MANAGED_PATH)
-                        .withStatParams(WEB_CONTEXT)
+                    Homepage.baseUrl.buildUpon()
+                        .appendPath(Homepage.PATH_ORGANIZATIONS)
+                        .appendPath(Homepage.PATH_ORGANIZATIONS_MANAGED)
+                        .withStatParams(javaClass.simpleName)
                         .build().toString()
                 )
             }
@@ -122,9 +118,9 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
             title = stringResource(R.string.navigation_drawer_privacy_policy),
             onClick = {
                 uriHandler.openUri(
-                    Constants.HOMEPAGE_URL.buildUpon()
-                        .appendPath(Constants.HOMEPAGE_PATH_PRIVACY)
-                        .withStatParams(WEB_CONTEXT)
+                    Homepage.baseUrl.buildUpon()
+                        .appendPath(Homepage.PATH_PRIVACY)
+                        .withStatParams(javaClass.simpleName)
                         .build().toString()
                 )
             }
