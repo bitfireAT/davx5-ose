@@ -19,9 +19,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.ExternalUris
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.Assistant
 
@@ -67,8 +67,8 @@ fun StandardLoginTypePage(
 
             HorizontalDivider(Modifier.padding(vertical = 12.dp))
 
-            val privacyPolicy = Constants.HOMEPAGE_URL.buildUpon()
-                .appendPath(Constants.HOMEPAGE_PATH_PRIVACY)
+            val privacyPolicy = ExternalUris.Homepage.baseUrl.buildUpon()
+                .appendPath(ExternalUris.Homepage.PATH_PRIVACY)
                 .withStatParams("StandardLoginTypePage")
                 .build().toString()
             val privacy = HtmlCompat.fromHtml(

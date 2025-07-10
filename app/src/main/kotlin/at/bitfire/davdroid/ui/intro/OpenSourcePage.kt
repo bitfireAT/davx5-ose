@@ -23,11 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.ExternalUris
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.RadioButtons
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -116,8 +116,8 @@ fun OpenSourcePage(
                 modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
                 onClick = {
                     uriHandler.openUri(
-                        Constants.HOMEPAGE_URL.buildUpon()
-                            .appendPath(Constants.HOMEPAGE_PATH_OPEN_SOURCE)
+                        ExternalUris.Homepage.baseUrl.buildUpon()
+                            .appendPath(ExternalUris.Homepage.PATH_OPEN_SOURCE)
                             .withStatParams("OpenSourcePage")
                             .build()
                             .toString()
