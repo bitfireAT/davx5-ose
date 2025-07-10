@@ -10,9 +10,9 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.LocalUriHandler
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.PlayClient
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,7 +42,7 @@ class EarnBadgesActivity() : AppCompatActivity() {
                     onStartRating = { uriHandler.openUri(
                         Uri.parse("market://details?id=$packageName")
                         .buildUpon()
-                        .withStatParams("EarnBadgesActivity")
+                        .withStatParams(javaClass.simpleName)
                         .build().toString()
                     ) },
                     onNavUp = ::onNavigateUp
