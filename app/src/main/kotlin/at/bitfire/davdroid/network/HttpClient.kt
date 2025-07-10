@@ -10,6 +10,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
@@ -266,7 +267,7 @@ class HttpClient(
             val certManager = CustomCertManager(
                 context = context,
                 trustSystemCerts = !settingsManager.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES),
-                appInForeground = if (/* davx5-ose */ true)
+                appInForeground = if (BuildConfig.customCertsUI)
                     ForegroundTracker.inForeground  // interactive mode
                 else
                     null                            // non-interactive mode
