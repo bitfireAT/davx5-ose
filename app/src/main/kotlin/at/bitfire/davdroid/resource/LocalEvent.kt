@@ -9,6 +9,7 @@ import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
+import at.bitfire.synctools.storage.calendar.AndroidEvent2
 import java.util.UUID
 
 class LocalEvent(
@@ -90,9 +91,9 @@ class LocalEvent(
         val values = ContentValues(5)
         if (fileName != null)
             values.put(Events._SYNC_ID, fileName)
-        values.put(AndroidEvent.COLUMN_ETAG, eTag)
-        values.put(AndroidEvent.COLUMN_SCHEDULE_TAG, scheduleTag)
-        values.put(AndroidEvent.COLUMN_SEQUENCE, androidEvent.event!!.sequence)
+        values.put(AndroidEvent2.COLUMN_ETAG, eTag)
+        values.put(AndroidEvent2.COLUMN_SCHEDULE_TAG, scheduleTag)
+        values.put(AndroidEvent2.COLUMN_SEQUENCE, androidEvent.event!!.sequence)
         values.put(Events.DIRTY, 0)
         androidEvent.update(values)
 
@@ -103,7 +104,7 @@ class LocalEvent(
     }
 
     override fun updateFlags(flags: Int) {
-        val values = contentValuesOf(AndroidEvent.COLUMN_FLAGS to flags)
+        val values = contentValuesOf(AndroidEvent2.COLUMN_FLAGS to flags)
         androidEvent.update(values)
 
         androidEvent.flags = flags
