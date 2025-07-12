@@ -63,7 +63,7 @@ class LocalCalendar @AssistedInject constructor(
         androidCalendar.iterateEventRows(null, "${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null) { values ->
             // create legacy AndroidEvent from AndroidEvent2's content values
             val legacyEvent = AndroidEvent(androidCalendar, values)
-            LocalEvent(legacyEvent)
+            result += LocalEvent(legacyEvent)
         }
         return result
     }

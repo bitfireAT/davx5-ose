@@ -70,6 +70,9 @@ class LocalEvent(
             val values = contentValuesOf(Events.UID_2445 to newUid)
             androidEvent.update(values)
 
+            // update in event data object
+            event.uid = newUid
+
             newUid
         }
 
