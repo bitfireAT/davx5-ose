@@ -9,6 +9,7 @@ import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
+import at.bitfire.ical4android.LegacyAndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
 import java.util.UUID
 
@@ -38,8 +39,6 @@ class LocalEvent(
     override val flags: Int
         get() = androidEvent.flags
 
-    override fun add() = androidEvent.add()
-
     override fun update(data: Event) = androidEvent.update(data)
 
     override fun delete() = androidEvent.delete()
@@ -47,8 +46,12 @@ class LocalEvent(
 
     // other methods
 
-    val weAreOrganizer
-        get() = androidEvent.event!!.isOrganizer == true
+    val event: Event by lazy {
+        val legacyCalendar = LegacyAndroidCalendar(androidEvent.calendar)
+        legacyCalendar.getEvent(androidEvent.id)!!
+    }
+
+    val weAreOrganizer: Boolean = event.isOrganizer == true
 
 
     /**
@@ -59,16 +62,13 @@ class LocalEvent(
      */
     override fun prepareForUpload(): String {
         // make sure that UID is set
-        val uid: String = androidEvent.event!!.uid ?: run {
+        val uid: String = event.uid ?: run {
             // generate new UID
             val newUid = UUID.randomUUID().toString()
 
             // update in calendar provider
             val values = contentValuesOf(Events.UID_2445 to newUid)
             androidEvent.update(values)
-
-            // update this event
-            androidEvent.event?.uid = newUid
 
             newUid
         }
@@ -86,6 +86,8 @@ class LocalEvent(
             "${UUID.randomUUID()}.ics"      // UID would be dangerous as file name, use random UUID instead
     }
 
+    @Deprecated("Use add...() of specific collection implementation", level = DeprecationLevel.ERROR)
+    override fun add() = throw NotImplementedError()
 
     override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
         val values = ContentValues(5)
@@ -93,7 +95,7 @@ class LocalEvent(
             values.put(Events._SYNC_ID, fileName)
         values.put(AndroidEvent2.COLUMN_ETAG, eTag)
         values.put(AndroidEvent2.COLUMN_SCHEDULE_TAG, scheduleTag)
-        values.put(AndroidEvent2.COLUMN_SEQUENCE, androidEvent.event!!.sequence)
+        values.put(AndroidEvent2.COLUMN_SEQUENCE, event.sequence)
         values.put(Events.DIRTY, 0)
         androidEvent.update(values)
 

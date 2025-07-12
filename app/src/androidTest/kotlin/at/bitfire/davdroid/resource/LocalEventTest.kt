@@ -14,8 +14,8 @@ import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
+import at.bitfire.ical4android.LegacyAndroidCalendar
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.techbee.jtx.JtxContract.asSyncAdapter
@@ -74,8 +74,10 @@ class LocalEventTest {
             dtStart = DtStart("20220120T010203Z")
             summary = "Event without uid"
         }
-        val localEvent = LocalEvent(AndroidEvent(calendar.androidCalendar, event, null))
-        localEvent.add()    // save it to calendar storage
+
+        val legacyCalendar = LegacyAndroidCalendar(calendar.androidCalendar)
+        legacyCalendar.add(event = event, syncId = "filename.ics", flags = LocalResource.FLAG_REMOTELY_PRESENT)
+        val localEvent = calendar.findByName("filename.ics")!!
 
         // prepare for upload - this should generate a new random uuid, returned as filename
         val fileNameWithSuffix = localEvent.prepareForUpload()
@@ -102,8 +104,9 @@ class LocalEventTest {
             summary = "Event with normal uid"
             uid = "some-event@hostname.tld"     // old UID format, UUID would be new format
         }
-        val localEvent = LocalEvent(AndroidEvent(calendar.androidCalendar, event, null))
-        localEvent.add() // save it to calendar storage
+        val legacyCalendar = LegacyAndroidCalendar(calendar.androidCalendar)
+        legacyCalendar.add(event = event, syncId = "filename.ics", flags = LocalResource.FLAG_REMOTELY_PRESENT)
+        val localEvent = calendar.findByName("filename.ics")!!
 
         // prepare for upload - this should use the UID for the file name
         val fileNameWithSuffix = localEvent.prepareForUpload()
@@ -129,8 +132,9 @@ class LocalEventTest {
             summary = "Event with funny uid"
             uid = "https://www.example.com/events/asdfewfe-cxyb-ewrws-sadfrwerxyvser-asdfxye-"
         }
-        val localEvent = LocalEvent(AndroidEvent(calendar.androidCalendar, event, null))
-        localEvent.add() // save it to calendar storage
+        val legacyCalendar = LegacyAndroidCalendar(calendar.androidCalendar)
+        legacyCalendar.add(event = event, syncId = "filename.ics", flags = LocalResource.FLAG_REMOTELY_PRESENT)
+        val localEvent = calendar.findByName("filename.ics")!!
 
         // prepare for upload - this should generate a new random uuid, returned as filename
         val fileNameWithSuffix = localEvent.prepareForUpload()
@@ -181,8 +185,9 @@ class LocalEventTest {
                 status = Status.VEVENT_CANCELLED
             })
         }
-        val localEvent = LocalEvent(AndroidEvent(calendar.androidCalendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT))
-        localEvent.add()
+        val legacyCalendar = LegacyAndroidCalendar(calendar.androidCalendar)
+        legacyCalendar.add(event = event, syncId = "filename.ics", flags = LocalResource.FLAG_REMOTELY_PRESENT)
+        val localEvent = calendar.findByName("filename.ics")!!
         val eventId = localEvent.id!!
 
         // set event as dirty
@@ -210,8 +215,9 @@ class LocalEventTest {
             summary = "Event with 3 instances"
             rRules.add(RRule("FREQ=DAILY;COUNT=3"))
         }
-        val localEvent = LocalEvent(AndroidEvent(calendar.androidCalendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT))
-        localEvent.add()
+        val legacyCalendar = LegacyAndroidCalendar(calendar.androidCalendar)
+        legacyCalendar.add(event = event, syncId = "filename.ics", flags = LocalResource.FLAG_REMOTELY_PRESENT)
+        val localEvent = calendar.findByName("filename.ics")!!
         val eventId = localEvent.id!!
 
         // set event as dirty

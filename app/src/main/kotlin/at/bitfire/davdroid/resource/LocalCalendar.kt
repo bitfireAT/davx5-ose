@@ -9,7 +9,7 @@ import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.ical4android.LegacyAndroidCalendar
+import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
@@ -37,8 +37,6 @@ class LocalCalendar @AssistedInject constructor(
         fun create(androidCalendar: AndroidCalendar): LocalCalendar
     }
 
-    val legacyCalendar = LegacyAndroidCalendar(androidCalendar)
-
 
     override val dbCollectionId: Long?
         get() = androidCalendar.syncId?.toLongOrNull()
@@ -60,10 +58,15 @@ class LocalCalendar @AssistedInject constructor(
             androidCalendar.writeSyncState(state.toString())
         }
 
-    override fun findDeleted() =
-        androidCalendar
-            .findEvents("${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null)
-            .map { LocalEvent(it) }
+    override fun findDeleted(): List<LocalEvent> {
+        val result = LinkedList<LocalEvent>()
+        androidCalendar.iterateEventRows(null, "${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null) { values ->
+            // create legacy AndroidEvent from AndroidEvent2's content values
+            val legacyEvent = AndroidEvent(androidCalendar, values)
+            LocalEvent(legacyEvent)
+        }
+        return result
+    }
 
     override fun findDirty(): List<LocalEvent> {
         val dirty = LinkedList<LocalEvent>()
@@ -73,10 +76,11 @@ class LocalCalendar @AssistedInject constructor(
          * When a calendar component is created, its sequence number is 0. It is monotonically incremented by the "Organizer's"
          * CUA each time the "Organizer" makes a significant revision to the calendar component.
          */
-        for (androidEvent in androidCalendar.findEvents("${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null)) {
-            val localEvent = LocalEvent(androidEvent)
+        androidCalendar.iterateEventRows(null, "${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null) { values ->
+            val legacyEvent = AndroidEvent(androidCalendar, values)
+            val localEvent = LocalEvent(legacyEvent)
             try {
-                val event = requireNotNull(androidEvent.event)
+                val event = localEvent.event
 
                 val nonGroupScheduled = event.attendees.isEmpty()
                 val weAreOrganizer = localEvent.weAreOrganizer
@@ -98,8 +102,10 @@ class LocalCalendar @AssistedInject constructor(
     }
 
     override fun findByName(name: String) =
-        androidCalendar.findEvents("${Events._SYNC_ID}=?", arrayOf(name)).firstOrNull()?.let { LocalEvent(it) }
-
+        androidCalendar.findEventRow(null, "${Events._SYNC_ID}=?", arrayOf(name))?.let { values ->
+            val legacyEvent = AndroidEvent(androidCalendar, values)
+            LocalEvent(legacyEvent)
+        }
 
     override fun markNotDirty(flags: Int) =
         androidCalendar.updateEventRows(
