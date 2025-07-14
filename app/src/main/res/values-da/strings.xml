@@ -236,8 +236,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="login_no_certificate_found">Intet certifikat fundet</string>
   <string name="login_install_certificate">Installere certifikat</string>
   <string name="login_type_google">Google Kontakter / Kalender</string>
-  <string name="login_google_see_tested_with">Se venligst vores \"Tested med Google\" side for up-to-date information.</string>
-  <string name="login_google_unexpected_warnings">Du kan opleve uforudsete advarsler og/eller blive nød til at lave dit eget klient ID.</string>
   <string name="login_google_account">Google konto</string>
   <string name="login_google">Log ind med Google</string>
   <string name="login_google_client_id">Klient ID (valgfrit)</string>

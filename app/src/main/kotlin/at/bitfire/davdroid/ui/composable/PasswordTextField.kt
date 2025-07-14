@@ -30,8 +30,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 
 @Composable
@@ -88,9 +88,9 @@ fun PasswordTextField(
     }
 }
 
-fun appPasswordHelpUrl(): Uri = Constants.MANUAL_URL.buildUpon()
-    .appendPath(Constants.MANUAL_PATH_INTRODUCTION)
-    .fragment(Constants.MANUAL_FRAGMENT_AUTHENTICATION_METHODS)
+fun appPasswordHelpUrl(): Uri = ExternalUris.Manual.baseUrl.buildUpon()
+    .appendPath(ExternalUris.Manual.PATH_INTRODUCTION)
+    .fragment(ExternalUris.Manual.FRAGMENT_AUTHENTICATION_METHODS)
     .build()
 
 

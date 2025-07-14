@@ -27,7 +27,7 @@ jobs:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           dependency-graph: generate-and-submit         # submit Github Dependency Graph info
 
-      - run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:compileOseDebugSource
+      - run: ./gradlew --build-cache --configuration-cache app:compileOseDebugSource
 
   test:
     needs: compile
@@ -46,9 +46,9 @@ jobs:
           cache-read-only: true
 
       - name: Run lint
-        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:lintOseDebug
+        run: ./gradlew --build-cache --configuration-cache app:lintOseDebug
       - name: Run unit tests
-        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:testOseDebugUnitTest
+        run: ./gradlew --build-cache --configuration-cache app:testOseDebugUnitTest
 
   test_on_emulator:
     needs: compile
@@ -79,4 +79,4 @@ jobs:
           key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
 
       - name: Run device tests
-        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:virtualCheck
+        run: ./gradlew --build-cache --configuration-cache app:virtualCheck

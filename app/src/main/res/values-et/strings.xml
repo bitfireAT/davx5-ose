@@ -121,6 +121,7 @@
   <string name="navigation_drawer_website">Veebisait</string>
   <string name="navigation_drawer_manual">Käsiraamat</string>
   <string name="navigation_drawer_faq">KKK</string>
+  <string name="navigation_drawer_managed">Organisatsioonide jaoks</string>
   <string name="navigation_drawer_community">Kogukond</string>
   <string name="navigation_drawer_support_project">Toeta projekti</string>
   <string name="navigation_drawer_contribute">Osalemise viisid</string>
@@ -271,8 +272,6 @@
   <string name="login_fastmail_account">Fastmaili kasutajakonto</string>
   <string name="login_fastmail_sign_in">Logi sisse Fastmaili kasutajakontoga</string>
   <string name="login_type_google">Google\'i Kontaktid / Kalender</string>
-  <string name="login_google_see_tested_with">Uuendatud teavet leiad meie „Tested with Google“ lehelt.</string>
-  <string name="login_google_unexpected_warnings">Võib tekkida ootamatuid vigu ja/või sa pead looma oma klienditunnuse.</string>
   <string name="login_google_account">Google\'i kasutajakonto</string>
   <string name="login_google">Logi sisse Google\'i kasutajakontoga</string>
   <string name="login_google_client_id">Klienditunnus (kui soovid lisada)</string>

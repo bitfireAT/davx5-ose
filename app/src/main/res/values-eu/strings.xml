@@ -271,8 +271,6 @@
   <string name="login_fastmail_account">Fastmail kontua</string>
   <string name="login_fastmail_sign_in">Ireki saioa Fastmail-ekin</string>
   <string name="login_type_google">Google Kontaktuak / Egutegia</string>
-  <string name="login_google_see_tested_with">Mesedez, ikusi gure \"Google-ekin probatuta\" orria informazio eguneraturako.</string>
-  <string name="login_google_unexpected_warnings">Oharrak jaso edo zure bezero ID sortzea beharrezkoa izatea gertatu daiteke.</string>
   <string name="login_google_account">Google kontua</string>
   <string name="login_google">Hasi saioa Google-rekin</string>
   <string name="login_google_client_id">Bezeroaren ID (aukerazkoa)</string>

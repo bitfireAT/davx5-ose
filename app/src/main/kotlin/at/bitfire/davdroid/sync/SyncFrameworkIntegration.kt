@@ -57,6 +57,8 @@ class SyncFrameworkIntegration @Inject constructor(
 
     /**
      * Disable this account/provider to be syncable.
+     *
+     * If an authority is not syncable, this implies that there's no sync on content changes, too.
      */
     fun disableSyncAbility(account: Account, authority: String) {
         logger.fine("Disabling sync framework for account=$account, authority=$authority")
@@ -72,6 +74,9 @@ class SyncFrameworkIntegration @Inject constructor(
 
     /**
      * Enable syncing on content (contact, calendar event or task) changes.
+     *
+     * This implies that the [authority] is syncable, so this method makes the [authority]
+     * syncable if required.
      */
     fun enableSyncOnContentChange(account: Account, authority: String) {
         if (!isSyncable(account, authority))

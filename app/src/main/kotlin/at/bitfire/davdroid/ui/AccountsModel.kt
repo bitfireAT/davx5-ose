@@ -25,6 +25,8 @@ import androidx.work.WorkQuery
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
+import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
@@ -62,6 +64,7 @@ class AccountsModel @AssistedInject constructor(
     private val db: AppDatabase,
     introPageFactory: IntroPageFactory,
     private val logger: Logger,
+    private val settings: SettingsManager,
     private val syncWorkerManager: SyncWorkerManager,
     private val syncFrameWork: SyncFrameworkIntegration
 ): ViewModel() {
@@ -85,8 +88,12 @@ class AccountsModel @AssistedInject constructor(
     )
 
     private val accounts = accountRepository.getAllFlow()
-    val showAddAccount: Flow<FABStyle> = accounts.map {
-        if (it.isEmpty())
+
+    private val maxAccounts = settings.getIntFlow(Settings.MAX_ACCOUNTS)
+    val showAddAccount: Flow<FABStyle> = combine(accounts, maxAccounts) { accounts, maxAccounts ->
+        if (maxAccounts != null && accounts.size >= maxAccounts)
+            FABStyle.None
+        else if (accounts.isEmpty())
             FABStyle.WithText
         else
             FABStyle.Standard

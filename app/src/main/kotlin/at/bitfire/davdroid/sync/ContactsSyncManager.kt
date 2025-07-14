@@ -20,6 +20,7 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -286,15 +287,15 @@ class ContactsSyncManager @AssistedInject constructor(
             when {
                 hasJCard -> {
                     mimeType = DavAddressBook.MIME_JCARD
-                    contact.writeJCard(os)
+                    contact.writeJCard(os, Constants.vCardProdId)
                 }
                 hasVCard4 -> {
                     mimeType = DavAddressBook.MIME_VCARD4
-                    contact.writeVCard(VCardVersion.V4_0, os)
+                    contact.writeVCard(VCardVersion.V4_0, os, Constants.vCardProdId)
                 }
                 else -> {
                     mimeType = DavAddressBook.MIME_VCARD3_UTF8
-                    contact.writeVCard(VCardVersion.V3_0, os)
+                    contact.writeVCard(VCardVersion.V3_0, os, Constants.vCardProdId)
                 }
             }
 

@@ -10,7 +10,6 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts.Data
 import androidx.core.content.contentValuesOf
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.resource.contactrow.CachedGroupMembershipHandler
 import at.bitfire.davdroid.resource.contactrow.GroupMembershipBuilder
 import at.bitfire.davdroid.resource.contactrow.GroupMembershipHandler
@@ -23,7 +22,6 @@ import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidContactFactory
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
-import ezvcard.Ezvcard
 import java.io.FileNotFoundException
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
@@ -31,10 +29,6 @@ import kotlin.jvm.optionals.getOrNull
 class LocalContact: AndroidContact, LocalAddress {
 
     companion object {
-
-        init {
-            Contact.productID = "+//IDN bitfire.at//DAVx5/${BuildConfig.VERSION_NAME} ez-vcard/" + Ezvcard.VERSION
-        }
 
         const val COLUMN_FLAGS = ContactsContract.RawContacts.SYNC4
         const val COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3

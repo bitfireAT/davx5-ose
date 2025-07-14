@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.davdroid.webdav.WebDavMountRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

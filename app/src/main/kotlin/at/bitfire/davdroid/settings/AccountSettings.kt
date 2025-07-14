@@ -11,7 +11,6 @@ import android.os.Looper
 import androidx.annotation.WorkerThread
 import androidx.core.os.bundleOf
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
@@ -125,7 +124,13 @@ class AccountSettings @AssistedInject constructor(
         accountManager.setAndVerifyUserData(account, KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
 
         // OAuth
-        accountManager.setAndVerifyUserData(account, KEY_AUTH_STATE, credentials.authState?.jsonSerializeString())
+        credentials.authState?.let { authState ->
+            updateAuthState(authState)
+        }
+    }
+
+    fun updateAuthState(authState: AuthState) {
+        accountManager.setAndVerifyUserData(account, KEY_AUTH_STATE, authState.jsonSerializeString())
     }
 
     /**
@@ -172,7 +177,7 @@ class AccountSettings @AssistedInject constructor(
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
             SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
-        val newValue = if (seconds == null) SYNC_INTERVAL_MANUALLY else seconds
+        val newValue = seconds ?: SYNC_INTERVAL_MANUALLY
         accountManager.setAndVerifyUserData(account, key, newValue.toString())
 
         automaticSyncManager.updateAutomaticSync(account, dataType)

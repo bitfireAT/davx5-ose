@@ -19,6 +19,12 @@ import java.net.URL
 @InstallIn(SingletonComponent::class)
 object OAuthModule {
 
+    /**
+     * Make sure to call [AuthorizationService.dispose] when obtaining an instance.
+     *
+     * Creating an instance is expensive (involves CustomTabsManager), so don't create an
+     * instance if not necessary (use Provider/Lazy).
+     */
     @Provides
     fun authorizationService(@ApplicationContext context: Context): AuthorizationService =
         AuthorizationService(context,

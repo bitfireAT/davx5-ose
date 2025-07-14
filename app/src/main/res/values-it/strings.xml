@@ -227,7 +227,6 @@
   <string name="login_no_certificate_found">Nessun certificato trovato</string>
   <string name="login_install_certificate">Installa il certificato</string>
   <string name="login_type_google">Contatti Google / Calendario</string>
-  <string name="login_google_see_tested_with">Consultare la nostra pagina \"Tested with Google\" per informazioni aggiornate.</string>
   <string name="login_google_account">Account Google</string>
   <string name="login_google">Accedi con Google</string>
   <string name="login_google_client_id">ID Client (facoltativo)</string>

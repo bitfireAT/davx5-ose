@@ -33,10 +33,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.ExternalUris
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import java.util.Locale
 
 @Composable
@@ -168,9 +168,9 @@ fun BatteryOptimizationsPageContent(
                     OutlinedButton(
                         onClick = {
                             uriHandler.openUri(
-                                Constants.HOMEPAGE_URL.buildUpon()
-                                    .appendPath(Constants.HOMEPAGE_PATH_FAQ)
-                                    .appendPath(Constants.HOMEPAGE_PATH_FAQ_SYNC_NOT_RUN)
+                                ExternalUris.Homepage.baseUrl.buildUpon()
+                                    .appendPath(ExternalUris.Homepage.PATH_FAQ)
+                                    .appendPath(ExternalUris.Homepage.PATH_FAQ_SYNC_NOT_RUN)
                                     .appendQueryParameter(
                                         "manufacturer",
                                         Build.MANUFACTURER.lowercase(Locale.ROOT)

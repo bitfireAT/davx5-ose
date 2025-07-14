@@ -234,8 +234,6 @@
   <string name="login_no_certificate_found">Δεν βρέθηκε πιστοποιητικό</string>
   <string name="login_install_certificate">Εγκατάσταση πιστοποιητικού</string>
   <string name="login_type_google">Επαφές / Ημερολόγιο Google</string>
-  <string name="login_google_see_tested_with">Παρακαλούμε ανατρέξτε στη σελίδα μας «Δοκιμασμένο με τη Google» για ενημερωμένες πληροφορίες.</string>
-  <string name="login_google_unexpected_warnings">Ενδέχεται να εμφανιστούν απροσδόκητες προειδοποιήσεις ή/και να χρειαστεί να δημιουργήσετε το δικό σας αναγνωριστικό πελάτη.</string>
   <string name="login_google_account">Λογαριασμός Google</string>
   <string name="login_google">Συνδεθείτε με την Google</string>
   <string name="login_google_client_id">Αναγνωριστικό πελάτη (προαιρετικό)</string>

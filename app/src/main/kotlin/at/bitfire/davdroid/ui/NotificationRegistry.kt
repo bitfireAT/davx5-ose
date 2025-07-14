@@ -52,6 +52,9 @@ class NotificationRegistry @Inject constructor(
         const val NOTIFY_TASKS_PROVIDER_TOO_OLD = 20
         const val NOTIFY_PERMISSIONS = 21
 
+        @Suppress("unused")     // for build variants
+        const val NOTIFY_LICENSE = 100
+
     }
 
 

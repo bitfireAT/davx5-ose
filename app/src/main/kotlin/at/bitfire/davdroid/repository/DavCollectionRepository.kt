@@ -23,6 +23,7 @@ import at.bitfire.dav4jvm.property.carddav.NS_CARDDAV
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.NS_WEBDAV
 import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
@@ -32,8 +33,6 @@ import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.ical4android.ICalendar
-import at.bitfire.ical4android.util.DateUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
@@ -42,6 +41,7 @@ import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.ComponentList
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.PropertyList
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.property.Version
 import okhttp3.HttpUrl
@@ -375,8 +375,8 @@ class DavCollectionRepository @Inject constructor(
                                         // spec requires "an iCalendar object with exactly one VTIMEZONE component"
                                         Calendar(
                                             PropertyList<Property>().apply {
-                                                add(ICalendar.prodId)
                                                 add(Version.VERSION_2_0)
+                                                add(Constants.iCalProdId)
                                             },
                                             ComponentList(
                                                 listOf(vTimezone)
@@ -417,6 +417,9 @@ class DavCollectionRepository @Inject constructor(
         return writer.toString()
     }
 
-    private fun getVTimeZone(tzId: String): VTimeZone? = DateUtils.ical4jTimeZone(tzId)?.vTimeZone
+    private fun getVTimeZone(tzId: String): VTimeZone? {
+        val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
+        return tzRegistry.getTimeZone(tzId)?.vTimeZone
+    }
 
 }

@@ -123,6 +123,7 @@
   <string name="navigation_drawer_website">Сайт</string>
   <string name="navigation_drawer_manual">Руководство</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_managed">Для организаций</string>
   <string name="navigation_drawer_community">Сообщество</string>
   <string name="navigation_drawer_support_project">Поддержать проект</string>
   <string name="navigation_drawer_contribute">Как внести свой вклад</string>
@@ -273,8 +274,6 @@
   <string name="login_fastmail_account">Аккаунт Fastmail</string>
   <string name="login_fastmail_sign_in">Войти с Fastmail</string>
   <string name="login_type_google">Google Контакты / Календарь</string>
-  <string name="login_google_see_tested_with">Актуальную информацию смотрите на нашей странице \"Протестировано с Google\".</string>
-  <string name="login_google_unexpected_warnings">Вы можете столкнуться с неожиданными предупреждениями и/или вам придется создать свой собственный ID клиента.</string>
   <string name="login_google_account">Google аккаунт</string>
   <string name="login_google">Войти с Google</string>
   <string name="login_google_client_id">ID клиента (необязательно)</string>

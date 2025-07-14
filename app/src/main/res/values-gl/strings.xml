@@ -265,8 +265,6 @@
   <string name="login_no_certificate_found">Non se atopa certificado</string>
   <string name="login_install_certificate">Instalar certificado</string>
   <string name="login_type_google">Contactos / Calendario de Google</string>
-  <string name="login_google_see_tested_with">Le a nosa páxina \"Probado con Google\" para ter información actualizada.</string>
-  <string name="login_google_unexpected_warnings">Pode que recibas algún aviso e/ou teñas que crear o teu propio ID de cliente.</string>
   <string name="login_google_account">Conta de Google</string>
   <string name="login_google">Inicia sesión con Google</string>
   <string name="login_google_client_id">ID Cliente (optativo)</string>

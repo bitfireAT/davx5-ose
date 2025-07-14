@@ -16,6 +16,7 @@ import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -25,8 +26,8 @@ import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.JtxICalObject
+import at.bitfire.synctools.exception.InvalidRemoteResourceException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -99,7 +100,7 @@ class JtxSyncManager @AssistedInject constructor(
         SyncException.wrapWithLocalResource(resource) {
             logger.log(Level.FINE, "Preparing upload of icalobject ${resource.fileName}", resource)
             val os = ByteArrayOutputStream()
-            resource.write(os)
+            resource.write(os, Constants.iCalProdId)
             os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }
 
@@ -166,7 +167,7 @@ class JtxSyncManager @AssistedInject constructor(
         try {
             // parse the reader content and return the list of ICalObjects
             icalobjects.addAll(JtxICalObject.fromReader(reader, localCollection))
-        } catch (e: InvalidCalendarException) {
+        } catch (e: InvalidRemoteResourceException) {
             logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
             return

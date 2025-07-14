@@ -264,9 +264,10 @@
   <string name="login_client_certificate_selected">クライアント証明書: %s</string>
   <string name="login_no_certificate_found">証明書が見つかりませんでした</string>
   <string name="login_install_certificate">証明書をインストール</string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Fastmail アカウント</string>
+  <string name="login_fastmail_sign_in">Fastmail でログイン</string>
   <string name="login_type_google">Google コンタクト / カレンダー</string>
-  <string name="login_google_see_tested_with">最新情報は \"Tested with Google\" のページをご確認ください。</string>
-  <string name="login_google_unexpected_warnings">未知のエラーに遭遇したり、クライアント ID を作成するように求められたりする場合があります。</string>
   <string name="login_google_account">Google アカウント</string>
   <string name="login_google">Google でログイン</string>
   <string name="login_google_client_id">クライアント ID (オプション)</string>
@@ -318,6 +319,7 @@
   <string name="settings_ignore_vpns_off">検証されたインターネット接続のない VPN でも同期を実行します</string>
   <string name="settings_authentication">認証</string>
   <string name="settings_username">ユーザー名</string>
+  <string name="settings_password">パスワードまたはアプリパスワード</string>
   <string name="settings_new_password">新しいパスワード</string>
   <string name="settings_password_summary">ご利用のサーバーに従ってパスワードを更新します。</string>
   <string name="settings_certificate_alias">クライアント証明書</string>

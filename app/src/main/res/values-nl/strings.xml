@@ -121,6 +121,7 @@
   <string name="navigation_drawer_website">Website</string>
   <string name="navigation_drawer_manual">Handleiding</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_managed">Voor organisaties</string>
   <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_support_project">Ondersteun het project</string>
   <string name="navigation_drawer_contribute">Hoe bijdragen</string>
@@ -271,8 +272,6 @@
   <string name="login_fastmail_account">Fastmail account</string>
   <string name="login_fastmail_sign_in">Inloggen met Fastmail</string>
   <string name="login_type_google">Google Contacten / Kalender</string>
-  <string name="login_google_see_tested_with">Raadpleeg onze pagina \"Getest met Google\" voor actuele informatie.</string>
-  <string name="login_google_unexpected_warnings">Het kan zijn dat je onverwachte waarschuwingen krijgt en/of je eigen client-ID moet aanmaken.</string>
   <string name="login_google_account">Google account</string>
   <string name="login_google">Inloggen met Google</string>
   <string name="login_google_client_id">Client ID (optioneel)</string>

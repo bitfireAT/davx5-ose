@@ -12,9 +12,11 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.LogFileHandler.Companion.debugDir
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.synctools.log.PlainTextFormatter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.Closeable
 import java.io.File

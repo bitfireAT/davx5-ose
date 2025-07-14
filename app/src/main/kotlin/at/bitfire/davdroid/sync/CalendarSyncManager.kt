@@ -17,6 +17,7 @@ import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -27,9 +28,12 @@ import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
-import at.bitfire.ical4android.InvalidCalendarException
+import at.bitfire.ical4android.EventReader
+import at.bitfire.ical4android.EventWriter
 import at.bitfire.ical4android.util.DateUtils
+import at.bitfire.synctools.exception.InvalidRemoteResourceException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -41,9 +45,9 @@ import net.fortuna.ical4j.model.property.Action
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
+import java.io.StringWriter
 import java.time.Duration
 import java.time.ZonedDateTime
 import java.util.logging.Level
@@ -176,13 +180,13 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalEvent): RequestBody =
         SyncException.wrapWithLocalResource(resource) {
-            val event = requireNotNull(resource.event)
+            val event = requireNotNull(resource.androidEvent.event)
             logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
-            val os = ByteArrayOutputStream()
-            event.write(os)
-
-            os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+            // write iCalendar to string and convert to request body
+            val iCalWriter = StringWriter()
+            EventWriter(Constants.iCalProdId).write(event, iCalWriter)
+            iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
@@ -253,8 +257,8 @@ class CalendarSyncManager @AssistedInject constructor(
     private fun processVEvent(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
         val events: List<Event>
         try {
-            events = Event.eventsFromReader(reader)
-        } catch (e: InvalidCalendarException) {
+            events = EventReader().readEvents(reader)
+        } catch (e: InvalidRemoteResourceException) {
             logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
             return
@@ -285,7 +289,7 @@ class CalendarSyncManager @AssistedInject constructor(
                     local.update(event)
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local calendar", event)
-                    val newLocal = LocalEvent(localCollection, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                    val newLocal = LocalEvent(AndroidEvent(localCollection.androidCalendar, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT))
                     SyncException.wrapWithLocalResource(newLocal) {
                         newLocal.add()
                     }

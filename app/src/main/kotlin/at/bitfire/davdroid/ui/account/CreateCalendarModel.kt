@@ -12,15 +12,11 @@ import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavHomeSetRepository
-import at.bitfire.ical4android.Css3Color
+import at.bitfire.synctools.icalendar.Css3Color
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.text.Collator
-import java.time.ZoneId
-import java.time.format.TextStyle
-import java.util.Locale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -28,6 +24,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import java.text.Collator
+import java.time.ZoneId
+import java.time.format.TextStyle
+import java.util.Locale
 
 @HiltViewModel(assistedFactory = CreateCalendarModel.Factory::class)
 class CreateCalendarModel @AssistedInject constructor(
