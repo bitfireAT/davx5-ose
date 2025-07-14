@@ -100,6 +100,11 @@ class AndroidSyncFrameworkTest {
         every {
             syncFrameworkIntegration.cancelSync(any(), any(), any())
         } returns Unit
+
+        // Request a sync to ensure the sync framework is in a known state, that is, initialize
+        // the problem at hand (always pending bug appears only subsequent runs)
+        ContentResolver.requestSync(syncRequest)
+        recordedStates.clear()
     }
 
     @After
@@ -176,7 +181,7 @@ class AndroidSyncFrameworkTest {
 
 
     // Wrong behaviour of the sync framework on Android 14+
-    // Pending state stays true forever, active state behaves correctly
+    // Pending state stays true forever (after initial run), active state behaves correctly
 
     @SdkSuppress(minSdkVersion = 34, maxSdkVersion = 34)
     @Test
@@ -252,6 +257,7 @@ class AndroidSyncFrameworkTest {
      */
     private fun verifyRecordedStatesMatchWith(expectedStatesLists: List<States>) =
         runBlocking {
+            recordedStates.clear()
             // We use runBlocking for these tests because it uses the default dispatcher
             // which does not auto-advance virtual time and we need real system time to
             // test the sync framework behavior.
@@ -260,7 +266,7 @@ class AndroidSyncFrameworkTest {
             // state behaves correctly, so we can record the state changes as pairs (pending,
             // active) and expect a certain sequence of state pairs to verify the presence or
             // absence of the bug on different Android versions.
-            withTimeout(15.seconds) { // Usually takes less than 10 seconds
+            withTimeout(60.seconds) { // Usually takes less than 30 seconds
                 ContentResolver.requestSync(syncRequest)
                 while (true) {
                     if (recordedStates == expectedStatesLists)
