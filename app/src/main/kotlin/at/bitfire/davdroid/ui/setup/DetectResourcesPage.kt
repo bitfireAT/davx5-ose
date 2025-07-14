@@ -26,10 +26,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.DebugInfoActivity
+import at.bitfire.davdroid.ui.ExternalUris
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.ProgressBar
 
@@ -120,8 +120,8 @@ fun DetectResourcesPageContent_NothingFound(
                     modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                 )
 
-                val urlServices = Constants.HOMEPAGE_URL.buildUpon()
-                    .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
+                val urlServices = ExternalUris.Homepage.baseUrl.buildUpon()
+                    .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
                     .withStatParams("DetectResourcesPage")
                     .build()
                 val testedServices = HtmlCompat.fromHtml(

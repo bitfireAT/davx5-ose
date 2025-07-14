@@ -177,7 +177,7 @@ class AccountSettings @AssistedInject constructor(
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
             SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
-        val newValue = if (seconds == null) SYNC_INTERVAL_MANUALLY else seconds
+        val newValue = seconds ?: SYNC_INTERVAL_MANUALLY
         accountManager.setAndVerifyUserData(account, key, newValue.toString())
 
         automaticSyncManager.updateAutomaticSync(account, dataType)

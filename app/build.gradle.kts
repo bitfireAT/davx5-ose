@@ -19,13 +19,15 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 405010003
-        versionName = "4.5.1"
+        versionCode = 405020000
+        versionName = "4.5.2-alpha.1"
 
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
         minSdk = 24        // Android 7.0
         targetSdk = 36     // Android 16
+
+        buildConfigField("boolean", "customCertsUI", "true")
 
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
     }

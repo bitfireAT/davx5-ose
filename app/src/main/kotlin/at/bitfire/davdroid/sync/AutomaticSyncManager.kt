@@ -6,8 +6,10 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.provider.CalendarContract
+import android.provider.ContactsContract
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import kotlinx.coroutines.runBlocking
@@ -27,6 +29,7 @@ import javax.inject.Provider
  */
 class AutomaticSyncManager @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
+    private val localAddressBookStore: LocalAddressBookStore,
     private val serviceRepository: DavServiceRepository,
     private val syncFramework: SyncFrameworkIntegration,
     private val tasksAppManager: Provider<TasksAppManager>,
@@ -39,15 +42,18 @@ class AutomaticSyncManager @Inject constructor(
     private fun disableAutomaticSync(account: Account, dataType: SyncDataType) {
         workerManager.disablePeriodic(account, dataType)
 
-        for (authority in dataType.possibleAuthorities())
+        for (authority in dataType.possibleAuthorities()) {
             syncFramework.disableSyncAbility(account, authority)
+            // no need to disable content-triggered sync, as it can't be active when sync-ability is disabled
+        }
     }
 
     /**
-     * Enables automatic synchronization for the given account and data type and sets it to the given interval:
+     * Enables/Disables automatic synchronization for the given account and data type and sets it to the given interval,
+     * based on sync interval setting in account settings:
      *
-     * 1. Sets up periodic sync for the given data type with the given interval.
-     * 2. Enables sync in the sync framework for the given data type and sets up periodic sync with the given interval.
+     * 1. Enables/Disables periodic sync worker for the given data type with the given interval.
+     * 2. Enables/Disables sync in the sync framework and enables or disables content-triggered syncs for the given data type
      *
      * @param account   the account to synchronize
      * @param dataType  the data type to synchronize
@@ -58,31 +64,44 @@ class AutomaticSyncManager @Inject constructor(
     ) {
         val accountSettings = accountSettingsFactory.create(account)
         val syncInterval = accountSettings.getSyncInterval(dataType)
+
+        // 1. Update sync workers (needs already updated sync interval in AccountSettings).
         if (syncInterval != null) {
-            // update sync workers (needs already updated sync interval in AccountSettings)
             val wifiOnly = accountSettings.getSyncWifiOnly()
             workerManager.enablePeriodic(account, dataType, syncInterval, wifiOnly)
         } else
             workerManager.disablePeriodic(account, dataType)
 
-        // also enable/disable content-triggered syncs
-        val possibleAuthorities = dataType.possibleAuthorities()
-        val authority: String? = when (dataType) {
-            // Content triggered sync of contacts is handled per address book account in
-            // [LocalAddressBook.updateSyncFrameworkSettings()]
-            SyncDataType.CONTACTS -> null
-            SyncDataType.EVENTS -> CalendarContract.AUTHORITY
-            SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
+        // 2. Enable/disable content-triggered syncs.
+        if (dataType == SyncDataType.CONTACTS) {
+            // Contact updates are handled by their respective address book accounts, so we must always
+            // disable the content-triggered sync for the main account.
+            syncFramework.disableSyncAbility(account, ContactsContract.AUTHORITY)
+
+            // pass through request to update all existing address books
+            localAddressBookStore.acquireContentProvider()?.use { provider ->
+                for (addressBookAccount in localAddressBookStore.getAll(account, provider))
+                    addressBookAccount.updateSyncFrameworkSettings()
+            }
+
+        } else {
+            // everything but contacts
+            val possibleAuthorities = dataType.possibleAuthorities()
+            val authority: String? = when (dataType) {
+                SyncDataType.CONTACTS -> throw IllegalStateException()  // handled above
+                SyncDataType.EVENTS -> CalendarContract.AUTHORITY
+                SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
+            }
+            if (authority != null && syncInterval != null) {
+                // enable given authority, but completely disable all other possible authorities
+                // (for instance, tasks apps which are not the current task app)
+                syncFramework.enableSyncOnContentChange(account, authority)
+                for (disableAuthority in possibleAuthorities - authority)
+                    syncFramework.disableSyncAbility(account, disableAuthority)
+            } else
+                for (authority in possibleAuthorities)
+                    syncFramework.disableSyncOnContentChange(account, authority)
         }
-        if (authority != null && syncInterval != null) {
-            // enable given authority, but completely disable all other possible authorities
-            // (for instance, tasks apps which are not the current task app)
-            syncFramework.enableSyncOnContentChange(account, authority)
-            for (disableAuthority in possibleAuthorities - authority)
-                syncFramework.disableSyncAbility(account, disableAuthority)
-        } else
-            for (authority in possibleAuthorities)
-                syncFramework.disableSyncOnContentChange(account, authority)
     }
 
     /**
@@ -101,7 +120,8 @@ class AutomaticSyncManager @Inject constructor(
     /**
      * Updates automatic synchronization of the given account and data type according to the account services and settings.
      *
-     * If there's a [Service] for the given account and data type, automatic sync is enabled (with details from [AccountSettings]).
+     * If there's a [Service] for the given account and data type, automatic sync may be enabled if sync interval is set
+     * in [AccountSettings].
      * Otherwise, automatic synchronization is disabled.
      *
      * @param account   account for which automatic synchronization shall be updated

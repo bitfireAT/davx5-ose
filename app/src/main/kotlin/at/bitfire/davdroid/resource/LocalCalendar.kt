@@ -14,6 +14,9 @@ import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.CalendarBatchOperation
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -23,12 +26,15 @@ import java.util.logging.Logger
  *
  * [Calendars._SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
-class LocalCalendar(
-    val androidCalendar: AndroidCalendar
+class LocalCalendar @AssistedInject constructor(
+    @Assisted val androidCalendar: AndroidCalendar,
+    private val logger: Logger
 ) : LocalCollection<LocalEvent> {
 
-    private val logger: Logger
-        get() = Logger.getLogger(javaClass.name)
+    @AssistedFactory
+    interface Factory {
+        fun create(androidCalendar: AndroidCalendar): LocalCalendar
+    }
 
 
     override val dbCollectionId: Long?
@@ -198,15 +204,15 @@ class LocalCalendar(
             "${Events.DIRTY} AND NOT ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL",
             null
         ) { values ->
-            val eventID = values.getAsLong(Events._ID)
+            val eventId = values.getAsLong(Events._ID)
 
             // get number of instances
-            val numEventInstances = AndroidEvent.numInstances(androidCalendar.client, androidCalendar.account, eventID)
+            val numEventInstances = androidCalendar.numInstances(eventId)
 
             // delete event if there are no instances
             if (numEventInstances == 0) {
-                logger.fine("Marking event #$eventID without instances as deleted")
-                AndroidEvent.markAsDeleted(androidCalendar.client, androidCalendar.account, eventID)
+                logger.fine("Marking event #$eventId without instances as deleted")
+                androidCalendar.updateEvent(eventId, contentValuesOf(Events.DELETED to 1))
             }
         }
     }

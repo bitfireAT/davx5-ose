@@ -18,56 +18,51 @@ import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.test.InitCalendarProviderRule
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Status
 import org.junit.After
-import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.ClassRule
+import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
+import javax.inject.Inject
 
+@HiltAndroidTest
 class LocalCalendarTest {
 
-    companion object {
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
 
-        @JvmField
-        @ClassRule
-        val initCalendarProviderRule: TestRule = InitCalendarProviderRule.initialize()
+    @get:Rule
+    val initCalendarProviderRule: TestRule = InitCalendarProviderRule.initialize()
 
-        private lateinit var client: ContentProviderClient
-
-        @BeforeClass
-        @JvmStatic
-        fun setUpClass() {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
-            client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun tearDownClass() {
-            client.closeCompat()
-        }
-
-    }
+    @Inject
+    lateinit var localCalendarFactory: LocalCalendar.Factory
 
     private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
+    private lateinit var client: ContentProviderClient
     private lateinit var calendar: LocalCalendar
 
     @Before
     fun setUp() {
+        hiltRule.inject()
+
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+
         val provider = AndroidCalendarProvider(account, client)
-        calendar = LocalCalendar(provider.createAndGetCalendar(ContentValues()))
+        calendar = localCalendarFactory.create(provider.createAndGetCalendar(ContentValues()))
     }
 
     @After
     fun tearDown() {
         calendar.androidCalendar.delete()
+        client.closeCompat()
     }
 
 

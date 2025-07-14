@@ -27,10 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.ExternalUris
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 
 @Composable
 fun LoginScreen(
@@ -90,10 +90,9 @@ fun LoginScreenContent(
                     },
                     actions = {
                         val uriHandler = LocalUriHandler.current
-                        val specificHelpUri = helpUri ?:
-                            Constants.HOMEPAGE_URL.buildUpon()
-                            .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
-                            .withStatParams("LoginActivity")
+                        val specificHelpUri = helpUri ?: ExternalUris.Homepage.baseUrl.buildUpon()
+                            .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
+                            .withStatParams("LoginScreen")
                             .build()
                         IconButton(onClick = {
                             // show tested-with page

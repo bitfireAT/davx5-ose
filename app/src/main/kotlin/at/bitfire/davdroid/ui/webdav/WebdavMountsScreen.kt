@@ -59,11 +59,11 @@ import androidx.core.app.ShareCompat
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.db.WebDavMountWithQuota
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.util.DavUtils
@@ -418,6 +418,6 @@ fun WebdavMountsItem_Preview() {
 }
 
 
-fun webdavMountsHelpUrl(): Uri = Constants.MANUAL_URL.buildUpon()
-    .appendPath(Constants.MANUAL_PATH_WEBDAV_MOUNTS)
+fun webdavMountsHelpUrl(): Uri = ExternalUris.Manual.baseUrl.buildUpon()
+    .appendPath(ExternalUris.Manual.PATH_WEBDAV_MOUNTS)
     .build()

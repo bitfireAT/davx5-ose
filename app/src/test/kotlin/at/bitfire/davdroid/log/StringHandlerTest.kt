@@ -7,6 +7,7 @@ package at.bitfire.davdroid.log
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.lang.System.lineSeparator
 import java.util.logging.Formatter
 import java.util.logging.Level
 import java.util.logging.LogRecord
@@ -19,8 +20,8 @@ class StringHandlerTest {
         handler.publish(LogRecord(Level.INFO, "Line 1"))
         handler.publish(LogRecord(Level.FINEST, "Line 2"))
         val str = handler.toString()
-        assertTrue(str.contains("Line 1\n"))
-        assertTrue(str.contains("Line 2\n"))
+        assertTrue(str.contains("Line 1${lineSeparator()}"))
+        assertTrue(str.contains("Line 2${lineSeparator()}"))
     }
 
     @Test

@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.settings
 
 import androidx.appcompat.app.AppCompatDelegate
+import at.bitfire.davdroid.settings.Settings.PRESELECT_COLLECTIONS_EXCLUDED
 
 object Settings {
 
@@ -60,5 +61,9 @@ object Settings {
 
     /** whether all address books are forced to be read-only */
     const val FORCE_READ_ONLY_ADDRESSBOOKS = "force_read_only_addressbooks"
+
+
+    /** max. number of accounts */
+    const val MAX_ACCOUNTS = "max_accounts"
     
 }

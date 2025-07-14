@@ -33,7 +33,6 @@ import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.ical4android.util.DateUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
@@ -42,6 +41,7 @@ import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.ComponentList
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.PropertyList
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.property.Version
 import okhttp3.HttpUrl
@@ -417,6 +417,9 @@ class DavCollectionRepository @Inject constructor(
         return writer.toString()
     }
 
-    private fun getVTimeZone(tzId: String): VTimeZone? = DateUtils.ical4jTimeZone(tzId)?.vTimeZone
+    private fun getVTimeZone(tzId: String): VTimeZone? {
+        val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
+        return tzRegistry.getTimeZone(tzId)?.vTimeZone
+    }
 
 }
