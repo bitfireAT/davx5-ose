@@ -98,7 +98,7 @@ class AndroidSyncFrameworkTest {
         // Disable the workaround we put in place for Android 14+ present in
         // [SyncAdapterService.SyncAdapter.onPerformSync]
         every {
-            syncFrameworkIntegration.cancelSyncInSyncFramework(any(), any(), any())
+            syncFrameworkIntegration.cancelSync(any(), any(), any())
         } returns Unit
     }
 

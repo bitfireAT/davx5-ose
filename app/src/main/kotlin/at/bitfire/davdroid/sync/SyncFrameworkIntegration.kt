@@ -105,16 +105,13 @@ class SyncFrameworkIntegration @Inject constructor(
      *
      * @param account The account for which the sync request should be canceled.
      * @param authority The authority for which the sync request should be canceled.
-     * @param upload Whether the sync request is for an upload operation.
+     * @param extras The original extras Bundle used to start the sync.
      */
-    fun cancelSyncInSyncFramework(account: Account, authority: String, upload: Boolean) {
-        // Recreate the sync request used to start this sync
+    fun cancelSync(account: Account, authority: String, extras: Bundle) {
+        // Recreate the sync request which was used to start this sync
         val syncRequest = SyncRequest.Builder()
             .setSyncAdapter(account, authority)
-            .setExtras(Bundle().apply {
-                if (upload)
-                    putBoolean(ContentResolver.SYNC_EXTRAS_UPLOAD, true)
-            })
+            .setExtras(extras)
             .syncOnce()
             .build()
 

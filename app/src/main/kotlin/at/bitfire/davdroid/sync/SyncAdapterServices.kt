@@ -167,7 +167,7 @@ abstract class SyncAdapterService: Service() {
             // See: https://github.com/bitfireAT/davx5-ose/issues/1458
             if (Build.VERSION.SDK_INT >= 34) {
                 logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for account=$account authority=$authority upload=$upload")
-                syncFrameworkIntegration.cancelSyncInSyncFramework(account, authority, upload)
+                syncFrameworkIntegration.cancelSync(account, authority, extras)
             }
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
