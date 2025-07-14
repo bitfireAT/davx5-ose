@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid
+package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentResolver
@@ -13,13 +13,12 @@ import android.provider.CalendarContract
 import androidx.test.filters.LargeTest
 import androidx.test.filters.SdkSuppress
 import at.bitfire.davdroid.sync.account.TestAccount
-import at.bitfire.davdroid.util.SyncFrameworkUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
-import io.mockk.mockkObject
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
@@ -51,6 +50,9 @@ class AndroidSyncFrameworkTest {
 
     @get:Rule
     val mockkRule = MockKRule(this)
+
+    @MockK
+    lateinit var syncFrameworkIntegration: SyncFrameworkIntegration
 
     lateinit var account: Account
     lateinit var syncRequest: SyncRequest
@@ -95,9 +97,8 @@ class AndroidSyncFrameworkTest {
 
         // Disable the workaround we put in place for Android 14+ present in
         // [SyncAdapterService.SyncAdapter.onPerformSync]
-        mockkObject(SyncFrameworkUtils)
         every {
-            SyncFrameworkUtils.cancelSyncInSyncFramework(any(), any(), any())
+            syncFrameworkIntegration.cancelSyncInSyncFramework(any(), any(), any())
         } returns Unit
     }
 
@@ -114,7 +115,6 @@ class AndroidSyncFrameworkTest {
     // Pending state is correctly reflected
 
     @SdkSuppress(minSdkVersion = 28, maxSdkVersion = 28)
-    @LargeTest
     @Test
     fun testVerifySyncAlwaysPending_correctBehaviour_android9() =
         verifyRecordedStatesMatchWith(
@@ -127,7 +127,6 @@ class AndroidSyncFrameworkTest {
         )
 
     @SdkSuppress(minSdkVersion = 29, maxSdkVersion = 29)
-    @LargeTest
     @Test
     fun testVerifySyncAlwaysPending_correctBehaviour_android10() =
         verifyRecordedStatesMatchWith(
@@ -140,7 +139,6 @@ class AndroidSyncFrameworkTest {
         )
 
     @SdkSuppress(minSdkVersion = 30, maxSdkVersion = 30)
-    @LargeTest
     @Test
     fun testVerifySyncAlwaysPending_correctBehaviour_android11() =
         verifyRecordedStatesMatchWith(
@@ -153,7 +151,6 @@ class AndroidSyncFrameworkTest {
         )
 
     @SdkSuppress(minSdkVersion = 31, maxSdkVersion = 32)
-    @LargeTest
     @Test
     fun testVerifySyncAlwaysPending_correctBehaviour_android12() =
         verifyRecordedStatesMatchWith(
@@ -166,7 +163,6 @@ class AndroidSyncFrameworkTest {
         )
 
     @SdkSuppress(minSdkVersion = 33, maxSdkVersion = 33)
-    @LargeTest
     @Test
     fun testVerifySyncAlwaysPending_correctBehaviour_android13() =
         verifyRecordedStatesMatchWith(
@@ -183,7 +179,6 @@ class AndroidSyncFrameworkTest {
     // Pending state stays true forever, active state behaves correctly
 
     @SdkSuppress(minSdkVersion = 34, maxSdkVersion = 34)
-    @LargeTest
     @Test
     fun testVerifySyncAlwaysPending_wrongBehaviour_android14() =
         verifyRecordedStatesMatchWith(
@@ -207,7 +202,6 @@ class AndroidSyncFrameworkTest {
         )
 
     @SdkSuppress(minSdkVersion = 36, maxSdkVersion = 36)
-    @LargeTest
     @Test
     fun testVerifySyncAlwaysPending_wrongBehaviour_android16() =
         verifyRecordedStatesMatchWith(
@@ -219,9 +213,8 @@ class AndroidSyncFrameworkTest {
         )
 
 
-    @Ignore // takes way too long to run in CI
+    @Ignore("Takes way too long to run in CI")
     @SdkSuppress(minSdkVersion = 34)
-    @LargeTest
     @Test(expected = TimeoutCancellationException::class)
     fun testVerifySyncAlwaysPending() = runBlocking {
         // Different from the previous tests. This test checks the pending state stays

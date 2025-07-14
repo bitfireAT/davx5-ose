@@ -107,6 +107,7 @@ class SyncAdapterServicesTest {
             context = context,
             logger = logger,
             syncConditionsFactory = syncConditionsFactory,
+            syncFrameworkIntegration = mockk<SyncFrameworkIntegration>(relaxed = true),
             syncWorkerManager = syncWorkerManager
         )
 

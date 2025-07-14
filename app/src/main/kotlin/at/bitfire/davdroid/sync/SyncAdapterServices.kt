@@ -27,7 +27,6 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.davdroid.util.SyncFrameworkUtils
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -107,6 +106,7 @@ abstract class SyncAdapterService: Service() {
         @ApplicationContext context: Context,
         private val logger: Logger,
         private val syncConditionsFactory: SyncConditions.Factory,
+        private val syncFrameworkIntegration: SyncFrameworkIntegration,
         private val syncWorkerManager: SyncWorkerManager
     ): AbstractThreadedSyncAdapter(
         /* context = */ context,
@@ -167,7 +167,7 @@ abstract class SyncAdapterService: Service() {
             // See: https://github.com/bitfireAT/davx5-ose/issues/1458
             if (Build.VERSION.SDK_INT >= 34) {
                 logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for account=$account authority=$authority upload=$upload")
-                SyncFrameworkUtils.cancelSyncInSyncFramework(account, authority, upload)
+                syncFrameworkIntegration.cancelSyncInSyncFramework(account, authority, upload)
             }
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
