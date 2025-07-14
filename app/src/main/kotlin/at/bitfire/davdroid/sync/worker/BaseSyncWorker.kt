@@ -114,12 +114,6 @@ abstract class BaseSyncWorker(
             else {
                 val syncConditions = syncConditionsFactory.create(accountSettings)
 
-                // check internet connection
-                if (!syncConditions.internetAvailable()) {
-                    logger.info("WorkManager started SyncWorker without Internet connection. Aborting.")
-                    return Result.success()
-                }
-
                 // check WiFi restriction
                 if (!syncConditions.wifiConditionsMet()) {
                     logger.info("WiFi conditions not met. Won't run periodic sync.")
