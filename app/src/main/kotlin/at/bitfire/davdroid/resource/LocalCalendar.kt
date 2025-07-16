@@ -8,7 +8,6 @@ import android.content.ContentUris
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
-import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
