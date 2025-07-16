@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.resource
 
-import at.bitfire.davdroid.db.SyncState
-
 interface LocalCollection<out T: LocalResource<*>> {
 
     /** a tag that uniquely identifies the collection (DAVx5-wide) */

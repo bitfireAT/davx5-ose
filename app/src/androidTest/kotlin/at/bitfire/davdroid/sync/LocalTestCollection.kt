@@ -4,8 +4,8 @@
 
 package at.bitfire.davdroid.sync
 
-import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.resource.LocalCollection
+import at.bitfire.davdroid.resource.SyncState
 
 class LocalTestCollection(
     override val dbCollectionId: Long = 0L

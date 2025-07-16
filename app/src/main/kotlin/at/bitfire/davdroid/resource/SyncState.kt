@@ -2,21 +2,21 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.db
+package at.bitfire.davdroid.resource
 
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import org.json.JSONException
 import org.json.JSONObject
 
 data class SyncState(
-        val type: Type,
-        val value: String,
+    val type: Type,
+    val value: String,
 
-        /**
-         * Whether this sync state occurred during an initial sync as described
-         * in RFC 6578, which means the initial sync is not complete yet.
-         */
-        var initialSync: Boolean? = null
+    /**
+     * Whether this sync state occurred during an initial sync as described
+     * in RFC 6578, which means the initial sync is not complete yet.
+     */
+    var initialSync: Boolean? = null
 ) {
 
     companion object {
