@@ -228,7 +228,7 @@ class DavCollectionRepository @Inject constructor(
      *
      * @param newCollection Collection to be inserted or updated
      */
-    fun insertOrUpdateByUrlAndRememberFlags(newCollection: Collection) {
+    fun insertOrUpdateByUrlRememberSync(newCollection: Collection) {
         db.runInTransaction {
             // remember locally set flags
             val oldCollection = dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())
