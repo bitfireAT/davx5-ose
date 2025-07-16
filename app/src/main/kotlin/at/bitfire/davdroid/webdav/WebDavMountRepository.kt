@@ -50,12 +50,13 @@ class WebDavMountRepository @Inject constructor(
         displayName: String,
         credentials: Credentials?
     ): Boolean {
-        if (!hasWebDav(url, credentials))
+        val webdavUrl = hasWebDav(url, credentials)
+        if (webdavUrl == null)
             return false
 
         // create in database
         val mount = WebDavMount(
-            url = url,
+            url = webdavUrl,
             name = displayName
         )
         val id = db.webDavMountDao().insert(mount)
@@ -114,7 +115,7 @@ class WebDavMountRepository @Inject constructor(
     internal suspend fun hasWebDav(
         url: HttpUrl,
         credentials: Credentials?
-    ): Boolean = withContext(ioDispatcher) {
+    ): HttpUrl? = withContext(ioDispatcher) {
         val validVersions = arrayOf("1", "2", "3")
 
         val builder = httpClientBuilder.get()
@@ -125,18 +126,20 @@ class WebDavMountRepository @Inject constructor(
                 getCredentials = { credentials }
             )
 
-        var supported = false
+        var webdavUrl: HttpUrl? = null
         builder.build().use { httpClient ->
             val dav = DavResource(httpClient.okHttpClient, url)
             runInterruptible {
-                dav.options { davCapabilities, _ ->
+                dav.options(followRedirects = true) { davCapabilities, response ->
                     if (davCapabilities.any { it in validVersions })
-                        supported = true
+                        webdavUrl = response.request.url
+                    else
+                        null
                 }
             }
         }
 
-        supported
+        webdavUrl
     }
 
 }
