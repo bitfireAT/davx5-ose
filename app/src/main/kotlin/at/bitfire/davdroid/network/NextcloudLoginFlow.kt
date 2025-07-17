@@ -125,7 +125,7 @@ class NextcloudLoginFlow @Inject constructor(
         if (response.code != HttpURLConnection.HTTP_OK)
             throw HttpException(response)
 
-        response.body?.use { body ->
+        response.body.use { body ->
             val mimeType = body.contentType() ?: throw DavException("Login Flow response without MIME type")
             if (mimeType.type != "application" || mimeType.subtype != "json")
                 throw DavException("Invalid Login Flow response (not JSON)")
@@ -133,8 +133,6 @@ class NextcloudLoginFlow @Inject constructor(
             // decode JSON
             return@withContext JSONObject(body.string())
         }
-
-        throw DavException("Invalid Login Flow response (no body)")
     }
 
 }
