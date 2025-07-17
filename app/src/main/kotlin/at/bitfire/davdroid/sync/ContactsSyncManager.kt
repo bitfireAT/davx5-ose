@@ -471,7 +471,7 @@ class ContactsSyncManager @AssistedInject constructor(
                             .build()).execute()
 
                         if (response.isSuccessful)
-                            return response.body?.bytes()
+                            return response.body.bytes()
                         else
                             logger.warning("Couldn't download external resource")
                     } catch(e: IOException) {
