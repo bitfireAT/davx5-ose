@@ -215,7 +215,7 @@ class RandomAccessCallback @AssistedInject constructor(
                     else if (response.code != 206)
                         throw HttpException(response)
 
-                    result = response.body?.bytes()
+                    result = response.body.bytes()
                 }
                 result ?: throw DavException("No response body")
             }

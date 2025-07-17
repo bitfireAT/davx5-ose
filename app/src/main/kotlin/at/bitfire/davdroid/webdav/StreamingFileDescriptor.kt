@@ -28,7 +28,6 @@ import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.RequestBody
-import okhttp3.internal.headersContentLength
 import okio.BufferedSink
 import java.io.IOException
 import java.util.logging.Level
@@ -113,9 +112,9 @@ class StreamingFileDescriptor @AssistedInject constructor(
     @WorkerThread
     private suspend fun downloadNow(writeFd: ParcelFileDescriptor) = runInterruptible {
         dav.get(DavUtils.acceptAnything(preferred = mimeType), null) { response ->
-            response.body?.use { body ->
+            response.body.use { body ->
                 if (response.isSuccessful) {
-                    val length = response.headersContentLength()
+                    val length = body.contentLength()
 
                     notification.setContentTitle(context.getString(R.string.webdav_notification_download))
                     if (length == -1L)
