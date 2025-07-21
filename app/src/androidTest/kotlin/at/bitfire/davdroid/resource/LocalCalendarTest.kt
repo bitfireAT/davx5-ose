@@ -12,8 +12,8 @@ import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
 import androidx.test.platform.app.InstrumentationRegistry
+import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
-import at.bitfire.ical4android.LegacyAndroidCalendar
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
@@ -92,9 +92,8 @@ class LocalCalendarTest {
                 status = Status.VEVENT_CANCELLED
             })
         }
-        val legacyCalendar = LegacyAndroidCalendar(calendar.androidCalendar)
-        legacyCalendar.add(event = event, syncId = "filename.ics", flags = LocalResource.FLAG_REMOTELY_PRESENT)
-        val localEvent = calendar.findByName("filename.ics")!!
+        val localEvent = AndroidEvent(calendar.androidCalendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
+        localEvent.add()
         val eventId = localEvent.id!!
 
         // set event as dirty
@@ -123,9 +122,8 @@ class LocalCalendarTest {
             summary = "Event with 3 instances"
             rRules.add(RRule("FREQ=DAILY;COUNT=3"))
         }
-        val legacyCalendar = LegacyAndroidCalendar(calendar.androidCalendar)
-        legacyCalendar.add(event = event, syncId = "filename.ics", flags = LocalResource.FLAG_REMOTELY_PRESENT)
-        val localEvent = calendar.findByName("filename.ics")!!
+        val localEvent = AndroidEvent(calendar.androidCalendar, event, "filename.ics", null, null, LocalResource.FLAG_REMOTELY_PRESENT)
+        localEvent.add()
         val eventId = localEvent.id!!
 
         // set event as dirty
