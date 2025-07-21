@@ -18,7 +18,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import java.util.LinkedList
-import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -77,24 +76,7 @@ class LocalCalendar @AssistedInject constructor(
          */
         androidCalendar.iterateEventRows(null, "${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null) { values ->
             val legacyEvent = AndroidEvent(androidCalendar, values)
-            val localEvent = LocalEvent(legacyEvent)
-            try {
-                val event = localEvent.getCachedEvent()
-
-                val nonGroupScheduled = event.attendees.isEmpty()
-                val weAreOrganizer = event.isOrganizer == true
-
-                val sequence = event.sequence
-                if (sequence == null)
-                    // sequence has not been assigned yet (i.e. this event was just locally created)
-                    event.sequence = 0
-                else if (nonGroupScheduled || weAreOrganizer)   // increase sequence
-                    event.sequence = sequence + 1
-
-            } catch(e: Exception) {
-                logger.log(Level.WARNING, "Couldn't check/increase sequence", e)
-            }
-            dirty += localEvent
+            dirty += LocalEvent(legacyEvent)
         }
 
         return dirty

@@ -178,9 +178,16 @@ class CalendarSyncManager @AssistedInject constructor(
         return modified or superModified
     }
 
+    override suspend fun uploadDirty(local: LocalEvent) {
+        super.uploadDirty(local)
+
+        // update local SEQUENCE to new value after successful upload
+        local.updateSequence(local.getCachedEvent().sequence)
+    }
+
     override fun generateUpload(resource: LocalEvent): RequestBody =
         SyncException.wrapWithLocalResource(resource) {
-            val event = resource.getCachedEvent()
+            val event = resource.eventToUpload()
             logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
             // write iCalendar to string and convert to request body

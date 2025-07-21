@@ -68,6 +68,40 @@ class LocalEvent(
         return event
     }
 
+    /**
+     * Generates the [Event] that should actually be uploaded:
+     *
+     * 1. Takes the [getCachedEvent].
+     * 2. Calculates the new SEQUENCE.
+     *
+     * _Note: This method currently modifies the object returned by [getCachedEvent], but
+     * this may change in the future._
+     *
+     * @return data object that should be used for uploading
+     */
+    fun eventToUpload(): Event {
+        val event = getCachedEvent()
+
+        val nonGroupScheduled = event.attendees.isEmpty()
+        val weAreOrganizer = event.isOrganizer == true
+
+        // Increase sequence (event.sequence null/non-null behavior is defined by the Event, see KDoc of event.sequence):
+        // - If it's null, the event has just been created in the database, so we can start with SEQUENCE:0 (default).
+        // - If it's non-null, the event already exists on the server, so increase by one.
+        val sequence = event.sequence
+        if (sequence != null && (nonGroupScheduled || weAreOrganizer))
+            event.sequence = sequence + 1
+
+        return event
+    }
+
+    // Updates the SEQUENCE in the content provider.
+    fun updateSequence(sequence: Int?) {
+        androidEvent.update(contentValuesOf(
+            AndroidEvent2.COLUMN_SEQUENCE to sequence
+        ))
+    }
+
 
     /**
      * Creates and sets a new UID in the calendar provider, if no UID is already set.
@@ -113,7 +147,6 @@ class LocalEvent(
             values.put(Events._SYNC_ID, fileName)
         values.put(AndroidEvent2.COLUMN_ETAG, eTag)
         values.put(AndroidEvent2.COLUMN_SCHEDULE_TAG, scheduleTag)
-        values.put(AndroidEvent2.COLUMN_SEQUENCE, getCachedEvent().sequence)
         values.put(Events.DIRTY, 0)
         androidEvent.update(values)
 

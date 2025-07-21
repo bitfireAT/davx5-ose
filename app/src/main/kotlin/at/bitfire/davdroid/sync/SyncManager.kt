@@ -378,7 +378,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         return numUploaded > 0
     }
 
-    protected suspend fun uploadDirty(local: ResourceType) {
+    protected open suspend fun uploadDirty(local: ResourceType) {
         val existingFileName = local.fileName
 
         var newFileName: String? = null
