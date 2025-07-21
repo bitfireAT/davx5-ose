@@ -95,7 +95,11 @@ class LocalEvent(
         return event
     }
 
-    // Updates the SEQUENCE in the content provider.
+    /**
+     * Updates the SEQUENCE of the event in the content provider.
+     *
+     * @param sequence  new sequence value
+     */
     fun updateSequence(sequence: Int?) {
         androidEvent.update(contentValuesOf(
             AndroidEvent2.COLUMN_SEQUENCE to sequence
