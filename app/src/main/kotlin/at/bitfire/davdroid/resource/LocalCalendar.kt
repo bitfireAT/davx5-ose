@@ -82,7 +82,7 @@ class LocalCalendar @AssistedInject constructor(
                 val event = localEvent.event
 
                 val nonGroupScheduled = event.attendees.isEmpty()
-                val weAreOrganizer = localEvent.weAreOrganizer
+                val weAreOrganizer = event.isOrganizer == true
 
                 val sequence = event.sequence
                 if (sequence == null)

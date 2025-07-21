@@ -52,8 +52,6 @@ class LocalEvent(
         legacyCalendar.getEvent(androidEvent.id) ?: throw LocalStorageException("Event ${androidEvent.id} not found")
     }
 
-    val weAreOrganizer: Boolean = event.isOrganizer == true
-
 
     /**
      * Creates and sets a new UID in the calendar provider, if no UID is already set.
@@ -67,11 +65,11 @@ class LocalEvent(
             // generate new UID
             val newUid = UUID.randomUUID().toString()
 
-            // update in calendar provider
+            // persist to calendar provider
             val values = contentValuesOf(Events.UID_2445 to newUid)
             androidEvent.update(values)
 
-            // update in event data object (does not write to calendar store!)
+            // update in event data object
             event.uid = newUid
 
             newUid
