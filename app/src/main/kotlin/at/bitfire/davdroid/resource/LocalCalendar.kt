@@ -79,7 +79,7 @@ class LocalCalendar @AssistedInject constructor(
             val legacyEvent = AndroidEvent(androidCalendar, values)
             val localEvent = LocalEvent(legacyEvent)
             try {
-                val event = localEvent.event
+                val event = localEvent.getCachedEvent()
 
                 val nonGroupScheduled = event.attendees.isEmpty()
                 val weAreOrganizer = event.isOrganizer == true

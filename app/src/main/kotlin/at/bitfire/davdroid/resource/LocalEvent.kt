@@ -47,9 +47,25 @@ class LocalEvent(
 
     // other methods
 
-    val event: Event by lazy {
+    private var _event: Event? = null
+    /**
+     * Retrieves the event from the content provider and converts it to a legacy data object.
+     *
+     * Caches the result: the content provider is only queried at the first call and then
+     * this method always returns the same object.
+     *
+     * @throws LocalStorageException    if there is no local event with the ID from [androidEvent]
+     */
+    @Synchronized
+    fun getCachedEvent(): Event {
+        _event?.let { return it }
+
         val legacyCalendar = LegacyAndroidCalendar(androidEvent.calendar)
-        legacyCalendar.getEvent(androidEvent.id) ?: throw LocalStorageException("Event ${androidEvent.id} not found")
+        val event = legacyCalendar.getEvent(androidEvent.id)
+            ?: throw LocalStorageException("Event ${androidEvent.id} not found")
+
+        _event = event
+        return event
     }
 
 
@@ -61,7 +77,7 @@ class LocalEvent(
      */
     override fun prepareForUpload(): String {
         // make sure that UID is set
-        val uid: String = event.uid ?: run {
+        val uid: String = getCachedEvent().uid ?: run {
             // generate new UID
             val newUid = UUID.randomUUID().toString()
 
@@ -69,8 +85,8 @@ class LocalEvent(
             val values = contentValuesOf(Events.UID_2445 to newUid)
             androidEvent.update(values)
 
-            // update in event data object
-            event.uid = newUid
+            // update in cached event data object
+            getCachedEvent().uid = newUid
 
             newUid
         }
@@ -97,7 +113,7 @@ class LocalEvent(
             values.put(Events._SYNC_ID, fileName)
         values.put(AndroidEvent2.COLUMN_ETAG, eTag)
         values.put(AndroidEvent2.COLUMN_SCHEDULE_TAG, scheduleTag)
-        values.put(AndroidEvent2.COLUMN_SEQUENCE, event.sequence)
+        values.put(AndroidEvent2.COLUMN_SEQUENCE, getCachedEvent().sequence)
         values.put(Events.DIRTY, 0)
         androidEvent.update(values)
 

@@ -180,7 +180,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalEvent): RequestBody =
         SyncException.wrapWithLocalResource(resource) {
-            val event = resource.event
+            val event = resource.getCachedEvent()
             logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
             // write iCalendar to string and convert to request body
