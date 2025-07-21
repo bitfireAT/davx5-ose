@@ -10,6 +10,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.LegacyAndroidCalendar
+import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
 import java.util.UUID
 
@@ -48,7 +49,7 @@ class LocalEvent(
 
     val event: Event by lazy {
         val legacyCalendar = LegacyAndroidCalendar(androidEvent.calendar)
-        legacyCalendar.getEvent(androidEvent.id)!!
+        legacyCalendar.getEvent(androidEvent.id) ?: throw LocalStorageException("Event ${androidEvent.id} not found")
     }
 
     val weAreOrganizer: Boolean = event.isOrganizer == true
@@ -70,7 +71,7 @@ class LocalEvent(
             val values = contentValuesOf(Events.UID_2445 to newUid)
             androidEvent.update(values)
 
-            // update in event data object
+            // update in event data object (does not write to calendar store!)
             event.uid = newUid
 
             newUid

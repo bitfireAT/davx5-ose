@@ -7,6 +7,9 @@ package at.bitfire.davdroid.resource
 import android.net.Uri
 import at.bitfire.davdroid.resource.LocalResource.Companion.FLAG_REMOTELY_PRESENT
 
+/**
+ * Defines operations that are used by SyncManager for all sync data types.
+ */
 interface LocalResource<in TData: Any> {
 
     companion object {
