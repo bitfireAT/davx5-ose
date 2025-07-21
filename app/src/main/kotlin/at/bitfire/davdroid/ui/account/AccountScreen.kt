@@ -7,21 +7,27 @@ import android.Manifest
 import android.accounts.Account
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.SyncProblem
+import androidx.compose.material.icons.filled.Upcoming
 import androidx.compose.material.icons.outlined.RuleFolder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -56,6 +62,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
@@ -238,6 +245,10 @@ fun AccountScreen(
                     (if (idxWebcal != null) 1 else 0)
         val pagerState = rememberPagerState(pageCount = { nrPages })
 
+        val calDavScrollState = rememberLazyListState()
+        val cardDavScrollState = rememberLazyListState()
+        val webcalScrollState = rememberLazyListState()
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -311,51 +322,43 @@ fun AccountScreen(
             ) {
                 if (nrPages > 0) {
                     TabRow(selectedTabIndex = pagerState.currentPage) {
-                        if (idxCalDav != null) {
-                            Tab(
-                                selected = pagerState.currentPage == idxCalDav,
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.scrollToPage(idxCalDav)
-                                    }
-                                }
-                            ) {
-                                Text(
-                                    stringResource(R.string.account_caldav),
-                                    modifier = Modifier.padding(8.dp)
-                                )
+                        val scrollState = when (pagerState.currentPage) {
+                            idxCalDav -> calDavScrollState
+                            idxCardDav -> cardDavScrollState
+                            idxWebcal -> webcalScrollState
+                            else -> null
+                        }
+
+                        if (idxCalDav != null) AccountScreen_Tab(
+                            selected = pagerState.currentPage == idxCalDav,
+                            scrollState = scrollState,
+                            icon = Icons.Default.CalendarToday,
+                            text = stringResource(R.string.account_caldav),
+                        ) {
+                            scope.launch {
+                                pagerState.scrollToPage(idxCalDav)
                             }
                         }
 
-                        if (idxCardDav != null) {
-                            Tab(
-                                selected = pagerState.currentPage == idxCardDav,
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.scrollToPage(idxCardDav)
-                                    }
-                                }
-                            ) {
-                                Text(
-                                    stringResource(R.string.account_carddav),
-                                    modifier = Modifier.padding(8.dp)
-                                )
+                        if (idxCardDav != null) AccountScreen_Tab(
+                            selected = pagerState.currentPage == idxCardDav,
+                            scrollState = scrollState,
+                            icon = Icons.Default.Person,
+                            text = stringResource(R.string.account_carddav),
+                        ) {
+                            scope.launch {
+                                pagerState.scrollToPage(idxCardDav)
                             }
                         }
 
-                        if (idxWebcal != null) {
-                            Tab(
-                                selected = pagerState.currentPage == idxWebcal,
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.scrollToPage(idxWebcal)
-                                    }
-                                }
-                            ) {
-                                Text(
-                                    stringResource(R.string.account_webcal),
-                                    modifier = Modifier.padding(8.dp)
-                                )
+                        if (idxWebcal != null) AccountScreen_Tab(
+                            selected = pagerState.currentPage == idxCardDav,
+                            scrollState = scrollState,
+                            icon = Icons.Default.Upcoming,
+                            text = stringResource(R.string.account_webcal),
+                        ) {
+                            scope.launch {
+                                pagerState.scrollToPage(idxWebcal)
                             }
                         }
                     }
@@ -378,7 +381,8 @@ fun AccountScreen(
                                         progress = cardDavProgress,
                                         collections = addressBooks,
                                         onUpdateCollectionSync = onUpdateCollectionSync,
-                                        onCollectionDetails = onCollectionDetails
+                                        onCollectionDetails = onCollectionDetails,
+                                        state = cardDavScrollState
                                     )
 
                                 idxCalDav -> {
@@ -390,7 +394,8 @@ fun AccountScreen(
                                         progress = calDavProgress,
                                         collections = calendars,
                                         onUpdateCollectionSync = onUpdateCollectionSync,
-                                        onCollectionDetails = onCollectionDetails
+                                        onCollectionDetails = onCollectionDetails,
+                                        state = calDavScrollState
                                     )
                                 }
 
@@ -425,7 +430,8 @@ fun AccountScreen(
                                             requiredPermissions = listOf(Manifest.permission.WRITE_CALENDAR),
                                             progress = calDavProgress,
                                             collections = subscriptions,
-                                            onSubscribe = onSubscribe
+                                            onSubscribe = onSubscribe,
+                                            state = webcalScrollState
                                         )
                                     }
                                 }
@@ -434,6 +440,36 @@ fun AccountScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun AccountScreen_Tab(
+    selected: Boolean,
+    scrollState: LazyListState?,
+    icon: ImageVector,
+    text: String,
+    onClick: () -> Unit,
+) {
+    AnimatedContent(
+        targetState = scrollState?.canScrollBackward
+    ) { canScrollBackward ->
+        if (canScrollBackward == false) {
+            Tab(
+                selected = selected,
+                onClick = onClick,
+                icon = { Icon(imageVector = icon, contentDescription = text) },
+                text = {
+                    Text(text, modifier = Modifier.padding(8.dp))
+                }
+            )
+        } else {
+            Tab(
+                selected = selected,
+                onClick = onClick,
+                content = { Text(text, modifier = Modifier.padding(8.dp)) }
+            )
         }
     }
 }
@@ -601,7 +637,8 @@ fun AccountScreen_ServiceTab(
     collections: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
     onSubscribe: (Collection) -> Unit = {},
-    onCollectionDetails: ((Collection) -> Unit)? = null
+    onCollectionDetails: ((Collection) -> Unit)? = null,
+    state: LazyListState = rememberLazyListState()
 ) {
     val context = LocalContext.current
 
@@ -646,7 +683,8 @@ fun AccountScreen_ServiceTab(
                     onChangeSync = onUpdateCollectionSync,
                     onSubscribe = onSubscribe,
                     onCollectionDetails = onCollectionDetails,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    state = state,
                 )
         }
     }
