@@ -8,6 +8,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
@@ -34,6 +35,24 @@ interface HomeSetDao {
 
     @Update
     fun update(homeset: HomeSet)
+
+    /**
+     * If a homeset with the given service ID and URL already exists, it is updated with the other fields.
+     * Otherwise, a new homeset is inserted.
+     *
+     * This method preserves the primary key, as opposed to using "@Insert(onConflict = OnConflictStrategy.REPLACE)"
+     * which will create a new row with incremented ID and thus breaks entity relationships!
+     *
+     * @param homeSet   home set to insert/update
+     *
+     * @return ID of the row that has been inserted or updated. -1 If the insert fails due to other reasons.
+     */
+    @Transaction
+    fun insertOrUpdateByUrlBlocking(homeSet: HomeSet): Long =
+        getByUrl(homeSet.serviceId, homeSet.url.toString())?.let { existingHomeset ->
+            update(homeSet.copy(id = existingHomeset.id))
+            existingHomeset.id
+        } ?: insert(homeSet)
 
     @Delete
     fun delete(homeset: HomeSet)
