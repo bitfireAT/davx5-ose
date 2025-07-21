@@ -12,8 +12,8 @@ import android.provider.CalendarContract
 import android.util.Base64
 import androidx.core.content.ContextCompat
 import androidx.core.content.contentValuesOf
+import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.UnknownProperty
-import at.bitfire.synctools.storage.calendar.AndroidEvent2
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.Binds
 import dagger.Module
@@ -69,7 +69,7 @@ class AccountSettingsMigration12 @Inject constructor(
                                     val property = UnknownProperty.fromJsonString(rawValue)
                                     if (property is Url) {  // rewrite to MIMETYPE_URL
                                         val newValues = contentValuesOf(
-                                            CalendarContract.ExtendedProperties.NAME to AndroidEvent2.EXTNAME_URL,
+                                            CalendarContract.ExtendedProperties.NAME to AndroidEvent.EXTNAME_URL,
                                             CalendarContract.ExtendedProperties.VALUE to property.value
                                         )
                                         provider.update(uri, newValues, null, null)
@@ -77,7 +77,7 @@ class AccountSettingsMigration12 @Inject constructor(
                                 } catch (e: Exception) {
                                     logger.log(
                                         Level.WARNING,
-                                        "Couldn't rewrite URL from unknown property to ${AndroidEvent2.EXTNAME_URL}",
+                                        "Couldn't rewrite URL from unknown property to ${AndroidEvent.EXTNAME_URL}",
                                         e
                                     )
                                 }
