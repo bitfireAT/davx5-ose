@@ -5,13 +5,10 @@
 package at.bitfire.davdroid.ui.webdav
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
@@ -19,7 +16,6 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Sell
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,8 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.davdroid.ui.composable.PasswordTextField
-import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.composable.SelectClientCertificateCard
 
 @Composable
@@ -139,18 +135,15 @@ fun AddWebDavMountScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
+        Assistant(
+            nextLabel = stringResource(R.string.webdav_add_mount_add),
+            nextEnabled = canContinue && !isLoading,
+            isLoading = isLoading,
+            onNext = onAddMount
         ) {
-            if (isLoading)
-                ProgressBar(modifier = Modifier.fillMaxWidth())
-
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .padding(paddingValues)
                     .padding(8.dp)
             ) {
                 val focusRequester = remember { FocusRequester() }
@@ -162,6 +155,7 @@ fun AddWebDavMountScreen(
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
                 )
+
                 OutlinedTextField(
                     label = { Text(stringResource(R.string.webdav_add_mount_url)) },
                     leadingIcon = { Icon(Icons.Default.Cloud, contentDescription = null) },
@@ -249,15 +243,6 @@ fun AddWebDavMountScreen(
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
                 )
-
-                Button(
-                    enabled = canContinue && !isLoading,
-                    onClick = { onAddMount() }
-                ) {
-                    Text(
-                        text = stringResource(R.string.webdav_add_mount_add)
-                    )
-                }
             }
         }
     }
