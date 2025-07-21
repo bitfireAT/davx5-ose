@@ -121,7 +121,7 @@
   <string name="navigation_drawer_website">Homepage</string>
   <string name="navigation_drawer_manual">Handbuch</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_managed">Für Betriebe</string>
+  <string name="navigation_drawer_managed">Für Organisationen</string>
   <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_support_project">Projekt unterstützen</string>
   <string name="navigation_drawer_contribute">Einen Beitrag leisten</string>
@@ -324,7 +324,7 @@
   <string name="settings_authentication">Anmeldeinformationen</string>
   <string name="settings_username">Benutzername</string>
   <string name="settings_password">Passwort oder App-Passwort</string>
-  <string name="settings_app_password_hint"><![CDATA[Möglicherweise möchten Sie ein <a href="%1$s">App-Passwort</a>. verwenden.]]></string>
+  <string name="settings_app_password_hint"><![CDATA[Möglicherweise möchten Sie ein <a href="%1$s">App-Passwort</a> verwenden.]]></string>
   <string name="settings_new_password">Neues Passwort</string>
   <string name="settings_password_summary">Aktualisieren Sie Ihr Passwort gemäß den Server-Einstellungen.</string>
   <string name="settings_reauthorize_oauth">Erneut authentifizieren (OAuth)</string>
