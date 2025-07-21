@@ -15,7 +15,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -177,6 +180,9 @@ fun AddWebDavMountScreen(
                     value = displayName,
                     onValueChange = onSetDisplayName,
                     singleLine = true,
+                    leadingIcon = {
+                        Icon(Icons.Default.Sell, null)
+                    },
                     readOnly = isLoading,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = Modifier
@@ -196,6 +202,9 @@ fun AddWebDavMountScreen(
                     value = username,
                     onValueChange = onSetUsername,
                     singleLine = true,
+                    leadingIcon = {
+                        Icon(Icons.Default.AccountCircle, null)
+                    },
                     readOnly = isLoading,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
@@ -210,6 +219,9 @@ fun AddWebDavMountScreen(
                     onPasswordChange = onSetPassword,
                     labelText = stringResource(R.string.login_password_optional),
                     readOnly = isLoading,
+                    leadingIcon = {
+                        Icon(Icons.Default.Password, null)
+                    },
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done
                     ),
