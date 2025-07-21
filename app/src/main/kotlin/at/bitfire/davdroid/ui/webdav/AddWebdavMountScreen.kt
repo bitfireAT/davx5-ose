@@ -192,7 +192,7 @@ fun AddWebDavMountScreen(
                         .padding(bottom = 8.dp)
                 )
                 OutlinedTextField(
-                    label = { Text(stringResource(R.string.login_user_name)) },
+                    label = { Text(stringResource(R.string.login_user_name_optional)) },
                     value = username,
                     onValueChange = onSetUsername,
                     singleLine = true,
@@ -208,7 +208,7 @@ fun AddWebDavMountScreen(
                 PasswordTextField(
                     password = password,
                     onPasswordChange = onSetPassword,
-                    labelText = stringResource(R.string.login_password),
+                    labelText = stringResource(R.string.login_password_optional),
                     readOnly = isLoading,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done
