@@ -73,15 +73,6 @@ interface LocalResource<in TData: Any> {
      */
     fun updateFlags(flags: Int)
 
-
-    /**
-     * Adds the data object to the content provider and ensures that the dirty flag is clear.
-     *
-     * @return content URI of the created row (e.g. event URI)
-     */
-    @Deprecated("Use add...() of specific collection implementation")
-    fun add(): Uri
-
     /**
      * Updates the data object in the content provider and ensures that the dirty flag is clear.
      *

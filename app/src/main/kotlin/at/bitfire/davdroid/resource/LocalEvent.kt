@@ -138,9 +138,6 @@ class LocalEvent(
             "${UUID.randomUUID()}.ics"      // UID would be dangerous as file name, use random UUID instead
     }
 
-    @Deprecated("Use add...() of specific collection implementation", level = DeprecationLevel.ERROR)
-    override fun add() = throw NotImplementedError()
-
     override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
         val values = ContentValues(5)
         if (fileName != null)
