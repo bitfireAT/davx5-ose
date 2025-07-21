@@ -66,7 +66,7 @@ class DebugInfoActivity : AppCompatActivity() {
             DebugInfoScreen(
                 account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
                 syncDataType = extras?.getString(EXTRA_SYNC_DATA_TYPE),
-                cause = IntentCompat.getParcelableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
+                cause = IntentCompat.getSerializableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE),
                 remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
                 logs = extras?.getString(EXTRA_LOGS),
