@@ -34,6 +34,7 @@
   <string name="intro_battery_text">一定の間隔で同期するには、%s のバックグラウンドでの動作を許可する必要があります。許可しない場合、Android によって同期が停止されることがあります。</string>
   <string name="intro_battery_dont_show">一定間隔での同期は不要です*</string>
   <string name="intro_autostart_title">%s 適合性</string>
+  <string name="intro_autostart_text">端末の製造元のファームウェアによって同期がブロックされている可能性があります。この問題に遭遇した場合、手動で問題を解決していただく必要があります。</string>
   <string name="intro_autostart_dont_show">必要な設定は完了したのでリマインダーは不要です*</string>
   <string name="intro_leave_unchecked">* 未チェックのままにすると後でリマインドします。アプリの設定 / %s でリセットできます</string>
   <string name="intro_more_info">追加情報</string>
@@ -119,6 +120,7 @@
   <string name="navigation_drawer_website">ウェブサイト</string>
   <string name="navigation_drawer_manual">マニュアル</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_managed">組織向け</string>
   <string name="navigation_drawer_community">コミュニティ</string>
   <string name="navigation_drawer_support_project">プロジェクトを支援</string>
   <string name="navigation_drawer_contribute">貢献する方法</string>
@@ -202,6 +204,7 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">プッシュメッセージは常に暗号化されます。</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">アカウントが存在しません</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -273,7 +276,7 @@
   <string name="login_google_client_id">クライアント ID (オプション)</string>
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s は、このデバイスとの同期のみを目的として、Google コンタクトとカレンダーのデータを転送を行います。詳細情報は、<a href="%2$s">プライバシーポリシー</a> をご確認ください。]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s は、追加要件を含む <a href="%2$s">Google API サービスのユーザーデータに関するポリシー</a> に準拠しています。]]></string>
-  <string name="login_oauth_couldnt_obtain_auth_code">認証コードを取得できませんでした</string>
+  <string name="login_oauth_couldnt_obtain_auth_code">認可コードを取得できませんでした</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Nextcloud でログイン</string>
   <string name="login_nextcloud_login_flow_text">ウェブブラウザーでのログインフローが開始されます。</string>
@@ -320,8 +323,12 @@
   <string name="settings_authentication">認証</string>
   <string name="settings_username">ユーザー名</string>
   <string name="settings_password">パスワードまたはアプリパスワード</string>
+  <string name="settings_app_password_hint"><![CDATA[<a href="%1$s">アプリパスワード</a>を使用しているかもしれません。]]></string>
   <string name="settings_new_password">新しいパスワード</string>
   <string name="settings_password_summary">ご利用のサーバーに従ってパスワードを更新します。</string>
+  <string name="settings_reauthorize_oauth">もう一度認可する (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">アクセス権が失効した場合に使用してください</string>
+  <string name="settings_reauthorize_oauth_success">正常に認可しました</string>
   <string name="settings_certificate_alias">クライアント証明書</string>
   <string name="settings_certificate_alias_empty">クライアント証明書が使用できないか、選択されていません</string>
   <string name="settings_certificate_install">証明書をインストール</string>
@@ -369,6 +376,7 @@
   <string name="create_collection_optional">* オプション</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">連絡先</string>
+  <string name="collection_datatype_events">件の予定</string>
   <string name="collection_datatype_tasks">ToDo リスト</string>
   <string name="collection_delete">コレクションを削除</string>
   <string name="collection_delete_warning">このコレクション (%s) とコレクション内のすべてのデータが、ローカルとサーバーから永久に削除されます。</string>
