@@ -154,6 +154,14 @@ fun AddWebDavMountScreen(
                     .padding(8.dp)
             ) {
                 val focusRequester = remember { FocusRequester() }
+
+                Text(
+                    text = stringResource(R.string.webdav_add_mount_mountpoint_displayname),
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
                 OutlinedTextField(
                     label = { Text(stringResource(R.string.webdav_add_mount_url)) },
                     leadingIcon = { Icon(Icons.Default.Cloud, contentDescription = null) },

@@ -496,6 +496,7 @@
     <string name="webdav_add_mount_display_name">Display name</string>
     <string name="webdav_add_mount_url">WebDAV URL</string>
     <string name="webdav_add_mount_url_invalid">Invalid URL</string>
+    <string name="webdav_add_mount_mountpoint_displayname">Mount point and display name</string>
     <string name="webdav_add_mount_authentication">Authentication</string>
     <string name="webdav_add_mount_username">User name</string>
     <string name="webdav_add_mount_password">Password</string>
