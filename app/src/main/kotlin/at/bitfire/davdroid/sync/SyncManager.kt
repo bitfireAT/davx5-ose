@@ -406,6 +406,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                             headers = pushDontNotifyHeader
                         )
                     }
+
+                    // success (no exception thrown)
+                    onSuccessfulUpload(local, newFileName, eTag, scheduleTag)
                 }
 
             } else /* existingFileName != null */ {     // updated resource
@@ -427,8 +430,17 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                             headers = pushDontNotifyHeader
                         )
                     }
+
+                    // success (no exception thrown)
+                    onSuccessfulUpload(local, existingFileName, eTag, scheduleTag)
                 }
             }
+
+            if (eTag != null)
+                logger.fine("Received new ETag=$eTag after uploading")
+            else
+                logger.fine("Didn't receive new ETag after uploading, setting to null")
+
         } catch (e: SyncException) {
             when (val ex = e.cause) {
                 is ForbiddenException -> {
@@ -464,12 +476,15 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 else -> throw e
             }
         }
+    }
 
-        if (eTag != null)
-            logger.fine("Received new ETag=$eTag after uploading")
-        else
-            logger.fine("Didn't receive new ETag after uploading, setting to null")
-
+    /**
+     * Called after a successful upload (either of a new or an updated resource) so that the local
+     * _dirty_ state can be reset.
+     *
+     * Note: [CalendarSyncManager] overrides this method to additionally store the updated SEQUENCE.
+     */
+    protected open fun onSuccessfulUpload(local: ResourceType, newFileName: String, eTag: String?, scheduleTag: String?) {
         local.clearDirty(newFileName, eTag, scheduleTag)
     }
 

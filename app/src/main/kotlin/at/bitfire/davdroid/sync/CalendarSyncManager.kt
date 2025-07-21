@@ -178,8 +178,8 @@ class CalendarSyncManager @AssistedInject constructor(
         return modified or superModified
     }
 
-    override suspend fun uploadDirty(local: LocalEvent) {
-        super.uploadDirty(local)
+    override fun onSuccessfulUpload(local: LocalEvent, newFileName: String, eTag: String?, scheduleTag: String?) {
+        super.onSuccessfulUpload(local, newFileName, eTag, scheduleTag)
 
         // update local SEQUENCE to new value after successful upload
         local.updateSequence(local.getCachedEvent().sequence)

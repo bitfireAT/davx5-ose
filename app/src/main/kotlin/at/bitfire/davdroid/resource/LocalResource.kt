@@ -60,9 +60,10 @@ interface LocalResource<in TData: Any> {
      * Unsets the /dirty/ field of the resource. Typically used after successfully uploading a
      * locally modified resource.
      *
-     * @param fileName If this argument is not *null*, [LocalResource.fileName] will be set to its value.
-     * @param eTag ETag of the uploaded resource as returned by the server (null if the server didn't return one)
-     * @param scheduleTag CalDAV Schedule-Tag of the uploaded resource as returned by the server (null if not applicable or if the server didn't return one)
+     * @param fileName      If this argument is not *null*, [LocalResource.fileName] will be set to its value.
+     * @param eTag          ETag of the uploaded resource as returned by the server (null if the server didn't return one)
+     * @param scheduleTag   CalDAV only: `Schedule-Tag` of the uploaded resource as returned by the server
+     *                      (null if not applicable or if the server didn't return one)
      */
     fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String? = null)
 
