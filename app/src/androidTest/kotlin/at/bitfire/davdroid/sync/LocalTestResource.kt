@@ -31,7 +31,6 @@ class LocalTestResource: LocalResource<Any> {
         this.flags = flags
     }
 
-    override fun add() = throw NotImplementedError()
     override fun update(data: Any) = throw NotImplementedError()
     override fun delete() = throw NotImplementedError()
     override fun resetDeleted() = throw NotImplementedError()
