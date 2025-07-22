@@ -66,8 +66,6 @@ class SyncAdapterServicesTest {
 
     lateinit var account: Account
 
-    private var masterSyncStateBeforeTest = ContentResolver.getMasterSyncAutomatically()
-
     @Before
     fun setUp() {
         hiltRule.inject()
@@ -82,7 +80,6 @@ class SyncAdapterServicesTest {
 
     @After
     fun tearDown() {
-        ContentResolver.setMasterSyncAutomatically(masterSyncStateBeforeTest)
         TestAccount.remove(account)
     }
 
