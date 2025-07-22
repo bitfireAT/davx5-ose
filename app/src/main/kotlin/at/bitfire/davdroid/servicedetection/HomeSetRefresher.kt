@@ -26,6 +26,9 @@ import okhttp3.OkHttpClient
 import java.util.logging.Level
 import java.util.logging.Logger
 
+/**
+ * Used to update the list of synchronizable collections
+ */
 class HomeSetRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
     @Assisted private val httpClient: OkHttpClient,
