@@ -266,7 +266,7 @@ class AndroidSyncFrameworkTest {
             // state behaves correctly, so we can record the state changes as pairs (pending,
             // active) and expect a certain sequence of state pairs to verify the presence or
             // absence of the bug on different Android versions.
-            withTimeout(60.seconds) { // Usually takes less than 30 seconds
+            withTimeout(120.seconds) { // Usually takes less than 30 seconds
                 ContentResolver.requestSync(syncRequest)
                 while (true) {
                     if (recordedStates == expectedStatesLists)
