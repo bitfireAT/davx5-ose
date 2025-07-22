@@ -24,7 +24,6 @@ import io.mockk.Awaits
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.just
 import io.mockk.mockk
@@ -58,9 +57,6 @@ class SyncAdapterServicesTest {
 
     @Inject
     lateinit var syncAdapterProvider: Provider<SyncAdapterService.SyncAdapter>
-
-    @BindValue @RelaxedMockK
-    lateinit var syncFrameworkIntegration: SyncFrameworkIntegration
 
     @BindValue @MockK
     lateinit var syncWorkerManager: SyncWorkerManager
