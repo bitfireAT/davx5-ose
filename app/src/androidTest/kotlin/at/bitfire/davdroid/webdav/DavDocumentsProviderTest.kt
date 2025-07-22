@@ -15,7 +15,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.test.runTest
-import okhttp3.CookieJar
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -94,7 +93,7 @@ class DavDocumentsProviderTest {
 
         // Query
         val actor = davDocumentsActorFactory.create(
-            cookieStore = mutableMapOf<Long, CookieJar>(),
+            cookieStore = mutableMapOf(),
             credentialsStore = credentialsStore
         )
         actor.queryChildren(parent)
@@ -130,7 +129,7 @@ class DavDocumentsProviderTest {
 
         // Query - should update the parent displayname and folder name
         val actor = davDocumentsActorFactory.create(
-            cookieStore = mutableMapOf<Long, CookieJar>(),
+            cookieStore = mutableMapOf(),
             credentialsStore = credentialsStore
         )
         actor.queryChildren(parent)
@@ -157,7 +156,7 @@ class DavDocumentsProviderTest {
 
         // Query - discovers serverside deletion
         val actor = davDocumentsActorFactory.create(
-            cookieStore = mutableMapOf<Long, CookieJar>(),
+            cookieStore = mutableMapOf(),
             credentialsStore = credentialsStore
         )
         actor.queryChildren(parent)
@@ -183,7 +182,7 @@ class DavDocumentsProviderTest {
 
         // Query - find children of two nodes simultaneously
         val actor = davDocumentsActorFactory.create(
-            cookieStore = mutableMapOf<Long, CookieJar>(),
+            cookieStore = mutableMapOf(),
             credentialsStore = credentialsStore
         )
         actor.queryChildren(parent1)

@@ -621,7 +621,7 @@ class DavDocumentsProvider(
                         var result: ByteArray? = null
                         runInterruptible(ioDispatcher) {
                             dav.get("image/*", null) { response ->
-                                response.body?.byteStream()?.use { data ->
+                                response.body.byteStream().use { data ->
                                     BitmapFactory.decodeStream(data)?.let { bitmap ->
                                         val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
                                         val baos = ByteArrayOutputStream()

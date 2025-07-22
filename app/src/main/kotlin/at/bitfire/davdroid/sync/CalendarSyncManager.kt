@@ -20,18 +20,18 @@ import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.di.SyncDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.EventReader
 import at.bitfire.ical4android.EventWriter
+import at.bitfire.ical4android.LegacyAndroidCalendar
 import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.synctools.exception.InvalidRemoteResourceException
 import dagger.assisted.Assisted
@@ -178,9 +178,16 @@ class CalendarSyncManager @AssistedInject constructor(
         return modified or superModified
     }
 
+    override fun onSuccessfulUpload(local: LocalEvent, newFileName: String, eTag: String?, scheduleTag: String?) {
+        super.onSuccessfulUpload(local, newFileName, eTag, scheduleTag)
+
+        // update local SEQUENCE to new value after successful upload
+        local.updateSequence(local.getCachedEvent().sequence)
+    }
+
     override fun generateUpload(resource: LocalEvent): RequestBody =
         SyncException.wrapWithLocalResource(resource) {
-            val event = requireNotNull(resource.androidEvent.event)
+            val event = resource.eventToUpload()
             logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
             // write iCalendar to string and convert to request body
@@ -289,10 +296,14 @@ class CalendarSyncManager @AssistedInject constructor(
                     local.update(event)
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local calendar", event)
-                    val newLocal = LocalEvent(AndroidEvent(localCollection.androidCalendar, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT))
-                    SyncException.wrapWithLocalResource(newLocal) {
-                        newLocal.add()
-                    }
+                    val legacyCalendar = LegacyAndroidCalendar(localCollection.androidCalendar)
+                    legacyCalendar.add(
+                        event = event,
+                        syncId = fileName,
+                        eTag = eTag,
+                        scheduleTag = scheduleTag,
+                        flags = LocalResource.FLAG_REMOTELY_PRESENT
+                    )
                 }
             }
         } else

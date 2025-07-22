@@ -279,7 +279,7 @@ class CollectionListRefresher @AssistedInject constructor(
 
                     // save or update collection if usable (ignore it otherwise)
                     if (isUsableCollection(collection))
-                        collectionRepository.insertOrUpdateByUrlAndRememberFlags(collection)
+                        collectionRepository.insertOrUpdateByUrlRememberSync(collection)
 
                     // Remove this collection from queue - because it was found in the home set
                     localHomesetCollections.remove(collection.url)
@@ -292,7 +292,7 @@ class CollectionListRefresher @AssistedInject constructor(
 
             // Mark leftover (not rediscovered) collections from queue as homeless (remove association)
             for ((_, homelessCollection) in localHomesetCollections)
-                collectionRepository.insertOrUpdateByUrlAndRememberFlags(
+                collectionRepository.insertOrUpdateByUrlRememberSync(
                     homelessCollection.copy(homeSetId = null)
                 )
 
@@ -317,7 +317,7 @@ class CollectionListRefresher @AssistedInject constructor(
                 Collection.fromDavResponse(response)?.let { collection ->
                     if (!isUsableCollection(collection))
                         return@let
-                    collectionRepository.insertOrUpdateByUrlAndRememberFlags(collection.copy(
+                    collectionRepository.insertOrUpdateByUrlRememberSync(collection.copy(
                         serviceId = localCollection.serviceId,          // use same service ID as previous entry
                         ownerId = response[Owner::class.java]?.href     // save the principal id (collection owner)
                             ?.let { response.href.resolve(it) }

@@ -179,12 +179,6 @@ fun AdvancedLoginScreen(
                 chosenAlias = certAlias,
                 onAliasChosen = onSetCertAlias
             )
-
-            Text(
-                stringResource(R.string.optional_label),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 16.dp)
-            )
         }
     }
 
