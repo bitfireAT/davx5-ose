@@ -31,7 +31,6 @@ import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.EventReader
 import at.bitfire.ical4android.EventWriter
-import at.bitfire.ical4android.LegacyAndroidCalendar
 import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.synctools.exception.InvalidRemoteResourceException
 import dagger.assisted.Assisted
@@ -291,13 +290,13 @@ class CalendarSyncManager @AssistedInject constructor(
             SyncException.wrapWithLocalResource(local) {
                 if (local != null) {
                     logger.log(Level.INFO, "Updating $fileName in local calendar", event)
-                    local.eTag = eTag
+                    // TODO
+                    /*local.eTag = eTag
                     local.scheduleTag = scheduleTag
-                    local.update(event)
+                    local.update(event)*/
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local calendar", event)
-                    val legacyCalendar = LegacyAndroidCalendar(localCollection.androidCalendar)
-                    legacyCalendar.add(
+                    localCollection.add(
                         event = event,
                         syncId = fileName,
                         eTag = eTag,

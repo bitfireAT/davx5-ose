@@ -211,9 +211,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
         batch.commit()
     }
 
-    override fun resetDeleted() {
-        val values = contentValuesOf(Groups.DELETED to 0)
-        addressBook.provider!!.update(groupSyncUri(), values, null, null)
+    override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        TODO("Not yet implemented")
     }
 
     override fun updateFlags(flags: Int) {
@@ -221,6 +220,15 @@ class LocalGroup: AndroidGroup, LocalAddress {
         addressBook.provider!!.update(groupSyncUri(), values, null, null)
 
         this.flags = flags
+    }
+
+    override fun deleteLocal() {
+        TODO("Not yet implemented")
+    }
+
+    override fun resetDeleted() {
+        val values = contentValuesOf(Groups.DELETED to 0)
+        addressBook.provider!!.update(groupSyncUri(), values, null, null)
     }
 
 

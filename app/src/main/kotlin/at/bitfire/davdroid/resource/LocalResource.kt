@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.resource
 
-import android.net.Uri
 import at.bitfire.davdroid.resource.LocalResource.Companion.FLAG_REMOTELY_PRESENT
 
 /**
@@ -36,10 +35,10 @@ interface LocalResource<in TData: Any> {
     val fileName: String?
 
     /** remote ETag for the resource */
-    var eTag: String?
+    val eTag: String?
 
     /** remote Schedule-Tag for the resource */
-    var scheduleTag: String?
+    val scheduleTag: String?
 
     /** bitfield of flags; currently either [FLAG_REMOTELY_PRESENT] or 0 */
     val flags: Int
@@ -78,14 +77,12 @@ interface LocalResource<in TData: Any> {
      *
      * @return content URI of the updated row (e.g. event URI)
      */
-    fun update(data: TData): Uri
+    fun update(data: TData, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int)
 
     /**
      * Deletes the data object from the content provider.
-     *
-     * @return number of affected rows
      */
-    fun delete(): Int
+    fun deleteLocal()
 
     /**
      * Undoes deletion of the data object from the content provider.

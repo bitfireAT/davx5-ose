@@ -93,6 +93,10 @@ class LocalTask: DmfsTask, LocalResource<Task> {
         this.eTag = eTag
     }
 
+    override fun update(data: Task, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        TODO("Not yet implemented")
+    }
+
     override fun updateFlags(flags: Int) {
         if (id != null) {
             val values = contentValuesOf(COLUMN_FLAGS to flags)
@@ -100,6 +104,10 @@ class LocalTask: DmfsTask, LocalResource<Task> {
         }
 
         this.flags = flags
+    }
+
+    override fun deleteLocal() {
+        TODO("Not yet implemented")
     }
 
     override fun resetDeleted() {

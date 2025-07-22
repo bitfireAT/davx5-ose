@@ -48,6 +48,14 @@ class LocalJtxICalObject(
 
     }
 
+    override fun update(data: JtxICalObject, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteLocal() {
+        TODO("Not yet implemented")
+    }
+
     override fun resetDeleted() {
         throw NotImplementedError()
     }

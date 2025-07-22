@@ -110,14 +110,13 @@ class LocalContact: AndroidContact, LocalAddress {
         this.eTag = eTag
     }
 
-    override fun resetDeleted() {
-        val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
-    }
-
     fun resetDirty() {
         val values = contentValuesOf(ContactsContract.RawContacts.DIRTY to 0)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+    }
+
+    override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        TODO("Not yet implemented")
     }
 
     override fun updateFlags(flags: Int) {
@@ -125,6 +124,15 @@ class LocalContact: AndroidContact, LocalAddress {
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
         this.flags = flags
+    }
+
+    override fun deleteLocal() {
+        TODO("Not yet implemented")
+    }
+
+    override fun resetDeleted() {
+        val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
 

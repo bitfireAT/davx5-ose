@@ -412,7 +412,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
                 } else {
                     // group has become an individual contact or vice versa, delete and create with new type
-                    local.delete()
+                    local.deleteLocal()
                     local = null
                 }
             }
