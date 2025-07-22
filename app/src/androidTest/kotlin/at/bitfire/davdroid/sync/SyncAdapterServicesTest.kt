@@ -14,17 +14,17 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import at.bitfire.davdroid.TestUtils
-import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.Awaits
 import io.mockk.coEvery
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.just
 import io.mockk.mockk
@@ -40,35 +40,12 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.logging.Logger
 import javax.inject.Inject
+import javax.inject.Provider
 import kotlin.coroutines.cancellation.CancellationException
 
 @HiltAndroidTest
 class SyncAdapterServicesTest {
-
-    lateinit var account: Account
-
-    @Inject
-    lateinit var accountSettingsFactory: AccountSettings.Factory
-
-    @Inject
-    lateinit var collectionRepository: DavCollectionRepository
-
-    @Inject @ApplicationContext
-    lateinit var context: Context
-
-    @Inject
-    lateinit var logger: Logger
-
-    @Inject
-    lateinit var serviceRepository: DavServiceRepository
-
-    @Inject
-    lateinit var syncConditionsFactory: SyncConditions.Factory
-
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -76,8 +53,22 @@ class SyncAdapterServicesTest {
     @get:Rule
     val mockkRule = MockKRule(this)
 
-    // test methods should run quickly and not wait 60 seconds for a sync timeout or something like that
+    @Inject @ApplicationContext
+    lateinit var context: Context
 
+    @Inject
+    lateinit var syncAdapterProvider: Provider<SyncAdapterService.SyncAdapter>
+
+    @BindValue @RelaxedMockK
+    lateinit var syncFrameworkIntegration: SyncFrameworkIntegration
+
+    @BindValue @MockK
+    lateinit var syncWorkerManager: SyncWorkerManager
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    lateinit var account: Account
 
     @Before
     fun setUp() {
@@ -97,26 +88,10 @@ class SyncAdapterServicesTest {
     }
 
 
-    private fun syncAdapter(
-        syncWorkerManager: SyncWorkerManager
-    ): SyncAdapterService.SyncAdapter =
-        SyncAdapterService.SyncAdapter(
-            accountSettingsFactory = accountSettingsFactory,
-            collectionRepository = collectionRepository,
-            serviceRepository = serviceRepository,
-            context = context,
-            logger = logger,
-            syncConditionsFactory = syncConditionsFactory,
-            syncFrameworkIntegration = mockk<SyncFrameworkIntegration>(relaxed = true),
-            syncWorkerManager = syncWorkerManager
-        )
-
-
     @Test
     fun testSyncAdapter_onPerformSync_cancellation() = runTest {
-        val syncWorkerManager = mockk<SyncWorkerManager>()
-        val syncAdapter = syncAdapter(syncWorkerManager = syncWorkerManager)
         val workManager = WorkManager.getInstance(context)
+        val syncAdapter = syncAdapterProvider.get()
 
         mockkObject(workManager) {
             // don't actually create a worker
@@ -139,9 +114,8 @@ class SyncAdapterServicesTest {
 
     @Test
     fun testSyncAdapter_onPerformSync_returnsAfterTimeout() {
-        val syncWorkerManager = mockk<SyncWorkerManager>()
-        val syncAdapter = syncAdapter(syncWorkerManager = syncWorkerManager)
         val workManager = WorkManager.getInstance(context)
+        val syncAdapter = syncAdapterProvider.get()
 
         mockkObject(workManager) {
             // don't actually create a worker
@@ -161,9 +135,8 @@ class SyncAdapterServicesTest {
 
     @Test
     fun testSyncAdapter_onPerformSync_runsInTime() {
-        val syncWorkerManager = mockk<SyncWorkerManager>()
-        val syncAdapter = syncAdapter(syncWorkerManager = syncWorkerManager)
         val workManager = WorkManager.getInstance(context)
+        val syncAdapter = syncAdapterProvider.get()
 
         mockkObject(workManager) {
             // don't actually create a worker
