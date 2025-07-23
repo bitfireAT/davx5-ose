@@ -13,6 +13,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import androidx.work.WorkInfo
@@ -57,16 +58,25 @@ abstract class SyncAdapterService: Service() {
     override fun onBind(intent: Intent?): IBinder {
         if (BuildConfig.DEBUG && !syncActive.get()) {
             // only for debug builds/testing: syncActive flag
-            val logger = Logger.getLogger(this@SyncAdapterService::class.java.name)
-            logger.log(Level.WARNING, "SyncAdapterService.onBind() was called but syncActive = false. Ignoring")
+            val logger = Logger.getLogger(SyncAdapterService::class.java.name)
+            logger.warning("SyncAdapterService.onBind() was called but syncActive = false. Returning fake sync adapter")
 
-            val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
+            val fakeAdapter = object: AbstractThreadedSyncAdapter(this, true) {
                 override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
                     val message = StringBuilder()
                     message.append("FakeSyncAdapter onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)")
                     for (key in extras.keySet())
                         message.append("\n\textras[$key] = ${extras[key]}")
                     logger.warning(message.toString())
+
+                    // fake 5 sec sync
+                    try {
+                        Thread.sleep(5000)
+                    } catch (_: InterruptedException) {
+                        logger.warning("FakeSyncAdapter onPerformSync($account) cancelled")
+                    }
+
+                    logger.warning("FakeSyncAdapter onPerformSync($account) finished")
                 }
             }
             return fakeAdapter.syncAdapterBinder
@@ -105,6 +115,7 @@ abstract class SyncAdapterService: Service() {
         @ApplicationContext context: Context,
         private val logger: Logger,
         private val syncConditionsFactory: SyncConditions.Factory,
+        private val syncFrameworkIntegration: SyncFrameworkIntegration,
         private val syncWorkerManager: SyncWorkerManager
     ): AbstractThreadedSyncAdapter(
         /* context = */ context,
@@ -160,6 +171,14 @@ abstract class SyncAdapterService: Service() {
             logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
             val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), fromUpload = upload)
 
+            // Android 14+ does not handle pending sync state correctly.
+            // As a defensive workaround, we can cancel specifically this still pending sync only
+            // See: https://github.com/bitfireAT/davx5-ose/issues/1458
+            if (Build.VERSION.SDK_INT >= 34) {
+                logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for " +
+                        "account=$account authority=$authority upload=$upload")
+                syncFrameworkIntegration.cancelSync(account, authority, extras)
+            }
 
             /* Because we are not allowed to observe worker state on a background thread, we can not
             use it to block the sync adapter. Instead we use a Flow to get notified when the sync
