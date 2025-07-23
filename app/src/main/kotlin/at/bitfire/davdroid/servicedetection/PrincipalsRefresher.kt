@@ -44,7 +44,7 @@ class PrincipalsRefresher @AssistedInject constructor(
      * Refreshes the principals (get their current display names).
      * Also removes principals which do not own any collections anymore.
      */
-    internal fun refreshPrincipals() {
+    fun refreshPrincipals() {
         // Refresh principals (collection owner urls)
         val principals = db.principalDao().getByService(service.id)
         for (oldPrincipal in principals) {
