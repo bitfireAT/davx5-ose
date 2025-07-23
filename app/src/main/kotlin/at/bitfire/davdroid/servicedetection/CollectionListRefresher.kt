@@ -65,14 +65,6 @@ class CollectionListRefresher @AssistedInject constructor(
     }
 
     /**
-     * Principal properties to ask the server for.
-     */
-    private val principalProperties = arrayOf(
-        DisplayName.NAME,
-        ResourceType.NAME
-    )
-
-    /**
      * Home-set class to use depending on the given service type.
      */
     private val homeSetClass: Class<out HrefListProperty> =
@@ -334,36 +326,6 @@ class CollectionListRefresher @AssistedInject constructor(
                 throw e
         }
 
-    }
-
-    /**
-     * Refreshes the principals (get their current display names).
-     * Also removes principals which do not own any collections anymore.
-     */
-    internal fun refreshPrincipals() {
-        // Refresh principals (collection owner urls)
-        val principals = db.principalDao().getByService(service.id)
-        for (oldPrincipal in principals) {
-            val principalUrl = oldPrincipal.url
-            logger.fine("Querying principal $principalUrl")
-            try {
-                DavResource(httpClient, principalUrl).propfind(0, *principalProperties) { response, _ ->
-                    if (!response.isSuccess())
-                        return@propfind
-                    Principal.fromDavResponse(service.id, response)?.let { principal ->
-                        logger.fine("Got principal: $principal")
-                        db.principalDao().insertOrUpdate(service.id, principal)
-                    }
-                }
-            } catch (e: HttpException) {
-                logger.info("Principal update failed with response code ${e.code}. principalUrl=$principalUrl")
-            }
-        }
-
-        // Delete principals which don't own any collections
-        db.principalDao().getAllWithoutCollections().forEach {principal ->
-            db.principalDao().delete(principal)
-        }
     }
 
     /**
