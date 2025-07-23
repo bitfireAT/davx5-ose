@@ -56,7 +56,7 @@ class SyncAdapterServicesTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var syncAdapterProvider: Provider<SyncAdapterService.SyncAdapter>
+    lateinit var realSyncAdapterProvider: Provider<RealSyncAdapter>
 
     @BindValue @MockK
     lateinit var syncWorkerManager: SyncWorkerManager
@@ -90,7 +90,7 @@ class SyncAdapterServicesTest {
     @Test
     fun testSyncAdapter_onPerformSync_cancellation() = runTest {
         val workManager = WorkManager.getInstance(context)
-        val syncAdapter = syncAdapterProvider.get()
+        val syncAdapter = realSyncAdapterProvider.get()
 
         mockkObject(workManager) {
             // don't actually create a worker
@@ -114,7 +114,7 @@ class SyncAdapterServicesTest {
     @Test
     fun testSyncAdapter_onPerformSync_returnsAfterTimeout() {
         val workManager = WorkManager.getInstance(context)
-        val syncAdapter = syncAdapterProvider.get()
+        val syncAdapter = realSyncAdapterProvider.get()
 
         mockkObject(workManager) {
             // don't actually create a worker
@@ -135,7 +135,7 @@ class SyncAdapterServicesTest {
     @Test
     fun testSyncAdapter_onPerformSync_runsInTime() {
         val workManager = WorkManager.getInstance(context)
-        val syncAdapter = syncAdapterProvider.get()
+        val syncAdapter = realSyncAdapterProvider.get()
 
         mockkObject(workManager) {
             // don't actually create a worker
