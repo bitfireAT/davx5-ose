@@ -70,7 +70,11 @@ abstract class SyncAdapterService: Service() {
                     logger.warning(message.toString())
 
                     // fake 5 sec sync
-                    Thread.sleep(5000)
+                    try {
+                        Thread.sleep(5000)
+                    } catch (_: InterruptedException) {
+                        logger.warning("FakeSyncAdapter onPerformSync($account) cancelled")
+                    }
 
                     logger.warning("FakeSyncAdapter onPerformSync($account) finished")
                 }
