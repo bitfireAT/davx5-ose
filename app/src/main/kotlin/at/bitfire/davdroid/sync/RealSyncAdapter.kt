@@ -80,7 +80,7 @@ class RealSyncAdapter @Inject constructor(
         // If we should sync an address book account - find the account storing the settings
         val account = if (accountOrAddressBookAccount.type == context.getString(R.string.account_type_address_book))
             AccountManager.get(context)
-                .getUserData(accountOrAddressBookAccount, LocalAddressBook.Companion.USER_DATA_COLLECTION_ID)
+                .getUserData(accountOrAddressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID)
                 ?.toLongOrNull()
                 ?.let { collectionId ->
                 collectionRepository.get(collectionId)?.let { collection ->
@@ -126,7 +126,7 @@ class RealSyncAdapter @Inject constructor(
         /* Because we are not allowed to observe worker state on a background thread, we can not
         use it to block the sync adapter. Instead we use a Flow to get notified when the sync
         has finished. */
-        val workManager = WorkManager.Companion.getInstance(context)
+        val workManager = WorkManager.getInstance(context)
 
         try {
             val waitJob = waitScope.launch {
@@ -135,7 +135,7 @@ class RealSyncAdapter @Inject constructor(
                     for (info in infoList)
                         if (info.state.isFinished) {
                             if (info.state == WorkInfo.State.FAILED) {
-                                if (info.outputData.getBoolean(BaseSyncWorker.Companion.OUTPUT_TOO_MANY_RETRIES, false))
+                                if (info.outputData.getBoolean(BaseSyncWorker.OUTPUT_TOO_MANY_RETRIES, false))
                                     syncResult.tooManyRetries = true
                                 else
                                     syncResult.databaseError = true
