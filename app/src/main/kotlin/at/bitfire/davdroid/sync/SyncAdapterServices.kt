@@ -58,16 +58,21 @@ abstract class SyncAdapterService: Service() {
     override fun onBind(intent: Intent?): IBinder {
         if (BuildConfig.DEBUG && !syncActive.get()) {
             // only for debug builds/testing: syncActive flag
-            val logger = Logger.getLogger(this@SyncAdapterService::class.java.name)
-            logger.log(Level.WARNING, "SyncAdapterService.onBind() was called but syncActive = false. Ignoring")
+            val logger = Logger.getLogger(SyncAdapterService::class.java.name)
+            logger.warning("SyncAdapterService.onBind() was called but syncActive = false. Returning fake sync adapter")
 
-            val fakeAdapter = object: AbstractThreadedSyncAdapter(this, false) {
+            val fakeAdapter = object: AbstractThreadedSyncAdapter(this, true) {
                 override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
                     val message = StringBuilder()
                     message.append("FakeSyncAdapter onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)")
                     for (key in extras.keySet())
                         message.append("\n\textras[$key] = ${extras[key]}")
                     logger.warning(message.toString())
+
+                    // fake 5 sec sync
+                    Thread.sleep(5000)
+
+                    logger.warning("FakeSyncAdapter onPerformSync($account) finished")
                 }
             }
             return fakeAdapter.syncAdapterBinder
@@ -166,7 +171,8 @@ abstract class SyncAdapterService: Service() {
             // As a defensive workaround, we can cancel specifically this still pending sync only
             // See: https://github.com/bitfireAT/davx5-ose/issues/1458
             if (Build.VERSION.SDK_INT >= 34) {
-                logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for account=$account authority=$authority upload=$upload")
+                logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for " +
+                        "account=$account authority=$authority upload=$upload")
                 syncFrameworkIntegration.cancelSync(account, authority, extras)
             }
 

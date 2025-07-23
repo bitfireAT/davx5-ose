@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncRequest
-import android.content.SyncStatusObserver
 import android.os.Bundle
 import android.provider.CalendarContract
 import androidx.test.filters.SdkSuppress
@@ -16,17 +15,15 @@ import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
-import junit.framework.TestCase.assertTrue
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
+import org.junit.AfterClass
+import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Ignore
+import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import java.util.Collections
@@ -36,7 +33,7 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 @HiltAndroidTest
-class AndroidSyncFrameworkTest: SyncStatusObserver {
+class AndroidSyncFrameworkTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -51,15 +48,11 @@ class AndroidSyncFrameworkTest: SyncStatusObserver {
     @Inject
     lateinit var logger: Logger
 
-    @MockK
-    lateinit var syncFrameworkIntegration: SyncFrameworkIntegration
-
     lateinit var account: Account
-    lateinit var syncRequest: SyncRequest
+    val authority = CalendarContract.AUTHORITY
+
     private lateinit var stateChangeListener: Any
     private val recordedStates = Collections.synchronizedList(LinkedList<State>())
-
-    private var globalAutoSyncBeforeTest = ContentResolver.getMasterSyncAutomatically()
 
     @Before
     fun setUp() {
@@ -68,192 +61,108 @@ class AndroidSyncFrameworkTest: SyncStatusObserver {
         account = TestAccount.create()
 
         // Enable sync globally and for the test account
-        ContentResolver.setMasterSyncAutomatically(false)
-        ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, false)
-        ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
-        ContentResolver.setMasterSyncAutomatically(true)
-
-        // Sync request to be used in the tests
-        syncRequest = SyncRequest.Builder()
-            .setSyncAdapter(account, CalendarContract.AUTHORITY)
-            .syncOnce()
-            .setExtras(Bundle()) // Needed for Android 9
-            .build()
+        ContentResolver.setIsSyncable(account, authority, 1)
 
         // Remember states the sync framework reports as pairs of (sync pending, sync active).
         recordedStates.clear()
+        onStatusChanged(0)      // record first entry (pending = false, active = false)
         stateChangeListener = ContentResolver.addStatusChangeListener(
             ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE,
-            this
+            ::onStatusChanged
         )
-
-        // Disable the workaround we put in place for Android 14+ present in
-        // [SyncAdapterService.SyncAdapter.onPerformSync]
-        every {
-            syncFrameworkIntegration.cancelSync(any(), any(), any())
-        } returns Unit
-
-        // Request a sync to ensure the sync framework is in a known state, that is, initialize
-        // the problem at hand (always pending bug appears only subsequent runs)
-        ContentResolver.requestSync(syncRequest)
     }
 
     @After
     fun tearDown() {
-        TestAccount.remove(account)
         ContentResolver.removeStatusChangeListener(stateChangeListener)
-        ContentResolver.setMasterSyncAutomatically(globalAutoSyncBeforeTest)
+        TestAccount.remove(account)
     }
 
 
-    // correct behaviour of the sync framework on Android 13 and below
-    // Pending state is correctly reflected
-
-    @SdkSuppress(minSdkVersion = 28, maxSdkVersion = 28)
+    /**
+     * Correct behaviour of the sync framework on Android 13 and below.
+     * Pending state is correctly reflected
+     */
+    @SdkSuppress(maxSdkVersion = 33)
     @Test
-    fun testVerifySyncAlwaysPending_correctBehaviour_android9() =
-        verifyRecordedStatesMatchWith(
+    fun testVerifySyncAlwaysPending_correctBehaviour_android13() {
+        assertSyncStates(
             listOf(
-                State(pending = true, active = false),
-                State(pending = true, active = true),
-                State(pending = false, active = true),
-                State(pending = false, active = false)
+                State(pending = false, active = false),     // no sync pending or active
+                State(pending = true, active = false),      // sync becomes pending
+                State(pending = true, active = true),       // ... and pending and active at the same time
+                State(pending = false, active = true),      // ... and then only active
+                State(pending = false, active = false)      // sync finished
             )
         )
+    }
 
-    @SdkSuppress(minSdkVersion = 29, maxSdkVersion = 29)
-    @Test
-    fun testVerifySyncAlwaysPending_correctBehaviour_android10() =
-        verifyRecordedStatesMatchWith(
-            listOf(
-                State(pending = true, active = false),
-                State(pending = true, active = true),
-                State(pending = false, active = true),
-                State(pending = false, active = false)
-            )
-        )
-
-    @SdkSuppress(minSdkVersion = 30, maxSdkVersion = 30)
-    @Test
-    fun testVerifySyncAlwaysPending_correctBehaviour_android11() =
-        verifyRecordedStatesMatchWith(
-            listOf(
-                State(pending = true, active = false),
-                State(pending = true, active = true),
-                State(pending = false, active = true),
-                State(pending = false, active = false),
-            )
-        )
-
-    @SdkSuppress(minSdkVersion = 31, maxSdkVersion = 32)
-    @Test
-    fun testVerifySyncAlwaysPending_correctBehaviour_android12() =
-        verifyRecordedStatesMatchWith(
-            listOf(
-                State(pending = true, active = false),
-                State(pending = true, active = true),
-                State(pending = false, active = true),
-                State(pending = false, active = false)
-            )
-        )
-
-    @SdkSuppress(minSdkVersion = 33, maxSdkVersion = 33)
-    @Test
-    fun testVerifySyncAlwaysPending_correctBehaviour_android13() =
-        verifyRecordedStatesMatchWith(
-            listOf(
-                State(pending = true, active = false),
-                State(pending = true, active = true),
-                State(pending = false, active = true),
-                State(pending = false, active = false)
-            )
-        )
-
-
-    // Wrong behaviour of the sync framework on Android 14+
-    // Pending state stays true forever (after initial run), active state behaves correctly
-
+    /**
+     * Wrong behaviour of the sync framework on Android 14+.
+     * Pending state stays true forever (after initial run), active state behaves correctly
+     */
     @SdkSuppress(minSdkVersion = 34 /*, maxSdkVersion = 36 */)
     @Test
-    fun testVerifySyncAlwaysPending_wrongBehaviour_android14AndNewer() =
-        verifyRecordedStatesMatchWith(
+    fun testVerifySyncAlwaysPending_wrongBehaviour_android14() {
+        assertSyncStates(
             listOf(
-                State(pending = true, active = false),
-                State(pending = true, active = true),
-                State(pending = true, active = false)
+                State(pending = false, active = false),     // no sync pending or active
+                State(pending = true, active = false),      // sync becomes pending
+                State(pending = true, active = true),       // ... and pending and active at the same time
+                State(pending = true, active = false)       // ... and finishes, but stays pending
             )
         )
-
-
-    @Ignore("Takes way too long to run in CI")
-    @SdkSuppress(minSdkVersion = 34)
-    @Test(expected = TimeoutCancellationException::class)
-    fun testVerifySyncAlwaysPending() = runBlocking {
-        // Different from the previous tests. This test checks the pending state stays
-        // "forever" (65 seconds in this test)
-
-        // The test is expected to fail on Android 13 (API lvl 33) and below. It
-        // succeeds on Android 14+ (API lvl 34), however, where the sync-framework-
-        // always-pending-bug is present and hopefully fails as soon as the bug is
-        // fixed in a future android version.
-        // See https://github.com/bitfireAT/davx5-ose/issues/1458
-
-        // Based on my observations the sync framework usually takes 40-63 seconds
-        // to start the sync and change the sync pending state on Android 13 and
-        // below (but could take up to several minutes).
-        // On Android 14+ it will run the sync at some point, but report a pending
-        // sync state forever. To verify this, we can wait for around a minute and
-        // if the sync is still pending, we can assume that the bug is still present.
-        withTimeout(65.seconds) {
-            // Request calendar sync
-            ContentResolver.requestSync(syncRequest)
-
-            // Verify the sync keeps being pending "forever" (65 seconds in this test)
-            while (true) {
-                assertTrue(ContentResolver.isSyncPending(account, CalendarContract.AUTHORITY))
-                delay(2000) // Check every 2 seconds
-            }
-        }
     }
 
 
     // helpers
 
+    private fun syncRequest() = SyncRequest.Builder()
+        .setSyncAdapter(account, authority)
+        .syncOnce()
+        .setExtras(Bundle())    // needed for Android 9
+        .setExpedited(true)     // sync request will be scheduled at the front of the sync request queue
+        .setManual(true)        // equivalent of setting both SYNC_EXTRAS_IGNORE_SETTINGS and SYNC_EXTRAS_IGNORE_BACKOFF
+        .build()
+
     /**
      * Verifies that the given expected states match the recorded states.
      */
-    private fun verifyRecordedStatesMatchWith(expectedStateLists: List<State>) =
-        runBlocking {
-            recordedStates.clear()
-            // We use runBlocking for these tests because it uses the default dispatcher
-            // which does not auto-advance virtual time and we need real system time to
-            // test the sync framework behavior.
+    private fun assertSyncStates(expectedStates: List<State>) = runBlocking {
+        // We use runBlocking for these tests because it uses the default dispatcher
+        // which does not auto-advance virtual time and we need real system time to
+        // test the sync framework behavior.
 
-            // Even though the always-pending-bug is present on Android 14+, the sync active
-            // state behaves correctly, so we can record the state changes as pairs (pending,
-            // active) and expect a certain sequence of state pairs to verify the presence or
-            // absence of the bug on different Android versions.
-            withTimeout(120.seconds) { // Usually takes less than 30 seconds
-                ContentResolver.requestSync(syncRequest)
-                while (true) {
-                    if (recordedStates == expectedStateLists)
-                        break
-                    delay(500) // avoid busy-waiting
-                }
+        ContentResolver.requestSync(syncRequest())
+
+        // Even though the always-pending-bug is present on Android 14+, the sync active
+        // state behaves correctly, so we can record the state changes as pairs (pending,
+        // active) and expect a certain sequence of state pairs to verify the presence or
+        // absence of the bug on different Android versions.
+        withTimeout(60.seconds) { // Usually takes less than 30 seconds
+            while (recordedStates.size < expectedStates.size) {
+                // verify already known states
+                if (recordedStates.isNotEmpty())
+                    assertEquals(expectedStates.subList(0, recordedStates.size), recordedStates)
+
+                delay(500) // avoid busy-waiting
             }
+
+            assertEquals(expectedStates, recordedStates)
         }
+    }
 
 
-    override fun onStatusChanged(which: Int) {
+    fun onStatusChanged(which: Int) {
         val state = State(
-            pending = ContentResolver.isSyncPending(account, CalendarContract.AUTHORITY),
-            active = ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY)
+            pending = ContentResolver.isSyncPending(account, authority),
+            active = ContentResolver.isSyncActive(account, authority)
         )
-        logger.info("$account sync state = $state")
-
         synchronized(recordedStates) {
-            if (recordedStates.lastOrNull() != state)
+            if (recordedStates.lastOrNull() != state) {
+                logger.info("$account syncState = $state")
                 recordedStates += state
+            }
         }
     }
 
@@ -261,5 +170,27 @@ class AndroidSyncFrameworkTest: SyncStatusObserver {
         val pending: Boolean,
         val active: Boolean
     )
+
+
+    companion object {
+
+        var globalAutoSyncBeforeTest = false
+
+        @BeforeClass
+        @JvmStatic
+        fun before() {
+            globalAutoSyncBeforeTest = ContentResolver.getMasterSyncAutomatically()
+
+            // We'll request syncs explicitly and with SYNC_EXTRAS_IGNORE_SETTINGS
+            ContentResolver.setMasterSyncAutomatically(false)
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun after() {
+            ContentResolver.setMasterSyncAutomatically(globalAutoSyncBeforeTest)
+        }
+
+    }
 
 }
