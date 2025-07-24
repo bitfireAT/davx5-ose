@@ -12,6 +12,7 @@ import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.storage.BatchOperation
 import org.dmfs.tasks.contract.TaskContract.Tasks
+import java.util.Optional
 import java.util.UUID
 
 class LocalTask: DmfsTask, LocalResource<Task> {
@@ -76,25 +77,25 @@ class LocalTask: DmfsTask, LocalResource<Task> {
         return "$uid.ics"
     }
 
-    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
+    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             logger.fine("Schedule-Tag for tasks not supported yet, won't save")
 
         val values = ContentValues(4)
-        if (fileName != null)
-            values.put(Tasks._SYNC_ID, fileName)
+        if (fileName.isPresent)
+            values.put(Tasks._SYNC_ID, fileName.get())
         values.put(COLUMN_ETAG, eTag)
         values.put(Tasks.SYNC_VERSION, task!!.sequence)
         values.put(Tasks._DIRTY, 0)
         taskList.provider.update(taskSyncURI(), values, null, null)
 
-        if (fileName != null)
-            this.fileName = fileName
+        if (fileName.isPresent)
+            this.fileName = fileName.get()
         this.eTag = eTag
     }
 
     override fun update(data: Task, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
-        TODO("Not yet implemented")
+        update(data)
     }
 
     override fun updateFlags(flags: Int) {
@@ -107,7 +108,7 @@ class LocalTask: DmfsTask, LocalResource<Task> {
     }
 
     override fun deleteLocal() {
-        TODO("Not yet implemented")
+        delete()
     }
 
     override fun resetDeleted() {

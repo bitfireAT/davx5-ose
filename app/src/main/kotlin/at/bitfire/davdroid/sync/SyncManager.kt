@@ -51,6 +51,7 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.util.LinkedList
+import java.util.Optional
 import java.util.concurrent.CancellationException
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.logging.Level
@@ -486,7 +487,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * Note: [CalendarSyncManager] overrides this method to additionally store the updated SEQUENCE.
      */
     protected open fun onSuccessfulUpload(local: ResourceType, newFileName: String, eTag: String?, scheduleTag: String?) {
-        local.clearDirty(newFileName, eTag, scheduleTag)
+        local.clearDirty(Optional.of(newFileName), eTag, scheduleTag)
     }
 
     /**

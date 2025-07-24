@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.resource
 
 import at.bitfire.davdroid.resource.LocalResource.Companion.FLAG_REMOTELY_PRESENT
+import java.util.Optional
 
 /**
  * Defines operations that are used by SyncManager for all sync data types.
@@ -56,19 +57,23 @@ interface LocalResource<in TData: Any> {
     fun prepareForUpload(): String
 
     /**
-     * Unsets the /dirty/ field of the resource. Typically used after successfully uploading a
-     * locally modified resource.
+     * Unsets the _dirty_ field of the resource and updates other sync-related fields in the content provider.
+     * Does not affect `this` object itself (which is immutable).
      *
-     * @param fileName      If this argument is not *null*, [LocalResource.fileName] will be set to its value.
+     * Typically used after successfully uploading a locally modified resource.
+     *
+     * @param fileName      If this optional argument is present, [LocalResource.fileName] will be set to its value.
      * @param eTag          ETag of the uploaded resource as returned by the server (null if the server didn't return one)
      * @param scheduleTag   CalDAV only: `Schedule-Tag` of the uploaded resource as returned by the server
      *                      (null if not applicable or if the server didn't return one)
      */
-    fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String? = null)
+    fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String? = null)
 
     /**
-     * Sets (local) flags of the resource. At the moment, the only allowed values are
-     * 0 and [FLAG_REMOTELY_PRESENT].
+     * Sets (local) flags of the resource in the content provider.
+     * Does not affect `this` object itself (which is immutable).
+     *
+     * At the moment, the only allowed values are 0 and [FLAG_REMOTELY_PRESENT].
      */
     fun updateFlags(flags: Int)
 

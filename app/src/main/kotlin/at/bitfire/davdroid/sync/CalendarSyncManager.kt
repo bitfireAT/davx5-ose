@@ -49,6 +49,7 @@ import java.io.StringReader
 import java.io.StringWriter
 import java.time.Duration
 import java.time.ZonedDateTime
+import java.util.Optional
 import java.util.logging.Level
 
 /**
@@ -158,7 +159,7 @@ class CalendarSyncManager @AssistedInject constructor(
             for (event in localCollection.findDirty()) {
                 logger.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
-                    event.clearDirty(null, null)
+                    event.clearDirty(Optional.empty(), null)
                 }
                 modified = true
             }
@@ -290,15 +291,18 @@ class CalendarSyncManager @AssistedInject constructor(
             SyncException.wrapWithLocalResource(local) {
                 if (local != null) {
                     logger.log(Level.INFO, "Updating $fileName in local calendar", event)
-                    // TODO
-                    /*local.eTag = eTag
-                    local.scheduleTag = scheduleTag
-                    local.update(event)*/
+                    local.update(
+                        data = event,
+                        fileName = fileName,
+                        eTag = eTag,
+                        scheduleTag = scheduleTag,
+                        flags = LocalResource.FLAG_REMOTELY_PRESENT
+                    )
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local calendar", event)
                     localCollection.add(
                         event = event,
-                        syncId = fileName,
+                        fileName = fileName,
                         eTag = eTag,
                         scheduleTag = scheduleTag,
                         flags = LocalResource.FLAG_REMOTELY_PRESENT

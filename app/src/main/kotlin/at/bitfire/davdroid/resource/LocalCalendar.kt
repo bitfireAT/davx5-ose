@@ -36,7 +36,6 @@ class LocalCalendar @AssistedInject constructor(
         fun create(androidCalendar: AndroidCalendar): LocalCalendar
     }
 
-
     override val dbCollectionId: Long?
         get() = androidCalendar.syncId?.toLongOrNull()
 
@@ -58,12 +57,12 @@ class LocalCalendar @AssistedInject constructor(
         }
 
 
-    fun add(event: Event, syncId: String, eTag: String?, scheduleTag: String?, flags: Int) {
+    fun add(event: Event, fileName: String, eTag: String?, scheduleTag: String?, flags: Int) {
         val mapped = LegacyAndroidEventBuilder2(
             calendar = androidCalendar,
             event = event,
             id = null,
-            syncId = syncId,
+            syncId = fileName,
             eTag = eTag,
             scheduleTag = scheduleTag,
             flags = flags

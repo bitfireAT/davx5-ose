@@ -244,7 +244,7 @@ class ContactsSyncManager @AssistedInject constructor(
             for (group in localCollection.findDirtyGroups()) {
                 logger.warning("Resetting locally modified group to ETag=null (read-only address book!)")
                 SyncException.wrapWithLocalResource(group) {
-                    group.clearDirty(null, null)
+                    group.clearDirty(Optional.empty(), null)
                 }
                 modified = true
             }
@@ -252,7 +252,7 @@ class ContactsSyncManager @AssistedInject constructor(
             for (contact in localCollection.findDirtyContacts()) {
                 logger.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
                 SyncException.wrapWithLocalResource(contact) {
-                    contact.clearDirty(null, null)
+                    contact.clearDirty(Optional.empty(), null)
                 }
                 modified = true
             }

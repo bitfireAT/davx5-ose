@@ -25,6 +25,7 @@ import at.bitfire.vcard4android.AndroidGroupFactory
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import java.util.LinkedList
+import java.util.Optional
 import java.util.UUID
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
@@ -159,20 +160,20 @@ class LocalGroup: AndroidGroup, LocalAddress {
         return "$uid.vcf"
     }
 
-    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
+    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             throw IllegalArgumentException("Contact groups must not have a Schedule-Tag")
         val id = requireNotNull(id)
 
         val values = ContentValues(3)
-        if (fileName != null)
-            values.put(COLUMN_FILENAME, fileName)
+        if (fileName.isPresent)
+            values.put(COLUMN_FILENAME, fileName.get())
         values.putNull(COLUMN_ETAG)     // don't save changed ETag but null, so that the group is downloaded again, so that pendingMembers is updated
         values.put(Groups.DIRTY, 0)
         update(values)
 
-        if (fileName != null)
-            this.fileName = fileName
+        if (fileName.isPresent)
+            this.fileName = fileName.get()
         this.eTag = null
 
         // update cached group memberships
@@ -212,7 +213,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
     }
 
     override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
-        TODO("Not yet implemented")
+        update(data)
     }
 
     override fun updateFlags(flags: Int) {
@@ -223,7 +224,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
     }
 
     override fun deleteLocal() {
-        TODO("Not yet implemented")
+        delete()
     }
 
     override fun resetDeleted() {

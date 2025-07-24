@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync.groups
 
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.vcard4android.Contact
+import java.util.Optional
 import java.util.logging.Logger
 
 class CategoriesStrategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
@@ -25,7 +26,7 @@ class CategoriesStrategy(val addressBook: LocalAddressBook): ContactGroupStrateg
         for (group in addressBook.findDirtyGroups()) {
             logger.fine("Marking members of modified group $group as dirty")
             group.markMembersDirty()
-            group.clearDirty(null, null)
+            group.clearDirty(Optional.empty(), null)
         }
     }
 
