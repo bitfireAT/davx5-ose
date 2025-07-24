@@ -11,6 +11,7 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import android.os.IBinder
+import at.bitfire.davdroid.sync.adapter.SyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Level
 import java.util.logging.Logger

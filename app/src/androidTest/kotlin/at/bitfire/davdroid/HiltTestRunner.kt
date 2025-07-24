@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.Bundle
 import androidx.test.runner.AndroidJUnitRunner
 import at.bitfire.davdroid.di.TestCoroutineDispatchersModule
-import at.bitfire.davdroid.sync.SyncAdapterService
 import at.bitfire.davdroid.test.BuildConfig
 import at.bitfire.synctools.log.LogcatHandler
 import dagger.hilt.android.testing.HiltTestApplication

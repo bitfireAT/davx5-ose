@@ -15,6 +15,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.davdroid.sync.adapter.SyncAdapterImpl
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
@@ -56,7 +57,7 @@ class SyncAdapterServicesTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var realSyncAdapterProvider: Provider<RealSyncAdapter>
+    lateinit var syncAdapterImplProvider: Provider<SyncAdapterImpl>
 
     @BindValue @MockK
     lateinit var syncWorkerManager: SyncWorkerManager
@@ -90,7 +91,7 @@ class SyncAdapterServicesTest {
     @Test
     fun testSyncAdapter_onPerformSync_cancellation() = runTest {
         val workManager = WorkManager.getInstance(context)
-        val syncAdapter = realSyncAdapterProvider.get()
+        val syncAdapter = syncAdapterImplProvider.get()
 
         mockkObject(workManager) {
             // don't actually create a worker
@@ -114,7 +115,7 @@ class SyncAdapterServicesTest {
     @Test
     fun testSyncAdapter_onPerformSync_returnsAfterTimeout() {
         val workManager = WorkManager.getInstance(context)
-        val syncAdapter = realSyncAdapterProvider.get()
+        val syncAdapter = syncAdapterImplProvider.get()
 
         mockkObject(workManager) {
             // don't actually create a worker
@@ -135,7 +136,7 @@ class SyncAdapterServicesTest {
     @Test
     fun testSyncAdapter_onPerformSync_runsInTime() {
         val workManager = WorkManager.getInstance(context)
-        val syncAdapter = realSyncAdapterProvider.get()
+        val syncAdapter = syncAdapterImplProvider.get()
 
         mockkObject(workManager) {
             // don't actually create a worker

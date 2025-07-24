@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.sync
+package at.bitfire.davdroid.sync.adapter
 
 import android.accounts.Account
 import android.accounts.AccountManager
@@ -21,6 +21,8 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.SyncConditions
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -51,7 +53,7 @@ import javax.inject.Inject
  *
  * All Sync Adapter Framework related interaction should happen inside [SyncFrameworkIntegration].
  */
-class RealSyncAdapter @Inject constructor(
+class SyncAdapterImpl @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     private val serviceRepository: DavServiceRepository,
@@ -112,7 +114,7 @@ class RealSyncAdapter @Inject constructor(
         }
 
         logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
-        val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), fromUpload = upload)
+        val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.Companion.fromAuthority(authority), fromUpload = upload)
 
         // Android 14+ does not handle pending sync state correctly.
         // As a defensive workaround, we can cancel specifically this still pending sync only
@@ -180,7 +182,7 @@ class RealSyncAdapter @Inject constructor(
     @InstallIn(SingletonComponent::class)
     abstract class RealSyncAdapterModule {
         @Binds
-        abstract fun provide(impl: RealSyncAdapter): SyncAdapter
+        abstract fun provide(impl: SyncAdapterImpl): SyncAdapter
     }
 
 }

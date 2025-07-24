@@ -186,7 +186,7 @@
                 android:resource="@xml/account_authenticator"/>
         </service>
         <service
-            android:name=".sync.CalendarsSyncAdapterService"
+            android:name=".sync.adapter.CalendarsSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -197,7 +197,7 @@
                 android:resource="@xml/sync_calendars"/>
         </service>
         <service
-            android:name=".sync.JtxSyncAdapterService"
+            android:name=".sync.adapter.JtxSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -208,7 +208,7 @@
                 android:resource="@xml/sync_notes"/>
         </service>
         <service
-            android:name=".sync.OpenTasksSyncAdapterService"
+            android:name=".sync.adapter.OpenTasksSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -219,7 +219,7 @@
                 android:resource="@xml/sync_opentasks"/>
         </service>
         <service
-            android:name=".sync.TasksOrgSyncAdapterService"
+            android:name=".sync.adapter.TasksOrgSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -254,7 +254,7 @@
                 android:resource="@xml/account_authenticator_address_book"/>
         </service>
         <service
-            android:name=".sync.ContactsSyncAdapterService"
+            android:name=".sync.adapter.ContactsSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
