@@ -67,6 +67,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry,
     private val pushRegistrationManager: PushRegistrationManager,
+    private val serviceRefresherFactory: ServiceRefresher.Factory,
     serviceRepository: DavServiceRepository
 ): CoroutineWorker(appContext, workerParams) {
 
@@ -161,7 +162,8 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         // refresh home set list (from principal url)
                         service.principal?.let { principalUrl ->
                             logger.fine("Querying principal $principalUrl for home sets")
-                            refresher.discoverHomesets(principalUrl)
+                            val serviceRefresher = serviceRefresherFactory.create(service, httpClient)
+                            serviceRefresher.discoverHomesets(principalUrl)
                         }
 
                         // refresh home sets and their member collections
