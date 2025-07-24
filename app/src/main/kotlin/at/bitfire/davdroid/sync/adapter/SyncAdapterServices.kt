@@ -6,9 +6,9 @@ package at.bitfire.davdroid.sync.adapter
 
 import android.app.Service
 import android.content.Intent
-import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.EarlyEntryPoint
+import dagger.hilt.android.EarlyEntryPoints
 import dagger.hilt.components.SingletonComponent
 
 abstract class SyncAdapterService: Service() {
@@ -17,7 +17,7 @@ abstract class SyncAdapterService: Service() {
      * We don't use @AndroidEntryPoint / @Inject because it's unavoidable that instrumented tests sometimes accidentally / asynchronously
      * create a [SyncAdapterService] instance before Hilt is initialized by the HiltTestRunner.
      */
-    @EntryPoint
+    @EarlyEntryPoint
     @InstallIn(SingletonComponent::class)
     interface SyncAdapterServicesEntryPoint {
         fun syncAdapter(): SyncAdapter
@@ -25,7 +25,7 @@ abstract class SyncAdapterService: Service() {
 
     // create syncAdapter on demand and cache it
     val syncAdapter by lazy {
-        val entryPoint = EntryPointAccessors.fromApplication<SyncAdapterServicesEntryPoint>(this)
+        val entryPoint = EarlyEntryPoints.get(applicationContext, SyncAdapterServicesEntryPoint::class.java)
         entryPoint.syncAdapter()
     }
 
