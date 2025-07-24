@@ -133,8 +133,6 @@ class WebDavMountRepository @Inject constructor(
                 dav.options(followRedirects = true) { davCapabilities, response ->
                     if (davCapabilities.any { it in validVersions })
                         webdavUrl = response.request.url
-                    else
-                        null
                 }
             }
         }
