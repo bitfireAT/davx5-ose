@@ -26,6 +26,9 @@ import javax.inject.Inject
 @HiltAndroidTest
 class ServiceRefresherTest {
 
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
     @Inject
     lateinit var db: AppDatabase
 
@@ -37,9 +40,6 @@ class ServiceRefresherTest {
 
     @Inject
     lateinit var serviceRefresherFactory: ServiceRefresher.Factory
-
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
 
     private lateinit var client: HttpClient
     private lateinit var mockServer: MockWebServer
@@ -71,6 +71,7 @@ class ServiceRefresherTest {
         client.close()
         mockServer.shutdown()
     }
+
 
     @Test
     fun testDiscoverHomesets() {
