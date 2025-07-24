@@ -66,6 +66,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     private val httpClientBuilder: HttpClient.Builder,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry,
+    private val principalsRefresherFactory: PrincipalsRefresher.Factory,
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRefresherFactory: ServiceRefresher.Factory,
     serviceRepository: DavServiceRepository
@@ -173,7 +174,8 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         refresher.refreshHomelessCollections()
 
                         // Lastly, refresh the principals (collection owners)
-                        refresher.refreshPrincipals()
+                        val principalsRefresher = principalsRefresherFactory.create(service, httpClient)
+                        principalsRefresher.refreshPrincipals()
                     }
                 }
 
