@@ -117,6 +117,7 @@ class ServiceRefresherTest {
 
         override fun dispatch(request: RecordedRequest): MockResponse {
             val path = request.path!!.trimEnd('/')
+            logger.info("Query: ${request.method} on $path ")
 
             if (request.method.equals("PROPFIND", true)) {
                 val properties = when (path) {
@@ -140,7 +141,6 @@ class ServiceRefresherTest {
 
                     else -> ""
                 }
-                logger.info("Queried: $path")
                 return MockResponse()
                     .setResponseCode(207)
                     .setBody(
