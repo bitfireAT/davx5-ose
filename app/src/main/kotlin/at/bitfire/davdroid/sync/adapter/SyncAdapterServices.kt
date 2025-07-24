@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync.adapter
 
 import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -24,11 +23,13 @@ abstract class SyncAdapterService: Service() {
         fun syncAdapter(): SyncAdapter
     }
 
-    override fun onBind(intent: Intent?): IBinder {
-        // create sync adapter via Hilt
+    // create syncAdapter on demand and cache it
+    val syncAdapter by lazy {
         val entryPoint = EntryPointAccessors.fromApplication<SyncAdapterServicesEntryPoint>(this)
-        return entryPoint.syncAdapter().getBinder()
+        entryPoint.syncAdapter()
     }
+
+    override fun onBind(intent: Intent?) = syncAdapter.getBinder()
 
 }
 
