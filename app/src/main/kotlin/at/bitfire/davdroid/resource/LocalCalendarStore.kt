@@ -81,11 +81,11 @@ class LocalCalendarStore @Inject constructor(
             .map { localCalendarFactory.create(it) }
 
     override fun update(client: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
-        val accountSettings = accountSettingsFactory.create(localCollection.androidCalendar.account)
+        val accountSettings = accountSettingsFactory.create(localCollection.calendar.account)
         val values = valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors())
 
         logger.log(Level.FINE, "Updating local calendar ${fromCollection.url}", values)
-        val androidCalendar = localCollection.androidCalendar
+        val androidCalendar = localCollection.calendar
         val provider = AndroidCalendarProvider(androidCalendar.account, client)
         provider.updateCalendar(androidCalendar.id, values)
     }
@@ -142,7 +142,7 @@ class LocalCalendarStore @Inject constructor(
 
     override fun delete(localCollection: LocalCalendar) {
         logger.log(Level.INFO, "Deleting local calendar", localCollection)
-        localCollection.androidCalendar.delete()
+        localCollection.calendar.delete()
     }
 
 }

@@ -11,10 +11,12 @@ import at.bitfire.ical4android.LegacyAndroidCalendar
 import at.bitfire.synctools.mapping.calendar.LegacyAndroidEventBuilder2
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
+import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
 import java.util.Optional
 import java.util.UUID
 
 class LocalEvent(
+    val recurringCalendar: AndroidRecurringCalendar,
     val androidEvent: AndroidEvent2
 ) : LocalResource<Event> {
 
@@ -44,7 +46,7 @@ class LocalEvent(
             scheduleTag = scheduleTag,
             flags = flags
         ).build()
-        androidEvent.update(eventAndExceptions)
+        recurringCalendar.updateEventAndExceptions(id, eventAndExceptions)
     }
 
 
@@ -161,7 +163,7 @@ class LocalEvent(
     }
 
     override fun deleteLocal() {
-        androidEvent.deleteWithExceptions()
+        recurringCalendar.deleteEventAndExceptions(id)
     }
 
     override fun resetDeleted() {

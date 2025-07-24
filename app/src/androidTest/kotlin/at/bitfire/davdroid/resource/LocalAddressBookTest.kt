@@ -29,6 +29,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.io.FileNotFoundException
 import java.util.LinkedList
+import java.util.Optional
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -98,7 +99,7 @@ class LocalAddressBookTest {
             val id = ContentUris.parseId(uri)
 
             // make sure it's not dirty
-            localGroup.clearDirty(null, null, null)
+            localGroup.clearDirty(Optional.empty(), null, null)
             assertFalse("Group is dirty before moving", isGroupDirty(addressBook, id))
 
             // rename address book
@@ -127,7 +128,7 @@ class LocalAddressBookTest {
      */
     fun isContactDirty(adddressBook: LocalAddressBook, id: Long): Boolean {
         val uri = ContentUris.withAppendedId(adddressBook.rawContactsSyncUri(), id)
-        provider!!.query(uri, arrayOf(ContactsContract.RawContacts.DIRTY), null, null, null)?.use { cursor ->
+        provider.query(uri, arrayOf(ContactsContract.RawContacts.DIRTY), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst())
                 return cursor.getInt(0) != 0
         }
@@ -143,7 +144,7 @@ class LocalAddressBookTest {
      */
     fun isGroupDirty(adddressBook: LocalAddressBook, id: Long): Boolean {
         val uri = ContentUris.withAppendedId(adddressBook.groupsSyncUri(), id)
-        provider!!.query(uri, arrayOf(ContactsContract.Groups.DIRTY), null, null, null)?.use { cursor ->
+        provider.query(uri, arrayOf(ContactsContract.Groups.DIRTY), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst())
                 return cursor.getInt(0) != 0
         }

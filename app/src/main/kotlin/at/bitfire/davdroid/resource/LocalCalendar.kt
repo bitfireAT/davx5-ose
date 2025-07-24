@@ -14,6 +14,7 @@ import at.bitfire.synctools.mapping.calendar.LegacyAndroidEventBuilder2
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
+import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
 import at.bitfire.synctools.storage.calendar.CalendarBatchOperation
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -27,39 +28,44 @@ import java.util.logging.Logger
  * [Calendars._SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
 class LocalCalendar @AssistedInject constructor(
-    @Assisted val androidCalendar: AndroidCalendar,
+    @Assisted val calendar: AndroidCalendar,
     private val logger: Logger
 ) : LocalCollection<LocalEvent> {
 
     @AssistedFactory
     interface Factory {
-        fun create(androidCalendar: AndroidCalendar): LocalCalendar
+        fun create(calendar: AndroidCalendar): LocalCalendar
     }
 
+
+    // properties
+
     override val dbCollectionId: Long?
-        get() = androidCalendar.syncId?.toLongOrNull()
+        get() = calendar.syncId?.toLongOrNull()
 
     override val tag: String
-        get() = "events-${androidCalendar.account.name}-${androidCalendar.id}"
+        get() = "events-${calendar.account.name}-${calendar.id}"
 
     override val title: String
-        get() = androidCalendar.displayName ?: androidCalendar.id.toString()
+        get() = calendar.displayName ?: calendar.id.toString()
 
     override val readOnly
-        get() = androidCalendar.accessLevel <= Calendars.CAL_ACCESS_READ
+        get() = calendar.accessLevel <= Calendars.CAL_ACCESS_READ
 
     override var lastSyncState: SyncState?
-        get() = androidCalendar.readSyncState()?.let {
+        get() = calendar.readSyncState()?.let {
             SyncState.fromString(it)
         }
         set(state) {
-            androidCalendar.writeSyncState(state.toString())
+            calendar.writeSyncState(state.toString())
         }
+
+    val recurringCalendar = AndroidRecurringCalendar(calendar)
 
 
     fun add(event: Event, fileName: String, eTag: String?, scheduleTag: String?, flags: Int) {
         val mapped = LegacyAndroidEventBuilder2(
-            calendar = androidCalendar,
+            calendar = calendar,
             event = event,
             id = null,
             syncId = fileName,
@@ -67,14 +73,13 @@ class LocalCalendar @AssistedInject constructor(
             scheduleTag = scheduleTag,
             flags = flags
         ).build()
-        androidCalendar.addEventAndExceptions(mapped)
+        recurringCalendar.addEventAndExceptions(mapped)
     }
-
 
     override fun findDeleted(): List<LocalEvent> {
         val result = LinkedList<LocalEvent>()
-        androidCalendar.iterateEvents( "${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null) { entity ->
-            result += LocalEvent(AndroidEvent2(androidCalendar, entity))
+        calendar.iterateEvents( "${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null) { entity ->
+            result += LocalEvent(recurringCalendar, AndroidEvent2(calendar, entity))
         }
         return result
     }
@@ -87,8 +92,8 @@ class LocalCalendar @AssistedInject constructor(
          * When a calendar component is created, its sequence number is 0. It is monotonically incremented by the "Organizer's"
          * CUA each time the "Organizer" makes a significant revision to the calendar component.
          */
-        androidCalendar.iterateEvents("${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null) { values ->
-            dirty += LocalEvent(AndroidEvent2(androidCalendar, values))
+        calendar.iterateEvents("${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null) { values ->
+            dirty += LocalEvent(recurringCalendar, AndroidEvent2(calendar, values))
         }
 
         return dirty
@@ -96,39 +101,39 @@ class LocalCalendar @AssistedInject constructor(
 
     override fun findByName(name: String) =
         // TODO implement findEvent() that returns only one row
-        androidCalendar.findEvents("${Events._SYNC_ID}=?", arrayOf(name)).firstOrNull()?.let {
-            LocalEvent(it)
+        calendar.findEvents("${Events._SYNC_ID}=?", arrayOf(name)).firstOrNull()?.let {
+            LocalEvent(recurringCalendar, it)
         }
 
     override fun markNotDirty(flags: Int) =
-        androidCalendar.updateEventRows(
+        calendar.updateEventRows(
             contentValuesOf(AndroidEvent2.COLUMN_FLAGS to flags),
             "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL",
-            arrayOf(androidCalendar.id.toString())
+            arrayOf(calendar.id.toString())
         )
 
     override fun removeNotDirtyMarked(flags: Int): Int {
         // list all non-dirty events with the given flags and delete every row + its exceptions
-        val batch = CalendarBatchOperation(androidCalendar.client)
-        androidCalendar.iterateEventRows(
+        val batch = CalendarBatchOperation(calendar.client)
+        calendar.iterateEventRows(
             arrayOf(Events._ID),
             "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND ${AndroidEvent2.COLUMN_FLAGS}=?",
-            arrayOf(androidCalendar.id.toString(), flags.toString())
+            arrayOf(calendar.id.toString(), flags.toString())
         ) { values ->
             val id = values.getAsInteger(Events._ID)
 
             // delete event and possible exceptions (content provider doesn't delete exceptions itself)
             batch += BatchOperation.CpoBuilder
-                .newDelete(Events.CONTENT_URI.asSyncAdapter(androidCalendar.account))
+                .newDelete(Events.CONTENT_URI.asSyncAdapter(calendar.account))
                 .withSelection("${Events._ID}=? OR ${Events.ORIGINAL_ID}=?", arrayOf(id.toString(), id.toString()))
         }
         return batch.commit()
     }
 
     override fun forgetETags() {
-        androidCalendar.updateEventRows(
+        calendar.updateEventRows(
             contentValuesOf(AndroidEvent2.COLUMN_ETAG to null),
-            "${Events.CALENDAR_ID}=?", arrayOf(androidCalendar.id.toString())
+            "${Events.CALENDAR_ID}=?", arrayOf(calendar.id.toString())
         )
     }
 
@@ -137,38 +142,38 @@ class LocalCalendar @AssistedInject constructor(
         // process deleted exceptions
         logger.info("Processing deleted exceptions")
 
-        androidCalendar.iterateEventRows(
+        calendar.iterateEventRows(
             arrayOf(Events._ID, Events.ORIGINAL_ID, AndroidEvent2.COLUMN_SEQUENCE),
             "${Events.CALENDAR_ID}=? AND ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NOT NULL",
-            arrayOf(androidCalendar.id.toString())
+            arrayOf(calendar.id.toString())
         ) { values ->
             logger.fine("Found deleted exception, removing and re-scheduling original event (if available)")
 
             val id = values.getAsLong(Events._ID)                   // can't be null (by definition)
             val originalID = values.getAsLong(Events.ORIGINAL_ID)   // can't be null (by query)
 
-            val batch = CalendarBatchOperation(androidCalendar.client)
+            val batch = CalendarBatchOperation(calendar.client)
 
             // enqueue: increase sequence of main event
-            val originalEventValues = androidCalendar.getEventRow(originalID, arrayOf(AndroidEvent2.COLUMN_SEQUENCE))
+            val originalEventValues = calendar.getEventRow(originalID, arrayOf(AndroidEvent2.COLUMN_SEQUENCE))
             val originalSequence = originalEventValues?.getAsInteger(AndroidEvent2.COLUMN_SEQUENCE) ?: 0
 
             batch += BatchOperation.CpoBuilder
-                .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, originalID).asSyncAdapter(androidCalendar.account))
+                .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, originalID).asSyncAdapter(calendar.account))
                 .withValue(AndroidEvent2.COLUMN_SEQUENCE, originalSequence + 1)
                 .withValue(Events.DIRTY, 1)
 
             // completely remove deleted exception
-            batch += BatchOperation.CpoBuilder.newDelete(ContentUris.withAppendedId(Events.CONTENT_URI, id).asSyncAdapter(androidCalendar.account))
+            batch += BatchOperation.CpoBuilder.newDelete(ContentUris.withAppendedId(Events.CONTENT_URI, id).asSyncAdapter(calendar.account))
             batch.commit()
         }
 
         // process dirty exceptions
         logger.info("Processing dirty exceptions")
-        androidCalendar.iterateEventRows(
+        calendar.iterateEventRows(
             arrayOf(Events._ID, Events.ORIGINAL_ID, AndroidEvent2.COLUMN_SEQUENCE),
             "${Events.CALENDAR_ID}=? AND ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NOT NULL",
-            arrayOf(androidCalendar.id.toString())
+            arrayOf(calendar.id.toString())
         ) { values ->
             logger.fine("Found dirty exception, increasing SEQUENCE to re-schedule")
 
@@ -176,16 +181,16 @@ class LocalCalendar @AssistedInject constructor(
             val originalID = values.getAsLong(Events.ORIGINAL_ID)   // can't be null (by query)
             val sequence = values.getAsInteger(AndroidEvent2.COLUMN_SEQUENCE) ?: 0
 
-            val batch = CalendarBatchOperation(androidCalendar.client)
+            val batch = CalendarBatchOperation(calendar.client)
 
             // enqueue: set original event to DIRTY
             batch += BatchOperation.CpoBuilder
-                .newUpdate(androidCalendar.eventUri(originalID))
+                .newUpdate(calendar.eventUri(originalID))
                 .withValue(Events.DIRTY, 1)
 
             // enqueue: increase exception SEQUENCE and set DIRTY to 0
             batch += BatchOperation.CpoBuilder
-                .newUpdate(androidCalendar.eventUri(id))
+                .newUpdate(calendar.eventUri(id))
                 .withValue(AndroidEvent2.COLUMN_SEQUENCE, sequence + 1)
                 .withValue(Events.DIRTY, 0)
 
@@ -200,7 +205,7 @@ class LocalCalendar @AssistedInject constructor(
      */
     fun deleteDirtyEventsWithoutInstances() {
         // Iterate dirty main events without exceptions
-        androidCalendar.iterateEventRows(
+        calendar.iterateEventRows(
             arrayOf(Events._ID),
             "${Events.DIRTY} AND NOT ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL",
             null
@@ -208,12 +213,12 @@ class LocalCalendar @AssistedInject constructor(
             val eventId = values.getAsLong(Events._ID)
 
             // get number of instances
-            val numEventInstances = androidCalendar.numInstances(eventId)
+            val numEventInstances = calendar.numInstances(eventId)
 
             // delete event if there are no instances
             if (numEventInstances == 0) {
                 logger.fine("Marking event #$eventId without instances as deleted")
-                androidCalendar.updateEventRow(eventId, contentValuesOf(Events.DELETED to 1))
+                calendar.updateEventRow(eventId, contentValuesOf(Events.DELETED to 1))
             }
         }
     }

@@ -15,7 +15,6 @@ import android.provider.CalendarContract.Events
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.ical4android.Event
-import at.bitfire.ical4android.LegacyAndroidCalendar
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.techbee.jtx.JtxContract.asSyncAdapter
@@ -62,7 +61,7 @@ class LocalEventTest {
 
     @After
     fun tearDown() {
-        calendar.androidCalendar.delete()
+        calendar.calendar.delete()
         client.closeCompat()
     }
 
@@ -75,8 +74,13 @@ class LocalEventTest {
             summary = "Event without uid"
         }
 
-        val legacyCalendar = LegacyAndroidCalendar(calendar.androidCalendar)
-        legacyCalendar.add(event = event, syncId = "filename.ics", flags = LocalResource.FLAG_REMOTELY_PRESENT)
+        calendar.add(
+            event = event,
+            fileName = "filename.ics",
+            eTag = null,
+            scheduleTag = null,
+            flags = LocalResource.FLAG_REMOTELY_PRESENT
+        )
         val localEvent = calendar.findByName("filename.ics")!!
 
         // prepare for upload - this should generate a new random uuid, returned as filename
@@ -104,8 +108,13 @@ class LocalEventTest {
             summary = "Event with normal uid"
             uid = "some-event@hostname.tld"     // old UID format, UUID would be new format
         }
-        val legacyCalendar = LegacyAndroidCalendar(calendar.androidCalendar)
-        legacyCalendar.add(event = event, syncId = "filename.ics", flags = LocalResource.FLAG_REMOTELY_PRESENT)
+        calendar.add(
+            event = event,
+            fileName = "filename.ics",
+            eTag = null,
+            scheduleTag = null,
+            flags = LocalResource.FLAG_REMOTELY_PRESENT
+        )
         val localEvent = calendar.findByName("filename.ics")!!
 
         // prepare for upload - this should use the UID for the file name
@@ -132,8 +141,13 @@ class LocalEventTest {
             summary = "Event with funny uid"
             uid = "https://www.example.com/events/asdfewfe-cxyb-ewrws-sadfrwerxyvser-asdfxye-"
         }
-        val legacyCalendar = LegacyAndroidCalendar(calendar.androidCalendar)
-        legacyCalendar.add(event = event, syncId = "filename.ics", flags = LocalResource.FLAG_REMOTELY_PRESENT)
+        calendar.add(
+            event = event,
+            fileName = "filename.ics",
+            eTag = null,
+            scheduleTag = null,
+            flags = LocalResource.FLAG_REMOTELY_PRESENT
+        )
         val localEvent = calendar.findByName("filename.ics")!!
 
         // prepare for upload - this should generate a new random uuid, returned as filename
@@ -185,8 +199,13 @@ class LocalEventTest {
                 status = Status.VEVENT_CANCELLED
             })
         }
-        val legacyCalendar = LegacyAndroidCalendar(calendar.androidCalendar)
-        legacyCalendar.add(event = event, syncId = "filename.ics", flags = LocalResource.FLAG_REMOTELY_PRESENT)
+        calendar.add(
+            event = event,
+            fileName = "filename.ics",
+            eTag = null,
+            scheduleTag = null,
+            flags = LocalResource.FLAG_REMOTELY_PRESENT
+        )
         val localEvent = calendar.findByName("filename.ics")!!
         val eventId = localEvent.id!!
 
@@ -215,8 +234,13 @@ class LocalEventTest {
             summary = "Event with 3 instances"
             rRules.add(RRule("FREQ=DAILY;COUNT=3"))
         }
-        val legacyCalendar = LegacyAndroidCalendar(calendar.androidCalendar)
-        legacyCalendar.add(event = event, syncId = "filename.ics", flags = LocalResource.FLAG_REMOTELY_PRESENT)
+        calendar.add(
+            event = event,
+            fileName = "filename.ics",
+            eTag = null,
+            scheduleTag = null,
+            flags = LocalResource.FLAG_REMOTELY_PRESENT
+        )
         val localEvent = calendar.findByName("filename.ics")!!
         val eventId = localEvent.id!!
 
