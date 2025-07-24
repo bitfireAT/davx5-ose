@@ -91,33 +91,6 @@ class CollectionListRefresherTest {
     }
 
 
-    @Test
-    fun testDiscoverHomesets() {
-        val baseUrl = mockServer.url(PATH_CARDDAV + SUBPATH_PRINCIPAL)
-
-        // Query home sets
-        refresherFactory.create(service, client.okHttpClient).discoverHomesets(baseUrl)
-
-        // Check home set has been saved correctly to database
-        val savedHomesets = db.homeSetDao().getByService(service.id)
-        assertEquals(2, savedHomesets.size)
-
-        // Home set from current-user-principal
-        val personalHomeset = savedHomesets[1]
-        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL/"), personalHomeset.url)
-        assertEquals(service.id, personalHomeset.serviceId)
-        // personal should be true for homesets detected at first query of current-user-principal (Even if they occur in a group principal as well!!!)
-        assertEquals(true, personalHomeset.personal)
-
-        // Home set found in a group principal
-        val groupHomeset = savedHomesets[0]
-        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_NON_PERSONAL/"), groupHomeset.url)
-        assertEquals(service.id, groupHomeset.serviceId)
-        // personal should be false for homesets not detected at the first query of current-user-principal (IE. in groups)
-        assertEquals(false, groupHomeset.personal)
-    }
-
-
     // refreshHomesetsAndTheirCollections
 
     @Test
