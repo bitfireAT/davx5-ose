@@ -2,16 +2,16 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.sync
+package at.bitfire.davdroid.sync.adapter
 
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.SyncRequest
 import android.os.Build
 import android.os.Bundle
-import android.provider.CalendarContract
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.sync.SyncDataType
 import dagger.Lazy
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -132,7 +132,7 @@ class SyncFrameworkIntegration @Inject constructor(
      *
      * @param account   account to enable/disable content change sync triggers for
      * @param enable    *true* enables automatic sync; *false* disables it
-     * @param authority sync authority (like [CalendarContract.AUTHORITY])
+     * @param authority sync authority (like [android.provider.CalendarContract.AUTHORITY])
      * @return whether the content triggered sync was enabled successfully
      */
     @WorkerThread
@@ -163,7 +163,7 @@ class SyncFrameworkIntegration @Inject constructor(
      *
      * @param account   account to enable/disable content change sync triggers for
      * @param enable    *true* enables automatic sync; *false* disables it
-     * @param authority sync authority (like [CalendarContract.AUTHORITY])
+     * @param authority sync authority (like [android.provider.CalendarContract.AUTHORITY])
      * @return whether the content triggered sync was enabled successfully
      */
     private fun setContentTrigger(account: Account, authority: String, enable: Boolean): Boolean =
