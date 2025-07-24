@@ -45,7 +45,7 @@ import javax.inject.Provider
 import kotlin.coroutines.cancellation.CancellationException
 
 @HiltAndroidTest
-class SyncAdapterServicesTest {
+class SyncAdapterImplTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
