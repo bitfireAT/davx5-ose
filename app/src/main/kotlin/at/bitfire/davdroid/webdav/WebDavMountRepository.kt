@@ -111,6 +111,14 @@ class WebDavMountRepository @Inject constructor(
 
     // helpers
 
+    /**
+     * Checks whether WebDAV is supported at given URL with given credentials
+     * and returns the resulting if following a few redirects.
+     *
+     * @param url The URL to check
+     * @param credentials The credentials to use for the request
+     * @return The URL at which WebDAV support was found
+     */
     @VisibleForTesting
     internal suspend fun hasWebDav(
         url: HttpUrl,
