@@ -140,7 +140,7 @@ class WebDavMountRepository @Inject constructor(
             runInterruptible {
                 dav.options(followRedirects = true) { davCapabilities, response ->
                     if (davCapabilities.any { it in validVersions })
-                        webdavUrl = response.request.url
+                        webdavUrl = dav.location
                 }
             }
         }
