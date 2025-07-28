@@ -44,7 +44,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavDocumentDao
-import at.bitfire.davdroid.db.WebDavMountDao
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.network.MemoryCookieStore
@@ -89,11 +88,9 @@ class DavDocumentsProvider @AssistedInject constructor(
     private val actor: DavDocumentsActor,
     private val db: AppDatabase,
     @ApplicationContext private val context: Context,
-    private val documentDao: WebDavDocumentDao,
     private val documentSortByMapper: Lazy<DocumentSortByMapper>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
-    private val mountDao: WebDavMountDao,
     private val randomAccessCallbackWrapperFactory: RandomAccessCallbackWrapper.Factory,
     private val streamingFileDescriptorFactory: StreamingFileDescriptor.Factory,
     private val thumbnailCache: Lazy<ThumbnailCache>
@@ -127,6 +124,8 @@ class DavDocumentsProvider @AssistedInject constructor(
     }
 
     private val authority by lazy { context.getString(R.string.webdav_authority) }
+    private val documentDao = db.webDavDocumentDao()
+    private val mountDao = db.webDavMountDao()
 
     /** List of currently active [queryChildDocuments] runners.
      *
@@ -134,6 +133,7 @@ class DavDocumentsProvider @AssistedInject constructor(
      *  Value: whether the runner is still running (*true*) or has already finished (*false*).
      */
     private val runningQueryChildren = ConcurrentHashMap<Long, Boolean>()
+
 
     fun queryRoots(projection: Array<out String>?): Cursor {
         logger.fine("WebDAV queryRoots")

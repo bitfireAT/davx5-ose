@@ -22,12 +22,12 @@ import kotlinx.coroutines.cancel
  * may not ready yet when the content provider is created. So we move the actual implementation
  * to [DavDocumentsProvider] which uses proper DI.
  */
-class BaseDavDocumentsProvider(): DocumentsProvider() {
+class BaseDavDocumentsProvider: DocumentsProvider() {
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface DavDocumentsProviderEntryPoint {
-        fun impl(): DavDocumentsProvider
+        fun impl(): DavDocumentsProvider.Factory
     }
 
     /**
@@ -35,14 +35,13 @@ class BaseDavDocumentsProvider(): DocumentsProvider() {
      */
     val documentProviderScope = CoroutineScope(SupervisorJob())
 
-    private lateinit var impl: DavDocumentsProvider
-
-
-    override fun onCreate(): Boolean {
+    private val impl: DavDocumentsProvider by lazy {
         val entryPoint = EntryPointAccessors.fromApplication<DavDocumentsProviderEntryPoint>(context!!)
-        impl = entryPoint.impl()
-        return true
+        entryPoint.impl().create(documentProviderScope)
     }
+
+
+    override fun onCreate() = true
 
     override fun shutdown() {
         documentProviderScope.cancel()

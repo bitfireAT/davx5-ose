@@ -42,7 +42,7 @@ class DavDocumentsProviderTest {
     lateinit var credentialsStore: CredentialsStore
     
     @Inject
-    lateinit var davDocumentsActorFactory: DavDocumentsProvider.DavDocumentsActor.Factory
+    lateinit var davDocumentsActor: DavDocumentsProvider.DavDocumentsActor
 
     @Inject
     lateinit var httpClientBuilder: HttpClient.Builder
@@ -92,11 +92,7 @@ class DavDocumentsProviderTest {
         val parent = db.webDavDocumentDao().getOrCreateRoot(webDavMount)
 
         // Query
-        val actor = davDocumentsActorFactory.create(
-            cookieStore = mutableMapOf(),
-            credentialsStore = credentialsStore
-        )
-        actor.queryChildren(parent)
+        davDocumentsActor.queryChildren(parent)
 
         // Assert new children were inserted into db
         assertEquals(3, db.webDavDocumentDao().getChildren(parent.id).size)
@@ -128,11 +124,7 @@ class DavDocumentsProviderTest {
         assertEquals("My Books", db.webDavDocumentDao().get(folderId)!!.displayName)
 
         // Query - should update the parent displayname and folder name
-        val actor = davDocumentsActorFactory.create(
-            cookieStore = mutableMapOf(),
-            credentialsStore = credentialsStore
-        )
-        actor.queryChildren(parent)
+        davDocumentsActor.queryChildren(parent)
 
         // Assert parent and children were updated in database
         assertEquals("Cats WebDAV", db.webDavDocumentDao().get(parent.id)!!.displayName)
@@ -155,11 +147,7 @@ class DavDocumentsProviderTest {
         assertEquals("deleteme", db.webDavDocumentDao().get(folderId)!!.name)
 
         // Query - discovers serverside deletion
-        val actor = davDocumentsActorFactory.create(
-            cookieStore = mutableMapOf(),
-            credentialsStore = credentialsStore
-        )
-        actor.queryChildren(parent)
+        davDocumentsActor.queryChildren(parent)
 
         // Assert folder got deleted
         assertEquals(null, db.webDavDocumentDao().get(folderId))
@@ -181,12 +169,8 @@ class DavDocumentsProviderTest {
         assertEquals("parent2", parent2.name)
 
         // Query - find children of two nodes simultaneously
-        val actor = davDocumentsActorFactory.create(
-            cookieStore = mutableMapOf(),
-            credentialsStore = credentialsStore
-        )
-        actor.queryChildren(parent1)
-        actor.queryChildren(parent2)
+        davDocumentsActor.queryChildren(parent1)
+        davDocumentsActor.queryChildren(parent2)
 
         // Assert the two folders names have changed
         assertEquals("childOne.txt", db.webDavDocumentDao().getChildren(parent1Id)[0].name)
