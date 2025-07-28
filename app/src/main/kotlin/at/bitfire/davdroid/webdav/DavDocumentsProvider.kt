@@ -54,7 +54,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.EntryPoint
-import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -95,18 +94,12 @@ class DavDocumentsProvider(
     @InstallIn(SingletonComponent::class)
     interface DavDocumentsProviderEntryPoint {
         fun appDatabase(): AppDatabase
+        fun credentialsStore(): CredentialsStore
         fun davDocumentsActorFactory(): DavDocumentsActor.Factory
         fun documentSortByMapper(): DocumentSortByMapper
         fun logger(): Logger
         fun randomAccessCallbackWrapperFactory(): RandomAccessCallbackWrapper.Factory
         fun streamingFileDescriptorFactory(): StreamingFileDescriptor.Factory
-        fun webdavComponentBuilder(): WebdavComponentBuilder
-    }
-
-    @EntryPoint
-    @InstallIn(WebdavComponent::class)
-    interface DavDocumentsProviderWebdavEntryPoint {
-        fun credentialsStore(): CredentialsStore
         fun thumbnailCache(): ThumbnailCache
     }
 
@@ -136,21 +129,15 @@ class DavDocumentsProvider(
 
     private val ourContext by lazy { context!! }        // requireContext() requires API level 30
     private val authority by lazy { ourContext.getString(R.string.webdav_authority) }
-    private val globalEntryPoint by lazy { EntryPointAccessors.fromApplication<DavDocumentsProviderEntryPoint>(ourContext) }
-    private val webdavEntryPoint by lazy {
-        EntryPoints.get(
-            globalEntryPoint.webdavComponentBuilder().build(),
-            DavDocumentsProviderWebdavEntryPoint::class.java
-        )
-    }
+    private val entryPoint by lazy { EntryPointAccessors.fromApplication<DavDocumentsProviderEntryPoint>(ourContext) }
 
-    private val logger by lazy { globalEntryPoint.logger() }
+    private val logger by lazy { entryPoint.logger() }
 
-    private val db by lazy { globalEntryPoint.appDatabase() }
+    private val db by lazy { entryPoint.appDatabase() }
     private val mountDao by lazy { db.webDavMountDao() }
     private val documentDao by lazy { db.webDavDocumentDao() }
 
-    private val thumbnailCache by lazy { webdavEntryPoint.thumbnailCache() }
+    private val thumbnailCache by lazy { entryPoint.thumbnailCache() }
 
     private val connectivityManager by lazy { ourContext.getSystemService<ConnectivityManager>()!! }
     private val storageManager by lazy { ourContext.getSystemService<StorageManager>()!! }
@@ -162,9 +149,9 @@ class DavDocumentsProvider(
      */
     private val runningQueryChildren = ConcurrentHashMap<Long, Boolean>()
 
-    private val credentialsStore by lazy { webdavEntryPoint.credentialsStore() }
+    private val credentialsStore by lazy { entryPoint.credentialsStore() }
     private val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
-    private val actor by lazy { globalEntryPoint.davDocumentsActorFactory().create(cookieStore, credentialsStore) }
+    private val actor by lazy { entryPoint.davDocumentsActorFactory().create(cookieStore, credentialsStore) }
 
     override fun onCreate() = true
 
@@ -290,7 +277,7 @@ class DavDocumentsProvider(
             runningQueryChildren.remove(parentId)
 
         // Prepare SORT BY clause
-        val mapper = globalEntryPoint.documentSortByMapper()
+        val mapper = entryPoint.documentSortByMapper()
         val sqlSortBy = if (sortOrder != null)
             mapper.mapContentProviderToSql(sortOrder)
         else
@@ -561,12 +548,12 @@ class DavDocumentsProvider(
             fileInfo.supportsPartial == true    // WebDAV server must support random access
         ) {
             logger.fine("Creating RandomAccessCallback for $url")
-            val factory = globalEntryPoint.randomAccessCallbackWrapperFactory()
+            val factory = entryPoint.randomAccessCallbackWrapperFactory()
             val accessor = factory.create(client, url, doc.mimeType, fileInfo, accessScope)
             storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
         } else {
             logger.fine("Creating StreamingFileDescriptor for $url")
-            val factory = globalEntryPoint.streamingFileDescriptorFactory()
+            val factory = entryPoint.streamingFileDescriptorFactory()
             val fd = factory.create(client, url, doc.mimeType, accessScope) { transferred ->
                 // called when transfer is finished
 
