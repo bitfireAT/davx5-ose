@@ -4,21 +4,11 @@
 
 package at.bitfire.davdroid.webdav
 
-import android.content.Context
 import android.graphics.Point
 import android.os.CancellationSignal
-import android.provider.DocumentsContract.buildRootsUri
 import android.provider.DocumentsProvider
-import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
-import at.bitfire.dav4jvm.property.webdav.DisplayName
-import at.bitfire.dav4jvm.property.webdav.GetContentLength
-import at.bitfire.dav4jvm.property.webdav.GetContentType
-import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.dav4jvm.property.webdav.GetLastModified
-import at.bitfire.dav4jvm.property.webdav.QuotaAvailableBytes
-import at.bitfire.dav4jvm.property.webdav.QuotaUsedBytes
-import at.bitfire.dav4jvm.property.webdav.ResourceType
-import at.bitfire.davdroid.R
+import android.util.Log
+import at.bitfire.davdroid.webdav.di.WebdavComponentManager
 import at.bitfire.davdroid.webdav.operation.CopyDocumentOperation
 import at.bitfire.davdroid.webdav.operation.CreateDocumentOperation
 import at.bitfire.davdroid.webdav.operation.DeleteDocumentOperation
@@ -60,6 +50,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         fun queryDocumentOperation(): QueryDocumentOperation
         fun queryRootsOperation(): QueryRootsOperation
         fun renameDocumentOperation(): RenameDocumentOperation
+        fun webdavComponentManager(): WebdavComponentManager
     }
 
     /**
@@ -72,10 +63,15 @@ class DavDocumentsProvider: DocumentsProvider() {
     }
 
 
-    override fun onCreate() = true
+    override fun onCreate(): Boolean {
+        Log.v("DavDocumentsProvider", "onCreate()")
+        return true
+    }
 
     override fun shutdown() {
+        Log.v("DavDocumentsProvider", "onDestroy()")
         providerScope.cancel()
+        entryPoint.webdavComponentManager().resetComponent()
     }
 
 
@@ -120,26 +116,4 @@ class DavDocumentsProvider: DocumentsProvider() {
     override fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?) =
         entryPoint.openDocumentThumbnailOperation().invoke(documentId, sizeHint, signal)
 
-
-    companion object {
-
-        val DAV_FILE_FIELDS = arrayOf(
-            ResourceType.NAME,
-            CurrentUserPrivilegeSet.NAME,
-            DisplayName.NAME,
-            GetETag.NAME,
-            GetContentType.NAME,
-            GetContentLength.NAME,
-            GetLastModified.NAME,
-            QuotaAvailableBytes.NAME,
-            QuotaUsedBytes.NAME,
-        )
-
-        const val MAX_NAME_ATTEMPTS = 5
-
-        fun notifyMountsChanged(context: Context) {
-            context.contentResolver.notifyChange(buildRootsUri(context.getString(R.string.webdav_authority)), null)
-        }
-
-    }
 }

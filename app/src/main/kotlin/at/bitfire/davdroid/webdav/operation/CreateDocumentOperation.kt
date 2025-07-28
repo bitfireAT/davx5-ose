@@ -11,7 +11,6 @@ import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.webdav.DavDocumentsProvider.Companion.MAX_NAME_ATTEMPTS
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
@@ -43,7 +42,7 @@ class CreateDocumentOperation @Inject constructor(
 
         var docId: Long?
         httpClientBuilder.build(parent.mountId).use { client ->
-            for (attempt in 0..MAX_NAME_ATTEMPTS) {
+            for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
                 val newName = displayNameToMemberName(displayName, attempt)
                 val parentUrl = parent.toHttpUrl(db)
                 val newLocation = parentUrl.newBuilder()

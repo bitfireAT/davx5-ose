@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.DocumentsContract.buildChildDocumentsUri
+import android.provider.DocumentsContract.buildRootsUri
 import android.webkit.MimeTypeMap
 import androidx.core.app.TaskStackBuilder
 import at.bitfire.dav4jvm.exception.HttpException
@@ -19,6 +20,8 @@ import java.io.FileNotFoundException
 import java.net.HttpURLConnection
 
 object DocumentProviderUtils  {
+
+    const val MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS = 5
 
     internal fun displayNameToMemberName(displayName: String, appendNumber: Int = 0): String {
         val safeName = displayName.filterNot { it.isISOControl() }
@@ -55,13 +58,18 @@ object DocumentProviderUtils  {
         )
     }
 
+    internal fun notifyMountsChanged(context: Context) {
+        context.contentResolver.notifyChange(
+            buildRootsUri(context.getString(R.string.webdav_authority)),
+            null)
+    }
+
 }
 
 internal fun HttpException.throwForDocumentProvider(context: Context, ignorePreconditionFailed: Boolean = false) {
     when (code) {
         HttpURLConnection.HTTP_UNAUTHORIZED -> {
             if (Build.VERSION.SDK_INT >= 26) {
-                // TODO edit mount
                 val intent = Intent(context, WebdavMountsActivity::class.java)
                 throw AuthenticationRequiredException(
                     this,

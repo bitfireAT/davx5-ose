@@ -9,7 +9,6 @@ import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.webdav.DavDocumentsProvider.Companion.MAX_NAME_ATTEMPTS
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
@@ -37,7 +36,7 @@ class RenameDocumentOperation @Inject constructor(
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
         httpClientBuilder.build(doc.mountId).use { client ->
-            for (attempt in 0..MAX_NAME_ATTEMPTS) {
+            for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
                 val newName = displayNameToMemberName(displayName, attempt)
                 val oldUrl = doc.toHttpUrl(db)
                 val newLocation = oldUrl.newBuilder()

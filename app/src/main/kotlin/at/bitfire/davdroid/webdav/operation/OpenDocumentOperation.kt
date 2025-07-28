@@ -44,10 +44,6 @@ class OpenDocumentOperation @Inject constructor(
     private val documentDao = db.webDavDocumentDao()
     private val storageManager = context.getSystemService<StorageManager>()!!
 
-    private suspend fun headRequest(client: HttpClient, url: HttpUrl): HeadResponse = runInterruptible(ioDispatcher) {
-        HeadResponse.fromUrl(client, url)
-    }
-
     operator fun invoke(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor = runBlocking {
         logger.fine("WebDAV openDocument $documentId $mode $signal")
 
@@ -75,8 +71,8 @@ class OpenDocumentOperation @Inject constructor(
 
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
         return@runBlocking if (
-            Build.VERSION.SDK_INT >= 26 &&      // openProxyFileDescriptor exists since Android 8.0
-            readAccess &&                       // WebDAV doesn't support random write access natively
+            androidSupportsRandomAccess &&
+            readAccess &&                       // WebDAV doesn't support random write access (natively)
             fileInfo.size != null &&            // file descriptor must return a useful value on getFileSize()
             (fileInfo.eTag != null || fileInfo.lastModified != null) &&     // we need a method to determine whether the document has changed during access
             fileInfo.supportsPartial == true    // WebDAV server must support random access
@@ -103,6 +99,18 @@ class OpenDocumentOperation @Inject constructor(
             else
                 fd.upload()
         }
+    }
+
+    private suspend fun headRequest(client: HttpClient, url: HttpUrl): HeadResponse = runInterruptible(ioDispatcher) {
+        HeadResponse.fromUrl(client, url)
+    }
+
+
+    companion object {
+
+        // openProxyFileDescriptor exists since Android 8.0
+        val androidSupportsRandomAccess = Build.VERSION.SDK_INT >= 26
+
     }
 
 }

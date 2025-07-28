@@ -23,7 +23,6 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavDocumentDao
 import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.webdav.DavDocumentsProvider.Companion.DAV_FILE_FIELDS
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentSortByMapper
 import at.bitfire.davdroid.webdav.DocumentsCursor
@@ -189,6 +188,18 @@ class QueryChildDocumentsOperation @Inject constructor(
 
 
     companion object {
+
+        val DAV_FILE_FIELDS = arrayOf(
+            ResourceType.NAME,
+            CurrentUserPrivilegeSet.NAME,
+            DisplayName.NAME,
+            GetETag.NAME,
+            GetContentType.NAME,
+            GetContentLength.NAME,
+            GetLastModified.NAME,
+            QuotaAvailableBytes.NAME,
+            QuotaUsedBytes.NAME,
+        )
 
         /** List of currently active [queryChildDocuments] runners.
          *
