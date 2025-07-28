@@ -63,6 +63,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val collectionListRefresherFactory: CollectionListRefresher.Factory,
+    private val homeSetRefresherFactory: HomeSetRefresher.Factory,
     private val httpClientBuilder: HttpClient.Builder,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry,
@@ -168,7 +169,8 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         }
 
                         // refresh home sets and their member collections
-                        refresher.refreshHomesetsAndTheirCollections()
+                        homeSetRefresherFactory.create(service, httpClient)
+                            .refreshHomesetsAndTheirCollections()
 
                         // also refresh collections without a home set
                         refresher.refreshHomelessCollections()
