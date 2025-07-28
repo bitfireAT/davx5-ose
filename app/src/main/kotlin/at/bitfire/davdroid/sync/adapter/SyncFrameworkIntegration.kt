@@ -6,12 +6,14 @@ package at.bitfire.davdroid.sync.adapter
 
 import android.accounts.Account
 import android.content.ContentResolver
+import android.content.Context
 import android.content.SyncRequest
 import android.os.Bundle
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.Lazy
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -30,6 +32,7 @@ import javax.inject.Inject
  * Sync requests from the Sync Adapter Framework are handled by [SyncAdapterService].
  */
 class SyncFrameworkIntegration @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger
 ) {
@@ -188,7 +191,9 @@ class SyncFrameworkIntegration @Inject constructor(
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
-        val authorities = dataTypes.flatMap { it.possibleAuthorities() }
+        val authorities = dataTypes.mapNotNull { dataType ->
+            dataType.selectedAuthority(context)
+        }
 
         // Use address book accounts if needed
         val accountsFlow = if (dataTypes.contains(SyncDataType.CONTACTS))
