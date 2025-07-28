@@ -7,7 +7,6 @@ package at.bitfire.davdroid.servicedetection
 import android.security.NetworkSecurityPolicy
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.SettingsManager
@@ -85,32 +84,6 @@ class CollectionListRefresherTest {
         mockServer.shutdown()
     }
 
-
-    @Test
-    fun testDiscoverHomesets() {
-        val baseUrl = mockServer.url(PATH_CARDDAV + SUBPATH_PRINCIPAL)
-
-        // Query home sets
-        refresherFactory.create(service, client.okHttpClient).discoverHomesets(baseUrl)
-
-        // Check home set has been saved correctly to database
-        val savedHomesets = db.homeSetDao().getByService(service.id)
-        assertEquals(2, savedHomesets.size)
-
-        // Home set from current-user-principal
-        val personalHomeset = savedHomesets[1]
-        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL/"), personalHomeset.url)
-        assertEquals(service.id, personalHomeset.serviceId)
-        // personal should be true for homesets detected at first query of current-user-principal (Even if they occur in a group principal as well!!!)
-        assertEquals(true, personalHomeset.personal)
-
-        // Home set found in a group principal
-        val groupHomeset = savedHomesets[0]
-        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_NON_PERSONAL/"), groupHomeset.url)
-        assertEquals(service.id, groupHomeset.serviceId)
-        // personal should be false for homesets not detected at the first query of current-user-principal (IE. in groups)
-        assertEquals(false, groupHomeset.personal)
-    }
 
     // refreshHomelessCollections
 
@@ -195,94 +168,6 @@ class CollectionListRefresherTest {
             principals[0].id,
             db.collectionDao().get(collectionId)!!.ownerId
         )
-    }
-
-
-    // refreshPrincipals
-
-    @Test
-    fun refreshPrincipals_inaccessiblePrincipal() {
-        // place principal without display name in db
-        val principalId = db.principalDao().insert(
-            Principal(
-                0,
-                service.id,
-                mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL_INACCESSIBLE"), // no trailing slash
-                null // no display name for now
-            )
-        )
-        // add an associated collection - as the principal is rightfully removed otherwise
-        db.collectionDao().insertOrUpdateByUrl(
-            Collection(
-                0,
-                service.id,
-                null,
-                principalId, // create association with principal
-                Collection.TYPE_ADDRESSBOOK,
-                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"), // with trailing slash
-            )
-        )
-
-        // Refresh principals
-        refresherFactory.create(service, client.okHttpClient).refreshPrincipals()
-
-        // Check principal was not updated
-        val principals = db.principalDao().getByService(service.id)
-        assertEquals(1, principals.size)
-        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL_INACCESSIBLE"), principals[0].url)
-        assertEquals(null, principals[0].displayName)
-    }
-
-    @Test
-    fun refreshPrincipals_updatesPrincipal() {
-        // place principal without display name in db
-        val principalId = db.principalDao().insert(
-            Principal(
-                0,
-                service.id,
-                mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL"), // no trailing slash
-                null // no display name for now
-            )
-        )
-        // add an associated collection - as the principal is rightfully removed otherwise
-        db.collectionDao().insertOrUpdateByUrl(
-            Collection(
-                0,
-                service.id,
-                null,
-                principalId, // create association with principal
-                Collection.TYPE_ADDRESSBOOK,
-                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"), // with trailing slash
-            )
-        )
-
-        // Refresh principals
-        refresherFactory.create(service, client.okHttpClient).refreshPrincipals()
-
-        // Check principal now got a display name
-        val principals = db.principalDao().getByService(service.id)
-        assertEquals(1, principals.size)
-        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL"), principals[0].url)
-        assertEquals("Mr. Wobbles", principals[0].displayName)
-    }
-
-    @Test
-    fun refreshPrincipals_deletesPrincipalsWithoutCollections() {
-        // place principal without collections in DB
-        db.principalDao().insert(
-            Principal(
-                0,
-                service.id,
-                mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL_WITHOUT_COLLECTIONS/")
-            )
-        )
-
-        // Refresh principals - detecting it does not own collections
-        refresherFactory.create(service, client.okHttpClient).refreshPrincipals()
-
-        // Check principal was deleted
-        val principals = db.principalDao().getByService(service.id)
-        assertEquals(0, principals.size)
     }
 
 

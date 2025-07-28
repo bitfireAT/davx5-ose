@@ -6,11 +6,11 @@ package at.bitfire.davdroid.webdav
 
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -36,7 +36,7 @@ class WebDavMountRepositoryTest {
     @Test
     fun testHasWebDav_NoDavHeader() = runTest {
         web.enqueue(MockResponse().setResponseCode(200))
-        assertFalse(repository.hasWebDav(url, null))
+        assertNull(repository.hasWebDav(url, null))
     }
 
     @Test
@@ -44,7 +44,7 @@ class WebDavMountRepositoryTest {
         web.enqueue(MockResponse()
             .setResponseCode(200)
             .addHeader("DAV: 1"))
-        assertTrue(repository.hasWebDav(url, null))
+        assertEquals(url, repository.hasWebDav(url, null))
     }
 
     @Test
@@ -52,7 +52,7 @@ class WebDavMountRepositoryTest {
         web.enqueue(MockResponse()
             .setResponseCode(200)
             .addHeader("DAV: 1, 2"))
-        assertTrue(repository.hasWebDav(url, null))
+        assertEquals(url,repository.hasWebDav(url, null))
     }
 
     @Test
@@ -60,7 +60,7 @@ class WebDavMountRepositoryTest {
         web.enqueue(MockResponse()
             .setResponseCode(200)
             .addHeader("DAV: 1, 3"))
-        assertTrue(repository.hasWebDav(url, null))
+        assertEquals(url,repository.hasWebDav(url, null))
     }
 
 }
