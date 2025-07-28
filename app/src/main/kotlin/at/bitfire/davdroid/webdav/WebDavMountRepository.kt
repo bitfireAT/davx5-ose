@@ -33,7 +33,7 @@ class WebDavMountRepository @Inject constructor(
     private val mountDao = db.webDavMountDao()
     private val documentDao = db.webDavDocumentDao()
 
-    /** authority of our WebDAV document provider ([DavDocumentsProviderWrapper]) */
+    /** authority of our WebDAV document provider ([DavDocumentsProvider]) */
     private val authority = context.getString(R.string.webdav_authority)
 
     /**

@@ -17,7 +17,6 @@ import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.webdav.DavDocumentsProvider.Companion.THUMBNAIL_TIMEOUT_MS
 import at.bitfire.davdroid.webdav.cache.ThumbnailCache
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -114,6 +113,13 @@ class OpenDocumentThumbnailOperation @Inject constructor(
             )
 
         return null
+    }
+
+
+    companion object {
+
+        const val THUMBNAIL_TIMEOUT_MS = 15000L
+
     }
 
 }

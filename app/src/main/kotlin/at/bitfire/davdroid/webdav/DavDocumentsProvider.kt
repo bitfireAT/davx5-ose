@@ -7,8 +7,8 @@ package at.bitfire.davdroid.webdav
 import android.content.Context
 import android.graphics.Point
 import android.os.CancellationSignal
-import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract.buildRootsUri
+import android.provider.DocumentsProvider
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.GetContentLength
@@ -30,87 +30,99 @@ import at.bitfire.davdroid.webdav.operation.QueryChildDocumentsOperation
 import at.bitfire.davdroid.webdav.operation.QueryDocumentOperation
 import at.bitfire.davdroid.webdav.operation.QueryRootsOperation
 import at.bitfire.davdroid.webdav.operation.RenameDocumentOperation
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
-import javax.inject.Provider
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 
 /**
- * Actual implementation of the [DavDocumentsProviderWrapper]. Required because at the time when
- * [DavDocumentsProviderWrapper] (which is a content provider) is initialized, Hilt and thus DI is
- * not ready yet. So we implement everything in this class, which is properly late-initialized
- * with Hilt.
+ * Provides functionality on WebDav documents.
+ *
+ * Hilt constructor injection can't be used for content providers because SingletonComponent
+ * may not ready yet when the content provider is created. So we use an explicit EntryPoint.
  */
-class DavDocumentsProvider @AssistedInject constructor(
-    @Assisted private val externalScope: CoroutineScope,
-    private val copyDocumentOperation: Provider<CopyDocumentOperation>,
-    private val createDocumentOperation: Provider<CreateDocumentOperation>,
-    private val deleteDocumentOperation: Provider<DeleteDocumentOperation>,
-    private val isChildDocumentOperation: Provider<IsChildDocumentOperation>,
-    private val moveDocumentOperation: Provider<MoveDocumentOperation>,
-    private val openDocumentOperation: Provider<OpenDocumentOperation>,
-    private val openDocumentThumbnailOperation: Provider<OpenDocumentThumbnailOperation>,
-    private val queryChildDocumentsOperation: Provider<QueryChildDocumentsOperation>,
-    private val queryDocumentOperation: Provider<QueryDocumentOperation>,
-    private val queryRootsOperation: Provider<QueryRootsOperation>,
-    private val renameDocumentOperation: Provider<RenameDocumentOperation>
-) {
-    
-    @AssistedFactory
-    interface Factory {
-        fun create(externalScope: CoroutineScope): DavDocumentsProvider
+class DavDocumentsProvider: DocumentsProvider() {
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface DavDocumentsProviderEntryPoint {
+        fun copyDocumentOperation(): CopyDocumentOperation
+        fun createDocumentOperation(): CreateDocumentOperation
+        fun deleteDocumentOperation(): DeleteDocumentOperation
+        fun isChildDocumentOperation(): IsChildDocumentOperation
+        fun moveDocumentOperation(): MoveDocumentOperation
+        fun openDocumentOperation(): OpenDocumentOperation
+        fun openDocumentThumbnailOperation(): OpenDocumentThumbnailOperation
+        fun queryChildDocumentsOperation(): QueryChildDocumentsOperation
+        fun queryDocumentOperation(): QueryDocumentOperation
+        fun queryRootsOperation(): QueryRootsOperation
+        fun renameDocumentOperation(): RenameDocumentOperation
     }
 
-    fun queryRoots(projection: Array<out String>?) =
-        queryRootsOperation.get().invoke(projection)
-
-    fun queryDocument(documentId: String, projection: Array<out String>?) =
-        queryDocumentOperation.get().invoke(documentId, projection)
-
     /**
-     * Gets old or new children of given parent.
-     *
-     * Dispatches a worker querying the server for new children of given parent, and instantly
-     * returns old children (or nothing, on initial call).
-     * Once the worker finishes its query, it notifies the [android.content.ContentResolver] about
-     * change, which calls this method again. The worker being done
+     * This scope is used to cancel current operations on [shutdown].
      */
-    fun queryChildDocuments(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
-        queryChildDocumentsOperation.get().invoke(externalScope, parentDocumentId, projection, sortOrder)
+    val providerScope = CoroutineScope(SupervisorJob())
 
-    fun isChildDocument(parentDocumentId: String, documentId: String) =
-        isChildDocumentOperation.get().invoke(parentDocumentId, documentId)
+    private val entryPoint: DavDocumentsProviderEntryPoint by lazy {
+        EntryPointAccessors.fromApplication<DavDocumentsProviderEntryPoint>(context!!)
+    }
+
+
+    override fun onCreate() = true
+
+    override fun shutdown() {
+        providerScope.cancel()
+    }
+
+
+    /*** query ***/
+
+    override fun queryRoots(projection: Array<out String>?) =
+        entryPoint.queryRootsOperation().invoke(projection)
+
+    override fun queryDocument(documentId: String, projection: Array<out String>?) =
+        entryPoint.queryDocumentOperation().invoke(documentId, projection)
+
+    override fun queryChildDocuments(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
+        entryPoint.queryChildDocumentsOperation().invoke(providerScope, parentDocumentId, projection, sortOrder)
+
+    override fun isChildDocument(parentDocumentId: String, documentId: String) =
+        entryPoint.isChildDocumentOperation().invoke(parentDocumentId, documentId)
 
 
     /*** copy/create/delete/move/rename ***/
 
-    fun copyDocument(sourceDocumentId: String, targetParentDocumentId: String) =
-        copyDocumentOperation.get().invoke(sourceDocumentId, targetParentDocumentId)
+    override fun copyDocument(sourceDocumentId: String, targetParentDocumentId: String) =
+        entryPoint.copyDocumentOperation().invoke(sourceDocumentId, targetParentDocumentId)
 
-    fun createDocument(parentDocumentId: String, mimeType: String, displayName: String): String? =
-        createDocumentOperation.get().invoke(parentDocumentId, mimeType, displayName)
+    override fun createDocument(parentDocumentId: String, mimeType: String, displayName: String): String? =
+        entryPoint.createDocumentOperation().invoke(parentDocumentId, mimeType, displayName)
 
-    fun deleteDocument(documentId: String) =
-        deleteDocumentOperation.get().invoke(documentId)
+    override fun deleteDocument(documentId: String) =
+        entryPoint.deleteDocumentOperation().invoke(documentId)
 
-    fun moveDocument(sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String) =
-        moveDocumentOperation.get().invoke(sourceDocumentId, sourceParentDocumentId, targetParentDocumentId)
+    override fun moveDocument(sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String) =
+        entryPoint.moveDocumentOperation().invoke(sourceDocumentId, sourceParentDocumentId, targetParentDocumentId)
 
-    fun renameDocument(documentId: String, displayName: String): String? =
-        renameDocumentOperation.get().invoke(documentId, displayName)
+    override fun renameDocument(documentId: String, displayName: String): String? =
+        entryPoint.renameDocumentOperation().invoke(documentId, displayName)
 
 
     /*** read/write ***/
 
-    fun openDocument(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor =
-        openDocumentOperation.get().invoke(documentId, mode, signal)
+    override fun openDocument(documentId: String, mode: String, signal: CancellationSignal?) =
+        entryPoint.openDocumentOperation().invoke(documentId, mode, signal)
 
-    fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?) =
-        openDocumentThumbnailOperation.get().invoke(documentId, sizeHint, signal)
+    override fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?) =
+        entryPoint.openDocumentThumbnailOperation().invoke(documentId, sizeHint, signal)
 
 
     companion object {
+
         val DAV_FILE_FIELDS = arrayOf(
             ResourceType.NAME,
             CurrentUserPrivilegeSet.NAME,
@@ -124,12 +136,10 @@ class DavDocumentsProvider @AssistedInject constructor(
         )
 
         const val MAX_NAME_ATTEMPTS = 5
-        const val THUMBNAIL_TIMEOUT_MS = 15000L
 
         fun notifyMountsChanged(context: Context) {
             context.contentResolver.notifyChange(buildRootsUri(context.getString(R.string.webdav_authority)), null)
         }
 
     }
-
 }

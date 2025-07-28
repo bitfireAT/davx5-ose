@@ -26,7 +26,6 @@ import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
 import at.bitfire.davdroid.webdav.DavDocumentsProvider.Companion.DAV_FILE_FIELDS
-import at.bitfire.davdroid.webdav.DavDocumentsProviderWrapper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
@@ -43,9 +42,9 @@ import javax.inject.Provider
  * Encapsulates functionality to make it easily testable without generating lots of
  * DocumentProviders during the tests.
  *
- * By containing the actual implementation logic of [DavDocumentsProviderWrapper], it adds a layer of separation
- * to make the methods of [DavDocumentsProviderWrapper] more easily testable.
- * [DavDocumentsProviderWrapper]s methods should do nothing more, but to call [DavDocumentsActor]s methods.
+ * By containing the actual implementation logic of [DavDocumentsProvider], it adds a layer of separation
+ * to make the methods of [DavDocumentsProvider] more easily testable.
+ * [DavDocumentsProvider]s methods should do nothing more, but to call [DavDocumentsActor]s methods.
  */
 @Deprecated("Move code to respective operations")
 class DavDocumentsActor @Inject constructor(
