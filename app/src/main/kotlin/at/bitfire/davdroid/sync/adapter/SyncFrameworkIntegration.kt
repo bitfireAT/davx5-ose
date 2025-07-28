@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync.adapter
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.SyncRequest
-import android.os.Build
 import android.os.Bundle
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.resource.LocalAddressBookStore
@@ -178,55 +177,56 @@ class SyncFrameworkIntegration @Inject constructor(
     /**
      * Observe whether any of the given data types is currently pending for sync.
      *
+     * Note: On Android 14+ finished syncs stay by default pending. This is why we
+     * explicitly cancel the active sync in [SyncAdapterImpl] for Android 14+. Doing
+     * so allows us to have a reliable "pending" flag again, which is used in this method.
+     *
      * @param account   account to observe sync status for
      * @param dataTypes data types to observe sync status for
+     *
      * @return flow emitting true if any of the given data types has a sync pending, false otherwise
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> =
-        if (Build.VERSION.SDK_INT >= 34) {
-            // On Android 14+ pending sync checks always return true (bug), so we don't need to check.
-            // See: https://github.com/bitfireAT/davx5-ose/issues/1458
-            flowOf(false)
-        } else {
-            val authorities = dataTypes.flatMap { it.possibleAuthorities() }
+    fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
+        val authorities = dataTypes.flatMap { it.possibleAuthorities() }
 
-            // Use address book accounts if needed
-            val accountsFlow = if (dataTypes.contains(SyncDataType.CONTACTS))
-                localAddressBookStore.get().getAddressBookAccountsFlow(account)
-            else
-                flowOf(listOf(account))
+        // Use address book accounts if needed
+        val accountsFlow = if (dataTypes.contains(SyncDataType.CONTACTS))
+            localAddressBookStore.get().getAddressBookAccountsFlow(account)
+        else
+            flowOf(listOf(account))
 
-            // Observe sync pending state for the given accounts and authorities
-            accountsFlow.flatMapLatest { accounts ->
-                callbackFlow {
-                    // Observe sync pending state
-                    val listener = ContentResolver.addStatusChangeListener(
-                        ContentResolver.SYNC_OBSERVER_TYPE_PENDING
-                    ) {
-                        trySend(anyPendingSync(accounts, authorities))
-                    }
-
-                    // Emit initial value
+        // Observe sync pending state for the given accounts and authorities
+        return accountsFlow.flatMapLatest { accounts ->
+            callbackFlow {
+                // Observe sync pending state
+                val listener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING) {
                     trySend(anyPendingSync(accounts, authorities))
-
-                    // Clean up listener on close
-                    awaitClose { ContentResolver.removeStatusChangeListener(listener) }
                 }
-            }.distinctUntilChanged()
-        }
+
+                // Emit initial value
+                trySend(anyPendingSync(accounts, authorities))
+
+                // Clean up listener on close
+                awaitClose { ContentResolver.removeStatusChangeListener(listener) }
+            }
+        }.distinctUntilChanged()
+    }
 
     /**
      * Check if any of the given accounts and authorities have a sync pending.
      *
      * @param accounts  accounts to check sync status for
      * @param authorities authorities to check sync status for
+     *
      * @return true if any of the given accounts and authorities has a sync pending, false otherwise
      */
     private fun anyPendingSync(accounts: List<Account>, authorities: List<String>): Boolean =
         accounts.any { account ->
             authorities.any { authority ->
-                ContentResolver.isSyncPending(account, authority)
+                ContentResolver.isSyncPending(account, authority).also { pending ->
+                    logger.finer("Sync pending($account, $authority) = $pending")
+                }
             }
         }
 
