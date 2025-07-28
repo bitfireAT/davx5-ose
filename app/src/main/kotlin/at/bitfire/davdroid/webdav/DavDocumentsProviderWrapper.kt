@@ -22,6 +22,7 @@ import kotlinx.coroutines.cancel
  * may not ready yet when the content provider is created. So we move the actual implementation
  * to [DavDocumentsProvider] which uses proper DI.
  */
+@Deprecated("Unite with DavDocumentsProvider")
 class DavDocumentsProviderWrapper: DocumentsProvider() {
 
     @EntryPoint

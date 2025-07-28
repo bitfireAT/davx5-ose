@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.webdav.operation
 
+import android.content.Context
 import android.content.res.AssetFileDescriptor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,7 +15,12 @@ import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.DavResource
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.webdav.DavDocumentsProvider.Companion.THUMBNAIL_TIMEOUT_MS
+import at.bitfire.davdroid.webdav.cache.ThumbnailCache
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
@@ -25,12 +31,20 @@ import kotlinx.coroutines.withTimeout
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.use
 
 class OpenDocumentThumbnailOperation @Inject constructor(
-
+    private val actor: DavDocumentsActor,
+    @ApplicationContext private val context: Context,
+    private val db: AppDatabase,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val logger: Logger,
+    private val thumbnailCache: ThumbnailCache
 ) {
+
+    private val documentDao = db.webDavDocumentDao()
 
     operator fun invoke(documentId: String, sizeHint: Point, signal: CancellationSignal?): AssetFileDescriptor? {
         logger.info("openDocumentThumbnail documentId=$documentId sizeHint=$sizeHint signal=$signal")
@@ -58,7 +72,7 @@ class OpenDocumentThumbnailOperation @Inject constructor(
             return null
         }
 
-        val thumbFile = thumbnailCache.get().get(docCacheKey, sizeHint) {
+        val thumbFile = thumbnailCache.get(docCacheKey, sizeHint) {
             // create thumbnail
             val job = accessScope.async {
                 withTimeout(THUMBNAIL_TIMEOUT_MS) {

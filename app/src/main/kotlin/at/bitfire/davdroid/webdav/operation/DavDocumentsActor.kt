@@ -47,6 +47,7 @@ import javax.inject.Provider
  * to make the methods of [DavDocumentsProviderWrapper] more easily testable.
  * [DavDocumentsProviderWrapper]s methods should do nothing more, but to call [DavDocumentsActor]s methods.
  */
+@Deprecated("Move code to respective operations")
 class DavDocumentsActor @Inject constructor(
     private val credentialsStore: CredentialsStore,
     @ApplicationContext private val context: Context,

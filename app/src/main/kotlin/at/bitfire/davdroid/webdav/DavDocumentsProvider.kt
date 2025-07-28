@@ -19,12 +19,8 @@ import at.bitfire.dav4jvm.property.webdav.QuotaAvailableBytes
 import at.bitfire.dav4jvm.property.webdav.QuotaUsedBytes
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.webdav.cache.ThumbnailCache
 import at.bitfire.davdroid.webdav.operation.CopyDocumentOperation
 import at.bitfire.davdroid.webdav.operation.CreateDocumentOperation
-import at.bitfire.davdroid.webdav.operation.DavDocumentsActor
 import at.bitfire.davdroid.webdav.operation.DeleteDocumentOperation
 import at.bitfire.davdroid.webdav.operation.IsChildDocumentOperation
 import at.bitfire.davdroid.webdav.operation.MoveDocumentOperation
@@ -34,12 +30,9 @@ import at.bitfire.davdroid.webdav.operation.QueryChildDocumentsOperation
 import at.bitfire.davdroid.webdav.operation.QueryDocumentOperation
 import at.bitfire.davdroid.webdav.operation.QueryRootsOperation
 import at.bitfire.davdroid.webdav.operation.RenameDocumentOperation
-import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Provider
 
@@ -51,13 +44,9 @@ import javax.inject.Provider
  */
 class DavDocumentsProvider @AssistedInject constructor(
     @Assisted private val externalScope: CoroutineScope,
-    private val actor: DavDocumentsActor,
-    @ApplicationContext private val context: Context,
     private val copyDocumentOperation: Provider<CopyDocumentOperation>,
     private val createDocumentOperation: Provider<CreateDocumentOperation>,
-    private val db: AppDatabase,
     private val deleteDocumentOperation: Provider<DeleteDocumentOperation>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val isChildDocumentOperation: Provider<IsChildDocumentOperation>,
     private val moveDocumentOperation: Provider<MoveDocumentOperation>,
     private val openDocumentOperation: Provider<OpenDocumentOperation>,
@@ -65,39 +54,13 @@ class DavDocumentsProvider @AssistedInject constructor(
     private val queryChildDocumentsOperation: Provider<QueryChildDocumentsOperation>,
     private val queryDocumentOperation: Provider<QueryDocumentOperation>,
     private val queryRootsOperation: Provider<QueryRootsOperation>,
-    private val renameDocumentOperation: Provider<RenameDocumentOperation>,
-    private val thumbnailCache: Lazy<ThumbnailCache>
+    private val renameDocumentOperation: Provider<RenameDocumentOperation>
 ) {
     
     @AssistedFactory
     interface Factory {
         fun create(externalScope: CoroutineScope): DavDocumentsProvider
     }
-
-    companion object {
-        val DAV_FILE_FIELDS = arrayOf(
-            ResourceType.NAME,
-            CurrentUserPrivilegeSet.NAME,
-            DisplayName.NAME,
-            GetETag.NAME,
-            GetContentType.NAME,
-            GetContentLength.NAME,
-            GetLastModified.NAME,
-            QuotaAvailableBytes.NAME,
-            QuotaUsedBytes.NAME,
-        )
-
-        const val MAX_NAME_ATTEMPTS = 5
-        const val THUMBNAIL_TIMEOUT_MS = 15000L
-
-        fun notifyMountsChanged(context: Context) {
-            context.contentResolver.notifyChange(buildRootsUri(context.getString(R.string.webdav_authority)), null)
-        }
-
-    }
-
-    private val documentDao = db.webDavDocumentDao()
-
 
     fun queryRoots(projection: Array<out String>?) =
         queryRootsOperation.get().invoke(projection)
@@ -144,5 +107,29 @@ class DavDocumentsProvider @AssistedInject constructor(
         openDocumentOperation.get().invoke(documentId, mode, signal)
 
     fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?) =
+        openDocumentThumbnailOperation.get().invoke(documentId, sizeHint, signal)
+
+
+    companion object {
+        val DAV_FILE_FIELDS = arrayOf(
+            ResourceType.NAME,
+            CurrentUserPrivilegeSet.NAME,
+            DisplayName.NAME,
+            GetETag.NAME,
+            GetContentType.NAME,
+            GetContentLength.NAME,
+            GetLastModified.NAME,
+            QuotaAvailableBytes.NAME,
+            QuotaUsedBytes.NAME,
+        )
+
+        const val MAX_NAME_ATTEMPTS = 5
+        const val THUMBNAIL_TIMEOUT_MS = 15000L
+
+        fun notifyMountsChanged(context: Context) {
+            context.contentResolver.notifyChange(buildRootsUri(context.getString(R.string.webdav_authority)), null)
+        }
+
+    }
 
 }

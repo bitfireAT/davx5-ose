@@ -33,13 +33,17 @@ class QueryChildDocumentsOperation @Inject constructor(
     private val documentDao = db.webDavDocumentDao()
 
     @Synchronized
-    operator fun invoke(externalScope: CoroutineScope, parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) {
+    operator fun invoke(externalScope: CoroutineScope, parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
         synchronized(QueryChildDocumentsOperation::class.java) {
             queryChildDocuments(externalScope, parentDocumentId, projection, sortOrder)
         }
-    }
 
-    private fun queryChildDocuments(externalScope: CoroutineScope, parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) {
+    private fun queryChildDocuments(
+        externalScope: CoroutineScope,
+        parentDocumentId: String,
+        projection: Array<out String>?,
+        sortOrder: String?
+    ): DocumentsCursor {
         logger.fine("WebDAV queryChildDocuments $parentDocumentId $projection $sortOrder")
         val parentId = parentDocumentId.toLong()
         val parent = documentDao.get(parentId) ?: throw FileNotFoundException()
