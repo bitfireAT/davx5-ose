@@ -196,7 +196,7 @@ class CollectionListRefresher @AssistedInject constructor(
     internal fun refreshHomelessCollections() {
         val homelessCollections = db.collectionDao().getByServiceAndHomeset(service.id, null).associateBy { it.url }.toMutableMap()
         for((url, localCollection) in homelessCollections) try {
-            val collectionProperties = ServiceDetectionUtils.getCollectionProperties(service)
+            val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service)
             DavResource(httpClient, url).propfind(0, *collectionProperties) { response, _ ->
                 if (!response.isSuccess()) {
                     collectionRepository.delete(localCollection)

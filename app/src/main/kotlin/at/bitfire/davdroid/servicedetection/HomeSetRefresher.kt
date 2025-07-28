@@ -66,7 +66,7 @@ class HomeSetRefresher @AssistedInject constructor(
                 .toMutableMap()
 
             try {
-                val collectionProperties = ServiceDetectionUtils.getCollectionProperties(service)
+                val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
                 DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties) { response, relation ->
                     // Note: This callback may be called multiple times ([MultiResponseCallback])
                     if (!response.isSuccess())

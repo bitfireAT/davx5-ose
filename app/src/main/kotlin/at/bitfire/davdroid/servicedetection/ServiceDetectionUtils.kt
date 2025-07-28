@@ -20,13 +20,14 @@ import at.bitfire.dav4jvm.property.webdav.Owner
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.db.ServiceType
 
 object ServiceDetectionUtils {
 
     /**
-     * Collection properties to ask for in a PROPFIND request on a collection.
+     * WebDAV properties to ask for in a PROPFIND request on a collection.
      */
-    fun getCollectionProperties(service: Service): Array<Property.Name> =
+    fun collectionQueryProperties(@ServiceType serviceType: String): Array<Property.Name> =
         arrayOf(                        // generic WebDAV properties
             CurrentUserPrivilegeSet.NAME,
             DisplayName.NAME,
@@ -34,7 +35,7 @@ object ServiceDetectionUtils {
             ResourceType.NAME,
             PushTransports.NAME,        // WebDAV-Push
             Topic.NAME
-        ) + when (service.type) {       // service-specific CalDAV/CardDAV properties
+        ) + when (serviceType) {       // service-specific CalDAV/CardDAV properties
             Service.TYPE_CARDDAV -> arrayOf(
                 AddressbookDescription.NAME
             )
@@ -52,9 +53,10 @@ object ServiceDetectionUtils {
         }
 
     /**
-     * Finds out whether given collection is usable, by checking that either
+     * Finds out whether given collection is usable for synchronization, by checking that either
+     *
      *  - CalDAV/CardDAV: service and collection type match, or
-     *  - WebCal: subscription source URL is not empty
+     *  - WebCal: subscription source URL is not empty.
      */
     fun isUsableCollection(service: Service, collection: Collection) =
         (service.type == Service.TYPE_CARDDAV && collection.type == Collection.TYPE_ADDRESSBOOK) ||

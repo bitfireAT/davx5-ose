@@ -37,6 +37,12 @@ import javax.inject.Inject
 @HiltAndroidTest
 class HomeSetRefresherTest {
 
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val mockKRule = MockKRule(this)
+
     @Inject
     lateinit var db: AppDatabase
 
@@ -52,12 +58,6 @@ class HomeSetRefresherTest {
     @BindValue
     @MockK(relaxed = true)
     lateinit var settings: SettingsManager
-
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule
-    val mockKRule = MockKRule(this)
 
     private lateinit var client: HttpClient
     private lateinit var mockServer: MockWebServer
