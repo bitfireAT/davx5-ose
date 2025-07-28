@@ -10,6 +10,8 @@ import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.webdav.DavDocumentsProvider.Companion.MAX_NAME_ATTEMPTS
+import at.bitfire.davdroid.webdav.DavHttpClientBuilder
+import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -22,8 +24,8 @@ import javax.inject.Inject
 
 class RenameDocumentOperation @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val actor: DavDocumentsActor,
     private val db: AppDatabase,
+    private val httpClientBuilder: DavHttpClientBuilder,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
@@ -34,7 +36,7 @@ class RenameDocumentOperation @Inject constructor(
         logger.fine("WebDAV renameDocument $documentId $displayName")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
-        actor.httpClient(doc.mountId).use { client ->
+        httpClientBuilder.build(doc.mountId).use { client ->
             for (attempt in 0..MAX_NAME_ATTEMPTS) {
                 val newName = displayNameToMemberName(displayName, attempt)
                 val oldUrl = doc.toHttpUrl(db)
@@ -51,7 +53,7 @@ class RenameDocumentOperation @Inject constructor(
                     }
                     documentDao.update(doc.copy(name = newName))
 
-                    actor.notifyFolderChanged(doc.parentId)
+                    DocumentProviderUtils.notifyFolderChanged(context, doc.parentId)
 
                     return@runBlocking doc.id.toString()
                 } catch (e: HttpException) {

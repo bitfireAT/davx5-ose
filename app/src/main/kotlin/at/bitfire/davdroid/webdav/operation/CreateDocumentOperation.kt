@@ -12,6 +12,8 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.webdav.DavDocumentsProvider.Companion.MAX_NAME_ATTEMPTS
+import at.bitfire.davdroid.webdav.DavHttpClientBuilder
+import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -25,9 +27,9 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class CreateDocumentOperation @Inject constructor(
-    private val actor: DavDocumentsActor,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
+    private val httpClientBuilder: DavHttpClientBuilder,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
@@ -40,7 +42,7 @@ class CreateDocumentOperation @Inject constructor(
         val createDirectory = mimeType == Document.MIME_TYPE_DIR
 
         var docId: Long?
-        actor.httpClient(parent.mountId).use { client ->
+        httpClientBuilder.build(parent.mountId).use { client ->
             for (attempt in 0..MAX_NAME_ATTEMPTS) {
                 val newName = displayNameToMemberName(displayName, attempt)
                 val parentUrl = parent.toHttpUrl(db)
@@ -70,7 +72,7 @@ class CreateDocumentOperation @Inject constructor(
                         )
                     )
 
-                    actor.notifyFolderChanged(parentDocumentId)
+                    DocumentProviderUtils.notifyFolderChanged(context, parentDocumentId)
 
                     return@runBlocking docId.toString()
                 } catch (e: HttpException) {

@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.webdav
+package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
 import android.security.NetworkSecurityPolicy
@@ -14,6 +14,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -29,29 +30,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 @HiltAndroidTest
-class DavDocumentsProviderTest {
-
-    companion object {
-        private const val PATH_WEBDAV_ROOT = "/webdav"
-    }
-
-    @Inject @ApplicationContext
-    lateinit var context: Context
-
-    @Inject
-    lateinit var credentialsStore: CredentialsStore
-    
-    @Inject
-    lateinit var davDocumentsActor: DavDocumentsProvider.DavDocumentsActor
-
-    @Inject
-    lateinit var httpClientBuilder: HttpClient.Builder
-    
-    @Inject
-    lateinit var db: AppDatabase
-
-    @Inject
-    lateinit var testDispatcher: TestDispatcher
+class QueryChildDocumentsOperationTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -59,13 +38,32 @@ class DavDocumentsProviderTest {
     @get:Rule
     val mockkRule = MockKRule(this)
 
+    @Inject @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
+    lateinit var db: AppDatabase
+
+    @Inject
+    lateinit var operation: QueryChildDocumentsOperation
+
+    @Inject
+    lateinit var httpClientBuilder: HttpClient.Builder
+
+    @Inject
+    lateinit var testDispatcher: TestDispatcher
+
     private lateinit var server: MockWebServer
     private lateinit var client: HttpClient
+
+    private lateinit var mount: WebDavMount
+    private lateinit var rootDocument: WebDavDocument
 
     @Before
     fun setUp() {
         hiltRule.inject()
 
+        // create server and client
         server = MockWebServer().apply {
             dispatcher = testDispatcher
             start()
@@ -75,46 +73,49 @@ class DavDocumentsProviderTest {
 
         // mock server delivers HTTP without encryption
         assertTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
+
+        // create WebDAV mount and root document in DB
+        runBlocking {
+            val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
+            mount = db.webDavMountDao().getById(mountId)
+            rootDocument = db.webDavDocumentDao().getOrCreateRoot(mount)
+        }
     }
 
     @After
     fun tearDown() {
         client.close()
         server.shutdown()
+
+        runBlocking {
+            db.webDavMountDao().deleteAsync(mount)
+        }
     }
 
 
     @Test
     fun testDoQueryChildren_insert() = runTest {
-        // Create parent and root in database
-        val id = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
-        val webDavMount = db.webDavMountDao().getById(id)
-        val parent = db.webDavDocumentDao().getOrCreateRoot(webDavMount)
-
         // Query
-        davDocumentsActor.queryChildren(parent)
+        operation.queryChildren(rootDocument)
 
         // Assert new children were inserted into db
-        assertEquals(3, db.webDavDocumentDao().getChildren(parent.id).size)
-        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[0].displayName)
-        assertEquals("MeowMeow_Cats.docx", db.webDavDocumentDao().getChildren(parent.id)[1].displayName)
-        assertEquals("Secret_Document.pages", db.webDavDocumentDao().getChildren(parent.id)[2].displayName)
+        assertEquals(3, db.webDavDocumentDao().getChildren(rootDocument.id).size)
+        assertEquals("Library", db.webDavDocumentDao().getChildren(rootDocument.id)[0].displayName)
+        assertEquals("MeowMeow_Cats.docx", db.webDavDocumentDao().getChildren(rootDocument.id)[1].displayName)
+        assertEquals("Secret_Document.pages", db.webDavDocumentDao().getChildren(rootDocument.id)[2].displayName)
     }
 
     @Test
     fun testDoQueryChildren_update() = runTest {
         // Create parent and root in database
-        val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
-        val webDavMount = db.webDavMountDao().getById(mountId)
-        val parent = db.webDavDocumentDao().getOrCreateRoot(webDavMount)
-        assertEquals("Cat food storage", db.webDavDocumentDao().get(parent.id)!!.displayName)
+        assertEquals("Cat food storage", db.webDavDocumentDao().get(rootDocument.id)!!.displayName)
 
         // Create a folder
         val folderId = db.webDavDocumentDao().insert(
             WebDavDocument(
                 0,
-                mountId,
-                parent.id,
+                mount.id,
+                rootDocument.id,
                 "My_Books",
                 true,
                 "My Books",
@@ -124,30 +125,25 @@ class DavDocumentsProviderTest {
         assertEquals("My Books", db.webDavDocumentDao().get(folderId)!!.displayName)
 
         // Query - should update the parent displayname and folder name
-        davDocumentsActor.queryChildren(parent)
+        operation.queryChildren(rootDocument)
 
         // Assert parent and children were updated in database
-        assertEquals("Cats WebDAV", db.webDavDocumentDao().get(parent.id)!!.displayName)
-        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[0].name)
-        assertEquals("Library", db.webDavDocumentDao().getChildren(parent.id)[0].displayName)
+        assertEquals("Cats WebDAV", db.webDavDocumentDao().get(rootDocument.id)!!.displayName)
+        assertEquals("Library", db.webDavDocumentDao().getChildren(rootDocument.id)[0].name)
+        assertEquals("Library", db.webDavDocumentDao().getChildren(rootDocument.id)[0].displayName)
 
     }
 
     @Test
     fun testDoQueryChildren_delete() = runTest {
-        // Create parent and root in database
-        val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
-        val webDavMount = db.webDavMountDao().getById(mountId)
-        val parent = db.webDavDocumentDao().getOrCreateRoot(webDavMount)
-
         // Create a folder
         val folderId = db.webDavDocumentDao().insert(
-            WebDavDocument(0, mountId, parent.id, "deleteme", true, "Should be deleted")
+            WebDavDocument(0, mount.id, rootDocument.id, "deleteme", true, "Should be deleted")
         )
         assertEquals("deleteme", db.webDavDocumentDao().get(folderId)!!.name)
 
         // Query - discovers serverside deletion
-        davDocumentsActor.queryChildren(parent)
+        operation.queryChildren(rootDocument)
 
         // Assert folder got deleted
         assertEquals(null, db.webDavDocumentDao().get(folderId))
@@ -155,22 +151,17 @@ class DavDocumentsProviderTest {
 
     @Test
     fun testDoQueryChildren_updateTwoDirectoriesSimultaneously() = runTest {
-        // Create root in database
-        val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
-        val webDavMount = db.webDavMountDao().getById(mountId)
-        val root = db.webDavDocumentDao().getOrCreateRoot(webDavMount)
-
         // Create two directories
-        val parent1Id = db.webDavDocumentDao().insert(WebDavDocument(0, mountId, root.id, "parent1", true))
-        val parent2Id = db.webDavDocumentDao().insert(WebDavDocument(0, mountId, root.id, "parent2", true))
+        val parent1Id = db.webDavDocumentDao().insert(WebDavDocument(0, mount.id, rootDocument.id, "parent1", true))
+        val parent2Id = db.webDavDocumentDao().insert(WebDavDocument(0, mount.id, rootDocument.id, "parent2", true))
         val parent1 = db.webDavDocumentDao().get(parent1Id)!!
         val parent2 = db.webDavDocumentDao().get(parent2Id)!!
         assertEquals("parent1", parent1.name)
         assertEquals("parent2", parent2.name)
 
         // Query - find children of two nodes simultaneously
-        davDocumentsActor.queryChildren(parent1)
-        davDocumentsActor.queryChildren(parent2)
+        operation.queryChildren(parent1)
+        operation.queryChildren(parent2)
 
         // Assert the two folders names have changed
         assertEquals("childOne.txt", db.webDavDocumentDao().getChildren(parent1Id)[0].name)
@@ -198,7 +189,7 @@ class DavDocumentsProviderTest {
                     PATH_WEBDAV_ROOT to arrayOf(
                         Resource("",
                             "<resourcetype><collection/></resourcetype>" +
-                            "<displayname>Cats WebDAV</displayname>"
+                                    "<displayname>Cats WebDAV</displayname>"
                         ),
                         Resource("Secret_Document.pages",
                             "<displayname>Secret_Document.pages</displayname>",
@@ -208,7 +199,7 @@ class DavDocumentsProviderTest {
                         ),
                         Resource("Library",
                             "<resourcetype><collection/></resourcetype>" +
-                            "<displayname>Library</displayname>"
+                                    "<displayname>Library</displayname>"
                         )
                     ),
 
@@ -227,15 +218,15 @@ class DavDocumentsProviderTest {
                 val responses = propsMap[requestPath]?.joinToString { resource ->
                     "<response><href>$requestPath/${resource.name}</href><propstat><prop>" +
                             resource.props +
-                    "</prop></propstat></response>"
+                            "</prop></propstat></response>"
                 }
 
                 val multistatus =
                     "<multistatus xmlns='DAV:' " +
-                        "xmlns:CARD='urn:ietf:params:xml:ns:carddav' " +
-                        "xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +
-                        responses +
-                    "</multistatus>"
+                            "xmlns:CARD='urn:ietf:params:xml:ns:carddav' " +
+                            "xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +
+                            responses +
+                            "</multistatus>"
 
                 logger.info("Response: $multistatus")
                 return MockResponse()
@@ -246,6 +237,11 @@ class DavDocumentsProviderTest {
             return MockResponse().setResponseCode(404)
         }
 
+    }
+
+
+    companion object {
+        private const val PATH_WEBDAV_ROOT = "/webdav"
     }
 
 }

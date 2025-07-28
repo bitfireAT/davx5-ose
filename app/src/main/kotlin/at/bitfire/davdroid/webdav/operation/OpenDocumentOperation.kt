@@ -13,6 +13,8 @@ import androidx.core.content.getSystemService
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.webdav.DavHttpClientBuilder
+import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.HeadResponse
 import at.bitfire.davdroid.webdav.RandomAccessCallbackWrapper
 import at.bitfire.davdroid.webdav.StreamingFileDescriptor
@@ -30,9 +32,9 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class OpenDocumentOperation @Inject constructor(
-    private val actor: DavDocumentsActor,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
+    private val httpClientBuilder: DavHttpClientBuilder,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val randomAccessCallbackWrapperFactory: RandomAccessCallbackWrapper.Factory,
@@ -51,7 +53,7 @@ class OpenDocumentOperation @Inject constructor(
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
         val url = doc.toHttpUrl(db)
-        val client = actor.httpClient(doc.mountId, logBody = false)
+        val client = httpClientBuilder.build(doc.mountId, logBody = false)
 
         val modeFlags = ParcelFileDescriptor.parseMode(mode)
         val readAccess = when (mode) {
@@ -93,7 +95,7 @@ class OpenDocumentOperation @Inject constructor(
                     documentDao.update(doc.copy(size = transferred, lastModified = now))
                 }
 
-                actor.notifyFolderChanged(doc.parentId)
+                DocumentProviderUtils.notifyFolderChanged(context, doc.parentId)
             }
 
             if (readAccess)

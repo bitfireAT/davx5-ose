@@ -9,16 +9,18 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.DocumentsContract.buildChildDocumentsUri
 import android.webkit.MimeTypeMap
 import androidx.core.app.TaskStackBuilder
 import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import java.io.FileNotFoundException
 import java.net.HttpURLConnection
 
 object DocumentProviderUtils  {
 
-    fun displayNameToMemberName(displayName: String, appendNumber: Int = 0): String {
+    internal fun displayNameToMemberName(displayName: String, appendNumber: Int = 0): String {
         val safeName = displayName.filterNot { it.isISOControl() }
 
         if (appendNumber != 0) {
@@ -32,9 +34,30 @@ object DocumentProviderUtils  {
             return safeName
     }
 
+    internal fun notifyFolderChanged(context: Context, parentDocumentId: Long?) {
+        if (parentDocumentId != null)
+            context.contentResolver.notifyChange(
+                buildChildDocumentsUri(
+                    context.getString(R.string.webdav_authority),
+                    parentDocumentId.toString()
+                ),
+                null
+            )
+    }
+
+    internal fun notifyFolderChanged(context: Context, parentDocumentId: String) {
+        context.contentResolver.notifyChange(
+            buildChildDocumentsUri(
+                context.getString(R.string.webdav_authority),
+                parentDocumentId
+            ),
+            null
+        )
+    }
+
 }
 
-fun HttpException.throwForDocumentProvider(context: Context, ignorePreconditionFailed: Boolean = false) {
+internal fun HttpException.throwForDocumentProvider(context: Context, ignorePreconditionFailed: Boolean = false) {
     when (code) {
         HttpURLConnection.HTTP_UNAUTHORIZED -> {
             if (Build.VERSION.SDK_INT >= 26) {

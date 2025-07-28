@@ -9,6 +9,8 @@ import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.webdav.DavHttpClientBuilder
+import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -19,9 +21,9 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class DeleteDocumentOperation @Inject constructor(
-    private val actor: DavDocumentsActor,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
+    private val httpClientBuilder: DavHttpClientBuilder,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
@@ -32,7 +34,7 @@ class DeleteDocumentOperation @Inject constructor(
         logger.fine("WebDAV removeDocument $documentId")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
-        actor.httpClient(doc.mountId).use { client ->
+        httpClientBuilder.build(doc.mountId).use { client ->
             val dav = DavResource(client.okHttpClient, doc.toHttpUrl(db))
             try {
                 runInterruptible(ioDispatcher) {
@@ -43,7 +45,7 @@ class DeleteDocumentOperation @Inject constructor(
                 logger.fine("Successfully removed")
                 documentDao.delete(doc)
 
-                actor.notifyFolderChanged(doc.parentId)
+                DocumentProviderUtils.notifyFolderChanged(context, doc.parentId)
             } catch (e: HttpException) {
                 e.throwForDocumentProvider(context)
             }

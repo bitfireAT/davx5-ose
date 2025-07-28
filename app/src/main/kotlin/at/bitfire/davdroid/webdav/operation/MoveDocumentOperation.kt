@@ -9,6 +9,8 @@ import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.webdav.DavHttpClientBuilder
+import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -19,9 +21,9 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class MoveDocumentOperation @Inject constructor(
-    private val actor: DavDocumentsActor,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
+    private val httpClientBuilder: DavHttpClientBuilder,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
@@ -40,7 +42,7 @@ class MoveDocumentOperation @Inject constructor(
             .addPathSegment(doc.name)
             .build()
 
-        actor.httpClient(doc.mountId).use { client ->
+        httpClientBuilder.build(doc.mountId).use { client ->
             val dav = DavResource(client.okHttpClient, doc.toHttpUrl(db))
             try {
                 runInterruptible(ioDispatcher) {
@@ -51,8 +53,8 @@ class MoveDocumentOperation @Inject constructor(
 
                 documentDao.update(doc.copy(parentId = dstParent.id))
 
-                actor.notifyFolderChanged(sourceParentDocumentId)
-                actor.notifyFolderChanged(targetParentDocumentId)
+                DocumentProviderUtils.notifyFolderChanged(context, sourceParentDocumentId)
+                DocumentProviderUtils.notifyFolderChanged(context, targetParentDocumentId)
             } catch (e: HttpException) {
                 e.throwForDocumentProvider(context)
             }

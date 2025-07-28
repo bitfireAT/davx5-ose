@@ -17,6 +17,7 @@ import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.cache.ThumbnailCache
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -35,9 +36,9 @@ import javax.inject.Inject
 import kotlin.use
 
 class OpenDocumentThumbnailOperation @Inject constructor(
-    private val actor: DavDocumentsActor,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
+    private val httpClientBuilder: DavHttpClientBuilder,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val thumbnailCache: ThumbnailCache
@@ -75,7 +76,7 @@ class OpenDocumentThumbnailOperation @Inject constructor(
             // create thumbnail
             val job = accessScope.async {
                 withTimeout(THUMBNAIL_TIMEOUT_MS) {
-                    actor.httpClient(doc.mountId, logBody = false).use { client ->
+                    httpClientBuilder.build(doc.mountId, logBody = false).use { client ->
                         val url = doc.toHttpUrl(db)
                         val dav = DavResource(client.okHttpClient, url)
                         var result: ByteArray? = null

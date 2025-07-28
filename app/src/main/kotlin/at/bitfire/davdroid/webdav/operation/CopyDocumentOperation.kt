@@ -10,6 +10,8 @@ import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.webdav.DavHttpClientBuilder
+import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -20,9 +22,9 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class CopyDocumentOperation @Inject constructor(
-    private val actor: DavDocumentsActor,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
+    private val httpClientBuilder: DavHttpClientBuilder,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
@@ -38,7 +40,7 @@ class CopyDocumentOperation @Inject constructor(
         if (srcDoc.mountId != dstFolder.mountId)
             throw UnsupportedOperationException("Can't COPY between WebDAV servers")
 
-        actor.httpClient(srcDoc.mountId).use { client ->
+        httpClientBuilder.build(srcDoc.mountId).use { client ->
             val dav = DavResource(client.okHttpClient, srcDoc.toHttpUrl(db))
             val dstUrl = dstFolder.toHttpUrl(db).newBuilder()
                 .addPathSegment(name)
@@ -66,7 +68,7 @@ class CopyDocumentOperation @Inject constructor(
                 )
             ).toString()
 
-            actor.notifyFolderChanged(targetParentDocumentId)
+            DocumentProviderUtils.notifyFolderChanged(context, targetParentDocumentId)
 
             /* return */ dstDocId
         }
