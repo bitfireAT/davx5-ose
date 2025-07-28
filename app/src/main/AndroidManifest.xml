@@ -231,7 +231,7 @@
         </service>
         <provider
             android:authorities="@string/webdav_authority"
-            android:name=".webdav.DavDocumentsProvider"
+            android:name=".webdav.BaseDavDocumentsProvider"
             android:exported="true"
             android:grantUriPermissions="true"
             android:permission="android.permission.MANAGE_DOCUMENTS">

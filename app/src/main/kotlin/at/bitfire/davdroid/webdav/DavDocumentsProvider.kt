@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.AssetFileDescriptor
 import android.database.Cursor
+import android.database.MatrixCursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Point
@@ -20,9 +21,9 @@ import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import android.os.storage.StorageManager
 import android.provider.DocumentsContract.Document
+import android.provider.DocumentsContract.Root
 import android.provider.DocumentsContract.buildChildDocumentsUri
 import android.provider.DocumentsContract.buildRootsUri
-import android.provider.DocumentsProvider
 import android.webkit.MimeTypeMap
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
@@ -43,22 +44,19 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavDocumentDao
+import at.bitfire.davdroid.db.WebDavMountDao
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import at.bitfire.davdroid.webdav.cache.ThumbnailCache
+import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
@@ -77,30 +75,33 @@ import java.net.HttpURLConnection
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.inject.Inject
 import javax.inject.Provider
 
 /**
- * Provides functionality on WebDav documents.
- *
- * Actual implementation should go into [DavDocumentsActor].
+ * Actual implementation of the [BaseDavDocumentsProvider]. Required because at the time when
+ * [BaseDavDocumentsProvider] (which is a content provider) is initialized, Hilt and thus DI is
+ * not ready yet. So we implement everything in this class, which is properly late-initialized
+ * with Hilt.
  */
-class DavDocumentsProvider(
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-): DocumentsProvider() {
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface DavDocumentsProviderEntryPoint {
-        fun appDatabase(): AppDatabase
-        fun credentialsStore(): CredentialsStore
-        fun davDocumentsActorFactory(): DavDocumentsActor.Factory
-        fun documentSortByMapper(): DocumentSortByMapper
-        fun logger(): Logger
-        fun randomAccessCallbackWrapperFactory(): RandomAccessCallbackWrapper.Factory
-        fun streamingFileDescriptorFactory(): StreamingFileDescriptor.Factory
-        fun thumbnailCache(): ThumbnailCache
-
-        fun impl(): DavDocumentsProviderImpl
+class DavDocumentsProvider @AssistedInject constructor(
+    @Assisted private val externalScope: CoroutineScope,
+    private val actor: DavDocumentsActor,
+    private val db: AppDatabase,
+    @ApplicationContext private val context: Context,
+    private val documentDao: WebDavDocumentDao,
+    private val documentSortByMapper: Lazy<DocumentSortByMapper>,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val logger: Logger,
+    private val mountDao: WebDavMountDao,
+    private val randomAccessCallbackWrapperFactory: RandomAccessCallbackWrapper.Factory,
+    private val streamingFileDescriptorFactory: StreamingFileDescriptor.Factory,
+    private val thumbnailCache: Lazy<ThumbnailCache>
+) {
+    
+    @AssistedFactory
+    interface Factory {
+        fun create(externalScope: CoroutineScope): DavDocumentsProvider
     }
 
     companion object {
@@ -125,22 +126,7 @@ class DavDocumentsProvider(
 
     }
 
-    val documentProviderScope = CoroutineScope(SupervisorJob())
-
-    private val ourContext by lazy { context!! }        // requireContext() requires API level 30
-    private val authority by lazy { ourContext.getString(R.string.webdav_authority) }
-    private lateinit var entryPoint: DavDocumentsProviderEntryPoint
-
-    private val logger by lazy { entryPoint.logger() }
-
-    private val db by lazy { entryPoint.appDatabase() }
-    private val mountDao by lazy { db.webDavMountDao() }
-    private val documentDao by lazy { db.webDavDocumentDao() }
-
-    private val thumbnailCache by lazy { entryPoint.thumbnailCache() }
-
-    private val connectivityManager by lazy { ourContext.getSystemService<ConnectivityManager>()!! }
-    private val storageManager by lazy { ourContext.getSystemService<StorageManager>()!! }
+    private val authority by lazy { context.getString(R.string.webdav_authority) }
 
     /** List of currently active [queryChildDocuments] runners.
      *
@@ -149,27 +135,74 @@ class DavDocumentsProvider(
      */
     private val runningQueryChildren = ConcurrentHashMap<Long, Boolean>()
 
-    private val credentialsStore by lazy { entryPoint.credentialsStore() }
-    private val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
-    private val actor by lazy { entryPoint.davDocumentsActorFactory().create(cookieStore, credentialsStore) }
+    fun queryRoots(projection: Array<out String>?): Cursor {
+        logger.fine("WebDAV queryRoots")
+        val roots = MatrixCursor(projection ?: arrayOf(
+            Root.COLUMN_ROOT_ID,
+            Root.COLUMN_ICON,
+            Root.COLUMN_TITLE,
+            Root.COLUMN_FLAGS,
+            Root.COLUMN_DOCUMENT_ID,
+            Root.COLUMN_SUMMARY
+        ))
 
-    override fun onCreate(): Boolean {
-        entryPoint = EntryPointAccessors.fromApplication<DavDocumentsProviderEntryPoint>(context!!)
-        return true
+        runBlocking {
+            for (mount in mountDao.getAll()) {
+                val rootDocument = documentDao.getOrCreateRoot(mount)
+                logger.info("Root ID: $rootDocument")
+
+                roots.newRow().apply {
+                    add(Root.COLUMN_ROOT_ID, mount.id)
+                    add(Root.COLUMN_ICON, R.mipmap.ic_launcher)
+                    add(Root.COLUMN_TITLE, context.getString(R.string.webdav_provider_root_title))
+                    add(Root.COLUMN_DOCUMENT_ID, rootDocument.id.toString())
+                    add(Root.COLUMN_SUMMARY, mount.name)
+                    add(Root.COLUMN_FLAGS, Root.FLAG_SUPPORTS_CREATE or Root.FLAG_SUPPORTS_IS_CHILD)
+
+                    val quotaAvailable = rootDocument.quotaAvailable
+                    if (quotaAvailable != null)
+                        add(Root.COLUMN_AVAILABLE_BYTES, quotaAvailable)
+
+                    val quotaUsed = rootDocument.quotaUsed
+                    if (quotaAvailable != null && quotaUsed != null)
+                        add(Root.COLUMN_CAPACITY_BYTES, quotaAvailable + quotaUsed)
+                }
+            }
+        }
+
+        return roots
     }
 
-    override fun shutdown() {
-        documentProviderScope.cancel()
+    fun queryDocument(documentId: String, projection: Array<out String>?): Cursor {
+        logger.fine("WebDAV queryDocument $documentId ${projection?.joinToString("+")}")
+
+        val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
+        val parent = doc.parentId?.let { parentId ->
+            documentDao.get(parentId)
+        }
+
+        return DocumentsCursor(projection ?: arrayOf(
+            Document.COLUMN_DOCUMENT_ID,
+            Document.COLUMN_DISPLAY_NAME,
+            Document.COLUMN_MIME_TYPE,
+            Document.COLUMN_FLAGS,
+            Document.COLUMN_SIZE,
+            Document.COLUMN_LAST_MODIFIED,
+            Document.COLUMN_ICON,
+            Document.COLUMN_SUMMARY
+        )).apply {
+            val bundle = doc.toBundle(parent)
+            logger.fine("queryDocument($documentId) = $bundle")
+
+            // override display names of root documents
+            if (parent == null) {
+                val mount = runBlocking { mountDao.getById(doc.mountId) }
+                bundle.putString(Document.COLUMN_DISPLAY_NAME, mount.name)
+            }
+
+            addRow(bundle)
+        }
     }
-
-
-    /*** query ***/
-
-    override fun queryRoots(projection: Array<out String>?) =
-        entryPoint.impl().queryRoots(projection)
-
-    override fun queryDocument(documentId: String, projection: Array<out String>?) =
-        entryPoint.impl().queryDocument(documentId, projection)
 
     /**
      * Gets old or new children of given parent.
@@ -180,7 +213,7 @@ class DavDocumentsProvider(
      * change, which calls this method again. The worker being done
      */
     @Synchronized
-    override fun queryChildDocuments(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?): Cursor {
+    fun queryChildDocuments(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?): Cursor {
         logger.fine("WebDAV queryChildDocuments $parentDocumentId $projection $sortOrder")
         val parentId = parentDocumentId.toLong()
         val parent = documentDao.get(parentId) ?: throw FileNotFoundException()
@@ -197,16 +230,16 @@ class DavDocumentsProvider(
         // Register watcher
         val result = DocumentsCursor(columns)
         val notificationUri = buildChildDocumentsUri(authority, parentDocumentId)
-        result.setNotificationUri(ourContext.contentResolver, notificationUri)
+        result.setNotificationUri(context.contentResolver, notificationUri)
 
         // Dispatch worker querying for the children and keep track of it
         val running = runningQueryChildren.getOrPut(parentId) {
-            documentProviderScope.launch {
+            externalScope.launch {
                 actor.queryChildren(parent)
                 // Once the query is done, set query as finished (not running)
                 runningQueryChildren[parentId] = false
                 // .. and notify - effectively calling this method again
-                ourContext.contentResolver.notifyChange(notificationUri, null)
+                context.contentResolver.notifyChange(notificationUri, null)
             }
             true
         }
@@ -217,7 +250,7 @@ class DavDocumentsProvider(
             runningQueryChildren.remove(parentId)
 
         // Prepare SORT BY clause
-        val mapper = entryPoint.documentSortByMapper()
+        val mapper = documentSortByMapper.get()
         val sqlSortBy = if (sortOrder != null)
             mapper.mapContentProviderToSql(sortOrder)
         else
@@ -233,7 +266,7 @@ class DavDocumentsProvider(
         return result
     }
 
-    override fun isChildDocument(parentDocumentId: String, documentId: String): Boolean {
+    fun isChildDocument(parentDocumentId: String, documentId: String): Boolean {
         logger.fine("WebDAV isChildDocument $parentDocumentId $documentId")
         val parent = documentDao.get(parentDocumentId.toLong()) ?: throw FileNotFoundException()
 
@@ -254,7 +287,7 @@ class DavDocumentsProvider(
 
     /*** copy/create/delete/move/rename ***/
 
-    override fun copyDocument(sourceDocumentId: String, targetParentDocumentId: String): String = runBlocking {
+    fun copyDocument(sourceDocumentId: String, targetParentDocumentId: String): String = runBlocking {
         logger.fine("WebDAV copyDocument $sourceDocumentId $targetParentDocumentId")
         val srcDoc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
         val dstFolder = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()
@@ -297,12 +330,12 @@ class DavDocumentsProvider(
         }
     }
 
-    override fun createDocument(parentDocumentId: String, mimeType: String, displayName: String): String? = runBlocking {
+    fun createDocument(parentDocumentId: String, mimeType: String, displayName: String): String? = runBlocking {
         logger.fine("WebDAV createDocument $parentDocumentId $mimeType $displayName")
         val parent = documentDao.get(parentDocumentId.toLong()) ?: throw FileNotFoundException()
         val createDirectory = mimeType == Document.MIME_TYPE_DIR
 
-        var docId: Long? = null
+        var docId: Long?
         actor.httpClient(parent.mountId).use { client ->
             for (attempt in 0..MAX_NAME_ATTEMPTS) {
                 val newName = displayNameToMemberName(displayName, attempt)
@@ -345,7 +378,7 @@ class DavDocumentsProvider(
         null
     }
 
-    override fun deleteDocument(documentId: String) = runBlocking {
+    fun deleteDocument(documentId: String) = runBlocking {
         logger.fine("WebDAV removeDocument $documentId")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
@@ -367,7 +400,7 @@ class DavDocumentsProvider(
         }
     }
 
-    override fun moveDocument(sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String): String = runBlocking {
+    fun moveDocument(sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String): String = runBlocking {
         logger.fine("WebDAV moveDocument $sourceDocumentId $sourceParentDocumentId $targetParentDocumentId")
         val doc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
         val dstParent = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()
@@ -400,7 +433,7 @@ class DavDocumentsProvider(
         doc.id.toString()
     }
 
-    override fun renameDocument(documentId: String, displayName: String): String? = runBlocking {
+    fun renameDocument(documentId: String, displayName: String): String? = runBlocking {
         logger.fine("WebDAV renameDocument $documentId $displayName")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
@@ -433,20 +466,6 @@ class DavDocumentsProvider(
         null
     }
 
-    private fun displayNameToMemberName(displayName: String, appendNumber: Int = 0): String {
-        val safeName = displayName.filterNot { it.isISOControl() }
-
-        if (appendNumber != 0) {
-            val extension: String? = MimeTypeMap.getFileExtensionFromUrl(displayName)
-            if (extension != null) {
-                val baseName = safeName.removeSuffix(".$extension")
-                return "${baseName}_$appendNumber.$extension"
-            } else
-                return "${safeName}_$appendNumber"
-        } else
-            return safeName
-    }
-
 
     /*** read/write ***/
 
@@ -454,7 +473,7 @@ class DavDocumentsProvider(
         HeadResponse.fromUrl(client, url)
     }
 
-    override fun openDocument(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor = runBlocking {
+    fun openDocument(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor = runBlocking {
         logger.fine("WebDAV openDocument $documentId $mode $signal")
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
@@ -488,13 +507,12 @@ class DavDocumentsProvider(
             fileInfo.supportsPartial == true    // WebDAV server must support random access
         ) {
             logger.fine("Creating RandomAccessCallback for $url")
-            val factory = entryPoint.randomAccessCallbackWrapperFactory()
-            val accessor = factory.create(client, url, doc.mimeType, fileInfo, accessScope)
+            val accessor = randomAccessCallbackWrapperFactory.create(client, url, doc.mimeType, fileInfo, accessScope)
+            val storageManager = context.getSystemService<StorageManager>()!!
             storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
         } else {
             logger.fine("Creating StreamingFileDescriptor for $url")
-            val factory = entryPoint.streamingFileDescriptorFactory()
-            val fd = factory.create(client, url, doc.mimeType, accessScope) { transferred ->
+            val fd = streamingFileDescriptorFactory.create(client, url, doc.mimeType, accessScope) { transferred ->
                 // called when transfer is finished
 
                 val now = System.currentTimeMillis()
@@ -513,11 +531,12 @@ class DavDocumentsProvider(
         }
     }
 
-    override fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?): AssetFileDescriptor? {
+    fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?): AssetFileDescriptor? {
         logger.info("openDocumentThumbnail documentId=$documentId sizeHint=$sizeHint signal=$signal")
 
+        // don't download the large images just to create a thumbnail on metered networks
+        val connectivityManager = context.getSystemService<ConnectivityManager>()!!
         if (connectivityManager.isActiveNetworkMetered)
-            // don't download the large images just to create a thumbnail on metered networks
             return null
 
         if (signal == null) {
@@ -538,7 +557,7 @@ class DavDocumentsProvider(
             return null
         }
 
-        val thumbFile = thumbnailCache.get(docCacheKey, sizeHint) {
+        val thumbFile = thumbnailCache.get().get(docCacheKey, sizeHint) {
             // create thumbnail
             val job = accessScope.async {
                 withTimeout(THUMBNAIL_TIMEOUT_MS) {
@@ -589,13 +608,12 @@ class DavDocumentsProvider(
      * Encapsulates functionality to make it easily testable without generating lots of
      * DocumentProviders during the tests.
      *
-     * By containing the actual implementation logic of [DavDocumentsProvider], it adds a layer of separation
-     * to make the methods of [DavDocumentsProvider] more easily testable.
-     * [DavDocumentsProvider]s methods should do nothing more, but to call [DavDocumentsActor]s methods.
+     * By containing the actual implementation logic of [BaseDavDocumentsProvider], it adds a layer of separation
+     * to make the methods of [BaseDavDocumentsProvider] more easily testable.
+     * [BaseDavDocumentsProvider]s methods should do nothing more, but to call [DavDocumentsActor]s methods.
      */
-    class DavDocumentsActor @AssistedInject constructor(
-        @Assisted private val cookieStores: MutableMap<Long, CookieJar>,
-        @Assisted private val credentialsStore: CredentialsStore,
+    class DavDocumentsActor @Inject constructor(
+        private val credentialsStore: CredentialsStore,
         @ApplicationContext private val context: Context,
         private val db: AppDatabase,
         private val httpClientBuilder: Provider<HttpClient.Builder>,
@@ -603,10 +621,7 @@ class DavDocumentsProvider(
         private val logger: Logger
     ) {
 
-        @AssistedFactory
-        interface Factory {
-            fun create(cookieStore: MutableMap<Long, CookieJar>, credentialsStore: CredentialsStore): DavDocumentsActor
-        }
+        private val cookieStores = mutableMapOf<Long, CookieJar>()
 
         private val authority = context.getString(R.string.webdav_authority)
         private val documentDao = db.webDavDocumentDao()
@@ -715,19 +730,34 @@ class DavDocumentsProvider(
             context.contentResolver.notifyChange(buildChildDocumentsUri(authority, parentDocumentId), null)
         }
 
-
     }
 
+
+    // helpers
+
+    private fun displayNameToMemberName(displayName: String, appendNumber: Int = 0): String {
+        val safeName = displayName.filterNot { it.isISOControl() }
+
+        if (appendNumber != 0) {
+            val extension: String? = MimeTypeMap.getFileExtensionFromUrl(displayName)
+            if (extension != null) {
+                val baseName = safeName.removeSuffix(".$extension")
+                return "${baseName}_$appendNumber.$extension"
+            } else
+                return "${safeName}_$appendNumber"
+        } else
+            return safeName
+    }
 
     private fun HttpException.throwForDocumentProvider(ignorePreconditionFailed: Boolean = false) {
         when (code) {
             HttpURLConnection.HTTP_UNAUTHORIZED -> {
                 if (Build.VERSION.SDK_INT >= 26) {
                     // TODO edit mount
-                    val intent = Intent(ourContext, WebdavMountsActivity::class.java)
+                    val intent = Intent(context, WebdavMountsActivity::class.java)
                     throw AuthenticationRequiredException(
                         this,
-                        TaskStackBuilder.create(ourContext)
+                        TaskStackBuilder.create(context)
                             .addNextIntentWithParentStack(intent)
                             .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                     )
