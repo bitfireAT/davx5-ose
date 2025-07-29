@@ -8,6 +8,10 @@ import android.accounts.Account
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -168,7 +172,7 @@ fun AccountScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun AccountScreen(
     accountName: String,
@@ -321,44 +325,56 @@ fun AccountScreen(
                 modifier = Modifier.padding(padding)
             ) {
                 if (nrPages > 0) {
-                    TabRow(selectedTabIndex = pagerState.currentPage) {
-                        val scrollState = when (pagerState.currentPage) {
+                    SharedTransitionLayout {
+                        val cantScrollBackward = when (pagerState.currentPage) {
                             idxCalDav -> calDavScrollState
                             idxCardDav -> cardDavScrollState
                             idxWebcal -> webcalScrollState
                             else -> null
-                        }
+                        }?.canScrollBackward == false
 
-                        if (idxCalDav != null) AccountScreen_Tab(
-                            selected = pagerState.currentPage == idxCalDav,
-                            scrollState = scrollState,
-                            icon = Icons.Default.CalendarToday,
-                            text = stringResource(R.string.account_caldav),
-                        ) {
-                            scope.launch {
-                                pagerState.scrollToPage(idxCalDav)
-                            }
-                        }
+                        AnimatedContent(
+                            targetState = cantScrollBackward
+                        ) { showIcon ->
+                            TabRow(selectedTabIndex = pagerState.currentPage) {
+                                if (idxCalDav != null) AccountScreen_Tab(
+                                    selected = pagerState.currentPage == idxCalDav,
+                                    showIcon = showIcon,
+                                    icon = Icons.Default.CalendarToday,
+                                    text = stringResource(R.string.account_caldav),
+                                    animatedVisibilityScope = this@AnimatedContent,
+                                    sharedTransitionScope = this@SharedTransitionLayout,
+                                ) {
+                                    scope.launch {
+                                        pagerState.scrollToPage(idxCalDav)
+                                    }
+                                }
 
-                        if (idxCardDav != null) AccountScreen_Tab(
-                            selected = pagerState.currentPage == idxCardDav,
-                            scrollState = scrollState,
-                            icon = Icons.Default.Person,
-                            text = stringResource(R.string.account_carddav),
-                        ) {
-                            scope.launch {
-                                pagerState.scrollToPage(idxCardDav)
-                            }
-                        }
+                                if (idxCardDav != null) AccountScreen_Tab(
+                                    selected = pagerState.currentPage == idxCardDav,
+                                    showIcon = showIcon,
+                                    icon = Icons.Default.Person,
+                                    text = stringResource(R.string.account_carddav),
+                                    animatedVisibilityScope = this@AnimatedContent,
+                                    sharedTransitionScope = this@SharedTransitionLayout,
+                                ) {
+                                    scope.launch {
+                                        pagerState.scrollToPage(idxCardDav)
+                                    }
+                                }
 
-                        if (idxWebcal != null) AccountScreen_Tab(
-                            selected = pagerState.currentPage == idxCardDav,
-                            scrollState = scrollState,
-                            icon = Icons.Default.Upcoming,
-                            text = stringResource(R.string.account_webcal),
-                        ) {
-                            scope.launch {
-                                pagerState.scrollToPage(idxWebcal)
+                                if (idxWebcal != null) AccountScreen_Tab(
+                                    selected = pagerState.currentPage == idxCardDav,
+                                    showIcon = showIcon,
+                                    icon = Icons.Default.Upcoming,
+                                    text = stringResource(R.string.account_webcal),
+                                    animatedVisibilityScope = this@AnimatedContent,
+                                    sharedTransitionScope = this@SharedTransitionLayout,
+                                ) {
+                                    scope.launch {
+                                        pagerState.scrollToPage(idxWebcal)
+                                    }
+                                }
                             }
                         }
                     }
@@ -445,30 +461,49 @@ fun AccountScreen(
 }
 
 @Composable
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun AccountScreen_Tab(
     selected: Boolean,
-    scrollState: LazyListState?,
+    showIcon: Boolean,
     icon: ImageVector,
     text: String,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onClick: () -> Unit,
 ) {
-    AnimatedContent(
-        targetState = scrollState?.canScrollBackward
-    ) { canScrollBackward ->
-        if (canScrollBackward == false) {
+    with(sharedTransitionScope) {
+        if (showIcon) {
             Tab(
                 selected = selected,
                 onClick = onClick,
                 icon = { Icon(imageVector = icon, contentDescription = text) },
                 text = {
-                    Text(text, modifier = Modifier.padding(8.dp))
+                    Text(
+                        text,
+                        modifier = Modifier
+                            .sharedElement(
+                                rememberSharedContentState(key = text),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
+                            .padding(8.dp)
+                    )
                 }
             )
         } else {
             Tab(
                 selected = selected,
                 onClick = onClick,
-                content = { Text(text, modifier = Modifier.padding(8.dp)) }
+                content = {
+                    Text(
+                        text,
+                        modifier = Modifier
+                            .sharedElement(
+                                rememberSharedContentState(key = text),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
+                            .padding(8.dp)
+                    )
+                }
             )
         }
     }
