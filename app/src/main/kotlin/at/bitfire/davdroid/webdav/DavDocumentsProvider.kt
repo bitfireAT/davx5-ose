@@ -7,8 +7,6 @@ package at.bitfire.davdroid.webdav
 import android.graphics.Point
 import android.os.CancellationSignal
 import android.provider.DocumentsProvider
-import android.util.Log
-import at.bitfire.davdroid.webdav.di.WebdavComponentManager
 import at.bitfire.davdroid.webdav.operation.CopyDocumentOperation
 import at.bitfire.davdroid.webdav.operation.CreateDocumentOperation
 import at.bitfire.davdroid.webdav.operation.DeleteDocumentOperation
@@ -24,15 +22,16 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 
 /**
  * Provides functionality on WebDav documents.
  *
  * Hilt constructor injection can't be used for content providers because SingletonComponent
  * may not ready yet when the content provider is created. So we use an explicit EntryPoint.
+ *
+ * Note: A DocumentsProvider is a ContentProvider and thus has no well-defined lifecycle. It
+ * is created by Android when it's first accessed and then stays in memory until the process
+ * is killed.
  */
 class DavDocumentsProvider: DocumentsProvider() {
 
@@ -50,29 +49,17 @@ class DavDocumentsProvider: DocumentsProvider() {
         fun queryDocumentOperation(): QueryDocumentOperation
         fun queryRootsOperation(): QueryRootsOperation
         fun renameDocumentOperation(): RenameDocumentOperation
-        fun webdavComponentManager(): WebdavComponentManager
     }
-
-    /**
-     * This scope is used to cancel current operations on [shutdown].
-     */
-    val providerScope = CoroutineScope(SupervisorJob())
 
     private val entryPoint: DavDocumentsProviderEntryPoint by lazy {
         EntryPointAccessors.fromApplication<DavDocumentsProviderEntryPoint>(context!!)
     }
 
 
-    override fun onCreate(): Boolean {
-        Log.v("DavDocumentsProvider", "onCreate()")
-        return true
-    }
+    override fun onCreate() = true
 
-    override fun shutdown() {
-        Log.v("DavDocumentsProvider", "onDestroy()")
-        providerScope.cancel()
-        entryPoint.webdavComponentManager().resetComponent()
-    }
+    /* Note: shutdown() is NOT called automatically by Android; a content provider lives until
+    the process is killed. */
 
 
     /*** query ***/
@@ -84,7 +71,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         entryPoint.queryDocumentOperation().invoke(documentId, projection)
 
     override fun queryChildDocuments(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
-        entryPoint.queryChildDocumentsOperation().invoke(providerScope, parentDocumentId, projection, sortOrder)
+        entryPoint.queryChildDocumentsOperation().invoke(parentDocumentId, projection, sortOrder)
 
     override fun isChildDocument(parentDocumentId: String, documentId: String) =
         entryPoint.isChildDocumentOperation().invoke(parentDocumentId, documentId)

@@ -30,6 +30,7 @@ import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import java.io.FileNotFoundException
@@ -50,14 +51,14 @@ class QueryChildDocumentsOperation @Inject constructor(
     private val authority = context.getString(R.string.webdav_authority)
     private val documentDao = db.webDavDocumentDao()
 
-    @Synchronized
-    operator fun invoke(externalScope: CoroutineScope, parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
+    private val backgroundScope = CoroutineScope(SupervisorJob())
+
+    operator fun invoke(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
         synchronized(QueryChildDocumentsOperation::class.java) {
-            queryChildDocuments(externalScope, parentDocumentId, projection, sortOrder)
+            queryChildDocuments(parentDocumentId, projection, sortOrder)
         }
 
     private fun queryChildDocuments(
-        externalScope: CoroutineScope,
         parentDocumentId: String,
         projection: Array<out String>?,
         sortOrder: String?
@@ -82,7 +83,7 @@ class QueryChildDocumentsOperation @Inject constructor(
 
         // Dispatch worker querying for the children and keep track of it
         val running = runningQueryChildren.getOrPut(parentId) {
-            externalScope.launch {
+            backgroundScope.launch {
                 queryChildren(parent)
                 // Once the query is done, set query as finished (not running)
                 runningQueryChildren[parentId] = false

@@ -5,12 +5,13 @@
 package at.bitfire.davdroid.webdav
 
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.MemoryCookieStore
+import okhttp3.CookieJar
 import okhttp3.logging.HttpLoggingInterceptor
 import javax.inject.Inject
 import javax.inject.Provider
 
 class DavHttpClientBuilder @Inject constructor(
-    private val cookieStoreManager: CookieStoreManager,
     private val credentialsStore: CredentialsStore,
     private val httpClientBuilder: Provider<HttpClient.Builder>,
 ) {
@@ -22,15 +23,27 @@ class DavHttpClientBuilder @Inject constructor(
      * @param logBody    whether to log the body of HTTP requests (disable for potentially large files)
      */
     fun build(mountId: Long, logBody: Boolean = true): HttpClient {
+        val cookieStore = cookieStores.getOrPut(mountId) {
+            MemoryCookieStore()
+        }
         val builder = httpClientBuilder.get()
             .loggerInterceptorLevel(if (logBody) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.HEADERS)
-            .setCookieStore(cookieStoreManager.forMount(mountId))
+            .setCookieStore(cookieStore)
 
         credentialsStore.getCredentials(mountId)?.let { credentials ->
             builder.authenticate(host = null, getCredentials = { credentials })
         }
 
         return builder.build()
+    }
+
+
+    companion object {
+
+        /** in-memory cookie stores (one per mount ID) that are available until the content
+         * provider (= process) is terminated */
+        private val cookieStores = mutableMapOf<Long, CookieJar>()
+
     }
 
 }
