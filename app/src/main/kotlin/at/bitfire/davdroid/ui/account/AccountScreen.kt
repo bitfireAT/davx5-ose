@@ -364,7 +364,7 @@ fun AccountScreen(
                                 }
 
                                 if (idxWebcal != null) AccountScreen_Tab(
-                                    selected = pagerState.currentPage == idxCardDav,
+                                    selected = pagerState.currentPage == idxWebcal,
                                     showIcon = showIcon,
                                     icon = Icons.Default.Upcoming,
                                     text = stringResource(R.string.account_webcal),
