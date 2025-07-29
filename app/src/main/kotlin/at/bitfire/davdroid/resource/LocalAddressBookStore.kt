@@ -78,8 +78,12 @@ class LocalAddressBookStore @Inject constructor(
         return sb.toString()
     }
 
-    override fun acquireContentProvider() =
+    override fun acquireContentProvider() = try {
         context.contentResolver.acquireContentProviderClient(authority)
+    } catch (_: SecurityException) {
+        // The content provider is not available for some reason. Probably because the permission is no longer granted.
+        null
+    }
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalAddressBook? {
         val service = serviceRepository.getBlocking(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
