@@ -11,7 +11,6 @@ import android.os.storage.StorageManager
 import android.text.format.Formatter
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.db.WebDavDocument
-import at.bitfire.davdroid.webdav.WebdavScoped
 import com.google.common.hash.Hashing
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -21,7 +20,6 @@ import javax.inject.Inject
 /**
  * Simple disk cache for image thumbnails.
  */
-@WebdavScoped
 class ThumbnailCache @Inject constructor(
     @ApplicationContext context: Context,
     logger: Logger

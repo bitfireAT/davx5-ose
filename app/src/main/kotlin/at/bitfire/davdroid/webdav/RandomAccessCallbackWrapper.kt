@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.webdav
 
-import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.ProxyFileDescriptorCallback
@@ -49,7 +48,7 @@ import kotlin.concurrent.schedule
  *
  * @param httpClient    HTTP client – [RandomAccessCallbackWrapper] is responsible to close it
  */
-@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(26)
 class RandomAccessCallbackWrapper @AssistedInject constructor(
     @Assisted private val httpClient: HttpClient,
     @Assisted private val url: HttpUrl,

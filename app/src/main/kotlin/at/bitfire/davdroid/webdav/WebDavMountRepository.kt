@@ -66,7 +66,7 @@ class WebDavMountRepository @Inject constructor(
         credentialsStore.setCredentials(id, credentials)
 
         // notify content URI listeners
-        DavDocumentsProvider.notifyMountsChanged(context)
+        DocumentProviderUtils.notifyMountsChanged(context)
 
         return true
     }
@@ -79,7 +79,7 @@ class WebDavMountRepository @Inject constructor(
         CredentialsStore(context).setCredentials(mount.id, null)
 
         // notify content URI listeners
-        DavDocumentsProvider.notifyMountsChanged(context)
+        DocumentProviderUtils.notifyMountsChanged(context)
     }
 
     fun getAllFlow() = mountDao.getAllFlow()
