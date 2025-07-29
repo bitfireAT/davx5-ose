@@ -10,7 +10,7 @@ import androidx.work.WorkInfo
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.SyncFrameworkIntegration
+import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.qualifiers.ApplicationContext

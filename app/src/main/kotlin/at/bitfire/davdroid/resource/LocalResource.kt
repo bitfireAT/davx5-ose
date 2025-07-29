@@ -5,7 +5,11 @@
 package at.bitfire.davdroid.resource
 
 import android.net.Uri
+import at.bitfire.davdroid.resource.LocalResource.Companion.FLAG_REMOTELY_PRESENT
 
+/**
+ * Defines operations that are used by SyncManager for all sync data types.
+ */
 interface LocalResource<in TData: Any> {
 
     companion object {
@@ -56,9 +60,10 @@ interface LocalResource<in TData: Any> {
      * Unsets the /dirty/ field of the resource. Typically used after successfully uploading a
      * locally modified resource.
      *
-     * @param fileName If this argument is not *null*, [LocalResource.fileName] will be set to its value.
-     * @param eTag ETag of the uploaded resource as returned by the server (null if the server didn't return one)
-     * @param scheduleTag CalDAV Schedule-Tag of the uploaded resource as returned by the server (null if not applicable or if the server didn't return one)
+     * @param fileName      If this argument is not *null*, [LocalResource.fileName] will be set to its value.
+     * @param eTag          ETag of the uploaded resource as returned by the server (null if the server didn't return one)
+     * @param scheduleTag   CalDAV only: `Schedule-Tag` of the uploaded resource as returned by the server
+     *                      (null if not applicable or if the server didn't return one)
      */
     fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String? = null)
 
@@ -67,14 +72,6 @@ interface LocalResource<in TData: Any> {
      * 0 and [FLAG_REMOTELY_PRESENT].
      */
     fun updateFlags(flags: Int)
-
-
-    /**
-     * Adds the data object to the content provider and ensures that the dirty flag is clear.
-     *
-     * @return content URI of the created row (e.g. event URI)
-     */
-    fun add(): Uri
 
     /**
      * Updates the data object in the content provider and ensures that the dirty flag is clear.

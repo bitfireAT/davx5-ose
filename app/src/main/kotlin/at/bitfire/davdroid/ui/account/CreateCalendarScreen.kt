@@ -228,7 +228,6 @@ fun CreateCalendarScreen(
                         value = description,
                         onValueChange = onSetDescription,
                         label = { Text(stringResource(R.string.create_collection_description_optional)) },
-                        supportingText = { Text(stringResource(R.string.create_collection_optional)) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done
@@ -251,7 +250,6 @@ fun CreateCalendarScreen(
                             label = { Text(stringResource(R.string.create_calendar_time_zone_optional)) },
                             value = timeZone ?: stringResource(R.string.create_calendar_time_zone_none),
                             onValueChange = { /* read-only */ },
-                            supportingText = { Text(stringResource(R.string.create_collection_optional)) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                             readOnly = true,
                             modifier = Modifier

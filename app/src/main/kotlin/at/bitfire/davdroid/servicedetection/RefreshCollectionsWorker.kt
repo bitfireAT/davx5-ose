@@ -63,10 +63,13 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val collectionListRefresherFactory: CollectionListRefresher.Factory,
+    private val homeSetRefresherFactory: HomeSetRefresher.Factory,
     private val httpClientBuilder: HttpClient.Builder,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry,
+    private val principalsRefresherFactory: PrincipalsRefresher.Factory,
     private val pushRegistrationManager: PushRegistrationManager,
+    private val serviceRefresherFactory: ServiceRefresher.Factory,
     serviceRepository: DavServiceRepository
 ): CoroutineWorker(appContext, workerParams) {
 
@@ -161,17 +164,20 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         // refresh home set list (from principal url)
                         service.principal?.let { principalUrl ->
                             logger.fine("Querying principal $principalUrl for home sets")
-                            refresher.discoverHomesets(principalUrl)
+                            val serviceRefresher = serviceRefresherFactory.create(service, httpClient)
+                            serviceRefresher.discoverHomesets(principalUrl)
                         }
 
                         // refresh home sets and their member collections
-                        refresher.refreshHomesetsAndTheirCollections()
+                        homeSetRefresherFactory.create(service, httpClient)
+                            .refreshHomesetsAndTheirCollections()
 
                         // also refresh collections without a home set
                         refresher.refreshHomelessCollections()
 
                         // Lastly, refresh the principals (collection owners)
-                        refresher.refreshPrincipals()
+                        val principalsRefresher = principalsRefresherFactory.create(service, httpClient)
+                        principalsRefresher.refreshPrincipals()
                     }
                 }
 

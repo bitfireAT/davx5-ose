@@ -9,6 +9,9 @@ import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
+import at.bitfire.ical4android.LegacyAndroidCalendar
+import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.calendar.AndroidEvent2
 import java.util.UUID
 
 class LocalEvent(
@@ -37,8 +40,6 @@ class LocalEvent(
     override val flags: Int
         get() = androidEvent.flags
 
-    override fun add() = androidEvent.add()
-
     override fun update(data: Event) = androidEvent.update(data)
 
     override fun delete() = androidEvent.delete()
@@ -46,8 +47,64 @@ class LocalEvent(
 
     // other methods
 
-    val weAreOrganizer
-        get() = androidEvent.event!!.isOrganizer == true
+    private var _event: Event? = null
+    /**
+     * Retrieves the event from the content provider and converts it to a legacy data object.
+     *
+     * Caches the result: the content provider is only queried at the first call and then
+     * this method always returns the same object.
+     *
+     * @throws LocalStorageException    if there is no local event with the ID from [androidEvent]
+     */
+    @Synchronized
+    fun getCachedEvent(): Event {
+        _event?.let { return it }
+
+        val legacyCalendar = LegacyAndroidCalendar(androidEvent.calendar)
+        val event = legacyCalendar.getEvent(androidEvent.id)
+            ?: throw LocalStorageException("Event ${androidEvent.id} not found")
+
+        _event = event
+        return event
+    }
+
+    /**
+     * Generates the [Event] that should actually be uploaded:
+     *
+     * 1. Takes the [getCachedEvent].
+     * 2. Calculates the new SEQUENCE.
+     *
+     * _Note: This method currently modifies the object returned by [getCachedEvent], but
+     * this may change in the future._
+     *
+     * @return data object that should be used for uploading
+     */
+    fun eventToUpload(): Event {
+        val event = getCachedEvent()
+
+        val nonGroupScheduled = event.attendees.isEmpty()
+        val weAreOrganizer = event.isOrganizer == true
+
+        // Increase sequence (event.sequence null/non-null behavior is defined by the Event, see KDoc of event.sequence):
+        // - If it's null, the event has just been created in the database, so we can start with SEQUENCE:0 (default).
+        // - If it's non-null, the event already exists on the server, so increase by one.
+        val sequence = event.sequence
+        if (sequence != null && (nonGroupScheduled || weAreOrganizer))
+            event.sequence = sequence + 1
+
+        return event
+    }
+
+    /**
+     * Updates the SEQUENCE of the event in the content provider.
+     *
+     * @param sequence  new sequence value
+     */
+    fun updateSequence(sequence: Int?) {
+        androidEvent.update(contentValuesOf(
+            AndroidEvent2.COLUMN_SEQUENCE to sequence
+        ))
+    }
 
 
     /**
@@ -58,16 +115,16 @@ class LocalEvent(
      */
     override fun prepareForUpload(): String {
         // make sure that UID is set
-        val uid: String = androidEvent.event!!.uid ?: run {
+        val uid: String = getCachedEvent().uid ?: run {
             // generate new UID
             val newUid = UUID.randomUUID().toString()
 
-            // update in calendar provider
+            // persist to calendar provider
             val values = contentValuesOf(Events.UID_2445 to newUid)
             androidEvent.update(values)
 
-            // update this event
-            androidEvent.event?.uid = newUid
+            // update in cached event data object
+            getCachedEvent().uid = newUid
 
             newUid
         }
@@ -85,14 +142,12 @@ class LocalEvent(
             "${UUID.randomUUID()}.ics"      // UID would be dangerous as file name, use random UUID instead
     }
 
-
     override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
         val values = ContentValues(5)
         if (fileName != null)
             values.put(Events._SYNC_ID, fileName)
-        values.put(AndroidEvent.COLUMN_ETAG, eTag)
-        values.put(AndroidEvent.COLUMN_SCHEDULE_TAG, scheduleTag)
-        values.put(AndroidEvent.COLUMN_SEQUENCE, androidEvent.event!!.sequence)
+        values.put(AndroidEvent2.COLUMN_ETAG, eTag)
+        values.put(AndroidEvent2.COLUMN_SCHEDULE_TAG, scheduleTag)
         values.put(Events.DIRTY, 0)
         androidEvent.update(values)
 
@@ -103,7 +158,7 @@ class LocalEvent(
     }
 
     override fun updateFlags(flags: Int) {
-        val values = contentValuesOf(AndroidEvent.COLUMN_FLAGS to flags)
+        val values = contentValuesOf(AndroidEvent2.COLUMN_FLAGS to flags)
         androidEvent.update(values)
 
         androidEvent.flags = flags
