@@ -481,7 +481,7 @@ fun AccountScreen_Tab(
                     Text(
                         text,
                         modifier = Modifier
-                            .sharedElement(
+                            .sharedBounds(
                                 rememberSharedContentState(key = text),
                                 animatedVisibilityScope = animatedVisibilityScope,
                             )
@@ -497,7 +497,7 @@ fun AccountScreen_Tab(
                     Text(
                         text,
                         modifier = Modifier
-                            .sharedElement(
+                            .sharedBounds(
                                 rememberSharedContentState(key = text),
                                 animatedVisibilityScope = animatedVisibilityScope,
                             )
