@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.webdav
 
-import android.content.Context
 import android.os.ParcelFileDescriptor
 import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.DavResource
@@ -15,7 +14,6 @@ import at.bitfire.davdroid.util.DavUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -27,17 +25,17 @@ import okio.BufferedSink
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillClose
 
 /**
- * @param client    HTTP client– [StreamingFileDescriptor] is responsible to close it
+ * @param client    HTTP client ([StreamingFileDescriptor] is responsible to close it)
  */
 class StreamingFileDescriptor @AssistedInject constructor(
-    @Assisted private val client: HttpClient,
+    @Assisted @WillClose private val client: HttpClient,
     @Assisted private val url: HttpUrl,
     @Assisted private val mimeType: MediaType?,
     @Assisted private val externalScope: CoroutineScope,
     @Assisted private val finishedCallback: OnSuccessCallback,
-    @ApplicationContext private val context: Context,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
@@ -96,8 +94,6 @@ class StreamingFileDescriptor @AssistedInject constructor(
         dav.get(DavUtils.acceptAnything(preferred = mimeType), null) { response ->
             response.body.use { body ->
                 if (response.isSuccessful) {
-                    val length = body.contentLength()
-
                     ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { output ->
                         val buffer = ByteArray(BUFFER_SIZE)
                         body.byteStream().use { source ->

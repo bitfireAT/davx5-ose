@@ -20,7 +20,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.RequestBody
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -56,7 +56,7 @@ class CreateDocumentOperation @Inject constructor(
                                 // directory successfully created
                             }
                         else
-                            doc.put("".toRequestBody(null), ifNoneMatch = true) {
+                            doc.put(RequestBody.EMPTY, ifNoneMatch = true) {
                                 // document successfully created
                             }
                     }
@@ -66,8 +66,11 @@ class CreateDocumentOperation @Inject constructor(
                             mountId = parent.mountId,
                             parentId = parent.id,
                             name = newName,
+                            isDirectory = createDirectory,
                             mimeType = mimeType.toMediaTypeOrNull(),
-                            isDirectory = createDirectory
+                            eTag = null,
+                            lastModified = null,
+                            size = if (createDirectory) null else 0
                         )
                     )
 

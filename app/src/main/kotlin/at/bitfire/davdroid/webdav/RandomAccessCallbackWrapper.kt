@@ -56,13 +56,13 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
         callbackFactory.create(httpClient, url, mimeType, headResponse, externalScope)
 
     private fun requireCallback(functionName: String): RandomAccessCallback =
-        callbackRef ?: throw ErrnoException(functionName, OsConstants.ECANCELED)
+        callbackRef ?: throw ErrnoException(functionName, OsConstants.EBADF)
 
 
     // non-interface delegates
 
-    fun fileDescriptor(modeFlags: Int) =
-        requireCallback("fileDescriptor").fileDescriptor(modeFlags)
+    fun fileDescriptor() =
+        requireCallback("fileDescriptor").fileDescriptor()
 
 
     // delegating implementation of ProxyFileDescriptorCallback
@@ -79,7 +79,7 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
         requireCallback("onWrite").onWrite(offset, size, data)
 
     override fun onRelease() {
-        requireCallback("onWrite").onRelease()
+        requireCallback("onRelease").onRelease()
 
         // remove reference to allow garbage collection
         callbackRef = null

@@ -93,10 +93,10 @@ class RandomAccessCallback @AssistedInject constructor(
     /**
      * Returns a random-access file descriptor that can be used in a DocumentsProvider.
      */
-    fun fileDescriptor(modeFlags: Int): ParcelFileDescriptor {
+    fun fileDescriptor(): ParcelFileDescriptor {
         val storageManager = context.getSystemService<StorageManager>()!!
         val handler = Handler(Looper.getMainLooper())
-        return storageManager.openProxyFileDescriptor(modeFlags, this, handler)
+        return storageManager.openProxyFileDescriptor(ParcelFileDescriptor.MODE_READ_ONLY, this, handler)
     }
 
 

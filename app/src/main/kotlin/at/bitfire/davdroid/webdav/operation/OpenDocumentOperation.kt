@@ -8,7 +8,6 @@ import android.content.Context
 import android.os.Build
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
-import android.system.OsConstants
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
@@ -49,8 +48,11 @@ class OpenDocumentOperation @Inject constructor(
         val url = doc.toHttpUrl(db)
         val client = httpClientBuilder.build(doc.mountId, logBody = false)
 
-        val modeFlags = ParcelFileDescriptor.parseMode(mode)
-        val readOnlyMode = modeFlags.and(OsConstants.O_ACCMODE) == OsConstants.O_RDONLY
+        val readOnlyMode = when (mode) {
+            "r" -> true
+            "w", "wt" -> false
+            else -> throw UnsupportedOperationException("Mode $mode not supported by WebDAV")
+        }
 
         val accessScope = CoroutineScope(SupervisorJob())
         signal?.setOnCancelListener {
@@ -73,7 +75,7 @@ class OpenDocumentOperation @Inject constructor(
         ) {
             logger.fine("Creating RandomAccessCallback for $url")
             val accessor = randomAccessCallbackWrapperFactory.create(client, url, doc.mimeType, fileInfo, accessScope)
-            accessor.fileDescriptor(modeFlags)
+            accessor.fileDescriptor()
 
         } else {
             logger.fine("Creating StreamingFileDescriptor for $url")
