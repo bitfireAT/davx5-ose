@@ -6,7 +6,7 @@ package at.bitfire.davdroid.webdav
 
 import android.content.Context
 import android.os.Handler
-import android.os.HandlerThread
+import android.os.Looper
 import android.os.ParcelFileDescriptor
 import android.os.ProxyFileDescriptorCallback
 import android.os.storage.StorageManager
@@ -22,6 +22,7 @@ import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.DavUtils
@@ -48,12 +49,13 @@ import java.util.logging.Logger
 
 @RequiresApi(26)
 class RandomAccessCallback @AssistedInject constructor(
-    @Assisted val httpClient: HttpClient,
-    @Assisted val url: HttpUrl,
-    @Assisted val mimeType: MediaType?,
+    @Assisted private val httpClient: HttpClient,
+    @Assisted private val url: HttpUrl,
+    @Assisted private val mimeType: MediaType?,
     @Assisted headResponse: HeadResponse,
     @Assisted private val externalScope: CoroutineScope,
-    @ApplicationContext val context: Context,
+    @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry
 ): ProxyFileDescriptorCallback() {
@@ -102,17 +104,15 @@ class RandomAccessCallback @AssistedInject constructor(
     private val pagingReader = PagingReader(fileSize, MAX_PAGE_SIZE, pageCache)
 
 
-    // file descriptor and handler
-
-    private val workerThread = HandlerThread(javaClass.simpleName).apply { start() }
-    val workerHandler: Handler = Handler(workerThread.looper)
+    // file descriptor
 
     /**
      * Returns a random-access file descriptor that can be used in a DocumentsProvider.
      */
     fun fileDescriptor(modeFlags: Int): ParcelFileDescriptor {
         val storageManager = context.getSystemService<StorageManager>()!!
-        return storageManager.openProxyFileDescriptor(modeFlags, this, workerHandler)
+        val handler = Handler(Looper.getMainLooper())
+        return storageManager.openProxyFileDescriptor(modeFlags, this, handler)
     }
 
 
@@ -142,15 +142,15 @@ class RandomAccessCallback @AssistedInject constructor(
         // remove notification
         notificationManager.cancel(notificationTag, NotificationRegistry.NOTIFY_WEBDAV_ACCESS)
 
-        // shut down I/O thread
-        workerThread.quitSafely()
+        // free resources
+        httpClient.close()
     }
 
 
     // scope / cancellation
 
     /**
-     * Runs blocking in [externalScope].
+     * Runs blocking on I/O dispatcher in [externalScope].
      *
      * Exceptions (including [CancellationException]) are wrapped in an [ErrnoException], as expected by the file
      * descriptor / Storage Access Framework.
@@ -158,7 +158,7 @@ class RandomAccessCallback @AssistedInject constructor(
      * @param functionName  name of the operation, passed to [ErrnoException] in case of cancellation
      */
     private fun<T> runBlockingFd(functionName: String, block: () -> T): T =
-        runBlocking {
+        runBlocking(ioDispatcher) {
             try {
                 externalScope.async {
                     block()
