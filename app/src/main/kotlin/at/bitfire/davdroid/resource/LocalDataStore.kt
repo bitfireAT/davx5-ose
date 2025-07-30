@@ -25,9 +25,10 @@ interface LocalDataStore<T: LocalCollection<*>> {
      *
      * **The caller is responsible for closing the content provider client!**
      *
-     * @param throwOnMissingPermissions If `true`, the function will throw [SecurityException] if permissions are not granted. Defaults to `false`.
+     * @param throwOnMissingPermissions If `true`, the function will throw [SecurityException] if permissions are not granted.
      *
-     * @return the content provider client, or `null` if the content provider could not be acquired (or permissions are not granted and [throwOnMissingPermissions] is `false`)
+     * @return the content provider client, or `null` if the content provider could not be acquired (or permissions are not
+     * granted and [throwOnMissingPermissions] is `false`)
      *
      * @throws SecurityException on missing permissions
      */
@@ -36,7 +37,7 @@ interface LocalDataStore<T: LocalCollection<*>> {
     /**
      * Creates a new local collection from the given (remote) collection info.
      *
-     * @param provider       the content provider client
+     * @param client        the content provider client
      * @param fromCollection collection info
      *
      * @return the new local collection, or `null` if creation failed
@@ -48,7 +49,7 @@ interface LocalDataStore<T: LocalCollection<*>> {
      * [Collection] entry.
      *
      * @param account  the account that the data store is associated with
-     * @param provider the content provider client
+     * @param client   the content provider client
      *
      * @return a list of all local collections
      */
@@ -57,7 +58,7 @@ interface LocalDataStore<T: LocalCollection<*>> {
     /**
      * Updates the local collection with the data from the given (remote) collection info.
      *
-     * @param provider        the content provider client
+     * @param client          the content provider client
      * @param localCollection the local collection to update
      * @param fromCollection  collection info
      */

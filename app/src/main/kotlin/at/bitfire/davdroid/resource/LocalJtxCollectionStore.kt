@@ -40,9 +40,10 @@ class LocalJtxCollectionStore @Inject constructor(
     override fun acquireContentProvider(throwOnMissingPermissions: Boolean) = try {
         context.contentResolver.acquireContentProviderClient(authority)
     } catch (e: SecurityException) {
-        // The content provider is not available for some reason. Probably because the permission is no longer granted.
-        if (throwOnMissingPermissions) throw e
-        null
+        if (throwOnMissingPermissions)
+            throw e
+        else
+            /* return */ null
     }
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalJtxCollection? {
