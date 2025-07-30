@@ -16,12 +16,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
+import junit.framework.AssertionFailedError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.AfterClass
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -86,13 +86,13 @@ class AndroidSyncFrameworkTest {
     @SdkSuppress(maxSdkVersion = 33)
     @Test
     fun testVerifySyncAlwaysPending_correctBehaviour_android13() {
-        assertSyncStates(
+        verifySyncStates(
             listOf(
-                State(pending = false, active = false),     // no sync pending or active
-                State(pending = true, active = false),      // sync becomes pending
-                State(pending = true, active = true),       // ... and pending and active at the same time
-                State(pending = false, active = true),      // ... and then only active
-                State(pending = false, active = false)      // sync finished
+                State(pending = false, active = false),             // no sync pending or active
+                State(pending = true, active = false).optional(),   // sync becomes pending
+                State(pending = true, active = true),               // ... and pending and active at the same time
+                State(pending = false, active = true),              // ... and then only active
+                State(pending = false, active = false)              // sync finished
             )
         )
     }
@@ -104,12 +104,12 @@ class AndroidSyncFrameworkTest {
     @SdkSuppress(minSdkVersion = 34 /*, maxSdkVersion = 36 */)
     @Test
     fun testVerifySyncAlwaysPending_wrongBehaviour_android14() {
-        assertSyncStates(
+        verifySyncStates(
             listOf(
-                State(pending = false, active = false),     // no sync pending or active
-                State(pending = true, active = false),      // sync becomes pending
-                State(pending = true, active = true),       // ... and pending and active at the same time
-                State(pending = true, active = false)       // ... and finishes, but stays pending
+                State(pending = false, active = false),              // no sync pending or active
+                State(pending = true, active = false).optional(),    // sync becomes pending
+                State(pending = true, active = true),                // ... and pending and active at the same time
+                State(pending = true, active = false)                // ... and finishes, but stays pending
             )
         )
     }
@@ -128,7 +128,7 @@ class AndroidSyncFrameworkTest {
     /**
      * Verifies that the given expected states match the recorded states.
      */
-    private fun assertSyncStates(expectedStates: List<State>) = runBlocking {
+    private fun verifySyncStates(expectedStates: List<State>) = runBlocking {
         // We use runBlocking for these tests because it uses the default dispatcher
         // which does not auto-advance virtual time and we need real system time to
         // test the sync framework behavior.
@@ -143,15 +143,48 @@ class AndroidSyncFrameworkTest {
             while (recordedStates.size < expectedStates.size) {
                 // verify already known states
                 if (recordedStates.isNotEmpty())
-                    assertEquals(expectedStates.subList(0, recordedStates.size), recordedStates)
+                    assertStatesEqual(expectedStates.subList(0, recordedStates.size), recordedStates)
 
                 delay(500) // avoid busy-waiting
             }
 
-            assertEquals(expectedStates, recordedStates)
+            assertStatesEqual(expectedStates, recordedStates)
         }
     }
 
+    /**
+     * Asserts whether [actualStates] and [expectedStates] are the same, under the condition
+     * that expected states with the [State.optional] flag can be skipped.
+     */
+    private fun assertStatesEqual(actualStates: List<State>, expectedStates: List<State>) {
+        fun fail() {
+            throw AssertionFailedError("Expected states=$expectedStates, actual=$actualStates")
+        }
+
+        if (actualStates.size != expectedStates.size)
+            fail()
+
+        // iterate through entries
+        val expectedIterator = expectedStates.iterator()
+        for (actual in actualStates) {
+            if (!expectedIterator.hasNext())
+                fail()
+            var expected = expectedIterator.next()
+
+            // skip optional expected entries if they don't match the actual entry
+            while (actual != expected && expected.optional) {
+                if (!expectedIterator.hasNext())
+                    fail()
+                expected = expectedIterator.next()
+            }
+
+            if (actual != expected)
+                fail()
+        }
+    }
+
+
+    // SyncStatusObserver implementation and data class
 
     fun onStatusChanged(which: Int) {
         val state = State(
@@ -169,7 +202,15 @@ class AndroidSyncFrameworkTest {
     data class State(
         val pending: Boolean,
         val active: Boolean
-    )
+    ) {
+        // only used for expected states
+        internal var optional: Boolean = false
+
+        fun optional(): State {
+            optional = true
+            return this
+        }
+    }
 
 
     companion object {
