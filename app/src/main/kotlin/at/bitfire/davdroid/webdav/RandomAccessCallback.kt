@@ -12,19 +12,14 @@ import android.os.ProxyFileDescriptorCallback
 import android.os.storage.StorageManager
 import android.system.ErrnoException
 import android.system.OsConstants
-import android.text.format.Formatter
 import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.DavUtils
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
@@ -56,8 +51,7 @@ class RandomAccessCallback @AssistedInject constructor(
     @Assisted private val externalScope: CoroutineScope,
     @ApplicationContext private val context: Context,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val logger: Logger,
-    private val notificationRegistry: NotificationRegistry
+    private val logger: Logger
 ): ProxyFileDescriptorCallback() {
 
     companion object {
@@ -83,17 +77,6 @@ class RandomAccessCallback @AssistedInject constructor(
 
     private val fileSize = headResponse.size ?: throw IllegalArgumentException("Can only be used with given file size")
     private val documentState = headResponse.toDocumentState() ?: throw IllegalArgumentException("Can only be used with ETag/Last-Modified")
-
-    private val notificationManager = NotificationManagerCompat.from(context)
-    private val notification = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_STATUS)
-        .setPriority(NotificationCompat.PRIORITY_LOW)
-        .setCategory(NotificationCompat.CATEGORY_STATUS)
-        .setContentTitle(context.getString(R.string.webdav_notification_access))
-        .setContentText(dav.fileName())
-        .setSubText(Formatter.formatFileSize(context, fileSize))
-        .setSmallIcon(R.drawable.ic_storage_notify)
-        .setOngoing(true)
-    private val notificationTag = url.toString()
 
     private val pageLoader = PageLoader(externalScope)
     private val pageCache: LoadingCache<PageIdentifier, ByteArray> = CacheBuilder.newBuilder()
@@ -138,9 +121,6 @@ class RandomAccessCallback @AssistedInject constructor(
 
     override fun onRelease() {
         logger.fine("onRelease")
-
-        // remove notification
-        notificationManager.cancel(notificationTag, NotificationRegistry.NOTIFY_WEBDAV_ACCESS)
 
         // free resources
         httpClient.close()
@@ -210,16 +190,6 @@ class RandomAccessCallback @AssistedInject constructor(
             val offset = key.offset
             val size = key.size
             logger.fine("Loading page $url $offset/$size")
-
-            // update notification
-            notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_WEBDAV_ACCESS, tag = notificationTag) {
-                val progress =
-                    if (fileSize == 0L)     // avoid division by zero
-                        100
-                    else
-                        (offset * 100 / fileSize).toInt()
-                notification.setProgress(100, progress, false).build()
-            }
 
             val ifMatch: Headers =
                 documentState.eTag?.let { eTag ->
