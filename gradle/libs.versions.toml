@@ -33,7 +33,6 @@ kotlinx-coroutines = "1.10.2"
 # see https://github.com/google/ksp/releases for version numbers
 ksp = "2.2.0-2.0.2"
 mikepenz-aboutLibraries = "12.2.4"
-nsk90-kstatemachine = "0.33.0"
 mockk = "1.14.5"
 okhttp = "5.1.0"
 openid-appauth = "0.11.1"
@@ -96,7 +95,6 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 mikepenz-aboutLibraries = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "mikepenz-aboutLibraries" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
-nsk90-kstatemachine = { module = "io.github.nsk90:kstatemachine-jvm", version.ref = "nsk90-kstatemachine" }
 okhttp-base = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version.ref = "okhttp" }
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }

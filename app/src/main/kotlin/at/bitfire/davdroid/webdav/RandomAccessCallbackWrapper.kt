@@ -25,7 +25,7 @@ import okhttp3.MediaType
  * is unloaded. See https://issuetracker.google.com/issues/208788568.
  * - (2024/08/24) [Fixed in Android.](https://android.googlesource.com/platform/frameworks/base/+/e7dbf78143ba083af7a8ecadd839a9dbf6f01655%5E%21/#F0)
  *
- * **All fields of this class must be set to `null` when [onRelease] is called!**
+ * **All fields of objects of this class must be set to `null` when [onRelease] is called!**
  * Otherwise they will leak memory.
  *
  * @param httpClient    HTTP client ([RandomAccessCallbackWrapper] is responsible to close it)
@@ -36,7 +36,7 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
     @Assisted url: HttpUrl,
     @Assisted mimeType: MediaType?,
     @Assisted headResponse: HeadResponse,
-    @Assisted  externalScope: CoroutineScope,
+    @Assisted externalScope: CoroutineScope,
     callbackFactory: RandomAccessCallback.Factory
 ): ProxyFileDescriptorCallback() {
 
@@ -49,7 +49,7 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
     // callback reference
 
     /**
-     * This field contains a strong reference to the callback. It is cleared when
+     * This field is initialized with a strong reference to the callback. It is cleared when
      * [onRelease] is called so that the garbage collector can remove the actual [RandomAccessCallback].
      */
     private var callbackRef: RandomAccessCallback? =
