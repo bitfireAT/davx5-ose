@@ -326,55 +326,60 @@ fun AccountScreen(
             ) {
                 if (nrPages > 0) {
                     SharedTransitionLayout {
-                        val cantScrollBackward = when (pagerState.currentPage) {
+                        val idxCurrentPage = pagerState.currentPage
+
+                        // The icon shall be shown when the scroll state is at the top (= we can't scroll backward)
+                        val currentPageScrollState = when (idxCurrentPage) {
                             idxCalDav -> calDavScrollState
                             idxCardDav -> cardDavScrollState
                             idxWebcal -> webcalScrollState
                             else -> null
-                        }?.canScrollBackward == false
-
+                        }
                         AnimatedContent(
-                            targetState = cantScrollBackward
+                            targetState = currentPageScrollState?.canScrollBackward == false
                         ) { showIcon ->
-                            TabRow(selectedTabIndex = pagerState.currentPage) {
-                                if (idxCalDav != null) AccountScreen_Tab(
-                                    selected = pagerState.currentPage == idxCalDav,
-                                    showIcon = showIcon,
-                                    icon = Icons.Default.CalendarToday,
-                                    text = stringResource(R.string.account_caldav),
-                                    animatedVisibilityScope = this@AnimatedContent,
-                                    sharedTransitionScope = this@SharedTransitionLayout,
-                                ) {
-                                    scope.launch {
-                                        pagerState.scrollToPage(idxCalDav)
+                            TabRow(selectedTabIndex = idxCurrentPage) {
+                                if (idxCalDav != null)
+                                    AccountScreen_Tab(
+                                        selected = idxCurrentPage == idxCalDav,
+                                        showIcon = showIcon,
+                                        icon = Icons.Default.CalendarToday,
+                                        text = stringResource(R.string.account_caldav),
+                                        animatedVisibilityScope = this@AnimatedContent,
+                                        sharedTransitionScope = this@SharedTransitionLayout,
+                                    ) {
+                                        scope.launch {
+                                            pagerState.scrollToPage(idxCalDav)
+                                        }
                                     }
-                                }
 
-                                if (idxCardDav != null) AccountScreen_Tab(
-                                    selected = pagerState.currentPage == idxCardDav,
-                                    showIcon = showIcon,
-                                    icon = Icons.Default.Person,
-                                    text = stringResource(R.string.account_carddav),
-                                    animatedVisibilityScope = this@AnimatedContent,
-                                    sharedTransitionScope = this@SharedTransitionLayout,
-                                ) {
-                                    scope.launch {
-                                        pagerState.scrollToPage(idxCardDav)
+                                if (idxCardDav != null)
+                                    AccountScreen_Tab(
+                                        selected = idxCurrentPage == idxCardDav,
+                                        showIcon = showIcon,
+                                        icon = Icons.Default.Person,
+                                        text = stringResource(R.string.account_carddav),
+                                        animatedVisibilityScope = this@AnimatedContent,
+                                        sharedTransitionScope = this@SharedTransitionLayout,
+                                    ) {
+                                        scope.launch {
+                                            pagerState.scrollToPage(idxCardDav)
+                                        }
                                     }
-                                }
 
-                                if (idxWebcal != null) AccountScreen_Tab(
-                                    selected = pagerState.currentPage == idxWebcal,
-                                    showIcon = showIcon,
-                                    icon = Icons.Default.Upcoming,
-                                    text = stringResource(R.string.account_webcal),
-                                    animatedVisibilityScope = this@AnimatedContent,
-                                    sharedTransitionScope = this@SharedTransitionLayout,
-                                ) {
-                                    scope.launch {
-                                        pagerState.scrollToPage(idxWebcal)
+                                if (idxWebcal != null)
+                                    AccountScreen_Tab(
+                                        selected = idxCurrentPage == idxWebcal,
+                                        showIcon = showIcon,
+                                        icon = Icons.Default.Upcoming,
+                                        text = stringResource(R.string.account_webcal),
+                                        animatedVisibilityScope = this@AnimatedContent,
+                                        sharedTransitionScope = this@SharedTransitionLayout,
+                                    ) {
+                                        scope.launch {
+                                            pagerState.scrollToPage(idxWebcal)
+                                        }
                                     }
-                                }
                             }
                         }
                     }
@@ -719,7 +724,7 @@ fun AccountScreen_ServiceTab(
                     onSubscribe = onSubscribe,
                     onCollectionDetails = onCollectionDetails,
                     modifier = Modifier.weight(1f),
-                    state = state,
+                    state = state
                 )
         }
     }
