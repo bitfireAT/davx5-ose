@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.EventNote
@@ -61,12 +63,14 @@ fun CollectionsList(
     onChangeSync: (collectionId: Long, sync: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     onSubscribe: (collection: Collection) -> Unit = {},
-    onCollectionDetails: ((collection: Collection) -> Unit)? = null
+    onCollectionDetails: ((collection: Collection) -> Unit)? = null,
+    state: LazyListState = rememberLazyListState()
 ) {
     LazyColumn(
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
-        modifier = modifier
+        modifier = modifier,
+        state = state
     ) {
         items(
             count = collections.itemCount,
