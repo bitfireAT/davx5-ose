@@ -31,7 +31,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.SyncProblem
-import androidx.compose.material.icons.filled.Upcoming
 import androidx.compose.material.icons.outlined.RuleFolder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -89,6 +88,7 @@ import at.bitfire.davdroid.ui.account.CollectionsList
 import at.bitfire.davdroid.ui.account.RenameAccountDialog
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
+import at.bitfire.davdroid.ui.icon.CalendarImport
 import at.bitfire.ical4android.TaskProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -336,7 +336,7 @@ fun AccountScreen(
                             else -> null
                         }
                         AnimatedContent(
-                            targetState = currentPageScrollState?.canScrollBackward == false
+                            targetState = currentPageScrollState?.canScrollBackward != true
                         ) { showIcon ->
                             TabRow(selectedTabIndex = idxCurrentPage) {
                                 if (idxCalDav != null)
@@ -371,7 +371,7 @@ fun AccountScreen(
                                     AccountScreen_Tab(
                                         selected = idxCurrentPage == idxWebcal,
                                         showIcon = showIcon,
-                                        icon = Icons.Default.Upcoming,
+                                        icon = Icons.Default.CalendarImport,
                                         text = stringResource(R.string.account_webcal),
                                         animatedVisibilityScope = this@AnimatedContent,
                                         sharedTransitionScope = this@SharedTransitionLayout,
