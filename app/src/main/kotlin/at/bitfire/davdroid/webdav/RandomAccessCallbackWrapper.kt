@@ -4,15 +4,20 @@
 
 package at.bitfire.davdroid.webdav
 
+import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
+import android.os.ParcelFileDescriptor
 import android.os.ProxyFileDescriptorCallback
+import android.os.storage.StorageManager
 import androidx.annotation.RequiresApi
+import androidx.core.content.getSystemService
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.webdav.RandomAccessCallbackWrapper.Companion.TIMEOUT_INTERVAL
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import okhttp3.HttpUrl
 import okhttp3.MediaType
@@ -55,6 +60,7 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
     @Assisted private val mimeType: MediaType?,
     @Assisted private val headResponse: HeadResponse,
     @Assisted private val externalScope: CoroutineScope,
+    @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val callbackFactory: RandomAccessCallback.Factory
 ): ProxyFileDescriptorCallback() {
@@ -68,12 +74,16 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
         fun create(httpClient: HttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallbackWrapper
     }
 
+
+    // state machine
+
     sealed class Events {
         object Transfer : Event
         object NowIdle : Event
         object GoStandby : Event
         object Close : Event
     }
+
     /* We don't use a sealed class for states here because the states would then be singletons, while we can have
     multiple instances of the state machine (which require multiple instances of the states, too). */
     private val machine = createStdLibStateMachine {
@@ -139,9 +149,12 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
     private val workerThread = HandlerThread(javaClass.simpleName).apply { start() }
     val workerHandler: Handler = Handler(workerThread.looper)
 
+
+    // callback reference
+
     private var _callback: RandomAccessCallback? = null
 
-    fun<T> requireCallback(block: (callback: RandomAccessCallback) -> T): T {
+    private fun<T> requireCallback(block: (callback: RandomAccessCallback) -> T): T {
         machine.processEventBlocking(Events.Transfer)
         try {
             return block(_callback ?: throw IllegalStateException())
@@ -151,7 +164,15 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
     }
 
 
-    /// states ///
+    // operations
+
+    /**
+     * Returns a random-access file descriptor that can be used in a DocumentsProvider.
+     */
+    fun fileDescriptor(modeFlags: Int): ParcelFileDescriptor {
+        val storageManager = context.getSystemService<StorageManager>()!!
+        return storageManager.openProxyFileDescriptor(modeFlags, this, workerHandler)
+    }
 
     @Synchronized
     private fun shutdown() {
@@ -160,7 +181,7 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
     }
 
 
-    /// delegating implementation of ProxyFileDescriptorCallback ///
+    // delegating implementation of ProxyFileDescriptorCallback
 
     @Synchronized
     override fun onFsync() { /* not used */ }
