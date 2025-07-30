@@ -37,8 +37,14 @@ class LocalJtxCollectionStore @Inject constructor(
     override val authority: String
         get() = JtxContract.AUTHORITY
 
-    override fun acquireContentProvider() =
-        context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)
+    override fun acquireContentProvider(throwOnMissingPermissions: Boolean) = try {
+        context.contentResolver.acquireContentProviderClient(authority)
+    } catch (e: SecurityException) {
+        if (throwOnMissingPermissions)
+            throw e
+        else
+            /* return */ null
+    }
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalJtxCollection? {
         val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
