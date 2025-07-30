@@ -156,7 +156,7 @@ class QueryChildDocumentsOperation @Inject constructor(
                                 ?: resource.isDirectory,
                             displayName = response[DisplayName::class.java]?.displayName,
                             mimeType = response[GetContentType::class.java]?.type,
-                            eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.let { resource.eTag },
+                            eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
                             lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
                             size = response[GetContentLength::class.java]?.contentLength,
                             mayBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind,
