@@ -5,13 +5,18 @@
 package at.bitfire.davdroid.webdav
 
 import android.content.Context
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.ParcelFileDescriptor
 import android.os.ProxyFileDescriptorCallback
+import android.os.storage.StorageManager
 import android.system.ErrnoException
 import android.system.OsConstants
 import android.text.format.Formatter
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.exception.DavException
@@ -91,11 +96,27 @@ class RandomAccessCallback @AssistedInject constructor(
     private val pageLoader = PageLoader(externalScope)
     private val pageCache: LoadingCache<PageIdentifier, ByteArray> = CacheBuilder.newBuilder()
         .maximumSize(10)    // don't cache more than 10 entries (MAX_PAGE_SIZE each)
-        .softValues()       // use SoftReference for the page contents so they will be garbage collected if memory is needed
+        .softValues()       // use SoftReference for the page contents so they will be garbage-collected if memory is needed
         .build(pageLoader)  // fetch actual content using pageLoader
 
     private val pagingReader = PagingReader(fileSize, MAX_PAGE_SIZE, pageCache)
 
+
+    // file descriptor and handler
+
+    private val workerThread = HandlerThread(javaClass.simpleName).apply { start() }
+    val workerHandler: Handler = Handler(workerThread.looper)
+
+    /**
+     * Returns a random-access file descriptor that can be used in a DocumentsProvider.
+     */
+    fun fileDescriptor(modeFlags: Int): ParcelFileDescriptor {
+        val storageManager = context.getSystemService<StorageManager>()!!
+        return storageManager.openProxyFileDescriptor(modeFlags, this, workerHandler)
+    }
+
+
+    // implementation
 
     override fun onFsync() { /* not used */ }
 
@@ -117,7 +138,12 @@ class RandomAccessCallback @AssistedInject constructor(
 
     override fun onRelease() {
         logger.fine("onRelease")
+
+        // remove notification
         notificationManager.cancel(notificationTag, NotificationRegistry.NOTIFY_WEBDAV_ACCESS)
+
+        // shut down I/O thread
+        workerThread.quitSafely()
     }
 
 
