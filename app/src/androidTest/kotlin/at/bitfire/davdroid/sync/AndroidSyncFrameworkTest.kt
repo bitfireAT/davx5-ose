@@ -88,11 +88,11 @@ class AndroidSyncFrameworkTest {
     fun testVerifySyncAlwaysPending_correctBehaviour_android13() {
         verifySyncStates(
             listOf(
-                State(pending = false, active = false),             // no sync pending or active
-                State(pending = true, active = false).optional(),   // sync becomes pending
-                State(pending = true, active = true),               // ... and pending and active at the same time
-                State(pending = false, active = true),              // ... and then only active
-                State(pending = false, active = false)              // sync finished
+                State(pending = false, active = false),                 // no sync pending or active
+                State(pending = true, active = false, optional = true), // sync becomes pending
+                State(pending = true, active = true),                   // ... and pending and active at the same time
+                State(pending = false, active = true),                  // ... and then only active
+                State(pending = false, active = false)                  // sync finished
             )
         )
     }
@@ -106,10 +106,10 @@ class AndroidSyncFrameworkTest {
     fun testVerifySyncAlwaysPending_wrongBehaviour_android14() {
         verifySyncStates(
             listOf(
-                State(pending = false, active = false),              // no sync pending or active
-                State(pending = true, active = false).optional(),    // sync becomes pending
-                State(pending = true, active = true),                // ... and pending and active at the same time
-                State(pending = true, active = false)                // ... and finishes, but stays pending
+                State(pending = false, active = false),                 // no sync pending or active
+                State(pending = true, active = false, optional = true), // sync becomes pending
+                State(pending = true, active = true),                   // ... and pending and active at the same time
+                State(pending = true, active = false)                   // ... and finishes, but stays pending
             )
         )
     }
@@ -156,13 +156,10 @@ class AndroidSyncFrameworkTest {
      * Asserts whether [actualStates] and [expectedStates] are the same, under the condition
      * that expected states with the [State.optional] flag can be skipped.
      */
-    private fun assertStatesEqual(actualStates: List<State>, expectedStates: List<State>) {
+    private fun assertStatesEqual(expectedStates: List<State>, actualStates: List<State>) {
         fun fail() {
             throw AssertionFailedError("Expected states=$expectedStates, actual=$actualStates")
         }
-
-        if (actualStates.size != expectedStates.size)
-            fail()
 
         // iterate through entries
         val expectedIterator = expectedStates.iterator()
@@ -172,13 +169,13 @@ class AndroidSyncFrameworkTest {
             var expected = expectedIterator.next()
 
             // skip optional expected entries if they don't match the actual entry
-            while (actual != expected && expected.optional) {
+            while (!actual.stateEquals(expected) && expected.optional) {
                 if (!expectedIterator.hasNext())
                     fail()
                 expected = expectedIterator.next()
             }
 
-            if (actual != expected)
+            if (!actual.stateEquals(expected))
                 fail()
         }
     }
@@ -201,15 +198,11 @@ class AndroidSyncFrameworkTest {
 
     data class State(
         val pending: Boolean,
-        val active: Boolean
+        val active: Boolean,
+        val optional: Boolean = false
     ) {
-        // only used for expected states
-        internal var optional: Boolean = false
-
-        fun optional(): State {
-            optional = true
-            return this
-        }
+        fun stateEquals(other: State) =
+            pending == other.pending && active == other.active
     }
 
 
