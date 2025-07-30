@@ -47,10 +47,11 @@ class LocalTaskListStore @AssistedInject constructor(
     override val authority: String
         get() = providerName.authority
 
-    override fun acquireContentProvider() = try {
+    override fun acquireContentProvider(throwOnMissingPermissions: Boolean) = try {
         context.contentResolver.acquireContentProviderClient(authority)
-    } catch (_: SecurityException) {
+    } catch (e: SecurityException) {
         // The content provider is not available for some reason. Probably because the permission is no longer granted.
+        if (throwOnMissingPermissions) throw e
         null
     }
 

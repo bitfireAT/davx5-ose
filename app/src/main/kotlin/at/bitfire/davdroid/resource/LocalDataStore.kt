@@ -25,11 +25,13 @@ interface LocalDataStore<T: LocalCollection<*>> {
      *
      * **The caller is responsible for closing the content provider client!**
      *
-     * @return the content provider client, or `null` if the content provider could not be acquired
+     * @param throwOnMissingPermissions If `true`, the function will throw [SecurityException] if permissions are not granted. Defaults to `false`.
+     *
+     * @return the content provider client, or `null` if the content provider could not be acquired (or permissions are not granted and [throwOnMissingPermissions] is `false`)
      *
      * @throws SecurityException on missing permissions
      */
-    fun acquireContentProvider(): ContentProviderClient?
+    fun acquireContentProvider(throwOnMissingPermissions: Boolean = false): ContentProviderClient?
 
     /**
      * Creates a new local collection from the given (remote) collection info.
