@@ -8,8 +8,6 @@ import android.content.Context
 import android.os.Build
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
-import android.os.storage.StorageManager
-import androidx.core.content.getSystemService
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
@@ -42,7 +40,6 @@ class OpenDocumentOperation @Inject constructor(
 ) {
 
     private val documentDao = db.webDavDocumentDao()
-    private val storageManager = context.getSystemService<StorageManager>()!!
 
     operator fun invoke(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor = runBlocking {
         logger.fine("WebDAV openDocument $documentId $mode $signal")
@@ -51,8 +48,7 @@ class OpenDocumentOperation @Inject constructor(
         val url = doc.toHttpUrl(db)
         val client = httpClientBuilder.build(doc.mountId, logBody = false)
 
-        val modeFlags = ParcelFileDescriptor.parseMode(mode)
-        val readAccess = when (mode) {
+        val readOnlyMode = when (mode) {
             "r" -> true
             "w", "wt" -> false
             else -> throw UnsupportedOperationException("Mode $mode not supported by WebDAV")
@@ -72,21 +68,24 @@ class OpenDocumentOperation @Inject constructor(
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
         return@runBlocking if (
             androidSupportsRandomAccess &&
-            readAccess &&                       // WebDAV doesn't support random write access (natively)
+            readOnlyMode &&                     // WebDAV doesn't support random write access (natively)
             fileInfo.size != null &&            // file descriptor must return a useful value on getFileSize()
-            (fileInfo.eTag != null || fileInfo.lastModified != null) &&     // we need a method to determine whether the document has changed during access
-            fileInfo.supportsPartial == true    // WebDAV server must support random access
+            (fileInfo.eTag != null || fileInfo.lastModified != null) &&     // we need a method to determine when the document changes during access
+            fileInfo.supportsPartial == true    // WebDAV server must advertise random access
         ) {
             logger.fine("Creating RandomAccessCallback for $url")
             val accessor = randomAccessCallbackWrapperFactory.create(client, url, doc.mimeType, fileInfo, accessScope)
-            storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
+            accessor.fileDescriptor()
+
         } else {
             logger.fine("Creating StreamingFileDescriptor for $url")
-            val fd = streamingFileDescriptorFactory.create(client, url, doc.mimeType, accessScope) { transferred ->
+            val fd = streamingFileDescriptorFactory.create(client, url, doc.mimeType, accessScope) { transferred, success ->
                 // called when transfer is finished
+                if (!success)
+                    return@create
 
                 val now = System.currentTimeMillis()
-                if (!readAccess /* write access */) {
+                if (!readOnlyMode /* write access */) {
                     // write access, update file size
                     documentDao.update(doc.copy(size = transferred, lastModified = now))
                 }
@@ -94,7 +93,7 @@ class OpenDocumentOperation @Inject constructor(
                 DocumentProviderUtils.notifyFolderChanged(context, doc.parentId)
             }
 
-            if (readAccess)
+            if (readOnlyMode)
                 fd.download()
             else
                 fd.upload()
@@ -108,7 +107,7 @@ class OpenDocumentOperation @Inject constructor(
 
     companion object {
 
-        // openProxyFileDescriptor exists since Android 8.0
+        /** openProxyFileDescriptor (required for random access) exists since Android 8.0 */
         val androidSupportsRandomAccess = Build.VERSION.SDK_INT >= 26
 
     }

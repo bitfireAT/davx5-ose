@@ -5,20 +5,20 @@
 package at.bitfire.davdroid.webdav
 
 import android.content.Context
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.ParcelFileDescriptor
 import android.os.ProxyFileDescriptorCallback
+import android.os.storage.StorageManager
 import android.system.ErrnoException
 import android.system.OsConstants
-import android.text.format.Formatter
 import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.DavUtils
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
@@ -40,17 +40,17 @@ import okhttp3.MediaType
 import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.util.logging.Logger
+import javax.annotation.WillClose
 
 @RequiresApi(26)
 class RandomAccessCallback @AssistedInject constructor(
-    @Assisted val httpClient: HttpClient,
-    @Assisted val url: HttpUrl,
-    @Assisted val mimeType: MediaType?,
+    @Assisted @WillClose private val httpClient: HttpClient,
+    @Assisted private val url: HttpUrl,
+    @Assisted private val mimeType: MediaType?,
     @Assisted headResponse: HeadResponse,
     @Assisted private val externalScope: CoroutineScope,
-    @ApplicationContext val context: Context,
-    private val logger: Logger,
-    private val notificationRegistry: NotificationRegistry
+    @ApplicationContext private val context: Context,
+    private val logger: Logger
 ): ProxyFileDescriptorCallback() {
 
     companion object {
@@ -77,25 +77,33 @@ class RandomAccessCallback @AssistedInject constructor(
     private val fileSize = headResponse.size ?: throw IllegalArgumentException("Can only be used with given file size")
     private val documentState = headResponse.toDocumentState() ?: throw IllegalArgumentException("Can only be used with ETag/Last-Modified")
 
-    private val notificationManager = NotificationManagerCompat.from(context)
-    private val notification = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_STATUS)
-        .setPriority(NotificationCompat.PRIORITY_LOW)
-        .setCategory(NotificationCompat.CATEGORY_STATUS)
-        .setContentTitle(context.getString(R.string.webdav_notification_access))
-        .setContentText(dav.fileName())
-        .setSubText(Formatter.formatFileSize(context, fileSize))
-        .setSmallIcon(R.drawable.ic_storage_notify)
-        .setOngoing(true)
-    private val notificationTag = url.toString()
-
     private val pageLoader = PageLoader(externalScope)
     private val pageCache: LoadingCache<PageIdentifier, ByteArray> = CacheBuilder.newBuilder()
         .maximumSize(10)    // don't cache more than 10 entries (MAX_PAGE_SIZE each)
-        .softValues()       // use SoftReference for the page contents so they will be garbage collected if memory is needed
+        .softValues()       // use SoftReference for the page contents so they will be garbage-collected if memory is needed
         .build(pageLoader)  // fetch actual content using pageLoader
+
+    /** This thread will be used for I/O operations like [onRead]. Using the main looper would cause ANRs. */
+    private val ioThread = HandlerThread("WebDAV I/O").apply {
+        start()
+    }
 
     private val pagingReader = PagingReader(fileSize, MAX_PAGE_SIZE, pageCache)
 
+
+    // file descriptor
+
+    /**
+     * Returns a random-access file descriptor that can be used in a DocumentsProvider.
+     */
+    fun fileDescriptor(): ParcelFileDescriptor {
+        val storageManager = context.getSystemService<StorageManager>()!!
+        val ioHandler = Handler(ioThread.looper)
+        return storageManager.openProxyFileDescriptor(ParcelFileDescriptor.MODE_READ_ONLY, this, ioHandler)
+    }
+
+
+    // implementation
 
     override fun onFsync() { /* not used */ }
 
@@ -117,7 +125,10 @@ class RandomAccessCallback @AssistedInject constructor(
 
     override fun onRelease() {
         logger.fine("onRelease")
-        notificationManager.cancel(notificationTag, NotificationRegistry.NOTIFY_WEBDAV_ACCESS)
+
+        // free resources
+        ioThread.quitSafely()
+        httpClient.close()
     }
 
 
@@ -184,16 +195,6 @@ class RandomAccessCallback @AssistedInject constructor(
             val offset = key.offset
             val size = key.size
             logger.fine("Loading page $url $offset/$size")
-
-            // update notification
-            notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_WEBDAV_ACCESS, tag = notificationTag) {
-                val progress =
-                    if (fileSize == 0L)     // avoid division by zero
-                        100
-                    else
-                        (offset * 100 / fileSize).toInt()
-                notification.setProgress(100, progress, false).build()
-            }
 
             val ifMatch: Headers =
                 documentState.eTag?.let { eTag ->

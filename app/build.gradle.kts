@@ -188,7 +188,6 @@ dependencies {
     implementation(libs.dnsjava)
     implementation(libs.guava)
     implementation(libs.mikepenz.aboutLibraries)
-    implementation(libs.nsk90.kstatemachine)
     implementation(libs.okhttp.base)
     implementation(libs.okhttp.brotli)
     implementation(libs.okhttp.logging)
