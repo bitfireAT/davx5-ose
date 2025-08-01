@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.webdav
 
 import android.os.ParcelFileDescriptor
-import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.di.IoDispatcher
@@ -40,11 +39,6 @@ class StreamingFileDescriptor @AssistedInject constructor(
     private val logger: Logger
 ) {
 
-    companion object {
-        /** 1 MB transfer buffer */
-        private const val BUFFER_SIZE = 1024*1024
-    }
-
     @AssistedFactory
     interface Factory {
         fun create(client: HttpClient, url: HttpUrl, mimeType: MediaType?, externalScope: CoroutineScope, finishedCallback: OnSuccessCallback): StreamingFileDescriptor
@@ -59,12 +53,15 @@ class StreamingFileDescriptor @AssistedInject constructor(
     private fun doStreaming(upload: Boolean): ParcelFileDescriptor {
         val (readFd, writeFd) = ParcelFileDescriptor.createReliablePipe()
 
-        externalScope.launch(ioDispatcher) {
+        var success = false
+        externalScope.launch {
             try {
                 if (upload)
                     uploadNow(readFd)
                 else
                     downloadNow(writeFd)
+
+                success = true
             } catch (e: HttpException) {
                 logger.log(Level.WARNING, "HTTP error when opening remote file", e)
                 writeFd.closeWithError("${e.code} ${e.message}")
@@ -72,15 +69,15 @@ class StreamingFileDescriptor @AssistedInject constructor(
                 logger.log(Level.INFO, "Couldn't serve file (not necessarily an error)", e)
                 writeFd.closeWithError(e.message)
             } finally {
+                // close pipe
+                try {
+                    readFd.close()
+                    writeFd.close()
+                } catch (_: IOException) {}
+
                 client.close()
+                finishedCallback.onFinished(transferred, success)
             }
-
-            try {
-                readFd.close()
-                writeFd.close()
-            } catch (_: IOException) {}
-
-            finishedCallback.onSuccess(transferred)
         }
 
         return if (upload)
@@ -89,26 +86,20 @@ class StreamingFileDescriptor @AssistedInject constructor(
             readFd
     }
 
-    @WorkerThread
-    private suspend fun downloadNow(writeFd: ParcelFileDescriptor) = runInterruptible {
+    /**
+     * Downloads a WebDAV resource.
+     *
+     * @param writeFd   destination file descriptor (could for instance represent a local file)
+     */
+    private suspend fun downloadNow(writeFd: ParcelFileDescriptor) = runInterruptible(ioDispatcher) {
         dav.get(DavUtils.acceptAnything(preferred = mimeType), null) { response ->
             response.body.use { body ->
                 if (response.isSuccessful) {
-                    ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { output ->
-                        val buffer = ByteArray(BUFFER_SIZE)
+                    ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { destination ->
                         body.byteStream().use { source ->
-                            // read first chunk
-                            var bytes = source.read(buffer)
-                            while (bytes != -1) {
-                                // write chunk
-                                output.write(buffer, 0, bytes)
-                                transferred += bytes
-
-                                // read next chunk
-                                bytes = source.read(buffer)
-                            }
-                            logger.finer("Downloaded $transferred byte(s) from $url")
+                            transferred += source.copyTo(destination)
                         }
+                        logger.finer("Downloaded $transferred byte(s) from $url")
                     }
 
                 } else
@@ -117,25 +108,18 @@ class StreamingFileDescriptor @AssistedInject constructor(
         }
     }
 
-    @WorkerThread
-    private suspend fun uploadNow(readFd: ParcelFileDescriptor) = runInterruptible {
+    /**
+     * Uploads a WebDAV resource.
+     *
+     * @param readFd    source file descriptor (could for instance represent a local file)
+     */
+    private suspend fun uploadNow(readFd: ParcelFileDescriptor) = runInterruptible(ioDispatcher) {
         val body = object: RequestBody() {
             override fun contentType(): MediaType? = mimeType
             override fun isOneShot() = true
             override fun writeTo(sink: BufferedSink) {
                 ParcelFileDescriptor.AutoCloseInputStream(readFd).use { input ->
-                    val buffer = ByteArray(BUFFER_SIZE)
-
-                    // read first chunk
-                    var size = input.read(buffer)
-                    while (size != -1) {
-                        // write chunk
-                        sink.write(buffer, 0, size)
-                        transferred += size
-
-                        // read next chunk
-                        size = input.read(buffer)
-                    }
+                    transferred += input.copyTo(sink.outputStream())
                     logger.finer("Uploaded $transferred byte(s) to $url")
                 }
             }
@@ -147,7 +131,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
 
 
     fun interface OnSuccessCallback {
-        fun onSuccess(transferred: Long)
+        fun onFinished(transferred: Long, success: Boolean)
     }
 
 }

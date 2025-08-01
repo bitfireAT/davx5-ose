@@ -79,8 +79,10 @@ class OpenDocumentOperation @Inject constructor(
 
         } else {
             logger.fine("Creating StreamingFileDescriptor for $url")
-            val fd = streamingFileDescriptorFactory.create(client, url, doc.mimeType, accessScope) { transferred ->
+            val fd = streamingFileDescriptorFactory.create(client, url, doc.mimeType, accessScope) { transferred, success ->
                 // called when transfer is finished
+                if (!success)
+                    return@create
 
                 val now = System.currentTimeMillis()
                 if (!readOnlyMode /* write access */) {

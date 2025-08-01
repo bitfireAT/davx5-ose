@@ -6,7 +6,7 @@ package at.bitfire.davdroid.webdav
 
 import android.content.Context
 import android.os.Handler
-import android.os.Looper
+import android.os.HandlerThread
 import android.os.ParcelFileDescriptor
 import android.os.ProxyFileDescriptorCallback
 import android.os.storage.StorageManager
@@ -18,7 +18,6 @@ import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.util.DavUtils
 import com.google.common.cache.CacheBuilder
@@ -51,7 +50,6 @@ class RandomAccessCallback @AssistedInject constructor(
     @Assisted headResponse: HeadResponse,
     @Assisted private val externalScope: CoroutineScope,
     @ApplicationContext private val context: Context,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ): ProxyFileDescriptorCallback() {
 
@@ -85,6 +83,11 @@ class RandomAccessCallback @AssistedInject constructor(
         .softValues()       // use SoftReference for the page contents so they will be garbage-collected if memory is needed
         .build(pageLoader)  // fetch actual content using pageLoader
 
+    /** This thread will be used for I/O operations like [onRead]. Using the main looper would cause ANRs. */
+    private val ioThread = HandlerThread("WebDAV I/O").apply {
+        start()
+    }
+
     private val pagingReader = PagingReader(fileSize, MAX_PAGE_SIZE, pageCache)
 
 
@@ -95,8 +98,8 @@ class RandomAccessCallback @AssistedInject constructor(
      */
     fun fileDescriptor(): ParcelFileDescriptor {
         val storageManager = context.getSystemService<StorageManager>()!!
-        val handler = Handler(Looper.getMainLooper())
-        return storageManager.openProxyFileDescriptor(ParcelFileDescriptor.MODE_READ_ONLY, this, handler)
+        val ioHandler = Handler(ioThread.looper)
+        return storageManager.openProxyFileDescriptor(ParcelFileDescriptor.MODE_READ_ONLY, this, ioHandler)
     }
 
 
@@ -124,6 +127,7 @@ class RandomAccessCallback @AssistedInject constructor(
         logger.fine("onRelease")
 
         // free resources
+        ioThread.quitSafely()
         httpClient.close()
     }
 
@@ -131,7 +135,7 @@ class RandomAccessCallback @AssistedInject constructor(
     // scope / cancellation
 
     /**
-     * Runs blocking on I/O dispatcher in [externalScope].
+     * Runs blocking in [externalScope].
      *
      * Exceptions (including [CancellationException]) are wrapped in an [ErrnoException], as expected by the file
      * descriptor / Storage Access Framework.
@@ -139,7 +143,7 @@ class RandomAccessCallback @AssistedInject constructor(
      * @param functionName  name of the operation, passed to [ErrnoException] in case of cancellation
      */
     private fun<T> runBlockingFd(functionName: String, block: () -> T): T =
-        runBlocking(ioDispatcher) {
+        runBlocking {
             try {
                 externalScope.async {
                     block()
