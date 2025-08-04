@@ -7,18 +7,27 @@ import android.Manifest
 import android.accounts.Account
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.SyncProblem
@@ -56,6 +65,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
@@ -78,6 +88,7 @@ import at.bitfire.davdroid.ui.account.CollectionsList
 import at.bitfire.davdroid.ui.account.RenameAccountDialog
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
+import at.bitfire.davdroid.ui.icon.CalendarImport
 import at.bitfire.ical4android.TaskProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -161,7 +172,7 @@ fun AccountScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun AccountScreen(
     accountName: String,
@@ -238,6 +249,10 @@ fun AccountScreen(
                     (if (idxWebcal != null) 1 else 0)
         val pagerState = rememberPagerState(pageCount = { nrPages })
 
+        val calDavScrollState = rememberLazyListState()
+        val cardDavScrollState = rememberLazyListState()
+        val webcalScrollState = rememberLazyListState()
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -310,52 +325,61 @@ fun AccountScreen(
                 modifier = Modifier.padding(padding)
             ) {
                 if (nrPages > 0) {
-                    TabRow(selectedTabIndex = pagerState.currentPage) {
-                        if (idxCalDav != null) {
-                            Tab(
-                                selected = pagerState.currentPage == idxCalDav,
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.scrollToPage(idxCalDav)
-                                    }
-                                }
-                            ) {
-                                Text(
-                                    stringResource(R.string.account_caldav),
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                        }
+                    SharedTransitionLayout {
+                        val idxCurrentPage = pagerState.currentPage
 
-                        if (idxCardDav != null) {
-                            Tab(
-                                selected = pagerState.currentPage == idxCardDav,
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.scrollToPage(idxCardDav)
-                                    }
-                                }
-                            ) {
-                                Text(
-                                    stringResource(R.string.account_carddav),
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
+                        // The icon shall be shown when the scroll state is at the top (= we can't scroll backward)
+                        val currentPageScrollState = when (idxCurrentPage) {
+                            idxCalDav -> calDavScrollState
+                            idxCardDav -> cardDavScrollState
+                            idxWebcal -> webcalScrollState
+                            else -> null
                         }
-
-                        if (idxWebcal != null) {
-                            Tab(
-                                selected = pagerState.currentPage == idxWebcal,
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.scrollToPage(idxWebcal)
+                        AnimatedContent(
+                            targetState = currentPageScrollState?.canScrollBackward != true
+                        ) { showIcon ->
+                            TabRow(selectedTabIndex = idxCurrentPage) {
+                                if (idxCalDav != null)
+                                    AccountScreen_Tab(
+                                        selected = idxCurrentPage == idxCalDav,
+                                        showIcon = showIcon,
+                                        icon = Icons.Default.CalendarToday,
+                                        text = stringResource(R.string.account_caldav),
+                                        animatedVisibilityScope = this@AnimatedContent,
+                                        sharedTransitionScope = this@SharedTransitionLayout,
+                                    ) {
+                                        scope.launch {
+                                            pagerState.scrollToPage(idxCalDav)
+                                        }
                                     }
-                                }
-                            ) {
-                                Text(
-                                    stringResource(R.string.account_webcal),
-                                    modifier = Modifier.padding(8.dp)
-                                )
+
+                                if (idxCardDav != null)
+                                    AccountScreen_Tab(
+                                        selected = idxCurrentPage == idxCardDav,
+                                        showIcon = showIcon,
+                                        icon = Icons.Default.Person,
+                                        text = stringResource(R.string.account_carddav),
+                                        animatedVisibilityScope = this@AnimatedContent,
+                                        sharedTransitionScope = this@SharedTransitionLayout,
+                                    ) {
+                                        scope.launch {
+                                            pagerState.scrollToPage(idxCardDav)
+                                        }
+                                    }
+
+                                if (idxWebcal != null)
+                                    AccountScreen_Tab(
+                                        selected = idxCurrentPage == idxWebcal,
+                                        showIcon = showIcon,
+                                        icon = Icons.Default.CalendarImport,
+                                        text = stringResource(R.string.account_webcal),
+                                        animatedVisibilityScope = this@AnimatedContent,
+                                        sharedTransitionScope = this@SharedTransitionLayout,
+                                    ) {
+                                        scope.launch {
+                                            pagerState.scrollToPage(idxWebcal)
+                                        }
+                                    }
                             }
                         }
                     }
@@ -378,7 +402,8 @@ fun AccountScreen(
                                         progress = cardDavProgress,
                                         collections = addressBooks,
                                         onUpdateCollectionSync = onUpdateCollectionSync,
-                                        onCollectionDetails = onCollectionDetails
+                                        onCollectionDetails = onCollectionDetails,
+                                        state = cardDavScrollState
                                     )
 
                                 idxCalDav -> {
@@ -390,7 +415,8 @@ fun AccountScreen(
                                         progress = calDavProgress,
                                         collections = calendars,
                                         onUpdateCollectionSync = onUpdateCollectionSync,
-                                        onCollectionDetails = onCollectionDetails
+                                        onCollectionDetails = onCollectionDetails,
+                                        state = calDavScrollState
                                     )
                                 }
 
@@ -425,7 +451,8 @@ fun AccountScreen(
                                             requiredPermissions = listOf(Manifest.permission.WRITE_CALENDAR),
                                             progress = calDavProgress,
                                             collections = subscriptions,
-                                            onSubscribe = onSubscribe
+                                            onSubscribe = onSubscribe,
+                                            state = webcalScrollState
                                         )
                                     }
                                 }
@@ -434,6 +461,55 @@ fun AccountScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalSharedTransitionApi::class)
+fun AccountScreen_Tab(
+    selected: Boolean,
+    showIcon: Boolean,
+    icon: ImageVector,
+    text: String,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    onClick: () -> Unit,
+) {
+    with(sharedTransitionScope) {
+        if (showIcon) {
+            Tab(
+                selected = selected,
+                onClick = onClick,
+                icon = { Icon(imageVector = icon, contentDescription = text) },
+                text = {
+                    Text(
+                        text,
+                        modifier = Modifier
+                            .sharedBounds(
+                                rememberSharedContentState(key = text),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
+                            .padding(8.dp)
+                    )
+                }
+            )
+        } else {
+            Tab(
+                selected = selected,
+                onClick = onClick,
+                content = {
+                    Text(
+                        text,
+                        modifier = Modifier
+                            .sharedBounds(
+                                rememberSharedContentState(key = text),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
+                            .padding(8.dp)
+                    )
+                }
+            )
         }
     }
 }
@@ -601,7 +677,8 @@ fun AccountScreen_ServiceTab(
     collections: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
     onSubscribe: (Collection) -> Unit = {},
-    onCollectionDetails: ((Collection) -> Unit)? = null
+    onCollectionDetails: ((Collection) -> Unit)? = null,
+    state: LazyListState = rememberLazyListState()
 ) {
     val context = LocalContext.current
 
@@ -646,7 +723,8 @@ fun AccountScreen_ServiceTab(
                     onChangeSync = onUpdateCollectionSync,
                     onSubscribe = onSubscribe,
                     onCollectionDetails = onCollectionDetails,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    state = state
                 )
         }
     }

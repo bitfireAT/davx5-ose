@@ -39,8 +39,14 @@ class LocalCalendarStore @Inject constructor(
     override val authority: String
         get() = CalendarContract.AUTHORITY
 
-    override fun acquireContentProvider() =
+    override fun acquireContentProvider(throwOnMissingPermissions: Boolean) = try {
         context.contentResolver.acquireContentProviderClient(authority)
+    } catch (e: SecurityException) {
+        if (throwOnMissingPermissions)
+            throw e
+        else
+            /* return */ null
+    }
 
     override fun create(client: ContentProviderClient, fromCollection: Collection): LocalCalendar? {
         val service = serviceRepository.getBlocking(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")

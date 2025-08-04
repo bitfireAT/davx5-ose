@@ -234,7 +234,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         logger.info("${dataStore.authority} sync of $account initiated (resync=$resync)")
 
         try {
-            dataStore.acquireContentProvider()
+            dataStore.acquireContentProvider(throwOnMissingPermissions = true)
         } catch (e: SecurityException) {
             logger.log(Level.WARNING, "Missing permissions for content provider authority ${dataStore.authority}", e)
             /* Don't show a notification here without possibility to permanently dismiss it!

@@ -19,8 +19,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 405020100
-        versionName = "4.5.2.1"
+        versionCode = 405030002
+        versionName = "4.5.3-rc.2"
 
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
@@ -188,7 +188,6 @@ dependencies {
     implementation(libs.dnsjava)
     implementation(libs.guava)
     implementation(libs.mikepenz.aboutLibraries)
-    implementation(libs.nsk90.kstatemachine)
     implementation(libs.okhttp.base)
     implementation(libs.okhttp.brotli)
     implementation(libs.okhttp.logging)
