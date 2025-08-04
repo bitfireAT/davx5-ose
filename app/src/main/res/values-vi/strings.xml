@@ -301,6 +301,7 @@
   <string name="webdav_add_mount_display_name">Tên hiển thị</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL không hợp lệ</string>
+  <string name="webdav_add_mount_authentication">Xác thực</string>
   <string name="webdav_add_mount_username">Tên người dùng</string>
   <string name="webdav_add_mount_password">Mật khẩu</string>
   <string name="webdav_add_mount_add">Thêm nơi gắn</string>

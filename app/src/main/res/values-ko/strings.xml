@@ -11,7 +11,6 @@
   <string name="field_required">이 항목은 필수입니다</string>
   <string name="help">도움말</string>
   <string name="navigate_up">상위 항목으로 이동</string>
-  <string name="optional_label">* 선택 사항</string>
   <string name="options_menu">옵션 메뉴</string>
   <string name="share">공유</string>
   <string name="sync_started">동기화 시작/대기열에 추가</string>
@@ -244,10 +243,8 @@
   <string name="login_password">비밀번호</string>
   <string name="login_password_hide">비밀번호 숨기기</string>
   <string name="login_password_show">비밀번호 표시</string>
-  <string name="login_password_optional">비밀번호*</string>
   <string name="login_type_url">로그인 URL 과 사용자 이름</string>
   <string name="login_user_name">사용자 이름</string>
-  <string name="login_user_name_optional">사용자 이름*</string>
   <string name="login_base_url">기본 URL</string>
   <string name="login_base_url_info"><![CDATA[기본 URL 직접 확인하지만, <a href="%s">이 서비스</a> 는 DNS 레코드와 잘 알려진 URL을 통해서도 탐색합니다.]]></string>
   <string name="login_select_certificate">인증서 선택</string>
@@ -261,7 +258,6 @@
   <string name="login_account_not_added">계정을 추가할 수 없습니다.</string>
   <string name="login_finish">종료</string>
   <string name="login_type_advanced">고급 로그인</string>
-  <string name="login_no_client_certificate_optional">클라이언트 인증서 없음*</string>
   <string name="login_client_certificate_selected">클라이언트 인증서: %s</string>
   <string name="login_no_certificate_found">인증서를 찾을 수 없음</string>
   <string name="login_install_certificate">인증서 설치</string>
@@ -359,7 +355,6 @@
   <string name="create_addressbook">주소록 생성</string>
   <string name="create_addressbook_maybe_not_supported">서버에서 CardDAV를 통한 주소록 생성을 지원하지 않을 수 있습니다.</string>
   <string name="create_calendar">캘린더 생성</string>
-  <string name="create_calendar_time_zone_optional">기본 시간대*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">가능한 캘린더 항목</string>
   <string name="create_calendar_type_vevent">이벤트</string>
@@ -369,9 +364,7 @@
   <string name="create_collection_color">색상</string>
   <string name="create_collection_display_name">제목</string>
   <string name="create_collection_home_set">저장 위치</string>
-  <string name="create_collection_description_optional">설명*</string>
   <string name="create_collection_create">생성</string>
-  <string name="create_collection_optional">* 선택 사항</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">주소록</string>
   <string name="collection_datatype_events">일정</string>
@@ -436,7 +429,7 @@
   <string name="webdav_add_mount_display_name">이름 표기</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">잘못된 URL</string>
-  <string name="webdav_add_mount_authentication">인증 (선택 사항)</string>
+  <string name="webdav_add_mount_authentication">인증</string>
   <string name="webdav_add_mount_username">사용자 이름</string>
   <string name="webdav_add_mount_password">비밀번호</string>
   <string name="webdav_add_mount_add">Add mount</string>

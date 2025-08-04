@@ -10,7 +10,6 @@
   <string name="field_required">Αυτό το πεδίο είναι απαραίτητο </string>
   <string name="help">Βοήθεια</string>
   <string name="navigate_up">Πλοήγηση προς τα πάνω</string>
-  <string name="optional_label">* προαιρετικό</string>
   <string name="options_menu">Μενού επιλογών</string>
   <string name="share">Διαμοιρασμός</string>
   <string name="sync_started">Ο συγχρονισμός ξεκίνησε/αναμονή στην ουρά</string>
@@ -214,10 +213,8 @@
   <string name="login_password">Συνθηματικό</string>
   <string name="login_password_hide">Απόκρυψη συνθηματικού</string>
   <string name="login_password_show">Εμφάνιση συνθηματικού</string>
-  <string name="login_password_optional">Συνθηματικό*</string>
   <string name="login_type_url">Είσοδος με την URL και το όνομα χρήστη</string>
   <string name="login_user_name">Όνομα χρήστη</string>
-  <string name="login_user_name_optional">Όνομα χρήστη*</string>
   <string name="login_base_url">Βασική URL</string>
   <string name="login_base_url_info"><![CDATA[Η βασική διεύθυνση URL θα ελεγχθεί άμεσα, αλλά <a href="%s">οι υπηρεσίες εντοπίζονται επίσης</a> χρησιμοποιώντας εγγραφές DNS και γνωστές διευθύνσεις URL.]]></string>
   <string name="login_select_certificate">Επιλογή πιστοποιητικού</string>
@@ -229,7 +226,6 @@
   <string name="login_account_name_required">Απαιτείται όνομα λογαριασμού</string>
   <string name="login_account_name_already_taken">Το όνομα λογαριασμού έχει ήδη ληφθεί</string>
   <string name="login_type_advanced">Σύνδεση για προχωρημένους</string>
-  <string name="login_no_client_certificate_optional">Δεν υπάρχει πιστοποιητικό πελάτη*</string>
   <string name="login_client_certificate_selected">Πιστοποιητικό πελάτη: %s</string>
   <string name="login_no_certificate_found">Δεν βρέθηκε πιστοποιητικό</string>
   <string name="login_install_certificate">Εγκατάσταση πιστοποιητικού</string>
@@ -321,7 +317,6 @@
   <string name="create_addressbook">Δημιουργία βιβλίου διευθύνσεων</string>
   <string name="create_addressbook_maybe_not_supported">Η δημιουργία βιβλίου διευθύνσεων μέσω CardDAV ενδέχεται να μην υποστηρίζεται από το διακομιστή.</string>
   <string name="create_calendar">Δημιουργία ημερολογίου</string>
-  <string name="create_calendar_time_zone_optional">Προεπιλεγμένη ζώνη ώρας*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Πιθανές καταχωρήσεις ημερολογίου</string>
   <string name="create_calendar_type_vevent">Συμβάντα</string>
@@ -331,9 +326,7 @@
   <string name="create_collection_color">Χρώμα</string>
   <string name="create_collection_display_name">Τίτλος</string>
   <string name="create_collection_home_set">Τοποθεσία αποθήκευσης</string>
-  <string name="create_collection_description_optional">Περιγραφή*</string>
   <string name="create_collection_create">Δημιουργία</string>
-  <string name="create_collection_optional">* προαιρετικό</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">επαφές</string>
   <string name="collection_datatype_tasks">εργασίες</string>
@@ -392,7 +385,7 @@
   <string name="webdav_add_mount_display_name">Εμφανιζόμενο όνομα</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Μη έγκυρο URL</string>
-  <string name="webdav_add_mount_authentication">Πιστοποίηση (προαιρετική)</string>
+  <string name="webdav_add_mount_authentication">Πιστοποίηση</string>
   <string name="webdav_add_mount_username">Όνομα χρήστη</string>
   <string name="webdav_add_mount_password">Κωδικός πρόσβασης</string>
   <string name="webdav_add_mount_add">Προσθήκη βάσης</string>

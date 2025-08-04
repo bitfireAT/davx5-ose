@@ -174,6 +174,7 @@
   <string name="exception_ioexception">Vyskytla sa V/V chyba.</string>
   <string name="exception_show_details">Zobraziť detaily</string>
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_authentication">Overenie</string>
   <string name="webdav_add_mount_username">Meno používateľa</string>
   <string name="webdav_add_mount_password">Heslo</string>
   <!--sync-->

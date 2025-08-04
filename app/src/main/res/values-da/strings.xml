@@ -10,7 +10,6 @@
   <string name="field_required">Feltet er påkrævet</string>
   <string name="help">Hjælp</string>
   <string name="navigate_up">Naviger opad</string>
-  <string name="optional_label">* valgfri</string>
   <string name="options_menu">Indstillinger</string>
   <string name="share">Del</string>
   <string name="sync_started">Synkroniseringen er startet/i kø</string>
@@ -216,10 +215,8 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="login_password">Adgangskode</string>
   <string name="login_password_hide">Skjul password</string>
   <string name="login_password_show">Vis kodeord</string>
-  <string name="login_password_optional">Kodeord*</string>
   <string name="login_type_url">Log ind med URL og brugernavn</string>
   <string name="login_user_name">Brugernavn</string>
-  <string name="login_user_name_optional">Brugernavn*</string>
   <string name="login_base_url">Basis URL</string>
   <string name="login_base_url_info"><![CDATA[Basis-URL\'en vil blive tjekket direkte, men <a href="%s">tjenester opdages også</a> ved hjælp af DNS-records og velkendte URL\'er]]>.</string>
   <string name="login_select_certificate">Vælge certifikat</string>
@@ -231,7 +228,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="login_account_name_required">Kontonavn påkrævet</string>
   <string name="login_account_name_already_taken">Konto navn er allerede i brug</string>
   <string name="login_type_advanced">Avanceret login</string>
-  <string name="login_no_client_certificate_optional">Intet certifikat fra klienten*</string>
   <string name="login_client_certificate_selected">Klientcertifikat: %s</string>
   <string name="login_no_certificate_found">Intet certifikat fundet</string>
   <string name="login_install_certificate">Installere certifikat</string>
@@ -323,7 +319,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="create_addressbook">Opret adressebog</string>
   <string name="create_addressbook_maybe_not_supported">Oprettelse af adressebøger via CardDAV understøttes muligvis ikke af serveren.</string>
   <string name="create_calendar">Opret kalender</string>
-  <string name="create_calendar_time_zone_optional">Standard tidszone*.</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Mulige kalenderposte</string>
   <string name="create_calendar_type_vevent">Begivenheder</string>
@@ -333,9 +328,8 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="create_collection_color">Farve</string>
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_home_set">Lager placering</string>
-  <string name="create_collection_description_optional">Beskrivelse*</string>
+  <string name="create_collection_description_optional">Beskrivelse (valgfrit)</string>
   <string name="create_collection_create">Opret</string>
-  <string name="create_collection_optional">* valgfri</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">Kontakter</string>
   <string name="collection_datatype_tasks">Opgaver</string>
@@ -392,7 +386,7 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="webdav_add_mount_display_name">Vis navn</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Ugyldig URL</string>
-  <string name="webdav_add_mount_authentication">Autentificering (valgfrit)</string>
+  <string name="webdav_add_mount_authentication">Adgangsgodkendelse</string>
   <string name="webdav_add_mount_username">Brugernavn</string>
   <string name="webdav_add_mount_password">Adgangskode</string>
   <string name="webdav_add_mount_add">Tilføj monteringspunkt</string>

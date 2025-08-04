@@ -11,7 +11,6 @@
   <string name="field_required">A mező megadása kötelező</string>
   <string name="help">Súgó</string>
   <string name="navigate_up">Navigáció felfelé</string>
-  <string name="optional_label">* nem kötelező</string>
   <string name="options_menu">Beállítások menü</string>
   <string name="share">Megosztás</string>
   <string name="sync_started">A szinkronizáció elkezdődött/sorba lett állítva</string>
@@ -242,10 +241,8 @@
   <string name="login_password">Jelszó</string>
   <string name="login_password_hide">Jelszó elrejtése</string>
   <string name="login_password_show">Jelszó megjelenítése</string>
-  <string name="login_password_optional">Jelszó*</string>
   <string name="login_type_url">Bejelentkezés webcím és felhasználónév segítségével</string>
   <string name="login_user_name">Felhasználónév</string>
-  <string name="login_user_name_optional">Felhasználónév*</string>
   <string name="login_base_url">Alapwebcím</string>
   <string name="login_base_url_info"><![CDATA[Az alapwebcím közvetlenül lesz ellenőrizve, de a <a href="%s">szolgáltatások felfedezése</a> DNS rekordok és jól ismert webcímek alapján is történik.]]></string>
   <string name="login_select_certificate">Tanúsítvány kiválasztása</string>
@@ -259,7 +256,6 @@
   <string name="login_account_not_added">A fiók hozzáadása nem sikerült</string>
   <string name="login_finish">Befejezés</string>
   <string name="login_type_advanced">Speciális bejelentkezés</string>
-  <string name="login_no_client_certificate_optional">Nincs klienstanúsítvány*</string>
   <string name="login_client_certificate_selected">Klienstanúsítvány: %s</string>
   <string name="login_no_certificate_found">Nem található tanúsítvány</string>
   <string name="login_install_certificate">Tanúsítvány telepítése</string>
@@ -351,7 +347,6 @@
   <string name="create_addressbook">Címjegyzék létrehozása</string>
   <string name="create_addressbook_maybe_not_supported">A címjegyzék CardDAV-on keresztüli létrehozását nem biztos, hogy támogatja a kiszolgáló.</string>
   <string name="create_calendar">Naptár létrehozása</string>
-  <string name="create_calendar_time_zone_optional">Alapértelmezett időzóna*</string>
   <string name="create_calendar_time_zone_none">–</string>
   <string name="create_calendar_type">Lehetséges naptárbejegyzések</string>
   <string name="create_calendar_type_vevent">Események</string>
@@ -361,9 +356,8 @@
   <string name="create_collection_color">Szín</string>
   <string name="create_collection_display_name">Cím</string>
   <string name="create_collection_home_set">Tárhely</string>
-  <string name="create_collection_description_optional">Leírás*</string>
+  <string name="create_collection_description_optional">Leírás (nem kötelező)</string>
   <string name="create_collection_create">Létrehozás</string>
-  <string name="create_collection_optional">* nem kötelező</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">névjegyek</string>
   <string name="collection_datatype_tasks">feladatok</string>
@@ -425,7 +419,7 @@
   <string name="webdav_add_mount_display_name">Megjelenítendő név</string>
   <string name="webdav_add_mount_url">WebDAV webcím</string>
   <string name="webdav_add_mount_url_invalid">Érvénytelen webcím</string>
-  <string name="webdav_add_mount_authentication">Hitelesítés (nem kötelező)</string>
+  <string name="webdav_add_mount_authentication">Hitelesítés</string>
   <string name="webdav_add_mount_username">Felhasználónév</string>
   <string name="webdav_add_mount_password">Jelszó</string>
   <string name="webdav_add_mount_add">WebDAV kötet hozzáadása</string>

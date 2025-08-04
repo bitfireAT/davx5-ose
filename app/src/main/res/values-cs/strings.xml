@@ -10,7 +10,6 @@
   <string name="field_required">Tuto kolonku je třeba vyplnit</string>
   <string name="help">Pomoc</string>
   <string name="navigate_up">Navigovat nahoru</string>
-  <string name="optional_label">* volitelné</string>
   <string name="options_menu">Menu možností</string>
   <string name="share">Sdílet</string>
   <string name="sync_started">Synchronizace spuštěna/přidána do fronty</string>
@@ -213,10 +212,8 @@
   <string name="login_password">Heslo</string>
   <string name="login_password_hide">Skrýt heslo</string>
   <string name="login_password_show">Zobrazit heslo</string>
-  <string name="login_password_optional">Heslo*</string>
   <string name="login_type_url">Přihlášení s URL a uživatelským jménem</string>
   <string name="login_user_name">Uživatelské jméno</string>
-  <string name="login_user_name_optional">Uživatelské jméno*</string>
   <string name="login_base_url">Základ URL</string>
   <string name="login_select_certificate">Vybrat certifikát</string>
   <string name="login_add_account">Přidat účet</string>
@@ -227,7 +224,6 @@
   <string name="login_account_name_required">Je třeba zadat název pro účet</string>
   <string name="login_account_name_already_taken">Tento název účtu už je používán někým jiným</string>
   <string name="login_type_advanced">Pokročilé přihlášení</string>
-  <string name="login_no_client_certificate_optional">Bez certifikátu klienta</string>
   <string name="login_client_certificate_selected">Certifikát klienta: %s</string>
   <string name="login_no_certificate_found">Nenalezen žádný certifikát</string>
   <string name="login_install_certificate">Instalovat certifikát</string>
@@ -322,7 +318,6 @@
   <string name="create_addressbook">Vytvořit adresář</string>
   <string name="create_addressbook_maybe_not_supported">Vytváření adresář kontaků přes CardDAV nemusí být serverem podporováno.</string>
   <string name="create_calendar">Vytvořit kalendář</string>
-  <string name="create_calendar_time_zone_optional">Výchozí časová zóna*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Možné položky kalendáře</string>
   <string name="create_calendar_type_vevent">Události</string>
@@ -332,9 +327,8 @@
   <string name="create_collection_color">Barva</string>
   <string name="create_collection_display_name">Nadpis</string>
   <string name="create_collection_home_set">Umístění úložiště</string>
-  <string name="create_collection_description_optional">Popis*</string>
+  <string name="create_collection_description_optional">Popis (volitelný)</string>
   <string name="create_collection_create">Vytvořit</string>
-  <string name="create_collection_optional">* volitelné</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Smazat sadu</string>
   <string name="collection_delete_warning">Tato kolekce (%s) a její data budou navždy odstraněna, lokálně i na serveru.</string>
@@ -391,7 +385,7 @@
   <string name="webdav_add_mount_display_name">Zobrazovaný název</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Neplatná URL</string>
-  <string name="webdav_add_mount_authentication">Ověření (volitelné)</string>
+  <string name="webdav_add_mount_authentication">Ověření</string>
   <string name="webdav_add_mount_username">Uživatelské jméno</string>
   <string name="webdav_add_mount_password">Heslo</string>
   <string name="webdav_add_mount_add">Přidat připojení (mount)</string>

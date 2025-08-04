@@ -11,7 +11,6 @@
   <string name="field_required">Acest câmp este obligatoriu</string>
   <string name="help">Ajutor</string>
   <string name="navigate_up">Navigare în sus</string>
-  <string name="optional_label">* opțional</string>
   <string name="options_menu">Meniul Opțiuni</string>
   <string name="share">Distribuie</string>
   <string name="sync_started">Sincronizare începută/pusă în coadă</string>
@@ -246,10 +245,8 @@
   <string name="login_password">Parolă</string>
   <string name="login_password_hide">Ascunde parola</string>
   <string name="login_password_show">Afișează parola</string>
-  <string name="login_password_optional">Parolă*</string>
   <string name="login_type_url">Conecteează-te cu adresa URL și numele de utilizator</string>
   <string name="login_user_name">Nume de utilizator</string>
-  <string name="login_user_name_optional">Nume de utilizator*</string>
   <string name="login_base_url">Adresa URL de bază</string>
   <string name="login_base_url_info"><![CDATA[Adresa URL de bază va fi verificată direct, dar <a href="%s">serviciile sunt de asemenea descoperite</a> folosind înregistrări DNS și adrese URL bine-cunoscute.]]></string>
   <string name="login_select_certificate">Selectează certificatul</string>
@@ -263,7 +260,6 @@
   <string name="login_account_not_added">Contul nu a putut fi adăugat</string>
   <string name="login_finish">Finalizează</string>
   <string name="login_type_advanced">Autentificare avansată</string>
-  <string name="login_no_client_certificate_optional">Fără certificat de client*</string>
   <string name="login_client_certificate_selected">Certificat de client: %s</string>
   <string name="login_no_certificate_found">Nu a fost găsit niciun certificat</string>
   <string name="login_install_certificate">Instalare certificat</string>
@@ -365,7 +361,6 @@
   <string name="create_addressbook">Creează agendă de adrese</string>
   <string name="create_addressbook_maybe_not_supported">Crearea agendei prin CardDAV poate să nu fie acceptată de server.</string>
   <string name="create_calendar">Creează un calendar</string>
-  <string name="create_calendar_time_zone_optional">Fus orar implicit*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Posibile intrări din calendar</string>
   <string name="create_calendar_type_vevent">Evenimente</string>
@@ -375,9 +370,8 @@
   <string name="create_collection_color">Culoare</string>
   <string name="create_collection_display_name">Titlu</string>
   <string name="create_collection_home_set">Locația de stocare</string>
-  <string name="create_collection_description_optional">Descriere*</string>
+  <string name="create_collection_description_optional">Descriere (opțional)</string>
   <string name="create_collection_create">Crează</string>
-  <string name="create_collection_optional">* opțional</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">contacte</string>
   <string name="collection_datatype_events">evenimente</string>
@@ -442,7 +436,7 @@
   <string name="webdav_add_mount_display_name">Numele afișat</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL greșit</string>
-  <string name="webdav_add_mount_authentication">Autentificare (opțional)</string>
+  <string name="webdav_add_mount_authentication">Autentificare</string>
   <string name="webdav_add_mount_username">Nume de utilizator</string>
   <string name="webdav_add_mount_password">Parolă</string>
   <string name="webdav_add_mount_add">Adaugă montare</string>

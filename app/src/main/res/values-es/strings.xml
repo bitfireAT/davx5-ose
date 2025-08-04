@@ -10,7 +10,6 @@
   <string name="field_required">Este campo es requerido</string>
   <string name="help">Ayuda</string>
   <string name="navigate_up">Navegar hacia arriba</string>
-  <string name="optional_label">* opcional</string>
   <string name="options_menu">Menú de opciones</string>
   <string name="share">Compartir</string>
   <string name="sync_started">Sincronización iniciada/programada</string>
@@ -215,10 +214,8 @@
   <string name="login_password">Contraseña</string>
   <string name="login_password_hide">Esconder contraseña</string>
   <string name="login_password_show">Mostrar contraseña</string>
-  <string name="login_password_optional">Contraseña*</string>
   <string name="login_type_url">Acceder con URL y nombre de usuario</string>
   <string name="login_user_name">Nombre de usuario</string>
-  <string name="login_user_name_optional">Nombre de usuario*</string>
   <string name="login_base_url">URL base</string>
   <string name="login_base_url_info"><![CDATA[La URL base será comprobada directamente, pero <a href="%s">los servicios también son detectados</a> usando registros DNS y URLs well-known.]]></string>
   <string name="login_select_certificate">Seleccionar un certificado</string>
@@ -230,7 +227,6 @@
   <string name="login_account_name_required">Nombre de cuenta requerido</string>
   <string name="login_account_name_already_taken">El nombre de la cuenta ya está siendo utilizado</string>
   <string name="login_type_advanced">Inicio de sesión avanzado</string>
-  <string name="login_no_client_certificate_optional">Sin certificado de cliente*</string>
   <string name="login_client_certificate_selected">Certificado de cliente: %s</string>
   <string name="login_no_certificate_found">No se ha encontrado ningún certificado</string>
   <string name="login_install_certificate">Instalar certificado</string>
@@ -324,7 +320,6 @@
   <string name="create_addressbook">Crear nueva agenda</string>
   <string name="create_addressbook_maybe_not_supported">La creación de agendas de contactos sobre CardDAV puede no ser soportada por el servidor.</string>
   <string name="create_calendar">Crear calendario</string>
-  <string name="create_calendar_time_zone_optional">Zona horaria por defecto*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Posibles entradas de calendario</string>
   <string name="create_calendar_type_vevent">Eventos</string>
@@ -334,9 +329,8 @@
   <string name="create_collection_color">Color</string>
   <string name="create_collection_display_name">Título </string>
   <string name="create_collection_home_set">Ubicación del almacenamiento</string>
-  <string name="create_collection_description_optional">Descripción*</string>
+  <string name="create_collection_description_optional">Descripción (opcional)</string>
   <string name="create_collection_create">Crear</string>
-  <string name="create_collection_optional">* opcional</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">contactos</string>
   <string name="collection_datatype_tasks">tareas</string>
@@ -395,7 +389,7 @@
   <string name="webdav_add_mount_display_name">Mostrar nombre</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL inválida</string>
-  <string name="webdav_add_mount_authentication">Autenticación (opcional)</string>
+  <string name="webdav_add_mount_authentication">Autenticación</string>
   <string name="webdav_add_mount_username">Nombre de usuario</string>
   <string name="webdav_add_mount_password">Contraseña</string>
   <string name="webdav_add_mount_add">Agregar montaje</string>
