@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.provider.Browser
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -90,6 +91,7 @@ object NextcloudLogin : LoginType {
                     @Suppress("DEPRECATION")
                     val browser = CustomTabsIntent.Builder()
                         .setToolbarColor(context.resources.getColor(R.color.primaryColor))
+                        .setNavigationBarColor(Color.WHITE)
                         .build()
                     browser.intent.data = loginUri
                     browser.intent.putExtra(
