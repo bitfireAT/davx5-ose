@@ -11,7 +11,6 @@
   <string name="field_required">Задължително поле</string>
   <string name="help">Помощ</string>
   <string name="navigate_up">Придвижване нагоре</string>
-  <string name="optional_label">* по желание</string>
   <string name="options_menu">Меню настройки</string>
   <string name="share">Споделяне</string>
   <string name="sync_started">Синхронизирането е започнало/изчаква</string>
@@ -247,10 +246,10 @@
   <string name="login_password">Парола</string>
   <string name="login_password_hide">Скриване на паролата</string>
   <string name="login_password_show">Показване на паролата</string>
-  <string name="login_password_optional">Парола*</string>
+  <string name="login_password_optional">Парола (по желание)</string>
   <string name="login_type_url">Вход с адрес и потребителско име</string>
   <string name="login_user_name">Потребителско име</string>
-  <string name="login_user_name_optional">Потребителско име*</string>
+  <string name="login_user_name_optional">Потребителско име (по желание)</string>
   <string name="login_base_url">Основен адрес</string>
   <string name="login_base_url_info"><![CDATA[Основният адрес ще бъде проверен, но <a href="%s">някои услуги могат да бъдат открити и</a> чрез записи в DNS, и добре познати адреси.]]></string>
   <string name="login_select_certificate">Избор на сертификат</string>
@@ -264,7 +263,7 @@
   <string name="login_account_not_added">Профилът не може да бъде добавен</string>
   <string name="login_finish">Готово</string>
   <string name="login_type_advanced">Вход за напреднали</string>
-  <string name="login_no_client_certificate_optional">Липсва клиентски сертификат*</string>
+  <string name="login_no_client_certificate_optional">Без клиентск сертификат (по желание)</string>
   <string name="login_client_certificate_selected">Клиентски сертификат: %s</string>
   <string name="login_no_certificate_found">Не е намерен сертификат</string>
   <string name="login_install_certificate">Инсталиране на сертификат</string>
@@ -364,7 +363,7 @@
   <string name="create_addressbook">Създаване на адресник</string>
   <string name="create_addressbook_maybe_not_supported">Създаване на адресник през CardDAV може да не е поддържано от сървъра.</string>
   <string name="create_calendar">Създаване на календар</string>
-  <string name="create_calendar_time_zone_optional">Подразбиран часови пояс*</string>
+  <string name="create_calendar_time_zone_optional">Стандартен часови пояс (по желание)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Възможни елементи на календара</string>
   <string name="create_calendar_type_vevent">Събития</string>
@@ -374,9 +373,8 @@
   <string name="create_collection_color">Цвят</string>
   <string name="create_collection_display_name">Заглавие</string>
   <string name="create_collection_home_set">Местоположение на хранилището</string>
-  <string name="create_collection_description_optional">Описание*</string>
+  <string name="create_collection_description_optional">Описание (по желание)</string>
   <string name="create_collection_create">Създаване</string>
-  <string name="create_collection_optional">* по желание</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">контакти</string>
   <string name="collection_datatype_events">събития</string>
@@ -441,9 +439,12 @@
   <string name="webdav_add_mount_display_name">Видимо име</string>
   <string name="webdav_add_mount_url">Адрес на WebDAV</string>
   <string name="webdav_add_mount_url_invalid">Недействителен адрес</string>
-  <string name="webdav_add_mount_authentication">Удостоверяване (по желание)</string>
+  <string name="webdav_add_mount_mountpoint_displayname">Точка на монтиране и показвано име</string>
+  <string name="webdav_add_mount_authentication">Удостоверяване</string>
   <string name="webdav_add_mount_username">Потребителско име</string>
   <string name="webdav_add_mount_password">Парола</string>
+  <string name="webdav_add_mount_username_optional">Потребителско име (по желание)</string>
+  <string name="webdav_add_mount_password_optional">Парола (по желание)</string>
   <string name="webdav_add_mount_add">Монтиране</string>
   <string name="webdav_add_mount_no_support">Няма услуга на WebDAV на адреса</string>
   <string name="webdav_remove_mount_title">Премахване на точката на монтиране</string>

@@ -11,7 +11,6 @@
   <string name="field_required">Это поле является обязательным</string>
   <string name="help">Помощь</string>
   <string name="navigate_up">Перейти наверх</string>
-  <string name="optional_label">* опционально</string>
   <string name="options_menu">Меню параметров</string>
   <string name="share">Поделиться</string>
   <string name="sync_started">Синхронизация начата/завершена</string>
@@ -249,10 +248,10 @@
   <string name="login_password">Пароль</string>
   <string name="login_password_hide">Скрыть пароль</string>
   <string name="login_password_show">Показать пароль</string>
-  <string name="login_password_optional">Пароль*</string>
+  <string name="login_password_optional">Пароль (необязательно)</string>
   <string name="login_type_url">Войти с URL и именем пользователя</string>
   <string name="login_user_name">Имя пользователя</string>
-  <string name="login_user_name_optional">Имя пользователя*</string>
+  <string name="login_user_name_optional">Имя пользователя (необязательно)</string>
   <string name="login_base_url">Базовый URL</string>
   <string name="login_base_url_info"><![CDATA[Базовый URL проверяется напрямую, но <a href="%s">сервисы также обнаруживаются</a> по записям DNS и известным URL.]]></string>
   <string name="login_select_certificate">Выберите сертификат</string>
@@ -266,7 +265,7 @@
   <string name="login_account_not_added">Не удалось добавить аккаунт</string>
   <string name="login_finish">Завершить</string>
   <string name="login_type_advanced">Расширенный вход</string>
-  <string name="login_no_client_certificate_optional">Нет клиентского сертификата*</string>
+  <string name="login_no_client_certificate_optional">Без клиентского сертификата (необязательно)</string>
   <string name="login_client_certificate_selected">Сертификат клиента: %s</string>
   <string name="login_no_certificate_found">Сертификат не найден</string>
   <string name="login_install_certificate">Установить сертификат</string>
@@ -370,7 +369,7 @@
   <string name="create_addressbook">Создать адресную книгу</string>
   <string name="create_addressbook_maybe_not_supported">Создание адресной книги через CardDAV может не поддерживаться сервером.</string>
   <string name="create_calendar">Создать календарь</string>
-  <string name="create_calendar_time_zone_optional">Часовой пояс по умолчанию*</string>
+  <string name="create_calendar_time_zone_optional">Часовой пояс по умолчанию (необязательно)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Возможные записи календаря</string>
   <string name="create_calendar_type_vevent">События</string>
@@ -380,9 +379,8 @@
   <string name="create_collection_color">Цвет</string>
   <string name="create_collection_display_name">Название</string>
   <string name="create_collection_home_set">Место хранения</string>
-  <string name="create_collection_description_optional">Описание*</string>
+  <string name="create_collection_description_optional">Описание (необязательно)</string>
   <string name="create_collection_create">Создать</string>
-  <string name="create_collection_optional">* опционально</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">контакты</string>
   <string name="collection_datatype_events">события</string>
@@ -447,9 +445,12 @@
   <string name="webdav_add_mount_display_name">Отображаемое имя</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Некорректный URL</string>
-  <string name="webdav_add_mount_authentication">Аутентификация (необязательно)</string>
+  <string name="webdav_add_mount_mountpoint_displayname">Точка монтирования и отображаемое имя</string>
+  <string name="webdav_add_mount_authentication">Аутентификация</string>
   <string name="webdav_add_mount_username">Имя пользователя</string>
   <string name="webdav_add_mount_password">Пароль</string>
+  <string name="webdav_add_mount_username_optional">Имя пользователя (необязательно)</string>
+  <string name="webdav_add_mount_password_optional">Пароль (необязательно)</string>
   <string name="webdav_add_mount_add">Добавить точку монтирования</string>
   <string name="webdav_add_mount_no_support">Служба WebDAV отсутствует на данном URL</string>
   <string name="webdav_remove_mount_title">Удалить точку монтирования</string>

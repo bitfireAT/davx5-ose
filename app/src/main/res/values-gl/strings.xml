@@ -11,7 +11,6 @@
   <string name="field_required">Este campo é requerido</string>
   <string name="help">Axuda</string>
   <string name="navigate_up">Ir arriba</string>
-  <string name="optional_label">* optativo</string>
   <string name="options_menu">Menú de opcións</string>
   <string name="share">Compartir</string>
   <string name="sync_started">Sincronización iniciada/en agarda</string>
@@ -243,10 +242,8 @@
   <string name="login_password">Contrasinal</string>
   <string name="login_password_hide">Agochar contrasinal</string>
   <string name="login_password_show">Mostrar contrasinal</string>
-  <string name="login_password_optional">Contrasinal*</string>
   <string name="login_type_url">Conectar con URL e nome de usuaria</string>
   <string name="login_user_name">Nome de usuaria</string>
-  <string name="login_user_name_optional">Identificador*</string>
   <string name="login_base_url">URL base</string>
   <string name="login_base_url_info"><![CDATA[O URL base compróbase directamente, mais os <a href="%s">servizos tamén se atopan</a> usando rexistros DNS e URLs tipo well-known.]]></string>
   <string name="login_select_certificate">Escoller certificado</string>
@@ -260,7 +257,6 @@
   <string name="login_account_not_added">Non se puido engadir a conta</string>
   <string name="login_finish">Rematar</string>
   <string name="login_type_advanced">Acceso avanzado</string>
-  <string name="login_no_client_certificate_optional">Sen certificado cliente*</string>
   <string name="login_client_certificate_selected">Certificado cliente: %s</string>
   <string name="login_no_certificate_found">Non se atopa certificado</string>
   <string name="login_install_certificate">Instalar certificado</string>
@@ -352,7 +348,6 @@
   <string name="create_addressbook">Crear libreta de enderezos</string>
   <string name="create_addressbook_maybe_not_supported">O servidor podería non ter soporte para crear libretas de enderezos usando CardDAV.</string>
   <string name="create_calendar">Crear calendario</string>
-  <string name="create_calendar_time_zone_optional">Zona horaria por defecto*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Entradas posibles no calendario</string>
   <string name="create_calendar_type_vevent">Eventos</string>
@@ -362,9 +357,8 @@
   <string name="create_collection_color">Cor</string>
   <string name="create_collection_display_name">Título</string>
   <string name="create_collection_home_set">Localización do almacenamento</string>
-  <string name="create_collection_description_optional">Descrición*</string>
+  <string name="create_collection_description_optional">Descrición (optativo)</string>
   <string name="create_collection_create">Crear</string>
-  <string name="create_collection_optional">* optativo</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">contactos</string>
   <string name="collection_datatype_tasks">tarefas</string>
@@ -425,7 +419,7 @@
   <string name="webdav_add_mount_display_name">Nome mostrado</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL inválido</string>
-  <string name="webdav_add_mount_authentication">Autenticación (optativo)</string>
+  <string name="webdav_add_mount_authentication">Autenticación</string>
   <string name="webdav_add_mount_username">Nome de usuaria</string>
   <string name="webdav_add_mount_password">Contrasinal</string>
   <string name="webdav_add_mount_add">Engadir montaxe</string>

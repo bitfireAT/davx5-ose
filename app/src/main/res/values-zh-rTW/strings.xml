@@ -213,6 +213,7 @@
   <string name="webdav_add_mount_empty_more_info"><![CDATA[關於 <a href="%1$s">WebDAV 如何運作</a>請見文件。]]></string>
   <string name="webdav_add_mount_display_name">顯示名稱</string>
   <string name="webdav_add_mount_url">WebDAV 網址</string>
+  <string name="webdav_add_mount_authentication">認證</string>
   <string name="webdav_add_mount_username">使用者帳號</string>
   <string name="webdav_add_mount_password">密碼</string>
   <string name="webdav_add_mount_add">新增掛載</string>

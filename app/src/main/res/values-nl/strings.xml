@@ -11,7 +11,6 @@
   <string name="field_required">Dit veld is verplicht</string>
   <string name="help">Hulp</string>
   <string name="navigate_up">Navigeer omhoog</string>
-  <string name="optional_label">*optioneel</string>
   <string name="options_menu">Opties menu</string>
   <string name="share">Delen</string>
   <string name="sync_started">Synchronisatie begonnen/in wachtrij geplaatst</string>
@@ -247,10 +246,10 @@
   <string name="login_password">Wachtwoord</string>
   <string name="login_password_hide">Verberg wachtwoord</string>
   <string name="login_password_show">Wachtwoord tonen</string>
-  <string name="login_password_optional">Wachtwoord*</string>
+  <string name="login_password_optional">Wachtwoord (optioneel)</string>
   <string name="login_type_url">Inloggen met URL en gebruikersnaam</string>
   <string name="login_user_name">Gebruikersnaam</string>
-  <string name="login_user_name_optional">Gebruikersnaam*</string>
+  <string name="login_user_name_optional">Gebruikersnaam (optioneel)</string>
   <string name="login_base_url">Basis-URL</string>
   <string name="login_base_url_info"><![CDATA[De basis URL wordt direct gecontroleerd, maar <a href="%s">services worden ook ontdekt</a> met behulp van DNS records en bekende URL\'s.]]></string>
   <string name="login_select_certificate">Certificaat selecteren</string>
@@ -264,7 +263,7 @@
   <string name="login_account_not_added">Account kon niet worden toegevoegd</string>
   <string name="login_finish">afwerken</string>
   <string name="login_type_advanced">Geavanceerd inloggen</string>
-  <string name="login_no_client_certificate_optional">Geen cliëntcertificaat*</string>
+  <string name="login_no_client_certificate_optional">Geen cliëntcertificaat (optioneel)</string>
   <string name="login_client_certificate_selected">Cliëntcertificaat: %s</string>
   <string name="login_no_certificate_found">Geen certificaat gevonden</string>
   <string name="login_install_certificate">Certificaat installeren</string>
@@ -364,7 +363,7 @@
   <string name="create_addressbook">Adresboek aanmaken</string>
   <string name="create_addressbook_maybe_not_supported">Het aanmaken van een adresboek via CardDAV wordt mogelijk niet ondersteund door de server.</string>
   <string name="create_calendar">Kalender aanmaken</string>
-  <string name="create_calendar_time_zone_optional">Standaard tijdzone*</string>
+  <string name="create_calendar_time_zone_optional">Standaard tijdzone (optioneel)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Mogelijke kalender-items</string>
   <string name="create_calendar_type_vevent">Gebeurtenissen</string>
@@ -374,9 +373,8 @@
   <string name="create_collection_color">Kleur</string>
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_home_set">Opslaglocatie</string>
-  <string name="create_collection_description_optional">Beschrijving*</string>
+  <string name="create_collection_description_optional">Beschrijving (optioneel)</string>
   <string name="create_collection_create">Aanmaken</string>
-  <string name="create_collection_optional">*optioneel</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">contacten</string>
   <string name="collection_datatype_events">gebeurtenissen</string>
@@ -441,9 +439,12 @@
   <string name="webdav_add_mount_display_name">Weergavenaam</string>
   <string name="webdav_add_mount_url">WebDAV-URL</string>
   <string name="webdav_add_mount_url_invalid">Ongeldige URL</string>
-  <string name="webdav_add_mount_authentication">Authenticatie (optioneel)</string>
+  <string name="webdav_add_mount_mountpoint_displayname">Koppelpunt en weergavenaam</string>
+  <string name="webdav_add_mount_authentication">Authenticatie</string>
   <string name="webdav_add_mount_username">Gebruikersnaam</string>
   <string name="webdav_add_mount_password">Wachtwoord</string>
+  <string name="webdav_add_mount_username_optional">Gebruikersnaam (optioneel)</string>
+  <string name="webdav_add_mount_password_optional">Wachtwoord (optioneel)</string>
   <string name="webdav_add_mount_add">Koppeling toevoegen</string>
   <string name="webdav_add_mount_no_support">Geen WebDAV-service op deze URL</string>
   <string name="webdav_remove_mount_title">Verwijder het koppelpunt</string>
