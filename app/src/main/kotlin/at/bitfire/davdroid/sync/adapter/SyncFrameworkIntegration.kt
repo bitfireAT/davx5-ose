@@ -192,37 +192,57 @@ class SyncFrameworkIntegration @Inject constructor(
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
-        val typeFlows: List<Flow<Boolean>> = dataTypes.map { dataType ->
-            val authorities = dataTypes.mapNotNull { dataType ->
-                dataType.selectedAuthority(context)
-            }
+        // Map given data types to authorities
+        val authorities = dataTypes.mapNotNull { dataType ->
+            dataType.selectedAuthority(context)
+        }
 
-            // Use address book accounts instead if needed
+        // Determine the pending states for the different data types of the account as separate flows
+        val pendingFlows: List<Flow<Boolean>> = dataTypes.map { dataType ->
+            // If checking contacts, we need to check all address book accounts instead of the single main account
             val accountsFlow = if (dataType == SyncDataType.CONTACTS)
                 localAddressBookStore.get().getAddressBookAccountsFlow(account)
             else
                 flowOf(listOf(account))
 
-            // Observe sync pending state for the given account(s) and data types (active authorities)
-            /* return */ accountsFlow.flatMapLatest { accounts ->
-                callbackFlow {
-                    // Observe sync pending state
-                    val listener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING) {
-                        trySend(anyPendingSync(accounts, authorities))
-                    }
-
-                    // Emit initial value
-                    trySend(anyPendingSync(accounts, authorities))
-
-                    // Clean up listener on close
-                    awaitClose { ContentResolver.removeStatusChangeListener(listener) }
-                }
-            }
+            // Return sync pending state as a flow for accounts flow and authorities
+            anyPendingSyncFlow(accountsFlow, authorities)
         }
 
-        return combine(typeFlows) { results ->
-            results.any { pending -> pending } // If any of the types are pending
-        }.distinctUntilChanged()
+        // Combine the different data types pending state flows into one
+        return combine(pendingFlows) { it.any { pending -> pending } }.distinctUntilChanged()
+    }
+
+    /**
+     * Maps the given accounts flow to a simple boolean flow telling us whether any of the accounts
+     * has a pending sync for any of the given authorities.
+     *
+     * @param accountsFlow accounts to check sync status for
+     * @param authorities authorities to check sync status for
+     *
+     * @return returns flow which emits *true* if any of the accounts has a sync pending for
+     * any of the given authorities and *false* otherwise
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun anyPendingSyncFlow(
+        accountsFlow: Flow<List<Account>>,
+        authorities: List<String>
+    ): Flow<Boolean> = accountsFlow.flatMapLatest { accounts ->
+        // Observe sync pending state for the given accounts and data types
+        callbackFlow {
+            // Observe sync pending state
+            val listener = ContentResolver.addStatusChangeListener(
+                ContentResolver.SYNC_OBSERVER_TYPE_PENDING
+            ) {
+                trySend(anyPendingSync(accounts, authorities))
+            }
+
+            // Emit initial value
+            trySend(anyPendingSync(accounts, authorities))
+
+            // Clean up listener on close
+            awaitClose { ContentResolver.removeStatusChangeListener(listener) }
+        }
     }
 
     /**
