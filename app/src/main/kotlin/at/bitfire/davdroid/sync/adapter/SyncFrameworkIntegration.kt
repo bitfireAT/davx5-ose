@@ -18,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -191,30 +192,36 @@ class SyncFrameworkIntegration @Inject constructor(
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
-        val authorities = dataTypes.mapNotNull { dataType ->
-            dataType.selectedAuthority(context)
+        val typeFlows: List<Flow<Boolean>> = dataTypes.map { dataType ->
+            val authorities = dataTypes.mapNotNull { dataType ->
+                dataType.selectedAuthority(context)
+            }
+
+            // Use address book accounts instead if needed
+            val accountsFlow = if (dataType == SyncDataType.CONTACTS)
+                localAddressBookStore.get().getAddressBookAccountsFlow(account)
+            else
+                flowOf(listOf(account))
+
+            // Observe sync pending state for the given account(s) and data types (active authorities)
+            /* return */ accountsFlow.flatMapLatest { accounts ->
+                callbackFlow {
+                    // Observe sync pending state
+                    val listener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING) {
+                        trySend(anyPendingSync(accounts, authorities))
+                    }
+
+                    // Emit initial value
+                    trySend(anyPendingSync(accounts, authorities))
+
+                    // Clean up listener on close
+                    awaitClose { ContentResolver.removeStatusChangeListener(listener) }
+                }
+            }
         }
 
-        // Use address book accounts if needed
-        val accountsFlow = if (dataTypes.contains(SyncDataType.CONTACTS))
-            localAddressBookStore.get().getAddressBookAccountsFlow(account)
-        else
-            flowOf(listOf(account))
-
-        // Observe sync pending state for the given accounts and authorities
-        return accountsFlow.flatMapLatest { accounts ->
-            callbackFlow {
-                // Observe sync pending state
-                val listener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING) {
-                    trySend(anyPendingSync(accounts, authorities))
-                }
-
-                // Emit initial value
-                trySend(anyPendingSync(accounts, authorities))
-
-                // Clean up listener on close
-                awaitClose { ContentResolver.removeStatusChangeListener(listener) }
-            }
+        return combine(typeFlows) { results ->
+            results.any { pending -> pending } // If any of the types are pending
         }.distinctUntilChanged()
     }
 
