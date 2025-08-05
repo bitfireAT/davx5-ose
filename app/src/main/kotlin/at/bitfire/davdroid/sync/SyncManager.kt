@@ -389,13 +389,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     protected open suspend fun uploadDirty(local: ResourceType, forceAsNew: Boolean = false) {
         val fileName = local.fileName ?: local.prepareForUpload()
 
-        var eTag: String? = null
-        var scheduleTag: String? = null
-        val readTagsFromResponse: (okhttp3.Response) -> Unit = { response ->
-            eTag = GetETag.fromResponse(response)?.eTag
-            scheduleTag = ScheduleTag.fromResponse(response)?.scheduleTag
-        }
-
         val uploadUrl = collection.url.newBuilder().addPathSegment(fileName).build()
         val remote = DavResource(httpClient.okHttpClient, uploadUrl)
 
@@ -405,17 +398,25 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 SyncException.wrapWithRemoteResourceSuspending(uploadUrl) {
                     logger.info("Uploading new record ${local.id} -> $fileName")
                     val bodyToUpload = generateUpload(local)
+
+                    var newETag: String? = null
+                    var newScheduleTag: String? = null
                     runInterruptible {
                         remote.put(
                             bodyToUpload,
                             ifNoneMatch = true,
-                            callback = readTagsFromResponse,
+                            callback = { response ->
+                                newETag = GetETag.fromResponse(response)?.eTag
+                                newScheduleTag = ScheduleTag.fromResponse(response)?.scheduleTag
+                            },
                             headers = pushDontNotifyHeader
                         )
                     }
 
+                    logger.fine("Upload successful; new ETag=$newETag, new Schedule-Tag: $newScheduleTag")
+
                     // success (no exception thrown)
-                    onSuccessfulUpload(local, fileName, eTag, scheduleTag)
+                    onSuccessfulUpload(local, fileName, newETag, newScheduleTag)
                 }
 
             } else {
@@ -433,25 +434,28 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
                     logger.info("Uploading modified record ${local.id} -> $fileName (ETag=$ifETag, Schedule-Tag=$ifScheduleTag)")
                     val bodyToUpload = generateUpload(local)
+
+                    var updatedETag: String? = null
+                    var updatedScheduleTag: String? = null
                     runInterruptible {
                         remote.put(
                             bodyToUpload,
                             ifETag = ifETag,
                             ifScheduleTag = ifScheduleTag,
-                            callback = readTagsFromResponse,
+                            callback = { response ->
+                                updatedETag = GetETag.fromResponse(response)?.eTag
+                                updatedScheduleTag = ScheduleTag.fromResponse(response)?.scheduleTag
+                            },
                             headers = pushDontNotifyHeader
                         )
                     }
 
+                    logger.fine("Upload successful; updated ETag=$updatedETag, updated Schedule-Tag: $updatedScheduleTag")
+
                     // success (no exception thrown)
-                    onSuccessfulUpload(local, fileName, eTag, scheduleTag)
+                    onSuccessfulUpload(local, fileName, updatedETag, updatedScheduleTag)
                 }
             }
-
-            if (eTag != null)
-                logger.fine("Received new ETag=$eTag after uploading")
-            else
-                logger.fine("Didn't receive new ETag after uploading, setting to null")
 
         } catch (e: SyncException) {
             when (val ex = e.cause) {
