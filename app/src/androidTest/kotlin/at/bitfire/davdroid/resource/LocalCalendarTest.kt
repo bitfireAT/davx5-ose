@@ -60,7 +60,7 @@ class LocalCalendarTest {
 
     @After
     fun tearDown() {
-        calendar.calendar.delete()
+        calendar.androidCalendar.delete()
         client.closeCompat()
     }
 
