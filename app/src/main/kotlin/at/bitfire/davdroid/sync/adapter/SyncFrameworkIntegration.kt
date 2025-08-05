@@ -194,7 +194,7 @@ class SyncFrameworkIntegration @Inject constructor(
     fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
         // Map given data types to authorities
         val authorities = dataTypes.mapNotNull { dataType ->
-            dataType.selectedAuthority(context)
+            dataType.authority(context)
         }
 
         // Determine the pending states for the different data types of the account as separate flows
