@@ -215,13 +215,13 @@ class SyncFrameworkIntegration @Inject constructor(
 
     /**
      * Maps the given accounts flow to a simple boolean flow telling us whether any of the accounts
-     * has a pending sync for any of the given authorities.
+     * has a pending sync for any of the given authority.
      *
      * @param accountsFlow accounts to check sync status for
-     * @param authority authorities to check sync status for
+     * @param authority authority to check sync status for
      *
      * @return returns flow which emits *true* if any of the accounts has a sync pending for
-     * any of the given authorities and *false* otherwise
+     * the given authority and *false* otherwise
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun anyPendingSyncFlow(
