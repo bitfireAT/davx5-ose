@@ -215,7 +215,7 @@ class SyncFrameworkIntegration @Inject constructor(
 
     /**
      * Maps the given accounts flow to a simple boolean flow telling us whether any of the accounts
-     * has a pending sync for any of the given authority.
+     * has a pending sync for given authority.
      *
      * @param accountsFlow accounts to check sync status for
      * @param authority authority to check sync status for
