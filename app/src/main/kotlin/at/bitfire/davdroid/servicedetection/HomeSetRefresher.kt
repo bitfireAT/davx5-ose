@@ -51,7 +51,7 @@ class HomeSetRefresher @AssistedInject constructor(
      * or marked as homeless - in case a collection was removed from its home-set.
      *
      * If a home-set URL in fact points to a collection directly, the collection will be saved with this URL,
-     * and a null value for it's home-set. Refreshing of collections without home-sets is then handled by [CollectionListRefresher.refreshHomelessCollections].
+     * and a null value for it's home-set. Refreshing of collections without home-sets is then handled by [CollectionsWithoutHomeSetRefresher.refreshHomelessCollections].
      */
     internal fun refreshHomesetsAndTheirCollections() {
         val homesets = homeSetRepository.getByServiceBlocking(service.id).associateBy { it.url }.toMutableMap()
