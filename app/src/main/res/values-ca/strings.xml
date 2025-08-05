@@ -11,7 +11,6 @@
   <string name="field_required">Cal aquest camp</string>
   <string name="help">Ajuda</string>
   <string name="navigate_up">Navega cap amunt</string>
-  <string name="optional_label">* opcional</string>
   <string name="options_menu">Menú d\'opcions</string>
   <string name="share">Comparteix</string>
   <string name="sync_started">La sincronització s\'ha iniciat/posat a la cua</string>
@@ -247,10 +246,8 @@
   <string name="login_password">Contrasenya</string>
   <string name="login_password_hide">Oculta la contrasenya</string>
   <string name="login_password_show">Mostra la contrasenya</string>
-  <string name="login_password_optional">Contrasenya*</string>
   <string name="login_type_url">Inici de sessió amb un URL i un nom d\'usuari/ària</string>
   <string name="login_user_name">Nom d\'usuari/ària</string>
-  <string name="login_user_name_optional">Nom d\'usuari*</string>
   <string name="login_base_url">URL base</string>
   <string name="login_base_url_info"><![CDATA[L\'URL base es comprovarà directament, però els <a href="%s">serveis també es descobreixen</a> utilitzant els registres de DNS i els URL ben coneguts.]]></string>
   <string name="login_select_certificate">Selecciona el certificat</string>
@@ -264,7 +261,6 @@
   <string name="login_account_not_added">No s\'ha pogut afegir el compte</string>
   <string name="login_finish">Finalitza</string>
   <string name="login_type_advanced">Inici de sessió avançat</string>
-  <string name="login_no_client_certificate_optional">Sense certificat del client*</string>
   <string name="login_client_certificate_selected">Certificat del client: %s</string>
   <string name="login_no_certificate_found">No s\'ha trobat cap certificat</string>
   <string name="login_install_certificate">Instal·la un certificat</string>
@@ -364,7 +360,6 @@
   <string name="create_addressbook">Crea una llibreta d\'adreces</string>
   <string name="create_addressbook_maybe_not_supported">La creació de llibretes d\'adreces sobre CardDAV pot no ser suportada pel servidor.</string>
   <string name="create_calendar">Crea un calendari</string>
-  <string name="create_calendar_time_zone_optional">Zona horària per defecte*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Possibles entrades de calendari</string>
   <string name="create_calendar_type_vevent">Esdeveniments</string>
@@ -374,9 +369,8 @@
   <string name="create_collection_color">Color</string>
   <string name="create_collection_display_name">Títol</string>
   <string name="create_collection_home_set">Ubicació d’emmagatzematge</string>
-  <string name="create_collection_description_optional">Descripció*</string>
+  <string name="create_collection_description_optional">Descripció (opcional)</string>
   <string name="create_collection_create">Crea</string>
-  <string name="create_collection_optional">* opcional</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">contactes</string>
   <string name="collection_datatype_events">esdeveniments</string>
@@ -441,7 +435,7 @@
   <string name="webdav_add_mount_display_name">Nom a mostrar</string>
   <string name="webdav_add_mount_url">URL del WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL no vàlid</string>
-  <string name="webdav_add_mount_authentication">Autenticació (opcional)</string>
+  <string name="webdav_add_mount_authentication">Autentificació</string>
   <string name="webdav_add_mount_username">Nom d\'usuari/ària</string>
   <string name="webdav_add_mount_password">Contrasenya</string>
   <string name="webdav_add_mount_add">Afegeix un muntatge</string>

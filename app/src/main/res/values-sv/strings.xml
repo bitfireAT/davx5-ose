@@ -11,7 +11,6 @@
   <string name="field_required">Detta fält är obligatoriskt</string>
   <string name="help">Hjälp</string>
   <string name="navigate_up">Navigera upp</string>
-  <string name="optional_label">* valfritt</string>
   <string name="options_menu">Inställningsmeny</string>
   <string name="share">Dela</string>
   <string name="sync_started">Synkronisering startad/köad</string>
@@ -245,10 +244,8 @@
   <string name="login_password">Lösenord</string>
   <string name="login_password_hide">Dölj lösenord</string>
   <string name="login_password_show">Visa lösenord</string>
-  <string name="login_password_optional">Lösenord*</string>
   <string name="login_type_url">Logga in med URL och användarnamn</string>
   <string name="login_user_name">Användarnamn</string>
-  <string name="login_user_name_optional">Användarnamn*</string>
   <string name="login_base_url">Bas-URL</string>
   <string name="login_base_url_info"><![CDATA[Bas URL kommer kontrolleras direkt, men <a href="%s">tjänster upptäcks även</a> genom DNS uppslag och välkända URL:er.]]></string>
   <string name="login_select_certificate">Välj certifikat</string>
@@ -262,7 +259,6 @@
   <string name="login_account_not_added">Konto kunde inte läggas till</string>
   <string name="login_finish">Klart</string>
   <string name="login_type_advanced">Avancerad inloggning</string>
-  <string name="login_no_client_certificate_optional">Inget klientcertifikat*</string>
   <string name="login_client_certificate_selected">Klientcertifikat: %s</string>
   <string name="login_no_certificate_found">Inget certifikat funnet</string>
   <string name="login_install_certificate">Installera certifikat</string>
@@ -362,7 +358,6 @@
   <string name="create_addressbook">Skapa adressbok</string>
   <string name="create_addressbook_maybe_not_supported">Att skapa adressbok över CardDAV kanske inte stöds av servern.</string>
   <string name="create_calendar">Skapa kalender</string>
-  <string name="create_calendar_time_zone_optional">Standardtidszon*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Möjliga kalenderposter</string>
   <string name="create_calendar_type_vevent">Händelser</string>
@@ -372,9 +367,7 @@
   <string name="create_collection_color">Färg</string>
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_home_set">Lagringsplats</string>
-  <string name="create_collection_description_optional">Beskrivning*</string>
   <string name="create_collection_create">Skapa</string>
-  <string name="create_collection_optional">* valfritt</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">kontakter</string>
   <string name="collection_datatype_events">händelser</string>
@@ -439,7 +432,7 @@
   <string name="webdav_add_mount_display_name">Visningsnamn</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Felaktig URL</string>
-  <string name="webdav_add_mount_authentication">Autentisering (valfritt)</string>
+  <string name="webdav_add_mount_authentication">Autentisering</string>
   <string name="webdav_add_mount_username">Användarnamn</string>
   <string name="webdav_add_mount_password">Lösenord</string>
   <string name="webdav_add_mount_add">Lägg till fäste</string>

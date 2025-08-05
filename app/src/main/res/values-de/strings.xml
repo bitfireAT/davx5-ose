@@ -11,7 +11,6 @@
   <string name="field_required">Feld wird benötigt</string>
   <string name="help">Hilfe</string>
   <string name="navigate_up">Aufwärts navigieren</string>
-  <string name="optional_label">* optional</string>
   <string name="options_menu">Auswahlmenü</string>
   <string name="share">Teilen</string>
   <string name="sync_started">Synchronisierung gestartet/eingereiht</string>
@@ -247,10 +246,10 @@
   <string name="login_password">Passwort</string>
   <string name="login_password_hide">Passwort ausblenden</string>
   <string name="login_password_show">Passwort anzeigen</string>
-  <string name="login_password_optional">Passwort*</string>
+  <string name="login_password_optional">Passwort (optional)</string>
   <string name="login_type_url">Mit URL und Benutzername anmelden</string>
   <string name="login_user_name">Benutzername</string>
-  <string name="login_user_name_optional">Benutzername*</string>
+  <string name="login_user_name_optional">Benutzername (optional)</string>
   <string name="login_base_url">Basis-URL</string>
   <string name="login_base_url_info"><![CDATA[Basis-URL wird direkt geprüft, aber es erfolgt auch <a href="%s">Dienst-Erkennung</a> über DNS-Einträge und well-known-URLs.]]></string>
   <string name="login_select_certificate">Zertifikat auswählen</string>
@@ -264,7 +263,7 @@
   <string name="login_account_not_added">Konto konnte nicht hinzugefügt werden</string>
   <string name="login_finish">Abschließen</string>
   <string name="login_type_advanced">Erweiterte Anmeldung</string>
-  <string name="login_no_client_certificate_optional">Kein Client-Zertifikat*</string>
+  <string name="login_no_client_certificate_optional">Kein Client-Zertifikat (optional)</string>
   <string name="login_client_certificate_selected">Client-Zertifikat: %s</string>
   <string name="login_no_certificate_found">Kein Zertifikat gefunden</string>
   <string name="login_install_certificate">Zertifikat installieren </string>
@@ -364,7 +363,7 @@
   <string name="create_addressbook">Adressbuch erstellen</string>
   <string name="create_addressbook_maybe_not_supported">Das Erstellen von Adressbüchern über CardDAV wird vom Server möglicherweise nicht unterstützt.</string>
   <string name="create_calendar">Kalender anlegen</string>
-  <string name="create_calendar_time_zone_optional">Standard-Zeitzone*</string>
+  <string name="create_calendar_time_zone_optional">Standard-Zeitzone (optional)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Mögliche Kalendereinträge</string>
   <string name="create_calendar_type_vevent">Termine</string>
@@ -374,9 +373,8 @@
   <string name="create_collection_color">Farbe</string>
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_home_set">Speicherort</string>
-  <string name="create_collection_description_optional">Beschreibung*</string>
+  <string name="create_collection_description_optional">Beschreibung (optional)</string>
   <string name="create_collection_create">Erstellen</string>
-  <string name="create_collection_optional">* optional</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">Kontakte</string>
   <string name="collection_datatype_events">Termine</string>
@@ -441,9 +439,12 @@
   <string name="webdav_add_mount_display_name">Anzeigename</string>
   <string name="webdav_add_mount_url">WebDAV-Adresse</string>
   <string name="webdav_add_mount_url_invalid">Ungültige Adresse</string>
-  <string name="webdav_add_mount_authentication">Authentifizierung (optional)</string>
+  <string name="webdav_add_mount_mountpoint_displayname">Einhängepunkt und Anzeigename</string>
+  <string name="webdav_add_mount_authentication">Anmeldeinformationen</string>
   <string name="webdav_add_mount_username">Anmeldename</string>
   <string name="webdav_add_mount_password">Passwort</string>
+  <string name="webdav_add_mount_username_optional">Benutzername (optional)</string>
+  <string name="webdav_add_mount_password_optional">Passwort (optional)</string>
   <string name="webdav_add_mount_add">Einhängen</string>
   <string name="webdav_add_mount_no_support">Kein WebDAV-Dienst unter dieser Adresse</string>
   <string name="webdav_remove_mount_title">Einhängepunkt entfernen</string>

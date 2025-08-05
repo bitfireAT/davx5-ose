@@ -306,6 +306,7 @@
   <string name="webdav_mounts_share_content">اشتراک گذاری محتوا</string>
   <string name="webdav_add_mount_display_name">نام نمایشی</string>
   <string name="webdav_add_mount_url_invalid">URL نامعتبر</string>
+  <string name="webdav_add_mount_authentication">احراز هویت</string>
   <string name="webdav_add_mount_username">نام کاربری</string>
   <string name="webdav_add_mount_password">گذرواژه</string>
   <string name="webdav_remove_mount_text">اتصال قطع میگردد، اما هیچ فایلی حذف نخواهد شد.</string>

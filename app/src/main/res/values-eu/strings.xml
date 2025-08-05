@@ -11,7 +11,6 @@
   <string name="field_required">Eremu hau beharrezkoa da</string>
   <string name="help">Laguntza</string>
   <string name="navigate_up">Nabigatu gora</string>
-  <string name="optional_label">* aukeran</string>
   <string name="options_menu">Aukeren menua</string>
   <string name="share">Partekatu</string>
   <string name="sync_started">Sinkronizazioa hasi/ilaran jarri da</string>
@@ -246,10 +245,8 @@
   <string name="login_password">Pasahitza</string>
   <string name="login_password_hide">Ezkutatu pasahitza</string>
   <string name="login_password_show">Erakutsi pasahitza</string>
-  <string name="login_password_optional">Pasahitza*</string>
   <string name="login_type_url">Saioa hasi URL eta erabiltzaile izenarekin</string>
   <string name="login_user_name">Erabiltzaile izena</string>
-  <string name="login_user_name_optional">Erabiltzaile-izena*</string>
   <string name="login_base_url">Oinarri URL</string>
   <string name="login_base_url_info"><![CDATA[Oinarrizko URLa zuzenean egiaztatuko da, baina <a href="%s">zerbitzuak ere aurkitzen dira</a> DNS erregistroak eta URL ezagunak erabilita.]]></string>
   <string name="login_select_certificate">Aukeratu ziurtagiria</string>
@@ -263,7 +260,6 @@
   <string name="login_account_not_added">Ezin izan da kontua gehitu</string>
   <string name="login_finish">Bukatu</string>
   <string name="login_type_advanced">Saio-hasiera aurreratua</string>
-  <string name="login_no_client_certificate_optional">Ez dago bezeroaren ziurtagiririk*</string>
   <string name="login_client_certificate_selected">Bezeroaren ziurtagiria: %s</string>
   <string name="login_no_certificate_found">Ez da ziurtagiririk aurkitu</string>
   <string name="login_install_certificate">Instalatu ziurtagiria</string>
@@ -363,7 +359,6 @@
   <string name="create_addressbook">Sortu helbide liburua</string>
   <string name="create_addressbook_maybe_not_supported">Baliteke zerbitzariak ez onartzea CardDAV bidez sortutako helbide-liburua.</string>
   <string name="create_calendar">Sortu egutegia</string>
-  <string name="create_calendar_time_zone_optional">Lehenetsitako ordu-zona*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Egutegi sarrera posibleak</string>
   <string name="create_calendar_type_vevent">Gertaerak</string>
@@ -373,9 +368,8 @@
   <string name="create_collection_color">Kolorea</string>
   <string name="create_collection_display_name">Izenburua</string>
   <string name="create_collection_home_set">Biltegiratze kokapena</string>
-  <string name="create_collection_description_optional">Deskribapena*</string>
+  <string name="create_collection_description_optional">Deskribapena (aukerakoa)</string>
   <string name="create_collection_create">Sortu</string>
-  <string name="create_collection_optional">* aukeran</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">kontaktuak</string>
   <string name="collection_datatype_events">gertakizunak</string>
@@ -440,7 +434,7 @@
   <string name="webdav_add_mount_display_name">Bistaratze-izena</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">URL baliogabea</string>
-  <string name="webdav_add_mount_authentication">Autentifikazioa (aukerakoa)</string>
+  <string name="webdav_add_mount_authentication">Autentifikazioa</string>
   <string name="webdav_add_mount_username">Erabiltzaile izena</string>
   <string name="webdav_add_mount_password">Pasahitza</string>
   <string name="webdav_add_mount_add">Gehitu muntaia</string>

@@ -3,6 +3,7 @@
   <!--common strings-->
   <string name="account_invalid">Обліківки не існує (більше)</string>
   <string name="account_title_address_book">Адресна книга DAVx⁵</string>
+  <string name="dialog_delete">Видалити</string>
   <string name="dialog_remove">Видалити</string>
   <string name="dialog_deny">Скасувати</string>
   <string name="dialog_enable">Увімкнути</string>
@@ -27,6 +28,7 @@
   <string name="intro_battery_title">Інтервали регулярної синхронізації</string>
   <string name="intro_battery_dont_show">Мені не потрібні інтервали регулярної синхронізації.*</string>
   <string name="intro_more_info">Детальніше</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
   <string name="intro_tasks_title">Підтримка завдань</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_dont_show">Мені не потрібна підтримка завдань.*</string>
@@ -41,6 +43,7 @@
   <string name="permissions_calendar_title">Дозволи календаря</string>
   <string name="permissions_calendar_status_off">Без синхронізації календаря (не рекомендується)</string>
   <string name="permissions_calendar_status_on">Можлива синхронізація календаря</string>
+  <string name="permissions_jtx_title">Дозволи jtx Board</string>
   <string name="permissions_opentasks_title">Дозволи OpenTasks</string>
   <string name="permissions_tasksorg_title">Дозволи завдань</string>
   <string name="permissions_tasks_status_on">Можлива синхронізація завдань</string>
@@ -130,8 +133,11 @@
   <string name="login_email_address">Адреса пошти</string>
   <string name="login_email_address_error">Потребує валідну електронну адресу</string>
   <string name="login_password">Пароль</string>
+  <string name="login_password_hide">Приховати пароль</string>
+  <string name="login_password_show">Показати пароль</string>
   <string name="login_type_url">Увійти за допомогою URL та імені користувача</string>
   <string name="login_user_name">Ім\'я користувача</string>
+  <string name="login_user_name_optional">Ім\'я користувача (необов\'язково)</string>
   <string name="login_base_url">Базовий URL</string>
   <string name="login_select_certificate">Обрати сертифікат</string>
   <string name="login_add_account">Додати запис</string>
@@ -142,6 +148,7 @@
   <string name="login_account_name_already_taken">Ім\'я запису вже зайняте</string>
   <string name="login_no_certificate_found">Не знайдено сертифікат</string>
   <string name="login_install_certificate">Встановити сертифікат</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_configuration_detection">Виявлення конфігурації</string>
   <string name="login_querying_server">Будь ласка, зачекайте, запит до серверу…</string>
   <string name="login_no_service">Не вдалося знайти  CalDAV чи CardDAV сервіс.</string>
@@ -171,6 +178,7 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">Керувати</string>
   <string name="settings_authentication">Автентифікація</string>
   <string name="settings_username">Ім\'я користувача</string>
+  <string name="settings_new_password">Новий пароль</string>
   <string name="settings_password_summary">Оновити пароль, згідно налаштувань Вашого сервера.</string>
   <string name="settings_certificate_install">Встановити сертифікат</string>
   <string name="settings_caldav">CalDAV</string>
@@ -210,6 +218,7 @@
   <string name="create_collection_color">Колір</string>
   <string name="create_collection_display_name">Заголовок</string>
   <string name="create_collection_home_set">Розташування сховища</string>
+  <string name="create_collection_description_optional">Опис (необов\'язково)</string>
   <string name="create_collection_create">Створити</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">контакти</string>
@@ -232,8 +241,10 @@
   <string name="exception_ioexception">Трапилась помилка I/O.</string>
   <string name="exception_show_details">Показати подробиці</string>
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_authentication">Автентифікація</string>
   <string name="webdav_add_mount_username">Ім\'я користувача</string>
   <string name="webdav_add_mount_password">Пароль</string>
+  <string name="webdav_add_mount_username_optional">Ім\'я користувача (необов\'язково)</string>
   <!--sync-->
   <string name="sync_error_permissions">Дозволи DAVx⁵</string>
   <string name="sync_error_permissions_text">Потребує додаткові дозволи</string>

@@ -11,7 +11,6 @@
   <string name="field_required">此字段是必填项</string>
   <string name="help">帮助</string>
   <string name="navigate_up">向上导航</string>
-  <string name="optional_label">* 可选</string>
   <string name="options_menu">选项菜单</string>
   <string name="share">分享</string>
   <string name="sync_started">同步已启动/已加入队列</string>
@@ -246,10 +245,10 @@
   <string name="login_password">密码</string>
   <string name="login_password_hide">隐藏密码</string>
   <string name="login_password_show">显示密码</string>
-  <string name="login_password_optional">密码*</string>
+  <string name="login_password_optional">密码（可选）</string>
   <string name="login_type_url">使用 URL 和用户名登录</string>
   <string name="login_user_name">用户名</string>
-  <string name="login_user_name_optional">用户名*</string>
+  <string name="login_user_name_optional">用户名（可选）</string>
   <string name="login_base_url">根地址</string>
   <string name="login_base_url_info"><![CDATA[此基URL将被直接检查，但 <a href="%s">服务发现也将</a>使用 DNS 记录 和已知 URLs 进行。]]></string>
   <string name="login_select_certificate">选择证书</string>
@@ -263,7 +262,7 @@
   <string name="login_account_not_added">无法添加账户</string>
   <string name="login_finish">完成</string>
   <string name="login_type_advanced">高级登录</string>
-  <string name="login_no_client_certificate_optional">无客户端证书*</string>
+  <string name="login_no_client_certificate_optional">无客户端证书（可选）</string>
   <string name="login_client_certificate_selected">客户端证书：%s</string>
   <string name="login_no_certificate_found">没有找到证书</string>
   <string name="login_install_certificate">安装证书</string>
@@ -361,7 +360,7 @@
   <string name="create_addressbook">创建通讯录</string>
   <string name="create_addressbook_maybe_not_supported">服务器可能不支持通过 CalDAV 创建通讯录</string>
   <string name="create_calendar">创建日历</string>
-  <string name="create_calendar_time_zone_optional">默认时区*</string>
+  <string name="create_calendar_time_zone_optional">默认时区（可选）</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">可能使用的日历类型</string>
   <string name="create_calendar_type_vevent">事件</string>
@@ -371,9 +370,8 @@
   <string name="create_collection_color">颜色</string>
   <string name="create_collection_display_name">标题</string>
   <string name="create_collection_home_set">存储位置</string>
-  <string name="create_collection_description_optional">描述</string>
+  <string name="create_collection_description_optional">描述（可选）</string>
   <string name="create_collection_create">创建</string>
-  <string name="create_collection_optional">* 可选</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">联系人</string>
   <string name="collection_datatype_events">活动</string>
@@ -438,9 +436,12 @@
   <string name="webdav_add_mount_display_name">展示名称</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">无效 URL</string>
-  <string name="webdav_add_mount_authentication">身份验证（可选）</string>
+  <string name="webdav_add_mount_mountpoint_displayname">挂载点和显示名称</string>
+  <string name="webdav_add_mount_authentication">认证</string>
   <string name="webdav_add_mount_username">用户名</string>
   <string name="webdav_add_mount_password">密码</string>
+  <string name="webdav_add_mount_username_optional">用户名（可选）</string>
+  <string name="webdav_add_mount_password_optional">密码（可选）</string>
   <string name="webdav_add_mount_add">添加 WebDAV 网址</string>
   <string name="webdav_add_mount_no_support">此 URL 无 WebDAV 服务</string>
   <string name="webdav_remove_mount_title">删除装载点</string>

@@ -265,6 +265,7 @@
   <string name="exception_show_details">Прикажи детаље</string>
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_display_name">Име за приказ</string>
+  <string name="webdav_add_mount_authentication">Аутентификација</string>
   <string name="webdav_add_mount_username">Корисничко име</string>
   <string name="webdav_add_mount_password">Лозинка</string>
   <!--sync-->

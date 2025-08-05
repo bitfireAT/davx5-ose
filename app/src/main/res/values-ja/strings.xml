@@ -11,7 +11,6 @@
   <string name="field_required">このフィールドは入力必須です</string>
   <string name="help">ヘルプ</string>
   <string name="navigate_up">上に移動</string>
-  <string name="optional_label">* オプション</string>
   <string name="options_menu">オプションメニュー</string>
   <string name="share">共有</string>
   <string name="sync_started">同期中/待機中</string>
@@ -246,10 +245,10 @@
   <string name="login_password">パスワード</string>
   <string name="login_password_hide">パスワードを非表示</string>
   <string name="login_password_show">パスワードを表示</string>
-  <string name="login_password_optional">パスワード*</string>
+  <string name="login_password_optional">パスワード (オプション)</string>
   <string name="login_type_url">URL とユーザー名でログイン</string>
   <string name="login_user_name">ユーザー名</string>
-  <string name="login_user_name_optional">ユーザー名*</string>
+  <string name="login_user_name_optional">ユーザー名 (オプション)</string>
   <string name="login_base_url">ベース URL</string>
   <string name="login_base_url_info"><![CDATA[ベース URL は直接確認します。ただし、<a href="%s">サービスの検出</a>には DNS レコードと well-known URL も使用します。]]></string>
   <string name="login_select_certificate">証明書を選択</string>
@@ -263,7 +262,7 @@
   <string name="login_account_not_added">アカウントを追加できませんでした</string>
   <string name="login_finish">完了</string>
   <string name="login_type_advanced">高度なログイン</string>
-  <string name="login_no_client_certificate_optional">クライアント証明書なし*</string>
+  <string name="login_no_client_certificate_optional">クライアント証明書が選択されていません (オプション)</string>
   <string name="login_client_certificate_selected">クライアント証明書: %s</string>
   <string name="login_no_certificate_found">証明書が見つかりませんでした</string>
   <string name="login_install_certificate">証明書をインストール</string>
@@ -361,7 +360,7 @@
   <string name="create_addressbook">アドレス帳を作成</string>
   <string name="create_addressbook_maybe_not_supported">サーバーが CardDAV 経由のカレンダー作成に対応していない可能性があります。</string>
   <string name="create_calendar">カレンダーを作成</string>
-  <string name="create_calendar_time_zone_optional">デフォルトのタイムゾーン*</string>
+  <string name="create_calendar_time_zone_optional">既定のタイムゾーン (オプション)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">可能なカレンダーエントリー</string>
   <string name="create_calendar_type_vevent">予定</string>
@@ -371,9 +370,8 @@
   <string name="create_collection_color">色</string>
   <string name="create_collection_display_name">タイトル</string>
   <string name="create_collection_home_set">ストレージの場所</string>
-  <string name="create_collection_description_optional">説明*</string>
+  <string name="create_collection_description_optional">説明 (オプション)</string>
   <string name="create_collection_create">作成</string>
-  <string name="create_collection_optional">* オプション</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">連絡先</string>
   <string name="collection_datatype_events">件の予定</string>
@@ -438,9 +436,12 @@
   <string name="webdav_add_mount_display_name">表示名</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">無効な URL</string>
-  <string name="webdav_add_mount_authentication">認証 (オプション)</string>
+  <string name="webdav_add_mount_mountpoint_displayname">マウントポイントと表示名</string>
+  <string name="webdav_add_mount_authentication">認証</string>
   <string name="webdav_add_mount_username">ユーザー名</string>
   <string name="webdav_add_mount_password">パスワード</string>
+  <string name="webdav_add_mount_username_optional">ユーザー名 (オプション)</string>
+  <string name="webdav_add_mount_password_optional">パスワード (オプション)</string>
   <string name="webdav_add_mount_add">マウントを追加</string>
   <string name="webdav_add_mount_no_support">この URL では WebDAV サービスがありません</string>
   <string name="webdav_remove_mount_title">マウントポイントを削除</string>

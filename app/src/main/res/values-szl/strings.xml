@@ -187,6 +187,7 @@
   <string name="exception_ioexception">Trefiōł sie błōnd I/O.</string>
   <string name="exception_show_details">Pokoż informacyje</string>
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_authentication">Autoryzowanie</string>
   <string name="webdav_add_mount_username">Miano używocza</string>
   <string name="webdav_add_mount_password">Hasło</string>
   <!--sync-->

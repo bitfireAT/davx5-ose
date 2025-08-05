@@ -262,6 +262,7 @@
   <string name="exception_ioexception">Dogodila se I/O greška.</string>
   <string name="exception_show_details">Prikaži detalje</string>
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_authentication">Autentifkacija</string>
   <string name="webdav_add_mount_username">Korisničko ime</string>
   <string name="webdav_add_mount_password">Lozinka</string>
   <!--sync-->

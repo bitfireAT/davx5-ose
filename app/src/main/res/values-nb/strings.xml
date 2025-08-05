@@ -155,6 +155,7 @@
   <string name="exception_ioexception">En I/O-feil har inntruffet.</string>
   <string name="exception_show_details">Vis detaljer</string>
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_authentication">Identitetsbekreftelse</string>
   <string name="webdav_add_mount_username">Brukernavn</string>
   <string name="webdav_add_mount_password">Passord</string>
   <!--sync-->

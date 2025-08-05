@@ -393,9 +393,28 @@ class ContactsSyncManager @AssistedInject constructor(
 
         var updated: LocalAddress? = null
 
-        // update local contact, if it exists
         val existing = localCollection.findByName(fileName)
-        if (existing != null) {
+        if (existing == null) {
+            // create new contact/group
+            if (newData.group) {
+                logger.log(Level.INFO, "Creating local group", newData)
+                val newGroup = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                SyncException.wrapWithLocalResource(newGroup) {
+                    newGroup.add()
+                    updated = newGroup
+                }
+
+            } else {
+                logger.log(Level.INFO, "Creating local contact", newData)
+                val newContact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                SyncException.wrapWithLocalResource(newContact) {
+                    newContact.add()
+                    updated = newContact
+                }
+            }
+
+        } else {
+            // update existing local contact/group
             logger.log(Level.INFO, "Updating $fileName in local address book", newData)
 
             SyncException.wrapWithLocalResource(existing) {
@@ -416,7 +435,7 @@ class ContactsSyncManager @AssistedInject constructor(
                     existing.deleteLocal()
 
                     if (newData.group) {
-                        logger.log(Level.INFO, "Creating local group", newData)
+                        logger.log(Level.INFO, "Creating local group (was contact before)", newData)
                         val newGroup = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                         SyncException.wrapWithLocalResource(newGroup) {
                             newGroup.add()
@@ -424,7 +443,7 @@ class ContactsSyncManager @AssistedInject constructor(
                         }
 
                     } else {
-                        logger.log(Level.INFO, "Creating local contact", newData)
+                        logger.log(Level.INFO, "Creating local contact (was group before)", newData)
                         val newContact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                         SyncException.wrapWithLocalResource(newContact) {
                             newContact.add()
@@ -435,14 +454,10 @@ class ContactsSyncManager @AssistedInject constructor(
             }
         }
 
-        // update hash code of updated contact/group, if applicable
-        updated?.let { local ->
-            dirtyVerifier.getOrNull()?.let { verifier ->
-                // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                (local as? LocalContact)?.let { localContact ->
-                    verifier.updateHashCode(localCollection, localContact)
-                }
-            }
+        // update hash code of updated contact, if applicable
+        (updated as? LocalContact)?.let { updatedContact ->
+            // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+            dirtyVerifier.getOrNull()?.updateHashCode(localCollection, updatedContact)
         }
     }
 

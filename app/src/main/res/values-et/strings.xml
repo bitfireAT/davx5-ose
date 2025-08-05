@@ -11,7 +11,6 @@
   <string name="field_required">See väli on kohustuslik</string>
   <string name="help">Abiteave</string>
   <string name="navigate_up">Liigu üles</string>
-  <string name="optional_label">* valikuline</string>
   <string name="options_menu">Valikute menüü</string>
   <string name="share">Jaga</string>
   <string name="sync_started">Sünkroniseerimine algas või on tööde järjekorras</string>
@@ -247,10 +246,10 @@
   <string name="login_password">Salasõna</string>
   <string name="login_password_hide">Peida salasõna</string>
   <string name="login_password_show">Näita salasõna</string>
-  <string name="login_password_optional">Salasõna*</string>
+  <string name="login_password_optional">Salasõna (kui on vaja)</string>
   <string name="login_type_url">Logi sisse võrguaadressi ja kasutajanimega</string>
   <string name="login_user_name">Kasutajanimi</string>
-  <string name="login_user_name_optional">Kasutajanimi*</string>
+  <string name="login_user_name_optional">Kasutajanimi (kui on vaja)</string>
   <string name="login_base_url">Alustuseks mõeldud võrguaadress</string>
   <string name="login_base_url_info"><![CDATA[Kontrollime alustuseks mõeldud võrguaadressi ka, aga lisaks <a href="%s">tuvastame teenuseid</a> nimeserveri kirjete ning „.well-known“ tunnusaadresside abil.]]></string>
   <string name="login_select_certificate">Vali sertifikaat</string>
@@ -264,7 +263,7 @@
   <string name="login_account_not_added">Kasutajakonto lisamine ei õnnestunud</string>
   <string name="login_finish">Lõpeta</string>
   <string name="login_type_advanced">Täiendavad sisselogimise seadistused</string>
-  <string name="login_no_client_certificate_optional">Kliendi sertifikaat puudub*</string>
+  <string name="login_no_client_certificate_optional">Kliendisertifikaat puudub (kui on vaja)</string>
   <string name="login_client_certificate_selected">Kliendi sertifikaat: %s</string>
   <string name="login_no_certificate_found">Kliendisertifikaati ei leidunud</string>
   <string name="login_install_certificate">Paigalda sertifikaat</string>
@@ -364,7 +363,7 @@
   <string name="create_addressbook">Loo aadressiraamat</string>
   <string name="create_addressbook_maybe_not_supported">See server ei pruugi toetada aadressiraamatu loomist CardDAVi ühenduse abil.</string>
   <string name="create_calendar">Loo kalender</string>
-  <string name="create_calendar_time_zone_optional">Vaikimisi ajavöönd*</string>
+  <string name="create_calendar_time_zone_optional">Vaikimisi ajavöönd (kui on vaja)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Võimalikud kalendrikirjed</string>
   <string name="create_calendar_type_vevent">Sündmused</string>
@@ -374,9 +373,8 @@
   <string name="create_collection_color">Värv</string>
   <string name="create_collection_display_name">Pealkiri</string>
   <string name="create_collection_home_set">Andmeruumi asukoht</string>
-  <string name="create_collection_description_optional">Kirjeldus*</string>
+  <string name="create_collection_description_optional">Kirjeldus (kui on vaja)</string>
   <string name="create_collection_create">Loo</string>
-  <string name="create_collection_optional">* valikuline</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">kontaktid</string>
   <string name="collection_datatype_events">sündmust</string>
@@ -441,9 +439,12 @@
   <string name="webdav_add_mount_display_name">Kuvatav nimi</string>
   <string name="webdav_add_mount_url">WebDAVi võrguaadress</string>
   <string name="webdav_add_mount_url_invalid">Vigane võrguaadress</string>
-  <string name="webdav_add_mount_authentication">Autentimine (kui on vaja)</string>
+  <string name="webdav_add_mount_mountpoint_displayname">Haakepunkt ja kuvatav nimi</string>
+  <string name="webdav_add_mount_authentication">Autentimine</string>
   <string name="webdav_add_mount_username">Kasutajanimi</string>
   <string name="webdav_add_mount_password">Salasõna</string>
+  <string name="webdav_add_mount_username_optional">Kasutajanimi (kui on vaja)</string>
+  <string name="webdav_add_mount_password_optional">Salasõna (kui on vaja)</string>
   <string name="webdav_add_mount_add">Lisa haakepunkt</string>
   <string name="webdav_add_mount_no_support">Sellel võrguaadressil ei leidu WebDAVi teenust</string>
   <string name="webdav_remove_mount_title">Eemalda haakepunkt</string>
