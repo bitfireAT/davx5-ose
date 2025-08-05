@@ -20,6 +20,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncDataType
@@ -58,6 +59,7 @@ class SyncAdapterImpl @Inject constructor(
     private val collectionRepository: DavCollectionRepository,
     private val serviceRepository: DavServiceRepository,
     @ApplicationContext context: Context,
+    private val localAddressBookStore: LocalAddressBookStore,
     private val logger: Logger,
     private val syncConditionsFactory: SyncConditions.Factory,
     private val syncFrameworkIntegration: SyncFrameworkIntegration,
@@ -120,9 +122,12 @@ class SyncAdapterImpl @Inject constructor(
         // As a defensive workaround, we can cancel specifically this still pending sync only
         // See: https://github.com/bitfireAT/davx5-ose/issues/1458
         if (Build.VERSION.SDK_INT >= 34) {
-            logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for " +
-                    "account=$account authority=$authority upload=$upload")
-            syncFrameworkIntegration.cancelSync(account, authority, extras)
+            val accounts = listOf(account) + localAddressBookStore.getAddressBookAccounts(account)
+            for (account in accounts) {
+                logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for " +
+                        "account=$account authority=$authority upload=$upload")
+                syncFrameworkIntegration.cancelSync(account, authority, extras)
+            }
         }
 
         /* Because we are not allowed to observe worker state on a background thread, we can not
