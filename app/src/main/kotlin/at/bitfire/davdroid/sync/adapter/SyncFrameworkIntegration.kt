@@ -246,12 +246,12 @@ class SyncFrameworkIntegration @Inject constructor(
     }
 
     /**
-     * Check if any of the given accounts and authorities have a sync pending.
+     * Check if any of the given accounts have a sync pending for given authority.
      *
      * @param accounts  accounts to check sync status for
      * @param authority authority to check sync status for
      *
-     * @return true if any of the given accounts and authorities has a sync pending, false otherwise
+     * @return *true* if any of the given accounts has a sync pending for given authority; *false* otherwise
      */
     private fun anyPendingSync(accounts: List<Account>, authority: String): Boolean =
         accounts.any { account ->
