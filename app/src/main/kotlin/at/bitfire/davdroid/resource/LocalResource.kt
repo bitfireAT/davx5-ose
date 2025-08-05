@@ -52,7 +52,7 @@ interface LocalResource<in TData: Any> {
      *   saved to the content provider. The sync manager is responsible for saving the file name that
      *   was actually used.
      *
-     * @return new file name of the resource (like "<uid>.vcf")
+     * @return suggestion for new file name of the resource (like "<uid>.vcf")
      */
     fun prepareForUpload(): String
 
