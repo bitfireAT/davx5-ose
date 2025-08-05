@@ -29,7 +29,13 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 @HiltAndroidTest
-class CollectionListRefresherTest {
+class CollectionsWithoutHomeSetRefresherTest {
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val mockKRule = MockKRule(this)
 
     @Inject
     lateinit var db: AppDatabase
@@ -41,17 +47,11 @@ class CollectionListRefresherTest {
     lateinit var logger: Logger
 
     @Inject
-    lateinit var refresherFactory: CollectionListRefresher.Factory
+    lateinit var refresherFactory: CollectionsWithoutHomeSetRefresher.Factory
 
     @BindValue
     @MockK(relaxed = true)
     lateinit var settings: SettingsManager
-
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule
-    val mockKRule = MockKRule(this)
 
     private lateinit var client: HttpClient
     private lateinit var mockServer: MockWebServer
@@ -172,20 +172,10 @@ class CollectionListRefresherTest {
 
 
     companion object {
-
-        private const val PATH_CALDAV = "/caldav"
         private const val PATH_CARDDAV = "/carddav"
-
         private const val SUBPATH_PRINCIPAL = "/principal"
-        private const val SUBPATH_PRINCIPAL_INACCESSIBLE = "/inaccessible-principal"
-        private const val SUBPATH_PRINCIPAL_WITHOUT_COLLECTIONS = "/principal2"
-        private const val SUBPATH_GROUPPRINCIPAL_0 = "/groups/0"
-        private const val SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL = "/addressbooks-homeset"
-        private const val SUBPATH_ADDRESSBOOK_HOMESET_NON_PERSONAL = "/addressbooks-homeset-non-personal"
-        private const val SUBPATH_ADDRESSBOOK_HOMESET_EMPTY = "/addressbooks-homeset-empty"
         private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts"
         private const val SUBPATH_ADDRESSBOOK_INACCESSIBLE = "/addressbooks/inaccessible-contacts"
-
     }
 
     class TestDispatcher(
@@ -194,41 +184,11 @@ class CollectionListRefresherTest {
 
         override fun dispatch(request: RecordedRequest): MockResponse {
             val path = request.path!!.trimEnd('/')
+            logger.info("${request.method} on $path")
 
             if (request.method.equals("PROPFIND", true)) {
                 val properties = when (path) {
-                    PATH_CALDAV,
-                    PATH_CARDDAV ->
-                        "<current-user-principal>" +
-                        "   <href>$path${SUBPATH_PRINCIPAL}</href>" +
-                        "</current-user-principal>"
-
-                    PATH_CARDDAV + SUBPATH_PRINCIPAL ->
-                        "<resourcetype><principal/></resourcetype>" +
-                        "<displayname>Mr. Wobbles</displayname>" +
-                        "<CARD:addressbook-home-set>" +
-                        "   <href>${PATH_CARDDAV}${SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL}</href>" +
-                        "</CARD:addressbook-home-set>" +
-                        "<group-membership>" +
-                        "   <href>${PATH_CARDDAV}${SUBPATH_GROUPPRINCIPAL_0}</href>" +
-                        "</group-membership>"
-
-                    PATH_CARDDAV + SUBPATH_PRINCIPAL_WITHOUT_COLLECTIONS ->
-                        "<CARD:addressbook-home-set>" +
-                        "   <href>${PATH_CARDDAV}${SUBPATH_ADDRESSBOOK_HOMESET_EMPTY}</href>" +
-                        "</CARD:addressbook-home-set>" +
-                        "<displayname>Mr. Wobbles Jr.</displayname>"
-
-                    PATH_CARDDAV + SUBPATH_GROUPPRINCIPAL_0 ->
-                        "<resourcetype><principal/></resourcetype>" +
-                        "<displayname>All address books</displayname>" +
-                        "<CARD:addressbook-home-set>" +
-                        "   <href>${PATH_CARDDAV}${SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL}</href>" +
-                        "   <href>${PATH_CARDDAV}${SUBPATH_ADDRESSBOOK_HOMESET_NON_PERSONAL}</href>" +
-                        "</CARD:addressbook-home-set>"
-
-                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK,
-                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL ->
+                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK ->
                         "<resourcetype>" +
                         "   <collection/>" +
                         "   <CARD:addressbook/>" +
@@ -239,65 +199,19 @@ class CollectionListRefresherTest {
                         "   <href>${PATH_CARDDAV + SUBPATH_PRINCIPAL}</href>" +
                         "</owner>"
 
-                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET_NON_PERSONAL ->
-                        "<resourcetype>" +
-                        "   <collection/>" +
-                        "   <CARD:addressbook/>" +
-                        "</resourcetype>" +
-                        "<displayname>Freds Contacts (not mine)</displayname>" +
-                        "<CARD:addressbook-description>Not personal contacts</CARD:addressbook-description>" +
-                        "<owner>" +
-                        "   <href>${PATH_CARDDAV + SUBPATH_PRINCIPAL}</href>" + // OK, user is allowed to own non-personal contacts
-                        "</owner>"
-
-                    PATH_CALDAV + SUBPATH_PRINCIPAL ->
-                        "<CAL:calendar-user-address-set>" +
-                        "  <href>urn:unknown-entry</href>" +
-                        "  <href>mailto:email1@example.com</href>" +
-                        "  <href>mailto:email2@example.com</href>" +
-                        "</CAL:calendar-user-address-set>"
-
-                    SUBPATH_ADDRESSBOOK_HOMESET_EMPTY -> ""
-
                     else -> ""
                 }
 
-                var responseBody = ""
-                var responseCode = 207
-                when (path) {
-                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL ->
-                        responseBody =
-                            "<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav' xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +
-                            "<response>" +
-                            "   <href>${PATH_CARDDAV + SUBPATH_ADDRESSBOOK}</href>" +
-                            "   <propstat><prop>" +
-                                    properties +
-                            "   </prop></propstat>" +
-                            "   <status>HTTP/1.1 200 OK</status>" +
-                            "</response>" +
-                            "</multistatus>"
-
-                    PATH_CARDDAV + SUBPATH_PRINCIPAL_INACCESSIBLE,
-                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK_INACCESSIBLE ->
-                        responseCode = 404
-
-                    else ->
-                        responseBody =
-                            "<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav' xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +
+                return MockResponse()
+                    .setResponseCode(207)
+                    .setBody("<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav' xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +
                             "<response>" +
                             "   <href>$path</href>" +
                             "   <propstat><prop>"+
-                                    properties +
+                            properties +
                             "   </prop></propstat>" +
                             "</response>" +
-                            "</multistatus>"
-                }
-
-                logger.info("Queried: $path")
-                logger.info("Response: $responseBody")
-                return MockResponse()
-                    .setResponseCode(responseCode)
-                    .setBody(responseBody)
+                            "</multistatus>")
             }
 
             return MockResponse().setResponseCode(404)
