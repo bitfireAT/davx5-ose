@@ -44,9 +44,9 @@ enum class SyncDataType {
         }
 
     /**
-     * Returns the authority for this datatype.
-     * When more than one tasks provider exists (tasks apps installed) the active
-     * (user selected) authority is returned.
+     * Returns the authority corresponding to this datatype.
+     * When more than one tasks provider exists (tasks apps installed) the authority for the active
+     * tasks provider (user selected tasks app) is returned.
      *
      * @param context android context used to determine the active/selected tasks provider
      * @return the authority matching this data type or *null* for [TASKS] if no tasks app is installed
