@@ -159,7 +159,7 @@ class CalendarSyncManager @AssistedInject constructor(
             for (event in localCollection.findDirty()) {
                 logger.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
-                    event.clearDirty(Optional.empty(), null)
+                    event.clearDirty(Optional.empty(), null, null)
                 }
                 modified = true
             }

@@ -112,7 +112,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
     override var scheduleTag: String?
         get() = null
-        set(value) = throw NotImplementedError()
+        set(_) = throw NotImplementedError()
 
     override var flags: Int = 0
 
@@ -213,6 +213,11 @@ class LocalGroup: AndroidGroup, LocalAddress {
     }
 
     override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        this.fileName = fileName
+        this.eTag = eTag
+        this.scheduleTag = scheduleTag
+
+        // processes this.{fileName, eTag, flags} and resets DIRTY flag
         update(data)
     }
 

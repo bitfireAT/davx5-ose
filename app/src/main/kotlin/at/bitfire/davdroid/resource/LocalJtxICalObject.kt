@@ -51,6 +51,12 @@ class LocalJtxICalObject(
     }
 
     override fun update(data: JtxICalObject, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        this.fileName = fileName
+        this.eTag = eTag
+        this.scheduleTag = scheduleTag
+        this.flags = flags
+
+        // processes this.{fileName, eTag, scheduleTag, flags} and resets DIRTY flag
         update(data)
     }
 

@@ -30,7 +30,6 @@ import kotlin.jvm.optionals.getOrNull
 class LocalContact: AndroidContact, LocalAddress {
 
     companion object {
-
         const val COLUMN_FLAGS = ContactsContract.RawContacts.SYNC4
         const val COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3
     }
@@ -116,6 +115,11 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
     override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        this.fileName = fileName
+        this.eTag = eTag
+        this.flags = flags
+
+        // processes this.{fileName, eTag, flags} and resets DIRTY flag
         update(data)
     }
 

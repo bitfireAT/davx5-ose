@@ -60,8 +60,6 @@ interface LocalResource<in TData: Any> {
      * Unsets the _dirty_ field of the resource and updates other sync-related fields in the content provider.
      * Does not affect `this` object itself (which is immutable).
      *
-     * Typically used after successfully uploading a locally modified resource.
-     *
      * @param fileName      If this optional argument is present, [LocalResource.fileName] will be set to its value.
      * @param eTag          ETag of the uploaded resource as returned by the server (null if the server didn't return one)
      * @param scheduleTag   CalDAV only: `Schedule-Tag` of the uploaded resource as returned by the server
@@ -79,6 +77,7 @@ interface LocalResource<in TData: Any> {
 
     /**
      * Updates the data object in the content provider and ensures that the dirty flag is clear.
+     * Does not affect `this` or the [data] object (which are both immutable).
      *
      * @return content URI of the updated row (e.g. event URI)
      */

@@ -95,6 +95,12 @@ class LocalTask: DmfsTask, LocalResource<Task> {
     }
 
     override fun update(data: Task, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        this.fileName = fileName
+        this.eTag = eTag
+        this.scheduleTag = scheduleTag
+        this.flags = flags
+
+        // processes this.{fileName, eTag, scheduleTag, flags} and resets DIRTY flag
         update(data)
     }
 
