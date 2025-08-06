@@ -27,7 +27,7 @@ enum class SyncDataType {
 
     /**
      * Returns authorities which exist for this sync data type. Used on [TASKS] the method
-     * may return an empty list if there are no task providers (installed tasks apps).
+     * may return an empty list if there are no tasks providers (installed tasks apps).
      *
      * @return list of authorities matching this data type
      */
