@@ -33,14 +33,9 @@ enum class SyncDataType {
      */
     fun possibleAuthorities(): List<String> =
         when (this) {
-            CONTACTS -> listOf(
-                ContactsContract.AUTHORITY
-            )
-            EVENTS -> listOf(
-                CalendarContract.AUTHORITY
-            )
-            TASKS ->
-                TaskProvider.ProviderName.entries.map { it.authority }
+            CONTACTS -> listOf(ContactsContract.AUTHORITY)
+            EVENTS -> listOf(CalendarContract.AUTHORITY)
+            TASKS -> TaskProvider.ProviderName.entries.map { it.authority }
         }
 
     /**
@@ -54,15 +49,13 @@ enum class SyncDataType {
     fun authority(context: Context): String? =
         when (this) {
             CONTACTS -> ContactsContract.AUTHORITY
-
             EVENTS -> CalendarContract.AUTHORITY
-
             TASKS -> EntryPointAccessors.fromApplication<SyncDataTypeEntryPoint>(context)
                 .tasksAppManager()
                 .currentProvider()
                 ?.authority
-
         }
+
 
     companion object {
 
