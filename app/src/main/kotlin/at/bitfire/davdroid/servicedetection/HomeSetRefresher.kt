@@ -6,6 +6,7 @@ package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Response
+import at.bitfire.dav4jvm.equalsForWebDAV
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
@@ -77,7 +78,8 @@ class HomeSetRefresher @AssistedInject constructor(
                         homeSetRepository.insertOrUpdateByUrlBlocking(
                             localHomeset.copy(
                                 displayName = response[DisplayName::class.java]?.displayName,
-                                privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
+                                privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false,
+                                personal = isPersonal(response) == true
                             )
                         )
 
@@ -157,6 +159,33 @@ class HomeSetRefresher @AssistedInject constructor(
             else -> // don't preselect
                 false
         }
+    }
+
+    /**
+     * Evaluates whether a response if personal or not.
+     * It takes the [Owner] property from the response, and compares its value against [service]'s [Service.principal].
+     *
+     * If either one of those is not set (`null`), this function returns `null`.
+     * @param davResponse The response to process.
+     * @return
+     * - `true` if the owner matches a principal.
+     * - `false` is the owner doesn't match a principal.
+     * - `null` if the owner and/or principal is not set / unknown.
+     */
+    private fun isPersonal(davResponse: Response): Boolean? {
+        // Owner must be set in order to check if the home set is personal
+        val ownerHref = davResponse[Owner::class.java]?.href
+        val principal = service.principal
+
+        // If either Owner or principal is not set, return null
+        if (ownerHref == null || principal == null) return null
+
+        // Try to resolve the owner href
+        val ownerResolvedHref = principal.resolve(ownerHref)
+        if (ownerResolvedHref == null) return null
+
+        // If both fields are set, compare them
+        return ownerResolvedHref.equalsForWebDAV(principal)
     }
 
 }
