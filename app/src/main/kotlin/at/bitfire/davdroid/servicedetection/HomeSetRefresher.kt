@@ -48,7 +48,7 @@ class HomeSetRefresher @AssistedInject constructor(
      * Refreshes home-sets and their collections.
      *
      * Each stored home-set URL is queried (`PROPFIND`) and its collections are either saved, updated
-     * or marked as homeless - in case a collection was removed from its home-set.
+     * or marked as "without home-set" - in case a collection was removed from its home-set.
      *
      * If a home-set URL in fact points to a collection directly, the collection will be saved with this URL,
      * and a null value for it's home-set. Refreshing of collections without home-sets is then handled by [CollectionsWithoutHomeSetRefresher.refreshCollectionsWithoutHomeSet].
@@ -59,7 +59,7 @@ class HomeSetRefresher @AssistedInject constructor(
             logger.fine("Listing home set $homeSetUrl")
 
             // To find removed collections in this homeset: create a queue from existing collections and remove every collection that
-            // is successfully rediscovered. If there are collections left, after processing is done, these are marked homeless.
+            // is successfully rediscovered. If there are collections left, after processing is done, these are marked as "without home-set".
             val localHomesetCollections = db.collectionDao()
                 .getByServiceAndHomeset(service.id, localHomeset.id)
                 .associateBy { it.url }
@@ -107,10 +107,10 @@ class HomeSetRefresher @AssistedInject constructor(
                     homeSetRepository.deleteBlocking(localHomeset)
             }
 
-            // Mark leftover (not rediscovered) collections from queue as homeless (remove association)
-            for ((_, homelessCollection) in localHomesetCollections)
+            // Mark leftover (not rediscovered) collections from queue as "without home-set" (remove association)
+            for ((_, collection) in localHomesetCollections)
                 collectionRepository.insertOrUpdateByUrlRememberSync(
-                    homelessCollection.copy(homeSetId = null)
+                    collection.copy(homeSetId = null)
                 )
 
         }
