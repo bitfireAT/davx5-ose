@@ -173,7 +173,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                             .refreshHomesetsAndTheirCollections()
 
                         // also refresh collections without a home set
-                        refresher.refreshHomelessCollections()
+                        refresher.refreshCollectionsWithoutHomeSet()
 
                         // Lastly, refresh the principals (collection owners)
                         val principalsRefresher = principalsRefresherFactory.create(service, httpClient)

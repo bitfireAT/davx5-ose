@@ -85,10 +85,10 @@ class CollectionsWithoutHomeSetRefresherTest {
     }
 
 
-    // refreshHomelessCollections
+    // refreshCollectionsWithoutHomeSet
 
     @Test
-    fun refreshHomelessCollections_updatesExistingCollection() {
+    fun refreshCollectionsWithoutHomeSet_updatesExistingCollection() {
         // place homeless collection in DB
         val collectionId = db.collectionDao().insertOrUpdateByUrl(
             Collection(
@@ -102,7 +102,7 @@ class CollectionsWithoutHomeSetRefresherTest {
         )
 
         // Refresh
-        refresherFactory.create(service, client.okHttpClient).refreshHomelessCollections()
+        refresherFactory.create(service, client.okHttpClient).refreshCollectionsWithoutHomeSet()
 
         // Check the collection got updated - with display name and description
         assertEquals(
@@ -121,7 +121,7 @@ class CollectionsWithoutHomeSetRefresherTest {
     }
 
     @Test
-    fun refreshHomelessCollections_deletesInaccessibleCollections() {
+    fun refreshCollectionsWithoutHomeSet_deletesInaccessibleCollectionsWithoutHomeSet() {
         // place homeless collection in DB - it is also inaccessible
         val collectionId = db.collectionDao().insertOrUpdateByUrl(
             Collection(
@@ -135,14 +135,14 @@ class CollectionsWithoutHomeSetRefresherTest {
         )
 
         // Refresh - should delete collection
-        refresherFactory.create(service, client.okHttpClient).refreshHomelessCollections()
+        refresherFactory.create(service, client.okHttpClient).refreshCollectionsWithoutHomeSet()
 
         // Check the collection got deleted
         assertEquals(null, db.collectionDao().get(collectionId))
     }
 
     @Test
-    fun refreshHomelessCollections_addsOwnerUrls() {
+    fun refreshCollectionsWithoutHomeSet_addsOwnerUrls() {
         // place homeless collection in DB
         val collectionId = db.collectionDao().insertOrUpdateByUrl(
             Collection(
@@ -157,7 +157,7 @@ class CollectionsWithoutHomeSetRefresherTest {
 
         // Refresh homeless collections
         assertEquals(0, db.principalDao().getByService(service.id).size)
-        refresherFactory.create(service, client.okHttpClient).refreshHomelessCollections()
+        refresherFactory.create(service, client.okHttpClient).refreshCollectionsWithoutHomeSet()
 
         // Check principal saved and the collection was updated with its reference
         val principals = db.principalDao().getByService(service.id)
