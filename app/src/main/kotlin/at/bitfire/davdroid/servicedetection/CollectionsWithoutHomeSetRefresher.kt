@@ -12,28 +12,25 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.repository.DavHomeSetRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import okhttp3.OkHttpClient
-import java.util.logging.Logger
 
 /**
- * Logic for refreshing the list of collections and home-sets and related information.
+ * Logic for refreshing the list of collections (and their related information)
+ * which do not belong to a home set.
  */
-class CollectionListRefresher @AssistedInject constructor(
+class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
     @Assisted private val httpClient: OkHttpClient,
     private val db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
-    private val homeSetRepository: DavHomeSetRepository,
-    private val logger: Logger
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(service: Service, httpClient: OkHttpClient): CollectionListRefresher
+        fun create(service: Service, httpClient: OkHttpClient): CollectionsWithoutHomeSetRefresher
     }
 
     /**
@@ -41,9 +38,9 @@ class CollectionListRefresher @AssistedInject constructor(
      *
      * It queries each stored collection with a homeSetId of "null" and either updates or deletes (if inaccessible or unusable) them.
      */
-    internal fun refreshHomelessCollections() {
-        val homelessCollections = db.collectionDao().getByServiceAndHomeset(service.id, null).associateBy { it.url }.toMutableMap()
-        for((url, localCollection) in homelessCollections) try {
+    internal fun refreshCollectionsWithoutHomeSet() {
+        val withoutHomeSet = db.collectionDao().getByServiceAndHomeset(service.id, null).associateBy { it.url }.toMutableMap()
+        for ((url, localCollection) in withoutHomeSet) try {
             val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
             DavResource(httpClient, url).propfind(0, *collectionProperties) { response, _ ->
                 if (!response.isSuccess()) {
@@ -71,7 +68,6 @@ class CollectionListRefresher @AssistedInject constructor(
             else
                 throw e
         }
-
     }
 
 }
