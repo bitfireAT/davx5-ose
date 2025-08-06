@@ -4,48 +4,51 @@
 
 package at.bitfire.davdroid.resource
 
-import android.content.ContentValues
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.LegacyAndroidCalendar
+import at.bitfire.synctools.mapping.calendar.LegacyAndroidEventBuilder2
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
+import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
+import java.util.Optional
 import java.util.UUID
 
 class LocalEvent(
-    val androidEvent: AndroidEvent
+    val recurringCalendar: AndroidRecurringCalendar,
+    val androidEvent: AndroidEvent2
 ) : LocalResource<Event> {
 
-    // LocalResource implementation
-
-    override val id: Long?
+    override val id: Long
         get() = androidEvent.id
 
-    override var fileName: String?
+    override val fileName: String?
         get() = androidEvent.syncId
-        private set(value) {
-            androidEvent.syncId = value
-        }
 
-    override var eTag: String?
+    override val eTag: String?
         get() = androidEvent.eTag
-        set(value) { androidEvent.eTag = value }
 
-    override var scheduleTag: String?
+    override val scheduleTag: String?
         get() = androidEvent.scheduleTag
-        set(value) { androidEvent.scheduleTag = value }
 
     override val flags: Int
         get() = androidEvent.flags
 
-    override fun update(data: Event) = androidEvent.update(data)
 
-    override fun delete() = androidEvent.delete()
+    override fun update(data: Event, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        val eventAndExceptions = LegacyAndroidEventBuilder2(
+            calendar = androidEvent.calendar,
+            event = data,
+            id = id,
+            syncId = fileName,
+            eTag = eTag,
+            scheduleTag = scheduleTag,
+            flags = flags
+        ).build()
+        recurringCalendar.updateEventAndExceptions(id, eventAndExceptions)
+    }
 
-
-    // other methods
 
     private var _event: Event? = null
     /**
@@ -142,31 +145,31 @@ class LocalEvent(
             "${UUID.randomUUID()}.ics"      // UID would be dangerous as file name, use random UUID instead
     }
 
-    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
-        val values = ContentValues(5)
-        if (fileName != null)
-            values.put(Events._SYNC_ID, fileName)
-        values.put(AndroidEvent2.COLUMN_ETAG, eTag)
-        values.put(AndroidEvent2.COLUMN_SCHEDULE_TAG, scheduleTag)
-        values.put(Events.DIRTY, 0)
+    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
+        val values = contentValuesOf(
+            Events.DIRTY to 0,
+            AndroidEvent2.COLUMN_ETAG to eTag,
+            AndroidEvent2.COLUMN_SCHEDULE_TAG to scheduleTag
+        )
+        if (fileName.isPresent)
+            values.put(Events._SYNC_ID, fileName.get())
         androidEvent.update(values)
-
-        if (fileName != null)
-            this.fileName = fileName
-        this.eTag = eTag
-        this.scheduleTag = scheduleTag
     }
 
     override fun updateFlags(flags: Int) {
-        val values = contentValuesOf(AndroidEvent2.COLUMN_FLAGS to flags)
-        androidEvent.update(values)
+        androidEvent.update(contentValuesOf(
+            AndroidEvent2.COLUMN_FLAGS to flags
+        ))
+    }
 
-        androidEvent.flags = flags
+    override fun deleteLocal() {
+        recurringCalendar.deleteEventAndExceptions(id)
     }
 
     override fun resetDeleted() {
-        val values = contentValuesOf(Events.DELETED to 0)
-        androidEvent.update(values)
+        androidEvent.update(contentValuesOf(
+            Events.DELETED to 0
+        ))
     }
 
 }

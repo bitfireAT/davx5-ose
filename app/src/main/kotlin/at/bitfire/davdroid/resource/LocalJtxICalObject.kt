@@ -9,6 +9,8 @@ import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.ical4android.JtxICalObjectFactory
 import at.techbee.jtx.JtxContract
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 class LocalJtxICalObject(
     collection: JtxCollection<*>,
@@ -46,6 +48,24 @@ class LocalJtxICalObject(
             return localJtxICalObject
         }
 
+    }
+
+    override fun update(data: JtxICalObject, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        this.fileName = fileName
+        this.eTag = eTag
+        this.scheduleTag = scheduleTag
+        this.flags = flags
+
+        // processes this.{fileName, eTag, scheduleTag, flags} and resets DIRTY flag
+        update(data)
+    }
+
+    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
+        clearDirty(fileName.getOrNull(), eTag, scheduleTag)
+    }
+
+    override fun deleteLocal() {
+        delete()
     }
 
     override fun resetDeleted() {

@@ -244,7 +244,7 @@ class ContactsSyncManager @AssistedInject constructor(
             for (group in localCollection.findDirtyGroups()) {
                 logger.warning("Resetting locally modified group to ETag=null (read-only address book!)")
                 SyncException.wrapWithLocalResource(group) {
-                    group.clearDirty(null, null)
+                    group.clearDirty(Optional.empty(), null)
                 }
                 modified = true
             }
@@ -252,7 +252,7 @@ class ContactsSyncManager @AssistedInject constructor(
             for (contact in localCollection.findDirtyContacts()) {
                 logger.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
                 SyncException.wrapWithLocalResource(contact) {
-                    contact.clearDirty(null, null)
+                    contact.clearDirty(Optional.empty(), null)
                 }
                 modified = true
             }
@@ -391,56 +391,73 @@ class ContactsSyncManager @AssistedInject constructor(
         val newData = contacts.first()
         groupStrategy.verifyContactBeforeSaving(newData)
 
-        // update local contact, if it exists
-        val localOrNull = localCollection.findByName(fileName)
-        SyncException.wrapWithLocalResource(localOrNull) {
-            var local = localOrNull
-            if (local != null) {
-                logger.log(Level.INFO, "Updating $fileName in local address book", newData)
+        var updated: LocalAddress? = null
 
-                if (local is LocalGroup && newData.group) {
-                    // update group
-                    local.eTag = eTag
-                    local.flags = LocalResource.FLAG_REMOTELY_PRESENT
-                    local.update(newData)
+        val existing = localCollection.findByName(fileName)
+        if (existing == null) {
+            // create new contact/group
+            if (newData.group) {
+                logger.log(Level.INFO, "Creating local group", newData)
+                val newGroup = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                SyncException.wrapWithLocalResource(newGroup) {
+                    newGroup.add()
+                    updated = newGroup
+                }
 
-                } else if (local is LocalContact && !newData.group) {
-                    // update contact
-                    local.eTag = eTag
-                    local.flags = LocalResource.FLAG_REMOTELY_PRESENT
-                    local.update(newData)
+            } else {
+                logger.log(Level.INFO, "Creating local contact", newData)
+                val newContact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                SyncException.wrapWithLocalResource(newContact) {
+                    newContact.add()
+                    updated = newContact
+                }
+            }
+
+        } else {
+            // update existing local contact/group
+            logger.log(Level.INFO, "Updating $fileName in local address book", newData)
+
+            SyncException.wrapWithLocalResource(existing) {
+                if ((existing is LocalGroup && newData.group) || (existing is LocalContact && !newData.group)) {
+                    // update contact / group
+
+                    existing.update(
+                        data = newData,
+                        fileName = fileName,
+                        eTag = eTag,
+                        flags = LocalResource.FLAG_REMOTELY_PRESENT,
+                        scheduleTag = null
+                    )
+                    updated = existing
 
                 } else {
                     // group has become an individual contact or vice versa, delete and create with new type
-                    local.delete()
-                    local = null
-                }
-            }
+                    existing.deleteLocal()
 
-            if (local == null) {
-                if (newData.group) {
-                    logger.log(Level.INFO, "Creating local group", newData)
-                    val newGroup = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                    SyncException.wrapWithLocalResource(newGroup) {
-                        newGroup.add()
-                        local = newGroup
-                    }
-                } else {
-                    logger.log(Level.INFO, "Creating local contact", newData)
-                    val newContact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                    SyncException.wrapWithLocalResource(newContact) {
-                        newContact.add()
-                        local = newContact
+                    if (newData.group) {
+                        logger.log(Level.INFO, "Creating local group (was contact before)", newData)
+                        val newGroup = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                        SyncException.wrapWithLocalResource(newGroup) {
+                            newGroup.add()
+                            updated = newGroup
+                        }
+
+                    } else {
+                        logger.log(Level.INFO, "Creating local contact (was group before)", newData)
+                        val newContact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                        SyncException.wrapWithLocalResource(newContact) {
+                            newContact.add()
+                            updated = newContact
+                        }
                     }
                 }
             }
+        }
 
-            dirtyVerifier.getOrNull()?.let { verifier ->
-                // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                (local as? LocalContact)?.let { localContact ->
-                    verifier.updateHashCode(localCollection, localContact)
-                }
-            }
+        // update hash code of updated contact, if applicable
+        (updated as? LocalContact)?.let { updatedContact ->
+            // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+            dirtyVerifier.getOrNull()?.updateHashCode(localCollection, updatedContact)
         }
     }
 

@@ -8,11 +8,13 @@ import android.content.ContentUris
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.AndroidEvent
+import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
+import at.bitfire.synctools.mapping.calendar.LegacyAndroidEventBuilder2
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
+import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
 import at.bitfire.synctools.storage.calendar.CalendarBatchOperation
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -26,15 +28,17 @@ import java.util.logging.Logger
  * [Calendars._SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
 class LocalCalendar @AssistedInject constructor(
-    @Assisted val androidCalendar: AndroidCalendar,
+    @Assisted internal val androidCalendar: AndroidCalendar,
     private val logger: Logger
 ) : LocalCollection<LocalEvent> {
 
     @AssistedFactory
     interface Factory {
-        fun create(androidCalendar: AndroidCalendar): LocalCalendar
+        fun create(calendar: AndroidCalendar): LocalCalendar
     }
 
+
+    // properties
 
     override val dbCollectionId: Long?
         get() = androidCalendar.syncId?.toLongOrNull()
@@ -56,12 +60,26 @@ class LocalCalendar @AssistedInject constructor(
             androidCalendar.writeSyncState(state.toString())
         }
 
+    private val recurringCalendar = AndroidRecurringCalendar(androidCalendar)
+
+
+    fun add(event: Event, fileName: String, eTag: String?, scheduleTag: String?, flags: Int) {
+        val mapped = LegacyAndroidEventBuilder2(
+            calendar = androidCalendar,
+            event = event,
+            id = null,
+            syncId = fileName,
+            eTag = eTag,
+            scheduleTag = scheduleTag,
+            flags = flags
+        ).build()
+        recurringCalendar.addEventAndExceptions(mapped)
+    }
+
     override fun findDeleted(): List<LocalEvent> {
         val result = LinkedList<LocalEvent>()
-        androidCalendar.iterateEventRows(null, "${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null) { values ->
-            // create legacy AndroidEvent from AndroidEvent2's content values
-            val legacyEvent = AndroidEvent(androidCalendar, values)
-            result += LocalEvent(legacyEvent)
+        androidCalendar.iterateEvents( "${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null) { entity ->
+            result += LocalEvent(recurringCalendar, AndroidEvent2(androidCalendar, entity))
         }
         return result
     }
@@ -74,18 +92,16 @@ class LocalCalendar @AssistedInject constructor(
          * When a calendar component is created, its sequence number is 0. It is monotonically incremented by the "Organizer's"
          * CUA each time the "Organizer" makes a significant revision to the calendar component.
          */
-        androidCalendar.iterateEventRows(null, "${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null) { values ->
-            val legacyEvent = AndroidEvent(androidCalendar, values)
-            dirty += LocalEvent(legacyEvent)
+        androidCalendar.iterateEvents("${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null) { values ->
+            dirty += LocalEvent(recurringCalendar, AndroidEvent2(androidCalendar, values))
         }
 
         return dirty
     }
 
     override fun findByName(name: String) =
-        androidCalendar.findEventRow(null, "${Events._SYNC_ID}=?", arrayOf(name))?.let { values ->
-            val legacyEvent = AndroidEvent(androidCalendar, values)
-            LocalEvent(legacyEvent)
+        androidCalendar.findEvent("${Events._SYNC_ID}=? AND ${Events.ORIGINAL_SYNC_ID} IS null", arrayOf(name))?.let {
+            LocalEvent(recurringCalendar, it)
         }
 
     override fun markNotDirty(flags: Int) =
