@@ -195,7 +195,7 @@ class SyncFrameworkIntegration @Inject constructor(
         // Determine the pending state for each data type of the account as separate flows
         val pendingStateFlows: List<Flow<Boolean>> = dataTypes.mapNotNull { dataType ->
             // Map datatype to authority
-            dataType.authority(context)?.let { authority ->
+            dataType.currentAuthority(context)?.let { authority ->
                 // If checking contacts, we need to check all address book accounts instead of the single main account
                 val accountsFlow: Flow<List<Account>> = when (dataType) {
                     SyncDataType.CONTACTS -> localAddressBookStore.get().getAddressBookAccountsFlow(account)

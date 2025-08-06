@@ -46,7 +46,7 @@ enum class SyncDataType {
      * @param context android context used to determine the active/selected tasks provider
      * @return the authority matching this data type or *null* for [TASKS] if no tasks app is installed
      */
-    fun authority(context: Context): String? =
+    fun currentAuthority(context: Context): String? =
         when (this) {
             CONTACTS -> ContactsContract.AUTHORITY
             EVENTS -> CalendarContract.AUTHORITY
