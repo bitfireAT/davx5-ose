@@ -89,7 +89,6 @@ object NextcloudLogin : LoginType {
                     // Custom Tabs are available
                     @Suppress("DEPRECATION")
                     val browser = CustomTabsIntent.Builder()
-                        .setToolbarColor(context.resources.getColor(R.color.primaryColor))
                         .build()
                     browser.intent.data = loginUri
                     browser.intent.putExtra(

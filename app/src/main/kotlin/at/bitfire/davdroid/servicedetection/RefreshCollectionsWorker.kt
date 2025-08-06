@@ -62,7 +62,7 @@ import java.util.logging.Logger
 class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val collectionListRefresherFactory: CollectionListRefresher.Factory,
+    private val collectionsWithoutHomeSetRefresherFactory: CollectionsWithoutHomeSetRefresher.Factory,
     private val homeSetRefresherFactory: HomeSetRefresher.Factory,
     private val httpClientBuilder: HttpClient.Builder,
     private val logger: Logger,
@@ -159,7 +159,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 .use { httpClient ->
                     runInterruptible {
                         val httpClient = httpClient.okHttpClient
-                        val refresher = collectionListRefresherFactory.create(service, httpClient)
+                        val refresher = collectionsWithoutHomeSetRefresherFactory.create(service, httpClient)
 
                         // refresh home set list (from principal url)
                         service.principal?.let { principalUrl ->
@@ -173,7 +173,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                             .refreshHomesetsAndTheirCollections()
 
                         // also refresh collections without a home set
-                        refresher.refreshHomelessCollections()
+                        refresher.refreshCollectionsWithoutHomeSet()
 
                         // Lastly, refresh the principals (collection owners)
                         val principalsRefresher = principalsRefresherFactory.create(service, httpClient)
