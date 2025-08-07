@@ -31,7 +31,6 @@ import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.EventReader
 import at.bitfire.ical4android.EventWriter
-import at.bitfire.ical4android.LegacyAndroidCalendar
 import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.synctools.exception.InvalidRemoteResourceException
 import dagger.assisted.Assisted
@@ -50,6 +49,7 @@ import java.io.StringReader
 import java.io.StringWriter
 import java.time.Duration
 import java.time.ZonedDateTime
+import java.util.Optional
 import java.util.logging.Level
 
 /**
@@ -159,7 +159,7 @@ class CalendarSyncManager @AssistedInject constructor(
             for (event in localCollection.findDirty()) {
                 logger.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
-                    event.clearDirty(null, null)
+                    event.clearDirty(Optional.empty(), null, null)
                 }
                 modified = true
             }
@@ -291,15 +291,18 @@ class CalendarSyncManager @AssistedInject constructor(
             SyncException.wrapWithLocalResource(local) {
                 if (local != null) {
                     logger.log(Level.INFO, "Updating $fileName in local calendar", event)
-                    local.eTag = eTag
-                    local.scheduleTag = scheduleTag
-                    local.update(event)
+                    local.update(
+                        data = event,
+                        fileName = fileName,
+                        eTag = eTag,
+                        scheduleTag = scheduleTag,
+                        flags = LocalResource.FLAG_REMOTELY_PRESENT
+                    )
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local calendar", event)
-                    val legacyCalendar = LegacyAndroidCalendar(localCollection.androidCalendar)
-                    legacyCalendar.add(
+                    localCollection.add(
                         event = event,
-                        syncId = fileName,
+                        fileName = fileName,
                         eTag = eTag,
                         scheduleTag = scheduleTag,
                         flags = LocalResource.FLAG_REMOTELY_PRESENT

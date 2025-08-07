@@ -32,6 +32,7 @@ import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
+import java.util.Optional
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -164,7 +165,7 @@ class LocalGroupTest {
                 }
             )
 
-            group.clearDirty(null, null)
+            group.clearDirty(Optional.empty(), null)
 
             // check cached group membership
             ab.provider!!.query(
@@ -200,7 +201,7 @@ class LocalGroupTest {
                 }
             )
 
-            group.clearDirty(null, null)
+            group.clearDirty(Optional.empty(), null)
 
             // cached group membership should be gone
             ab.provider!!.query(

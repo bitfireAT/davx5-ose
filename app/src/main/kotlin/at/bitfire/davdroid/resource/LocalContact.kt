@@ -23,13 +23,13 @@ import at.bitfire.vcard4android.AndroidContactFactory
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import java.io.FileNotFoundException
+import java.util.Optional
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 class LocalContact: AndroidContact, LocalAddress {
 
     companion object {
-
         const val COLUMN_FLAGS = ContactsContract.RawContacts.SYNC4
         const val COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3
     }
@@ -40,9 +40,8 @@ class LocalContact: AndroidContact, LocalAddress {
     internal val cachedGroupMemberships = HashSet<Long>()
     internal val groupMemberships = HashSet<Long>()
 
-    override var scheduleTag: String?
+    override val scheduleTag: String?
         get() = null
-        set(_) = throw NotImplementedError()
 
     override var flags: Int = 0
 
@@ -90,13 +89,13 @@ class LocalContact: AndroidContact, LocalAddress {
         _contact = null
     }
 
-    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
+    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             throw IllegalArgumentException("Contacts must not have a Schedule-Tag")
 
         val values = ContentValues(4)
-        if (fileName != null)
-            values.put(COLUMN_FILENAME, fileName)
+        if (fileName.isPresent)
+            values.put(COLUMN_FILENAME, fileName.get())
         values.put(COLUMN_ETAG, eTag)
         values.put(ContactsContract.RawContacts.DIRTY, 0)
 
@@ -105,14 +104,9 @@ class LocalContact: AndroidContact, LocalAddress {
 
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
-        if (fileName != null)
-            this.fileName = fileName
+        if (fileName.isPresent)
+            this.fileName = fileName.get()
         this.eTag = eTag
-    }
-
-    override fun resetDeleted() {
-        val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
     fun resetDirty() {
@@ -120,11 +114,29 @@ class LocalContact: AndroidContact, LocalAddress {
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
+    override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        this.fileName = fileName
+        this.eTag = eTag
+        this.flags = flags
+
+        // processes this.{fileName, eTag, flags} and resets DIRTY flag
+        update(data)
+    }
+
     override fun updateFlags(flags: Int) {
         val values = contentValuesOf(COLUMN_FLAGS to flags)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
         this.flags = flags
+    }
+
+    override fun deleteLocal() {
+        delete()
+    }
+
+    override fun resetDeleted() {
+        val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
 

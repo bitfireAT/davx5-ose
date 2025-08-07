@@ -3,7 +3,7 @@
  */
 package at.bitfire.davdroid
 
-import at.bitfire.ical4android.ical4jVersion
+import at.bitfire.synctools.icalendar.ical4jVersion
 import ezvcard.Ezvcard
 import net.fortuna.ical4j.model.property.ProdId
 

@@ -48,7 +48,6 @@ interface LocalCollection<out T: LocalResource<*>> {
      */
     fun findByName(name: String): T?
 
-
     /**
      * Sets the [LocalEvent.COLUMN_FLAGS] value for entries which are not dirty ([Events.DIRTY] is 0)
      * and have an [Events.ORIGINAL_ID] of null.
