@@ -173,11 +173,8 @@ class HomeSetRefresher @AssistedInject constructor(
      */
     private fun isPersonal(davResponse: Response): Boolean {
         // Owner must be set in order to check if the home set is personal
-        val ownerHref = davResponse[Owner::class.java]?.href
-        val principal = service.principal
-
-        // If either Owner or principal is not set, return false
-        if (ownerHref == null || principal == null) return false
+        val ownerHref = davResponse[Owner::class.java]?.href ?: return false
+        val principal = service.principal ?: return false
 
         // Try to resolve the owner href
         val ownerResolvedHref = principal.resolve(ownerHref)
