@@ -162,7 +162,7 @@ class HomeSetRefresher @AssistedInject constructor(
     }
 
     /**
-     * Evaluates whether a response if personal or not.
+     * Evaluates whether a response is personal or not.
      * It takes the [Owner] property from the response, and compares its value against [service]'s [Service.principal].
      *
      * If either one of those is not set (`null`), this function returns `null`.
