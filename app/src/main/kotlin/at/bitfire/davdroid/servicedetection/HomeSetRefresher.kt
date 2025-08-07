@@ -79,7 +79,7 @@ class HomeSetRefresher @AssistedInject constructor(
                             localHomeset.copy(
                                 displayName = response[DisplayName::class.java]?.displayName,
                                 privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false,
-                                personal = isPersonal(response) == true
+                                personal = isPersonal(response)
                             )
                         )
 
