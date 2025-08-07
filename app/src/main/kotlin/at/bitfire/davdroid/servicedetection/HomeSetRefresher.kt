@@ -169,7 +169,7 @@ class HomeSetRefresher @AssistedInject constructor(
      * @param davResponse The response to process.
      * @return
      * - `true` if the owner matches a principal.
-     * - `false` is the owner doesn't match a principal.
+     * - `false` if the owner doesn't match a principal.
      * - `null` if the owner and/or principal is not set / unknown.
      */
     private fun isPersonal(davResponse: Response): Boolean? {
