@@ -169,20 +169,19 @@ class HomeSetRefresher @AssistedInject constructor(
      * @param davResponse The response to process.
      * @return
      * - `true` if the owner matches a principal.
-     * - `false` if the owner doesn't match a principal.
-     * - `null` if the owner and/or principal is not set / unknown.
+     * - `false` if the owner doesn't match a principal or the owner and/or principal is not set / unknown.
      */
-    private fun isPersonal(davResponse: Response): Boolean? {
+    private fun isPersonal(davResponse: Response): Boolean {
         // Owner must be set in order to check if the home set is personal
         val ownerHref = davResponse[Owner::class.java]?.href
         val principal = service.principal
 
-        // If either Owner or principal is not set, return null
-        if (ownerHref == null || principal == null) return null
+        // If either Owner or principal is not set, return false
+        if (ownerHref == null || principal == null) return false
 
         // Try to resolve the owner href
         val ownerResolvedHref = principal.resolve(ownerHref)
-        if (ownerResolvedHref == null) return null
+        if (ownerResolvedHref == null) return false
 
         // If both fields are set, compare them
         return ownerResolvedHref.equalsForWebDAV(principal)
