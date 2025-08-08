@@ -166,7 +166,7 @@ fun AccountScreen(
         onCreateAddressBook = onCreateAddressBook,
         onCreateCalendar = onCreateCalendar,
         onRenameAccount = model::renameAccount,
-        onDeleteAccount = model::deleteAccount,
+        onDeleteAccount = { model.deleteAccount(onFinish) },
         onNavUp = onNavUp,
         onFinish = onFinish
     )

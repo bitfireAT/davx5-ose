@@ -159,10 +159,14 @@ class AccountScreenModel @AssistedInject constructor(
 
     // actions
 
-    /** Deletes the account from the system (won't touch collections on the server). */
-    fun deleteAccount() {
+    /**
+     * Deletes the account from the system (won't touch collections on the server).
+     * @param finish Gets called after deleting the account. Should close the activity.
+     */
+    fun deleteAccount(finish: () -> Unit) {
         viewModelScope.launch {
             accountRepository.delete(account.name)
+            finish()
         }
     }
 
