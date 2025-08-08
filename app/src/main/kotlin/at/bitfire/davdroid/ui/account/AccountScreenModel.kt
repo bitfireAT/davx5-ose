@@ -78,6 +78,9 @@ class AccountScreenModel @AssistedInject constructor(
         !accounts.contains(account)
     }
 
+    private val _deletingAccount = MutableStateFlow(false)
+    val deletingAccount = _deletingAccount.asStateFlow()
+
     /**
      * Whether to show only personal collections.
      */
@@ -159,14 +162,11 @@ class AccountScreenModel @AssistedInject constructor(
 
     // actions
 
-    /**
-     * Deletes the account from the system (won't touch collections on the server).
-     * @param finish Gets called after deleting the account. Should close the activity.
-     */
-    fun deleteAccount(finish: () -> Unit) {
+    /** Deletes the account from the system (won't touch collections on the server). */
+    fun deleteAccount() {
         viewModelScope.launch {
+            _deletingAccount.emit(true)
             accountRepository.delete(account.name)
-            finish()
         }
     }
 
