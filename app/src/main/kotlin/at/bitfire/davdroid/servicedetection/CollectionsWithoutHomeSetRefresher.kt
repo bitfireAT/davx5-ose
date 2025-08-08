@@ -49,7 +49,7 @@ class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
                 }
 
                 // Save or update the collection, if usable, otherwise delete it
-                Collection.fromDavResponse(response)?.let { collection ->
+                Collection.fromDavResponse(response, service.principal)?.let { collection ->
                     if (!ServiceDetectionUtils.isUsableCollection(service, collection))
                         return@let
                     collectionRepository.insertOrUpdateByUrlRememberSync(collection.copy(

@@ -25,6 +25,7 @@ import at.bitfire.dav4jvm.property.push.WebPush
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.davdroid.servicedetection.ServiceDetectionUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.ical4android.util.DateUtils
@@ -101,6 +102,12 @@ data class Collection(
     val forceReadOnly: Boolean = false,
 
     /**
+     * Whether this collection's `DAV:owner` property matches `current-user-principal`.
+     * `null` indicates an unknown principal or that `DAV:owner` was not set.
+     */
+    val personal: Boolean? = null,
+
+    /**
      * Human-readable name of the collection
      */
     val displayName: String? = null,
@@ -162,7 +169,7 @@ data class Collection(
          * @param dav WebDAV response
          * @return null if the response doesn't represent a collection
          */
-        fun fromDavResponse(dav: Response): Collection? {
+        fun fromDavResponse(dav: Response, principalUrl: HttpUrl?): Collection? {
             val url = UrlUtils.withTrailingSlash(dav.href)
             val type: String = dav[ResourceType::class.java]?.let { resourceType ->
                 when {
@@ -252,7 +259,8 @@ data class Collection(
                 source = source,
                 supportsWebPush = supportsWebPush,
                 pushVapidKey = vapidPublicKey,
-                pushTopic = pushTopic
+                pushTopic = pushTopic,
+                personal = ServiceDetectionUtils.isPersonal(principalUrl, dav)
             )
         }
 
