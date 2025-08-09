@@ -94,7 +94,7 @@ class LocalTask: DmfsTask, LocalResource<Task> {
         this.eTag = eTag
     }
 
-    override fun update(data: Task, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+    override fun updateFromRemote(data: Task, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
         this.fileName = fileName
         this.eTag = eTag
         this.scheduleTag = scheduleTag

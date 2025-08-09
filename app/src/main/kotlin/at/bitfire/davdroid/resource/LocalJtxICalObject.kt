@@ -50,7 +50,7 @@ class LocalJtxICalObject(
 
     }
 
-    override fun update(data: JtxICalObject, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+    override fun updateFromRemote(data: JtxICalObject, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
         this.fileName = fileName
         this.eTag = eTag
         this.scheduleTag = scheduleTag

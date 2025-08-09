@@ -114,7 +114,7 @@ class LocalContact: AndroidContact, LocalAddress {
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
-    override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+    override fun updateFromRemote(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
         this.fileName = fileName
         this.eTag = eTag
         this.flags = flags

@@ -81,7 +81,7 @@ interface LocalResource<in TData: Any> {
      *
      * @return content URI of the updated row (e.g. event URI)
      */
-    fun update(data: TData, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int)
+    fun updateFromRemote(data: TData, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int)
 
     /**
      * Deletes the data object from the content provider.

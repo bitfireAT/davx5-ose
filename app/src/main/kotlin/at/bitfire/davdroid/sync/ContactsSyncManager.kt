@@ -421,7 +421,7 @@ class ContactsSyncManager @AssistedInject constructor(
                 if ((existing is LocalGroup && newData.group) || (existing is LocalContact && !newData.group)) {
                     // update contact / group
 
-                    existing.update(
+                    existing.updateFromRemote(
                         data = newData,
                         fileName = fileName,
                         eTag = eTag,

@@ -32,7 +32,7 @@ class LocalTestResource: LocalResource<Any> {
         this.flags = flags
     }
 
-    override fun update(data: Any, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) = throw NotImplementedError()
+    override fun updateFromRemote(data: Any, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) = throw NotImplementedError()
     override fun deleteLocal() = throw NotImplementedError()
     override fun resetDeleted() = throw NotImplementedError()
 

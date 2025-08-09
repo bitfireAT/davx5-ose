@@ -8,6 +8,7 @@ import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.LegacyAndroidCalendar
+import at.bitfire.synctools.icalendar.AssociatedEvents
 import at.bitfire.synctools.mapping.calendar.LegacyAndroidEventBuilder2
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
@@ -18,7 +19,7 @@ import java.util.UUID
 class LocalEvent(
     val recurringCalendar: AndroidRecurringCalendar,
     val androidEvent: AndroidEvent2
-) : LocalResource<Event> {
+) : LocalResource<AssociatedEvents> {
 
     override val id: Long
         get() = androidEvent.id
@@ -36,7 +37,7 @@ class LocalEvent(
         get() = androidEvent.flags
 
 
-    override fun update(data: Event, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+    override fun updateFromRemote(data: AssociatedEvents, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
         val eventAndExceptions = LegacyAndroidEventBuilder2(
             calendar = androidEvent.calendar,
             event = data,
