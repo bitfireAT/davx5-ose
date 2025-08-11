@@ -8,6 +8,8 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
+import at.bitfire.davdroid.util.MARKER
+import at.bitfire.davdroid.util.decodeWithMarker
 import java.util.logging.Logger
 
 object SystemAccountUtils {
@@ -67,4 +69,9 @@ fun AccountManager.setAndVerifyUserData(account: Account, key: String, value: St
         Thread.sleep(100)
     }
     Logger.getGlobal().warning("AccountManager failed to set $account user data $key := $value")
+}
+
+fun Account.nameWithNumber(): String {
+    val number = decodeWithMarker(name) ?: return name
+    return name.substringBeforeLast(MARKER) + " (#" + number + ")"
 }

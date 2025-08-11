@@ -22,6 +22,8 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.davdroid.util.MARKER
+import at.bitfire.davdroid.util.encodeNumber
 import com.google.common.base.CharMatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
@@ -74,7 +76,7 @@ class LocalAddressBookStore @Inject constructor(
             sb.append(" (${service.accountName})")
         }
         // Add the collection ID for uniqueness
-        sb.append(" #${info.id}")
+        sb.append(MARKER + encodeNumber(info.id))
         return sb.toString()
     }
 

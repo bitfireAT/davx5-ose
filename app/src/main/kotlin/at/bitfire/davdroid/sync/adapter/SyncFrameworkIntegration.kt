@@ -12,6 +12,9 @@ import android.os.Bundle
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.sync.account.nameWithNumber
+import at.bitfire.davdroid.util.MARKER
+import at.bitfire.davdroid.util.decodeWithMarker
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -256,7 +259,7 @@ class SyncFrameworkIntegration @Inject constructor(
     private fun anyPendingSync(accounts: List<Account>, authority: String): Boolean =
         accounts.any { account ->
             ContentResolver.isSyncPending(account, authority).also { pending ->
-                logger.finer("Sync pending($account, $authority) = $pending")
+                logger.finer("Sync pending(name=${account.nameWithNumber()}, type=${account.type}, $authority) = $pending")
             }
         }
 
