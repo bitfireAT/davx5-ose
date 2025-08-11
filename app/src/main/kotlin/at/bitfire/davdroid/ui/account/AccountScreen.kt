@@ -125,7 +125,6 @@ fun AccountScreen(
         error = model.error,
         onResetError = model::resetError,
         invalidAccount = model.invalidAccount.collectAsStateWithLifecycle(false).value,
-        deletingAccount = model.deletingAccount.collectAsStateWithLifecycle(false).value,
         showOnlyPersonal = model.showOnlyPersonal.collectAsStateWithLifecycle().value,
         showOnlyPersonalLocked = model.showOnlyPersonalLocked.collectAsStateWithLifecycle().value,
         onSetShowOnlyPersonal = model::setShowOnlyPersonal,
@@ -180,7 +179,6 @@ fun AccountScreen(
     error: String? = null,
     onResetError: () -> Unit = {},
     invalidAccount: Boolean = false,
-    deletingAccount: Boolean = false,
     showOnlyPersonal: Boolean = false,
     showOnlyPersonalLocked: Boolean = false,
     onSetShowOnlyPersonal: (showOnlyPersonal: Boolean) -> Unit = {},
@@ -216,11 +214,7 @@ fun AccountScreen(
 
         LaunchedEffect(invalidAccount) {
             if (invalidAccount) {
-                Toast.makeText(
-                    context,
-                    if (deletingAccount) R.string.account_deleted_account else R.string.account_invalid_account,
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(context, R.string.account_invalid_account, Toast.LENGTH_LONG).show()
                 onFinish()
             }
         }

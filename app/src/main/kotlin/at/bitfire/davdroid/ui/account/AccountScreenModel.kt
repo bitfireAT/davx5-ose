@@ -78,9 +78,6 @@ class AccountScreenModel @AssistedInject constructor(
         !accounts.contains(account)
     }
 
-    private val _deletingAccount = MutableStateFlow(false)
-    val deletingAccount = _deletingAccount.asStateFlow()
-
     /**
      * Whether to show only personal collections.
      */
