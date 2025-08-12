@@ -266,7 +266,7 @@ class CalendarSyncManager @AssistedInject constructor(
             if (vEvents.size > 1)
                 logger.warning("Received iCalendar with more than one UID; ignoring all but first one")
 
-            vEvents.values.firstOrNull
+            vEvents.values.firstOrNull()
         } catch (e: InvalidRemoteResourceException) {
             logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
@@ -277,6 +277,9 @@ class CalendarSyncManager @AssistedInject constructor(
             logger.warning("Ignoring iCalendar without VEVENTs ($fileName)")
             return
         }
+
+        // TODO we need both the new associated event and the legacy event here,
+        // then pass both to addupdateFromRemote / updateFromRemote.
 
         // TODO add default reminder
         /* set default reminder for non-full-day events, if requested
@@ -305,7 +308,7 @@ class CalendarSyncManager @AssistedInject constructor(
             } else {
                 logger.log(Level.INFO, "Adding $fileName to local calendar", vEvent)
                 localCollection.addFromRemote(
-                    event = vEvent,
+                    associatedEvents = vEvent,
                     fileName = fileName,
                     eTag = eTag,
                     scheduleTag = scheduleTag,

@@ -11,7 +11,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.icalendar.AssociatedEvents
-import at.bitfire.synctools.mapping.calendar.LegacyAndroidEventBuilder2
+import at.bitfire.synctools.mapping.calendar.AndroidEventBuilder
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
@@ -64,16 +64,17 @@ class LocalCalendar @AssistedInject constructor(
     private val recurringCalendar = AndroidRecurringCalendar(androidCalendar)
 
 
-    fun addFromRemote(event: AssociatedEvents, fileName: String, eTag: String?, scheduleTag: String?, flags: Int) {
-        val mapped = LegacyAndroidEventBuilder2(
-            calendar = androidCalendar,
-            event = event,
-            id = null,
+    fun addFromRemote(associatedEvents: AssociatedEvents, legacyEvent: Event, fileName: String, eTag: String?, scheduleTag: String?, flags: Int) {
+        val mapped = AndroidEventBuilder(
             syncId = fileName,
             eTag = eTag,
             scheduleTag = scheduleTag,
-            flags = flags
-        ).build()
+            flags = flags,
+            associatedEvents = associatedEvents,
+            androidCalendar = androidCalendar,
+            event = legacyEvent,
+            id = null
+        ).build() ?: TODO("Handle invalid event")
         recurringCalendar.addEventAndExceptions(mapped)
     }
 

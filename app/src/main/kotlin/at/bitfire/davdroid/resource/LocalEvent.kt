@@ -9,7 +9,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.LegacyAndroidCalendar
 import at.bitfire.synctools.icalendar.AssociatedEvents
-import at.bitfire.synctools.mapping.calendar.LegacyAndroidEventBuilder2
+import at.bitfire.synctools.mapping.calendar.AndroidEventBuilder
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
 import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
@@ -38,16 +38,20 @@ class LocalEvent(
 
 
     override fun updateFromRemote(data: AssociatedEvents, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
-        val eventAndExceptions = LegacyAndroidEventBuilder2(
-            calendar = androidEvent.calendar,
-            event = data,
-            id = id,
-            syncId = fileName,
+        val eventAndExceptions = AndroidEventBuilder(
+            associatedEvents = data,
+            calendarId = androidEvent.calendar.id,
+            syncId = fileName ?: TODO(),
             eTag = eTag,
             scheduleTag = scheduleTag,
             flags = flags
         ).build()
-        recurringCalendar.updateEventAndExceptions(id, eventAndExceptions)
+
+        if (eventAndExceptions != null)
+            recurringCalendar.updateEventAndExceptions(id, eventAndExceptions)
+        else {
+            // TODO handle invalid event
+        }
     }
 
 
