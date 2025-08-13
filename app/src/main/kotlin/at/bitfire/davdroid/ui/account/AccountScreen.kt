@@ -26,6 +26,8 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -357,7 +359,7 @@ fun AccountScreen(
                                     AccountScreen_Tab(
                                         selected = idxCurrentPage == idxCardDav,
                                         showIcon = showIcon,
-                                        icon = Icons.Default.Person,
+                                        icon = Icons.Default.Group,
                                         text = stringResource(R.string.account_carddav),
                                         animatedVisibilityScope = this@AnimatedContent,
                                         sharedTransitionScope = this@SharedTransitionLayout,
@@ -371,7 +373,7 @@ fun AccountScreen(
                                     AccountScreen_Tab(
                                         selected = idxCurrentPage == idxWebcal,
                                         showIcon = showIcon,
-                                        icon = Icons.Default.CalendarImport,
+                                        icon = Icons.Default.Link,
                                         text = stringResource(R.string.account_webcal),
                                         animatedVisibilityScope = this@AnimatedContent,
                                         sharedTransitionScope = this@SharedTransitionLayout,
