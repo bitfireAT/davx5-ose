@@ -234,7 +234,7 @@ open class LocalAddressBook @AssistedInject constructor(
         if (syncInterval != null)
             syncFramework.enableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
         else
-            syncFramework.disableSyncAbility(addressBookAccount, ContactsContract.AUTHORITY)
+            syncFramework.disableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
     }
 
 
