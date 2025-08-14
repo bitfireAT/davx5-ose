@@ -119,11 +119,11 @@ class LocalCalendar @AssistedInject constructor(
             "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND ${AndroidEvent2.COLUMN_FLAGS}=?",
             arrayOf(androidCalendar.id.toString(), flags.toString())
         ) { values ->
-            val id = values.getAsInteger(Events._ID)
+            val id = values.getAsLong(Events._ID)
 
             // delete event and possible exceptions (content provider doesn't delete exceptions itself)
             batch += BatchOperation.CpoBuilder
-                .newDelete(Events.CONTENT_URI.asSyncAdapter(androidCalendar.account))
+                .newDelete(androidCalendar.eventsUri)
                 .withSelection("${Events._ID}=? OR ${Events.ORIGINAL_ID}=?", arrayOf(id.toString(), id.toString()))
         }
         return batch.commit()
