@@ -107,7 +107,8 @@ class LocalCalendar @AssistedInject constructor(
     override fun markNotDirty(flags: Int) =
         androidCalendar.updateEventRows(
             contentValuesOf(AndroidEvent2.COLUMN_FLAGS to flags),
-            "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL",
+            // `dirty` can be 0, 1, or null. "NOT dirty" is not enough.
+            "${Events.CALENDAR_ID}=? AND (${Events.DIRTY} is NULL OR ${Events.DIRTY}=0) AND ${Events.ORIGINAL_ID} IS NULL",
             arrayOf(androidCalendar.id.toString())
         )
 
@@ -116,7 +117,8 @@ class LocalCalendar @AssistedInject constructor(
         val batch = CalendarBatchOperation(androidCalendar.client)
         androidCalendar.iterateEventRows(
             arrayOf(Events._ID),
-            "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND ${AndroidEvent2.COLUMN_FLAGS}=?",
+            // `dirty` can be 0, 1, or null. "NOT dirty" is not enough.
+            "${Events.CALENDAR_ID}=? AND (${Events.DIRTY} is NULL OR ${Events.DIRTY}=0) AND ${Events.ORIGINAL_ID} IS NULL AND ${AndroidEvent2.COLUMN_FLAGS}=?",
             arrayOf(androidCalendar.id.toString(), flags.toString())
         ) { values ->
             val id = values.getAsLong(Events._ID)

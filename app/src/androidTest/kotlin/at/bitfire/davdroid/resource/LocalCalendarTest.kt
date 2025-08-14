@@ -29,6 +29,7 @@ import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Status
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
@@ -161,7 +162,7 @@ class LocalCalendarTest {
 
     @Test
     fun testRemoveNotDirtyMarked_IdLargerThanIntMaxValue() {
-        val id = androidCalendar.addEvent(Entity(contentValuesOf(
+        val idDirty0 = androidCalendar.addEvent(Entity(contentValuesOf(
             Events.CALENDAR_ID to androidCalendar.id,
             Events._ID to Int.MAX_VALUE.toLong() + 10,
             Events.DTSTART to System.currentTimeMillis(),
@@ -170,10 +171,48 @@ class LocalCalendarTest {
             Events.DIRTY to 0,
             AndroidEvent2.COLUMN_FLAGS to 123
         )))
+        val idDirtyNull = androidCalendar.addEvent(Entity(contentValuesOf(
+            Events.CALENDAR_ID to androidCalendar.id,
+            Events._ID to Int.MAX_VALUE.toLong() + 10,
+            Events.DTSTART to System.currentTimeMillis(),
+            Events.DTEND to System.currentTimeMillis(),
+            Events.TITLE to "Some Event",
+            Events.DIRTY to null,
+            AndroidEvent2.COLUMN_FLAGS to 123
+        )))
 
         calendar.removeNotDirtyMarked(123)
 
-        assertNull(androidCalendar.getEvent(id))
+        assertNull(androidCalendar.getEvent(idDirty0))
+        assertNull(androidCalendar.getEvent(idDirtyNull))
+    }
+
+    @Test
+    fun test_markNotDirty() {
+        val idDirty0 = androidCalendar.addEvent(Entity(contentValuesOf(
+            Events.CALENDAR_ID to androidCalendar.id,
+            Events._ID to Int.MAX_VALUE.toLong() + 10,
+            Events.DTSTART to System.currentTimeMillis(),
+            Events.DTEND to System.currentTimeMillis(),
+            Events.TITLE to "Some Event",
+            Events.DIRTY to 0,
+            AndroidEvent2.COLUMN_FLAGS to 123
+        )))
+        val idDirtyNull = androidCalendar.addEvent(Entity(contentValuesOf(
+            Events.CALENDAR_ID to androidCalendar.id,
+            Events._ID to Int.MAX_VALUE.toLong() + 10,
+            Events.DTSTART to System.currentTimeMillis(),
+            Events.DTEND to System.currentTimeMillis(),
+            Events.TITLE to "Some Event",
+            Events.DIRTY to null,
+            AndroidEvent2.COLUMN_FLAGS to 123
+        )))
+
+        val updated = calendar.markNotDirty(321)
+        assertEquals(2, updated)
+
+        assertEquals(321, androidCalendar.getEvent(idDirty0)?.flags)
+        assertEquals(321, androidCalendar.getEvent(idDirtyNull)?.flags)
     }
 
 }
