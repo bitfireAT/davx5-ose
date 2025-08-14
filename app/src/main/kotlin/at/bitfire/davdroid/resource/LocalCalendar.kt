@@ -123,7 +123,7 @@ class LocalCalendar @AssistedInject constructor(
 
             // delete event and possible exceptions (content provider doesn't delete exceptions itself)
             batch += BatchOperation.CpoBuilder
-                .newDelete(Events.CONTENT_URI.asSyncAdapter(androidCalendar.account))
+                .newDelete(androidCalendar.eventsUri)
                 .withSelection("${Events._ID}=? OR ${Events.ORIGINAL_ID}=?", arrayOf(id.toString(), id.toString()))
         }
         return batch.commit()
