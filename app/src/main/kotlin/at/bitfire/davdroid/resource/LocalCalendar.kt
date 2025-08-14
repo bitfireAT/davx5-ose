@@ -119,7 +119,7 @@ class LocalCalendar @AssistedInject constructor(
             "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND ${AndroidEvent2.COLUMN_FLAGS}=?",
             arrayOf(androidCalendar.id.toString(), flags.toString())
         ) { values ->
-            val id = values.getAsInteger(Events._ID)
+            val id = values.getAsLong(Events._ID)
 
             // delete event and possible exceptions (content provider doesn't delete exceptions itself)
             batch += BatchOperation.CpoBuilder
