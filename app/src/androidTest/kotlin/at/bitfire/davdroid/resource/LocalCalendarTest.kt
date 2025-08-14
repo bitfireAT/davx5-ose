@@ -167,16 +167,16 @@ class LocalCalendarTest {
             Events._ID to Int.MAX_VALUE.toLong() + 10,
             Events.DTSTART to System.currentTimeMillis(),
             Events.DTEND to System.currentTimeMillis(),
-            Events.TITLE to "Some Event",
+            Events.TITLE to "Some Event 1",
             Events.DIRTY to 0,
             AndroidEvent2.COLUMN_FLAGS to 123
         )))
         val idDirtyNull = androidCalendar.addEvent(Entity(contentValuesOf(
             Events.CALENDAR_ID to androidCalendar.id,
-            Events._ID to Int.MAX_VALUE.toLong() + 10,
+            Events._ID to Int.MAX_VALUE.toLong() + 11,
             Events.DTSTART to System.currentTimeMillis(),
             Events.DTEND to System.currentTimeMillis(),
-            Events.TITLE to "Some Event",
+            Events.TITLE to "Some Event 2",
             Events.DIRTY to null,
             AndroidEvent2.COLUMN_FLAGS to 123
         )))
@@ -191,19 +191,19 @@ class LocalCalendarTest {
     fun test_markNotDirty() {
         val idDirty0 = androidCalendar.addEvent(Entity(contentValuesOf(
             Events.CALENDAR_ID to androidCalendar.id,
-            Events._ID to Int.MAX_VALUE.toLong() + 10,
+            Events._ID to 1,
             Events.DTSTART to System.currentTimeMillis(),
             Events.DTEND to System.currentTimeMillis(),
-            Events.TITLE to "Some Event",
+            Events.TITLE to "Some Event 1",
             Events.DIRTY to 0,
             AndroidEvent2.COLUMN_FLAGS to 123
         )))
         val idDirtyNull = androidCalendar.addEvent(Entity(contentValuesOf(
             Events.CALENDAR_ID to androidCalendar.id,
-            Events._ID to Int.MAX_VALUE.toLong() + 10,
+            Events._ID to 2,
             Events.DTSTART to System.currentTimeMillis(),
             Events.DTEND to System.currentTimeMillis(),
-            Events.TITLE to "Some Event",
+            Events.TITLE to "Some Event 2",
             Events.DIRTY to null,
             AndroidEvent2.COLUMN_FLAGS to 123
         )))
