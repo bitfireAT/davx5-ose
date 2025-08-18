@@ -91,7 +91,9 @@ class Migration18Test : DatabaseMigrationTest(toVersion = 18) {
                 arrayOf<Any?>(1, 1, "com.android.contacts", 1234)
             )
 
-            // Two orphan syncstats rows (collectionId not in collection)
+            // Insert two orphan syncstats rows (collectionId not in collection)
+            // We can insert them here because SQLite foreign key constraint enforcement is not active.
+            // See `testMigration()` for details.
             db.execSQL(
                 "INSERT INTO syncstats (id, collectionId, authority, lastSync) VALUES (?, ?, ?, ?)",
                 arrayOf<Any?>(2, 99, "com.android.calendar", 1660521600)

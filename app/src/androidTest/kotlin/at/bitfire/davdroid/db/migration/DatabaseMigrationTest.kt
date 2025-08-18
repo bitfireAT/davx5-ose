@@ -61,6 +61,11 @@ abstract class DatabaseMigrationTest(
         // Prepare the database with the initial version.
         val dbName = "test"
         helper.createDatabase(dbName, version = toVersion - 1).apply {
+            // Foreign key constraint enforcement is disabled by default in SQLite and needs to
+            // be enabled per connection. For production code room does that for us - in tests we
+            // need to enable it ourselves. We could enable foreign key constraint enforcement here,
+            // but it's more practical for the tests to not do so.
+            // execSQL("PRAGMA foreign_keys=ON;");
             prepare(this)
             close()
         }
