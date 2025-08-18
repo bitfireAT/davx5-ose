@@ -8,14 +8,18 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Entity
 import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
+import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
+import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
+import at.bitfire.synctools.storage.calendar.AndroidEvent2
 import at.bitfire.synctools.test.InitCalendarProviderRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -25,6 +29,7 @@ import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Status
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -44,6 +49,7 @@ class LocalCalendarTest {
     lateinit var localCalendarFactory: LocalCalendar.Factory
 
     private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
+    private lateinit var androidCalendar: AndroidCalendar
     private lateinit var client: ContentProviderClient
     private lateinit var calendar: LocalCalendar
 
@@ -55,12 +61,13 @@ class LocalCalendarTest {
         client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
 
         val provider = AndroidCalendarProvider(account, client)
-        calendar = localCalendarFactory.create(provider.createAndGetCalendar(ContentValues()))
+        androidCalendar = provider.createAndGetCalendar(ContentValues())
+        calendar = localCalendarFactory.create(androidCalendar)
     }
 
     @After
     fun tearDown() {
-        calendar.androidCalendar.delete()
+        androidCalendar.delete()
         client.closeCompat()
     }
 
@@ -135,24 +142,38 @@ class LocalCalendarTest {
             flags = LocalResource.FLAG_REMOTELY_PRESENT
         )
         val localEvent = calendar.findByName("filename.ics")!!
-        val eventId = localEvent.id
+        val eventUrl = androidCalendar.eventUri(localEvent.id)
 
         // set event as dirty
-        client.update(ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId), ContentValues(1).apply {
-            put(Events.DIRTY, 1)
-        }, null, null)
+        client.update(eventUrl, contentValuesOf(
+            Events.DIRTY to 1
+        ), null, null)
 
         // this method should mark the event as deleted
         calendar.deleteDirtyEventsWithoutInstances()
 
         // verify that event is not marked as deleted
-        client.query(
-            ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId),
-            arrayOf(Events.DELETED), null, null, null
-        )!!.use { cursor ->
+        client.query(eventUrl, arrayOf(Events.DELETED), null, null, null)!!.use { cursor ->
             cursor.moveToNext()
             assertEquals(0, cursor.getInt(0))
         }
+    }
+
+    @Test
+    fun testRemoveNotDirtyMarked_IdLargerThanIntMaxValue() {
+        val id = androidCalendar.addEvent(Entity(contentValuesOf(
+            Events.CALENDAR_ID to androidCalendar.id,
+            Events._ID to Int.MAX_VALUE.toLong() + 10,
+            Events.DTSTART to System.currentTimeMillis(),
+            Events.DTEND to System.currentTimeMillis(),
+            Events.TITLE to "Some Event",
+            Events.DIRTY to 0,
+            AndroidEvent2.COLUMN_FLAGS to 123
+        )))
+
+        calendar.removeNotDirtyMarked(123)
+
+        assertNull(androidCalendar.getEvent(id))
     }
 
 }
