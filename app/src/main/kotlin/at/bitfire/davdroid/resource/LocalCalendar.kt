@@ -108,7 +108,11 @@ class LocalCalendar @AssistedInject constructor(
         androidCalendar.updateEventRows(
             contentValuesOf(AndroidEvent2.COLUMN_FLAGS to flags),
             // `dirty` can be 0, 1, or null. "NOT dirty" is not enough.
-            "${Events.CALENDAR_ID}=? AND (${Events.DIRTY} is NULL OR ${Events.DIRTY}=0) AND ${Events.ORIGINAL_ID} IS NULL",
+            """
+                ${Events.CALENDAR_ID}=?
+                AND (${Events.DIRTY} is NULL OR ${Events.DIRTY}=0)
+                AND ${Events.ORIGINAL_ID} IS NULL
+            """.trimIndent(),
             arrayOf(androidCalendar.id.toString())
         )
 
@@ -118,7 +122,12 @@ class LocalCalendar @AssistedInject constructor(
         androidCalendar.iterateEventRows(
             arrayOf(Events._ID),
             // `dirty` can be 0, 1, or null. "NOT dirty" is not enough.
-            "${Events.CALENDAR_ID}=? AND (${Events.DIRTY} is NULL OR ${Events.DIRTY}=0) AND ${Events.ORIGINAL_ID} IS NULL AND ${AndroidEvent2.COLUMN_FLAGS}=?",
+            """
+                ${Events.CALENDAR_ID}=?
+                AND (${Events.DIRTY} is NULL OR ${Events.DIRTY}=0)
+                AND ${Events.ORIGINAL_ID} IS NULL
+                AND ${AndroidEvent2.COLUMN_FLAGS}=?
+            """.trimIndent(),
             arrayOf(androidCalendar.id.toString(), flags.toString())
         ) { values ->
             val id = values.getAsLong(Events._ID)
