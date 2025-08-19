@@ -50,7 +50,7 @@ interface LocalCollection<out T: LocalResource<*>> {
 
     /**
      * Sets the [at.bitfire.synctools.storage.calendar.AndroidEvent2.COLUMN_FLAGS] value for entries which
-     * are not dirty ([android.provider.CalendarContract.Events.DIRTY] is 0) and have an [android.provider.CalendarContract.Events.ORIGINAL_ID] of null.
+     * are not dirty ([android.provider.CalendarContract.Events.DIRTY] is 0 or null) and have an [android.provider.CalendarContract.Events.ORIGINAL_ID] of null.
      *
      * @param flags    value of flags to set (for instance, [LocalResource.FLAG_REMOTELY_PRESENT]])
      *
@@ -59,7 +59,7 @@ interface LocalCollection<out T: LocalResource<*>> {
     fun markNotDirty(flags: Int): Int
 
     /**
-     * Removes entries which are not dirty ([android.provider.CalendarContract.Events.DIRTY] is 0 and
+     * Removes entries which are not dirty ([android.provider.CalendarContract.Events.DIRTY] is 0 or null and
      * an [android.provider.CalendarContract.Events.ORIGINAL_ID] is null) with a given flag combination.
      *
      * @param flags    exact flags value to remove entries with (for instance, if this is [LocalResource.FLAG_REMOTELY_PRESENT]],
