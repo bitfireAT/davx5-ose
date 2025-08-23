@@ -49,8 +49,7 @@ interface LocalCollection<out T: LocalResource<*>> {
     fun findByName(name: String): T?
 
     /**
-     * Sets the [at.bitfire.synctools.storage.calendar.AndroidEvent2.COLUMN_FLAGS] value for entries which
-     * are not dirty ([android.provider.CalendarContract.Events.DIRTY] is 0 or null) and have an [android.provider.CalendarContract.Events.ORIGINAL_ID] of null.
+     * Updates the flags value for entries which are not dirty.
      *
      * @param flags    value of flags to set (for instance, [LocalResource.FLAG_REMOTELY_PRESENT]])
      *
@@ -59,8 +58,7 @@ interface LocalCollection<out T: LocalResource<*>> {
     fun markNotDirty(flags: Int): Int
 
     /**
-     * Removes entries which are not dirty ([android.provider.CalendarContract.Events.DIRTY] is 0 or null and
-     * an [android.provider.CalendarContract.Events.ORIGINAL_ID] is null) with a given flag combination.
+     * Removes entries which are not dirty with a given flag combination.
      *
      * @param flags    exact flags value to remove entries with (for instance, if this is [LocalResource.FLAG_REMOTELY_PRESENT]],
      *                 all entries with exactly this flag will be removed)
