@@ -160,59 +160,77 @@ class LocalCalendarTest {
         }
     }
 
-    @Test
-    fun testRemoveNotDirtyMarked_IdLargerThanIntMaxValue() {
-        val idDirty0 = androidCalendar.addEvent(Entity(contentValuesOf(
-            Events.CALENDAR_ID to androidCalendar.id,
-            Events._ID to Int.MAX_VALUE.toLong() + 10,
-            Events.DTSTART to System.currentTimeMillis(),
-            Events.DTEND to System.currentTimeMillis(),
-            Events.TITLE to "Some Event 1",
-            Events.DIRTY to 0,
-            AndroidEvent2.COLUMN_FLAGS to 123
-        )))
-        val idDirtyNull = androidCalendar.addEvent(Entity(contentValuesOf(
-            Events.CALENDAR_ID to androidCalendar.id,
-            Events._ID to Int.MAX_VALUE.toLong() + 11,
-            Events.DTSTART to System.currentTimeMillis(),
-            Events.DTEND to System.currentTimeMillis(),
-            Events.TITLE to "Some Event 2",
-            Events.DIRTY to null,
-            AndroidEvent2.COLUMN_FLAGS to 123
-        )))
+    /**
+     * Verifies that [LocalCalendar.removeNotDirtyMarked] works as expected.
+     * @param contentValues values to set on the event. Required:
+     * - [Events._ID]
+     * - [Events.DIRTY]
+     */
+    private fun testRemoveNotDirtyMarked(contentValues: ContentValues) {
+        val id = androidCalendar.addEvent(Entity(
+            contentValuesOf(
+                Events.CALENDAR_ID to androidCalendar.id,
+                Events.DTSTART to System.currentTimeMillis(),
+                Events.DTEND to System.currentTimeMillis(),
+                Events.TITLE to "Some Event",
+                AndroidEvent2.COLUMN_FLAGS to 123
+            ).apply { putAll(contentValues) }
+        ))
 
         calendar.removeNotDirtyMarked(123)
 
-        assertNull(androidCalendar.getEvent(idDirty0))
-        assertNull(androidCalendar.getEvent(idDirtyNull))
+        assertNull(androidCalendar.getEvent(id))
     }
 
     @Test
-    fun test_markNotDirty() {
-        val idDirty0 = androidCalendar.addEvent(Entity(contentValuesOf(
-            Events.CALENDAR_ID to androidCalendar.id,
-            Events._ID to 1,
-            Events.DTSTART to System.currentTimeMillis(),
-            Events.DTEND to System.currentTimeMillis(),
-            Events.TITLE to "Some Event 1",
-            Events.DIRTY to 0,
-            AndroidEvent2.COLUMN_FLAGS to 123
-        )))
-        val idDirtyNull = androidCalendar.addEvent(Entity(contentValuesOf(
-            Events.CALENDAR_ID to androidCalendar.id,
-            Events._ID to 2,
-            Events.DTSTART to System.currentTimeMillis(),
-            Events.DTEND to System.currentTimeMillis(),
-            Events.TITLE to "Some Event 2",
-            Events.DIRTY to null,
-            AndroidEvent2.COLUMN_FLAGS to 123
-        )))
+    fun testRemoveNotDirtyMarked_IdLargerThanIntMaxValue() = testRemoveNotDirtyMarked(
+        contentValuesOf(Events._ID to Int.MAX_VALUE.toLong() + 10, Events.DIRTY to 0)
+    )
+
+    @Test
+    fun testRemoveNotDirtyMarked_DirtyIs0() = testRemoveNotDirtyMarked(
+        contentValuesOf(Events._ID to 1, Events.DIRTY to 0)
+    )
+
+    @Test
+    fun testRemoveNotDirtyMarked_DirtyNull() = testRemoveNotDirtyMarked(
+        contentValuesOf(Events._ID to 1, Events.DIRTY to null)
+    )
+
+    /**
+     * Verifies that [LocalCalendar.markNotDirty] works as expected.
+     * @param contentValues values to set on the event. Required:
+     * - [Events.DIRTY]
+     */
+    private fun testMarkNotDirty(contentValues: ContentValues) {
+        val id = androidCalendar.addEvent(Entity(
+            contentValuesOf(
+                Events.CALENDAR_ID to androidCalendar.id,
+                Events._ID to 1,
+                Events.DTSTART to System.currentTimeMillis(),
+                Events.DTEND to System.currentTimeMillis(),
+                Events.TITLE to "Some Event",
+                AndroidEvent2.COLUMN_FLAGS to 123
+            ).apply { putAll(contentValues) }
+        ))
 
         val updated = calendar.markNotDirty(321)
-        assertEquals(2, updated)
-
-        assertEquals(321, androidCalendar.getEvent(idDirty0)?.flags)
-        assertEquals(321, androidCalendar.getEvent(idDirtyNull)?.flags)
+        assertEquals(1, updated)
+        assertEquals(321, androidCalendar.getEvent(id)?.flags)
     }
+
+    @Test
+    fun test_markNotDirty_DirtyIs0() = testMarkNotDirty(
+        contentValuesOf(
+            Events.DIRTY to 0
+        )
+    )
+
+    @Test
+    fun test_markNotDirty_DirtyIsNull() = testMarkNotDirty(
+        contentValuesOf(
+            Events.DIRTY to null
+        )
+    )
 
 }
