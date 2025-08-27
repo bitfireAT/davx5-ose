@@ -9,3 +9,6 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "[CI] "
+    groups:
+      ci-actions:
+        patterns: "[*]"
