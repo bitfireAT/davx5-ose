@@ -46,7 +46,7 @@ abstract class DatabaseMigrationTest(
      *
      * Note: SQLite's foreign key constraint enforcement is not enabled (always per
      * DB connection) in tests we need to enable it ourselves using
-     * execSQL("PRAGMA foreign_keys=ON;"); It's usually practical not do so however.
+     * execSQL("PRAGMA foreign_keys=ON;"); It's usually practical not to do so, however.
      * In production database connections room enables it for us.
      *
      * @param prepare      Callback to prepare the database. Will be run with database schema in version [toVersion] - 1.
