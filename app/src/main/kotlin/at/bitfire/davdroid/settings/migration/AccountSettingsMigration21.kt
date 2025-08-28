@@ -9,8 +9,10 @@ import android.accounts.AccountManager
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncRequest
+import android.os.Bundle
 import android.provider.ContactsContract
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -33,6 +35,7 @@ import javax.inject.Inject
  */
 class AccountSettingsMigration21 @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val syncFrameworkIntegration: SyncFrameworkIntegration,
     private val logger: Logger
 ): AccountSettingsMigration {
 
@@ -42,12 +45,7 @@ class AccountSettingsMigration21 @Inject constructor(
         val addressBookAccountType = context.getString(R.string.account_type_address_book)
         accountManager.getAccountsByType(addressBookAccountType).forEach { addressBookAccount ->
             logger.info("Canceling pending sync for address book account $addressBookAccount")
-            ContentResolver.cancelSync(
-                SyncRequest.Builder()
-                    .setSyncAdapter(addressBookAccount, ContactsContract.AUTHORITY)
-                    .syncOnce()
-                    .build()
-            )
+            syncFrameworkIntegration.cancelSync(addressBookAccount, ContactsContract.AUTHORITY, Bundle())
         }
     }
 
