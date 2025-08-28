@@ -14,6 +14,7 @@ import at.bitfire.davdroid.R
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
@@ -30,7 +31,7 @@ import javax.inject.Inject
  * dormant.
  */
 class AccountSettingsMigration21 @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ): AccountSettingsMigration {
 
     private val accountManager = AccountManager.get(context)
