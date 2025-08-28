@@ -26,10 +26,9 @@ import javax.inject.Inject
  * As a workaround we cancel incoming sync requests (clears pending flag) after enqueuing our own
  * sync worker (work manager). With version 4.5.3 we started cancelling pending syncs for DAVx5
  * accounts, but forgot to do that for address book accounts. With version 4.5.4 we also cancel
- * those, but only once contact data of an address book has been edited.
+ * those, but only when contact data of an address book has been edited.
  *
- * This migration cancels (once only) any wrongly pending address book account syncs that might still lie
- * dormant.
+ * This migration cancels (once only) any wrongly pending address book account syncs.
  */
 class AccountSettingsMigration21 @Inject constructor(
     @ApplicationContext private val context: Context,
