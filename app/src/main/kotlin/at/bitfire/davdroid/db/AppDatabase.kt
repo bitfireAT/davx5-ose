@@ -35,6 +35,13 @@ import dagger.hilt.components.SingletonComponent
 import java.io.Writer
 import javax.inject.Singleton
 
+/**
+ * The app database. Managed via android jetpack room. Room provides an abstraction
+ * layer over SQLite.
+ *
+ * Note: In SQLite PRAGMA foreign_keys is off by default. Room activates it for
+ * production (non-test) databases.
+ */
 @Database(entities = [
     Service::class,
     HomeSet::class,
