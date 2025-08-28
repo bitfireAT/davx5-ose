@@ -41,7 +41,7 @@ class AccountSettingsMigration21 @Inject constructor(
     override fun migrate(account: Account) {
         val addressBookAccountType = context.getString(R.string.account_type_address_book)
         accountManager.getAccountsByType(addressBookAccountType).forEach { addressBookAccount ->
-            logger.info("Canceling pending sync for address book account $addressBookAccount")
+            logger.info("Canceling forever pending sync for address book account $addressBookAccount")
             syncFrameworkIntegration.cancelSync(addressBookAccount, ContactsContract.AUTHORITY, Bundle())
         }
     }
