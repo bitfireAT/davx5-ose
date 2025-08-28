@@ -18,6 +18,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import java.util.logging.Logger
 import javax.inject.Inject
 
 /**
@@ -31,7 +32,8 @@ import javax.inject.Inject
  * dormant.
  */
 class AccountSettingsMigration21 @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val logger: Logger
 ): AccountSettingsMigration {
 
     private val accountManager = AccountManager.get(context)
@@ -39,6 +41,7 @@ class AccountSettingsMigration21 @Inject constructor(
     override fun migrate(account: Account) {
         val addressBookAccountType = context.getString(R.string.account_type_address_book)
         accountManager.getAccountsByType(addressBookAccountType).forEach { addressBookAccount ->
+            logger.info("Canceling pending sync for address book account $addressBookAccount")
             ContentResolver.cancelSync(
                 SyncRequest.Builder()
                     .setSyncAdapter(addressBookAccount, ContactsContract.AUTHORITY)
