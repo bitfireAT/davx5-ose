@@ -44,10 +44,10 @@ abstract class DatabaseMigrationTest(
     /**
      * Used for testing the migration process from [toVersion]-1 to [toVersion].
      *
-     * Note: SQLite's foreign key constraint enforcement is not enabled (always per
-     * DB connection) in tests we need to enable it ourselves using
-     * execSQL("PRAGMA foreign_keys=ON;"); It's usually practical not to do so, however.
-     * In production database connections room enables it for us.
+     * Note: SQLite's foreign key constraint enforcement is not enabled in tests. We need
+     * to enable it ourselves using setting "PRAGMA foreign_keys=ON" directly after opening
+     * a new database connection (works per connection). In tests it's usually more practical
+     * not to do so, however. In production database connections room enables it for us.
      *
      * @param prepare      Callback to prepare the database. Will be run with database schema in version [toVersion] - 1.
      * @param validate     Callback to validate the migration result. Will be run with database schema in version [toVersion].
@@ -67,7 +67,7 @@ abstract class DatabaseMigrationTest(
         val dbName = "test"
         helper.createDatabase(dbName, version = toVersion - 1).apply {
             // We could enable foreign key constraint enforcement here
-            // execSQL("PRAGMA foreign_keys=ON;");
+            // by setting "PRAGMA foreign_keys=ON".
             prepare(this)
             close()
         }
