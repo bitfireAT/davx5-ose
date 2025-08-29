@@ -12,3 +12,15 @@ updates:
     groups:
       ci-actions:
         patterns: ["*"]
+        
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      lib-dependencies:
+        patterns: ["*"]
+    ignore:
+      # kotlin and ksp must be aligned and should only be updated together and manually
+      - dependency-name: "kotlin"
+      - dependency-name: "ksp"
