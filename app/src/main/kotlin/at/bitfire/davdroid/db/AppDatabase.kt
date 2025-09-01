@@ -25,6 +25,7 @@ import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.db.migration.AutoMigration12
 import at.bitfire.davdroid.db.migration.AutoMigration16
 import at.bitfire.davdroid.db.migration.AutoMigration18
+import at.bitfire.davdroid.db.migration.AutoMigration19
 import at.bitfire.davdroid.ui.AccountsActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.Module
@@ -50,9 +51,10 @@ import javax.inject.Singleton
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 18, autoMigrations = [
+], exportSchema = true, version = 19, autoMigrations = [
+    AutoMigration(from = 18, to = 19, spec = AutoMigration19::class),
     AutoMigration(from = 17, to = 18, spec = AutoMigration18::class),
-    AutoMigration(from = 16, to = 17),      // collection: add VAPID key
+    AutoMigration(from = 16, to = 17),  // add VAPID key to collection
     AutoMigration(from = 15, to = 16, spec = AutoMigration16::class),
     AutoMigration(from = 14, to = 15),
     AutoMigration(from = 13, to = 14),

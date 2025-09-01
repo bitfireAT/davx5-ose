@@ -13,7 +13,7 @@ import at.bitfire.davdroid.settings.Credentials
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class CredentialsStore @Inject constructor(
+class LegacyCredentialsStore @Inject constructor(
     @ApplicationContext context: Context
 ) {
 

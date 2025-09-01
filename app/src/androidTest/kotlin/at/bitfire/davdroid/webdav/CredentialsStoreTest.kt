@@ -21,7 +21,7 @@ class CredentialsStoreTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var store: CredentialsStore
+    lateinit var store: LegacyCredentialsStore
 
     @Before
     fun setUp() {

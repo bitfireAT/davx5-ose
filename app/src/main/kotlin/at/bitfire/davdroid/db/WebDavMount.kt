@@ -17,8 +17,10 @@ data class WebDavMount(
     val name: String,
 
     /** URL of the WebDAV service, including trailing slash */
-    val url: HttpUrl
+    val url: HttpUrl,
 
-    // credentials are stored using CredentialsStore
-
+    // credentials
+    val username: String?,
+    val password: String?,
+    var certificateAlias: String?
 )

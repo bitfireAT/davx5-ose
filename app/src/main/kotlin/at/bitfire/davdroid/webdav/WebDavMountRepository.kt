@@ -62,8 +62,8 @@ class WebDavMountRepository @Inject constructor(
         val id = db.webDavMountDao().insert(mount)
 
         // store credentials
-        val credentialsStore = CredentialsStore(context)
-        credentialsStore.setCredentials(id, credentials)
+        val legacyCredentialsStore = LegacyCredentialsStore(context)
+        legacyCredentialsStore.setCredentials(id, credentials)
 
         // notify content URI listeners
         DocumentProviderUtils.notifyMountsChanged(context)
@@ -76,7 +76,7 @@ class WebDavMountRepository @Inject constructor(
         mountDao.deleteAsync(mount)
 
         // remove credentials, too
-        CredentialsStore(context).setCredentials(mount.id, null)
+        LegacyCredentialsStore(context).setCredentials(mount.id, null)
 
         // notify content URI listeners
         DocumentProviderUtils.notifyMountsChanged(context)
