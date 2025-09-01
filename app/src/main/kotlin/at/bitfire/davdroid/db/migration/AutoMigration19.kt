@@ -13,7 +13,6 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import androidx.sqlite.db.SupportSQLiteDatabase
 import at.bitfire.davdroid.settings.Credentials
-import at.bitfire.davdroid.webdav.LegacyCredentialsStore.KeyName
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -40,7 +39,7 @@ class AutoMigration19 @Inject constructor(
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
 
 
-    private fun keyName(mountId: Long, @KeyName name: String) =
+    private fun keyName(mountId: Long, name: String) =
         "$mountId.$name"
 
     private fun legacyCredentials(mountId: Long): Credentials? {

@@ -373,7 +373,10 @@ fun WebdavMountsScreen_Preview_TwoMounts() {
                         url = HttpUrl.Builder()
                             .scheme("https")
                             .host("example.com")
-                            .build()
+                            .build(),
+                        username = null,
+                        password = null,
+                        certificateAlias = null
                     ),
                     quotaAvailable = 1024 * 1024 * 1024,
                     quotaUsed = 512 * 1024 * 1024
@@ -385,7 +388,10 @@ fun WebdavMountsScreen_Preview_TwoMounts() {
                         url = HttpUrl.Builder()
                             .scheme("https")
                             .host("example.com")
-                            .build()
+                            .build(),
+                        username = null,
+                        password = null,
+                        certificateAlias = null
                     ),
                     quotaAvailable = 1024 * 1024 * 1024,
                     quotaUsed = 512 * 1024 * 1024
@@ -408,7 +414,10 @@ fun WebdavMountsItem_Preview() {
                     url = HttpUrl.Builder()
                         .scheme("https")
                         .host("example.com")
-                        .build()
+                        .build(),
+                    username = null,
+                    password = null,
+                    certificateAlias = null
                 ),
                 quotaAvailable = 1024 * 1024 * 1024,
                 quotaUsed = 512 * 1024 * 1024
