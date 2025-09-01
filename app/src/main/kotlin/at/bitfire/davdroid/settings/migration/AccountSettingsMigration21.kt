@@ -51,7 +51,7 @@ class AccountSettingsMigration21 @Inject constructor(
     }
 
     /**
-     * Cancels any (possibly forever pending) syncs for the accounts of given type.
+     * Cancels any (possibly forever pending) syncs for the accounts of given type and authority.
      */
     private fun cancelSyncs(accountType: String, authority: String) {
         accountManager.getAccountsByType(accountType).forEach { account ->
