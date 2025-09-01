@@ -31,7 +31,10 @@ class SensitiveString private constructor(
     // make comparable by data
 
     override fun equals(other: Any?) =
-        data == other
+        if (other is SensitiveString)
+            data == other.data
+        else
+            false
 
     override fun hashCode() = data.hashCode()
 
@@ -41,7 +44,7 @@ class SensitiveString private constructor(
     companion object {
 
         fun CharArray.toSensitiveString() =
-            SensitiveString(this.toString())
+            SensitiveString(this.concatToString())
 
         fun String.toSensitiveString() =
             SensitiveString(this)
