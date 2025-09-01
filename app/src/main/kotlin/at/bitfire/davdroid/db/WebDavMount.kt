@@ -23,5 +23,5 @@ data class WebDavMount(
     // credentials
     val username: String?,
     val password: SensitiveString?,
-    var certificateAlias: String?
+    val certificateAlias: String?
 )

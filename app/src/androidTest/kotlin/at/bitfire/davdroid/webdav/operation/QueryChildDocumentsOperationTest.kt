@@ -76,7 +76,14 @@ class QueryChildDocumentsOperationTest {
 
         // create WebDAV mount and root document in DB
         runBlocking {
-            val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
+            val mountId = db.webDavMountDao().insert(WebDavMount(
+                id = 0,
+                name = "Cat food storage",
+                url = server.url(PATH_WEBDAV_ROOT),
+                username = null,
+                password = null,
+                certificateAlias = null
+            ))
             mount = db.webDavMountDao().getById(mountId)
             rootDocument = db.webDavDocumentDao().getOrCreateRoot(mount)
         }

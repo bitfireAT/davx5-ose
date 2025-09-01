@@ -39,7 +39,14 @@ class WebDavDocumentDaoTest {
         val mountDao = db.webDavMountDao()
         val dao = db.webDavDocumentDao()
 
-        val mount = WebDavMount(id = 1, name = "Test", url = "https://example.com/".toHttpUrl())
+        val mount = WebDavMount(
+            id = 1,
+            name = "Test",
+            url = "https://example.com/".toHttpUrl(),
+            username = null,
+            password = null,
+            certificateAlias = null
+        )
         db.webDavMountDao().insert(mount)
 
         val root = WebDavDocument(
