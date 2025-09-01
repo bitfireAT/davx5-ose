@@ -7,6 +7,7 @@ package at.bitfire.davdroid.settings.migration
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.provider.ContactsContract
@@ -43,11 +44,13 @@ class AccountSettingsMigration21 @Inject constructor(
     private val addressBookAccountType = context.getString(R.string.account_type_address_book)
 
     override fun migrate(account: Account) {
-        // Cancel the (after an update) possibly forever pending calendar account syncs
-        cancelSyncs(calendarAccountType, CalendarContract.AUTHORITY)
+        if (Build.VERSION.SDK_INT >= 34) {
+            // Cancel the (after an update) possibly forever pending calendar account syncs
+            cancelSyncs(calendarAccountType, CalendarContract.AUTHORITY)
 
-        // Cancel the (after an update) possibly forever pending address book account syncs
-        cancelSyncs(addressBookAccountType, ContactsContract.AUTHORITY)
+            // Cancel the (after an update) possibly forever pending address book account syncs
+            cancelSyncs(addressBookAccountType, ContactsContract.AUTHORITY)
+        }
     }
 
     /**
@@ -55,7 +58,7 @@ class AccountSettingsMigration21 @Inject constructor(
      */
     private fun cancelSyncs(accountType: String, authority: String) {
         accountManager.getAccountsByType(accountType).forEach { account ->
-            logger.info("Canceling (possibly forever pending) sync for $account")
+            logger.info("Android 14+: Canceling (possibly forever pending) sync for $account")
             syncFrameworkIntegration.cancelSync(account, authority, Bundle())
         }
     }
