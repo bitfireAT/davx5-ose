@@ -6,6 +6,7 @@ package at.bitfire.davdroid.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import at.bitfire.davdroid.util.SensitiveString
 import okhttp3.HttpUrl
 
 @Entity(tableName = "webdav_mount")
@@ -21,6 +22,6 @@ data class WebDavMount(
 
     // credentials
     val username: String?,
-    val password: String?,
+    val password: SensitiveString?,
     var certificateAlias: String?
 )

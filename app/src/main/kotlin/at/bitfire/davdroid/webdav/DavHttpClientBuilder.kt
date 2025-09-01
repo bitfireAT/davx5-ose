@@ -48,7 +48,7 @@ class DavHttpClientBuilder @Inject constructor(
 
         return Credentials(
             username = mount.username,
-            password = mount.password?.toCharArray(),
+            password = mount.password?.asCharArray(),
             certificateAlias = mount.certificateAlias
             // OAuth is not supported for WebDAV mounts
         )

@@ -14,6 +14,7 @@ import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.Credentials
+import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -59,7 +60,7 @@ class WebDavMountRepository @Inject constructor(
             url = webdavUrl,
             name = displayName,
             username = credentials?.username,
-            password = credentials?.password?.toString(),
+            password = credentials?.password.toSensitiveString(),
             certificateAlias = credentials?.certificateAlias
         )
         db.webDavMountDao().insert(mount)
