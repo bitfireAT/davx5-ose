@@ -6,14 +6,25 @@ package at.bitfire.davdroid.util
 
 /**
  * Wrapper for passwords and other sensitive strings so that they're not directly [String]s,
- * so that they're less likely to be used in plain text unintentionally, like being printed in logs
+ * so that they're less likely to be used in clear-text unintentionally, like being printed in logs
  * by [Any.toString].
  */
 class SensitiveString private constructor(
     private val data: String
 ) {
 
+    /**
+     * Returns the sensitive string as a [CharArray].
+     *
+     * _Be careful when using it (for instance, don't print its content unintentionally)._
+     */
     fun asCharArray() = data.toCharArray()
+
+    /**
+     * Returns the sensitive string as an immutable [String].
+     *
+     * _Be careful when using it (for instance, don't print it unintentionally)._
+     */
     fun asString() = data
 
 
