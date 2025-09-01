@@ -55,21 +55,23 @@ class AutoMigration19 @Inject constructor(
 
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
         // Iterate all WebDAV mounts and move credentials (if any).
-        db.query("SELECT id FROM webdav_mounts").use { cursor ->
-            val mountId = cursor.getLong(0)
+        db.query("SELECT id FROM webdav_mount").use { cursor ->
+            while (cursor.moveToNext()) {
+                val mountId = cursor.getLong(0)
 
-            // get legacy credentials
-            val credentials = legacyCredentials(mountId)
-            if (credentials != null) {
-                val credentialsFields = contentValuesOf(
-                    "username" to credentials.username,
-                    "password" to credentials.password?.toString(),
-                    "certificateAlias" to credentials.certificateAlias
-                )
-                db.update(
-                    "webdav_mounts", SQLiteDatabase.CONFLICT_IGNORE, credentialsFields,
-                    "id=?", arrayOf(mountId.toString())
-                )
+                // get legacy credentials
+                val credentials = legacyCredentials(mountId)
+                if (credentials != null) {
+                    val credentialsFields = contentValuesOf(
+                        "username" to credentials.username,
+                        "password" to credentials.password?.concatToString(),
+                        "certificateAlias" to credentials.certificateAlias
+                    )
+                    db.update(
+                        "webdav_mount", SQLiteDatabase.CONFLICT_IGNORE, credentialsFields,
+                        "id=?", arrayOf(mountId.toString())
+                    )
+                }
             }
         }
     }
