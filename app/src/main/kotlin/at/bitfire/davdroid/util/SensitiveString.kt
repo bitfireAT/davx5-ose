@@ -21,15 +21,11 @@ class SensitiveString private constructor(
 
     companion object {
 
-        fun CharArray?.toSensitiveString() =
-            this?.let {
-                SensitiveString(this.toString())
-            }
+        fun CharArray.toSensitiveString() =
+            SensitiveString(this.toString())
 
-        fun String?.toSensitiveString() =
-            this?.let {
-                SensitiveString(this)
-            }
+        fun String.toSensitiveString() =
+            SensitiveString(this)
 
     }
 

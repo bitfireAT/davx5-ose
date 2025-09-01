@@ -44,6 +44,6 @@ class Converters {
 
     @TypeConverter
     fun stringToSensitiveString(string: String?): SensitiveString? =
-        string.toSensitiveString()
+        string?.toSensitiveString()
 
 }

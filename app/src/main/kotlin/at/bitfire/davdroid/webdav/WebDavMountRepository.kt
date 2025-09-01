@@ -60,7 +60,7 @@ class WebDavMountRepository @Inject constructor(
             url = webdavUrl,
             name = displayName,
             username = credentials?.username,
-            password = credentials?.password.toSensitiveString(),
+            password = credentials?.password?.toSensitiveString(),
             certificateAlias = credentials?.certificateAlias
         )
         db.webDavMountDao().insert(mount)
