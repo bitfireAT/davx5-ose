@@ -45,11 +45,12 @@ class DavHttpClientBuilder @Inject constructor(
 
     private fun getCredentials(mountId: Long): Credentials? {
         val mount = runBlocking { mountDao.getById(mountId) }
+
         return Credentials(
             username = mount.username,
             password = mount.password?.toCharArray(),
-            certificateAlias = mount.certificateAlias,
-            // OAuth not supported for WebDAV mounts
+            certificateAlias = mount.certificateAlias
+            // OAuth is not supported for WebDAV mounts
         )
     }
 
