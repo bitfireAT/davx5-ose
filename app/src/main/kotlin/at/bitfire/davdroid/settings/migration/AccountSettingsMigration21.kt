@@ -44,21 +44,16 @@ class AccountSettingsMigration21 @Inject constructor(
 
     override fun migrate(account: Account) {
         // Cancel the (after an update) possibly forever pending calendar account syncs
-        cancelSyncsByAccountType(calendarAccountType)
+        cancelSyncs(calendarAccountType, CalendarContract.AUTHORITY)
 
         // Cancel the (after an update) possibly forever pending address book account syncs
-        cancelSyncsByAccountType(addressBookAccountType)
+        cancelSyncs(addressBookAccountType, ContactsContract.AUTHORITY)
     }
 
     /**
      * Cancels any (possibly forever pending) syncs for the accounts of given type.
      */
-    private fun cancelSyncsByAccountType(accountType: String) {
-        val authority = when (accountType) {
-            calendarAccountType -> CalendarContract.AUTHORITY
-            addressBookAccountType -> ContactsContract.AUTHORITY
-            else -> return
-        }
+    private fun cancelSyncs(accountType: String, authority: String) {
         accountManager.getAccountsByType(accountType).forEach { account ->
             logger.info("Canceling (possibly forever pending) sync for $account")
             syncFrameworkIntegration.cancelSync(account, authority, Bundle())
