@@ -8,9 +8,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import android.os.Build
-import android.os.Bundle
-import android.provider.CalendarContract
-import android.provider.ContactsContract
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import dagger.Binds
@@ -30,7 +27,8 @@ import javax.inject.Inject
  * accounts, but forgot to do that for address book accounts. With version 4.5.4 we also cancel
  * those, but only when contact data of an address book has been edited.
  *
- * This migration cancels (once only) any possibly still wrongly pending address book and calendar account syncs.
+ * This migration cancels (once only) any possibly still wrongly pending address book and calendar
+ * (+tasks) account syncs.
  */
 class AccountSettingsMigration21 @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -45,21 +43,22 @@ class AccountSettingsMigration21 @Inject constructor(
 
     override fun migrate(account: Account) {
         if (Build.VERSION.SDK_INT >= 34) {
-            // Cancel the (after an update) possibly forever pending calendar account syncs
-            cancelSyncs(calendarAccountType, CalendarContract.AUTHORITY)
+            // Cancel any (after an update) possibly forever pending calendar (+tasks) account syncs
+            cancelSyncs(calendarAccountType)
 
-            // Cancel the (after an update) possibly forever pending address book account syncs
-            cancelSyncs(addressBookAccountType, ContactsContract.AUTHORITY)
+            // Cancel any (after an update) possibly forever pending address book account syncs
+            cancelSyncs(addressBookAccountType)
         }
     }
 
     /**
-     * Cancels any (possibly forever pending) syncs for the accounts of given type and authority.
+     * Cancels any (possibly forever pending) syncs for the accounts of given account type for all
+     * authorities.
      */
-    private fun cancelSyncs(accountType: String, authority: String) {
+    private fun cancelSyncs(accountType: String) {
         accountManager.getAccountsByType(accountType).forEach { account ->
-            logger.info("Android 14+: Canceling (possibly forever pending) sync for $account")
-            syncFrameworkIntegration.cancelSync(account, authority, Bundle())
+            logger.info("Android 14+: Canceling all (possibly forever pending) syncs for $account")
+            syncFrameworkIntegration.cancelSync(account, null)
         }
     }
 
