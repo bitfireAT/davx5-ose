@@ -101,11 +101,9 @@ class SyncFrameworkIntegration @Inject constructor(
     }
 
     /**
-     * Cancels the sync request in the Sync Framework for Android 14+.
-     * This is a workaround for the bug that the sync framework does not handle pending syncs correctly
-     * on Android 14+ (API level 34+).
-     *
-     * See: https://github.com/bitfireAT/davx5-ose/issues/1458
+     * Cancels the sync request in the Sync Adapter Framework by sync request. This
+     * is the defensive approach canceling only one specific sync request with matching
+     * sync extras.
      *
      * @param account The account for which the sync request should be canceled.
      * @param authority The authority for which the sync request should be canceled.
@@ -122,6 +120,17 @@ class SyncFrameworkIntegration @Inject constructor(
         // Cancel it
         ContentResolver.cancelSync(syncRequest)
     }
+
+    /**
+     * Cancels all Sync Adapter Framework syncs (system wide) for given account and
+     * authority. If authority is null, all syncs for the given account
+     * regardless of authority are canceled.
+     *
+     * @param account The account for which syncs should be canceled.
+     * @param authority Null or the authority for which syncs should be canceled.
+     */
+    fun cancelSync(account: Account, authority: String?) =
+        ContentResolver.cancelSync(account, authority)
 
     /**
      * Enables/disables sync adapter automatic sync (content triggered sync) for the given
