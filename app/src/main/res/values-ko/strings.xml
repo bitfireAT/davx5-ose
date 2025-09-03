@@ -201,7 +201,6 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">푸시 메시지는 항상 암호화됩니다.</string>
   <!--AccountScreen-->
-  <string name="account_invalid_account">계정이 존재하지 않습니다.</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>

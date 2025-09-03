@@ -206,7 +206,7 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">Push-сообщения всегда зашифрованы.</string>
   <!--AccountScreen-->
-  <string name="account_invalid_account">Аккаунт не существует</string>
+  <string name="account_invalid_account">Аккаунт удален</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">WebСal</string>
@@ -417,10 +417,10 @@
   <string name="debug_info_http_403_description">Запрос был отклонен. Для получения подробной информации проверьте задействованные ресурсы и отладочную информацию.</string>
   <string name="debug_info_http_404_description">Запрошенного ресурса не существует (больше не существует). Проверьте задействованные ресурсы и отладочную информацию для получения подробной информации.</string>
   <string name="debug_info_http_5xx_description">Возникла проблема на стороне сервера. Пожалуйста, свяжитесь со службой поддержки вашего сервера.</string>
-  <string name="debug_info_unexpected_error">Произошла неожиданная ошибка. Просмотрите отладочную информацию для получения подробностей.</string>
-  <string name="debug_info_view_details">Просмотреть информацию</string>
-  <string name="debug_info_subtitle">Собрана отладочная информация</string>
-  <string name="debug_info_involved_caption">Вовлеченные ресурсы</string>
+  <string name="debug_info_unexpected_error">Произошла неожиданная ошибка. Просмотрите отладочную информацию, чтобы узнать подробности.</string>
+  <string name="debug_info_view_details">Просмотр</string>
+  <string name="debug_info_subtitle">Отладочная информация собрана</string>
+  <string name="debug_info_involved_caption">Задействованные ресурсы</string>
   <string name="debug_info_involved_subtitle">Связанная с этим проблема</string>
   <string name="debug_info_involved_remote">Удаленный ресурс:</string>
   <string name="debug_info_involved_local">Локальный ресурс:</string>
@@ -428,7 +428,7 @@
   <string name="debug_info_logs_subtitle">Доступны подробные логи</string>
   <string name="debug_info_logs_view">Просмотр логов</string>
   <string name="debug_info_privacy_warning_title"> Предупреждение о конфиденциальности</string>
-  <string name="debug_info_privacy_warning_description">Журналы и отладочная информация могут содержать конфиденциальную информацию. Пожалуйста, помните об этом при публичном использовании.</string>
+  <string name="debug_info_privacy_warning_description">Журналы и отладочная информация могут содержать конфиденциальную информацию. Пожалуйста, помните об этом, когда делитесь ими.</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Произошла ошибка.</string>
   <string name="exception_httpexception">Произошла ошибка HTTP</string>
@@ -440,7 +440,7 @@
   <string name="webdav_mounts_share_content">Поделиться контентом</string>
   <string name="webdav_mounts_unmount">Отмонтировать</string>
   <string name="webdav_add_mount_title">Добавление точки монтирования WebDAV</string>
-  <string name="webdav_mounts_empty">Прямой доступ к вашим облачным файлам с помощью точки монтирования WebDAV!</string>
+  <string name="webdav_mounts_empty">Прямой доступ к вашим облачным файлам с помощью точек монтирования WebDAV!</string>
   <string name="webdav_add_mount_empty_more_info"><![CDATA[Ознакомьтесь с руководством, чтобы узнать <a href="%1$s">как работают точки монтирования WebDAV</a>.]]></string>
   <string name="webdav_add_mount_display_name">Отображаемое имя</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>

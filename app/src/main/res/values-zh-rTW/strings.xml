@@ -3,10 +3,15 @@
   <!--common strings-->
   <string name="account_invalid">帳號（已）不存在</string>
   <string name="account_title_address_book">DAVx⁵ 通訊錄</string>
+  <string name="account_prefs_use_app">別在這裡更改帳戶！請直接使用應用程式管理帳戶。</string>
+  <string name="dialog_delete">刪除</string>
+  <string name="dialog_remove">移除</string>
   <string name="dialog_deny">取消</string>
   <string name="dialog_enable">啟用</string>
   <string name="field_required">此為必填欄位</string>
   <string name="help">幫助</string>
+  <string name="navigate_up">向上導航</string>
+  <string name="options_menu">選項選單</string>
   <string name="share">分享</string>
   <string name="sync_started">同步已開始或排入佇列</string>
   <string name="database_destructive_migration_title">資料庫損毀</string>
@@ -28,6 +33,7 @@
   <string name="intro_battery_text">為了定期進行同步，必須允許 %s 在背景運行，否則 Android 可能會隨時暫停同步。</string>
   <string name="intro_battery_dont_show">我不需要定期同步間隔*</string>
   <string name="intro_autostart_title">%s 相容性</string>
+  <string name="intro_autostart_text">特定廠商的韌體可能會阻止同步。如果您受到影響，您只能手動解決這一問題。</string>
   <string name="intro_autostart_dont_show">所需設定已完成，不用再提醒我*</string>
   <string name="intro_leave_unchecked">* 取消勾選則稍後會再次提醒，可於設定中重置 / %s</string>
   <string name="intro_more_info">更多資訊</string>
@@ -35,13 +41,40 @@
   <string name="intro_tasks_title">待辦事項支援</string>
   <string name="intro_tasks_text1">如果你的服務器支持任務，它們可以與支援任務的app同步:</string>
   <string name="intro_tasks_opentasks_info">似乎已不再繼續開發 - 不建議使用。</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[某些功能 <a href="https://www.davx5.com/faq/tasks/advanced-task-features">不被支援</a>。]]></string>
   <string name="intro_tasks_no_app_store">沒有應用商店可用</string>
+  <string name="intro_tasks_dont_show">我不需要任務支援。*</string>
   <string name="intro_open_source_title">開源軟體</string>
+  <string name="intro_open_source_text">我們很高興您使用 %s 開源軟體。開發、維護和支持是艱苦的工作。請考慮透過多種方式提供貢獻或捐款。不勝感激！</string>
+  <string name="intro_open_source_details">如何貢獻或捐款</string>
+  <string name="intro_open_source_dont_show">不要提醒時長</string>
+  <plurals name="intro_open_source_dont_show_months">
+    <item quantity="other">%d 個月</item>
+  </plurals>
+  <string name="intro_next">繼續</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">權限</string>
+  <string name="permissions_text">%s需要權限才能正常工作</string>
+  <string name="permissions_all_title">以下所有</string>
+  <string name="permissions_all_status_off">使用它來啟用所有功能（推薦）</string>
+  <string name="permissions_all_status_on">已授予所有權限</string>
   <string name="permissions_contacts_title">通訊錄權限</string>
+  <string name="permissions_contacts_status_off">無聯絡人同步（不推薦）</string>
+  <string name="permissions_contacts_status_on">可同步聯絡人</string>
   <string name="permissions_calendar_title">行事曆權限</string>
+  <string name="permissions_calendar_status_off">無日曆同步（不推薦）</string>
+  <string name="permissions_calendar_status_on">可同步日曆</string>
+  <string name="permissions_notification_title">通知權限</string>
+  <string name="permissions_notification_status_off">已關閉通知（不推薦）</string>
+  <string name="permissions_notification_status_on">已啟用通知</string>
+  <string name="permissions_jtx_title">jtx Board 權限</string>
   <string name="permissions_opentasks_title">OpenTasks 權限</string>
+  <string name="permissions_tasksorg_title">Tasks 權限</string>
+  <string name="permissions_tasks_status_off">無任務同步</string>
+  <string name="permissions_tasks_status_on">可同步任步</string>
+  <string name="permissions_autoreset_title">保持權限</string>
+  <string name="permissions_autoreset_status_off">權限可能會被自動重設（不推薦）</string>
+  <string name="permissions_autoreset_status_on">權限不會被自動重設</string>
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_translations">翻譯</string>

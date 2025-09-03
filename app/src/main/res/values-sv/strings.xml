@@ -201,7 +201,6 @@
   <string name="app_settings_unifiedpush_ready">Redo att ta emot push meddelanden över %s</string>
   <string name="app_settings_unifiedpush_encrypted">Push-meddelanden är alltid krypterade.</string>
   <!--AccountScreen-->
-  <string name="account_invalid_account">Kontot finns inte</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
