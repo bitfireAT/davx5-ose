@@ -6,10 +6,10 @@ package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.ContentResolver
 import android.content.Context
 import android.os.Build
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -32,7 +32,6 @@ import javax.inject.Inject
  */
 class AccountSettingsMigration21 @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val syncFrameworkIntegration: SyncFrameworkIntegration,
     private val logger: Logger
 ): AccountSettingsMigration {
 
@@ -58,7 +57,7 @@ class AccountSettingsMigration21 @Inject constructor(
     private fun cancelSyncs(accountType: String) {
         accountManager.getAccountsByType(accountType).forEach { account ->
             logger.info("Android 14+: Canceling all (possibly forever pending) syncs for $account")
-            syncFrameworkIntegration.cancelSync(account, null)
+            ContentResolver.cancelSync(account, null)
         }
     }
 

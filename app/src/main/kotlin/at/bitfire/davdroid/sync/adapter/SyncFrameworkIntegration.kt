@@ -122,17 +122,6 @@ class SyncFrameworkIntegration @Inject constructor(
     }
 
     /**
-     * Cancels all Sync Adapter Framework syncs (system wide) for given account and
-     * authority. If authority is null, all syncs for the given account
-     * regardless of authority are canceled.
-     *
-     * @param account The account for which syncs should be canceled.
-     * @param authority Null or the authority for which syncs should be canceled.
-     */
-    fun cancelSync(account: Account, authority: String?) =
-        ContentResolver.cancelSync(account, authority)
-
-    /**
      * Enables/disables sync adapter automatic sync (content triggered sync) for the given
      * account and authority. Does *not* call [ContentResolver.setIsSyncable].
      *
