@@ -22,5 +22,7 @@ updates:
         patterns: ["*"]
     ignore:
       # kotlin and ksp must be aligned and should only be updated together and manually
-      - dependency-name: "kotlin"
-      - dependency-name: "ksp"
+      - dependency-name: "org.jetbrains.kotlin:kotlin-stdlib"
+      - dependency-name: "org.jetbrains.kotlin.plugin.compose"
+      - dependency-name: "org.jetbrains.kotlin.android"
+      - dependency-name: "com.google.devtools.ksp"
