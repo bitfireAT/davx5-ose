@@ -8,7 +8,7 @@
     <string name="nav_feedback_scroll_to_reviews">Zum Rezensionsabschnitt blättern, um Feedback zu übermitteln</string>
 
     <!-- AboutActivity -->
-    <string name="about_flavor_info">Diese Version ist nur für den Vertrieb über Google Play geeignet.</string>
+    <string name="about_flavor_info">Diese Version ist ausschließlich zur Verteilung über Google Play bestimmt.</string>
 
     <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
