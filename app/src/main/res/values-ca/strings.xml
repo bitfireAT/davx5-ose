@@ -443,7 +443,7 @@
   <string name="webdav_add_mount_authentication">Autentificació</string>
   <string name="webdav_add_mount_username">Nom d\'usuari/ària</string>
   <string name="webdav_add_mount_password">Contrasenya</string>
-  <string name="webdav_add_mount_username_optional">Nom d\\'usuari (opcional)</string>
+  <string name="webdav_add_mount_username_optional">Nom d\'usuari (opcional)</string>
   <string name="webdav_add_mount_password_optional">Contrasenya (opcional)</string>
   <string name="webdav_add_mount_add">Afegeix un muntatge</string>
   <string name="webdav_add_mount_no_support">No hi ha cap servei WebDAV en aquest URL</string>
