@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BatterySaver
+import androidx.compose.material.icons.filled.CancelScheduleSend
 import androidx.compose.material.icons.filled.DataSaverOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.NotificationsOff
@@ -111,6 +112,7 @@ fun AccountsScreen(
     }
 
     AccountsScreen(
+        cancelSyncAdapterSyncs = { model.cancelSyncAdapterSyncs() },
         accountsDrawerHandler = accountsDrawerHandler,
         accounts = accounts,
         showSyncAll = showSyncAll,
@@ -131,6 +133,7 @@ fun AccountsScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AccountsScreen(
+    cancelSyncAdapterSyncs: () -> Unit,
     accountsDrawerHandler: AccountsDrawerHandler,
     accounts: List<AccountsModel.AccountInfo>,
     showSyncAll: Boolean = true,
@@ -228,6 +231,17 @@ fun AccountsScreen(
                                     contentDescription = stringResource(R.string.accounts_sync_all)
                                 )
                             }
+                        FloatingActionButton(
+                            onClick = cancelSyncAdapterSyncs,
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onSecondary,
+                            modifier = Modifier.padding(top = 24.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.CancelScheduleSend,
+                                contentDescription = stringResource(R.string.accounts_sync_all)
+                            )
+                        }
                     }
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -321,6 +335,7 @@ fun AccountsScreen(
 @Preview
 fun AccountsScreen_Preview_Empty() {
     AccountsScreen(
+        cancelSyncAdapterSyncs = {},
         accountsDrawerHandler = object: AccountsDrawerHandler() {
             @Composable
             override fun MenuEntries(snackbarHostState: SnackbarHostState) {
@@ -337,6 +352,7 @@ fun AccountsScreen_Preview_Empty() {
 @Preview
 fun AccountsScreen_Preview_OneAccount() {
     AccountsScreen(
+        cancelSyncAdapterSyncs = {},
         accountsDrawerHandler = object: AccountsDrawerHandler() {
             @Composable
             override fun MenuEntries(snackbarHostState: SnackbarHostState) {

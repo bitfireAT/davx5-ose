@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -13,6 +14,8 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.os.Build
+import android.os.Bundle
 import android.os.PowerManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
@@ -22,6 +25,7 @@ import androidx.lifecycle.ViewModel
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -295,5 +299,31 @@ class AccountsModel @AssistedInject constructor(
             logger.fine("$authority provider app not found")
             false
         }
+
+    fun cancelSyncAdapterSyncs() {
+        if (Build.VERSION.SDK_INT >= 34) {
+            val calendarAccountType = context.getString(R.string.account_type)
+            val addressBookAccountType = context.getString(R.string.account_type_address_book)
+
+            // Cancel any (after an update) possibly forever pending calendar (+tasks) account syncs
+            cancelSyncs(calendarAccountType, CalendarContract.AUTHORITY)
+
+            // Cancel any (after an update) possibly forever pending address book account syncs
+            cancelSyncs(addressBookAccountType, ContactsContract.AUTHORITY)
+        }
+    }
+
+    /**
+     * Cancels any (possibly forever pending) syncs for the accounts of given account type for all
+     * authorities.
+     */
+    private fun cancelSyncs(accountType: String, authority: String) {
+        val accountManager = AccountManager.get(context)
+        accountManager.getAccountsByType(accountType).forEach { account ->
+            val extras = Bundle()
+            logger.info("Android 14+: Canceling all (possibly forever pending) syncs for $account and $authority with $extras")
+            syncFrameWork.cancelSync(account, authority, extras)
+        }
+    }
 
 }
