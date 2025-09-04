@@ -191,12 +191,6 @@ class SyncFrameworkIntegration @Inject constructor(
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
-        // Android 14+ does not handle pending sync state correctly.
-        // For now we simply always return false
-        // See also sync cancellation in [SyncAdapterImpl.onPerformSync]
-        if (Build.VERSION.SDK_INT >= 34)
-            return flowOf(false)
-
         // Determine the pending state for each data type of the account as separate flows
         val pendingStateFlows: List<Flow<Boolean>> = dataTypes.mapNotNull { dataType ->
             // Map datatype to authority
