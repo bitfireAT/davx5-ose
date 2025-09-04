@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
+import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -38,7 +39,7 @@ class EmailLoginModel @AssistedInject constructor(
                 baseUri = uri,
                 credentials = Credentials(
                     username = email,
-                    password = password.toCharArray()
+                    password = password.toSensitiveString()
                 )
             )
         }
@@ -50,7 +51,7 @@ class EmailLoginModel @AssistedInject constructor(
     init {
         uiState = uiState.copy(
             email = initialLoginInfo.credentials?.username ?: "",
-            password = initialLoginInfo.credentials?.password?.concatToString() ?: ""
+            password = initialLoginInfo.credentials?.password?.asString() ?: ""
         )
     }
 

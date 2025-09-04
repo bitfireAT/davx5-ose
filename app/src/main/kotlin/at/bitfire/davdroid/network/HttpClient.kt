@@ -116,7 +116,7 @@ class HttpClient(
                 val authHandler = BasicDigestAuthHandler(
                     domain = UrlUtils.hostToDomain(host),
                     username = credentials.username,
-                    password = credentials.password,
+                    password = credentials.password.asCharArray(),
                     insecurePreemptive = true
                 )
                 authenticationInterceptor = authHandler

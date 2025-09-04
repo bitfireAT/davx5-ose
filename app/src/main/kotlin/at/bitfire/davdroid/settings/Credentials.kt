@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.settings
 
+import at.bitfire.davdroid.util.SensitiveString
 import net.openid.appauth.AuthState
 
 /**
@@ -16,7 +17,7 @@ data class Credentials(
     /** username for Basic / Digest auth */
     val username: String? = null,
     /** password for Basic / Digest auth */
-    val password: CharArray? = null,
+    val password: SensitiveString? = null,
 
     /** alias of an client certificate that is present on the system */
     val certificateAlias: String? = null,
@@ -50,7 +51,7 @@ data class Credentials(
         other as Credentials
 
         if (username != other.username) return false
-        if (!password.contentEquals(other.password)) return false
+        if (password != other.password) return false
         if (certificateAlias != other.certificateAlias) return false
         if (authState != other.authState) return false
 
@@ -59,7 +60,7 @@ data class Credentials(
 
     override fun hashCode(): Int {
         var result = username?.hashCode() ?: 0
-        result = 31 * result + (password?.contentHashCode() ?: 0)
+        result = 31 * result + (password?.hashCode() ?: 0)
         result = 31 * result + (certificateAlias?.hashCode() ?: 0)
         result = 31 * result + (authState?.hashCode() ?: 0)
         return result

@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.settings.Credentials
+import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.davdroid.webdav.WebDavMountRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -84,7 +85,7 @@ class AddWebdavMountModel @Inject constructor(
         val displayName = uiState.displayName
         val credentials = Credentials(
             username = uiState.username.trimToNull(),
-            password = uiState.password.trimToNull()?.toCharArray(),
+            password = uiState.password.trimToNull()?.toSensitiveString(),
             certificateAlias = uiState.certificateAlias
         )
 
