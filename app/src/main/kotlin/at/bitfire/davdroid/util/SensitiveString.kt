@@ -49,6 +49,10 @@ class SensitiveString private constructor(
 
     override fun hashCode() = data.hashCode()
 
+
+    /**
+     * Overrides [toString] so that it doesn't expose the clear-text string (password).
+     */
     override fun toString() = "*****"
 
 
