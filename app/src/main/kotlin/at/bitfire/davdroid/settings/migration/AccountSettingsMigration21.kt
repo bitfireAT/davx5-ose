@@ -6,10 +6,13 @@ package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentResolver
 import android.content.Context
 import android.os.Build
+import android.os.Bundle
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -32,6 +35,7 @@ import javax.inject.Inject
  */
 class AccountSettingsMigration21 @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val syncFrameworkIntegration: SyncFrameworkIntegration,
     private val logger: Logger
 ): AccountSettingsMigration {
 
@@ -43,10 +47,10 @@ class AccountSettingsMigration21 @Inject constructor(
     override fun migrate(account: Account) {
         if (Build.VERSION.SDK_INT >= 34) {
             // Cancel any (after an update) possibly forever pending calendar (+tasks) account syncs
-            cancelSyncs(calendarAccountType)
+            cancelSyncs(calendarAccountType, CalendarContract.AUTHORITY)
 
             // Cancel any (after an update) possibly forever pending address book account syncs
-            cancelSyncs(addressBookAccountType)
+            cancelSyncs(addressBookAccountType, ContactsContract.AUTHORITY)
         }
     }
 
@@ -54,10 +58,10 @@ class AccountSettingsMigration21 @Inject constructor(
      * Cancels any (possibly forever pending) syncs for the accounts of given account type for all
      * authorities.
      */
-    private fun cancelSyncs(accountType: String) {
+    private fun cancelSyncs(accountType: String, authority: String) {
         accountManager.getAccountsByType(accountType).forEach { account ->
             logger.info("Android 14+: Canceling all (possibly forever pending) syncs for $account")
-            ContentResolver.cancelSync(account, null)
+            syncFrameworkIntegration.cancelSync(account, authority, Bundle())
         }
     }
 
