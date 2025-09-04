@@ -204,7 +204,7 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">Els missatges «push» sempre són xifrats.</string>
   <!--AccountScreen-->
-  <string name="account_invalid_account">El compte no existeix</string>
+  <string name="account_invalid_account">S\'ha eliminat el compte</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -246,8 +246,10 @@
   <string name="login_password">Contrasenya</string>
   <string name="login_password_hide">Oculta la contrasenya</string>
   <string name="login_password_show">Mostra la contrasenya</string>
+  <string name="login_password_optional">Contrasenya (opcional)</string>
   <string name="login_type_url">Inici de sessió amb un URL i un nom d\'usuari/ària</string>
   <string name="login_user_name">Nom d\'usuari/ària</string>
+  <string name="login_user_name_optional">Nom d\'usuari (opcional)</string>
   <string name="login_base_url">URL base</string>
   <string name="login_base_url_info"><![CDATA[L\'URL base es comprovarà directament, però els <a href="%s">serveis també es descobreixen</a> utilitzant els registres de DNS i els URL ben coneguts.]]></string>
   <string name="login_select_certificate">Selecciona el certificat</string>
@@ -261,6 +263,7 @@
   <string name="login_account_not_added">No s\'ha pogut afegir el compte</string>
   <string name="login_finish">Finalitza</string>
   <string name="login_type_advanced">Inici de sessió avançat</string>
+  <string name="login_no_client_certificate_optional">Sense certificat del client (opcional)</string>
   <string name="login_client_certificate_selected">Certificat del client: %s</string>
   <string name="login_no_certificate_found">No s\'ha trobat cap certificat</string>
   <string name="login_install_certificate">Instal·la un certificat</string>
@@ -360,6 +363,7 @@
   <string name="create_addressbook">Crea una llibreta d\'adreces</string>
   <string name="create_addressbook_maybe_not_supported">La creació de llibretes d\'adreces sobre CardDAV pot no ser suportada pel servidor.</string>
   <string name="create_calendar">Crea un calendari</string>
+  <string name="create_calendar_time_zone_optional">Fus horari predeterminat (opcional)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Possibles entrades de calendari</string>
   <string name="create_calendar_type_vevent">Esdeveniments</string>
@@ -435,9 +439,12 @@
   <string name="webdav_add_mount_display_name">Nom a mostrar</string>
   <string name="webdav_add_mount_url">URL del WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL no vàlid</string>
+  <string name="webdav_add_mount_mountpoint_displayname">Punt de muntatge i nom de visualització</string>
   <string name="webdav_add_mount_authentication">Autentificació</string>
   <string name="webdav_add_mount_username">Nom d\'usuari/ària</string>
   <string name="webdav_add_mount_password">Contrasenya</string>
+  <string name="webdav_add_mount_username_optional">Nom d\'usuari (opcional)</string>
+  <string name="webdav_add_mount_password_optional">Contrasenya (opcional)</string>
   <string name="webdav_add_mount_add">Afegeix un muntatge</string>
   <string name="webdav_add_mount_no_support">No hi ha cap servei WebDAV en aquest URL</string>
   <string name="webdav_remove_mount_title">Elimina el punt de muntatge</string>
