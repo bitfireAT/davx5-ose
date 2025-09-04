@@ -11,6 +11,7 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.Credentials
+import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.mockwebserver.Dispatcher
@@ -70,7 +71,7 @@ class DavResourceFinderTest {
             start()
         }
 
-        val credentials = Credentials(username = "mock", password = "12345".toCharArray())
+        val credentials = Credentials(username = "mock", password = "12345".toSensitiveString())
         client = httpClientBuilder
                 .authenticate(host = null, getCredentials = { credentials })
                 .build()
