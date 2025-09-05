@@ -18,7 +18,7 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      lib-dependencies:
+      app-dependencies:
         patterns: ["*"]
     ignore:
       # kotlin and ksp must be aligned and should only be updated together and manually
