@@ -21,15 +21,13 @@ import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.AfterClass
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 import java.util.Optional
@@ -38,22 +36,34 @@ import javax.inject.Inject
 @HiltAndroidTest
 class LocalGroupTest {
 
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
+
     @Inject @ApplicationContext
     lateinit var context: Context
 
     @Inject
     lateinit var localTestAddressBookProvider: LocalTestAddressBookProvider
 
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
+    lateinit var provider: ContentProviderClient
 
     val account = Account("Test Account", "Test Account Type")
 
     @Before
-    fun setup() {
+    fun setUp() {
         hiltRule.inject()
+
+        val context = InstrumentationRegistry.getInstrumentation().context
+        provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
     }
 
+    @After
+    fun tearDown() {
+        provider.close()
+    }
 
     @Test
     fun testApplyPendingMemberships_addPendingMembership() {
@@ -146,7 +156,6 @@ class LocalGroupTest {
         }
     }
 
-
     @Test
     fun testClearDirty_addCachedGroupMembership() {
         localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
@@ -214,7 +223,6 @@ class LocalGroupTest {
             }
     }
 
-
     @Test
     fun testMarkMembersDirty() {
         localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
@@ -234,7 +242,6 @@ class LocalGroupTest {
         }
     }
 
-
     @Test
     fun testPrepareForUpload() {
         localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
@@ -245,6 +252,14 @@ class LocalGroupTest {
             val newUid = group.getContact().uid
             assertNotNull(newUid)
             assertEquals("$newUid.vcf", fileName)
+        }
+    }
+
+    @Test
+    fun testUpdate() {
+        localTestAddressBookProvider.provide(account, provider) { ab ->
+            val group = newGroup(ab)
+            group.update(Contact(displayName = "New Group Name"), null, null, null, 0)
         }
     }
 
@@ -259,28 +274,5 @@ class LocalGroupTest {
         ).apply {
             add()
         }
-
-
-    companion object {
-
-        @JvmField
-        @ClassRule
-        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
-
-        private lateinit var provider: ContentProviderClient
-
-        @BeforeClass
-        @JvmStatic
-        fun connect() {
-            val context = InstrumentationRegistry.getInstrumentation().context
-            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun disconnect() {
-            provider.close()
-        }
-    }
 
 }
