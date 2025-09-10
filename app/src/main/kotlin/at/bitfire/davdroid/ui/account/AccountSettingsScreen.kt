@@ -67,6 +67,7 @@ import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.vcard4android.GroupMethod
 import kotlinx.coroutines.launch
 
@@ -578,7 +579,7 @@ fun AuthenticationSettings(
                         initialValue = null, // Do not show the existing password
                         passwordField = true,
                         onValueEntered = { newValue ->
-                            onUpdateCredentials(credentials.copy(password = newValue.toCharArray()))
+                            onUpdateCredentials(credentials.copy(password = newValue.toSensitiveString()))
                         },
                         onDismiss = { showPasswordDialog = false }
                     )
@@ -781,7 +782,7 @@ fun AccountSettingsScreen_Preview() {
             onUpdateIgnoreVpns = {},
 
             // Authentication Settings
-            credentials = Credentials(username = "test", password = "test".toCharArray()),
+            credentials = Credentials(username = "test", password = "test".toSensitiveString()),
             onUpdateCredentials = {},
             isCredentialsUpdateAllowed = true,
 

@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
+import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.davdroid.util.trimToNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -46,7 +47,7 @@ class UrlLoginModel @AssistedInject constructor(
                 baseUri = uri,
                 credentials = Credentials(
                     username = username.trimToNull(),
-                    password = password.trimToNull()?.toCharArray()
+                    password = password.trimToNull()?.toSensitiveString()
                 )
             )
 
@@ -59,7 +60,7 @@ class UrlLoginModel @AssistedInject constructor(
         uiState = UiState(
             url = initialLoginInfo.baseUri?.toString()?.removePrefix("https://") ?: "",
             username = initialLoginInfo.credentials?.username ?: "",
-            password = initialLoginInfo.credentials?.password?.concatToString() ?: ""
+            password = initialLoginInfo.credentials?.password?.asString() ?: ""
         )
     }
 
