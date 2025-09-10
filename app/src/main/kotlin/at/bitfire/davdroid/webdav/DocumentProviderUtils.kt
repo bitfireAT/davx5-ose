@@ -17,7 +17,6 @@ import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import java.io.FileNotFoundException
-import java.net.HttpURLConnection
 
 object DocumentProviderUtils  {
 
@@ -67,8 +66,8 @@ object DocumentProviderUtils  {
 }
 
 internal fun HttpException.throwForDocumentProvider(context: Context, ignorePreconditionFailed: Boolean = false) {
-    when (code) {
-        HttpURLConnection.HTTP_UNAUTHORIZED -> {
+    when (statusCode) {
+        401 -> {
             if (Build.VERSION.SDK_INT >= 26) {
                 val intent = Intent(context, WebdavMountsActivity::class.java)
                 throw AuthenticationRequiredException(
@@ -79,9 +78,9 @@ internal fun HttpException.throwForDocumentProvider(context: Context, ignorePrec
                 )
             }
         }
-        HttpURLConnection.HTTP_NOT_FOUND ->
+        404 ->
             throw FileNotFoundException()
-        HttpURLConnection.HTTP_PRECON_FAILED ->
+        412 ->
             if (ignorePreconditionFailed)
                 return
     }

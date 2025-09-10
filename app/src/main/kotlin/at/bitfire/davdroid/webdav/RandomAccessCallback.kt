@@ -38,7 +38,6 @@ import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import java.io.InterruptedIOException
-import java.net.HttpURLConnection
 import java.util.logging.Logger
 import javax.annotation.WillClose
 
@@ -161,9 +160,9 @@ class RandomAccessCallback @AssistedInject constructor(
             functionName,
             when (this) {
                 is HttpException ->
-                    when (code) {
-                        HttpURLConnection.HTTP_FORBIDDEN -> OsConstants.EPERM
-                        HttpURLConnection.HTTP_NOT_FOUND -> OsConstants.ENOENT
+                    when (statusCode) {
+                        403 -> OsConstants.EPERM
+                        404 -> OsConstants.ENOENT
                         else -> OsConstants.EIO
                     }
                 is IndexOutOfBoundsException -> OsConstants.ENXIO   // no such [device or] address, see man lseek (2)

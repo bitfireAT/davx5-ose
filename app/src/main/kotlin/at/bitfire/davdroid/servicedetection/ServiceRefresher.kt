@@ -155,7 +155,7 @@ class ServiceRefresher @AssistedInject constructor(
                 }
             }
         } catch (e: HttpException) {
-            if (e.code / 100 == 4)
+            if (e.isClientError)
                 logger.log(Level.INFO, "Ignoring Client Error 4xx while looking for ${service.type} home sets", e)
             else
                 throw e

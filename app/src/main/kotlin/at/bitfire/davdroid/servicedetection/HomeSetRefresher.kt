@@ -103,7 +103,7 @@ class HomeSetRefresher @AssistedInject constructor(
                 }
             } catch (e: HttpException) {
                 // delete home set locally if it was not accessible (40x)
-                if (e.code in arrayOf(403, 404, 410))
+                if (e.statusCode in arrayOf(403, 404, 410))
                     homeSetRepository.deleteBlocking(localHomeset)
             }
 
