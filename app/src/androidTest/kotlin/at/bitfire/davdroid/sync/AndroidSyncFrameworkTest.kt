@@ -129,6 +129,10 @@ class AndroidSyncFrameworkTest {
      * Verifies that the given expected states match the recorded states.
      */
     private fun verifySyncStates(expectedStates: List<State>) = runBlocking {
+        // Verify that last state is non-optional.
+        if (expectedStates.last().optional)
+            throw IllegalArgumentException("Last expected state must not be optional")
+
         // We use runBlocking for these tests because it uses the default dispatcher
         // which does not auto-advance virtual time and we need real system time to
         // test the sync framework behavior.
@@ -145,7 +149,7 @@ class AndroidSyncFrameworkTest {
                 if (recordedStates.isNotEmpty())
                     assertStatesEqual(expectedStates, recordedStates, fullMatch = false)
 
-                delay(100) // avoid busy-waiting
+                delay(500) // avoid busy-waiting
             }
 
             assertStatesEqual(expectedStates, recordedStates, fullMatch = true)
@@ -181,6 +185,10 @@ class AndroidSyncFrameworkTest {
                     return false
                 expected = expectedIterator.next()
             }
+
+            // we now have a non-optional expected state and it must match
+            if (!actual.stateEquals(expected))
+                return false
         }
 
         // full match: all expected states must have been used
