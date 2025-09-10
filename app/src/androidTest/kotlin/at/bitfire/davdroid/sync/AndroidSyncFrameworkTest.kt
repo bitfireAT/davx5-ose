@@ -143,41 +143,51 @@ class AndroidSyncFrameworkTest {
             while (recordedStates.size < expectedStates.size) {
                 // verify already known states
                 if (recordedStates.isNotEmpty())
-                    assertStatesEqual(expectedStates.subList(0, recordedStates.size), recordedStates)
+                    assertStatesEqual(expectedStates, recordedStates, fullMatch = false)
 
-                delay(500) // avoid busy-waiting
+                delay(100) // avoid busy-waiting
             }
 
-            assertStatesEqual(expectedStates, recordedStates)
+            assertStatesEqual(expectedStates, recordedStates, fullMatch = true)
         }
     }
 
-    /**
-     * Asserts whether [actualStates] and [expectedStates] are the same, under the condition
-     * that expected states with the [State.optional] flag can be skipped.
-     */
-    private fun assertStatesEqual(expectedStates: List<State>, actualStates: List<State>) {
-        fun fail() {
+    private fun assertStatesEqual(expectedStates: List<State>, actualStates: List<State>, fullMatch: Boolean) {
+        if (!statesMatch(expectedStates, actualStates, fullMatch))
             throw AssertionFailedError("Expected states=$expectedStates, actual=$actualStates")
-        }
+    }
 
+    /**
+     * Checks whether [actualStates] have matching [expectedStates], under the condition
+     * that expected states with the [State.optional] flag can be skipped.
+     *
+     * Note: When [fullMatch] is not set, this method can return _true_ even if not all expected states are used.
+     *
+     * @param expectedStates    expected states (can include optional states which don't have to be present in actual states)
+     * @param actualStates      actual states
+     * @param fullMatch         whether all non-optional expected states must be present in actual states
+     */
+    private fun statesMatch(expectedStates: List<State>, actualStates: List<State>, fullMatch: Boolean): Boolean {
         // iterate through entries
         val expectedIterator = expectedStates.iterator()
         for (actual in actualStates) {
             if (!expectedIterator.hasNext())
-                fail()
+                return false
             var expected = expectedIterator.next()
 
             // skip optional expected entries if they don't match the actual entry
             while (!actual.stateEquals(expected) && expected.optional) {
                 if (!expectedIterator.hasNext())
-                    fail()
+                    return false
                 expected = expectedIterator.next()
             }
-
-            if (!actual.stateEquals(expected))
-                fail()
         }
+
+        // full match: all expected states must have been used
+        if (fullMatch && expectedIterator.hasNext())
+            return false
+
+        return true
     }
 
 
