@@ -6,6 +6,8 @@ package at.bitfire.davdroid.util
 
 import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SensitiveStringTest {
@@ -14,6 +16,24 @@ class SensitiveStringTest {
         val username: String,
         val password: SensitiveString
     )
+
+    @Test
+    fun `equals (other object)`() {
+        val password = "some-password".toSensitiveString()
+        assertFalse(password == Any())
+    }
+
+    @Test
+    fun `equals (other password)`() {
+        val password = "some-password".toSensitiveString()
+        assertFalse(password == "other-password".toSensitiveString())
+    }
+
+    @Test
+    fun `equals (same password)`() {
+        val password = "some-password".toSensitiveString()
+        assertTrue(password == "some-password".toSensitiveString())
+    }
 
     @Test
     fun `toString in data class`() {
