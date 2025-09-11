@@ -42,7 +42,7 @@ class AccountSettingsMigration21 @Inject constructor(
     private val addressBookAccountType = context.getString(R.string.account_type_address_book)
 
     /**
-     * Cancel any (after an update) possibly forever pending account syncs of the different authorities
+     * Cancel any possibly forever pending account syncs of the different authorities
      */
     override fun migrate(account: Account) {
         if (Build.VERSION.SDK_INT >= 34) {
@@ -59,12 +59,11 @@ class AccountSettingsMigration21 @Inject constructor(
 
     /**
      * Cancels any (possibly forever pending) syncs for the accounts of given account type for all
-     * authorities.
-     * Note: Sync extras are ignored.
+     * given authorities.
      */
     private fun cancelSyncs(accountType: String, authorities: List<String>) {
         accountManager.getAccountsByType(accountType).forEach { account ->
-            logger.info("Android 14+: Canceling all (possibly forever pending) syncs for $account")
+            logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $account")
             for (authority in authorities)
                 ContentResolver.cancelSync(account, authority) // Ignores possibly set sync extras
         }
