@@ -6,16 +6,13 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentResolver
-import android.content.Context
 import android.content.SyncRequest
 import android.os.Bundle
 import android.provider.CalendarContract
 import androidx.test.filters.SdkSuppress
 import at.bitfire.davdroid.sync.account.TestAccount
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.mockk.junit4.MockKRule
 import junit.framework.AssertionFailedError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -37,13 +34,6 @@ class AndroidSyncFrameworkTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule
-    val mockkRule = MockKRule(this)
-
-    @Inject
-    @ApplicationContext
-    lateinit var context: Context
 
     @Inject
     lateinit var logger: Logger
