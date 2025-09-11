@@ -9,6 +9,7 @@ import android.accounts.AccountManager
 import android.content.ContentResolver
 import android.content.Context
 import android.os.Build
+import android.os.Bundle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.Binds
@@ -46,6 +47,17 @@ class AccountSettingsMigration21 @Inject constructor(
      */
     override fun migrate(account: Account) {
         if (Build.VERSION.SDK_INT >= 34) {
+            // Request new dummy syncs (yes, seems like this is needed)
+            val extras = Bundle().apply {
+                putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
+                putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
+            }
+            val possibleAuthorities = SyncDataType.EVENTS.possibleAuthorities() +
+                    SyncDataType.TASKS.possibleAuthorities() +
+                    SyncDataType.CONTACTS.possibleAuthorities()
+            for (authority in possibleAuthorities)
+                ContentResolver.requestSync(account, authority, extras)
+
             // Cancel calendar account syncs
             cancelSyncs(calendarAccountType, SyncDataType.EVENTS.possibleAuthorities())
 
@@ -54,6 +66,9 @@ class AccountSettingsMigration21 @Inject constructor(
 
             // Cancel address book account syncs
             cancelSyncs(addressBookAccountType, SyncDataType.CONTACTS.possibleAuthorities())
+
+            // Now cancel syncs for all authorities again (yes, this seems to be needed additionally too)
+            ContentResolver.cancelSync(account, null)
         }
     }
 
