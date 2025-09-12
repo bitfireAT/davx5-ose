@@ -7,18 +7,19 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.SyncRequest
+import android.content.SyncStatusObserver
 import android.os.Bundle
 import android.provider.CalendarContract
 import androidx.test.filters.SdkSuppress
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import junit.framework.AssertionFailedError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.AfterClass
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -30,7 +31,7 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 @HiltAndroidTest
-class AndroidSyncFrameworkTest {
+class AndroidSyncFrameworkTest: SyncStatusObserver {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -58,7 +59,7 @@ class AndroidSyncFrameworkTest {
         onStatusChanged(0)      // record first entry (pending = false, active = false)
         stateChangeListener = ContentResolver.addStatusChangeListener(
             ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE,
-            ::onStatusChanged
+            this
         )
     }
 
@@ -147,8 +148,7 @@ class AndroidSyncFrameworkTest {
     }
 
     private fun assertStatesEqual(expectedStates: List<State>, actualStates: List<State>, fullMatch: Boolean) {
-        if (!statesMatch(expectedStates, actualStates, fullMatch))
-            throw AssertionFailedError("Expected states=$expectedStates, actual=$actualStates")
+        assertTrue("Expected states=$expectedStates, actual=$actualStates", statesMatch(expectedStates, actualStates, fullMatch))
     }
 
     /**
@@ -191,7 +191,7 @@ class AndroidSyncFrameworkTest {
 
     // SyncStatusObserver implementation and data class
 
-    fun onStatusChanged(which: Int) {
+    override fun onStatusChanged(which: Int) {
         val state = State(
             pending = ContentResolver.isSyncPending(account, authority),
             active = ContentResolver.isSyncActive(account, authority)
