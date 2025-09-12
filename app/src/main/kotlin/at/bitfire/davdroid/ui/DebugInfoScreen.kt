@@ -100,7 +100,7 @@ fun DebugInfoScreen(
         zipProgress = zipInProgress,
         showModelCause = cause != null,
         modelCauseTitle = when (cause) {
-            is HttpException -> stringResource(if (cause.code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
+            is HttpException -> stringResource(if (cause.isServerError) R.string.debug_info_server_error else R.string.debug_info_http_error)
             is DavException -> stringResource(R.string.debug_info_webdav_error)
             is IOException, is IOError -> stringResource(R.string.debug_info_io_error)
             else -> cause?.let { it::class.java.simpleName }
@@ -109,9 +109,9 @@ fun DebugInfoScreen(
         modelCauseMessage = stringResource(
             if (cause is HttpException)
                 when {
-                    cause.code == 403 -> R.string.debug_info_http_403_description
-                    cause.code == 404 -> R.string.debug_info_http_404_description
-                    cause.code / 100 == 5 -> R.string.debug_info_http_5xx_description
+                    cause.statusCode == 403 -> R.string.debug_info_http_403_description
+                    cause.statusCode == 404 -> R.string.debug_info_http_404_description
+                    cause.isServerError -> R.string.debug_info_http_5xx_description
                     else -> R.string.debug_info_unexpected_error
                 }
             else

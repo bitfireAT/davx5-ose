@@ -60,7 +60,7 @@ class PrincipalsRefresher @AssistedInject constructor(
                     }
                 }
             } catch (e: HttpException) {
-                logger.info("Principal update failed with response code ${e.code}. principalUrl=$principalUrl")
+                logger.info("Principal update failed with response code ${e.statusCode}. principalUrl=$principalUrl")
             }
         }
 

@@ -64,7 +64,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
                 success = true
             } catch (e: HttpException) {
                 logger.log(Level.WARNING, "HTTP error when opening remote file", e)
-                writeFd.closeWithError("${e.code} ${e.message}")
+                writeFd.closeWithError("${e.statusCode} ${e.message}")
             } catch (e: Exception) {
                 logger.log(Level.INFO, "Couldn't serve file (not necessarily an error)", e)
                 writeFd.closeWithError(e.message)

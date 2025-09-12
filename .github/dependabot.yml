@@ -26,3 +26,5 @@ updates:
       - dependency-name: "org.jetbrains.kotlin.plugin.compose"
       - dependency-name: "org.jetbrains.kotlin.android"
       - dependency-name: "com.google.devtools.ksp"
+      # dependencies without semantic versioning
+      - dependency-name: "com.github.bitfireat:dav4jvm"

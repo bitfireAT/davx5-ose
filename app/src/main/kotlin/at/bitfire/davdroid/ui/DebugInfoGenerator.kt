@@ -114,14 +114,14 @@ class DebugInfoGenerator @Inject constructor(
 
         // exception details
         if (cause is DavException) {
-            cause.request?.let { request ->
-                writer.append("HTTP REQUEST\n$request\n")
-                cause.requestBody?.let { writer.append(it) }
+            cause.requestExcerpt?.let { request ->
+                writer.append("HTTP REQUEST\n")
+                writer.append(request)
                 writer.append("\n\n")
             }
-            cause.response?.let { response ->
-                writer.append("HTTP RESPONSE\n$response\n")
-                cause.responseBody?.let { writer.append(it) }
+            cause.responseExcerpt?.let { response ->
+                writer.append("HTTP RESPONSE\n")
+                writer.append(response)
                 writer.append("\n\n")
             }
         }
