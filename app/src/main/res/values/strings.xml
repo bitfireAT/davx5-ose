@@ -464,6 +464,7 @@
     <string name="debug_info_io_error">I/O Error</string>
     <string name="debug_info_http_403_description">The request has been denied. Check involved resources and debug info for details.</string>
     <string name="debug_info_http_404_description">The requested resource doesn\'t exist (anymore). Check involved resources and debug info for details.</string>
+    <string name="debug_info_http_405_description">Server does not allow deleting this collection.</string>
     <string name="debug_info_http_5xx_description">A server-side problem occured. Please contact your server support.</string>
     <string name="debug_info_unexpected_error">An unexpected error has occured. View debug info for details.</string>
     <string name="debug_info_view_details">View details</string>
