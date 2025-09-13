@@ -24,6 +24,9 @@ import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -87,8 +90,14 @@ class LocalCalendarStore @Inject constructor(
             .map { localCalendarFactory.create(it) }
 
     override fun update(client: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
-        val accountSettings = accountSettingsFactory.create(localCollection.androidCalendar.account)
-        val values = valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors())
+        // AccountSettings must be created on a background thread
+        val manageCalendarColors = runBlocking {
+            withContext(Dispatchers.Default) {
+                val accountSettings = accountSettingsFactory.create(localCollection.androidCalendar.account)
+                accountSettings.getManageCalendarColors()
+            }
+        }
+        val values = valuesFromCollectionInfo(fromCollection, withColor = manageCalendarColors)
 
         logger.log(Level.FINE, "Updating local calendar ${fromCollection.url}", values)
         val androidCalendar = localCollection.androidCalendar

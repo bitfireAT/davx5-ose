@@ -13,7 +13,9 @@ import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -59,16 +61,18 @@ class AutomaticSyncManager @Inject constructor(
      * @param account   the account to synchronize
      * @param dataType  the data type to synchronize
      */
-    private fun enableAutomaticSync(
+    private suspend fun enableAutomaticSync(
         account: Account,
         dataType: SyncDataType
     ) {
-        val accountSettings = accountSettingsFactory.create(account)
-        val syncInterval = accountSettings.getSyncInterval(dataType)
+        // AccountSettings must be created on a background thread
+        val (syncInterval, wifiOnly) = withContext(Dispatchers.Default) {
+            val accountSettings = accountSettingsFactory.create(account)
+            Pair(accountSettings.getSyncInterval(dataType), accountSettings.getSyncWifiOnly())
+        }
 
         // 1. Update sync workers (needs already updated sync interval in AccountSettings).
         if (syncInterval != null) {
-            val wifiOnly = accountSettings.getSyncWifiOnly()
             workerManager.enablePeriodic(account, dataType, syncInterval, wifiOnly)
         } else
             workerManager.disablePeriodic(account, dataType)
@@ -142,7 +146,7 @@ class AutomaticSyncManager @Inject constructor(
             true
 
         if (hasService && hasProvider)
-            enableAutomaticSync(account, dataType)
+            runBlocking { enableAutomaticSync(account, dataType) }
         else
             disableAutomaticSync(account, dataType)
     }

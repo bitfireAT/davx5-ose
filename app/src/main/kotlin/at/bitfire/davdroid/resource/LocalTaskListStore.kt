@@ -23,6 +23,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.TaskLists
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -105,8 +108,14 @@ class LocalTaskListStore @AssistedInject constructor(
 
     override fun update(provider: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list ${fromCollection.url}", fromCollection)
-        val accountSettings = accountSettingsFactory.create(localCollection.account)
-        localCollection.update(valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors()))
+        // AccountSettings must be created on a background thread
+        val manageCalendarColors = runBlocking {
+            withContext(Dispatchers.Default) {
+                val accountSettings = accountSettingsFactory.create(localCollection.account)
+                accountSettings.getManageCalendarColors()
+            }
+        }
+        localCollection.update(valuesFromCollectionInfo(fromCollection, withColor = manageCalendarColors))
     }
 
     override fun updateAccount(oldAccount: Account, newAccount: Account) {

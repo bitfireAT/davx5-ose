@@ -22,6 +22,9 @@ import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -98,8 +101,15 @@ class LocalJtxCollectionStore @Inject constructor(
         JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
 
     override fun update(provider: ContentProviderClient, localCollection: LocalJtxCollection, fromCollection: Collection) {
-        val accountSettings = accountSettingsFactory.create(localCollection.account)
-        val values = valuesFromCollection(fromCollection, account = localCollection.account, withColor = accountSettings.getManageCalendarColors())
+        // AccountSettings must be created on a background thread
+        val (manageCalendarColors, values) = runBlocking {
+            withContext(Dispatchers.Default) {
+                val accountSettings = accountSettingsFactory.create(localCollection.account)
+                val manageCalendarColors = accountSettings.getManageCalendarColors()
+                val values = valuesFromCollection(fromCollection, account = localCollection.account, withColor = manageCalendarColors)
+                Pair(manageCalendarColors, values)
+            }
+        }
         localCollection.update(values)
     }
 
