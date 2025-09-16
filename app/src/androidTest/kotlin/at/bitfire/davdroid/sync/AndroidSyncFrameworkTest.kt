@@ -6,22 +6,20 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentResolver
-import android.content.Context
 import android.content.SyncRequest
+import android.content.SyncStatusObserver
 import android.os.Bundle
 import android.provider.CalendarContract
 import androidx.test.filters.SdkSuppress
 import at.bitfire.davdroid.sync.account.TestAccount
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.mockk.junit4.MockKRule
-import junit.framework.AssertionFailedError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.AfterClass
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -33,17 +31,10 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 @HiltAndroidTest
-class AndroidSyncFrameworkTest {
+class AndroidSyncFrameworkTest: SyncStatusObserver {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule
-    val mockkRule = MockKRule(this)
-
-    @Inject
-    @ApplicationContext
-    lateinit var context: Context
 
     @Inject
     lateinit var logger: Logger
@@ -68,7 +59,7 @@ class AndroidSyncFrameworkTest {
         onStatusChanged(0)      // record first entry (pending = false, active = false)
         stateChangeListener = ContentResolver.addStatusChangeListener(
             ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE,
-            ::onStatusChanged
+            this
         )
     }
 
@@ -129,6 +120,10 @@ class AndroidSyncFrameworkTest {
      * Verifies that the given expected states match the recorded states.
      */
     private fun verifySyncStates(expectedStates: List<State>) = runBlocking {
+        // Verify that last state is non-optional.
+        if (expectedStates.last().optional)
+            throw IllegalArgumentException("Last expected state must not be optional")
+
         // We use runBlocking for these tests because it uses the default dispatcher
         // which does not auto-advance virtual time and we need real system time to
         // test the sync framework behavior.
@@ -143,47 +138,60 @@ class AndroidSyncFrameworkTest {
             while (recordedStates.size < expectedStates.size) {
                 // verify already known states
                 if (recordedStates.isNotEmpty())
-                    assertStatesEqual(expectedStates.subList(0, recordedStates.size), recordedStates)
+                    assertStatesEqual(expectedStates, recordedStates, fullMatch = false)
 
                 delay(500) // avoid busy-waiting
             }
 
-            assertStatesEqual(expectedStates, recordedStates)
+            assertStatesEqual(expectedStates, recordedStates, fullMatch = true)
         }
     }
 
-    /**
-     * Asserts whether [actualStates] and [expectedStates] are the same, under the condition
-     * that expected states with the [State.optional] flag can be skipped.
-     */
-    private fun assertStatesEqual(expectedStates: List<State>, actualStates: List<State>) {
-        fun fail() {
-            throw AssertionFailedError("Expected states=$expectedStates, actual=$actualStates")
-        }
+    private fun assertStatesEqual(expectedStates: List<State>, actualStates: List<State>, fullMatch: Boolean) {
+        assertTrue("Expected states=$expectedStates, actual=$actualStates", statesMatch(expectedStates, actualStates, fullMatch))
+    }
 
+    /**
+     * Checks whether [actualStates] have matching [expectedStates], under the condition
+     * that expected states with the [State.optional] flag can be skipped.
+     *
+     * Note: When [fullMatch] is not set, this method can return _true_ even if not all expected states are used.
+     *
+     * @param expectedStates    expected states (can include optional states which don't have to be present in actual states)
+     * @param actualStates      actual states
+     * @param fullMatch         whether all non-optional expected states must be present in actual states
+     */
+    private fun statesMatch(expectedStates: List<State>, actualStates: List<State>, fullMatch: Boolean): Boolean {
         // iterate through entries
         val expectedIterator = expectedStates.iterator()
         for (actual in actualStates) {
             if (!expectedIterator.hasNext())
-                fail()
+                return false
             var expected = expectedIterator.next()
 
             // skip optional expected entries if they don't match the actual entry
             while (!actual.stateEquals(expected) && expected.optional) {
                 if (!expectedIterator.hasNext())
-                    fail()
+                    return false
                 expected = expectedIterator.next()
             }
 
+            // we now have a non-optional expected state and it must match
             if (!actual.stateEquals(expected))
-                fail()
+                return false
         }
+
+        // full match: all expected states must have been used
+        if (fullMatch && expectedIterator.hasNext())
+            return false
+
+        return true
     }
 
 
     // SyncStatusObserver implementation and data class
 
-    fun onStatusChanged(which: Int) {
+    override fun onStatusChanged(which: Int) {
         val state = State(
             pending = ContentResolver.isSyncPending(account, authority),
             active = ContentResolver.isSyncActive(account, authority)
