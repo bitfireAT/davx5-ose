@@ -71,14 +71,14 @@ fun EarnBadgesScreen(
 ) {
     val availableBadges by model.availableBadges.collectAsStateWithLifecycle()
     val boughtBadges by model.boughtBadges.collectAsStateWithLifecycle()
-    val errorMessage by model.errorMessage.collectAsStateWithLifecycle()
+    val errorMessage by model.message.collectAsStateWithLifecycle()
 
     EarnBadges(
         availableBadges = availableBadges,
         boughtBadges = boughtBadges,
-        errorMessage = errorMessage,
+        message = errorMessage,
         onBuyBadge = model::buyBadge,
-        onResetErrors = model::onResetErrors,
+        onResetMessage = model::onResetMessage,
         onStartRating = onStartRating,
         onNavUp = onNavUp
     )
@@ -89,18 +89,18 @@ fun EarnBadgesScreen(
 fun EarnBadges(
     availableBadges: List<Badge>,
     boughtBadges: List<Badge>,
-    errorMessage: String?,
+    message: String?,
     onBuyBadge: (badge: Badge) -> Unit = {},
-    onResetErrors: () -> Unit = {},
+    onResetMessage: () -> Unit = {},
     onStartRating: () -> Unit = {},
     onNavUp: () -> Unit = {}
 ) {
-    // Show snackbar when some network operation fails
+    // Show snackbar when some message needs to be displayed
     val snackbarHostState = remember { SnackbarHostState() }
-    LaunchedEffect(errorMessage != null) {
-        errorMessage?.let {
-            snackbarHostState.showSnackbar(errorMessage, duration = SnackbarDuration.Long)
-            onResetErrors()
+    LaunchedEffect(message != null) {
+        message?.let {
+            snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Long)
+            onResetMessage()
         }
     }
 

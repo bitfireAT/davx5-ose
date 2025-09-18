@@ -6,6 +6,8 @@ package at.bitfire.davdroid
 
 import android.app.Activity
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.LifecycleCoroutineScope
+import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.ui.icons.Badge1UpExtralife
 import at.bitfire.davdroid.ui.icons.BadgeCoffee
 import at.bitfire.davdroid.ui.icons.BadgeCupcake
@@ -20,45 +22,44 @@ import at.bitfire.davdroid.ui.icons.BadgeSailboat
 import at.bitfire.davdroid.ui.icons.BadgesIcons
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClient.BillingResponseCode
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.ProductDetailsResponseListener
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesResponseListener
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.acknowledgePurchase
+import com.android.billingclient.api.queryProductDetails
 import com.android.billingclient.api.queryPurchasesAsync
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import java.io.Closeable
-import java.util.logging.Level
 import java.util.logging.Logger
 
 class PlayClient @AssistedInject constructor(
     @Assisted val activity: Activity,
+    @IoDispatcher val ioDispatcher: CoroutineDispatcher,
+    @Assisted val lifecycleScope: LifecycleCoroutineScope,
     val logger: Logger
 ) : Closeable,
     PurchasesUpdatedListener,
     BillingClientStateListener,
-    ProductDetailsResponseListener,
     PurchasesResponseListener
 {
 
     @AssistedFactory
     interface Factory {
-        fun create(activity: Activity): PlayClient
+        fun create(activity: Activity, lifecycleScope: LifecycleCoroutineScope): PlayClient
     }
-
-    val context = activity.applicationContext
 
     /**
      * The product details; IE title, description, price, etc.
@@ -71,20 +72,21 @@ class PlayClient @AssistedInject constructor(
     val purchases = MutableStateFlow<List<Purchase>>(emptyList())
 
     /**
-     * Error message to display to the user
+     * Short message to display to the user
      */
-    val errorMessage = MutableStateFlow<String?>(null)
+    val message = MutableStateFlow<String?>(null)
 
-    private val billingClient: BillingClient = BillingClient.newBuilder(context)
+    private val billingClient: BillingClient = BillingClient.newBuilder(activity)
         .setListener(this)
-        .enablePendingPurchases()
+        .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
+        .enableAutoServiceReconnection() // Less SERVICE_DISCONNECTED responses (still need to handle them)
         .build()
     private var connectionTriesCount: Int = 0
 
     /**
-     * Set up the billing client and connect when the activity is created
-     * Product details and purchases are loaded from play store app cache, but this will give a more responsive user
-     * experience, when buying a product
+     * Set up the billing client and connect when the activity is created.
+     * Product details and purchases are loaded from play store app cache,
+     * but this will give a more responsive user experience, when buying a product.
      */
     init {
         if (!billingClient.isReady) {
@@ -93,42 +95,76 @@ class PlayClient @AssistedInject constructor(
         }
     }
 
+    fun resetMessage() { message.value = null }
+
     /**
-     * Stop the billing client connection when the activity is destroyed
+     * Query the product details and purchases
      */
-    override fun close() {
+    fun queryProductsAndPurchases() {
+        // Make sure billing client is available
         if (!billingClient.isReady) {
-            logger.fine("Closing connection...")
-            billingClient.endConnection()
+            logger.warning("BillingClient is not ready")
+            message.value = activity.getString(R.string.billing_unavailable)
+            return
+        }
+
+        // Only request product details if not found already
+        if (productDetailsList.value.isEmpty()) {
+            logger.fine("No products loaded yet, requesting")
+            // Query product details
+            queryProductDetails()
+        }
+
+        // Query purchases
+        // Purchases are stored locally by gplay app
+        // Result is received in [onQueryPurchasesResponse]
+        billingClient.queryPurchasesAsync(QueryPurchasesParams.newBuilder()
+            .setProductType(BillingClient.ProductType.INAPP)
+            .build(), this)
+    }
+
+    /**
+     * Start the purchase flow for a product
+     */
+    fun purchaseProduct(badge: Badge) {
+        // Make sure billing client is available
+        if (!billingClient.isReady) {
+            logger.warning("BillingClient is not ready")
+            message.value = activity.getString(R.string.billing_unavailable)
+            return
+        }
+
+        // Build and send purchase request
+        val params = BillingFlowParams.newBuilder().setProductDetailsParamsList(listOf(
+            BillingFlowParams.ProductDetailsParams.newBuilder()
+                .setProductDetails(badge.productDetails)
+                .build()
+        )).build()
+        val billingResult = billingClient.launchBillingFlow(activity, params)
+
+        // Check purchase was successful
+        if (!billingResultOk(billingResult)) {
+            logBillingResult("launchBillingFlow", billingResult)
+            message.value = activity.getString(R.string.purchase_failed)
         }
     }
 
     /**
-     * Continue if connected, and handle failure if connecting was unsuccessful
+     * Stop the billing client connection (ie. when the activity is destroyed)
+     */
+    override fun close() {
+        logger.fine("Closing connection...")
+        billingClient.endConnection()
+    }
+
+    /**
+     * Continue if connected
      */
     override fun onBillingSetupFinished(billingResult: BillingResult) {
-        val responseCode = billingResult.responseCode
-        val debugMessage = billingResult.debugMessage
-        logger.warning("onBillingSetupFinished: $responseCode $debugMessage")
-        when (responseCode) {
-            BillingClient.BillingResponseCode.OK -> {
-                logger.fine("ready")
-
-                // Purchases are stored locally by gplay app
-                queryPurchases()
-
-                // Only request product details if not found already
-                if (productDetailsList.value.isEmpty()) {
-                    logger.fine("No products loaded yet, requesting")
-                    queryProductDetailsAsync()
-                }
-            }
-
-            BillingClient.BillingResponseCode.SERVICE_DISCONNECTED,
-            BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE ->
-                errorMessage.value = context.getString(R.string.network_problems)
-            BillingClient.BillingResponseCode.BILLING_UNAVAILABLE ->
-                errorMessage.value = context.getString(R.string.billing_unavailable)
+        logBillingResult("onBillingSetupFinished", billingResult)
+        if (billingResultOk(billingResult)) {
+            logger.fine("Play client ready")
+            queryProductsAndPurchases()
         }
     }
 
@@ -150,93 +186,57 @@ class PlayClient @AssistedInject constructor(
 
     /**
      * Ask google servers for product details to display (ie. id, price, description, etc)
-     * This is an asynchronous call that will receive a result in [onProductDetailsResponse].
      */
-    private fun queryProductDetailsAsync() {
-        logger.fine("queryProductDetailsAsync")
+    private fun queryProductDetails() = lifecycleScope.launch(ioDispatcher) {
+        // Build request and query product details
         val productList = productIds.map {
             QueryProductDetailsParams.Product.newBuilder()
                 .setProductId(it)
                 .setProductType(BillingClient.ProductType.INAPP)
-                .build() }
-        val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
-        billingClient.queryProductDetailsAsync(params, this)
-    }
-
-    /**
-     * Receives the result from [queryProductDetailsAsync].
-     *
-     * Post product details to [productDetailsList]. This allows other parts
-     * of the app to show product detail information and make purchases.
-     */
-    override fun onProductDetailsResponse(billingResult: BillingResult, productDetails: MutableList<ProductDetails>) {
-        val responseCode = billingResult.responseCode
-        val debugMessage = billingResult.debugMessage
-        if (responseCode == BillingClient.BillingResponseCode.OK) {
-            if (productDetails.size == productIds.size) {
-                logger.log(Level.FINE, "BillingClient: Got product details!", productDetails)
-            } else
-                logger.warning("Oh no! Expected ${productIds.size}, but got ${productDetails.size} product details from server.")
-            productDetailsList.value = productDetails
-        } else
-            logger.warning("Failed to query for product details:\n $responseCode $debugMessage")
-    }
-
-    fun purchaseProduct(badge: Badge) {
-        if (!billingClient.isReady) {
-            logger.warning("BillingClient is not ready")
-            return
-        }
-        val params = BillingFlowParams.newBuilder().setProductDetailsParamsList(listOf(
-            BillingFlowParams.ProductDetailsParams.newBuilder()
-                .setProductDetails(badge.productDetails)
                 .build()
-        )).build()
-        val billingResult = billingClient.launchBillingFlow(activity, params)
-        val responseCode = billingResult.responseCode
-        val debugMessage = billingResult.debugMessage
-        logger.fine("BillingResponse $responseCode $debugMessage")
-    }
-
-    /**
-     * Query Google Play Billing for existing purchases.
-     *
-     * New purchases will be provided to the PurchasesUpdatedListener.
-     * You still need to check the Google Play Billing API to know when purchase tokens are removed.
-     */
-    internal fun queryPurchases() {
-        if (!billingClient.isReady) {
-            logger.warning("BillingClient is not ready")
-            return
         }
-        billingClient.queryPurchasesAsync(QueryPurchasesParams.newBuilder()
-            .setProductType(BillingClient.ProductType.INAPP)
-            .build(), this)
+        val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
+        val productDetailsResult = billingClient.queryProductDetails(params)
+
+        // Handle billing result for request
+        val billingResult = productDetailsResult.billingResult
+        logBillingResult("onProductDetailsResponse", billingResult)
+        if (!billingResultOk(billingResult)) {
+            logger.warning("Failed to retrieve product details")
+            return@launch
+        }
+
+        // Check amount of products received is correct
+        val productDetails = productDetailsResult.productDetailsList
+        if (productDetails?.size != productIds.size) {
+            logger.warning("Missing products. Expected ${productIds.size}, but got ${productDetails?.size} product details from server.")
+            return@launch
+        }
+
+        // Save product details to be shown on screen
+        logger.fine("Got product details!\n$productDetails")
+        productDetailsList.emit(productDetails)
     }
 
     /**
      * Callback from the billing library when [queryPurchasesAsync] is called.
      */
-    override fun onQueryPurchasesResponse(billingResult: BillingResult, purchasesList: MutableList<Purchase>) =
-        processPurchases(purchasesList)
+    override fun onQueryPurchasesResponse(billingResult: BillingResult, purchasesList: MutableList<Purchase>) {
+        logBillingResult("onQueryPurchasesResponse", billingResult)
+        if (billingResultOk(billingResult)) {
+            logger.fine("Received purchases list")
+            processPurchases(purchasesList)
+        }
+    }
 
     /**
      * Called by the Billing Library when new purchases are detected.
      */
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: MutableList<Purchase>?) {
-        val responseCode = billingResult.responseCode
-        val debugMessage = billingResult.debugMessage
-        logger.fine("$responseCode $debugMessage")
-        when (responseCode) {
-            BillingClient.BillingResponseCode.OK ->
-                if (!purchases.isNullOrEmpty()) processPurchases(purchases)
-            BillingClient.BillingResponseCode.USER_CANCELED ->
-                logger.info("User canceled the purchase")
-            BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED ->
-                logger.info("The user already owns this item")
-            BillingClient.BillingResponseCode.DEVELOPER_ERROR ->
-                logger.warning("Google Play does not recognize the application configuration." +
-                    "Do the product IDs match and is the APK in use signed with release keys?")
+        logBillingResult("onPurchasesUpdated", billingResult)
+        if (billingResultOk(billingResult) && !purchases.isNullOrEmpty()){
+            logger.fine("Received updated purchases list")
+            processPurchases(purchases)
         }
     }
 
@@ -244,88 +244,125 @@ class PlayClient @AssistedInject constructor(
      * Process purchases
      */
     private fun processPurchases(purchasesList: MutableList<Purchase>) {
-        val initialCount = purchasesList.size
-        if (purchasesList == purchases.value) {
-            logger.fine("Purchase list has not changed")
+        // Return early if purchases list has not changed
+        if (purchasesList == purchases.value)
             return
-        }
 
         // Handle purchases
         logPurchaseStatus(purchasesList)
-        runBlocking {
-            for (purchase in purchasesList) {
-                logger.info("Handling purchase with state: ${purchase.purchaseState}")
-                if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-                    if (!purchase.isAcknowledged) {
-                        logger.info("Acknowledging purchase")
-                        acknowledgePurchase(purchase) { ackPurchaseResult ->
-                            val responseCode = ackPurchaseResult.responseCode
-                            val debugMessage = ackPurchaseResult.debugMessage
-                            if (responseCode != BillingClient.BillingResponseCode.OK) {
-                                logger.warning("Acknowledging Purchase failed!")
-                                logger.warning("AcknowledgePurchaseResult: $responseCode $debugMessage")
-                                purchasesList.remove(purchase)
-                            }
-                        }
-                    }
-                } else {
-                    // purchase pending or in undefined state (ie. refunded)
-                    purchasesList.remove(purchase)
-                }
-//                // DANGER: consumes product! use for revoking a test purchase
-//                if (BuildConfig.BUILD_TYPE == "debug")
-//                    consumePurchase(purchase) { result ->
-//                        when (result.billingResult.responseCode) {
-//                            BillingClient.BillingResponseCode.OK ->
-//                                logger.info("Successfully consumed item with purchase token: '${result.purchaseToken}'")
-//                            BillingClient.BillingResponseCode.ITEM_NOT_OWNED ->
-//                                logger.info("Failed to consume item with purchase token: '${result.purchaseToken}'. Item not owned")
-//                            else ->
-//                                logger.info("Failed to consume item with purchase token: '${result.purchaseToken}'. BillingResult: $result")
-//                        }
-//                    }
+        for (purchase in purchasesList) {
+            logger.info("Handling purchase with state: ${purchase.purchaseState}")
+
+            // Verify purchase state
+            if (purchase.purchaseState != Purchase.PurchaseState.PURCHASED) {
+                // purchase pending or in undefined state (ie. refunded or consumed)
+                purchasesList.remove(purchase)
+                continue
+            }
+
+            // Check acknowledgement
+            if (!purchase.isAcknowledged) {
+                // Don't entitle user to purchase yet remove from purchases list for now
+                purchasesList.remove(purchase)
+
+                // Try to acknowledge purchase
+                acknowledgePurchase(purchase)
             }
         }
-
         logAcknowledgementStatus(purchasesList)
 
-        if (purchasesList.size != initialCount)
-            throw BillingException("Some purchase could not be acknowledged")
-
         // Update list
-        logger.info("New purchases: $purchasesList")
-        purchasesList.addAll(purchases.value)
-        purchases.value = purchasesList
+        val mergedPurchases = (purchases.value + purchasesList).distinctBy {
+            it.purchaseToken
+        }
+        logger.info("Purchases: $mergedPurchases")
+        purchases.value = mergedPurchases
+    }
 
+    /**
+     * Requests acknowledgement of a purchase
+     */
+    private fun acknowledgePurchase(purchase: Purchase) = lifecycleScope.launch(ioDispatcher)  {
+        logger.info("Acknowledging purchase")
+        val params = AcknowledgePurchaseParams.newBuilder().setPurchaseToken(purchase.purchaseToken).build()
+        val billingResult = billingClient.acknowledgePurchase(params)
+        logBillingResult("acknowledgePurchase", billingResult)
+
+        // Check billing result
+        if (!billingResultOk(billingResult)) {
+            logger.warning("Acknowledging Purchase failed!")
+
+            // Notify user about failure
+            message.value = activity.getString(R.string.purchase_acknowledgement_failed)
+            return@launch
+        }
+
+        // Billing result OK! Acknowledgement successful
+        // Now entitle user to purchase (Add to purchases list)
+        val purchasesList = purchases.value.toMutableList()
+        purchasesList.add(purchase)
+        purchases.emit(purchasesList)
+
+        // Notify user about success
+        message.value = activity.getString(R.string.purchase_acknowledgement_successful)
+    }
+    
+    /**
+     * Checks if the billing result response code is ok. Logs and may set error message if not.
+     */
+    private fun billingResultOk(result: BillingResult): Boolean {
+        when (result.responseCode) {
+            BillingResponseCode.SERVICE_DISCONNECTED,
+            BillingResponseCode.SERVICE_UNAVAILABLE ->
+                message.value = activity.getString(R.string.network_problems)
+            BillingResponseCode.BILLING_UNAVAILABLE ->
+                message.value = activity.getString(R.string.billing_unavailable)
+            BillingResponseCode.USER_CANCELED ->
+                logger.info("User canceled the purchase")
+            BillingResponseCode.ITEM_ALREADY_OWNED ->
+                logger.info("The user already owns this item")
+            BillingResponseCode.DEVELOPER_ERROR ->
+                logger.warning("Google Play does not recognize the application configuration." +
+                        "Do the product IDs match and is the APK in use signed with release keys?")
+        }
+        return result.responseCode == BillingResponseCode.OK
     }
 
 //    /**
+//     * DANGER: Use only for testing!
 //     * Consumes a purchased item, so it will be available for purchasing again.
-//     * Used for testing - don't remove.
+//     * Used only for revoking a test purchase.
 //     */
 //    @Suppress("unused")
-//    private suspend fun consumePurchase(purchase: Purchase, runAfter: (billingResult: ConsumeResult) -> Unit) {
+//    private fun consumePurchase(purchase: Purchase) {
+//        if (BuildConfig.BUILD_TYPE != "debug")
+//            return
+//
 //        logger.info("Trying to consume purchase with token: ${purchase.purchaseToken}")
 //        val consumeParams = ConsumeParams.newBuilder()
 //            .setPurchaseToken(purchase.purchaseToken)
 //            .build()
-//        val response = withContext(Dispatchers.IO) {
-//            billingClient.consumePurchase(consumeParams)
+//        lifecycleScope.launch(ioDispatcher) {
+//            val consumeResult = billingClient.consumePurchase(consumeParams)
+//            when (consumeResult.billingResult.responseCode) {
+//                BillingResponseCode.OK ->
+//                    logger.info("Successfully consumed item with purchase token: '${consumeResult.purchaseToken}'")
+//                BillingResponseCode.ITEM_NOT_OWNED ->
+//                    logger.info("Failed to consume item with purchase token: '${consumeResult.purchaseToken}'. Item not owned")
+//                else ->
+//                    logger.info("Failed to consume item with purchase token: '${consumeResult.purchaseToken}'. BillingResult: ${consumeResult.billingResult}")
+//            }
 //        }
-//        runAfter(response)
 //    }
 
+
+    // logging helpers
+
     /**
-     * Requests acknowledgement of a purchase and lets the passed function handle the request result
+     * Log billing result the same way each time
      */
-    private suspend fun acknowledgePurchase(purchase: Purchase, runAfter: (billingResult: BillingResult) -> Unit) {
-        val acknowledgePurchaseParams = AcknowledgePurchaseParams.newBuilder()
-            .setPurchaseToken(purchase.purchaseToken)
-        val response = withContext(Dispatchers.IO) {
-            billingClient.acknowledgePurchase(acknowledgePurchaseParams.build())
-        }
-        // Handle acknowledgement response in passed function
-        runAfter(response)
+    private fun logBillingResult(source: String, result: BillingResult) {
+        logger.fine("$source: responseCode=${result.responseCode}, message=${result.debugMessage}")
     }
 
     /**
@@ -352,13 +389,11 @@ class PlayClient @AssistedInject constructor(
                 Purchase.PurchaseState.PURCHASED -> purchased++
                 Purchase.PurchaseState.PENDING -> pending++
             }
-        logger.info("logPurchaseStatus: purchased=$purchased pending=$pending undefined=$undefined")
+        logger.info("Purchases status: purchased=$purchased pending=$pending undefined=$undefined")
     }
 
-    fun resetErrors() { errorMessage.value = null }
-
     /**
-     * A Badge type object
+     * Support badge product
      * @param productDetails
      * @param yearBought
      * @param count - amount of badge items of this badge type
@@ -390,5 +425,3 @@ class PlayClient @AssistedInject constructor(
     }
 
 }
-
-class BillingException(msg: String) : Exception(msg)

@@ -26,6 +26,9 @@
     <string name="button_buy_badge_bought">Thank you!</string>
     <string name="earn_badges">Earn badges to support us!</string>
     <string name="billing_unavailable">Billing API not available</string>
+    <string name="purchase_acknowledgement_failed">Failed to acknowledge purchase</string>
+    <string name="purchase_acknowledgement_successful">Thank you for the support!</string>
+    <string name="purchase_failed">Purchase failed</string>
     <string name="network_problems">Network problems, please try again later.</string>
 
 </resources>

@@ -5,11 +5,12 @@
 package at.bitfire.davdroid.ui
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
 import at.bitfire.davdroid.PlayClient
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
@@ -38,9 +39,9 @@ class EarnBadgesActivity() : AppCompatActivity() {
             AppTheme {
                 val uriHandler = LocalUriHandler.current
                 EarnBadgesScreen(
-                    playClient = playClientFactory.create(this),
+                    playClient = playClientFactory.create(this, lifecycleScope),
                     onStartRating = { uriHandler.openUri(
-                        Uri.parse("market://details?id=$packageName")
+                        "market://details?id=$packageName".toUri()
                         .buildUpon()
                         .withStatParams(javaClass.simpleName)
                         .build().toString()

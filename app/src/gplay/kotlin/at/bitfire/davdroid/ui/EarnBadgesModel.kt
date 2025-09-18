@@ -37,10 +37,10 @@ class EarnBadgesModel @AssistedInject constructor(
 
     init {
         // Load the current state of bought badges
-        playClient.queryPurchases()
+        playClient.queryProductsAndPurchases()
     }
 
-    val errorMessage = playClient.errorMessage
+    val message = playClient.message
 
     /**
      * List of badges available to buy
@@ -95,7 +95,7 @@ class EarnBadgesModel @AssistedInject constructor(
 
     fun buyBadge(badge: Badge) = playClient.purchaseProduct(badge)
 
-    fun onResetErrors() = playClient.resetErrors()
+    fun onResetMessage() = playClient.resetMessage()
 
     override fun onCleared() = playClient.close()
 
