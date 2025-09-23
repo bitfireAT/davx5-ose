@@ -40,7 +40,6 @@ class LocalEvent(
         val eventAndExceptions = LegacyAndroidEventBuilder2(
             calendar = androidEvent.calendar,
             event = data,
-            id = id,
             syncId = fileName,
             eTag = eTag,
             scheduleTag = scheduleTag,
