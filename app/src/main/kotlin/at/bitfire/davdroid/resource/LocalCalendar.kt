@@ -67,7 +67,6 @@ class LocalCalendar @AssistedInject constructor(
         val mapped = LegacyAndroidEventBuilder2(
             calendar = androidCalendar,
             event = event,
-            id = null,
             syncId = fileName,
             eTag = eTag,
             scheduleTag = scheduleTag,
