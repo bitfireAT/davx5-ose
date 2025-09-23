@@ -8,10 +8,12 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
+import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
+import at.bitfire.davdroid.di.DefaultDispatcher
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
@@ -28,7 +30,7 @@ import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.vcard4android.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.withContext
@@ -47,6 +49,7 @@ class AccountRepository @Inject constructor(
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val collectionRepository: DavCollectionRepository,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val homeSetRepository: DavHomeSetRepository,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
@@ -70,6 +73,7 @@ class AccountRepository @Inject constructor(
      *
      * @return account if account creation was successful; null otherwise (for instance because an account with this name already exists)
      */
+    @WorkerThread
     fun createBlocking(accountName: String, credentials: Credentials?, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): Account? {
         val account = fromName(accountName)
 
@@ -153,7 +157,7 @@ class AccountRepository @Inject constructor(
         val listener = OnAccountsUpdateListener { accounts ->
             trySend(accounts.filter { it.type == accountType }.toSet())
         }
-        withContext(Dispatchers.Default) {  // causes disk I/O
+        withContext(defaultDispatcher) {  // causes disk I/O
             accountManager.addOnAccountsUpdatedListener(listener, null, true)
         }
 
@@ -198,7 +202,7 @@ class AccountRepository @Inject constructor(
             val future = accountManager.renameAccount(oldAccount, newName, null, null)
 
             // wait for operation to complete
-            withContext(Dispatchers.Default) {
+            withContext(defaultDispatcher) {
                 // blocks calling thread
                 val newNameFromApi: Account = future.result
                 if (newNameFromApi.name != newName)
@@ -238,7 +242,9 @@ class AccountRepository @Inject constructor(
             }
 
             // update automatic sync
-            automaticSyncManager.get().updateAutomaticSync(newAccount)
+            withContext(defaultDispatcher) {
+                automaticSyncManager.get().updateAutomaticSync(newAccount)
+            }
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()
