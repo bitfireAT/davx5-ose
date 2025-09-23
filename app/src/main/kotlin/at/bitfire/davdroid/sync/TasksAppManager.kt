@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
+import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
@@ -77,6 +78,7 @@ class TasksAppManager @Inject constructor(
     /**
      * Sets up sync for the selected TaskProvider.
      */
+    @WorkerThread
     fun selectProvider(selectedProvider: ProviderName?) {
         logger.info("Selecting tasks app: $selectedProvider")
 

@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBookStore
@@ -59,6 +60,7 @@ class AutomaticSyncManager @Inject constructor(
      * @param account   the account to synchronize
      * @param dataType  the data type to synchronize
      */
+    @WorkerThread
     private fun enableAutomaticSync(
         account: Account,
         dataType: SyncDataType
@@ -113,6 +115,7 @@ class AutomaticSyncManager @Inject constructor(
      *
      * @param account   account for which automatic synchronization shall be updated
      */
+    @WorkerThread
     fun updateAutomaticSync(account: Account) {
         for (dataType in SyncDataType.entries)
             updateAutomaticSync(account, dataType)
@@ -128,6 +131,7 @@ class AutomaticSyncManager @Inject constructor(
      * @param account   account for which automatic synchronization shall be updated
      * @param dataType  sync data type for which automatic synchronization shall be updated
      */
+    @WorkerThread
     fun updateAutomaticSync(account: Account, dataType: SyncDataType) {
         val serviceType = when (dataType) {
             SyncDataType.CONTACTS -> Service.TYPE_CARDDAV

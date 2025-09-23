@@ -7,13 +7,14 @@ package at.bitfire.davdroid
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import at.bitfire.davdroid.di.DefaultDispatcher
 import at.bitfire.davdroid.log.LogManager
 import at.bitfire.davdroid.startup.StartupPlugin
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.ui.UiUtils
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.logging.Logger
@@ -30,6 +31,10 @@ class App: Application(), Configuration.Provider {
      */
     @Inject
     lateinit var logManager: LogManager
+
+    @Inject
+    @DefaultDispatcher
+    lateinit var defaultDispatcher: CoroutineDispatcher
 
     @Inject
     lateinit var plugins: Set<@JvmSuppressWildcards StartupPlugin>
@@ -60,7 +65,7 @@ class App: Application(), Configuration.Provider {
 
         // don't block UI for some background checks
         @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch(Dispatchers.Default) {
+        GlobalScope.launch(defaultDispatcher) {
             // clean up orphaned accounts in DB from time to time
             AccountsCleanupWorker.enable(this@App)
 
