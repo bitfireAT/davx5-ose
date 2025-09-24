@@ -522,7 +522,7 @@
     <string name="sync_error_http_dav">HTTP server error – %s</string>
     <string name="sync_error_local_storage">Local storage error – %s</string>
     <string name="sync_error_retry_limit_reached">Soft error (max retries reached)</string>
-    <string name="sync_error_view_item">View item</string>
+    <string name="sync_error_view_item">Show</string>
     <string name="sync_invalid_contact">Received invalid contact from server</string>
     <string name="sync_invalid_event">Received invalid event from server</string>
     <string name="sync_invalid_task">Received invalid task from server</string>
