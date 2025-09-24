@@ -28,3 +28,4 @@ updates:
       - dependency-name: "com.google.devtools.ksp"
       # dependencies without semantic versioning
       - dependency-name: "com.github.bitfireat:dav4jvm"
+      - dependency-name: "com.github.bitfireat:synctools"
