@@ -179,7 +179,7 @@ class AccountRepository @Inject constructor(
      * @throws IllegalArgumentException if the new account name already exists
      * @throws Exception (or sub-classes) on other errors
      */
-    suspend fun rename(oldName: String, newName: String) {
+    suspend fun rename(oldName: String, newName: String): Unit = withContext(defaultDispatcher) {
         val oldAccount = fromName(oldName)
         val newAccount = fromName(newName)
 
@@ -201,13 +201,10 @@ class AccountRepository @Inject constructor(
             // rename account (also moves AccountSettings)
             val future = accountManager.renameAccount(oldAccount, newName, null, null)
 
-            // wait for operation to complete
-            withContext(defaultDispatcher) {
-                // blocks calling thread
-                val newNameFromApi: Account = future.result
-                if (newNameFromApi.name != newName)
-                    throw IllegalStateException("renameAccount returned ${newNameFromApi.name} instead of $newName")
-            }
+            // wait for operation to complete (blocks calling thread)
+            val newNameFromApi: Account = future.result
+            if (newNameFromApi.name != newName)
+                throw IllegalStateException("renameAccount returned ${newNameFromApi.name} instead of $newName")
 
             // account renamed, cancel maybe running synchronization of old account
             syncWorkerManager.get().cancelAllWork(oldAccount)
@@ -242,9 +239,7 @@ class AccountRepository @Inject constructor(
             }
 
             // update automatic sync
-            withContext(defaultDispatcher) {
-                automaticSyncManager.get().updateAutomaticSync(newAccount)
-            }
+            automaticSyncManager.get().updateAutomaticSync(newAccount)
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()
