@@ -10,6 +10,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
+import androidx.core.content.IntentCompat
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,7 +21,7 @@ class AccountSettingsActivity: AppCompatActivity() {
     }
 
     private val account by lazy {
-        intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
+        IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
