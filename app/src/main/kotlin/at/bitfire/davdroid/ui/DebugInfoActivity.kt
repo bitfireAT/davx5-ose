@@ -110,6 +110,11 @@ class DebugInfoActivity: AppCompatActivity() {
     }
 
 
+    /**
+     * Starts an activity to inspect a [at.bitfire.davdroid.resource.LocalResource].
+     *
+     * Could be a contact, event, or task.
+     */
     private fun viewResource(uriString: String?) {
         if (uriString == null)
             return
