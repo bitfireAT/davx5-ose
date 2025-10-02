@@ -28,7 +28,6 @@ import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import at.bitfire.ical4android.TaskProvider
-import com.google.common.base.Ascii
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -235,8 +234,10 @@ class SyncNotificationManager @AssistedInject constructor(
 
         if (local != null)
             try {
-                // Truncate the string to avoid the Intent to be > 1 MB, which doesn't work (IPC limit)
-                builder.withLocalResource(Ascii.truncate(local.toString(), 10000, "[…]"))
+                // Add local resource dump to intent
+                builder.withLocalResource(local.run{
+                    "id=$id, fileName=$fileName, eTag=$eTag, scheduleTag=$scheduleTag, flags=$flags"
+                })
 
                 // Add local resource URI, so user can jump directly to possibly problematic resource
                 val uri = local.id?.let { id ->
