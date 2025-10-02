@@ -57,11 +57,13 @@ fun DebugInfoScreen(
     syncDataType: String?,
     cause: Throwable?,
     localResource: String?,
+    localResourceUri: String?,
     remoteResource: String?,
     logs: String?,
     timestamp: Long?,
     onShareZipFile: (File) -> Unit,
     onViewFile: (File) -> Unit,
+    onViewResource: (String?) -> Unit,
     onNavUp: () -> Unit
 ) {
     val model: DebugInfoModel = hiltViewModel(
@@ -119,11 +121,13 @@ fun DebugInfoScreen(
                 R.string.debug_info_unexpected_error
         ),
         localResource = localResource,
+        localResourceUri = localResourceUri,
         remoteResource = remoteResource,
         hasLogFile = logFile != null,
         onShareZip = { model.generateZip() },
         onViewLogsFile = { logFile?.let { onViewFile(it) } },
         onViewDebugFile = { debugInfo?.let { onViewFile(it) } },
+        onViewResource = onViewResource,
         onNavUp = onNavUp
     )
 }
@@ -140,11 +144,13 @@ fun DebugInfoScreen(
     modelCauseSubtitle: String?,
     modelCauseMessage: String?,
     localResource: String?,
+    localResourceUri: String?,
     remoteResource: String?,
     hasLogFile: Boolean,
     onShareZip: () -> Unit = {},
     onViewLogsFile: () -> Unit = {},
     onViewDebugFile: () -> Unit = {},
+    onViewResource: (String?) -> Unit = {},
     onNavUp: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -268,6 +274,15 @@ fun DebugInfoScreen(
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
                         }
+                        if (localResourceUri != null)
+                            OutlinedButton(
+                                onClick = { onViewResource(localResourceUri) },
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            ) {
+                                Text(
+                                    stringResource(R.string.debug_info_inspect_resource)
+                                )
+                            }
                     }
 
                 if (hasLogFile) {
@@ -327,6 +342,7 @@ fun DebugInfoScreen_Preview() {
         modelCauseSubtitle = "ModelCauseSubtitle",
         modelCauseMessage = "ModelCauseMessage",
         localResource = "local-resource-string",
+        localResourceUri = "content://bla",
         remoteResource = "remote-resource-string",
         hasLogFile = true
     )

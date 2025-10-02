@@ -7,12 +7,14 @@ package at.bitfire.davdroid.ui
 import android.accounts.Account
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
+import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.SyncDataType
@@ -33,7 +35,7 @@ import java.time.Instant
  * - enable App settings / Verbose logs, then open debug info activity (should provide debug info + logs; check logs, too)
  */
 @AndroidEntryPoint
-class DebugInfoActivity : AppCompatActivity() {
+class DebugInfoActivity: AppCompatActivity() {
 
     companion object {
         /** [android.accounts.Account] (as [android.os.Parcelable]) related to problem */
@@ -47,6 +49,9 @@ class DebugInfoActivity : AppCompatActivity() {
 
         /** dump of local resource related to the problem (plain-text [String]) */
         private const val EXTRA_LOCAL_RESOURCE = "localResource"
+
+        /** local resource URI related to the problem (plain-text [String]) */
+        private const val EXTRA_LOCAL_RESOURCE_URI = "localResourceUri"
 
         /** logs related to the problem (plain-text [String]) */
         private const val EXTRA_LOGS = "logs"
@@ -67,12 +72,14 @@ class DebugInfoActivity : AppCompatActivity() {
                 account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
                 syncDataType = extras?.getString(EXTRA_SYNC_DATA_TYPE),
                 cause = IntentCompat.getSerializableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
+                localResourceUri = extras?.getString(EXTRA_LOCAL_RESOURCE_URI),
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE),
                 remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
                 logs = extras?.getString(EXTRA_LOGS),
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,
+                onViewResource = { viewResource(it) },
                 onNavUp = ::onSupportNavigateUp
             )
         }
@@ -129,10 +136,19 @@ class DebugInfoActivity : AppCompatActivity() {
     }
 
 
+    private fun viewResource(uriString: String?) {
+        if (uriString == null)
+            return
+        val intent = Intent(Intent.ACTION_VIEW, uriString.toUri())
+        val resolvable = intent.resolveActivity(packageManager)
+        if (resolvable != null)
+            startActivity(Intent.createChooser(intent, null))
+    }
+
     /**
      * Builder for [DebugInfoActivity] intents
      */
-    class IntentBuilder(context: Context) {
+    class IntentBuilder(val context: Context) {
 
         companion object {
             const val MAX_ELEMENT_SIZE = 800 * 1024     // 800 kB
@@ -170,6 +186,16 @@ class DebugInfoActivity : AppCompatActivity() {
                     EXTRA_LOCAL_RESOURCE,
                     Ascii.truncate(dump, MAX_ELEMENT_SIZE, "...")
                 )
+            return this
+        }
+
+        fun withLocalResourceUri(uri: Uri?): IntentBuilder {
+            if (uri == null)
+                return this
+            val resolvable = Intent(Intent.ACTION_VIEW, uri)
+                .resolveActivity(context.packageManager)
+            if (resolvable != null)
+                intent.putExtra(EXTRA_LOCAL_RESOURCE_URI, uri.toString())
             return this
         }
 

@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.provider.CalendarContract
@@ -19,16 +20,21 @@ import at.bitfire.dav4jvm.exception.UnauthorizedException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalCollection
+import at.bitfire.davdroid.resource.LocalContact
+import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
+import at.bitfire.ical4android.TaskProvider
 import com.google.common.base.Ascii
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
+import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -231,6 +237,21 @@ class SyncNotificationManager @AssistedInject constructor(
             try {
                 // Truncate the string to avoid the Intent to be > 1 MB, which doesn't work (IPC limit)
                 builder.withLocalResource(Ascii.truncate(local.toString(), 10000, "[…]"))
+
+                // Add local resource URI, so user can jump directly to possibly problematic resource
+                val uri = local.id?.let { id ->
+                    when (local) {
+                        is LocalContact ->
+                            null
+                        is LocalEvent ->
+                            ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id)
+                        is LocalTask ->
+                            null
+                        else ->
+                            null
+                    }
+                }
+                builder.withLocalResourceUri(uri)
             } catch (_: OutOfMemoryError) {
                 // For instance because of a huge contact photo; maybe we're lucky and can catch it
             }
