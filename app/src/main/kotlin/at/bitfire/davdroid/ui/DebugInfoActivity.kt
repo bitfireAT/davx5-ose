@@ -37,32 +37,6 @@ import java.time.Instant
 @AndroidEntryPoint
 class DebugInfoActivity: AppCompatActivity() {
 
-    companion object {
-        /** [android.accounts.Account] (as [android.os.Parcelable]) related to problem */
-        private const val EXTRA_ACCOUNT = "account"
-
-        /** sync data type related to problem */
-        private const val EXTRA_SYNC_DATA_TYPE = "syncDataType"
-
-        /** serialized [Throwable] that causes the problem */
-        private const val EXTRA_CAUSE = "cause"
-
-        /** dump of local resource related to the problem (plain-text [String]) */
-        private const val EXTRA_LOCAL_RESOURCE = "localResource"
-
-        /** local resource URI related to the problem (plain-text [String]) */
-        private const val EXTRA_LOCAL_RESOURCE_URI = "localResourceUri"
-
-        /** logs related to the problem (plain-text [String]) */
-        private const val EXTRA_LOGS = "logs"
-
-        /** URL of remote resource related to the problem (plain-text [String]) */
-        private const val EXTRA_REMOTE_RESOURCE = "remoteResource"
-
-        /** A timestamp of the moment at which the error took place. */
-        private const val EXTRA_TIMESTAMP = "timestamp"
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val extras = intent.extras
@@ -221,6 +195,32 @@ class DebugInfoActivity: AppCompatActivity() {
             action = Intent.ACTION_SEND
         }
 
+    }
+
+    companion object {
+        /** [android.accounts.Account] (as [android.os.Parcelable]) related to problem */
+        private const val EXTRA_ACCOUNT = "account"
+
+        /** sync data type related to problem */
+        private const val EXTRA_SYNC_DATA_TYPE = "syncDataType"
+
+        /** serialized [Throwable] that causes the problem */
+        private const val EXTRA_CAUSE = "cause"
+
+        /** dump of local resource related to the problem (plain-text [String]) */
+        private const val EXTRA_LOCAL_RESOURCE = "localResource"
+
+        /** local resource URI related to the problem (plain-text [String]) */
+        private const val EXTRA_LOCAL_RESOURCE_URI = "localResourceUri"
+
+        /** logs related to the problem (plain-text [String]) */
+        private const val EXTRA_LOGS = "logs"
+
+        /** URL of remote resource related to the problem (plain-text [String]) */
+        private const val EXTRA_REMOTE_RESOURCE = "remoteResource"
+
+        /** A timestamp of the moment at which the error took place. */
+        private const val EXTRA_TIMESTAMP = "timestamp"
     }
 
 }
