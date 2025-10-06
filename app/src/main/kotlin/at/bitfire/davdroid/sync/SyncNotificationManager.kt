@@ -240,15 +240,17 @@ class SyncNotificationManager @AssistedInject constructor(
                     "id=$id, fileName=$fileName, eTag=$eTag, scheduleTag=$scheduleTag, flags=$flags"
                 })
 
-                // Add local resource URI, so user can jump directly to possibly problematic resource
-                val uri = local.id?.let { id ->
+                // Add intent to view local resource
+                val intent = local.id?.let { id ->
                     when (local) {
                         is LocalContact ->
                             null // can't get this working, maybe use ACTION_EDIT?
                         // https://developer.android.com/identity/providers/contacts-provider/modify-data#EditContact
 
-                        is LocalEvent ->
+                        is LocalEvent -> Intent(
+                            Intent.ACTION_VIEW,
                             ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id)
+                        )
 
                         is LocalTask, is LocalJtxICalObject ->
                             null // missing permissions for the tasks apps to link directly to a task
@@ -262,7 +264,7 @@ class SyncNotificationManager @AssistedInject constructor(
                             null
                     }
                 }
-                builder.withLocalResourceUri(uri)
+                builder.withPendingIntent(intent)
             } catch (_: OutOfMemoryError) {
                 // For instance because of a huge contact photo; maybe we're lucky and can catch it
             }

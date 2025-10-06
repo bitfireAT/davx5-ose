@@ -57,13 +57,13 @@ fun DebugInfoScreen(
     syncDataType: String?,
     cause: Throwable?,
     localResource: String?,
-    localResourceUri: String?,
+    canViewResource: Boolean,
     remoteResource: String?,
     logs: String?,
     timestamp: Long?,
     onShareZipFile: (File) -> Unit,
     onViewFile: (File) -> Unit,
-    onViewResource: (String?) -> Unit,
+    onViewResource: () -> Unit,
     onNavUp: () -> Unit
 ) {
     val model: DebugInfoModel = hiltViewModel(
@@ -121,7 +121,7 @@ fun DebugInfoScreen(
                 R.string.debug_info_unexpected_error
         ),
         localResource = localResource,
-        localResourceUri = localResourceUri,
+        canViewResource = canViewResource,
         remoteResource = remoteResource,
         hasLogFile = logFile != null,
         onShareZip = { model.generateZip() },
@@ -144,13 +144,13 @@ fun DebugInfoScreen(
     modelCauseSubtitle: String?,
     modelCauseMessage: String?,
     localResource: String?,
-    localResourceUri: String?,
+    canViewResource: Boolean,
     remoteResource: String?,
     hasLogFile: Boolean,
     onShareZip: () -> Unit = {},
     onViewLogsFile: () -> Unit = {},
     onViewDebugFile: () -> Unit = {},
-    onViewResource: (String?) -> Unit = {},
+    onViewResource: () -> Unit = {},
     onNavUp: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -274,9 +274,9 @@ fun DebugInfoScreen(
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
                         }
-                        if (localResourceUri != null)
+                        if (canViewResource)
                             OutlinedButton(
-                                onClick = { onViewResource(localResourceUri) },
+                                onClick = { onViewResource() },
                                 modifier = Modifier.padding(bottom = 4.dp)
                             ) {
                                 Text(
@@ -342,7 +342,7 @@ fun DebugInfoScreen_Preview() {
         modelCauseSubtitle = "ModelCauseSubtitle",
         modelCauseMessage = "ModelCauseMessage",
         localResource = "local-resource-string",
-        localResourceUri = "content://bla",
+        canViewResource = true,
         remoteResource = "remote-resource-string",
         hasLogFile = true
     )

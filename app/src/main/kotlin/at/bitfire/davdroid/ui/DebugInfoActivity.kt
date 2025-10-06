@@ -5,16 +5,15 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
-import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.SyncDataType
@@ -39,6 +38,11 @@ class DebugInfoActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val pendingIntent = IntentCompat.getParcelableExtra(
+            intent,
+            Intent.EXTRA_INTENT,
+            PendingIntent::class.java
+        )
         val extras = intent.extras
 
         setContent { 
@@ -46,14 +50,14 @@ class DebugInfoActivity: AppCompatActivity() {
                 account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
                 syncDataType = extras?.getString(EXTRA_SYNC_DATA_TYPE),
                 cause = IntentCompat.getSerializableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
-                localResourceUri = extras?.getString(EXTRA_LOCAL_RESOURCE_URI),
-                localResource = extras?.getString(EXTRA_LOCAL_RESOURCE),
+                canViewResource = pendingIntent != null,
+                localResource = extras?.getString(EXTRA_LOCAL_RESOURCE_DUMP),
                 remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
                 logs = extras?.getString(EXTRA_LOGS),
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,
-                onViewResource = { viewResource(it) },
+                onViewResource = { pendingIntent?.send() },
                 onNavUp = ::onSupportNavigateUp
             )
         }
@@ -109,23 +113,6 @@ class DebugInfoActivity: AppCompatActivity() {
         startActivity(Intent.createChooser(intent, title))
     }
 
-
-    /**
-     * Starts an activity to inspect a [at.bitfire.davdroid.resource.LocalResource].
-     *
-     * Could be a contact, event, or task.
-     */
-    private fun viewResource(uriString: String?) {
-        if (uriString == null)
-            return
-        val intent = Intent(Intent.ACTION_VIEW, uriString.toUri()).apply {
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        val resolvable = intent.resolveActivity(packageManager)
-        if (resolvable != null)
-            startActivity(Intent.createChooser(intent, null))
-    }
-
     /**
      * Builder for [DebugInfoActivity] intents
      */
@@ -164,19 +151,21 @@ class DebugInfoActivity: AppCompatActivity() {
         fun withLocalResource(dump: String?): IntentBuilder {
             if (dump != null)
                 intent.putExtra(
-                    EXTRA_LOCAL_RESOURCE,
+                    EXTRA_LOCAL_RESOURCE_DUMP,
                     Ascii.truncate(dump, MAX_ELEMENT_SIZE, "...")
                 )
             return this
         }
 
-        fun withLocalResourceUri(uri: Uri?): IntentBuilder {
-            if (uri == null)
-                return this
-            val resolvable = Intent(Intent.ACTION_VIEW, uri)
-                .resolveActivity(context.packageManager)
-            if (resolvable != null)
-                intent.putExtra(EXTRA_LOCAL_RESOURCE_URI, uri.toString())
+        fun withPendingIntent(innerIntent: Intent?): IntentBuilder {
+            val resolvable = innerIntent?.resolveActivity(context.packageManager)
+            if (resolvable != null) {
+                val pendingIntent = PendingIntent.getActivity(
+                    context, 0, innerIntent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+                intent.putExtra(Intent.EXTRA_INTENT, pendingIntent)
+            }
             return this
         }
 
@@ -215,10 +204,7 @@ class DebugInfoActivity: AppCompatActivity() {
         private const val EXTRA_CAUSE = "cause"
 
         /** dump of local resource related to the problem (plain-text [String]) */
-        private const val EXTRA_LOCAL_RESOURCE = "localResource"
-
-        /** local resource URI related to the problem (plain-text [String]) */
-        private const val EXTRA_LOCAL_RESOURCE_URI = "localResourceUri"
+        internal const val EXTRA_LOCAL_RESOURCE_DUMP = "localResourceDump"
 
         /** logs related to the problem (plain-text [String]) */
         private const val EXTRA_LOGS = "logs"
