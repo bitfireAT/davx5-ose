@@ -22,18 +22,18 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalEvent
+import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
-import at.bitfire.ical4android.TaskProvider
+import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
-import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -42,7 +42,8 @@ class SyncNotificationManager @AssistedInject constructor(
     @Assisted val account: Account,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
-    private val notificationRegistry: NotificationRegistry
+    private val notificationRegistry: NotificationRegistry,
+    private val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
     @AssistedFactory
@@ -243,11 +244,20 @@ class SyncNotificationManager @AssistedInject constructor(
                 val uri = local.id?.let { id ->
                     when (local) {
                         is LocalContact ->
-                            null
+                            null // can't get this working, maybe use ACTION_EDIT?
+                        // https://developer.android.com/identity/providers/contacts-provider/modify-data#EditContact
+
                         is LocalEvent ->
                             ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id)
-                        is LocalTask ->
-                            null
+
+                        is LocalTask, is LocalJtxICalObject ->
+                            null // missing permissions for the tasks apps to link directly to a task
+                        // 15:41:09.565  E  java.lang.SecurityException: Provider at.techbee.jtx/at.techbee.jtx.SyncContentProvider does not allow granting of Uri permissions (uri content://at.techbee.jtx.provider/tasks/13 [user 0])
+//                            tasksAppManager.get().currentProvider()?.let { provider ->
+//                                val contentUri = TaskContract.Tasks.getContentUri(provider.authority)
+//                                return@let ContentUris.withAppendedId(contentUri, id)
+//                            }
+
                         else ->
                             null
                     }

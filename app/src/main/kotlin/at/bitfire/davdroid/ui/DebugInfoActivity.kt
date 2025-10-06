@@ -118,7 +118,9 @@ class DebugInfoActivity: AppCompatActivity() {
     private fun viewResource(uriString: String?) {
         if (uriString == null)
             return
-        val intent = Intent(Intent.ACTION_VIEW, uriString.toUri())
+        val intent = Intent(Intent.ACTION_VIEW, uriString.toUri()).apply {
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
         val resolvable = intent.resolveActivity(packageManager)
         if (resolvable != null)
             startActivity(Intent.createChooser(intent, null))
