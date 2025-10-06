@@ -479,6 +479,7 @@
     <string name="debug_info_inspect_resource">Inspect resource</string>
     <string name="debug_info_privacy_warning_title">Privacy notice</string>
     <string name="debug_info_privacy_warning_description">Logs and debug info may contain private information. Please be aware of this when sharing publicly.</string>
+    <string name="debug_info_can_not_open_resource">Unable to open resource</string>
 
     <!-- ExceptionInfoFragment -->
     <string name="exception">An error has occurred.</string>

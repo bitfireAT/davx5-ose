@@ -243,9 +243,12 @@ class SyncNotificationManager @AssistedInject constructor(
                 // Add intent to view local resource
                 val intent = local.id?.let { id ->
                     when (local) {
-                        is LocalContact ->
-                            null // can't get this working, maybe use ACTION_EDIT?
-                        // https://developer.android.com/identity/providers/contacts-provider/modify-data#EditContact
+                        is LocalContact -> Intent(Intent.ACTION_VIEW).apply {
+                            setDataAndType(
+                                local.getLookupUri(),
+                                ContactsContract.Contacts.CONTENT_ITEM_TYPE
+                            )
+                        }
 
                         is LocalEvent -> Intent(
                             Intent.ACTION_VIEW,

@@ -6,9 +6,11 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.Account
 import android.app.PendingIntent
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
@@ -57,7 +59,7 @@ class DebugInfoActivity: AppCompatActivity() {
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,
-                onViewResource = { pendingIntent?.send() },
+                onViewResource = { viewResource(pendingIntent) },
                 onNavUp = ::onSupportNavigateUp
             )
         }
@@ -114,6 +116,19 @@ class DebugInfoActivity: AppCompatActivity() {
     }
 
     /**
+     * Starts an activity to viewing the affected/problematic resource
+     */
+    private fun viewResource(pendingIntent: PendingIntent?) = try {
+        pendingIntent?.send()
+    } catch (_: PendingIntent.CanceledException) {
+        Toast.makeText(
+            this,
+            getString(R.string.debug_info_can_not_open_resource),
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    /**
      * Builder for [DebugInfoActivity] intents
      */
     class IntentBuilder(val context: Context) {
@@ -158,14 +173,18 @@ class DebugInfoActivity: AppCompatActivity() {
         }
 
         fun withPendingIntent(innerIntent: Intent?): IntentBuilder {
-            val resolvable = innerIntent?.resolveActivity(context.packageManager)
-            if (resolvable != null) {
-                val pendingIntent = PendingIntent.getActivity(
+            if (innerIntent == null)
+                return this
+            // Note: We don't resolve the intent before passing because it's unreliable
+            // There are false positives for contact resource URIs, for example:
+            // Intent { act=android.intent.action.VIEW dat=content://com.android.contacts/contacts/lookup/3691r594-2C4646/594 typ=vnd.android.cursor.item/contact }
+            intent.putExtra(
+                Intent.EXTRA_INTENT,
+                PendingIntent.getActivity(
                     context, 0, innerIntent,
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 )
-                intent.putExtra(Intent.EXTRA_INTENT, pendingIntent)
-            }
+            )
             return this
         }
 
