@@ -243,7 +243,8 @@ class SyncNotificationManager @AssistedInject constructor(
 
                 // Add intent to view local resource
                 logger.log(Level.FINE, "Adding view intent for local resource", local)
-                builder.withPendingIntent(buildViewLocalResourceIntent(local))
+                val intent = buildViewLocalResourceIntent(local)
+                builder.withPendingIntent(intent)
             } catch (_: OutOfMemoryError) {
                 // For instance because of a huge contact photo; maybe we're lucky and can catch it
             }

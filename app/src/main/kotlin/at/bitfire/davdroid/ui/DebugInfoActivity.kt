@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.Account
 import android.app.PendingIntent
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -40,7 +39,7 @@ class DebugInfoActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val pendingIntent = IntentCompat.getParcelableExtra(
+        val viewResourcependingIntent = IntentCompat.getParcelableExtra(
             intent,
             Intent.EXTRA_INTENT,
             PendingIntent::class.java
@@ -52,14 +51,14 @@ class DebugInfoActivity: AppCompatActivity() {
                 account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
                 syncDataType = extras?.getString(EXTRA_SYNC_DATA_TYPE),
                 cause = IntentCompat.getSerializableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
-                canViewResource = pendingIntent != null,
+                canViewResource = viewResourcependingIntent != null,
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE_DUMP),
                 remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
                 logs = extras?.getString(EXTRA_LOGS),
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,
-                onViewResource = { viewResource(pendingIntent) },
+                onViewResource = { viewResource(viewResourcependingIntent) },
                 onNavUp = ::onSupportNavigateUp
             )
         }
@@ -116,14 +115,14 @@ class DebugInfoActivity: AppCompatActivity() {
     }
 
     /**
-     * Starts an activity to viewing the affected/problematic resource
+     * Starts activity to view the affected/problematic resource
      */
     private fun viewResource(pendingIntent: PendingIntent?) = try {
         pendingIntent?.send()
     } catch (_: PendingIntent.CanceledException) {
         Toast.makeText(
             this,
-            getString(R.string.debug_info_can_not_open_resource),
+            getString(R.string.debug_info_can_not_view_resource),
             Toast.LENGTH_LONG
         ).show()
     }
@@ -175,7 +174,7 @@ class DebugInfoActivity: AppCompatActivity() {
         fun withPendingIntent(innerIntent: Intent?): IntentBuilder {
             if (innerIntent == null)
                 return this
-            // Note: We don't resolve the intent before passing because it's unreliable
+            // Note: We don't resolve the intent before passing because it's unreliable.
             // There are false positives for contact resource URIs, for example:
             // Intent { act=android.intent.action.VIEW dat=content://com.android.contacts/contacts/lookup/3691r594-2C4646/594 typ=vnd.android.cursor.item/contact }
             intent.putExtra(

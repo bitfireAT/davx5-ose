@@ -280,7 +280,7 @@ fun DebugInfoScreen(
                                 modifier = Modifier.padding(bottom = 4.dp)
                             ) {
                                 Text(
-                                    stringResource(R.string.debug_info_inspect_resource)
+                                    stringResource(R.string.debug_info_view_resource)
                                 )
                             }
                     }
