@@ -22,7 +22,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalEvent
-import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.ui.DebugInfoActivity
@@ -267,15 +266,15 @@ class SyncNotificationManager @AssistedInject constructor(
                 Intent.ACTION_VIEW,
                 ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id)
             )
-            is LocalTask, is LocalJtxICalObject ->
-                null // missing permissions for the tasks apps to link directly to a task
-            // 15:41:09.565  E  java.lang.SecurityException: Provider at.techbee.jtx/at.techbee.jtx.SyncContentProvider does not allow granting of Uri permissions (uri content://at.techbee.jtx.provider/tasks/13 [user 0])
-//                tasksAppManager.get().currentProvider()?.let { provider ->
-//                    val contentUri = TaskContract.Tasks.getContentUri(provider.authority)
-//                    return@let ContentUris.withAppendedId(contentUri, id)
-//                }
-            else ->
-                null
+            is LocalTask -> tasksAppManager.get().currentProvider()?.let { provider ->
+                if (provider == TaskProvider.ProviderName.OpenTasks) {
+                    // Only OpenTasks supported. TasksOrg and jtxBoard do not support viewing
+                    // tasks via intent-filter (yet)
+                    val contentUri = TaskContract.Tasks.getContentUri(provider.authority)
+                    Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(contentUri, id))
+                } else null
+            }
+            else -> null
         }
     }
 
