@@ -28,12 +28,14 @@ import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
+import at.bitfire.ical4android.TaskProvider
 import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
+import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -241,33 +243,8 @@ class SyncNotificationManager @AssistedInject constructor(
                 })
 
                 // Add intent to view local resource
-                val intent = local.id?.let { id ->
-                    when (local) {
-                        is LocalContact -> Intent(Intent.ACTION_VIEW).apply {
-                            setDataAndType(
-                                local.getLookupUri(),
-                                ContactsContract.Contacts.CONTENT_ITEM_TYPE
-                            )
-                        }
-
-                        is LocalEvent -> Intent(
-                            Intent.ACTION_VIEW,
-                            ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id)
-                        )
-
-                        is LocalTask, is LocalJtxICalObject ->
-                            null // missing permissions for the tasks apps to link directly to a task
-                        // 15:41:09.565  E  java.lang.SecurityException: Provider at.techbee.jtx/at.techbee.jtx.SyncContentProvider does not allow granting of Uri permissions (uri content://at.techbee.jtx.provider/tasks/13 [user 0])
-//                            tasksAppManager.get().currentProvider()?.let { provider ->
-//                                val contentUri = TaskContract.Tasks.getContentUri(provider.authority)
-//                                return@let ContentUris.withAppendedId(contentUri, id)
-//                            }
-
-                        else ->
-                            null
-                    }
-                }
-                builder.withPendingIntent(intent)
+                logger.log(Level.FINE, "Adding view intent for local resource", local)
+                builder.withPendingIntent(buildViewLocalResourceIntent(local))
             } catch (_: OutOfMemoryError) {
                 // For instance because of a huge contact photo; maybe we're lucky and can catch it
             }
@@ -276,6 +253,30 @@ class SyncNotificationManager @AssistedInject constructor(
             builder.withRemoteResource(remote)
 
         return builder.build()
+    }
+
+    /**
+     * Builds intent to view the given local resource.
+     */
+    private fun buildViewLocalResourceIntent(local: LocalResource<*>): Intent? = local.id?.let { id ->
+        when (local) {
+            is LocalContact -> Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(local.getLookupUri(), ContactsContract.Contacts.CONTENT_ITEM_TYPE)
+            }
+            is LocalEvent -> Intent(
+                Intent.ACTION_VIEW,
+                ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id)
+            )
+            is LocalTask, is LocalJtxICalObject ->
+                null // missing permissions for the tasks apps to link directly to a task
+            // 15:41:09.565  E  java.lang.SecurityException: Provider at.techbee.jtx/at.techbee.jtx.SyncContentProvider does not allow granting of Uri permissions (uri content://at.techbee.jtx.provider/tasks/13 [user 0])
+//                tasksAppManager.get().currentProvider()?.let { provider ->
+//                    val contentUri = TaskContract.Tasks.getContentUri(provider.authority)
+//                    return@let ContentUris.withAppendedId(contentUri, id)
+//                }
+            else ->
+                null
+        }
     }
 
 }
