@@ -237,9 +237,7 @@ class SyncNotificationManager @AssistedInject constructor(
         if (local != null)
             try {
                 // Add local resource dump to intent
-                builder.withLocalResource(local.run{
-                    "id=$id, fileName=$fileName, eTag=$eTag, scheduleTag=$scheduleTag, flags=$flags"
-                })
+                builder.withLocalResource(local.toDumpString())
 
                 // Add intent to view local resource
                 logger.log(Level.FINE, "Adding view intent for local resource", local)

@@ -93,4 +93,9 @@ interface LocalResource<in TData: Any> {
      */
     fun resetDeleted()
 
+    /**
+     * String representation of this local resource without implementation details
+     */
+    fun toDumpString() = "id=$id, fileName=$fileName, eTag=$eTag, scheduleTag=$scheduleTag, flags=$flags"
+
 }
