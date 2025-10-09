@@ -33,7 +33,7 @@ kotlinx-coroutines = "1.10.2"
 # see https://github.com/google/ksp/releases for version numbers
 ksp = "2.2.20-2.0.3"
 mikepenz-aboutLibraries = "12.2.4"
-mockk = "1.14.6"
+mockk = "1.14.5"
 okhttp = "5.2.0"
 openid-appauth = "0.11.1"
 room = "2.8.2"
