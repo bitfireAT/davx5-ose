@@ -61,8 +61,17 @@ fun ExceptionInfoDialog(
             }
         },
         text = {
+            val message = if (exception is HttpException) {
+                 when (exception.statusCode) {
+                    403 -> context.getString(R.string.debug_info_http_403_description)
+                    404 -> context.getString(R.string.debug_info_http_404_description)
+                    405 -> context.getString(R.string.debug_info_http_405_description)
+                     in 500..599 -> context.getString(R.string.debug_info_http_5xx_description)
+                    else -> null
+                }
+            } else null
             Text(
-                exception::class.java.name + "\n" + exception.localizedMessage,
+                text = message ?: "${exception::class.java.name}\n${exception.localizedMessage}",
                 style = MaterialTheme.typography.bodyLarge
             )
         },
