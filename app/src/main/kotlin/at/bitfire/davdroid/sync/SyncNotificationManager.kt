@@ -10,6 +10,7 @@ import android.app.TaskStackBuilder
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.provider.Settings
@@ -239,10 +240,8 @@ class SyncNotificationManager @AssistedInject constructor(
                 // Add local resource dump to intent
                 builder.withLocalResource(local.toDumpString())
 
-                // Add intent to view local resource
-                logger.log(Level.FINE, "Adding view intent for local resource", local)
-                val intent = buildViewLocalResourceIntent(local)
-                builder.withPendingIntent(intent)
+                // Add id and type to view local resource
+                builder.withLocalResourceUri(getLocalResourceUri(local))
             } catch (_: OutOfMemoryError) {
                 // For instance because of a huge contact photo; maybe we're lucky and can catch it
             }
@@ -254,25 +253,25 @@ class SyncNotificationManager @AssistedInject constructor(
     }
 
     /**
-     * Builds intent to view the given local resource.
+     * Retrieves/Creates local resource uri to view the given local resource.
+     * Note: Only OpenTasks supported. TasksOrg and jtxBoard do not support viewing
+     * tasks via intent-filter (yet).
      */
-    private fun buildViewLocalResourceIntent(local: LocalResource<*>): Intent? = local.id?.let { id ->
+    private fun getLocalResourceUri(local: LocalResource<*>): Uri? = local.id?.let { id ->
         when (local) {
-            is LocalContact -> Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(local.getLookupUri(), ContactsContract.Contacts.CONTENT_ITEM_TYPE)
-            }
-            is LocalEvent -> Intent(
-                Intent.ACTION_VIEW,
-                ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id)
-            )
-            is LocalTask -> tasksAppManager.get().currentProvider()?.let { provider ->
-                if (provider == TaskProvider.ProviderName.OpenTasks) {
-                    // Only OpenTasks supported. TasksOrg and jtxBoard do not support viewing
-                    // tasks via intent-filter (yet)
-                    val contentUri = TaskContract.Tasks.getContentUri(provider.authority)
-                    Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(contentUri, id))
-                } else null
-            }
+            is LocalContact ->
+                local.getLookupUri()
+            is LocalEvent ->
+                ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, local.id)
+            is LocalTask ->
+                tasksAppManager.get().currentProvider()?.let { provider ->
+                    if (provider == TaskProvider.ProviderName.OpenTasks) {
+                        // Only OpenTasks supported. TasksOrg and jtxBoard do not support viewing
+                        // tasks via intent-filter (yet)
+                        val contentUri = TaskContract.Tasks.getContentUri(provider.authority)
+                        ContentUris.withAppendedId(contentUri, id)
+                    } else null
+                }
             else -> null
         }
     }

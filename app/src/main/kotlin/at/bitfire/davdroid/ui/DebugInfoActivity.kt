@@ -5,10 +5,13 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
-import android.app.PendingIntent
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -18,11 +21,14 @@ import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.sync.TasksAppManager
 import com.google.common.base.Ascii
+import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.HttpUrl
 import java.io.File
 import java.time.Instant
+import javax.inject.Inject
 
 /**
  * Debug info activity. Provides verbose information for debugging and support. Should enable users
@@ -37,28 +43,31 @@ import java.time.Instant
 @AndroidEntryPoint
 class DebugInfoActivity: AppCompatActivity() {
 
+    @Inject
+    lateinit var tasksAppManager: Lazy<TasksAppManager>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewResourcependingIntent = IntentCompat.getParcelableExtra(
-            intent,
-            Intent.EXTRA_INTENT,
-            PendingIntent::class.java
-        )
+
         val extras = intent.extras
+        val nullableUri = IntentCompat.getParcelableExtra(intent, EXTRA_LOCAL_RESOURCE_URI, Uri::class.java)
+        val viewResourceIntent = nullableUri?.let { uri ->
+            buildViewLocalResourceIntent(uri)
+        }
 
         setContent { 
             DebugInfoScreen(
                 account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
                 syncDataType = extras?.getString(EXTRA_SYNC_DATA_TYPE),
                 cause = IntentCompat.getSerializableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
-                canViewResource = viewResourcependingIntent != null,
+                canViewResource = viewResourceIntent != null,
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE_DUMP),
                 remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
                 logs = extras?.getString(EXTRA_LOGS),
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,
-                onViewResource = { viewResource(viewResourcependingIntent) },
+                onViewResource = { viewResource(viewResourceIntent) },
                 onNavUp = ::onSupportNavigateUp
             )
         }
@@ -117,14 +126,35 @@ class DebugInfoActivity: AppCompatActivity() {
     /**
      * Starts activity to view the affected/problematic resource
      */
-    private fun viewResource(pendingIntent: PendingIntent?) = try {
-        pendingIntent?.send()
-    } catch (_: PendingIntent.CanceledException) {
+    private fun viewResource(intent: Intent?) = try {
+        startActivity(intent)
+    } catch (_: ActivityNotFoundException) {
         Toast.makeText(
             this,
             getString(R.string.debug_info_can_not_view_resource),
             Toast.LENGTH_LONG
         ).show()
+    }
+
+    /**
+     * Builds intent to view the problematic local event, task or contact at given Uri.
+     *
+     * Note that only OpenTasks is supported as tasks provider. TasksOrg and jtxBoard
+     * do not support viewing tasks via intent-filter (yet). See also [at.bitfire.davdroid.sync.SyncNotificationManager.getLocalResourceUri]
+     */
+    private fun buildViewLocalResourceIntent(uri: Uri): Intent? {
+        val activeTasksAuthority = tasksAppManager.get().currentProvider()?.authority
+        return when (uri.authority) {
+            ContactsContract.AUTHORITY ->
+                Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(uri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
+                }
+
+            CalendarContract.AUTHORITY, activeTasksAuthority ->
+                Intent(Intent.ACTION_VIEW, uri)
+
+            else -> null
+        }
     }
 
     /**
@@ -171,19 +201,10 @@ class DebugInfoActivity: AppCompatActivity() {
             return this
         }
 
-        fun withPendingIntent(innerIntent: Intent?): IntentBuilder {
-            if (innerIntent == null)
+        fun withLocalResourceUri(uri: Uri?): IntentBuilder {
+            if (uri == null)
                 return this
-            // Note: We don't resolve the intent before passing because it's unreliable.
-            // There are false positives for contact resource URIs, for example:
-            // Intent { act=android.intent.action.VIEW dat=content://com.android.contacts/contacts/lookup/3691r594-2C4646/594 typ=vnd.android.cursor.item/contact }
-            intent.putExtra(
-                Intent.EXTRA_INTENT,
-                PendingIntent.getActivity(
-                    context, 0, innerIntent,
-                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                )
-            )
+            intent.putExtra(EXTRA_LOCAL_RESOURCE_URI, uri)
             return this
         }
 
@@ -223,6 +244,9 @@ class DebugInfoActivity: AppCompatActivity() {
 
         /** dump of local resource related to the problem (plain-text [String]) */
         internal const val EXTRA_LOCAL_RESOURCE_DUMP = "localResourceDump"
+
+        /** [Uri] of local resource related to the problem (as [android.os.Parcelable]) */
+        internal const val EXTRA_LOCAL_RESOURCE_URI = "localResourceId"
 
         /** logs related to the problem (plain-text [String]) */
         private const val EXTRA_LOGS = "logs"
