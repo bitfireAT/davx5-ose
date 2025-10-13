@@ -26,6 +26,7 @@ import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import dagger.Lazy
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -60,7 +61,7 @@ class SyncAdapterImpl @Inject constructor(
     @ApplicationContext context: Context,
     private val logger: Logger,
     private val syncConditionsFactory: SyncConditions.Factory,
-    private val syncFrameworkIntegration: SyncFrameworkIntegration,
+    private val syncFrameworkIntegration: Lazy<SyncFrameworkIntegration>,
     private val syncWorkerManager: SyncWorkerManager
 ): AbstractThreadedSyncAdapter(
     /* context = */ context,
@@ -122,7 +123,7 @@ class SyncAdapterImpl @Inject constructor(
         if (Build.VERSION.SDK_INT >= 34) {
             logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for " +
                     "account=$accountOrAddressBookAccount authority=$authority extras=$extras")
-            syncFrameworkIntegration.cancelSync(accountOrAddressBookAccount, authority, extras)
+            syncFrameworkIntegration.get().cancelSync(accountOrAddressBookAccount, authority, extras)
         }
 
         /* Because we are not allowed to observe worker state on a background thread, we can not
