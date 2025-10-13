@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.resource
 
 import android.content.ContentValues
-import android.net.Uri
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
@@ -190,50 +189,6 @@ class LocalContact: AndroidContact, LocalAddress {
     fun getGroupMemberships(): Set<Long> {
         getContact()
         return groupMemberships
-    }
-
-    /**
-     * Lookup uri for this contact. Used to open the contact in a contacts app.
-     * @throws RemoteException on contacts provider errors
-     */
-    fun getLookupUri(): Uri? {
-        val rawContactId = id
-        // Get the contact ID from raw contact ID
-        val contactId: Long? = addressBook.provider?.query(
-            ContactsContract.RawContacts.CONTENT_URI,
-            arrayOf(ContactsContract.RawContacts.CONTACT_ID),
-            "${ContactsContract.RawContacts._ID} = ?",
-            arrayOf(rawContactId.toString()),
-            null
-        )?.use {
-            if (!it.moveToFirst())
-                return null
-            val contactIdIndex = it.getColumnIndexOrThrow(ContactsContract.RawContacts.CONTACT_ID)
-            it.getLong(contactIdIndex)
-        }
-        if (contactId == null)
-            return null
-
-        // Get the lookup key in contacts table from contact ID
-        val lookupKey: String? = addressBook.provider?.query(
-            ContactsContract.Contacts.CONTENT_URI,
-            arrayOf(
-                ContactsContract.Contacts.LOOKUP_KEY
-            ),
-            "${ContactsContract.Contacts._ID} = ?",
-            arrayOf(contactId.toString()),
-            null
-        )?.use {
-            if (!it.moveToFirst())
-                return null
-            val lookupIndex = it.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY)
-            it.getString(lookupIndex)
-        }
-        if (lookupKey == null)
-            return null
-
-        // Get the lookup uri
-        return ContactsContract.Contacts.getLookupUri(contactId, lookupKey)
     }
 
 

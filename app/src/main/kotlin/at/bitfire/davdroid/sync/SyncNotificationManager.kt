@@ -13,6 +13,8 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import android.provider.ContactsContract.RawContacts
+import android.provider.ContactsContract.RawContacts.getContactLookupUri
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -260,7 +262,11 @@ class SyncNotificationManager @AssistedInject constructor(
     private fun getLocalResourceUri(local: LocalResource<*>): Uri? = local.id?.let { id ->
         when (local) {
             is LocalContact ->
-                local.getLookupUri()
+                getContactLookupUri(
+                    context.contentResolver,
+                    ContentUris.withAppendedId(RawContacts.CONTENT_URI, id)
+                )
+
             is LocalEvent ->
                 ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, local.id)
             is LocalTask ->
