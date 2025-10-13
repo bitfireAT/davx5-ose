@@ -10,7 +10,9 @@ import android.content.ContentResolver
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.provider.ContactsContract
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.Binds
 import dagger.Module
@@ -33,14 +35,9 @@ import javax.inject.Inject
  * (+tasks) account syncs.
  */
 class AccountSettingsMigration21 @Inject constructor(
-    @ApplicationContext private val context: Context,
+    private val localAddressBookStore: LocalAddressBookStore,
     private val logger: Logger
 ): AccountSettingsMigration {
-
-    private val accountManager = AccountManager.get(context)
-
-    private val calendarAccountType = context.getString(R.string.account_type)
-    private val addressBookAccountType = context.getString(R.string.account_type_address_book)
 
     /**
      * Cancel any possibly forever pending account syncs of the different authorities
@@ -52,35 +49,23 @@ class AccountSettingsMigration21 @Inject constructor(
                 putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
                 putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
             }
+
+            // Request calendar and tasks syncs
             val possibleAuthorities = SyncDataType.EVENTS.possibleAuthorities() +
-                    SyncDataType.TASKS.possibleAuthorities() +
-                    SyncDataType.CONTACTS.possibleAuthorities()
-            for (authority in possibleAuthorities)
+                    SyncDataType.TASKS.possibleAuthorities()
+            for (authority in possibleAuthorities) {
                 ContentResolver.requestSync(account, authority, extras)
-
-            // Cancel calendar account syncs
-            cancelSyncs(calendarAccountType, SyncDataType.EVENTS.possibleAuthorities())
-
-            // Cancel tasks (calendar account) syncs
-            cancelSyncs(calendarAccountType, SyncDataType.TASKS.possibleAuthorities())
-
-            // Cancel address book account syncs
-            cancelSyncs(addressBookAccountType, SyncDataType.CONTACTS.possibleAuthorities())
-
-            // Now cancel syncs for all authorities again (yes, this seems to be needed additionally too)
-            ContentResolver.cancelSync(account, null)
-        }
-    }
-
-    /**
-     * Cancels any (possibly forever pending) syncs for the accounts of given account type for all
-     * given authorities.
-     */
-    private fun cancelSyncs(accountType: String, authorities: List<String>) {
-        accountManager.getAccountsByType(accountType).forEach { account ->
-            logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $account")
-            for (authority in authorities)
+                logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $account")
                 ContentResolver.cancelSync(account, authority) // Ignores possibly set sync extras
+            }
+
+            // Request contacts sync (per address book account)
+            val addressBookAccounts = localAddressBookStore.getAddressBookAccounts(account) + account
+            for (addressBookAccount in addressBookAccounts) {
+                ContentResolver.requestSync(addressBookAccount, ContactsContract.AUTHORITY, extras)
+                logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $addressBookAccount")
+                ContentResolver.cancelSync(addressBookAccount, ContactsContract.AUTHORITY) // Ignores possibly set sync extras
+            }
         }
     }
 
