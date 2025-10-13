@@ -121,7 +121,7 @@ class SyncAdapterImpl @Inject constructor(
         // See: https://github.com/bitfireAT/davx5-ose/issues/1458
         if (Build.VERSION.SDK_INT >= 34) {
             logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for " +
-                    "account=$accountOrAddressBookAccount authority=$authority upload=$upload")
+                    "account=$accountOrAddressBookAccount authority=$authority extras=$extras")
             syncFrameworkIntegration.cancelSync(accountOrAddressBookAccount, authority, extras)
         }
 
