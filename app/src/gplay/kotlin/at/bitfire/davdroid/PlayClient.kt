@@ -41,6 +41,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.Closeable
 import java.util.logging.Logger
@@ -76,6 +77,8 @@ class PlayClient @AssistedInject constructor(
      */
     val message = MutableStateFlow<String?>(null)
 
+    val purchaseSuccessful = MutableStateFlow(false)
+
     private val billingClient: BillingClient = BillingClient.newBuilder(activity)
         .setListener(this)
         .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
@@ -96,6 +99,8 @@ class PlayClient @AssistedInject constructor(
     }
 
     fun resetMessage() { message.value = null }
+
+    fun resetPurchaseSuccessful() { purchaseSuccessful.value = false }
 
     /**
      * Query the product details and purchases
@@ -305,6 +310,7 @@ class PlayClient @AssistedInject constructor(
 
         // Notify user about success
         message.value = activity.getString(R.string.purchase_acknowledgement_successful)
+        purchaseSuccessful.value = true
     }
     
     /**

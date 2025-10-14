@@ -14,7 +14,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -41,6 +43,7 @@ class EarnBadgesModel @AssistedInject constructor(
     }
 
     val message = playClient.message
+    val purchaseSuccessful = playClient.purchaseSuccessful
 
     /**
      * List of badges available to buy
@@ -96,6 +99,8 @@ class EarnBadgesModel @AssistedInject constructor(
     fun buyBadge(badge: Badge) = playClient.purchaseProduct(badge)
 
     fun onResetMessage() = playClient.resetMessage()
+
+    fun onResetPurchaseSuccessful() = playClient.resetPurchaseSuccessful()
 
     override fun onCleared() = playClient.close()
 

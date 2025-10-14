@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -20,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material3.Button
@@ -43,19 +45,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.zIndex
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.PlayClient
 import at.bitfire.davdroid.PlayClient.Badge
 import at.bitfire.davdroid.PlayClient.Companion.BADGE_ICONS
 import at.bitfire.davdroid.R
-import kotlin.collections.forEach
+import io.github.vinceglb.confettikit.compose.ConfettiKit
+import io.github.vinceglb.confettikit.core.Angle
+import io.github.vinceglb.confettikit.core.Party
+import io.github.vinceglb.confettikit.core.Position
+import io.github.vinceglb.confettikit.core.emitter.Emitter
+import io.github.vinceglb.confettikit.core.models.Shape
+import io.github.vinceglb.confettikit.core.models.Size
+import kotlin.time.Duration.Companion.seconds
 
 
 @Composable
@@ -72,13 +83,16 @@ fun EarnBadgesScreen(
     val availableBadges by model.availableBadges.collectAsStateWithLifecycle()
     val boughtBadges by model.boughtBadges.collectAsStateWithLifecycle()
     val errorMessage by model.message.collectAsStateWithLifecycle()
+    val purchaseSuccessful by model.purchaseSuccessful.collectAsStateWithLifecycle()
 
     EarnBadges(
         availableBadges = availableBadges,
         boughtBadges = boughtBadges,
         message = errorMessage,
+        purchaseSuccessful = purchaseSuccessful,
         onBuyBadge = model::buyBadge,
         onResetMessage = model::onResetMessage,
+        onResetPurchaseSuccessful = model::onResetPurchaseSuccessful,
         onStartRating = onStartRating,
         onNavUp = onNavUp
     )
@@ -90,8 +104,10 @@ fun EarnBadges(
     availableBadges: List<Badge>,
     boughtBadges: List<Badge>,
     message: String?,
+    purchaseSuccessful: Boolean,
     onBuyBadge: (badge: Badge) -> Unit = {},
     onResetMessage: () -> Unit = {},
+    onResetPurchaseSuccessful: () -> Unit = {},
     onStartRating: () -> Unit = {},
     onNavUp: () -> Unit = {}
 ) {
@@ -133,6 +149,29 @@ fun EarnBadges(
             SnackbarHost(snackbarHostState)
         },
     ) { padding ->
+        if (purchaseSuccessful) {
+            ConfettiKit(
+                modifier = Modifier.fillMaxSize().navigationBarsPadding().zIndex(1f),
+                parties = listOf(
+                    Party(
+                        angle = Angle.TOP,
+                        spread = 60,
+                        speed = 70f,
+                        size = listOf(Size(10), Size(15), Size(20)),
+                        shapes = listOf(
+                            Shape.Vector(rememberVectorPainter(Icons.Default.Favorite)),
+                            Shape.Vector(rememberVectorPainter(Icons.Default.FavoriteBorder)),
+                            Shape.Circle,
+                            Shape.Square,
+                        ),
+                        emitter = Emitter(duration = 3.seconds).perSecond(50),
+                        position = Position.Relative(x = 0.5, y = 1.0)
+                    )
+                ),
+                onParticleSystemEnded = { _, _ -> onResetPurchaseSuccessful() }
+            )
+        }
+
         Column(
             modifier = Modifier
                 .padding(padding)
