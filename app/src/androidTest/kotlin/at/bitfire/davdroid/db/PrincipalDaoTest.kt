@@ -7,6 +7,9 @@ package at.bitfire.davdroid.db
 import android.database.sqlite.SQLiteConstraintException
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.junit4.MockKRule
+import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
@@ -14,7 +17,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.logging.Logger
 import javax.inject.Inject
 
 
@@ -24,42 +26,63 @@ class PrincipalDaoTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
+    @get:Rule
+    val mockKRule = MockKRule(this)
+
     @Inject
     lateinit var db: AppDatabase
 
-    lateinit var principalDao: PrincipalDao
+    private lateinit var principalDao: PrincipalDao
+    private lateinit var service: Service
+    private val url = "https://example.com/dav/principal".toHttpUrl()
 
     @Before
     fun setUp() {
         hiltRule.inject()
-        principalDao = db.principalDao()
+        principalDao = spyk(db.principalDao())
+
+        service = Service(id = 1, accountName = "account", type = "webdav")
+        db.serviceDao().insertOrReplace(service)
     }
 
     @Test
-    fun insertOrUpdate_insertsAndUpdatesCorrectly() = runTest {
-        // Prepare
-        val service = Service(id = 1, accountName = "account", type = "webdav")
-        db.serviceDao().insertOrReplace(service)
+    fun insertOrUpdate_insertsIfNotExisting() = runTest {
+        val principal = Principal(serviceId = service.id, url = url, displayName = "principal")
+        val id = principalDao.insertOrUpdate(service.id, principal)
+        assertTrue(id > 0)
 
-        // Inserts if not existing
-        val url = "https://example.com/dav/principal".toHttpUrl()
-        val principal1 = Principal(serviceId = service.id, url = url, displayName = "p1")
-        val id1 = principalDao.insertOrUpdate(service.id, principal1)
-        assertTrue(id1 > 0)
+        val stored = principalDao.get(id)
+        assertEquals("principal", stored.displayName)
+        verify(exactly = 0) { principalDao.update(any()) }
+    }
 
-        // Does not update if display name is equal
-        val principal2 = Principal(serviceId = service.id, url = url, displayName = "p1")
-        val id2 = principalDao.insertOrUpdate(service.id, principal2)
-        assertEquals(id1, id2)
+    @Test
+    fun insertOrUpdate_doesNotUpdateIfDisplayNameIsEqual() = runTest {
+        val principalOld = Principal(serviceId = service.id, url = url, displayName = "principalOld")
+        val idOld = principalDao.insertOrUpdate(service.id, principalOld)
 
-        // Update does not change id
-        val principal3 = Principal(serviceId = service.id, url = url, displayName = "p3")
-        val id3 = principalDao.insertOrUpdate(service.id, principal3)
-        assertEquals(id1, id3)
+        val principalNew = Principal(serviceId = service.id, url = url, displayName = "principalOld")
+        val idNew = principalDao.insertOrUpdate(service.id, principalNew)
 
-        // Updates principal, if display name is different
-        val updated = principalDao.get(id1)
-        assertEquals("p3", updated.displayName)
+        assertEquals(idOld, idNew)
+        val stored = principalDao.get(idOld)
+        assertEquals("principalOld", stored.displayName)
+        verify(exactly = 0) { principalDao.update(any()) }
+    }
+
+    @Test
+    fun insertOrUpdate_updatesIfDisplayNameIsDifferent() = runTest {
+        val principalOld = Principal(serviceId = service.id, url = url, displayName = "principalOld")
+        val idOld = principalDao.insertOrUpdate(service.id, principalOld)
+
+        val principalNew = Principal(serviceId = service.id, url = url, displayName = "principalNew")
+        val idNew = principalDao.insertOrUpdate(service.id, principalNew)
+
+        assertEquals(idOld, idNew)
+
+        val updated = principalDao.get(idOld)
+        assertEquals("principalNew", updated.displayName)
+        verify(exactly = 1) { principalDao.update(any()) }
     }
 
     @Test(expected = SQLiteConstraintException::class)
