@@ -111,6 +111,7 @@ fun DebugInfoScreen(
                 when {
                     cause.statusCode == 403 -> R.string.debug_info_http_403_description
                     cause.statusCode == 404 -> R.string.debug_info_http_404_description
+                    cause.statusCode == 405 -> R.string.debug_info_http_405_description
                     cause.isServerError -> R.string.debug_info_http_5xx_description
                     else -> R.string.debug_info_unexpected_error
                 }
