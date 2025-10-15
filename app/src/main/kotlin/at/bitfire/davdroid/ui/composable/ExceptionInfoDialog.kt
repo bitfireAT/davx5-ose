@@ -47,18 +47,12 @@ fun ExceptionInfoDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(Icons.Rounded.Error, null)
-                Text(
-                    text = stringResource(titleRes),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp)
-                )
-            }
+            Text(
+                text = stringResource(titleRes)
+            )
+        },
+        icon = {
+            Icon(Icons.Rounded.Error, null)
         },
         text = {
             val message = if (exception is HttpException) {
@@ -71,8 +65,7 @@ fun ExceptionInfoDialog(
                 }
             } else null
             Text(
-                text = message ?: "${exception::class.java.name}\n${exception.localizedMessage}",
-                style = MaterialTheme.typography.bodyLarge
+                text = message ?: "${exception::class.java.name}\n${exception.localizedMessage}"
             )
         },
         dismissButton = {

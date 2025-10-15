@@ -48,11 +48,20 @@ interface PrincipalDao {
      * @param principal Principal to be inserted or updated
      * @return ID of the newly inserted or already existing principal
      */
-    fun insertOrUpdate(serviceId: Long, principal: Principal): Long =
-        getByUrl(serviceId, principal.url)?.let { oldPrincipal ->
-            if (principal.displayName != oldPrincipal.displayName)
-                update(principal.copy(id = oldPrincipal.id))
-            return oldPrincipal.id
-        } ?: insert(principal)
+    fun insertOrUpdate(serviceId: Long, principal: Principal): Long {
+        // Try to get existing principal by URL
+        val oldPrincipal = getByUrl(serviceId, principal.url)
+
+        // Insert new principal if not existing
+        if (oldPrincipal == null)
+            return insert(principal)
+
+        // Otherwise update the existing principal
+        if (principal.displayName != oldPrincipal.displayName)
+            update(principal.copy(id = oldPrincipal.id))
+
+        // In any case return the id of the principal
+        return oldPrincipal.id
+    }
 
 }
