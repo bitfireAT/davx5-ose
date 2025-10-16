@@ -163,7 +163,7 @@ class DebugInfoActivity: AppCompatActivity() {
     /**
      * Builder for [DebugInfoActivity] intents
      */
-    class IntentBuilder(val context: Context) {
+    class IntentBuilder(context: Context) {
 
         companion object {
             const val MAX_ELEMENT_SIZE = 800 * 1024     // 800 kB
