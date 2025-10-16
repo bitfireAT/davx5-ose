@@ -50,8 +50,11 @@ class DebugInfoActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val extras = intent.extras
-        val nullableUri = IntentCompat.getParcelableExtra(intent, EXTRA_LOCAL_RESOURCE_URI, Uri::class.java)
-        val viewResourceIntent = nullableUri?.let { uri ->
+        val viewResourceIntent = IntentCompat.getParcelableExtra(
+            intent,
+            EXTRA_LOCAL_RESOURCE_URI,
+            Uri::class.java
+        )?.let { uri ->
             buildViewLocalResourceIntent(uri)
         }
 
