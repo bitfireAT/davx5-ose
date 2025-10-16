@@ -240,7 +240,7 @@ class SyncNotificationManager @AssistedInject constructor(
         if (local != null)
             try {
                 // Add local resource dump to intent
-                builder.withLocalResource(local.toDumpString())
+                builder.withLocalResource(local.toSummaryString())
 
                 // Add id and type to view local resource
                 builder.withLocalResourceUri(getLocalResourceUri(local))

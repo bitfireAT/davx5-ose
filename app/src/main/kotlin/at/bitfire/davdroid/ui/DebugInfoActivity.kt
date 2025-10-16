@@ -64,7 +64,7 @@ class DebugInfoActivity: AppCompatActivity() {
                 syncDataType = extras?.getString(EXTRA_SYNC_DATA_TYPE),
                 cause = IntentCompat.getSerializableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
                 canViewResource = viewResourceIntent != null,
-                localResource = extras?.getString(EXTRA_LOCAL_RESOURCE_DUMP),
+                localResource = extras?.getString(EXTRA_LOCAL_RESOURCE_SUMMARY),
                 remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
                 logs = extras?.getString(EXTRA_LOGS),
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
@@ -198,7 +198,7 @@ class DebugInfoActivity: AppCompatActivity() {
         fun withLocalResource(dump: String?): IntentBuilder {
             if (dump != null)
                 intent.putExtra(
-                    EXTRA_LOCAL_RESOURCE_DUMP,
+                    EXTRA_LOCAL_RESOURCE_SUMMARY,
                     Ascii.truncate(dump, MAX_ELEMENT_SIZE, "...")
                 )
             return this
@@ -245,8 +245,8 @@ class DebugInfoActivity: AppCompatActivity() {
         /** serialized [Throwable] that causes the problem */
         private const val EXTRA_CAUSE = "cause"
 
-        /** dump of local resource related to the problem (plain-text [String]) */
-        internal const val EXTRA_LOCAL_RESOURCE_DUMP = "localResourceDump"
+        /** Summary (dump of [at.bitfire.davdroid.resource.LocalResource] properties) of local resource related to the problem (plain-text [String]) */
+        internal const val EXTRA_LOCAL_RESOURCE_SUMMARY = "localResourceSummary"
 
         /** [Uri] of local resource related to the problem (as [android.os.Parcelable]) */
         internal const val EXTRA_LOCAL_RESOURCE_URI = "localResourceId"

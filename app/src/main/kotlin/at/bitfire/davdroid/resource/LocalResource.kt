@@ -96,6 +96,6 @@ interface LocalResource<in TData: Any> {
     /**
      * String representation of this local resource without implementation details
      */
-    fun toDumpString() = "id=$id, fileName=$fileName, eTag=$eTag, scheduleTag=$scheduleTag, flags=$flags"
+    fun toSummaryString() = "id=$id, fileName=$fileName, eTag=$eTag, scheduleTag=$scheduleTag, flags=$flags"
 
 }
