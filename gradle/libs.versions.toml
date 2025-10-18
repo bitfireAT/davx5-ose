@@ -32,12 +32,12 @@ kotlin = "2.2.20"
 kotlinx-coroutines = "1.10.2"
 # see https://github.com/google/ksp/releases for version numbers
 ksp = "2.2.20-2.0.3"
-mikepenz-aboutLibraries = "12.2.4"
-mockk = "1.14.5"
-okhttp = "5.2.0"
+mikepenz-aboutLibraries = "13.1.0"
+mockk = "1.14.6"
+okhttp = "5.2.1"
 openid-appauth = "0.11.1"
 room = "2.8.2"
-unifiedpush = "3.1.0"
+unifiedpush = "3.1.2"
 unifiedpush-fcm = "3.0.0"
 
 # Other libraries, especially ical4j, require Apache Commons. Some recent versions of Apache
