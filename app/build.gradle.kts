@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
 
-    alias(libs.plugins.mikepenz.aboutLibraries)
+    alias(libs.plugins.mikepenz.aboutLibraries.android)
 }
 
 // Android configuration
@@ -123,8 +123,10 @@ ksp {
 }
 
 aboutLibraries {
-    // exclude timestamps for reproducible builds [https://github.com/bitfireAT/davx5-ose/issues/994]
-    excludeFields = arrayOf("generated")
+    export {
+        // exclude timestamps for reproducible builds [https://github.com/bitfireAT/davx5-ose/issues/994]
+        excludeFields.add("generated")
+    }
 }
 
 dependencies {
@@ -187,7 +189,7 @@ dependencies {
     @Suppress("RedundantSuppression")
     implementation(libs.dnsjava)
     implementation(libs.guava)
-    implementation(libs.mikepenz.aboutLibraries)
+    implementation(libs.mikepenz.aboutLibraries.m3)
     implementation(libs.okhttp.base)
     implementation(libs.okhttp.brotli)
     implementation(libs.okhttp.logging)
