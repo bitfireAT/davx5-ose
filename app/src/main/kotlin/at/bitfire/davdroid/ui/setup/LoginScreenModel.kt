@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.di.DefaultDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
@@ -21,6 +22,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +43,7 @@ class LoginScreenModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     private val accountRepository: AccountRepository,
     @ApplicationContext val context: Context,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
     private val resourceFinderFactory: DavResourceFinder.Factory,
@@ -299,7 +302,7 @@ class LoginScreenModel @AssistedInject constructor(
         }
 
         viewModelScope.launch {
-            val account = withContext(Dispatchers.Default) {
+            val account = withContext(defaultDispatcher) {
                 accountRepository.createBlocking(
                     accountDetailsUiState.value.accountName,
                     loginInfo.credentials,
