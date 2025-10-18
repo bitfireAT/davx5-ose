@@ -26,7 +26,7 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.Task
-import at.bitfire.synctools.exception.InvalidRemoteResourceException
+import at.bitfire.synctools.exception.InvalidICalendarException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -161,7 +161,7 @@ class TasksSyncManager @AssistedInject constructor(
         val tasks: List<Task>
         try {
             tasks = Task.tasksFromReader(reader)
-        } catch (e: InvalidRemoteResourceException) {
+        } catch (e: InvalidICalendarException) {
             logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
             return
