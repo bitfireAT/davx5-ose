@@ -233,8 +233,8 @@ class SyncNotificationManager @AssistedInject constructor(
 
                 // Add URI to view local resource, if available
                 builder.withLocalResourceUri(local.getViewUri(context))
-            } catch (_: OutOfMemoryError) {
-                // For instance because of a huge contact photo; maybe we're lucky and can catch it
+            } catch (_: Throwable) {
+                // Ignore all potential exceptions that arise from providing information about the local resource
             }
 
         if (remote != null)
