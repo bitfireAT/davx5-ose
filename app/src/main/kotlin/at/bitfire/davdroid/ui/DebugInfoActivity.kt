@@ -5,6 +5,8 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -57,6 +59,7 @@ class DebugInfoActivity: AppCompatActivity() {
             buildViewLocalResourceIntent(uri)
         }
 
+        val remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE)
         setContent { 
             DebugInfoScreen(
                 account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
@@ -64,12 +67,17 @@ class DebugInfoActivity: AppCompatActivity() {
                 cause = IntentCompat.getSerializableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
                 canViewResource = viewResourceIntent != null,
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE_SUMMARY),
-                remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
+                remoteResource = remoteResource,
                 logs = extras?.getString(EXTRA_LOGS),
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,
-                onViewResource = { viewResource(viewResourceIntent) },
+                onCopyRemoteUrl = {
+                    val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipData = ClipData.newPlainText("Remote resource", remoteResource)
+                    clipboard.setPrimaryClip(clipData)
+                },
+                onViewLocalResource = { viewResource(viewResourceIntent) },
                 onNavUp = ::onSupportNavigateUp
             )
         }
