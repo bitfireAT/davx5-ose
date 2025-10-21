@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -131,7 +130,7 @@ class DebugInfoActivity: AppCompatActivity() {
      */
     private fun viewResource(intent: Intent?) = try {
         startActivity(intent)
-    } catch (_: ActivityNotFoundException) {
+    } catch (_: Exception) {
         Toast.makeText(
             this,
             getString(R.string.debug_info_can_not_view_resource),
@@ -208,6 +207,7 @@ class DebugInfoActivity: AppCompatActivity() {
             if (uri == null)
                 return this
             intent.putExtra(EXTRA_LOCAL_RESOURCE_URI, uri)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             return this
         }
 

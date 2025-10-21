@@ -7,14 +7,10 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
-import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import android.provider.ContactsContract.RawContacts
-import android.provider.ContactsContract.RawContacts.getContactLookupUri
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -23,21 +19,15 @@ import at.bitfire.dav4jvm.exception.UnauthorizedException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalCollection
-import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
-import at.bitfire.ical4android.TaskProvider
-import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
-import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -46,8 +36,7 @@ class SyncNotificationManager @AssistedInject constructor(
     @Assisted val account: Account,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
-    private val notificationRegistry: NotificationRegistry,
-    private val tasksAppManager: Lazy<TasksAppManager>
+    private val notificationRegistry: NotificationRegistry
 ) {
 
     @AssistedFactory
@@ -239,11 +228,11 @@ class SyncNotificationManager @AssistedInject constructor(
 
         if (local != null)
             try {
-                // Add local resource dump to intent
+                // Add local resource summary, if available
                 builder.withLocalResource(local.toSummaryString())
 
-                // Add id and type to view local resource
-                builder.withLocalResourceUri(getLocalResourceUri(local))
+                // Add URI to view local resource, if available
+                builder.withLocalResourceUri(local.getViewUri(context))
             } catch (_: OutOfMemoryError) {
                 // For instance because of a huge contact photo; maybe we're lucky and can catch it
             }
@@ -252,34 +241,6 @@ class SyncNotificationManager @AssistedInject constructor(
             builder.withRemoteResource(remote)
 
         return builder.build()
-    }
-
-    /**
-     * Retrieves/Creates local resource uri to view the given local resource.
-     * Note: Only OpenTasks supported. TasksOrg and jtxBoard do not support viewing
-     * tasks via intent-filter (yet).
-     */
-    private fun getLocalResourceUri(local: LocalResource<*>): Uri? = local.id?.let { id ->
-        when (local) {
-            is LocalContact ->
-                getContactLookupUri(
-                    context.contentResolver,
-                    ContentUris.withAppendedId(RawContacts.CONTENT_URI, id)
-                )
-
-            is LocalEvent ->
-                ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, local.id)
-            is LocalTask ->
-                tasksAppManager.get().currentProvider()?.let { provider ->
-                    if (provider == TaskProvider.ProviderName.OpenTasks) {
-                        // Only OpenTasks supported. TasksOrg and jtxBoard do not support viewing
-                        // tasks via intent-filter (yet)
-                        val contentUri = TaskContract.Tasks.getContentUri(provider.authority)
-                        ContentUris.withAppendedId(contentUri, id)
-                    } else null
-                }
-            else -> null
-        }
     }
 
 }

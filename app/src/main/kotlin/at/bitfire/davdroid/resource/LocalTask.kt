@@ -4,12 +4,16 @@
 
 package at.bitfire.davdroid.resource
 
+import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
+import android.net.Uri
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.DmfsTaskFactory
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.Task
+import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.storage.BatchOperation
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
@@ -119,6 +123,15 @@ class LocalTask: DmfsTask, LocalResource<Task> {
 
     override fun resetDeleted() {
         throw NotImplementedError()
+    }
+
+    override fun getViewUri(context: Context): Uri? {
+        val idNotNull = id ?: return null
+        if (taskList.providerName == TaskProvider.ProviderName.OpenTasks) {
+            val contentUri = Tasks.getContentUri(taskList.providerName.authority)
+            return ContentUris.withAppendedId(contentUri, idNotNull)
+        }
+        return null
     }
 
 

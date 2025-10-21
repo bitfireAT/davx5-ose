@@ -6,6 +6,7 @@ package at.bitfire.davdroid.resource
 
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
 import android.net.Uri
 import android.os.RemoteException
 import android.provider.ContactsContract
@@ -235,6 +236,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
         val values = contentValuesOf(Groups.DELETED to 0)
         addressBook.provider!!.update(groupSyncUri(), values, null, null)
     }
+
+    override fun getViewUri(context: Context) = null
 
 
     // helpers

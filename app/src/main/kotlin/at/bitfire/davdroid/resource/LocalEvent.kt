@@ -4,6 +4,9 @@
 
 package at.bitfire.davdroid.resource
 
+import android.content.ContentUris
+import android.content.Context
+import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Event
@@ -170,5 +173,8 @@ class LocalEvent(
             Events.DELETED to 0
         ))
     }
+
+    override fun getViewUri(context: Context) =
+        ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id)
 
 }

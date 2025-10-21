@@ -4,11 +4,16 @@
 
 package at.bitfire.davdroid.resource
 
+import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
+import android.net.Uri
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
+import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
+import android.provider.ContactsContract.RawContacts.getContactLookupUri
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.resource.contactrow.CachedGroupMembershipHandler
 import at.bitfire.davdroid.resource.contactrow.GroupMembershipBuilder
@@ -138,6 +143,14 @@ class LocalContact: AndroidContact, LocalAddress {
         val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
+
+    override fun getViewUri(context: Context): Uri? =
+        id?.let { idNotNull ->
+            getContactLookupUri(
+                context.contentResolver,
+                ContentUris.withAppendedId(RawContacts.CONTENT_URI, idNotNull)
+            )
+        }
 
 
     fun addToGroup(batch: ContactsBatchOperation, groupID: Long) {
