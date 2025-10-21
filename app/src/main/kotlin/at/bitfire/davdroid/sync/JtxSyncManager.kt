@@ -27,7 +27,7 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.JtxICalObject
-import at.bitfire.synctools.exception.InvalidRemoteResourceException
+import at.bitfire.synctools.exception.InvalidICalendarException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -167,7 +167,7 @@ class JtxSyncManager @AssistedInject constructor(
         try {
             // parse the reader content and return the list of ICalObjects
             icalobjects.addAll(JtxICalObject.fromReader(reader, localCollection))
-        } catch (e: InvalidRemoteResourceException) {
+        } catch (e: InvalidICalendarException) {
             logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
             return

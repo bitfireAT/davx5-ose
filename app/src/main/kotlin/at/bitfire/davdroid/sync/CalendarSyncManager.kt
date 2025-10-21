@@ -32,7 +32,7 @@ import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.EventReader
 import at.bitfire.ical4android.EventWriter
 import at.bitfire.ical4android.util.DateUtils
-import at.bitfire.synctools.exception.InvalidRemoteResourceException
+import at.bitfire.synctools.exception.InvalidICalendarException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -265,7 +265,7 @@ class CalendarSyncManager @AssistedInject constructor(
         val events: List<Event>
         try {
             events = EventReader().readEvents(reader)
-        } catch (e: InvalidRemoteResourceException) {
+        } catch (e: InvalidICalendarException) {
             logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
             return
