@@ -15,6 +15,7 @@ import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.storage.BatchOperation
+import com.google.common.base.Ascii
 import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
@@ -135,7 +136,7 @@ class LocalTask: DmfsTask, LocalResource<Task> {
             .add("flags", flags)
             .add("task",
                 try {
-                    task.toString()
+                    Ascii.truncate(task.toString(), 1000, "…")
                 } catch (e: Exception) {
                     e
                 }

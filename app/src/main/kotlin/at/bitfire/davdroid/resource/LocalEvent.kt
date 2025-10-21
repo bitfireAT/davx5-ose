@@ -15,6 +15,7 @@ import at.bitfire.synctools.mapping.calendar.LegacyAndroidEventBuilder2
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
 import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
+import com.google.common.base.Ascii
 import com.google.common.base.MoreObjects
 import java.util.Optional
 import java.util.UUID
@@ -184,7 +185,7 @@ class LocalEvent(
             .add("flags", flags)
             .add("event",
                 try {
-                    getCachedEvent().toString()
+                    Ascii.truncate(getCachedEvent().toString(), 1000, "…")
                 } catch (e: Exception) {
                     e
                 }
