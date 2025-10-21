@@ -15,6 +15,7 @@ import at.bitfire.synctools.mapping.calendar.LegacyAndroidEventBuilder2
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
 import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
+import com.google.common.base.MoreObjects
 import java.util.Optional
 import java.util.UUID
 
@@ -173,6 +174,21 @@ class LocalEvent(
             Events.DELETED to 0
         ))
     }
+
+    override fun getDebugSummary() =
+        MoreObjects.toStringHelper(this)
+            .add("id", id)
+            .add("fileName", fileName)
+            .add("eTag", eTag)
+            .add("scheduleTag", scheduleTag)
+            .add("flags", flags)
+            .add("event",
+                try {
+                    getCachedEvent().toString()
+                } catch (e: Exception) {
+                    e
+                }
+            ).toString()
 
     override fun getViewUri(context: Context) =
         ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id)

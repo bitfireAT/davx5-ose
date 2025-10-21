@@ -25,6 +25,7 @@ import at.bitfire.vcard4android.AndroidGroup
 import at.bitfire.vcard4android.AndroidGroupFactory
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
+import com.google.common.base.MoreObjects
 import java.util.LinkedList
 import java.util.Optional
 import java.util.UUID
@@ -236,6 +237,20 @@ class LocalGroup: AndroidGroup, LocalAddress {
         val values = contentValuesOf(Groups.DELETED to 0)
         addressBook.provider!!.update(groupSyncUri(), values, null, null)
     }
+
+    override fun getDebugSummary() =
+        MoreObjects.toStringHelper(this)
+            .add("id", id)
+            .add("fileName", fileName)
+            .add("eTag", eTag)
+            .add("flags", flags)
+            .add("contact",
+                try {
+                    getContact().toString()
+                } catch (e: Exception) {
+                    e
+                }
+            ).toString()
 
     override fun getViewUri(context: Context) = null
 

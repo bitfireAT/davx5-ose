@@ -15,6 +15,7 @@ import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.storage.BatchOperation
+import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
 import java.util.UUID
@@ -124,6 +125,21 @@ class LocalTask: DmfsTask, LocalResource<Task> {
     override fun resetDeleted() {
         throw NotImplementedError()
     }
+
+    override fun getDebugSummary() =
+        MoreObjects.toStringHelper(this)
+            .add("id", id)
+            .add("fileName", fileName)
+            .add("eTag", eTag)
+            .add("scheduleTag", scheduleTag)
+            .add("flags", flags)
+            .add("task",
+                try {
+                    task.toString()
+                } catch (e: Exception) {
+                    e
+                }
+            ).toString()
 
     override fun getViewUri(context: Context): Uri? {
         val idNotNull = id ?: return null

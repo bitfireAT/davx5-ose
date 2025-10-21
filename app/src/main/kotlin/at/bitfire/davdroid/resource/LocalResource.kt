@@ -97,9 +97,9 @@ interface LocalResource<in TData: Any> {
     fun resetDeleted()
 
     /**
-     * String representation of this local resource without implementation details
+     * User-readable debug summary of this local resource (used in debug info)
      */
-    fun toSummaryString() = "id=$id, fileName=$fileName, eTag=$eTag, scheduleTag=$scheduleTag, flags=$flags"
+    fun getDebugSummary(): String
 
     /**
      * Returns the content provider URI that opens the local resource for viewing ([Intent.ACTION_VIEW])

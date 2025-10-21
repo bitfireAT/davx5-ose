@@ -229,7 +229,7 @@ class SyncNotificationManager @AssistedInject constructor(
         if (local != null)
             try {
                 // Add local resource summary, if available
-                builder.withLocalResource(local.toSummaryString())
+                builder.withLocalResource(local.getDebugSummary())
 
                 // Add URI to view local resource, if available
                 builder.withLocalResourceUri(local.getViewUri(context))
