@@ -269,7 +269,7 @@ fun DebugInfoScreen(
                                 onClick = onCopyRemoteUrl,
                                 modifier = Modifier.padding(end = 8.dp)
                             ) {
-                                Text("Copy URL")
+                                Text(stringResource(R.string.debug_info_copy_remote_url))
                             }
                         }
                         localResource?.let {
@@ -292,7 +292,7 @@ fun DebugInfoScreen(
                                 modifier = Modifier.padding(bottom = 4.dp)
                             ) {
                                 Text(
-                                    stringResource(R.string.debug_info_view_resource)
+                                    stringResource(R.string.debug_info_view_local_resource)
                                 )
                             }
                     }
