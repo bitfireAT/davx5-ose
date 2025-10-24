@@ -7,14 +7,14 @@ package at.bitfire.davdroid.ui.webdav
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -70,7 +70,6 @@ fun AddWebdavMountScreen(
             username = uiState.username,
             onSetUsername = model::setUsername,
             password = uiState.password,
-            onSetPassword = model::setPassword,
             certificateAlias = uiState.certificateAlias,
             onSetCertificateAlias = model::setCertificateAlias,
             canContinue = uiState.canContinue,
@@ -92,8 +91,7 @@ fun AddWebDavMountScreen(
     onSetUrl: (String) -> Unit = {},
     username: String,
     onSetUsername: (String) -> Unit = {},
-    password: String,
-    onSetPassword: (String) -> Unit = {},
+    password: TextFieldState,
     certificateAlias: String?,
     onSetCertificateAlias: (String) -> Unit = {},
     canContinue: Boolean,
@@ -218,18 +216,15 @@ fun AddWebDavMountScreen(
                 )
                 PasswordTextField(
                     password = password,
-                    onPasswordChange = onSetPassword,
-                    labelText = stringResource(R.string.login_password_optional),
-                    readOnly = isLoading,
-                    leadingIcon = {
-                        Icon(Icons.Default.Password, null)
-                    },
+                    labelText = stringResource(R.string.login_password),
+                    enabled = isLoading,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done
                     ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { onAddMount() }
-                    ),
+                    onKeyboardAction = {
+                        if (canContinue)
+                        onAddMount()
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
@@ -258,7 +253,7 @@ fun AddWebDavMountScreen_Preview() {
             displayName = "Test",
             url = "https://example.com",
             username = "user",
-            password = "password",
+            password = rememberTextFieldState("password"),
             certificateAlias = null,
             canContinue = true
         )

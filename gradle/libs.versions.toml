@@ -23,6 +23,7 @@ bitfire-dav4jvm = "f11523619b"
 bitfire-synctools = "1a7f70b1a0"
 compose-accompanist = "0.37.3"
 compose-bom = "2025.10.00"
+compose-material3 = "1.4.0"
 dnsjava = "3.6.3"
 glance = "1.1.1"
 guava = "33.5.0-android"
@@ -77,7 +78,7 @@ commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "compose-material3" }
 compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
