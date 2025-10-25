@@ -59,11 +59,18 @@ android {
             dimension = "distribution"
             versionNameSuffix = "-ose"
         }
+        create("gplay") {
+            versionNameSuffix = "-gplay"
+        }
     }
 
     sourceSets {
         getByName("androidTest") {
             assets.srcDir("$projectDir/schemas")
+        }
+        getByName("gplay") {
+            kotlin.srcDirs("src/gplay/kotlin", "src/davdroid/kotlin")
+            res.srcDirs("src/gplay/res", "src/davdroid/res")
         }
     }
 
