@@ -8,6 +8,7 @@ import android.content.Context
 import android.util.Log
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.repository.PreferenceRepository
+import at.bitfire.synctools.log.LogcatHandler
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -79,7 +80,7 @@ class LogManager @Inject constructor(
         // root logger: set default log level and always log to logcat
         val rootLogger = Logger.getLogger("")
         rootLogger.level = if (logVerbose) Level.ALL else Level.INFO
-        rootLogger.addHandler(LogcatHandler())
+        rootLogger.addHandler(LogcatHandler(BuildConfig.APPLICATION_ID))
 
         // log to file, if requested
         if (logToFile)

@@ -11,7 +11,6 @@
   <string name="field_required">Cal aquest camp</string>
   <string name="help">Ajuda</string>
   <string name="navigate_up">Navega cap amunt</string>
-  <string name="optional_label">* opcional</string>
   <string name="options_menu">Menú d\'opcions</string>
   <string name="share">Comparteix</string>
   <string name="sync_started">La sincronització s\'ha iniciat/posat a la cua</string>
@@ -34,7 +33,7 @@
   <string name="intro_battery_text">Per la sincronització en intervals regulars, cal que %s tingui permís per a executar-se en segon pla. En cas contrari, Android podria aturar la sincronització en qualsevol moment.</string>
   <string name="intro_battery_dont_show">No necessito intervals de sincronització regulars.*</string>
   <string name="intro_autostart_title">Compatibilitat amb %s</string>
-  <string name="intro_autostart_text">Probablement, aquest dispositiu bloqueja la sincronització. Si t\'hi veus afectat, només pots resoldre-ho manualment.</string>
+  <string name="intro_autostart_text">El microprogramari específic dels proveïdors pot bloquejar la sincronització. Si us afecta, només podeu resoldre-ho manualment.</string>
   <string name="intro_autostart_dont_show">He fet els ajustaments requerits. No m\'ho recordis més.*</string>
   <string name="intro_leave_unchecked">* Deixar desmarcat per un recordatori més tard. Pot ser reinicialitzat a ajustaments /%s.</string>
   <string name="intro_more_info">Més informació</string>
@@ -121,6 +120,7 @@
   <string name="navigation_drawer_website">Pàgina web</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Preguntes més freqüents</string>
+  <string name="navigation_drawer_managed">Per a organitzacions</string>
   <string name="navigation_drawer_community">Comunitat</string>
   <string name="navigation_drawer_support_project">Doneu suport al projecte</string>
   <string name="navigation_drawer_contribute">Com col·laborar</string>
@@ -202,8 +202,9 @@
   <string name="app_settings_unifiedpush_no_endpoint">No s\'ha configurat cap punt final</string>
   <string name="app_settings_unifiedpush_ready">Preparat per a rebre missatges «push» sobre %s</string>
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-  <string name="app_settings_unifiedpush_encrypted">Els missatges no notificació automàtica sempre són xifrats.</string>
+  <string name="app_settings_unifiedpush_encrypted">Els missatges «push» sempre són xifrats.</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">S\'ha eliminat el compte</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -245,10 +246,10 @@
   <string name="login_password">Contrasenya</string>
   <string name="login_password_hide">Oculta la contrasenya</string>
   <string name="login_password_show">Mostra la contrasenya</string>
-  <string name="login_password_optional">Contrasenya*</string>
+  <string name="login_password_optional">Contrasenya (opcional)</string>
   <string name="login_type_url">Inici de sessió amb un URL i un nom d\'usuari/ària</string>
   <string name="login_user_name">Nom d\'usuari/ària</string>
-  <string name="login_user_name_optional">Nom d\'usuari*</string>
+  <string name="login_user_name_optional">Nom d\'usuari (opcional)</string>
   <string name="login_base_url">URL base</string>
   <string name="login_base_url_info"><![CDATA[L\'URL base es comprovarà directament, però els <a href="%s">serveis també es descobreixen</a> utilitzant els registres de DNS i els URL ben coneguts.]]></string>
   <string name="login_select_certificate">Selecciona el certificat</string>
@@ -262,13 +263,14 @@
   <string name="login_account_not_added">No s\'ha pogut afegir el compte</string>
   <string name="login_finish">Finalitza</string>
   <string name="login_type_advanced">Inici de sessió avançat</string>
-  <string name="login_no_client_certificate_optional">Sense certificat del client*</string>
+  <string name="login_no_client_certificate_optional">Sense certificat del client (opcional)</string>
   <string name="login_client_certificate_selected">Certificat del client: %s</string>
   <string name="login_no_certificate_found">No s\'ha trobat cap certificat</string>
   <string name="login_install_certificate">Instal·la un certificat</string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Compte de Fastmail</string>
+  <string name="login_fastmail_sign_in">Inici de sessió amb el Fastmail</string>
   <string name="login_type_google">Contactes / Calendari de Google</string>
-  <string name="login_google_see_tested_with">Vegeu la nostra guia «Tested with Google» per a obtenir informació actualitzada.</string>
-  <string name="login_google_unexpected_warnings">És possible que sorgeixin advertències inesperades, en aquest cas hauràs de crear el teu propi ID de client.</string>
   <string name="login_google_account">Compte de Google</string>
   <string name="login_google">Inicia la sessió amb Google</string>
   <string name="login_google_client_id">ID de Client (opcional)</string>
@@ -320,9 +322,13 @@
   <string name="settings_ignore_vpns_off">Una VPN sense connexió a Internet validada subjacent és suficient per a executar la sincronització</string>
   <string name="settings_authentication">Autentificació</string>
   <string name="settings_username">Nom d\'usuari/ària</string>
-  <string name="settings_password">Contrasenya</string>
+  <string name="settings_password">Contrasenya o contrasenya d\'aplicació</string>
+  <string name="settings_app_password_hint"><![CDATA[Potser preferiu fer servir una <a href="%1$s">contrasenya d\'aplicació</a>.]]></string>
   <string name="settings_new_password">Contrasenya nova</string>
   <string name="settings_password_summary">Actualitzeu la contrasenya segons el vostre servidor.</string>
+  <string name="settings_reauthorize_oauth">Torna a autoritzar (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">Usa quan s\'hagi revocat l\'accés</string>
+  <string name="settings_reauthorize_oauth_success">Autorització correcta</string>
   <string name="settings_certificate_alias">Certificat del client</string>
   <string name="settings_certificate_alias_empty">No hi ha cap certificat disponible o seleccionat</string>
   <string name="settings_certificate_install">Instal·la un certificat</string>
@@ -357,7 +363,7 @@
   <string name="create_addressbook">Crea una llibreta d\'adreces</string>
   <string name="create_addressbook_maybe_not_supported">La creació de llibretes d\'adreces sobre CardDAV pot no ser suportada pel servidor.</string>
   <string name="create_calendar">Crea un calendari</string>
-  <string name="create_calendar_time_zone_optional">Zona horària per defecte*</string>
+  <string name="create_calendar_time_zone_optional">Fus horari predeterminat (opcional)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Possibles entrades de calendari</string>
   <string name="create_calendar_type_vevent">Esdeveniments</string>
@@ -367,10 +373,12 @@
   <string name="create_collection_color">Color</string>
   <string name="create_collection_display_name">Títol</string>
   <string name="create_collection_home_set">Ubicació d’emmagatzematge</string>
-  <string name="create_collection_description_optional">Descripció*</string>
+  <string name="create_collection_description_optional">Descripció (opcional)</string>
   <string name="create_collection_create">Crea</string>
-  <string name="create_collection_optional">* opcional</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">contactes</string>
+  <string name="collection_datatype_events">esdeveniments</string>
+  <string name="collection_datatype_tasks">tasques</string>
   <string name="collection_delete">Suprimeix la col·lecció</string>
   <string name="collection_delete_warning">Aquesta col·lecció (%s) i totes les seves dades seran eliminades localment i del servidor.</string>
   <string name="collection_synchronization">Sincronització</string>
@@ -413,6 +421,8 @@
   <string name="debug_info_logs_caption">Registres</string>
   <string name="debug_info_logs_subtitle">Hi ha registres detallats disponibles</string>
   <string name="debug_info_logs_view">Visualitza els registres</string>
+  <string name="debug_info_privacy_warning_title">Avís de privadesa</string>
+  <string name="debug_info_privacy_warning_description">Els registres i la informació de depuració poden contenir informació privada. Tingueu en compte això quan ho compartiu públicament.</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">S\'ha produït un error.</string>
   <string name="exception_httpexception">S\'ha produït un error HTTP.</string>
@@ -429,9 +439,12 @@
   <string name="webdav_add_mount_display_name">Nom a mostrar</string>
   <string name="webdav_add_mount_url">URL del WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL no vàlid</string>
-  <string name="webdav_add_mount_authentication">Autenticació (opcional)</string>
+  <string name="webdav_add_mount_mountpoint_displayname">Punt de muntatge i nom de visualització</string>
+  <string name="webdav_add_mount_authentication">Autentificació</string>
   <string name="webdav_add_mount_username">Nom d\'usuari/ària</string>
   <string name="webdav_add_mount_password">Contrasenya</string>
+  <string name="webdav_add_mount_username_optional">Nom d\'usuari (opcional)</string>
+  <string name="webdav_add_mount_password_optional">Contrasenya (opcional)</string>
   <string name="webdav_add_mount_add">Afegeix un muntatge</string>
   <string name="webdav_add_mount_no_support">No hi ha cap servei WebDAV en aquest URL</string>
   <string name="webdav_remove_mount_title">Elimina el punt de muntatge</string>
@@ -460,5 +473,8 @@
   <!--widgets-->
   <string name="widget_sync_all">Sincronitza-ho tot</string>
   <string name="widget_sync_all_accounts">Sincronitza tots els comptes</string>
+  <string name="widget_labeled_sync_label">Botó etiquetat de sincronització</string>
+  <string name="widget_icon_sync_label">Botó d\'icona de sincronització</string>
+  <string name="widget_sync_description">Toqueu per a executar manualment la sincronització.</string>
   <!--cert4android-->
 </resources>

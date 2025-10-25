@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
           android:installLocation="internalOnly">
@@ -49,11 +53,19 @@
         tools:ignore="UnusedAttribute"
         android:supportsRtl="true">
 
-        <!-- required for Hilt/WorkManager integration -->
+        <!-- Required for Hilt/WorkManager integration. See
+        - https://developer.android.com/develop/background-work/background-tasks/persistent/configuration/custom-configuration#remove-default
+        - https://developer.android.com/training/dependency-injection/hilt-jetpack#workmanager
+        However, we must not disable AndroidX startup completely, as it's needed by other libraries like okhttp. -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
-            tools:node="remove">
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
         </provider>
 
         <!-- Remove the node added by AppAuth (remove only from net.openid.appauth library, not from our flavor manifest files) -->
@@ -174,7 +186,7 @@
                 android:resource="@xml/account_authenticator"/>
         </service>
         <service
-            android:name=".sync.CalendarsSyncAdapterService"
+            android:name=".sync.adapter.CalendarsSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -185,7 +197,7 @@
                 android:resource="@xml/sync_calendars"/>
         </service>
         <service
-            android:name=".sync.JtxSyncAdapterService"
+            android:name=".sync.adapter.JtxSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -196,7 +208,7 @@
                 android:resource="@xml/sync_notes"/>
         </service>
         <service
-            android:name=".sync.OpenTasksSyncAdapterService"
+            android:name=".sync.adapter.OpenTasksSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -207,7 +219,7 @@
                 android:resource="@xml/sync_opentasks"/>
         </service>
         <service
-            android:name=".sync.TasksOrgSyncAdapterService"
+            android:name=".sync.adapter.TasksOrgSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -242,7 +254,7 @@
                 android:resource="@xml/account_authenticator_address_book"/>
         </service>
         <service
-            android:name=".sync.ContactsSyncAdapterService"
+            android:name=".sync.adapter.ContactsSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>

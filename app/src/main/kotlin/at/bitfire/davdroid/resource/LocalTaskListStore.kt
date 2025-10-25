@@ -47,8 +47,14 @@ class LocalTaskListStore @AssistedInject constructor(
     override val authority: String
         get() = providerName.authority
 
-    override fun acquireContentProvider() =
+    override fun acquireContentProvider(throwOnMissingPermissions: Boolean) = try {
         context.contentResolver.acquireContentProviderClient(authority)
+    } catch (e: SecurityException) {
+        if (throwOnMissingPermissions)
+            throw e
+        else
+            /* return */ null
+    }
 
     override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalTaskList? {
         val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")

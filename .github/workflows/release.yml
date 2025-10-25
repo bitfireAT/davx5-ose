@@ -19,19 +19,19 @@ jobs:
       discussions: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v5
 
       - name: Prepare keystore
         run: echo ${{ secrets.android_keystore_base64 }} | base64 -d >$GITHUB_WORKSPACE/keystore.jks
 
       - name: Build signed package
-        # Make sure that caches are disabled to generate reproducible release builds
-        run: ./gradlew --no-build-cache --no-configuration-cache --no-daemon app:assembleRelease
+        # Use build cache to speed up building of build variants, but clean caches from previous tests before
+        run: ./gradlew --build-cache --configuration-cache --no-daemon app:clean app:assembleRelease
         env:
           ANDROID_KEYSTORE: ${{ github.workspace }}/keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
@@ -45,4 +45,3 @@ jobs:
           files: app/build/outputs/apk/ose/release/*.apk
           fail_on_unmatched_files: true
           generate_release_notes: true
-          discussion_category_name: Announcements

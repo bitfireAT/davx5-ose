@@ -9,8 +9,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
+import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.davdroid.util.trimToNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -47,7 +48,7 @@ class AdvancedLoginModel @AssistedInject constructor(
             baseUri = uri,
             credentials = Credentials(
                 username = username.trimToNull(),
-                password = password.text.toString().trimToNull()?.toCharArray(),
+                password = password.text.trimToNull()?.toSensitiveString(),
                 certificateAlias = certAlias.trimToNull()
             )
         )
@@ -61,7 +62,7 @@ class AdvancedLoginModel @AssistedInject constructor(
         uiState = uiState.copy(
             url = initialLoginInfo.baseUri?.toString()?.removePrefix("https://") ?: "",
             username = initialLoginInfo.credentials?.username ?: "",
-            password = TextFieldState(initialLoginInfo.credentials?.password?.concatToString() ?: ""),
+            password = TextFieldState(initialLoginInfo.credentials?.password?.asString() ?: ""),
             certAlias = initialLoginInfo.credentials?.certificateAlias ?: ""
         )
     }

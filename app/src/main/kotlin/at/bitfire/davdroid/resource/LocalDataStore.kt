@@ -25,41 +25,44 @@ interface LocalDataStore<T: LocalCollection<*>> {
      *
      * **The caller is responsible for closing the content provider client!**
      *
-     * @return the content provider client, or `null` if the content provider could not be acquired
+     * @param throwOnMissingPermissions If `true`, the function will throw [SecurityException] if permissions are not granted.
+     *
+     * @return the content provider client, or `null` if the content provider could not be acquired (or permissions are not
+     * granted and [throwOnMissingPermissions] is `false`)
      *
      * @throws SecurityException on missing permissions
      */
-    fun acquireContentProvider(): ContentProviderClient?
+    fun acquireContentProvider(throwOnMissingPermissions: Boolean = false): ContentProviderClient?
 
     /**
      * Creates a new local collection from the given (remote) collection info.
      *
-     * @param provider       the content provider client
+     * @param client        the content provider client
      * @param fromCollection collection info
      *
      * @return the new local collection, or `null` if creation failed
      */
-    fun create(provider: ContentProviderClient, fromCollection: Collection): T?
+    fun create(client: ContentProviderClient, fromCollection: Collection): T?
 
     /**
      * Returns all local collections of the data store, including those which don't have a corresponding remote
      * [Collection] entry.
      *
      * @param account  the account that the data store is associated with
-     * @param provider the content provider client
+     * @param client   the content provider client
      *
      * @return a list of all local collections
      */
-    fun getAll(account: Account, provider: ContentProviderClient): List<T>
+    fun getAll(account: Account, client: ContentProviderClient): List<T>
 
     /**
      * Updates the local collection with the data from the given (remote) collection info.
      *
-     * @param provider        the content provider client
+     * @param client          the content provider client
      * @param localCollection the local collection to update
      * @param fromCollection  collection info
      */
-    fun update(provider: ContentProviderClient, localCollection: T, fromCollection: Collection)
+    fun update(client: ContentProviderClient, localCollection: T, fromCollection: Collection)
 
     /**
      * Deletes the local collection.

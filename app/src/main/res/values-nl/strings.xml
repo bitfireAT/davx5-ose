@@ -5,13 +5,12 @@
   <string name="account_title_address_book">DAVx⁵ Adresboek</string>
   <string name="account_prefs_use_app">Verander hier niet van account! Gebruik in plaats daarvan direct de app om accounts te beheren.</string>
   <string name="dialog_delete">Verwijderen</string>
-  <string name="dialog_remove">Verwijder</string>
-  <string name="dialog_deny">Annuleer</string>
+  <string name="dialog_remove">Verwijderen</string>
+  <string name="dialog_deny">Annuleren</string>
   <string name="dialog_enable">Inschakelen</string>
   <string name="field_required">Dit veld is verplicht</string>
   <string name="help">Hulp</string>
   <string name="navigate_up">Navigeer omhoog</string>
-  <string name="optional_label">*optioneel</string>
   <string name="options_menu">Opties menu</string>
   <string name="share">Delen</string>
   <string name="sync_started">Synchronisatie begonnen/in wachtrij geplaatst</string>
@@ -34,7 +33,7 @@
   <string name="intro_battery_text">Om op gezette tijden te synchroniseren moet %s zonder beperking op de achtergrond kunnen draaien. Anders kan Android het synchroniseren op elk moment onderbreken.</string>
   <string name="intro_battery_dont_show">Synchroniseren op gezette tijden is niet nodig.*</string>
   <string name="intro_autostart_title">%s compatibiliteit</string>
-  <string name="intro_autostart_text">Waarschijnlijk blokkeert dit toestel het synchroniseren. In dat geval is dit alleen handmatig op te lossen.</string>
+  <string name="intro_autostart_text">Leverancierspecifieke firmware kan de synchronisatie blokkeren. Als je hier last van hebt, kan dit alleen handmatig worden opgelost.</string>
   <string name="intro_autostart_dont_show">De vereiste instellingen zijn verricht. Er aan herinneren is niet meer nodig.*</string>
   <string name="intro_leave_unchecked">* Niet aanvinken om later herinnerd te worden. Kan teruggezet in app instellingen / %s.</string>
   <string name="intro_more_info">Meer informatie</string>
@@ -121,6 +120,7 @@
   <string name="navigation_drawer_website">Website</string>
   <string name="navigation_drawer_manual">Handleiding</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_managed">Voor organisaties</string>
   <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_support_project">Ondersteun het project</string>
   <string name="navigation_drawer_contribute">Hoe bijdragen</string>
@@ -161,14 +161,14 @@
   <string name="app_settings_battery_optimization_exempted">App is vrijgesteld (aanbevolen)</string>
   <string name="app_settings_battery_optimization_optimized">Batterijbeperkingen van toepassing (niet aanbevolen)</string>
   <string name="app_settings_connection">Verbinding</string>
-  <string name="app_settings_proxy">Proxy type</string>
+  <string name="app_settings_proxy">Proxy-type</string>
   <string-array name="app_settings_proxy_types">
     <item>Systeem standaard</item>
     <item>Geen proxy</item>
     <item>HTTP</item>
     <item>SOCKS (voor Orbot)</item>
   </string-array>
-  <string name="app_settings_proxy_host">Proxy host naam</string>
+  <string name="app_settings_proxy_host">Proxy hostnaam</string>
   <string name="app_settings_proxy_port">Proxy poort</string>
   <string name="app_settings_security">Beveiliging</string>
   <string name="app_settings_security_app_permissions">App rechten</string>
@@ -204,20 +204,20 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">Pushberichten zijn altijd versleuteld.</string>
   <!--AccountScreen-->
-  <string name="account_invalid_account">Account bestaat niet</string>
+  <string name="account_invalid_account">Account is verwijderd</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
   <string name="account_missing_permissions">Er zijn extra rechten nodig om deze collecties te synchroniseren.</string>
   <string name="account_manage_permissions">Machtigingen beheren</string>
   <string name="account_synchronize_now">Nu synchroniseren</string>
-  <string name="account_settings">Account instellingen</string>
-  <string name="account_rename">Naam account wijzigen</string>
+  <string name="account_settings">Account-instellingen</string>
+  <string name="account_rename">Accountnaam wijzigen</string>
   <string name="account_rename_new_name_description">Niet opgeslagen lokale gegevens kunnen worden verwijderd. Na het hernoemen is opnieuw synchroniseren vereist.</string>
   <string name="account_rename_new_name">Nieuwe accountnaam</string>
   <string name="account_rename_rename">Naam wijzigen</string>
   <string name="account_rename_exists_already">Accountnaam is al in gebruik</string>
-  <string name="account_rename_couldnt_rename">Naam account is niet gewijzigd</string>
+  <string name="account_rename_couldnt_rename">Accountnaam is niet gewijzigd</string>
   <string name="account_delete">Account verwijderen</string>
   <string name="account_delete_confirmation_title">Account echt verwijderen?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopieën van adresboeken, kalenders en takenlijsten worden verwijderd.</string>
@@ -244,12 +244,12 @@
   <string name="login_email_address_error">Geldig e-mailadres vereist</string>
   <string name="login_email_address_info"><![CDATA[Het e-maildomein wordt gebruikt als basis-URL. <a href="%s">Diensten worden ontdekt</a> met behulp van DNS-records en bekende URL\'s.]]></string>
   <string name="login_password">Wachtwoord</string>
-  <string name="login_password_hide">Verberg wachtwoord</string>
+  <string name="login_password_hide">Wachtwoord verbergen</string>
   <string name="login_password_show">Wachtwoord tonen</string>
-  <string name="login_password_optional">Wachtwoord*</string>
+  <string name="login_password_optional">Wachtwoord (optioneel)</string>
   <string name="login_type_url">Inloggen met URL en gebruikersnaam</string>
   <string name="login_user_name">Gebruikersnaam</string>
-  <string name="login_user_name_optional">Gebruikersnaam*</string>
+  <string name="login_user_name_optional">Gebruikersnaam (optioneel)</string>
   <string name="login_base_url">Basis-URL</string>
   <string name="login_base_url_info"><![CDATA[De basis URL wordt direct gecontroleerd, maar <a href="%s">services worden ook ontdekt</a> met behulp van DNS records en bekende URL\'s.]]></string>
   <string name="login_select_certificate">Certificaat selecteren</string>
@@ -261,15 +261,16 @@
   <string name="login_account_name_required">Accountnaam verplicht</string>
   <string name="login_account_name_already_taken">Accountnaam is al in gebruik</string>
   <string name="login_account_not_added">Account kon niet worden toegevoegd</string>
-  <string name="login_finish">afwerken</string>
+  <string name="login_finish">Afwerken</string>
   <string name="login_type_advanced">Geavanceerd inloggen</string>
-  <string name="login_no_client_certificate_optional">Geen cliëntcertificaat*</string>
+  <string name="login_no_client_certificate_optional">Geen cliëntcertificaat (optioneel)</string>
   <string name="login_client_certificate_selected">Cliëntcertificaat: %s</string>
   <string name="login_no_certificate_found">Geen certificaat gevonden</string>
   <string name="login_install_certificate">Certificaat installeren</string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Fastmail-account</string>
+  <string name="login_fastmail_sign_in">Inloggen met Fastmail</string>
   <string name="login_type_google">Google Contacten / Kalender</string>
-  <string name="login_google_see_tested_with">Raadpleeg onze pagina \"Getest met Google\" voor actuele informatie.</string>
-  <string name="login_google_unexpected_warnings">Het kan zijn dat je onverwachte waarschuwingen krijgt en/of je eigen client-ID moet aanmaken.</string>
   <string name="login_google_account">Google account</string>
   <string name="login_google">Inloggen met Google</string>
   <string name="login_google_client_id">Client ID (optioneel)</string>
@@ -321,9 +322,13 @@
   <string name="settings_ignore_vpns_off">VPN zonder onderliggende gevalideerde internetverbinding is voldoende om synchronisatie uit te voeren</string>
   <string name="settings_authentication">Authenticatie</string>
   <string name="settings_username">Gebruikersnaam</string>
-  <string name="settings_password">Wachtwoord</string>
+  <string name="settings_password">Wachtwoord of app-wachtwoord</string>
+  <string name="settings_app_password_hint"><![CDATA[Misschien gebruik je liever een <a href="%1$s">app-wachtwoord</a>.]]></string>
   <string name="settings_new_password">Nieuw wachtwoord</string>
   <string name="settings_password_summary">Gebruik het zelfde wachtwoord als op de server.</string>
+  <string name="settings_reauthorize_oauth">Opnieuw autoriseren (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">Gebruiken wanneer de toegang is ingetrokken</string>
+  <string name="settings_reauthorize_oauth_success">Autorisatie geslaagd</string>
   <string name="settings_certificate_alias">Cliëntcertificaat</string>
   <string name="settings_certificate_alias_empty">Geen certificaat beschikbaar of geselecteerd</string>
   <string name="settings_certificate_install">Certificaat installeren</string>
@@ -358,7 +363,7 @@
   <string name="create_addressbook">Adresboek aanmaken</string>
   <string name="create_addressbook_maybe_not_supported">Het aanmaken van een adresboek via CardDAV wordt mogelijk niet ondersteund door de server.</string>
   <string name="create_calendar">Kalender aanmaken</string>
-  <string name="create_calendar_time_zone_optional">Standaard tijdzone*</string>
+  <string name="create_calendar_time_zone_optional">Standaard tijdzone (optioneel)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Mogelijke kalender-items</string>
   <string name="create_calendar_type_vevent">Gebeurtenissen</string>
@@ -368,10 +373,12 @@
   <string name="create_collection_color">Kleur</string>
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_home_set">Opslaglocatie</string>
-  <string name="create_collection_description_optional">Beschrijving*</string>
+  <string name="create_collection_description_optional">Beschrijving (optioneel)</string>
   <string name="create_collection_create">Aanmaken</string>
-  <string name="create_collection_optional">*optioneel</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">contacten</string>
+  <string name="collection_datatype_events">gebeurtenissen</string>
+  <string name="collection_datatype_tasks">taken</string>
   <string name="collection_delete">Collectie verwijderen</string>
   <string name="collection_delete_warning">Deze collectie (%s) en alle gegevens worden permanent verwijderd, zowel lokaal als op de server.</string>
   <string name="collection_synchronization">Synchroniseren</string>
@@ -388,7 +395,7 @@
   <string name="collection_push_support">Push-ondersteuning</string>
   <string name="collection_push_web_push">Server adverteert Push-ondersteuning</string>
   <string name="collection_push_subscribed_at">Ingeschreven op %1$s, vervalt op %2$s</string>
-  <string name="collection_last_sync">Laatste gesynchroniseerd (%s)</string>
+  <string name="collection_last_sync">Laatste synchronisatie (%s)</string>
   <string name="collection_url">Adres (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
@@ -432,9 +439,12 @@
   <string name="webdav_add_mount_display_name">Weergavenaam</string>
   <string name="webdav_add_mount_url">WebDAV-URL</string>
   <string name="webdav_add_mount_url_invalid">Ongeldige URL</string>
-  <string name="webdav_add_mount_authentication">Authenticatie (optioneel)</string>
+  <string name="webdav_add_mount_mountpoint_displayname">Koppelpunt en weergavenaam</string>
+  <string name="webdav_add_mount_authentication">Authenticatie</string>
   <string name="webdav_add_mount_username">Gebruikersnaam</string>
   <string name="webdav_add_mount_password">Wachtwoord</string>
+  <string name="webdav_add_mount_username_optional">Gebruikersnaam (optioneel)</string>
+  <string name="webdav_add_mount_password_optional">Wachtwoord (optioneel)</string>
   <string name="webdav_add_mount_add">Koppeling toevoegen</string>
   <string name="webdav_add_mount_no_support">Geen WebDAV-service op deze URL</string>
   <string name="webdav_remove_mount_title">Verwijder het koppelpunt</string>

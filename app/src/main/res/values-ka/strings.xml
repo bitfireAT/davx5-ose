@@ -9,7 +9,6 @@
   <string name="field_required">ეს ველი სავალდებულოა</string>
   <string name="help">დახმარება</string>
   <string name="navigate_up">ზემოთ გადასვლა</string>
-  <string name="optional_label">* არასავალდებულო</string>
   <string name="options_menu">ოპციების მენიუ</string>
   <string name="share">გაზიარება</string>
   <string name="sync_started">სინქრონიზაცია დაიწყა/დადგა რიგში</string>
@@ -32,7 +31,6 @@
   <string name="intro_battery_text">რეგულარული ინტერვალი სინქრონიზაციისთვის, %s-ს უნდა ჰქონდეს უფლება გაეშვას ფონურ რეჟიმში. სხვაგვარად, Android-მა შეიძლება ნებისმიერ მომენტში შეაჩეროს სინქრონიზაცია.</string>
   <string name="intro_battery_dont_show">მე არ მჭირდება რეგულარული სინქრონიზაციის ინტერვალები.*</string>
   <string name="intro_autostart_title">%s თავსებადობა</string>
-  <string name="intro_autostart_text">ეს მოწყობილობა სავარაუდოდ ბლოკავს სინქრონიზაცია. თუ ეს გეხებათ, ამის გამოსწორება მხოლოდ ხელით შეიძლება.</string>
   <string name="intro_autostart_dont_show">მე შევცვალე საჭირო პარამეტრები. აღარ შემახსენოთ.*</string>
   <string name="intro_leave_unchecked">* დატოვეთ მოუნიშნელად მოგვიანებით შესახსენებლად. შეიძლება ჩამოგდებულ იქნას აპის პარამეტრებში /%s.</string>
   <string name="intro_more_info">მეტი ინფორმაცია</string>
@@ -214,10 +212,8 @@
   <string name="login_password">პაროლი</string>
   <string name="login_password_hide">პაროლის დამალვა</string>
   <string name="login_password_show">პაროლის ჩვენება</string>
-  <string name="login_password_optional">პაროლი*</string>
   <string name="login_type_url">URL-ით და მომხმარებლის სახელით შესვლა</string>
   <string name="login_user_name">მომხმარებლის სახელი</string>
-  <string name="login_user_name_optional">მოხმარებლის სახელი*</string>
   <string name="login_base_url">საბაზო URL</string>
   <string name="login_base_url_info"><![CDATA[საბაზო URL-ი პირადპირ იქნება შემოწმებული, მაგრამ <a href="%s">ასევე აღმოჩენილია სერვისები</a> DNS ჩანაწერების და კარგად ცნობილი URL-ების მეშვეობით.]]></string>
   <string name="login_select_certificate">სერტიფიკატის არჩევა</string>
@@ -229,13 +225,10 @@
   <string name="login_account_name_required">საჭიროა ანგარიშის სახელი</string>
   <string name="login_account_name_already_taken">ანგარიშის სახელი უკვე დაკავებულია</string>
   <string name="login_type_advanced">გაფართოებული შესვლა</string>
-  <string name="login_no_client_certificate_optional">კლიენტის სერტიფიკატი არ არის*</string>
   <string name="login_client_certificate_selected">კლიენტის სერტიფიკატი: %s</string>
   <string name="login_no_certificate_found">სერტიფიკატი ვერ მოიძებნა</string>
   <string name="login_install_certificate">სერტიფიკატის დაყენება</string>
   <string name="login_type_google">Google კონტაქტები / კალენდარი</string>
-  <string name="login_google_see_tested_with">გთხოვთ, იხილოთ ჩვენი \"ტესტირებულია Google-თან\" გვერდი ბოლო ინფორმაციისთვის.</string>
-  <string name="login_google_unexpected_warnings">შეიძლება გქონდეთ მოულოდნელი გაფრთხილებები ან/და მოგიწიოთ შექმნათ თქვენი პირადი კლიენტის ID.</string>
   <string name="login_google_account">Google ანგარიში</string>
   <string name="login_google">Google-ით შესვლა</string>
   <string name="login_google_client_id">კლიენტის ID (aრასავალდებულო)</string>
@@ -287,7 +280,6 @@
   <string name="settings_ignore_vpns_off">VPN არსებული დადასტურებული ინტერნეტ-კავშირის გარეშე არ არის საკმარისი სინქრონიზაციის გასაშვებად</string>
   <string name="settings_authentication">აუთენტიფიკაცია</string>
   <string name="settings_username">მომხმარებლის სახელი</string>
-  <string name="settings_password">პაროლი</string>
   <string name="settings_new_password">ახალი პაროლი</string>
   <string name="settings_password_summary">პაროლის განახლება თქვენი სერვერის მიხედვით</string>
   <string name="settings_certificate_alias">კლიენტის სერთიფიკატი</string>
@@ -324,7 +316,6 @@
   <string name="create_addressbook">მისამართთა წიგნაკის შექმნა</string>
   <string name="create_addressbook_maybe_not_supported">მისამართთა წიგნაკის შექმნა CardDAV-ით შეიძლება არ იყოს მხარდაჭერილი სერვერის მიერ.</string>
   <string name="create_calendar">კალენდარის შექმნა</string>
-  <string name="create_calendar_time_zone_optional">ნაგულისხმევი საათის სარტყელი*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">დაშვებული კალენდარის ჩანაწერები</string>
   <string name="create_calendar_type_vevent">ღონისძიებები</string>
@@ -334,10 +325,11 @@
   <string name="create_collection_color">ფერი</string>
   <string name="create_collection_display_name">სათაური</string>
   <string name="create_collection_home_set">მეხსიერების ადგილმდებარეობა</string>
-  <string name="create_collection_description_optional">აღწერა*</string>
+  <string name="create_collection_description_optional">აღწერა (არასავალდებულო)</string>
   <string name="create_collection_create">შექმნა</string>
-  <string name="create_collection_optional">* არასავალდებულო</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">კონტაქტები</string>
+  <string name="collection_datatype_tasks">დავალებები</string>
   <string name="collection_delete">კოლექციის წაშლა</string>
   <string name="collection_delete_warning">ეს კოლექცია (%s) და მისი ყველა მონაცემი სამუდამოდ წაიშლება, როგორც ადგილობრივად, ისე სერვერზეც.</string>
   <string name="collection_synchronization">სინქრონიზაცია</string>
@@ -393,7 +385,7 @@
   <string name="webdav_add_mount_display_name">ნაჩვენები სახელი</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">არასწორი URL</string>
-  <string name="webdav_add_mount_authentication">აუთენტიფიკაცია (არასავალდებულო)</string>
+  <string name="webdav_add_mount_authentication">აუთენტიფიკაცია</string>
   <string name="webdav_add_mount_username">მომხმარებლის სახელი</string>
   <string name="webdav_add_mount_password">პაროლი</string>
   <string name="webdav_add_mount_add">მიბმის დამატება</string>

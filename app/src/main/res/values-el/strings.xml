@@ -10,7 +10,6 @@
   <string name="field_required">Αυτό το πεδίο είναι απαραίτητο </string>
   <string name="help">Βοήθεια</string>
   <string name="navigate_up">Πλοήγηση προς τα πάνω</string>
-  <string name="optional_label">* προαιρετικό</string>
   <string name="options_menu">Μενού επιλογών</string>
   <string name="share">Διαμοιρασμός</string>
   <string name="sync_started">Ο συγχρονισμός ξεκίνησε/αναμονή στην ουρά</string>
@@ -33,7 +32,6 @@
   <string name="intro_battery_text">Για συγχρονισμό σε τακτικά διαστήματα, πρέπει να επιτραπεί στο %s να λειτουργεί στο παρασκήνιο. Αλλιώς, το Android μπορεί να παύση τον συγχρονισμό ανά πάσα στιγμή.</string>
   <string name="intro_battery_dont_show">Δεν χρειάζομαι τακτικά διαστήματα συγχρονισμού.*</string>
   <string name="intro_autostart_title">%s Συμβατότητα</string>
-  <string name="intro_autostart_text">Αυτή η συσκευή πιθανόν δεν επιτρέπει τον συγχρονισμό. Εάν αυτό σας επηρεάζει αρνητικά, μπορείτε να το λύσετε μόνο χειροκίνητα.</string>
   <string name="intro_autostart_dont_show">Έχω κάνει τις απαιτούμενες ρυθμίσεις. Δεν θέλω άλλες υπενθυμίσεις.*</string>
   <string name="intro_leave_unchecked">Άφησε απενεργοποιημένες τις υπενθυμίσεις. Μπορούν να επαναφερθούν στις ρυθμίσεις εφαρμογών / %s.</string>
   <string name="intro_more_info">Περισσότερες πληροφορίες</string>
@@ -215,10 +213,8 @@
   <string name="login_password">Συνθηματικό</string>
   <string name="login_password_hide">Απόκρυψη συνθηματικού</string>
   <string name="login_password_show">Εμφάνιση συνθηματικού</string>
-  <string name="login_password_optional">Συνθηματικό*</string>
   <string name="login_type_url">Είσοδος με την URL και το όνομα χρήστη</string>
   <string name="login_user_name">Όνομα χρήστη</string>
-  <string name="login_user_name_optional">Όνομα χρήστη*</string>
   <string name="login_base_url">Βασική URL</string>
   <string name="login_base_url_info"><![CDATA[Η βασική διεύθυνση URL θα ελεγχθεί άμεσα, αλλά <a href="%s">οι υπηρεσίες εντοπίζονται επίσης</a> χρησιμοποιώντας εγγραφές DNS και γνωστές διευθύνσεις URL.]]></string>
   <string name="login_select_certificate">Επιλογή πιστοποιητικού</string>
@@ -230,13 +226,10 @@
   <string name="login_account_name_required">Απαιτείται όνομα λογαριασμού</string>
   <string name="login_account_name_already_taken">Το όνομα λογαριασμού έχει ήδη ληφθεί</string>
   <string name="login_type_advanced">Σύνδεση για προχωρημένους</string>
-  <string name="login_no_client_certificate_optional">Δεν υπάρχει πιστοποιητικό πελάτη*</string>
   <string name="login_client_certificate_selected">Πιστοποιητικό πελάτη: %s</string>
   <string name="login_no_certificate_found">Δεν βρέθηκε πιστοποιητικό</string>
   <string name="login_install_certificate">Εγκατάσταση πιστοποιητικού</string>
   <string name="login_type_google">Επαφές / Ημερολόγιο Google</string>
-  <string name="login_google_see_tested_with">Παρακαλούμε ανατρέξτε στη σελίδα μας «Δοκιμασμένο με τη Google» για ενημερωμένες πληροφορίες.</string>
-  <string name="login_google_unexpected_warnings">Ενδέχεται να εμφανιστούν απροσδόκητες προειδοποιήσεις ή/και να χρειαστεί να δημιουργήσετε το δικό σας αναγνωριστικό πελάτη.</string>
   <string name="login_google_account">Λογαριασμός Google</string>
   <string name="login_google">Συνδεθείτε με την Google</string>
   <string name="login_google_client_id">Αναγνωριστικό πελάτη (προαιρετικό)</string>
@@ -288,7 +281,6 @@
   <string name="settings_ignore_vpns_off">Το VPN χωρίς υποκείμενη επικυρωμένη σύνδεση στο διαδίκτυο είναι αρκετό για την εκτέλεση του συγχρονισμού</string>
   <string name="settings_authentication">Πιστοποίηση</string>
   <string name="settings_username">Όνομα χρήστη</string>
-  <string name="settings_password">Συνθηματικό</string>
   <string name="settings_new_password">Νέο συνθηματικό</string>
   <string name="settings_password_summary">Ενημερώστε το συνθηματικό σύμφωνα με τον διακομιστή σας.</string>
   <string name="settings_certificate_alias">Πιστοποιητικό πελάτη</string>
@@ -325,7 +317,6 @@
   <string name="create_addressbook">Δημιουργία βιβλίου διευθύνσεων</string>
   <string name="create_addressbook_maybe_not_supported">Η δημιουργία βιβλίου διευθύνσεων μέσω CardDAV ενδέχεται να μην υποστηρίζεται από το διακομιστή.</string>
   <string name="create_calendar">Δημιουργία ημερολογίου</string>
-  <string name="create_calendar_time_zone_optional">Προεπιλεγμένη ζώνη ώρας*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Πιθανές καταχωρήσεις ημερολογίου</string>
   <string name="create_calendar_type_vevent">Συμβάντα</string>
@@ -335,10 +326,10 @@
   <string name="create_collection_color">Χρώμα</string>
   <string name="create_collection_display_name">Τίτλος</string>
   <string name="create_collection_home_set">Τοποθεσία αποθήκευσης</string>
-  <string name="create_collection_description_optional">Περιγραφή*</string>
   <string name="create_collection_create">Δημιουργία</string>
-  <string name="create_collection_optional">* προαιρετικό</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">επαφές</string>
+  <string name="collection_datatype_tasks">εργασίες</string>
   <string name="collection_delete">Διαγραφή συλλογής</string>
   <string name="collection_delete_warning">Αυτή η συλλογή (%s) και όλα τα δεδομένα της θα διαγραφούν μόνιμα, τόσο τοπικά όσο και από τον διακομιστή.</string>
   <string name="collection_synchronization">Συγχρονισμός</string>
@@ -394,7 +385,7 @@
   <string name="webdav_add_mount_display_name">Εμφανιζόμενο όνομα</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Μη έγκυρο URL</string>
-  <string name="webdav_add_mount_authentication">Πιστοποίηση (προαιρετική)</string>
+  <string name="webdav_add_mount_authentication">Πιστοποίηση</string>
   <string name="webdav_add_mount_username">Όνομα χρήστη</string>
   <string name="webdav_add_mount_password">Κωδικός πρόσβασης</string>
   <string name="webdav_add_mount_add">Προσθήκη βάσης</string>

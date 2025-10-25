@@ -14,7 +14,7 @@ class Converters {
 
     @TypeConverter
     fun httpUrlToString(url: HttpUrl?) =
-            url?.toString()
+        url?.toString()
 
     @TypeConverter
     fun mediaTypeToString(mediaType: MediaType?) =

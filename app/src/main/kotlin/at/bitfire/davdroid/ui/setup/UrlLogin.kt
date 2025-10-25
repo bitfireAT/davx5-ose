@@ -33,8 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.davdroid.ui.composable.PasswordTextField
@@ -87,6 +87,7 @@ fun UrlLoginScreen(
     onLogin: () -> Unit = {}
 ) {
     val focusRequester = remember { FocusRequester() }
+
     Assistant(
         nextLabel = stringResource(R.string.login_login),
         nextEnabled = canContinue,
@@ -99,6 +100,19 @@ fun UrlLoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
+            )
+
+            val manualUrl = ExternalUris.Manual.baseUrl.buildUpon()
+                .appendPath(ExternalUris.Manual.PATH_ACCOUNTS_COLLECTIONS)
+                .fragment(ExternalUris.Manual.FRAGMENT_SERVICE_DISCOVERY)
+                .build()
+            val urlInfo = HtmlCompat.fromHtml(stringResource(R.string.login_base_url_info, manualUrl), HtmlCompat.FROM_HTML_MODE_COMPACT)
+            Text(
+                text = urlInfo.toAnnotatedString(),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, bottom = 16.dp)
             )
 
             OutlinedTextField(
@@ -117,19 +131,6 @@ fun UrlLoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
-            )
-
-            val manualUrl = Constants.MANUAL_URL.buildUpon()
-                .appendPath(Constants.MANUAL_PATH_ACCOUNTS_COLLECTIONS)
-                .fragment(Constants.MANUAL_FRAGMENT_SERVICE_DISCOVERY)
-                .build()
-            val urlInfo = HtmlCompat.fromHtml(stringResource(R.string.login_base_url_info, manualUrl), HtmlCompat.FROM_HTML_MODE_COMPACT)
-            Text(
-                text = urlInfo.toAnnotatedString(),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 16.dp)
             )
 
             OutlinedTextField(
@@ -157,7 +158,7 @@ fun UrlLoginScreen(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-                onKeyboardAction = { onLogin() },
+                onKeyboardAction = { if (canContinue) onLogin() },
                 modifier = Modifier.fillMaxWidth()
             )
         }

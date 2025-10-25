@@ -9,9 +9,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
+import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
+import androidx.core.net.toUri
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalDataStore
@@ -77,6 +78,7 @@ class TasksAppManager @Inject constructor(
     /**
      * Sets up sync for the selected TaskProvider.
      */
+    @WorkerThread
     fun selectProvider(selectedProvider: ProviderName?) {
         logger.info("Selecting tasks app: $selectedProvider")
 
@@ -122,7 +124,7 @@ class TasksAppManager @Inject constructor(
                 // couldn't get provider app icon
             }
 
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${e.provider.packageName}"))
+            val intent = Intent(Intent.ACTION_VIEW, "market://details?id=${e.provider.packageName}".toUri())
             val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
 
             if (intent.resolveActivity(pm) != null)

@@ -17,19 +17,22 @@ import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.di.SyncDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.Event
-import at.bitfire.ical4android.InvalidCalendarException
+import at.bitfire.ical4android.EventReader
+import at.bitfire.ical4android.EventWriter
 import at.bitfire.ical4android.util.DateUtils
+import at.bitfire.synctools.exception.InvalidICalendarException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -41,11 +44,12 @@ import net.fortuna.ical4j.model.property.Action
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
+import java.io.StringWriter
 import java.time.Duration
 import java.time.ZonedDateTime
+import java.util.Optional
 import java.util.logging.Level
 
 /**
@@ -54,7 +58,6 @@ import java.util.logging.Level
 class CalendarSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted httpClient: HttpClient,
-    @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
     @Assisted collection: Collection,
@@ -64,7 +67,7 @@ class CalendarSyncManager @AssistedInject constructor(
 ): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
     httpClient,
-    authority,
+    SyncDataType.EVENTS,
     syncResult,
     localCalendar,
     collection,
@@ -77,7 +80,6 @@ class CalendarSyncManager @AssistedInject constructor(
         fun calendarSyncManager(
             account: Account,
             httpClient: HttpClient,
-            authority: String,
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
             collection: Collection,
@@ -157,7 +159,7 @@ class CalendarSyncManager @AssistedInject constructor(
             for (event in localCollection.findDirty()) {
                 logger.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
-                    event.clearDirty(null, null)
+                    event.clearDirty(Optional.empty(), null, null)
                 }
                 modified = true
             }
@@ -176,15 +178,22 @@ class CalendarSyncManager @AssistedInject constructor(
         return modified or superModified
     }
 
+    override fun onSuccessfulUpload(local: LocalEvent, newFileName: String, eTag: String?, scheduleTag: String?) {
+        super.onSuccessfulUpload(local, newFileName, eTag, scheduleTag)
+
+        // update local SEQUENCE to new value after successful upload
+        local.updateSequence(local.getCachedEvent().sequence)
+    }
+
     override fun generateUpload(resource: LocalEvent): RequestBody =
         SyncException.wrapWithLocalResource(resource) {
-            val event = requireNotNull(resource.event)
+            val event = resource.eventToUpload()
             logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
-            val os = ByteArrayOutputStream()
-            event.write(os)
-
-            os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+            // write iCalendar to string and convert to request body
+            val iCalWriter = StringWriter()
+            EventWriter(Constants.iCalProdId).write(event, iCalWriter)
+            iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
@@ -255,8 +264,8 @@ class CalendarSyncManager @AssistedInject constructor(
     private fun processVEvent(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
         val events: List<Event>
         try {
-            events = Event.eventsFromReader(reader)
-        } catch (e: InvalidCalendarException) {
+            events = EventReader().readEvents(reader)
+        } catch (e: InvalidICalendarException) {
             logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
             return
@@ -282,15 +291,22 @@ class CalendarSyncManager @AssistedInject constructor(
             SyncException.wrapWithLocalResource(local) {
                 if (local != null) {
                     logger.log(Level.INFO, "Updating $fileName in local calendar", event)
-                    local.eTag = eTag
-                    local.scheduleTag = scheduleTag
-                    local.update(event)
+                    local.update(
+                        data = event,
+                        fileName = fileName,
+                        eTag = eTag,
+                        scheduleTag = scheduleTag,
+                        flags = LocalResource.FLAG_REMOTELY_PRESENT
+                    )
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local calendar", event)
-                    val newLocal = LocalEvent(localCollection, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                    SyncException.wrapWithLocalResource(newLocal) {
-                        newLocal.add()
-                    }
+                    localCollection.add(
+                        event = event,
+                        fileName = fileName,
+                        eTag = eTag,
+                        scheduleTag = scheduleTag,
+                        flags = LocalResource.FLAG_REMOTELY_PRESENT
+                    )
                 }
             }
         } else

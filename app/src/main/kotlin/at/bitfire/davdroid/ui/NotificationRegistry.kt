@@ -47,10 +47,12 @@ class NotificationRegistry @Inject constructor(
         const val NOTIFY_DATABASE_CORRUPTED = 4
         const val NOTIFY_SYNC_ERROR = 10
         const val NOTIFY_INVALID_RESOURCE = 11
-        const val NOTIFY_WEBDAV_ACCESS = 12
         const val NOTIFY_SYNC_EXPEDITED = 14
         const val NOTIFY_TASKS_PROVIDER_TOO_OLD = 20
         const val NOTIFY_PERMISSIONS = 21
+
+        @Suppress("unused")     // for build variants
+        const val NOTIFY_LICENSE = 100
 
     }
 

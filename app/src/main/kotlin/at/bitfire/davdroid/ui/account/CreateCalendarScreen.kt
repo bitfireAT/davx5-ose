@@ -62,7 +62,7 @@ import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.widget.CalendarColorPickerDialog
-import at.bitfire.ical4android.Css3Color
+import at.bitfire.synctools.icalendar.Css3Color
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Composable
@@ -228,7 +228,6 @@ fun CreateCalendarScreen(
                         value = description,
                         onValueChange = onSetDescription,
                         label = { Text(stringResource(R.string.create_collection_description_optional)) },
-                        supportingText = { Text(stringResource(R.string.create_collection_optional)) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done
@@ -251,7 +250,6 @@ fun CreateCalendarScreen(
                             label = { Text(stringResource(R.string.create_calendar_time_zone_optional)) },
                             value = timeZone ?: stringResource(R.string.create_calendar_time_zone_none),
                             onValueChange = { /* read-only */ },
-                            supportingText = { Text(stringResource(R.string.create_collection_optional)) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                             readOnly = true,
                             modifier = Modifier

@@ -16,17 +16,18 @@ import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.di.SyncDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.JtxICalObject
+import at.bitfire.synctools.exception.InvalidICalendarException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -43,7 +44,6 @@ import java.util.logging.Level
 class JtxSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted httpClient: HttpClient,
-    @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
@@ -52,7 +52,7 @@ class JtxSyncManager @AssistedInject constructor(
 ): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(
     account,
     httpClient,
-    authority,
+    SyncDataType.TASKS,
     syncResult,
     localCollection,
     collection,
@@ -65,7 +65,6 @@ class JtxSyncManager @AssistedInject constructor(
         fun jtxSyncManager(
             account: Account,
             httpClient: HttpClient,
-            authority: String,
             syncResult: SyncResult,
             localCollection: LocalJtxCollection,
             collection: Collection,
@@ -101,7 +100,7 @@ class JtxSyncManager @AssistedInject constructor(
         SyncException.wrapWithLocalResource(resource) {
             logger.log(Level.FINE, "Preparing upload of icalobject ${resource.fileName}", resource)
             val os = ByteArrayOutputStream()
-            resource.write(os)
+            resource.write(os, Constants.iCalProdId)
             os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }
 
@@ -168,7 +167,7 @@ class JtxSyncManager @AssistedInject constructor(
         try {
             // parse the reader content and return the list of ICalObjects
             icalobjects.addAll(JtxICalObject.fromReader(reader, localCollection))
-        } catch (e: InvalidCalendarException) {
+        } catch (e: InvalidICalendarException) {
             logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
             return

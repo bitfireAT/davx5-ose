@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.resource
 
-import at.bitfire.davdroid.db.SyncState
-
 interface LocalCollection<out T: LocalResource<*>> {
 
     /** a tag that uniquely identifies the collection (DAVx5-wide) */
@@ -50,10 +48,8 @@ interface LocalCollection<out T: LocalResource<*>> {
      */
     fun findByName(name: String): T?
 
-
     /**
-     * Sets the [LocalEvent.COLUMN_FLAGS] value for entries which are not dirty ([Events.DIRTY] is 0)
-     * and have an [Events.ORIGINAL_ID] of null.
+     * Updates the flags value for entries which are not dirty.
      *
      * @param flags    value of flags to set (for instance, [LocalResource.FLAG_REMOTELY_PRESENT]])
      *
@@ -62,8 +58,7 @@ interface LocalCollection<out T: LocalResource<*>> {
     fun markNotDirty(flags: Int): Int
 
     /**
-     * Removes entries which are not dirty ([Events.DIRTY] is 0 and an [Events.ORIGINAL_ID] is null) with
-     * a given flag combination.
+     * Removes entries which are not dirty with a given flag combination.
      *
      * @param flags    exact flags value to remove entries with (for instance, if this is [LocalResource.FLAG_REMOTELY_PRESENT]],
      *                 all entries with exactly this flag will be removed)

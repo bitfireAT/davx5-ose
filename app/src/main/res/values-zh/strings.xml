@@ -11,7 +11,6 @@
   <string name="field_required">此字段是必填项</string>
   <string name="help">帮助</string>
   <string name="navigate_up">向上导航</string>
-  <string name="optional_label">* 可选</string>
   <string name="options_menu">选项菜单</string>
   <string name="share">分享</string>
   <string name="sync_started">同步已启动/已加入队列</string>
@@ -34,7 +33,7 @@
   <string name="intro_battery_text">为了定期进行同步，必须允许%s在后台运行。否则，Android可能会随时暂停同步。</string>
   <string name="intro_battery_dont_show">我不需要定期的同步。*</string>
   <string name="intro_autostart_title">%s兼容性</string>
-  <string name="intro_autostart_text">该设备可能会阻止同步。如果您受到影响，则只能手动解决。</string>
+  <string name="intro_autostart_text">特定厂商的固件可能会阻止同步。如果你受到影响，你只能手动解决这一问题。</string>
   <string name="intro_autostart_dont_show">我已完成所需的设置。不再提醒我。*</string>
   <string name="intro_leave_unchecked">*取消选中以供稍后提醒。可以在应用设置中重置/%s。</string>
   <string name="intro_more_info">更多信息</string>
@@ -120,6 +119,7 @@
   <string name="navigation_drawer_website">应用网站</string>
   <string name="navigation_drawer_manual">手册</string>
   <string name="navigation_drawer_faq">常见问题</string>
+  <string name="navigation_drawer_managed">面向机构</string>
   <string name="navigation_drawer_community">社区</string>
   <string name="navigation_drawer_support_project">支持项目</string>
   <string name="navigation_drawer_contribute">如何作贡献</string>
@@ -203,7 +203,7 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">推送消息始终是加密的</string>
   <!--AccountScreen-->
-  <string name="account_invalid_account">账户不存在</string>
+  <string name="account_invalid_account">账户已被删除</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -245,10 +245,10 @@
   <string name="login_password">密码</string>
   <string name="login_password_hide">隐藏密码</string>
   <string name="login_password_show">显示密码</string>
-  <string name="login_password_optional">密码*</string>
+  <string name="login_password_optional">密码（可选）</string>
   <string name="login_type_url">使用 URL 和用户名登录</string>
   <string name="login_user_name">用户名</string>
-  <string name="login_user_name_optional">用户名*</string>
+  <string name="login_user_name_optional">用户名（可选）</string>
   <string name="login_base_url">根地址</string>
   <string name="login_base_url_info"><![CDATA[此基URL将被直接检查，但 <a href="%s">服务发现也将</a>使用 DNS 记录 和已知 URLs 进行。]]></string>
   <string name="login_select_certificate">选择证书</string>
@@ -262,13 +262,14 @@
   <string name="login_account_not_added">无法添加账户</string>
   <string name="login_finish">完成</string>
   <string name="login_type_advanced">高级登录</string>
-  <string name="login_no_client_certificate_optional">无客户端证书*</string>
+  <string name="login_no_client_certificate_optional">无客户端证书（可选）</string>
   <string name="login_client_certificate_selected">客户端证书：%s</string>
   <string name="login_no_certificate_found">没有找到证书</string>
   <string name="login_install_certificate">安装证书</string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Fastmail 账户</string>
+  <string name="login_fastmail_sign_in">使用 Fastmail 登录</string>
   <string name="login_type_google">Google 联系人/日历</string>
-  <string name="login_google_see_tested_with">请参阅我们的“Tested with”页面的 Google 部分获得最新信息。</string>
-  <string name="login_google_unexpected_warnings">你可能遇到意外的警告和/或者不得不创建自己的 client ID。</string>
   <string name="login_google_account">Google 账户</string>
   <string name="login_google">使用 Google 账户登录</string>
   <string name="login_google_client_id">Client ID (可选)</string>
@@ -320,9 +321,13 @@
   <string name="settings_ignore_vpns_off">没有底层验证的互联网连接的 VPN 足以运行同步了</string>
   <string name="settings_authentication">认证</string>
   <string name="settings_username">用户名</string>
-  <string name="settings_password">密码</string>
+  <string name="settings_password">密码或应用密码</string>
+  <string name="settings_app_password_hint"><![CDATA[你可能偏好使用 <a href="%1$s">应用密码</a>.]]></string>
   <string name="settings_new_password">新密码</string>
   <string name="settings_password_summary">修改服务器密码</string>
+  <string name="settings_reauthorize_oauth">再次授权 (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">当访问权被撤销时使用</string>
+  <string name="settings_reauthorize_oauth_success">授权成功</string>
   <string name="settings_certificate_alias">客户端证书</string>
   <string name="settings_certificate_alias_empty">无证书可用或未选择证书</string>
   <string name="settings_certificate_install">安装证书</string>
@@ -355,7 +360,7 @@
   <string name="create_addressbook">创建通讯录</string>
   <string name="create_addressbook_maybe_not_supported">服务器可能不支持通过 CalDAV 创建通讯录</string>
   <string name="create_calendar">创建日历</string>
-  <string name="create_calendar_time_zone_optional">默认时区*</string>
+  <string name="create_calendar_time_zone_optional">默认时区（可选）</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">可能使用的日历类型</string>
   <string name="create_calendar_type_vevent">事件</string>
@@ -365,10 +370,12 @@
   <string name="create_collection_color">颜色</string>
   <string name="create_collection_display_name">标题</string>
   <string name="create_collection_home_set">存储位置</string>
-  <string name="create_collection_description_optional">描述</string>
+  <string name="create_collection_description_optional">描述（可选）</string>
   <string name="create_collection_create">创建</string>
-  <string name="create_collection_optional">* 可选</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">联系人</string>
+  <string name="collection_datatype_events">活动</string>
+  <string name="collection_datatype_tasks">任务</string>
   <string name="collection_delete">删除集合</string>
   <string name="collection_delete_warning">此集合(%s)及其所有数据将从本地和服务器被永久删除</string>
   <string name="collection_synchronization">同步</string>
@@ -429,9 +436,12 @@
   <string name="webdav_add_mount_display_name">展示名称</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">无效 URL</string>
-  <string name="webdav_add_mount_authentication">身份验证（可选）</string>
+  <string name="webdav_add_mount_mountpoint_displayname">挂载点和显示名称</string>
+  <string name="webdav_add_mount_authentication">认证</string>
   <string name="webdav_add_mount_username">用户名</string>
   <string name="webdav_add_mount_password">密码</string>
+  <string name="webdav_add_mount_username_optional">用户名（可选）</string>
+  <string name="webdav_add_mount_password_optional">密码（可选）</string>
   <string name="webdav_add_mount_add">添加 WebDAV 网址</string>
   <string name="webdav_add_mount_no_support">此 URL 无 WebDAV 服务</string>
   <string name="webdav_remove_mount_title">删除装载点</string>

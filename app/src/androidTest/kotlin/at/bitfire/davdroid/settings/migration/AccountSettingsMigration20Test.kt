@@ -127,16 +127,16 @@ class AccountSettingsMigration20Test {
                     Calendars.NAME to url,
                     Calendars.SYNC_EVENTS to 1
                 )
-            )!!
+            )!!.asSyncAdapter(account)
             try {
-                migration.migrateCalendars(account, calDavServiceId = 1)
+                migration.migrateCalendars(account, 1)
 
-                provider.query(uri.asSyncAdapter(account), arrayOf(Calendars._SYNC_ID), null, null, null)!!.use { cursor ->
+                provider.query(uri, arrayOf(Calendars._SYNC_ID), null, null, null)!!.use { cursor ->
                     cursor.moveToNext()
                     assertEquals(collectionId, cursor.getLongOrNull(0))
                 }
             } finally {
-                provider.delete(uri.asSyncAdapter(account), null, null)
+                provider.delete(uri, null, null)
             }
         }
     }

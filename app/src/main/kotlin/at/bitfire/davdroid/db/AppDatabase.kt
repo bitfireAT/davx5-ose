@@ -24,6 +24,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.db.migration.AutoMigration12
 import at.bitfire.davdroid.db.migration.AutoMigration16
+import at.bitfire.davdroid.db.migration.AutoMigration18
 import at.bitfire.davdroid.ui.AccountsActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.Module
@@ -34,6 +35,13 @@ import dagger.hilt.components.SingletonComponent
 import java.io.Writer
 import javax.inject.Singleton
 
+/**
+ * The app database. Managed via android jetpack room. Room provides an abstraction
+ * layer over SQLite.
+ *
+ * Note: In SQLite PRAGMA foreign_keys is off by default. Room activates it for
+ * production (non-test) databases.
+ */
 @Database(entities = [
     Service::class,
     HomeSet::class,
@@ -42,7 +50,8 @@ import javax.inject.Singleton
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 17, autoMigrations = [
+], exportSchema = true, version = 18, autoMigrations = [
+    AutoMigration(from = 17, to = 18, spec = AutoMigration18::class),
     AutoMigration(from = 16, to = 17),      // collection: add VAPID key
     AutoMigration(from = 15, to = 16, spec = AutoMigration16::class),
     AutoMigration(from = 14, to = 15),

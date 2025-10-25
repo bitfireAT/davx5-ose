@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.resource.LocalResource
+import java.util.Optional
 
 class LocalTestResource: LocalResource<Any> {
 
@@ -19,10 +20,10 @@ class LocalTestResource: LocalResource<Any> {
 
     override fun prepareForUpload() = "generated-file.txt"
 
-    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
+    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         dirty = false
-        if (fileName != null)
-            this.fileName = fileName
+        if (fileName.isPresent)
+            this.fileName = fileName.get()
         this.eTag = eTag
         this.scheduleTag = scheduleTag
     }
@@ -31,9 +32,8 @@ class LocalTestResource: LocalResource<Any> {
         this.flags = flags
     }
 
-    override fun add() = throw NotImplementedError()
-    override fun update(data: Any) = throw NotImplementedError()
-    override fun delete() = throw NotImplementedError()
+    override fun update(data: Any, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) = throw NotImplementedError()
+    override fun deleteLocal() = throw NotImplementedError()
     override fun resetDeleted() = throw NotImplementedError()
 
 }

@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentValues
 import androidx.core.content.contentValuesOf
-import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.DmfsTaskListFactory
 import at.bitfire.ical4android.TaskProvider
@@ -110,7 +109,7 @@ class LocalTaskList private constructor(
                     arrayOf(id.toString(), flags.toString()))
 
     override fun forgetETags() {
-        val values = contentValuesOf(LocalEvent.COLUMN_ETAG to null)
+        val values = contentValuesOf(LocalTask.COLUMN_ETAG to null)
         provider.update(tasksSyncUri(), values, "${Tasks.LIST_ID}=?",
                 arrayOf(id.toString()))
     }

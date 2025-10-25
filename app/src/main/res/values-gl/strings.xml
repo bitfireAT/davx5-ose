@@ -11,7 +11,6 @@
   <string name="field_required">Este campo é requerido</string>
   <string name="help">Axuda</string>
   <string name="navigate_up">Ir arriba</string>
-  <string name="optional_label">* optativo</string>
   <string name="options_menu">Menú de opcións</string>
   <string name="share">Compartir</string>
   <string name="sync_started">Sincronización iniciada/en agarda</string>
@@ -34,7 +33,6 @@
   <string name="intro_battery_text">Para sincronizar a intervalos regulares, %s debe ter permiso para executarse en segundo plano. Se non, Android podería deter a sincronización.</string>
   <string name="intro_battery_dont_show">Non preciso sincr. con regularidade.*</string>
   <string name="intro_autostart_title">Compatibilidade de %s</string>
-  <string name="intro_autostart_text">Este dispositivo probablemente está a bloquear a sincronización. Esto só se pode solucionar de xeito manual.</string>
   <string name="intro_autostart_dont_show">Xa fixen o que me pediades. Non mo lembres máis.*</string>
   <string name="intro_leave_unchecked">* Deixar sen marcar para lembrar máis tarde. Pode restablecerse nos axustes da app / %s.</string>
   <string name="intro_more_info">Máis información</string>
@@ -244,10 +242,8 @@
   <string name="login_password">Contrasinal</string>
   <string name="login_password_hide">Agochar contrasinal</string>
   <string name="login_password_show">Mostrar contrasinal</string>
-  <string name="login_password_optional">Contrasinal*</string>
   <string name="login_type_url">Conectar con URL e nome de usuaria</string>
   <string name="login_user_name">Nome de usuaria</string>
-  <string name="login_user_name_optional">Identificador*</string>
   <string name="login_base_url">URL base</string>
   <string name="login_base_url_info"><![CDATA[O URL base compróbase directamente, mais os <a href="%s">servizos tamén se atopan</a> usando rexistros DNS e URLs tipo well-known.]]></string>
   <string name="login_select_certificate">Escoller certificado</string>
@@ -261,13 +257,10 @@
   <string name="login_account_not_added">Non se puido engadir a conta</string>
   <string name="login_finish">Rematar</string>
   <string name="login_type_advanced">Acceso avanzado</string>
-  <string name="login_no_client_certificate_optional">Sen certificado cliente*</string>
   <string name="login_client_certificate_selected">Certificado cliente: %s</string>
   <string name="login_no_certificate_found">Non se atopa certificado</string>
   <string name="login_install_certificate">Instalar certificado</string>
   <string name="login_type_google">Contactos / Calendario de Google</string>
-  <string name="login_google_see_tested_with">Le a nosa páxina \"Probado con Google\" para ter información actualizada.</string>
-  <string name="login_google_unexpected_warnings">Pode que recibas algún aviso e/ou teñas que crear o teu propio ID de cliente.</string>
   <string name="login_google_account">Conta de Google</string>
   <string name="login_google">Inicia sesión con Google</string>
   <string name="login_google_client_id">ID Cliente (optativo)</string>
@@ -319,7 +312,6 @@
   <string name="settings_ignore_vpns_off">VPN, sen ter a conexión a Internet verificada, é suficiente para lanzar a sincronización</string>
   <string name="settings_authentication">Autenticación</string>
   <string name="settings_username">Nome de usuaria</string>
-  <string name="settings_password">Contrasinal</string>
   <string name="settings_new_password">Novo contrasinal</string>
   <string name="settings_password_summary">Actualizar o contrasinal de acordo ao teu servidor.</string>
   <string name="settings_certificate_alias">Certificado do cliente</string>
@@ -356,7 +348,6 @@
   <string name="create_addressbook">Crear libreta de enderezos</string>
   <string name="create_addressbook_maybe_not_supported">O servidor podería non ter soporte para crear libretas de enderezos usando CardDAV.</string>
   <string name="create_calendar">Crear calendario</string>
-  <string name="create_calendar_time_zone_optional">Zona horaria por defecto*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Entradas posibles no calendario</string>
   <string name="create_calendar_type_vevent">Eventos</string>
@@ -366,10 +357,11 @@
   <string name="create_collection_color">Cor</string>
   <string name="create_collection_display_name">Título</string>
   <string name="create_collection_home_set">Localización do almacenamento</string>
-  <string name="create_collection_description_optional">Descrición*</string>
+  <string name="create_collection_description_optional">Descrición (optativo)</string>
   <string name="create_collection_create">Crear</string>
-  <string name="create_collection_optional">* optativo</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">contactos</string>
+  <string name="collection_datatype_tasks">tarefas</string>
   <string name="collection_delete">Eliminar colección</string>
   <string name="collection_delete_warning">Esta colección (%s) e todos os seus datos serán borrados permanentemente, tanto localmente como no servidor.</string>
   <string name="collection_synchronization">Sincronización</string>
@@ -427,7 +419,7 @@
   <string name="webdav_add_mount_display_name">Nome mostrado</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL inválido</string>
-  <string name="webdav_add_mount_authentication">Autenticación (optativo)</string>
+  <string name="webdav_add_mount_authentication">Autenticación</string>
   <string name="webdav_add_mount_username">Nome de usuaria</string>
   <string name="webdav_add_mount_password">Contrasinal</string>
   <string name="webdav_add_mount_add">Engadir montaxe</string>

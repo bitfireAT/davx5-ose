@@ -17,7 +17,7 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
                     tools:ignore="AppLinkUrlError"
-                    android:scheme="at.bitfire.davdroid"
+                        android:scheme="${applicationId}"
                     android:path="/oauth2/redirect"/>
             </intent-filter>
         </activity>

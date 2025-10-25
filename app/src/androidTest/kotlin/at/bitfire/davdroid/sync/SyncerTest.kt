@@ -189,7 +189,7 @@ class SyncerTest {
         override val authority: String
             get() = throw NotImplementedError()
 
-        override fun acquireContentProvider(): ContentProviderClient? {
+        override fun acquireContentProvider(throwOnMissingPermissions: Boolean): ContentProviderClient? {
             throw NotImplementedError()
         }
 

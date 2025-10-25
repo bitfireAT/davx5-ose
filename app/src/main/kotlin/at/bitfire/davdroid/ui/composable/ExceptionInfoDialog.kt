@@ -47,23 +47,25 @@ fun ExceptionInfoDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(Icons.Rounded.Error, null)
-                Text(
-                    text = stringResource(titleRes),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp)
-                )
-            }
+            Text(
+                text = stringResource(titleRes)
+            )
+        },
+        icon = {
+            Icon(Icons.Rounded.Error, null)
         },
         text = {
+            val message = if (exception is HttpException) {
+                 when (exception.statusCode) {
+                    403 -> context.getString(R.string.debug_info_http_403_description)
+                    404 -> context.getString(R.string.debug_info_http_404_description)
+                    405 -> context.getString(R.string.debug_info_http_405_description)
+                     in 500..599 -> context.getString(R.string.debug_info_http_5xx_description)
+                    else -> null
+                }
+            } else null
             Text(
-                exception::class.java.name + "\n" + exception.localizedMessage,
-                style = MaterialTheme.typography.bodyLarge
+                text = message ?: "${exception::class.java.name}\n${exception.localizedMessage}"
             )
         },
         dismissButton = {

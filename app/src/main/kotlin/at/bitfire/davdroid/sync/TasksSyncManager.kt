@@ -15,17 +15,18 @@ import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.di.SyncDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.Task
+import at.bitfire.synctools.exception.InvalidICalendarException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -45,7 +46,6 @@ import java.util.logging.Level
 class TasksSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted httpClient: HttpClient,
-    @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTaskList,
     @Assisted collection: Collection,
@@ -54,7 +54,7 @@ class TasksSyncManager @AssistedInject constructor(
 ): SyncManager<LocalTask, LocalTaskList, DavCalendar>(
     account,
     httpClient,
-    authority,
+    SyncDataType.TASKS,
     syncResult,
     localCollection,
     collection,
@@ -67,7 +67,6 @@ class TasksSyncManager @AssistedInject constructor(
         fun tasksSyncManager(
             account: Account,
             httpClient: HttpClient,
-            authority: String,
             syncResult: SyncResult,
             localCollection: LocalTaskList,
             collection: Collection,
@@ -108,7 +107,7 @@ class TasksSyncManager @AssistedInject constructor(
             logger.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
 
             val os = ByteArrayOutputStream()
-            task.write(os)
+            task.write(os, Constants.iCalProdId)
 
             os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }
@@ -162,7 +161,7 @@ class TasksSyncManager @AssistedInject constructor(
         val tasks: List<Task>
         try {
             tasks = Task.tasksFromReader(reader)
-        } catch (e: InvalidCalendarException) {
+        } catch (e: InvalidICalendarException) {
             logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
             return

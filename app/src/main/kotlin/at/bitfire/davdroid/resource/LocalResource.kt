@@ -4,8 +4,12 @@
 
 package at.bitfire.davdroid.resource
 
-import android.net.Uri
+import at.bitfire.davdroid.resource.LocalResource.Companion.FLAG_REMOTELY_PRESENT
+import java.util.Optional
 
+/**
+ * Defines operations that are used by SyncManager for all sync data types.
+ */
 interface LocalResource<in TData: Any> {
 
     companion object {
@@ -32,10 +36,10 @@ interface LocalResource<in TData: Any> {
     val fileName: String?
 
     /** remote ETag for the resource */
-    var eTag: String?
+    val eTag: String?
 
     /** remote Schedule-Tag for the resource */
-    var scheduleTag: String?
+    val scheduleTag: String?
 
     /** bitfield of flags; currently either [FLAG_REMOTELY_PRESENT] or 0 */
     val flags: Int
@@ -48,47 +52,41 @@ interface LocalResource<in TData: Any> {
      *   saved to the content provider. The sync manager is responsible for saving the file name that
      *   was actually used.
      *
-     * @return new file name of the resource (like "<uid>.vcf")
+     * @return suggestion for new file name of the resource (like "<uid>.vcf")
      */
     fun prepareForUpload(): String
 
     /**
-     * Unsets the /dirty/ field of the resource. Typically used after successfully uploading a
-     * locally modified resource.
+     * Unsets the _dirty_ field of the resource and updates other sync-related fields in the content provider.
+     * Does not affect `this` object itself (which is immutable).
      *
-     * @param fileName If this argument is not *null*, [LocalResource.fileName] will be set to its value.
-     * @param eTag ETag of the uploaded resource as returned by the server (null if the server didn't return one)
-     * @param scheduleTag CalDAV Schedule-Tag of the uploaded resource as returned by the server (null if not applicable or if the server didn't return one)
+     * @param fileName      If this optional argument is present, [LocalResource.fileName] will be set to its value.
+     * @param eTag          ETag of the uploaded resource as returned by the server (null if the server didn't return one)
+     * @param scheduleTag   CalDAV only: `Schedule-Tag` of the uploaded resource as returned by the server
+     *                      (null if not applicable or if the server didn't return one)
      */
-    fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String? = null)
+    fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String? = null)
 
     /**
-     * Sets (local) flags of the resource. At the moment, the only allowed values are
-     * 0 and [FLAG_REMOTELY_PRESENT].
+     * Sets (local) flags of the resource in the content provider.
+     * Does not affect `this` object itself (which is immutable).
+     *
+     * At the moment, the only allowed values are 0 and [FLAG_REMOTELY_PRESENT].
      */
     fun updateFlags(flags: Int)
 
-
-    /**
-     * Adds the data object to the content provider and ensures that the dirty flag is clear.
-     *
-     * @return content URI of the created row (e.g. event URI)
-     */
-    fun add(): Uri
-
     /**
      * Updates the data object in the content provider and ensures that the dirty flag is clear.
+     * Does not affect `this` or the [data] object (which are both immutable).
      *
      * @return content URI of the updated row (e.g. event URI)
      */
-    fun update(data: TData): Uri
+    fun update(data: TData, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int)
 
     /**
      * Deletes the data object from the content provider.
-     *
-     * @return number of affected rows
      */
-    fun delete(): Int
+    fun deleteLocal()
 
     /**
      * Undoes deletion of the data object from the content provider.

@@ -6,15 +6,15 @@ package at.bitfire.davdroid.ui.setup
 
 import android.accounts.AccountManager
 import android.content.Context
-import android.content.Intent
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.network.GoogleLogin
+import at.bitfire.davdroid.network.OAuthGoogle
+import at.bitfire.davdroid.network.OAuthIntegration
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.util.trimToNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -22,7 +22,6 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
-import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import java.util.Locale
@@ -41,8 +40,6 @@ class GoogleLoginModel @AssistedInject constructor(
     interface Factory {
         fun create(loginInfo: LoginInfo): GoogleLoginModel
     }
-
-    val googleLogin = GoogleLogin(authService)
 
     override fun onCleared() {
         authService.dispose()
@@ -80,8 +77,11 @@ class GoogleLoginModel @AssistedInject constructor(
         uiState = uiState.copy(customClientId = clientId)
     }
 
+
+    fun authorizationContract() = OAuthIntegration.AuthorizationContract(authService)
+
     fun signIn() =
-        googleLogin.signIn(
+        OAuthGoogle.signIn(
             email = uiState.emailWithDomain,
             customClientId = uiState.customClientId.trimToNull(),
             locale = Locale.getDefault().toLanguageTag()
@@ -94,12 +94,12 @@ class GoogleLoginModel @AssistedInject constructor(
     fun authenticate(authResponse: AuthorizationResponse) {
         viewModelScope.launch {
             try {
-                val credentials = googleLogin.authenticate(authResponse)
+                val credentials = Credentials(authState = OAuthIntegration.authenticate(authService, authResponse))
 
                 // success, provide login info to continue
                 uiState = uiState.copy(
                     result = LoginInfo(
-                        baseUri = GoogleLogin.googleBaseUri(uiState.emailWithDomain),
+                        baseUri = OAuthGoogle.baseUri(uiState.emailWithDomain),
                         credentials = credentials,
                         suggestedAccountName = uiState.emailWithDomain
                     )
@@ -125,15 +125,6 @@ class GoogleLoginModel @AssistedInject constructor(
             .getAccountsByType("com.google")
             .map { it.name }
             .firstOrNull()
-    }
-
-
-    inner class AuthorizationContract() : ActivityResultContract<AuthorizationRequest, AuthorizationResponse?>() {
-        override fun createIntent(context: Context, input: AuthorizationRequest) =
-            authService.getAuthorizationRequestIntent(input)
-
-        override fun parseResult(resultCode: Int, intent: Intent?): AuthorizationResponse? =
-            intent?.let { AuthorizationResponse.fromIntent(it) }
     }
 
 }

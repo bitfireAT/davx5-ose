@@ -7,7 +7,7 @@ package at.bitfire.davdroid.settings.migration
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
-import android.provider.CalendarContract.Calendars
+import android.provider.CalendarContract
 import androidx.annotation.OpenForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.db.Service
@@ -18,6 +18,7 @@ import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.ical4android.JtxCollection
+import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.techbee.jtx.JtxContract
 import dagger.Binds
 import dagger.Module
@@ -64,12 +65,7 @@ class AccountSettingsMigration20 @Inject constructor(
 
     @OpenForTesting
     internal fun migrateAddressBooks(account: Account, cardDavServiceId: Long) {
-        try {
-            addressBookStore.acquireContentProvider()
-        } catch (_: SecurityException) {
-            // no contacts permission
-            null
-        }?.use { provider ->
+        addressBookStore.acquireContentProvider()?.use { provider ->
             for (addressBook in addressBookStore.getAll(account, provider)) {
                 val url = accountManager.getUserData(addressBook.addressBookAccount, ADDRESS_BOOK_USER_DATA_URL) ?: continue
                 val collection = collectionRepository.getByServiceAndUrl(cardDavServiceId, url) ?: continue
@@ -80,35 +76,25 @@ class AccountSettingsMigration20 @Inject constructor(
 
     @OpenForTesting
     internal fun migrateCalendars(account: Account, calDavServiceId: Long) {
-        try {
-            calendarStore.acquireContentProvider()
-        } catch (_: SecurityException) {
-            // no contacts permission
-            null
-        }?.use { provider ->
-            for (calendar in calendarStore.getAll(account, provider))
-                provider.query(calendar.calendarSyncURI(), arrayOf(Calendars.NAME), null, null, null)?.use { cursor ->
-                    if (cursor.moveToFirst())
-                        cursor.getString(0)?.let { url ->
-                            collectionRepository.getByServiceAndUrl(calDavServiceId, url)?.let { collection ->
-                                calendar.update(contentValuesOf(
-                                    Calendars._SYNC_ID to collection.id
-                                ))
-                            }
-                        }
+        calendarStore.acquireContentProvider()?.use { client ->
+            val calendarProvider = AndroidCalendarProvider(account, client)
+            // for each calendar, assign _SYNC_ID := ID if collection (identified by NAME field = URL)
+            for (calendar in calendarProvider.findCalendars()) {
+                val url = calendar.name ?: continue
+                collectionRepository.getByServiceAndUrl(calDavServiceId, url)?.let { collection ->
+                    calendar.update(contentValuesOf(
+                        CalendarContract.Calendars._SYNC_ID to collection.id
+                    ))
                 }
+
+            }
         }
     }
 
     @OpenForTesting
     internal fun migrateTaskLists(account: Account, calDavServiceId: Long) {
         val taskListStore = tasksAppManager.getDataStore() ?: /* no tasks app */ return
-        try {
-            taskListStore.acquireContentProvider()
-        } catch (_: SecurityException) {
-            // no tasks permission
-            null
-        }?.use { provider ->
+        taskListStore.acquireContentProvider()?.use { provider ->
             for (taskList in taskListStore.getAll(account, provider)) {
                 when (taskList) {
                     is LocalTaskList -> {       // tasks.org, OpenTasks

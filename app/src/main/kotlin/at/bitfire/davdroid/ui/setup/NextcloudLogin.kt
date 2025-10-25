@@ -42,9 +42,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.hilt.navigation.compose.hiltViewModel
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.ExternalUris
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.davdroid.ui.composable.ProgressBar
@@ -56,10 +56,10 @@ object NextcloudLogin : LoginType {
         get() = R.string.login_type_nextcloud
 
     override val helpUrl: Uri
-        get() = Constants.HOMEPAGE_URL.buildUpon()
-            .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
+        get() = ExternalUris.Homepage.baseUrl.buildUpon()
+            .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
             .appendPath("nextcloud")
-            .withStatParams("LoginTypeNextcloud")
+            .withStatParams(javaClass.simpleName)
             .build()
 
 
@@ -89,7 +89,6 @@ object NextcloudLogin : LoginType {
                     // Custom Tabs are available
                     @Suppress("DEPRECATION")
                     val browser = CustomTabsIntent.Builder()
-                        .setToolbarColor(context.resources.getColor(R.color.primaryColor))
                         .build()
                     browser.intent.data = loginUri
                     browser.intent.putExtra(

@@ -29,7 +29,6 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -37,9 +36,9 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.ical4android.CalendarStorageException
-import at.bitfire.vcard4android.ContactsStorageException
+import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
@@ -52,6 +51,7 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.util.LinkedList
+import java.util.Optional
 import java.util.concurrent.CancellationException
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.logging.Level
@@ -68,7 +68,7 @@ import javax.net.ssl.SSLHandshakeException
  *
  * @param account               account to synchronize
  * @param httpClient            HTTP client to use for network requests, already authenticated with credentials from [account]
- * @param authority             authority of the content provider the collection shall be synchronized with
+ * @param dataType              data type to synchronize
  * @param syncResult            receiver for result of the synchronization (will be updated by [performSync])
  * @param localCollection       local collection to synchronize (interface to content provider)
  * @param collection            collection info in the database
@@ -77,7 +77,7 @@ import javax.net.ssl.SSLHandshakeException
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
     val account: Account,
     val httpClient: HttpClient,
-    val authority: String,
+    val dataType: SyncDataType,
     val syncResult: SyncResult,
     val localCollection: CollectionType,
     val collection: Collection,
@@ -141,7 +141,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 logger.info("No reason to synchronize, aborting")
                 return@withContext
             }
-            syncStatsRepository.logSyncTime(collection.id, authority)
+            syncStatsRepository.logSyncTime(collection.id, dataType)
 
             logger.info("Querying server capabilities")
             var remoteSyncState = queryCapabilities()
@@ -348,7 +348,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     }
                 } else
                     logger.info("Removing local record #${local.id} which has been deleted locally and was never uploaded")
-                local.delete()
+                local.deleteLocal()
             }
         }
         logger.info("Removed $numDeleted record(s) from server")
@@ -379,57 +379,83 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         return numUploaded > 0
     }
 
-    protected suspend fun uploadDirty(local: ResourceType) {
+    /**
+     * Uploads a dirty local resource.
+     *
+     * @param local         resource to upload
+     * @param forceAsNew    whether the ETag (and Schedule-Tag) of [local] are ignored and the resource
+     *                      is created as a new resource on the server
+     */
+    protected open suspend fun uploadDirty(local: ResourceType, forceAsNew: Boolean = false) {
         val existingFileName = local.fileName
-
-        var newFileName: String? = null
-        var eTag: String? = null
-        var scheduleTag: String? = null
-        val readTagsFromResponse: (okhttp3.Response) -> Unit = { response ->
-            eTag = GetETag.fromResponse(response)?.eTag
-            scheduleTag = ScheduleTag.fromResponse(response)?.scheduleTag
+        val fileName = if (existingFileName != null) {
+            // prepare upload (for UID etc), but ignore returned file name suggestion
+            local.prepareForUpload()
+            existingFileName
+        } else {
+            // prepare upload and use returned file name suggestion as new file name
+            local.prepareForUpload()
         }
 
+        val uploadUrl = collection.url.newBuilder().addPathSegment(fileName).build()
+        val remote = DavResource(httpClient.okHttpClient, uploadUrl)
+
         try {
-            if (existingFileName == null) {             // new resource
-                newFileName = local.prepareForUpload()
-
-                val uploadUrl = collection.url.newBuilder().addPathSegment(newFileName).build()
-                val remote = DavResource(httpClient.okHttpClient, uploadUrl)
-                SyncException.wrapWithRemoteResourceSuspending(uploadUrl) {
-                    logger.info("Uploading new record ${local.id} -> $newFileName")
+            SyncException.wrapWithRemoteResourceSuspending(uploadUrl) {
+                if (existingFileName == null || forceAsNew) {
+                    // create new resource on server
+                    logger.info("Uploading new resource ${local.id} -> $fileName")
                     val bodyToUpload = generateUpload(local)
+
+                    var newETag: String? = null
+                    var newScheduleTag: String? = null
                     runInterruptible {
                         remote.put(
                             bodyToUpload,
-                            ifNoneMatch = true,
-                            callback = readTagsFromResponse,
+                            ifNoneMatch = true,     // fails if there's already a resource with that name
+                            callback = { response ->
+                                newETag = GetETag.fromResponse(response)?.eTag
+                                newScheduleTag = ScheduleTag.fromResponse(response)?.scheduleTag
+                            },
                             headers = pushDontNotifyHeader
                         )
                     }
-                }
 
-            } else /* existingFileName != null */ {     // updated resource
-                local.prepareForUpload()
+                    logger.fine("Upload successful; new ETag=$newETag / Schedule-Tag=$newScheduleTag")
 
-                val uploadUrl = collection.url.newBuilder().addPathSegment(existingFileName).build()
-                val remote = DavResource(httpClient.okHttpClient, uploadUrl)
-                SyncException.wrapWithRemoteResourceSuspending(uploadUrl) {
-                    val lastScheduleTag = local.scheduleTag
-                    val lastETag = if (lastScheduleTag == null) local.eTag else null
-                    logger.info("Uploading modified record ${local.id} -> $existingFileName (ETag=$lastETag, Schedule-Tag=$lastScheduleTag)")
+                    // success (no exception thrown)
+                    onSuccessfulUpload(local, fileName, newETag, newScheduleTag)
+
+                } else {
+                    // update resource on server
+                    val ifScheduleTag = local.scheduleTag
+                    val ifETag = if (ifScheduleTag == null) local.eTag else null
+
+                    logger.info("Uploading modified resource ${local.id} -> $fileName (if ETag=$ifETag / Schedule-Tag=$ifScheduleTag)")
                     val bodyToUpload = generateUpload(local)
+
+                    var updatedETag: String? = null
+                    var updatedScheduleTag: String? = null
                     runInterruptible {
                         remote.put(
                             bodyToUpload,
-                            ifETag = lastETag,
-                            ifScheduleTag = lastScheduleTag,
-                            callback = readTagsFromResponse,
+                            ifETag = ifETag,
+                            ifScheduleTag = ifScheduleTag,
+                            callback = { response ->
+                                updatedETag = GetETag.fromResponse(response)?.eTag
+                                updatedScheduleTag = ScheduleTag.fromResponse(response)?.scheduleTag
+                            },
                             headers = pushDontNotifyHeader
                         )
                     }
+
+                    logger.fine("Upload successful; updated ETag=$updatedETag / Schedule-Tag=$updatedScheduleTag")
+
+                    // success (no exception thrown)
+                    onSuccessfulUpload(local, fileName, updatedETag, updatedScheduleTag)
                 }
             }
+
         } catch (e: SyncException) {
             when (val ex = e.cause) {
                 is ForbiddenException -> {
@@ -442,15 +468,14 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 }
                 is NotFoundException, is GoneException -> {
                     // HTTP 404 Not Found (i.e. either original resource or the whole collection is not there anymore)
-                    if (local.scheduleTag != null || local.eTag != null) {      // this was an update of a previously existing resource
+                    if (!forceAsNew) {      // first try; if this fails with 404, too, the collection is gone
                         logger.info("Original version of locally modified resource is not there (anymore), trying as fresh upload")
-                        if (local.scheduleTag != null)  // contacts don't support scheduleTag, don't try to set it without check
-                            local.scheduleTag = null
-                        local.eTag = null
-                        uploadDirty(local)      // if this fails with 404, too, the collection is gone
+                        uploadDirty(local, forceAsNew = true)
                         return
-                    } else
-                        throw e                 // the collection is probably gone
+                    } else {
+                        // we tried with forceAsNew, collection probably gone
+                        throw e
+                    }
                 }
                 is ConflictException -> {
                     // HTTP 409 Conflict
@@ -465,13 +490,16 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 else -> throw e
             }
         }
+    }
 
-        if (eTag != null)
-            logger.fine("Received new ETag=$eTag after uploading")
-        else
-            logger.fine("Didn't receive new ETag after uploading, setting to null")
-
-        local.clearDirty(newFileName, eTag, scheduleTag)
+    /**
+     * Called after a successful upload (either of a new or an updated resource) so that the local
+     * _dirty_ state can be reset.
+     *
+     * Note: [CalendarSyncManager] overrides this method to additionally store the updated SEQUENCE.
+     */
+    protected open fun onSuccessfulUpload(local: ResourceType, newFileName: String, eTag: String?, scheduleTag: String?) {
+        local.clearDirty(Optional.of(newFileName), eTag, scheduleTag)
     }
 
     /**
@@ -608,7 +636,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         localCollection.findByName(name)?.let { local ->
                             SyncException.wrapWithLocalResource(local) {
                                 logger.info("$name has been deleted on server, deleting locally")
-                                local.delete()
+                                local.deleteLocal()
                             }
                         }
                     }
@@ -738,7 +766,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 message = context.getString(R.string.sync_error_http_dav, e.localizedMessage)
             }
 
-            is CalendarStorageException, is ContactsStorageException, is RemoteException -> {
+            is LocalStorageException, is RemoteException -> {
                 logger.log(Level.SEVERE, "Couldn't access local storage", e)
                 syncResult.localStorageError = true
                 message = context.getString(R.string.sync_error_local_storage, e.localizedMessage)
@@ -752,7 +780,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
 
         syncNotificationManager.notifyException(
-            authority,
+            dataType,
             localCollection.tag,
             message,
             localCollection,
@@ -764,7 +792,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     protected fun notifyInvalidResource(e: Throwable, fileName: String) =
         syncNotificationManager.notifyInvalidResource(
-            authority,
+            dataType,
             localCollection.tag,
             collection,
             e,

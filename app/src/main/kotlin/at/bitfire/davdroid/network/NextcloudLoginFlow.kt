@@ -6,8 +6,9 @@ package at.bitfire.davdroid.network
 
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.ui.setup.LoginInfo
+import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.davdroid.util.withTrailingSlash
 import at.bitfire.vcard4android.GroupMethod
 import kotlinx.coroutines.Dispatchers
@@ -106,7 +107,7 @@ class NextcloudLoginFlow @Inject constructor(
             baseUri = URI(serverUrl).resolve(DAV_PATH),
             credentials = Credentials(
                 username = json.getString("loginName"),
-                password = json.getString("appPassword").toCharArray()
+                password = json.getString("appPassword").toSensitiveString()
             ),
             suggestedGroupMethod = GroupMethod.CATEGORIES
         )
@@ -125,7 +126,7 @@ class NextcloudLoginFlow @Inject constructor(
         if (response.code != HttpURLConnection.HTTP_OK)
             throw HttpException(response)
 
-        response.body?.use { body ->
+        response.body.use { body ->
             val mimeType = body.contentType() ?: throw DavException("Login Flow response without MIME type")
             if (mimeType.type != "application" || mimeType.subtype != "json")
                 throw DavException("Invalid Login Flow response (not JSON)")
@@ -133,8 +134,6 @@ class NextcloudLoginFlow @Inject constructor(
             // decode JSON
             return@withContext JSONObject(body.string())
         }
-
-        throw DavException("Invalid Login Flow response (no body)")
     }
 
 }

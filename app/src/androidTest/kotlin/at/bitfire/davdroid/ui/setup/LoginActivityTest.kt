@@ -21,7 +21,7 @@ class LoginActivityTest {
         val loginInfo = LoginActivity.loginInfoFromIntent(intent)
         assertEquals("https://example.com/nextcloud", loginInfo.baseUri.toString())
         assertEquals("user", loginInfo.credentials!!.username)
-        assertEquals("password", loginInfo.credentials.password?.concatToString())
+        assertEquals("password", loginInfo.credentials.password?.asString())
     }
 
     @Test
@@ -34,7 +34,7 @@ class LoginActivityTest {
         val loginInfo = LoginActivity.loginInfoFromIntent(intent)
         assertEquals("https://example.com:444/nextcloud", loginInfo.baseUri.toString())
         assertEquals("user", loginInfo.credentials!!.username)
-        assertEquals("password", loginInfo.credentials.password?.concatToString())
+        assertEquals("password", loginInfo.credentials.password?.asString())
     }
 
     @Test
@@ -43,7 +43,7 @@ class LoginActivityTest {
         val loginInfo = LoginActivity.loginInfoFromIntent(intent)
         assertEquals("https://example.com/path", loginInfo.baseUri.toString())
         assertEquals("user", loginInfo.credentials!!.username)
-        assertEquals("password", loginInfo.credentials.password?.concatToString())
+        assertEquals("password", loginInfo.credentials.password?.asString())
     }
 
     @Test
@@ -52,7 +52,7 @@ class LoginActivityTest {
         val loginInfo = LoginActivity.loginInfoFromIntent(intent)
         assertEquals("https://example.com:0/path", loginInfo.baseUri.toString())
         assertEquals("user", loginInfo.credentials!!.username)
-        assertEquals("password", loginInfo.credentials.password?.concatToString())
+        assertEquals("password", loginInfo.credentials.password?.asString())
     }
 
     @Test
@@ -61,7 +61,7 @@ class LoginActivityTest {
         val loginInfo = LoginActivity.loginInfoFromIntent(intent)
         assertEquals(null, loginInfo.baseUri)
         assertEquals("user@example.com", loginInfo.credentials!!.username)
-        assertEquals(null, loginInfo.credentials.password?.concatToString())
+        assertEquals(null, loginInfo.credentials.password?.asString())
     }
     
 }

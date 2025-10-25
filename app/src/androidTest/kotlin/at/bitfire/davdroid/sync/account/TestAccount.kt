@@ -19,9 +19,9 @@ object TestAccount {
      *
      * Remove it with [remove].
      */
-    fun create(version: Int = AccountSettings.CURRENT_VERSION): Account {
+    fun create(version: Int = AccountSettings.CURRENT_VERSION, accountName: String = "Test Account"): Account {
         val accountType = targetContext.getString(R.string.account_type)
-        val account = Account("Test Account", accountType)
+        val account = Account(accountName, accountType)
 
         val initialData = AccountSettings.initialUserData(null)
         initialData.putString(AccountSettings.KEY_SETTINGS_VERSION, version.toString())

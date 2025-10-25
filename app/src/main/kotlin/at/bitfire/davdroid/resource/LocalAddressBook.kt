@@ -17,19 +17,20 @@ import android.provider.ContactsContract.RawContacts
 import androidx.annotation.OpenForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_READ_ONLY
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.sync.SyncFrameworkIntegration
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
+import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
+import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.ContactsBatchOperation
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidGroup
-import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -198,17 +199,17 @@ open class LocalAddressBook @AssistedInject constructor(
             return false
 
         // move contacts and groups to new account
-        val batch = BatchOperation(provider!!)
-        batch.enqueue(BatchOperation.CpoBuilder
+        val batch = ContactsBatchOperation(provider!!)
+        batch += BatchOperation.CpoBuilder
             .newUpdate(groupsSyncUri())
             .withSelection(Groups.ACCOUNT_NAME + "=? AND " + Groups.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
             .withValue(Groups.ACCOUNT_NAME, newAccount.name)
-        )
-        batch.enqueue(BatchOperation.CpoBuilder
+            .withValue(Groups.ACCOUNT_TYPE, newAccount.type)
+        batch += BatchOperation.CpoBuilder
             .newUpdate(rawContactsSyncUri())
             .withSelection(RawContacts.ACCOUNT_NAME + "=? AND " + RawContacts.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
             .withValue(RawContacts.ACCOUNT_NAME, newAccount.name)
-        )
+            .withValue(RawContacts.ACCOUNT_TYPE, newAccount.type)
         batch.commit()
 
         // update AndroidAddressBook.account
@@ -222,15 +223,18 @@ open class LocalAddressBook @AssistedInject constructor(
 
 
     /**
-     * Makes contacts of this address book available to be synced and activates synchronization upon
-     * contact data changes.
+     * Enables or disables sync on content changes for the address book account based on the current sync
+     * interval account setting.
      */
     fun updateSyncFrameworkSettings() {
-        // Enable sync-ability of contacts
-        syncFramework.enableSyncAbility(addressBookAccount, ContactsContract.AUTHORITY)
+        val accountSettings = accountSettingsFactory.create(account)
+        val syncInterval = accountSettings.getSyncInterval(SyncDataType.CONTACTS)
 
-        // Changes in contact data should trigger syncs
-        syncFramework.enableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
+        // Enable/Disable content triggered syncs for the address book account.
+        if (syncInterval != null)
+            syncFramework.enableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
+        else
+            syncFramework.disableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
     }
 
 

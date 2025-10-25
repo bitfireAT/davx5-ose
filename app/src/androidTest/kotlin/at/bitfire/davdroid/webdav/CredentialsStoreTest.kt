@@ -4,7 +4,8 @@
 
 package at.bitfire.davdroid.webdav
 
-import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.settings.Credentials
+import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
@@ -30,8 +31,8 @@ class CredentialsStoreTest {
 
     @Test
     fun testSetGetDelete() {
-        store.setCredentials(0, Credentials(username = "myname", password = "12345".toCharArray()))
-        assertEquals(Credentials(username = "myname", password = "12345".toCharArray()), store.getCredentials(0))
+        store.setCredentials(0, Credentials(username = "myname", password = "12345".toSensitiveString()))
+        assertEquals(Credentials(username = "myname", password = "12345".toSensitiveString()), store.getCredentials(0))
 
         store.setCredentials(0, null)
         assertNull(store.getCredentials(0))

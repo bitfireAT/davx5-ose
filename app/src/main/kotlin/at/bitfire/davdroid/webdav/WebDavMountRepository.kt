@@ -10,10 +10,10 @@ import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.settings.Credentials
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -50,12 +50,13 @@ class WebDavMountRepository @Inject constructor(
         displayName: String,
         credentials: Credentials?
     ): Boolean {
-        if (!hasWebDav(url, credentials))
+        val webdavUrl = hasWebDav(url, credentials)
+        if (webdavUrl == null)
             return false
 
         // create in database
         val mount = WebDavMount(
-            url = url,
+            url = webdavUrl,
             name = displayName
         )
         val id = db.webDavMountDao().insert(mount)
@@ -65,7 +66,7 @@ class WebDavMountRepository @Inject constructor(
         credentialsStore.setCredentials(id, credentials)
 
         // notify content URI listeners
-        DavDocumentsProvider.notifyMountsChanged(context)
+        DocumentProviderUtils.notifyMountsChanged(context)
 
         return true
     }
@@ -78,7 +79,7 @@ class WebDavMountRepository @Inject constructor(
         CredentialsStore(context).setCredentials(mount.id, null)
 
         // notify content URI listeners
-        DavDocumentsProvider.notifyMountsChanged(context)
+        DocumentProviderUtils.notifyMountsChanged(context)
     }
 
     fun getAllFlow() = mountDao.getAllFlow()
@@ -110,11 +111,19 @@ class WebDavMountRepository @Inject constructor(
 
     // helpers
 
+    /**
+     * Checks whether WebDAV is supported at given URL with given credentials
+     * and returns the resulting if following a few redirects.
+     *
+     * @param url The URL to check
+     * @param credentials The credentials to use for the request
+     * @return The URL at which WebDAV support was found
+     */
     @VisibleForTesting
     internal suspend fun hasWebDav(
         url: HttpUrl,
         credentials: Credentials?
-    ): Boolean = withContext(ioDispatcher) {
+    ): HttpUrl? = withContext(ioDispatcher) {
         val validVersions = arrayOf("1", "2", "3")
 
         val builder = httpClientBuilder.get()
@@ -122,21 +131,21 @@ class WebDavMountRepository @Inject constructor(
         if (credentials != null)
             builder.authenticate(
                 host = null,
-                credentials = credentials
+                getCredentials = { credentials }
             )
 
-        var supported = false
+        var webdavUrl: HttpUrl? = null
         builder.build().use { httpClient ->
             val dav = DavResource(httpClient.okHttpClient, url)
             runInterruptible {
-                dav.options { davCapabilities, _ ->
+                dav.options(followRedirects = true) { davCapabilities, response ->
                     if (davCapabilities.any { it in validVersions })
-                        supported = true
+                        webdavUrl = dav.location
                 }
             }
         }
 
-        supported
+        webdavUrl
     }
 
 }

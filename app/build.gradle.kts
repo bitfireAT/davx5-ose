@@ -9,23 +9,25 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
 
-    alias(libs.plugins.mikepenz.aboutLibraries)
+    alias(libs.plugins.mikepenz.aboutLibraries.android)
 }
 
 // Android configuration
 android {
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 404110004
-        versionName = "4.4.11"
+        versionCode = 405050002
+        versionName = "4.5.5-beta.1"
 
-        setProperty("archivesBaseName", "davx5-ose-$versionName")
+        base.archivesName = "davx5-ose-$versionName"
 
         minSdk = 24        // Android 7.0
-        targetSdk = 35     // Android 15
+        targetSdk = 36     // Android 16
+
+        buildConfigField("boolean", "customCertsUI", "true")
 
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
     }
@@ -106,6 +108,8 @@ android {
             localDevices {
                 create("virtual") {
                     device = "Pixel 3"
+                    // TBD: API level 35 and higher causes network tests to fail sometimes, see https://github.com/bitfireAT/davx5-ose/issues/1525
+                    // Suspected reason: https://developer.android.com/about/versions/15/behavior-changes-all#background-network-access
                     apiLevel = 34
                     systemImageSource = "aosp-atd"
                 }
@@ -119,8 +123,10 @@ ksp {
 }
 
 aboutLibraries {
-    // exclude timestamps for reproducible builds [https://github.com/bitfireAT/davx5-ose/issues/994]
-    excludeFields = arrayOf("generated")
+    export {
+        // exclude timestamps for reproducible builds [https://github.com/bitfireAT/davx5-ose/issues/994]
+        excludeFields.add("generated")
+    }
 }
 
 dependencies {
@@ -174,15 +180,16 @@ dependencies {
         exclude(group="junit")
         exclude(group="org.ogce", module="xpp3")    // Android has its own XmlPullParser implementation
     }
-    implementation(libs.bitfire.ical4android)
-    implementation(libs.bitfire.vcard4android)
+    implementation(libs.bitfire.synctools) {
+        exclude(group="androidx.test")              // synctools declares test rules, but we don't want them in non-test code
+        exclude(group = "junit")
+    }
 
     // third-party libs
     @Suppress("RedundantSuppression")
     implementation(libs.dnsjava)
     implementation(libs.guava)
-    implementation(libs.mikepenz.aboutLibraries)
-    implementation(libs.nsk90.kstatemachine)
+    implementation(libs.mikepenz.aboutLibraries.m3)
     implementation(libs.okhttp.base)
     implementation(libs.okhttp.brotli)
     implementation(libs.okhttp.logging)

@@ -9,7 +9,8 @@ import androidx.annotation.StringDef
 import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.settings.Credentials
+import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -47,7 +48,7 @@ class CredentialsStore @Inject constructor(
 
         return Credentials(
             prefs.getString(keyName(mountId, USER_NAME), null),
-            prefs.getString(keyName(mountId, PASSWORD), null)?.toCharArray(),
+            prefs.getString(keyName(mountId, PASSWORD), null)?.toSensitiveString(),
             prefs.getString(keyName(mountId, CERTIFICATE_ALIAS), null)
         )
     }
@@ -57,7 +58,7 @@ class CredentialsStore @Inject constructor(
             if (credentials != null)
                 putBoolean(keyName(mountId, HAS_CREDENTIALS), true)
                     .putString(keyName(mountId, USER_NAME), credentials.username)
-                    .putString(keyName(mountId, PASSWORD), credentials.password?.concatToString())
+                    .putString(keyName(mountId, PASSWORD), credentials.password?.asString())
                     .putString(keyName(mountId, CERTIFICATE_ALIAS), credentials.certificateAlias)
             else
                 remove(keyName(mountId, HAS_CREDENTIALS))

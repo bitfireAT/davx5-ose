@@ -19,7 +19,6 @@
     <string name="field_required">This field is required</string>
     <string name="help">Help</string>
     <string name="navigate_up">Navigate up</string>
-    <string name="optional_label">* optional</string>
     <string name="options_menu">Options menu</string>
     <string name="share">Share</string>
     <string name="sync_started">Synchronization started/enqueued</string>
@@ -45,7 +44,7 @@
     <string name="intro_battery_text">For synchronization at regular intervals, %s must be allowed to run in the background. Otherwise, Android may pause synchronization at any time.</string>
     <string name="intro_battery_dont_show">I don\'t need regular sync intervals.*</string>
     <string name="intro_autostart_title">%s compatibility</string>
-    <string name="intro_autostart_text">This device probably blocks synchronization. If you\'re affected, you can only resolve this manually.</string>
+    <string name="intro_autostart_text">Vendor-specific firmware may block synchronization. If you\'re affected, you can only resolve this manually.</string>
     <string name="intro_autostart_dont_show">I have done the required settings. Don\'t remind me anymore.*</string>
     <string name="intro_leave_unchecked">* Leave unchecked to be reminded later. Can be reset in app settings / %s.</string>
     <string name="intro_more_info">More information</string>
@@ -137,6 +136,7 @@
     <string name="navigation_drawer_website">Web site</string>
     <string name="navigation_drawer_manual">Manual</string>
     <string name="navigation_drawer_faq">FAQ</string>
+    <string name="navigation_drawer_managed">For organizations</string>
     <string name="navigation_drawer_community">Community</string>
     <string name="navigation_drawer_support_project">Support the project</string>
     <string name="navigation_drawer_contribute">How to contribute</string>
@@ -238,7 +238,7 @@
     <string name="app_settings_unifiedpush_encrypted">Push messages are always encrypted.</string>
 
     <!-- AccountScreen -->
-    <string name="account_invalid_account">Account doesn\'t exist</string>
+    <string name="account_invalid_account">Account has been removed</string>
     <string name="account_carddav">CardDAV</string>
     <string name="account_caldav">CalDAV</string>
     <string name="account_webcal">Webcal</string>
@@ -281,10 +281,10 @@
     <string name="login_password">Password</string>
     <string name="login_password_hide">Hide password</string>
     <string name="login_password_show">Show password</string>
-    <string name="login_password_optional">Password*</string>
+    <string name="login_password_optional">Password (optional)</string>
     <string name="login_type_url">Login with URL and user name</string>
     <string name="login_user_name">User name</string>
-    <string name="login_user_name_optional">User name*</string>
+    <string name="login_user_name_optional">User name (optional)</string>
     <string name="login_base_url">Base URL</string>
     <string name="login_base_url_info"><![CDATA[The base URL will be checked directly, but <a href="%s">services are also discovered</a> using DNS records and well-known URLs.]]></string>
     <string name="login_select_certificate">Select certificate</string>
@@ -298,13 +298,14 @@
     <string name="login_account_not_added">Account could not be added</string>
     <string name="login_finish">Finish</string>
     <string name="login_type_advanced">Advanced login</string>
-    <string name="login_no_client_certificate_optional">No client certificate*</string>
+    <string name="login_no_client_certificate_optional">No client certificate (optional)</string>
     <string name="login_client_certificate_selected">Client certificate: %s</string>
     <string name="login_no_certificate_found">No certificate found</string>
     <string name="login_install_certificate">Install certificate</string>
+    <string name="login_fastmail">Fastmail</string>
+    <string name="login_fastmail_account">Fastmail account</string>
+    <string name="login_fastmail_sign_in">Sign in with Fastmail</string>
     <string name="login_type_google">Google Contacts / Calendar</string>
-    <string name="login_google_see_tested_with">Please see our \"Tested with Google\" page for up-to-date information.</string>
-    <string name="login_google_unexpected_warnings">You may experience unexpected warnings and/or have to create your own client ID.</string>
     <string name="login_google_account">Google account</string>
     <string name="login_google">Sign in with Google</string>
     <string name="login_google_client_id">Client ID (optional)</string>
@@ -367,9 +368,13 @@
     <string name="settings_ignore_vpns_off">VPN without underlying validated Internet connection is enough to run synchronization</string>
     <string name="settings_authentication">Authentication</string>
     <string name="settings_username">User name</string>
-    <string name="settings_password">Password</string>
+    <string name="settings_password">Password or app password</string>
+    <string name="settings_app_password_hint"><![CDATA[You may prefer to use an <a href="%1$s">app password</a>.]]></string>
     <string name="settings_new_password">New password</string>
     <string name="settings_password_summary">Update the password according to your server.</string>
+    <string name="settings_reauthorize_oauth">Authorize again (OAuth)</string>
+    <string name="settings_reauthorize_oauth_summary">Use when access has been revoked</string>
+    <string name="settings_reauthorize_oauth_success">Authorization successful</string>
     <string name="settings_certificate_alias">Client certificate</string>
     <string name="settings_certificate_alias_empty">No certificate available or selected</string>
     <string name="settings_certificate_install">Install certificate</string>
@@ -409,7 +414,7 @@
     <string name="create_addressbook">Create address book</string>
     <string name="create_addressbook_maybe_not_supported">Address book creation over CardDAV may not be supported by the server.</string>
     <string name="create_calendar">Create calendar</string>
-    <string name="create_calendar_time_zone_optional">Default time zone*</string>
+    <string name="create_calendar_time_zone_optional">Default time zone (optional)</string>
     <string name="create_calendar_time_zone_none">—</string>
     <string name="create_calendar_type">Possible calendar entries</string>
     <string name="create_calendar_type_vevent">Events</string>
@@ -419,11 +424,13 @@
     <string name="create_collection_color">Color</string>
     <string name="create_collection_display_name">Title</string>
     <string name="create_collection_home_set">Storage location</string>
-    <string name="create_collection_description_optional">Description*</string>
+    <string name="create_collection_description_optional">Description (optional)</string>
     <string name="create_collection_create">Create</string>
-    <string name="create_collection_optional">* optional</string>
 
     <!-- CollectionScreen -->
+    <string name="collection_datatype_contacts">contacts</string>
+    <string name="collection_datatype_events">events</string>
+    <string name="collection_datatype_tasks">tasks</string>
     <string name="collection_delete">Delete collection</string>
     <string name="collection_delete_warning">This collection (%s) and all its data will be removed permanently, both locally and on the server.</string>
     <string name="collection_synchronization">Synchronization</string>
@@ -455,10 +462,11 @@
     <string name="debug_info_server_error">Server Error</string>
     <string name="debug_info_webdav_error">WebDAV Error</string>
     <string name="debug_info_io_error">I/O Error</string>
-    <string name="debug_info_http_403_description">The request has been denied. Check involved resources and debug info for details.</string>
-    <string name="debug_info_http_404_description">The requested resource doesn\'t exist (anymore). Check involved resources and debug info for details.</string>
-    <string name="debug_info_http_5xx_description">A server-side problem occured. Please contact your server support.</string>
-    <string name="debug_info_unexpected_error">An unexpected error has occured. View debug info for details.</string>
+    <string name="debug_info_http_403_description">The request has been denied by the server.</string>
+    <string name="debug_info_http_404_description">The requested resource doesn\'t exist (anymore).</string>
+    <string name="debug_info_http_405_description">The server doesn\'t allow the requested type of operation.</string>
+    <string name="debug_info_http_5xx_description">A server-side problem occurred. Please contact your server support.</string>
+    <string name="debug_info_unexpected_error">An unexpected error has occurred. View debug info for details.</string>
     <string name="debug_info_view_details">View details</string>
     <string name="debug_info_subtitle">Debug info have been collected</string>
     <string name="debug_info_involved_caption">Involved resources</string>
@@ -489,9 +497,12 @@
     <string name="webdav_add_mount_display_name">Display name</string>
     <string name="webdav_add_mount_url">WebDAV URL</string>
     <string name="webdav_add_mount_url_invalid">Invalid URL</string>
-    <string name="webdav_add_mount_authentication">Authentication (optional)</string>
+    <string name="webdav_add_mount_mountpoint_displayname">Mount point and display name</string>
+    <string name="webdav_add_mount_authentication">Authentication</string>
     <string name="webdav_add_mount_username">User name</string>
     <string name="webdav_add_mount_password">Password</string>
+    <string name="webdav_add_mount_username_optional">User name (optional)</string>
+    <string name="webdav_add_mount_password_optional">Password (optional)</string>
     <string name="webdav_add_mount_add">Add mount</string>
     <string name="webdav_add_mount_no_support">No WebDAV service at this URL</string>
     <string name="webdav_remove_mount_title">Remove mount point</string>

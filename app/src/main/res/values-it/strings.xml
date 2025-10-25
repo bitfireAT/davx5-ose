@@ -9,7 +9,6 @@
   <string name="dialog_enable">Attiva</string>
   <string name="field_required">Questo campo è necessario</string>
   <string name="help">Aiuto</string>
-  <string name="optional_label">* opzionale</string>
   <string name="options_menu">Menu opzioni</string>
   <string name="share">Condividi</string>
   <string name="sync_started">Sincronizzazione avviata</string>
@@ -32,7 +31,6 @@
   <string name="intro_battery_text">Per sincronizzare i dati a intervalli regolari, %s deve essere autorizzato a girare in background. Altrimenti Android può mettere in pausa gli aggiornamenti in qualunque momento.</string>
   <string name="intro_battery_dont_show">Non ho bisogno di sincronizzare a intervalli di tempo regolari.*</string>
   <string name="intro_autostart_title">%s compatibilità</string>
-  <string name="intro_autostart_text">Questo dispositivo probabilmente impedisce la sincronizzazione. In questo caso puoi risolvere solo manualmente.</string>
   <string name="intro_autostart_dont_show">Ho settato le impostazioni richieste. Non ricordarmelo più.</string>
   <string name="intro_leave_unchecked">* Lascia smarcato per fartelo ricordare dopo. Può essere reimpostato nelle impostazione dell\'app %s.</string>
   <string name="intro_more_info">Maggiori informazioni</string>
@@ -208,10 +206,8 @@
   <string name="login_password">Password</string>
   <string name="login_password_hide">Nascondi password</string>
   <string name="login_password_show">Mostra password</string>
-  <string name="login_password_optional">Password*</string>
   <string name="login_type_url">Accedi con URL e nome utente</string>
   <string name="login_user_name">Nome utente</string>
-  <string name="login_user_name_optional">Nome utente*</string>
   <string name="login_base_url">Base URL</string>
   <string name="login_base_url_info"><![CDATA[La URL base viene controllata direttamente, ma <a href="%s">i servizi sono individuati anche </a> usando record DNS records e le URL well-known.]]></string>
   <string name="login_select_certificate">Seleziona certificato</string>
@@ -223,12 +219,10 @@
   <string name="login_account_name_required">Richiesto il nome dell\'account</string>
   <string name="login_account_name_already_taken">Nome account già usato</string>
   <string name="login_type_advanced">Login avanzato</string>
-  <string name="login_no_client_certificate_optional">Nessun certificato client*</string>
   <string name="login_client_certificate_selected">Certificato client: %s</string>
   <string name="login_no_certificate_found">Nessun certificato trovato</string>
   <string name="login_install_certificate">Installa il certificato</string>
   <string name="login_type_google">Contatti Google / Calendario</string>
-  <string name="login_google_see_tested_with">Consultare la nostra pagina \"Tested with Google\" per informazioni aggiornate.</string>
   <string name="login_google_account">Account Google</string>
   <string name="login_google">Accedi con Google</string>
   <string name="login_google_client_id">ID Client (facoltativo)</string>
@@ -278,7 +272,6 @@
   <string name="settings_ignore_vpns_off">La VPN senza una connessione internet validata è sufficiente per lanciare la sincronizzazione</string>
   <string name="settings_authentication">Autenticazione</string>
   <string name="settings_username">Nome utente</string>
-  <string name="settings_password">Password</string>
   <string name="settings_new_password">Nuova password</string>
   <string name="settings_password_summary">Aggiorna la password come sul tuo server.</string>
   <string name="settings_certificate_alias">Certificato client</string>
@@ -318,7 +311,6 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="create_addressbook">Crea rubrica</string>
   <string name="create_addressbook_maybe_not_supported">La creazione di rubriche tramitte CardDAV potrebbe non essere supportata dal server.</string>
   <string name="create_calendar">Crea calendario</string>
-  <string name="create_calendar_time_zone_optional">Fuso orario di default*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Possibili voci del calendario</string>
   <string name="create_calendar_type_vevent">Eventi</string>
@@ -328,10 +320,10 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="create_collection_color">Colore</string>
   <string name="create_collection_display_name">Titolo</string>
   <string name="create_collection_home_set">Percorso di archiviazione</string>
-  <string name="create_collection_description_optional">Descrizione*</string>
   <string name="create_collection_create">Crea</string>
-  <string name="create_collection_optional">* opzionale</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">contatti</string>
+  <string name="collection_datatype_tasks">attività</string>
   <string name="collection_delete">Elimina raccolta</string>
   <string name="collection_delete_warning">Questa raccolta (%s) e tutti i suoi dati saranno rimossi definitivamente, sia localmente che sul server.</string>
   <string name="collection_synchronization">Sincronizzazione</string>
@@ -386,7 +378,7 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="webdav_add_mount_display_name">Nome del display</string>
   <string name="webdav_add_mount_url">URL WebDVA</string>
   <string name="webdav_add_mount_url_invalid">URL non valido</string>
-  <string name="webdav_add_mount_authentication">Autenticazione (facoltativa)</string>
+  <string name="webdav_add_mount_authentication">Autenticazione</string>
   <string name="webdav_add_mount_username">Nome utente</string>
   <string name="webdav_add_mount_password">Password</string>
   <string name="webdav_add_mount_add">Aggiungi installazioni</string>

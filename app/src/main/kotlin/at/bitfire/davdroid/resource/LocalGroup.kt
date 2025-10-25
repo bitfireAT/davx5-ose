@@ -14,15 +14,18 @@ import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
 import androidx.core.content.contentValuesOf
+import at.bitfire.davdroid.resource.LocalGroup.Companion.COLUMN_PENDING_MEMBERS
 import at.bitfire.davdroid.util.trimToNull
+import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.ContactsBatchOperation
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidGroup
 import at.bitfire.vcard4android.AndroidGroupFactory
-import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import java.util.LinkedList
+import java.util.Optional
 import java.util.UUID
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
@@ -53,7 +56,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
             addressBook.allGroups { group ->
                 val groupId = group.id!!
                 val pendingMemberUids = group.pendingMemberships.toMutableSet()
-                val batch = BatchOperation(addressBook.provider!!)
+                val batch = ContactsBatchOperation(addressBook.provider!!)
 
                 // required for workaround for Android 7 which sets DIRTY flag when only meta-data is changed
                 val changeContactIDs = HashSet<Long>()
@@ -109,7 +112,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
     override var scheduleTag: String?
         get() = null
-        set(value) = throw NotImplementedError()
+        set(_) = throw NotImplementedError()
 
     override var flags: Int = 0
 
@@ -157,40 +160,40 @@ class LocalGroup: AndroidGroup, LocalAddress {
         return "$uid.vcf"
     }
 
-    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
+    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             throw IllegalArgumentException("Contact groups must not have a Schedule-Tag")
         val id = requireNotNull(id)
 
         val values = ContentValues(3)
-        if (fileName != null)
-            values.put(COLUMN_FILENAME, fileName)
+        if (fileName.isPresent)
+            values.put(COLUMN_FILENAME, fileName.get())
         values.putNull(COLUMN_ETAG)     // don't save changed ETag but null, so that the group is downloaded again, so that pendingMembers is updated
         values.put(Groups.DIRTY, 0)
         update(values)
 
-        if (fileName != null)
-            this.fileName = fileName
+        if (fileName.isPresent)
+            this.fileName = fileName.get()
         this.eTag = null
 
         // update cached group memberships
-        val batch = BatchOperation(addressBook.provider!!)
+        val batch = ContactsBatchOperation(addressBook.provider!!)
 
         // delete old cached group memberships
-        batch.enqueue(BatchOperation.CpoBuilder
-                .newDelete(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
-                .withSelection(
-                        CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?",
-                        arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, id.toString())
-                ))
+        batch += BatchOperation.CpoBuilder
+            .newDelete(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
+            .withSelection(
+                CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?",
+                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, id.toString())
+            )
 
         // insert updated cached group memberships
         for (member in getMembers())
-            batch.enqueue(BatchOperation.CpoBuilder
-                    .newInsert(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
-                    .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                    .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
-                    .withValue(CachedGroupMembership.GROUP_ID, id))
+            batch += BatchOperation.CpoBuilder
+                .newInsert(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
+                .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+                .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
+                .withValue(CachedGroupMembership.GROUP_ID, id)
 
         batch.commit()
     }
@@ -199,19 +202,22 @@ class LocalGroup: AndroidGroup, LocalAddress {
      * Marks all members of the current group as dirty.
      */
     fun markMembersDirty() {
-        val batch = BatchOperation(addressBook.provider!!)
+        val batch = ContactsBatchOperation(addressBook.provider!!)
 
         for (member in getMembers())
-            batch.enqueue(BatchOperation.CpoBuilder
-                    .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member)))
-                    .withValue(RawContacts.DIRTY, 1))
+            batch += BatchOperation.CpoBuilder
+                .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member)))
+                .withValue(RawContacts.DIRTY, 1)
 
         batch.commit()
     }
 
-    override fun resetDeleted() {
-        val values = contentValuesOf(Groups.DELETED to 0)
-        addressBook.provider!!.update(groupSyncUri(), values, null, null)
+    override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        this.fileName = fileName
+        this.eTag = eTag
+
+        // processes this.{fileName, eTag, flags} and resets DIRTY flag
+        update(data)
     }
 
     override fun updateFlags(flags: Int) {
@@ -219,6 +225,15 @@ class LocalGroup: AndroidGroup, LocalAddress {
         addressBook.provider!!.update(groupSyncUri(), values, null, null)
 
         this.flags = flags
+    }
+
+    override fun deleteLocal() {
+        delete()
+    }
+
+    override fun resetDeleted() {
+        val values = contentValuesOf(Groups.DELETED to 0)
+        addressBook.provider!!.update(groupSyncUri(), values, null, null)
     }
 
 

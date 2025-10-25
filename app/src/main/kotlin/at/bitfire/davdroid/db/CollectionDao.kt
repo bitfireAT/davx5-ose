@@ -38,6 +38,10 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE pushTopic=:topic AND sync")
     suspend fun getSyncableByPushTopic(topic: String): Collection?
 
+    @Suppress("unused")     // for build variant
+    @Query("SELECT * FROM collection WHERE sync")
+    fun getSyncCollections(): List<Collection>
+
     @Query("SELECT pushVapidKey FROM collection WHERE serviceId=:serviceId AND pushVapidKey IS NOT NULL LIMIT 1")
     suspend fun getFirstVapidKey(serviceId: Long): String?
 

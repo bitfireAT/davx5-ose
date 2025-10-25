@@ -11,7 +11,6 @@
   <string name="field_required">Это поле является обязательным</string>
   <string name="help">Помощь</string>
   <string name="navigate_up">Перейти наверх</string>
-  <string name="optional_label">* опционально</string>
   <string name="options_menu">Меню параметров</string>
   <string name="share">Поделиться</string>
   <string name="sync_started">Синхронизация начата/завершена</string>
@@ -34,7 +33,7 @@
   <string name="intro_battery_text">Для обеспечения синхронизации с регулярными интервалами необходимо разрешить работу %s в фоновом режиме. В противном случае, Android может приостановить синхронизацию в любое время.</string>
   <string name="intro_battery_dont_show">Мне не нужна синхронизация с регулярными интервалами.*</string>
   <string name="intro_autostart_title">Совместимость %s</string>
-  <string name="intro_autostart_text">Скорее всего, это устройство блокирует синхронизацию. В этом случае, вы можете решить проблему только самостоятельно.</string>
+  <string name="intro_autostart_text">Прошивка конкретного производителя может блокировать синхронизацию. Если вы столкнулись с этой проблемой, ее можно решить только самостоятельно.</string>
   <string name="intro_autostart_dont_show">Я выполнил необходимые настройки. Больше не напоминать.*</string>
   <string name="intro_leave_unchecked">* Чтобы получить предупреждение позже, снимите флажок. Можно сбросить в настройках приложения  / %s.</string>
   <string name="intro_more_info">Дополнительная информация</string>
@@ -123,6 +122,7 @@
   <string name="navigation_drawer_website">Сайт</string>
   <string name="navigation_drawer_manual">Руководство</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_managed">Для организаций</string>
   <string name="navigation_drawer_community">Сообщество</string>
   <string name="navigation_drawer_support_project">Поддержать проект</string>
   <string name="navigation_drawer_contribute">Как внести свой вклад</string>
@@ -132,7 +132,7 @@
   <string name="accounts_sync_all">Синхронизировать все аккаунты</string>
   <!--Sync warnings-->
   <string name="sync_warning_no_notification_permission">Уведомления отключены. Вы не будете получать уведомления об ошибках синхронизации.</string>
-  <string name="sync_warning_no_internet">Автоматическая синхронизация не активна (нет проверенного подключения к интернету).</string>
+  <string name="sync_warning_no_internet">Автоматическая синхронизация недоступна (нет подключения к интернету).</string>
   <string name="sync_warning_manage_connections">Управление подключениями</string>
   <string name="sync_warning_datasaver_enabled">Экономия трафика включена. Фоновая синхронизация ограничена.</string>
   <string name="sync_warning_manage_datasaver">Экономия трафика</string>
@@ -206,7 +206,7 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">Push-сообщения всегда зашифрованы.</string>
   <!--AccountScreen-->
-  <string name="account_invalid_account">Аккаунт не существует</string>
+  <string name="account_invalid_account">Аккаунт удален</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">WebСal</string>
@@ -248,10 +248,10 @@
   <string name="login_password">Пароль</string>
   <string name="login_password_hide">Скрыть пароль</string>
   <string name="login_password_show">Показать пароль</string>
-  <string name="login_password_optional">Пароль*</string>
+  <string name="login_password_optional">Пароль (необязательно)</string>
   <string name="login_type_url">Войти с URL и именем пользователя</string>
   <string name="login_user_name">Имя пользователя</string>
-  <string name="login_user_name_optional">Имя пользователя*</string>
+  <string name="login_user_name_optional">Имя пользователя (необязательно)</string>
   <string name="login_base_url">Базовый URL</string>
   <string name="login_base_url_info"><![CDATA[Базовый URL проверяется напрямую, но <a href="%s">сервисы также обнаруживаются</a> по записям DNS и известным URL.]]></string>
   <string name="login_select_certificate">Выберите сертификат</string>
@@ -265,21 +265,22 @@
   <string name="login_account_not_added">Не удалось добавить аккаунт</string>
   <string name="login_finish">Завершить</string>
   <string name="login_type_advanced">Расширенный вход</string>
-  <string name="login_no_client_certificate_optional">Нет клиентского сертификата*</string>
+  <string name="login_no_client_certificate_optional">Без клиентского сертификата (необязательно)</string>
   <string name="login_client_certificate_selected">Сертификат клиента: %s</string>
   <string name="login_no_certificate_found">Сертификат не найден</string>
   <string name="login_install_certificate">Установить сертификат</string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Аккаунт Fastmail</string>
+  <string name="login_fastmail_sign_in">Войти с Fastmail</string>
   <string name="login_type_google">Google Контакты / Календарь</string>
-  <string name="login_google_see_tested_with">Актуальную информацию смотрите на нашей странице \"Протестировано с Google\".</string>
-  <string name="login_google_unexpected_warnings">Вы можете столкнуться с неожиданными предупреждениями и/или вам придется создать свой собственный ID клиента.</string>
   <string name="login_google_account">Google аккаунт</string>
-  <string name="login_google">Войти через Google</string>
+  <string name="login_google">Войти с Google</string>
   <string name="login_google_client_id">ID клиента (необязательно)</string>
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s передает Google данные Контактов и Календаря исключительно для синхронизации с этим устройством. Для получения подробностей смотрите нашу <a href="%2$s">Политику конфиденциальности</a>.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s соблюдает <a href="%2$s">Политику в отношении пользовательских данных Google API Services</a>, включая требования Ограниченного использования.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Не удалось получить код авторизации</string>
   <string name="login_type_nextcloud">Nextcloud</string>
-  <string name="login_nextcloud_login_with_nextcloud">Войти через Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Войти с Nextcloud</string>
   <string name="login_nextcloud_login_flow_text">Это запустит процесс авторизации в Nextcloud в браузере.</string>
   <string name="login_nextcloud_login_flow_server_address">Адрес сервера Nextcloud</string>
   <string name="login_nextcloud_login_flow_sign_in">Войти</string>
@@ -323,9 +324,13 @@
   <string name="settings_ignore_vpns_off">VPN без основного интернета достаточно для выполнения синхронизации</string>
   <string name="settings_authentication">Аутентификация</string>
   <string name="settings_username">Имя пользователя</string>
-  <string name="settings_password">Пароль</string>
+  <string name="settings_password"> Пароль или пароль приложения</string>
+  <string name="settings_app_password_hint"><![CDATA[Возможно, вам больше понравится использовать <a href="%1$s">пароль приложения</a>.]]></string>
   <string name="settings_new_password">Новый пароль</string>
   <string name="settings_password_summary">Обновить пароль</string>
+  <string name="settings_reauthorize_oauth">Авторизовать снова (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">Использовать, когда доступ был отозван</string>
+  <string name="settings_reauthorize_oauth_success">Авторизация успешна</string>
   <string name="settings_certificate_alias">Сертификат клиента</string>
   <string name="settings_certificate_alias_empty">Сертификат отсутствует или не выбран</string>
   <string name="settings_certificate_install">Установить сертификат</string>
@@ -364,7 +369,7 @@
   <string name="create_addressbook">Создать адресную книгу</string>
   <string name="create_addressbook_maybe_not_supported">Создание адресной книги через CardDAV может не поддерживаться сервером.</string>
   <string name="create_calendar">Создать календарь</string>
-  <string name="create_calendar_time_zone_optional">Часовой пояс по умолчанию*</string>
+  <string name="create_calendar_time_zone_optional">Часовой пояс по умолчанию (необязательно)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Возможные записи календаря</string>
   <string name="create_calendar_type_vevent">События</string>
@@ -374,10 +379,12 @@
   <string name="create_collection_color">Цвет</string>
   <string name="create_collection_display_name">Название</string>
   <string name="create_collection_home_set">Место хранения</string>
-  <string name="create_collection_description_optional">Описание*</string>
+  <string name="create_collection_description_optional">Описание (необязательно)</string>
   <string name="create_collection_create">Создать</string>
-  <string name="create_collection_optional">* опционально</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">контакты</string>
+  <string name="collection_datatype_events">события</string>
+  <string name="collection_datatype_tasks">задачи</string>
   <string name="collection_delete">Удалить коллекцию</string>
   <string name="collection_delete_warning">Эта коллекция (%s) и все ее данные будут удалены навсегда, как локально, так и на сервере.</string>
   <string name="collection_synchronization">Синхронизация</string>
@@ -410,10 +417,10 @@
   <string name="debug_info_http_403_description">Запрос был отклонен. Для получения подробной информации проверьте задействованные ресурсы и отладочную информацию.</string>
   <string name="debug_info_http_404_description">Запрошенного ресурса не существует (больше не существует). Проверьте задействованные ресурсы и отладочную информацию для получения подробной информации.</string>
   <string name="debug_info_http_5xx_description">Возникла проблема на стороне сервера. Пожалуйста, свяжитесь со службой поддержки вашего сервера.</string>
-  <string name="debug_info_unexpected_error">Произошла неожиданная ошибка. Просмотрите отладочную информацию для получения подробностей.</string>
-  <string name="debug_info_view_details">Просмотреть информацию</string>
-  <string name="debug_info_subtitle">Собрана отладочная информация</string>
-  <string name="debug_info_involved_caption">Вовлеченные ресурсы</string>
+  <string name="debug_info_unexpected_error">Произошла неожиданная ошибка. Просмотрите отладочную информацию, чтобы узнать подробности.</string>
+  <string name="debug_info_view_details">Просмотр</string>
+  <string name="debug_info_subtitle">Отладочная информация собрана</string>
+  <string name="debug_info_involved_caption">Задействованные ресурсы</string>
   <string name="debug_info_involved_subtitle">Связанная с этим проблема</string>
   <string name="debug_info_involved_remote">Удаленный ресурс:</string>
   <string name="debug_info_involved_local">Локальный ресурс:</string>
@@ -421,7 +428,7 @@
   <string name="debug_info_logs_subtitle">Доступны подробные логи</string>
   <string name="debug_info_logs_view">Просмотр логов</string>
   <string name="debug_info_privacy_warning_title"> Предупреждение о конфиденциальности</string>
-  <string name="debug_info_privacy_warning_description">Журналы и отладочная информация могут содержать конфиденциальную информацию. Пожалуйста, помните об этом при публичном использовании.</string>
+  <string name="debug_info_privacy_warning_description">Журналы и отладочная информация могут содержать конфиденциальную информацию. Пожалуйста, помните об этом, когда делитесь ими.</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Произошла ошибка.</string>
   <string name="exception_httpexception">Произошла ошибка HTTP</string>
@@ -433,14 +440,17 @@
   <string name="webdav_mounts_share_content">Поделиться контентом</string>
   <string name="webdav_mounts_unmount">Отмонтировать</string>
   <string name="webdav_add_mount_title">Добавление точки монтирования WebDAV</string>
-  <string name="webdav_mounts_empty">Прямой доступ к вашим облачным файлам с помощью точки монтирования WebDAV!</string>
+  <string name="webdav_mounts_empty">Прямой доступ к вашим облачным файлам с помощью точек монтирования WebDAV!</string>
   <string name="webdav_add_mount_empty_more_info"><![CDATA[Ознакомьтесь с руководством, чтобы узнать <a href="%1$s">как работают точки монтирования WebDAV</a>.]]></string>
   <string name="webdav_add_mount_display_name">Отображаемое имя</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Некорректный URL</string>
-  <string name="webdav_add_mount_authentication">Аутентификация (необязательно)</string>
+  <string name="webdav_add_mount_mountpoint_displayname">Точка монтирования и отображаемое имя</string>
+  <string name="webdav_add_mount_authentication">Аутентификация</string>
   <string name="webdav_add_mount_username">Имя пользователя</string>
   <string name="webdav_add_mount_password">Пароль</string>
+  <string name="webdav_add_mount_username_optional">Имя пользователя (необязательно)</string>
+  <string name="webdav_add_mount_password_optional">Пароль (необязательно)</string>
   <string name="webdav_add_mount_add">Добавить точку монтирования</string>
   <string name="webdav_add_mount_no_support">Служба WebDAV отсутствует на данном URL</string>
   <string name="webdav_remove_mount_title">Удалить точку монтирования</string>

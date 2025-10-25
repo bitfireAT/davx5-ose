@@ -8,8 +8,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.ui.account.AccountActivity
+import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.AndroidEntryPoint
 import java.net.URI
 import java.net.URISyntaxException
@@ -139,7 +140,7 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
                 },
                 credentials = Credentials(
                     username = givenUsername,
-                    password = givenPassword?.toCharArray()
+                    password = givenPassword?.toSensitiveString()
                 )
             )
         }

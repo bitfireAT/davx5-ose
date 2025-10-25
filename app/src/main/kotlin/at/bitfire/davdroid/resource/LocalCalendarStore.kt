@@ -6,11 +6,13 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.provider.CalendarContract
+import android.provider.CalendarContract.Attendees
 import android.provider.CalendarContract.Calendars
+import android.provider.CalendarContract.Events
+import android.provider.CalendarContract.Reminders
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
@@ -18,10 +20,9 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.AndroidCalendar
-import at.bitfire.ical4android.AndroidCalendar.Companion.calendarBaseValues
 import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
+import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -30,6 +31,7 @@ import javax.inject.Inject
 class LocalCalendarStore @Inject constructor(
     @ApplicationContext private val context: Context,
     private val accountSettingsFactory: AccountSettings.Factory,
+    private val localCalendarFactory: LocalCalendar.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
 ): LocalDataStore<LocalCalendar> {
@@ -37,10 +39,16 @@ class LocalCalendarStore @Inject constructor(
     override val authority: String
         get() = CalendarContract.AUTHORITY
 
-    override fun acquireContentProvider() =
+    override fun acquireContentProvider(throwOnMissingPermissions: Boolean) = try {
         context.contentResolver.acquireContentProviderClient(authority)
+    } catch (e: SecurityException) {
+        if (throwOnMissingPermissions)
+            throw e
+        else
+            /* return */ null
+    }
 
-    override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalCalendar? {
+    override fun create(client: ContentProviderClient, fromCollection: Collection): LocalCalendar? {
         val service = serviceRepository.getBlocking(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
@@ -69,26 +77,49 @@ class LocalCalendarStore @Inject constructor(
         }
 
         logger.log(Level.INFO, "Adding local calendar", values)
-        val uri = AndroidCalendar.create(account, provider, values)
-        return AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
+        val provider = AndroidCalendarProvider(account, client)
+        return localCalendarFactory.create(provider.createAndGetCalendar(values))
     }
 
-    override fun getAll(account: Account, provider: ContentProviderClient) =
-        AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${Calendars.SYNC_EVENTS}!=0", null)
+    override fun getAll(account: Account, client: ContentProviderClient) =
+        AndroidCalendarProvider(account, client)
+            .findCalendars("${Calendars.SYNC_EVENTS}!=0", null)
+            .map { localCalendarFactory.create(it) }
 
-    override fun update(provider: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
-        val accountSettings = accountSettingsFactory.create(localCollection.account)
+    override fun update(client: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
+        val accountSettings = accountSettingsFactory.create(localCollection.androidCalendar.account)
         val values = valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors())
 
         logger.log(Level.FINE, "Updating local calendar ${fromCollection.url}", values)
-        localCollection.update(values)
+        val androidCalendar = localCollection.androidCalendar
+        val provider = AndroidCalendarProvider(androidCalendar.account, client)
+        provider.updateCalendar(androidCalendar.id, values)
     }
 
     private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
-        val values = ContentValues()
-        values.put(Calendars._SYNC_ID, info.id)
-        values.put(Calendars.CALENDAR_DISPLAY_NAME,
-            if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
+        val values = contentValuesOf(
+            Calendars._SYNC_ID to info.id,
+            Calendars.CALENDAR_DISPLAY_NAME to
+                    if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName,
+
+            Calendars.ALLOWED_AVAILABILITY to arrayOf(
+                Events.AVAILABILITY_BUSY,
+                Events.AVAILABILITY_FREE
+            ).joinToString(",") { it.toString() },
+
+            Calendars.ALLOWED_ATTENDEE_TYPES to arrayOf(
+                Attendees.TYPE_NONE,
+                Attendees.TYPE_OPTIONAL,
+                Attendees.TYPE_REQUIRED,
+                Attendees.TYPE_RESOURCE
+            ).joinToString(",") { it.toString() },
+
+            Calendars.ALLOWED_REMINDERS to arrayOf(
+                Reminders.METHOD_DEFAULT,
+                Reminders.METHOD_ALERT,
+                Reminders.METHOD_EMAIL
+            ).joinToString(",") { it.toString() },
+        )
 
         if (withColor && info.color != null)
             values.put(Calendars.CALENDAR_COLOR, info.color)
@@ -104,9 +135,6 @@ class LocalCalendarStore @Inject constructor(
             values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(tzId))
         }
 
-        // add base values for Calendars
-        values.putAll(calendarBaseValues)
-
         return values
     }
 
@@ -120,7 +148,7 @@ class LocalCalendarStore @Inject constructor(
 
     override fun delete(localCollection: LocalCalendar) {
         logger.log(Level.INFO, "Deleting local calendar", localCollection)
-        localCollection.delete()
+        localCollection.androidCalendar.delete()
     }
 
 }

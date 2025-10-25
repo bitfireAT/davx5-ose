@@ -11,10 +11,9 @@
   <string name="field_required">Feld wird benötigt</string>
   <string name="help">Hilfe</string>
   <string name="navigate_up">Aufwärts navigieren</string>
-  <string name="optional_label">* optional</string>
   <string name="options_menu">Auswahlmenü</string>
   <string name="share">Teilen</string>
-  <string name="sync_started">Synchronisierung gestartet/angehalten</string>
+  <string name="sync_started">Synchronisierung gestartet/eingereiht</string>
   <string name="database_destructive_migration_title">Datenbank beschädigt</string>
   <string name="database_destructive_migration_text">Alle Konten wurden lokal entfernt.</string>
   <string name="notification_channel_debugging">Fehlersuche</string>
@@ -34,7 +33,7 @@
   <string name="intro_battery_text">Zur Synchronisierung in regelmäßigen Intervallen muss %s im Hintergrund laufen dürfen; ansonsten kann Android die Synchronisierung jederzeit aussetzen.</string>
   <string name="intro_battery_dont_show">Ich brauche keine regelmäßigen Sync-Intervalle.*</string>
   <string name="intro_autostart_title">%s-Kompatibilität</string>
-  <string name="intro_autostart_text">Dieses Gerät blockiert die Synchronisierung wahrscheinlich. Dies kann nur manuell behoben werden.</string>
+  <string name="intro_autostart_text">Herstellerspezifische Firmware blockiert möglicherweise die Synchronisierung. Wenn Sie davon betroffen sind, können Sie dies nur manuell beheben.</string>
   <string name="intro_autostart_dont_show">Ich habe die Einstellungen gemacht, nicht mehr erinnern.*</string>
   <string name="intro_leave_unchecked">* Nicht anwählen, um später erinnert zu werden. Kann unter App-Einstellungen / %s zurückgesetzt werden.</string>
   <string name="intro_more_info">Mehr Infos</string>
@@ -64,19 +63,19 @@
   <string name="permissions_all_status_off">Hiermit können alle Funktionen aktiviert werden (empfohlen)</string>
   <string name="permissions_all_status_on">Alle Berechtigungen gewährt</string>
   <string name="permissions_contacts_title">Kontakte-Berechtigungen</string>
-  <string name="permissions_contacts_status_off">Keine Kontaktsynchronisierung (nicht empfohlen)</string>
-  <string name="permissions_contacts_status_on">Kontaktsynchronisierung möglich</string>
+  <string name="permissions_contacts_status_off">Keine Kontakte-Synchronisierung (nicht empfohlen)</string>
+  <string name="permissions_contacts_status_on">Kontakte-Synchronisierung möglich</string>
   <string name="permissions_calendar_title">Kalender-Berechtigungen</string>
-  <string name="permissions_calendar_status_off">Keine Kalendersynchronisierung (nicht empfohlen)</string>
-  <string name="permissions_calendar_status_on">Kalendersynchronisierung möglich</string>
+  <string name="permissions_calendar_status_off">Keine Kalender-Synchronisierung (nicht empfohlen)</string>
+  <string name="permissions_calendar_status_on">Kalender-Synchronisierung möglich</string>
   <string name="permissions_notification_title">Benachrichtigungsberechtigung</string>
   <string name="permissions_notification_status_off">Benachrichtigungen deaktiviert (nicht empfohlen)</string>
   <string name="permissions_notification_status_on">Benachrichtigungen aktiviert</string>
   <string name="permissions_jtx_title">jtx Board-Berechtigungen</string>
   <string name="permissions_opentasks_title">OpenTasks-Berechtigungen</string>
   <string name="permissions_tasksorg_title">Tasks-Berechtigungen</string>
-  <string name="permissions_tasks_status_off">Keine Aufgabensynchronisierung</string>
-  <string name="permissions_tasks_status_on">Aufgabensynchronisierung möglich</string>
+  <string name="permissions_tasks_status_off">Keine Aufgaben-Synchronisierung</string>
+  <string name="permissions_tasks_status_on">Aufgaben-Synchronisierung möglich</string>
   <string name="permissions_autoreset_title">Berechtigungen behalten</string>
   <string name="permissions_autoreset_status_off">Berechtigungen können automatisch entzogen werden (nicht empfohlen)</string>
   <string name="permissions_autoreset_status_on">Berechtigungen werden nicht automatisch entzogen</string>
@@ -93,8 +92,8 @@
   <string name="wifi_permissions_background_location_permission_label">Immer zulassen</string>
   <string name="wifi_permissions_background_location_permission_on">Standort-Zugriff eingestellt auf: %s</string>
   <string name="wifi_permissions_background_location_permission_off">Standort-Zugriff nicht eingestellt auf: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s benutzt die Positionsdaten (nur WLAN SSID) nur, um die Synchronisierung auf ein bestimmtes WLAN zu beschränken. Das passiert auch, wenn die Synchronisierung im Hintergrund läuft.</string>
-  <string name="wifi_permissions_background_location_disclaimer2">Alle Positionsdaten (nur W-LAN SSID) werden nur lokal genutzt und nirgendwo hin gesendet.</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s benutzt Standortdaten (nur WLAN-SSID) ausschließlich, um die Synchronisierung auf ein bestimmtes WLAN zu beschränken. Dies geschieht auch dann, wenn die Synchronisierung im Hintergrund ausgeführt wird.</string>
+  <string name="wifi_permissions_background_location_disclaimer2">Alle Standortdaten (nur WLAN-SSID) werden nur lokal verwendet und nicht an Dritte weitergegeben.</string>
   <string name="wifi_permissions_location_enabled">Standort-Dienst immer aktiviert</string>
   <string name="wifi_permissions_location_enabled_on">Standort-Dienst aktiv</string>
   <string name="wifi_permissions_location_enabled_off">Standort-Dienst inaktiv</string>
@@ -121,6 +120,7 @@
   <string name="navigation_drawer_website">Homepage</string>
   <string name="navigation_drawer_manual">Handbuch</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_managed">Für Organisationen</string>
   <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_support_project">Projekt unterstützen</string>
   <string name="navigation_drawer_contribute">Einen Beitrag leisten</string>
@@ -134,8 +134,8 @@
   <string name="sync_warning_manage_connections">Verbindungen steuern</string>
   <string name="sync_warning_datasaver_enabled">Datensparen aktiviert. Hintergrundsynchronisierung ist eingeschränkt.</string>
   <string name="sync_warning_manage_datasaver">Datensparen verwalten</string>
-  <string name="sync_warning_battery_saver_enabled">Akkusparen aktiviert. Synchronisierung kann eingeschränkt sein.</string>
-  <string name="sync_warning_manage_battery_saver">Akkusparen verwalten</string>
+  <string name="sync_warning_battery_saver_enabled">Energiesparmodus aktiviert. Synchronisierung kann eingeschränkt sein.</string>
+  <string name="sync_warning_manage_battery_saver">Energieeinstellungen verwalten</string>
   <string name="sync_warning_low_storage">Wenig Speicherplatz. Android wird lokale Änderungen nicht sofort synchronisieren, sondern bei der nächsten regulären Synchronisierung.</string>
   <string name="sync_warning_manage_storage">Speicherplatz verwalten</string>
   <string name="sync_warning_calendar_storage_disabled_title">Kalender-Provider fehlt</string>
@@ -176,7 +176,7 @@
   <string name="app_settings_distrust_system_certs">Systemzertifikaten nicht vertrauen</string>
   <string name="app_settings_distrust_system_certs_on">System- und installierten CAs wird nicht vertraut</string>
   <string name="app_settings_distrust_system_certs_off">System- und installierten CAs wird vertraut (empfohlen)</string>
-  <string name="app_settings_distrust_system_certs_dialog_message">Wenn diese Einstellung aktiv ist, werden Systemzertifikate als nicht vertrauenswürdig erachtet. Das bedeutet, dass Sie jedes Zertifikat (auch wenn der Server sein Zertifikat auffrischt) von Hand akzeptieren müssen oder die Kontoeinrichtung und Synchronisation werden nicht funktionieren.</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">Wenn diese Einstellung aktiv ist, werden Systemzertifikate als nicht vertrauenswürdig erachtet. Das bedeutet, dass Sie jedes Zertifikat (auch wenn der Server sein Zertifikat auffrischt) von Hand akzeptieren müssen; sonst werden Kontoeinrichtung und Synchronisierung nicht funktionieren.</string>
   <string name="app_settings_reset_certificates">Zertifikat-Vertrauen zurücksetzen</string>
   <string name="app_settings_reset_certificates_summary">Setzt angenommene/abgelehnte Zertifikate zurück</string>
   <string name="app_settings_reset_certificates_success">Angenommene/abgelehnte Zertifikate zurückgesetzt</string>
@@ -204,7 +204,7 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">Push-Nachrichten sind immer verschlüsselt.</string>
   <!--AccountScreen-->
-  <string name="account_invalid_account">Konto gibt es nicht</string>
+  <string name="account_invalid_account">Konto wurde entfernt</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -234,7 +234,7 @@
   <string name="account_install_icsx5">ICSx⁵ installieren</string>
   <!--AddAccountActivity-->
   <string name="login_title">Konto hinzufügen</string>
-  <string name="login_privacy_hint"><![CDATA[Alle Daten werden nur zwischen ihrem Server und ihrem Gerät übertragen. %1$s wird sie nirgendwohin sonst schicken. Siehe die <a href="%2$s">Datenschutzbestimmungen</a>.]]></string>
+  <string name="login_privacy_hint"><![CDATA[Alle Daten werden nur zwischen Ihrem Server und Ihrem Gerät übertragen. %1$s wird sie nirgendwohin sonst schicken. Siehe die <a href="%2$s">Datenschutzbestimmungen</a>.]]></string>
   <string name="login_generic_login">Allgemeine Anmeldung</string>
   <string name="login_provider_login">Provider-spezifische Anmeldung</string>
   <string name="login_continue">Fortfahren</string>
@@ -246,10 +246,10 @@
   <string name="login_password">Passwort</string>
   <string name="login_password_hide">Passwort ausblenden</string>
   <string name="login_password_show">Passwort anzeigen</string>
-  <string name="login_password_optional">Passwort*</string>
+  <string name="login_password_optional">Passwort (optional)</string>
   <string name="login_type_url">Mit URL und Benutzername anmelden</string>
   <string name="login_user_name">Benutzername</string>
-  <string name="login_user_name_optional">Benutzername*</string>
+  <string name="login_user_name_optional">Benutzername (optional)</string>
   <string name="login_base_url">Basis-URL</string>
   <string name="login_base_url_info"><![CDATA[Basis-URL wird direkt geprüft, aber es erfolgt auch <a href="%s">Dienst-Erkennung</a> über DNS-Einträge und well-known-URLs.]]></string>
   <string name="login_select_certificate">Zertifikat auswählen</string>
@@ -263,13 +263,14 @@
   <string name="login_account_not_added">Konto konnte nicht hinzugefügt werden</string>
   <string name="login_finish">Abschließen</string>
   <string name="login_type_advanced">Erweiterte Anmeldung</string>
-  <string name="login_no_client_certificate_optional">Kein Client-Zertifikat*</string>
+  <string name="login_no_client_certificate_optional">Kein Client-Zertifikat (optional)</string>
   <string name="login_client_certificate_selected">Client-Zertifikat: %s</string>
   <string name="login_no_certificate_found">Kein Zertifikat gefunden</string>
   <string name="login_install_certificate">Zertifikat installieren </string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Fastmail-Konto</string>
+  <string name="login_fastmail_sign_in">Mit Fastmail anmelden</string>
   <string name="login_type_google">Google-Kontakte / -Kalender</string>
-  <string name="login_google_see_tested_with">Siehe unsere \"Getestet mit Google\"-Seite für neuere Informationen.</string>
-  <string name="login_google_unexpected_warnings">Sie werden unerwartete Warnungen erhalten und/oder müssen eine eigene Client-ID erstellen.</string>
   <string name="login_google_account">Google-Konto</string>
   <string name="login_google">Mit Google anmelden</string>
   <string name="login_google_client_id">Client-ID (optional)</string>
@@ -284,13 +285,13 @@
   <string name="login_nextcloud_login_flow_no_login_url">Login-URL konnte nicht abgerufen werden</string>
   <string name="login_nextcloud_login_flow_no_login_data">Anmeldedaten konnten nicht abgerufen werden</string>
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
-  <string name="login_querying_server">Server-Informationen werden abgerufen. Bitte warten …</string>
+  <string name="login_querying_server">Server wird abgefragt. Bitte warten …</string>
   <string name="login_no_service">Es konnte weder ein CalDAV- noch ein CardDAV-Dienst gefunden werden.</string>
   <string name="login_no_service_info">Die Basis-URL scheint keine erreichbare CalDAV/CardDAV-URL zu sein und die Diensterkennung war nicht erfolgreich.</string>
   <string name="login_see_tested_services"><![CDATA[Bitte beachten Sie das Handbuch Ihres Dienstanbieters und <a href="%s">unsere Liste der getesteten Dienste</a> und deren Basis-URLs.]]></string>
   <string name="login_check_credentials">Bitte überprüfen Sie auch die Authentifizierung (normalerweise Benutzername und Passwort).</string>
   <string name="login_logs_available">Weitere technische Informationen sind in den Protokollen verfügbar.</string>
-  <string name="login_view_logs">Logs anzeigen</string>
+  <string name="login_view_logs">Protokoll anzeigen</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronisierung</string>
   <string name="settings_sync_interval_contacts">Häufigkeit der Kontakte-Synchronisierung</string>
@@ -313,7 +314,7 @@
   <string name="settings_sync_wifi_only_ssids">WLAN-SSID-Beschränkung</string>
   <string name="settings_sync_wifi_only_ssids_on">Synchronisierung nur über %s</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle WLAN-Verbindungen werden verwendet</string>
-  <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs, mit Komma getrennt, leer lassen für alle)</string>
+  <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs), mit Komma getrennt (leer lassen für alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WLAN-SSID-Einschränkung benötigt weitere Einstellungen</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Verwalten</string>
   <string name="settings_ignore_vpns">VPN erfordert zugrundeliegendes Internet</string>
@@ -321,9 +322,13 @@
   <string name="settings_ignore_vpns_off">VPN ohne zugrundeliegende überprüfte Internetverbindung reicht für Synchronisierung aus</string>
   <string name="settings_authentication">Anmeldeinformationen</string>
   <string name="settings_username">Benutzername</string>
-  <string name="settings_password">Passwort</string>
+  <string name="settings_password">Passwort oder App-Passwort</string>
+  <string name="settings_app_password_hint"><![CDATA[Möglicherweise möchten Sie ein <a href="%1$s">App-Passwort</a> verwenden.]]></string>
   <string name="settings_new_password">Neues Passwort</string>
   <string name="settings_password_summary">Aktualisieren Sie Ihr Passwort gemäß den Server-Einstellungen.</string>
+  <string name="settings_reauthorize_oauth">Erneut authentifizieren (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">Verwenden, wenn der Zugriff widerrufen wurde</string>
+  <string name="settings_reauthorize_oauth_success">Authentifizierung erfolgreich</string>
   <string name="settings_certificate_alias">Client-Zertifikat</string>
   <string name="settings_certificate_alias_empty">Kein Zertifikat verfügbar oder ausgewählt</string>
   <string name="settings_certificate_install">Zertifikat installieren </string>
@@ -358,7 +363,7 @@
   <string name="create_addressbook">Adressbuch erstellen</string>
   <string name="create_addressbook_maybe_not_supported">Das Erstellen von Adressbüchern über CardDAV wird vom Server möglicherweise nicht unterstützt.</string>
   <string name="create_calendar">Kalender anlegen</string>
-  <string name="create_calendar_time_zone_optional">Standard-Zeitzone*</string>
+  <string name="create_calendar_time_zone_optional">Standard-Zeitzone (optional)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Mögliche Kalendereinträge</string>
   <string name="create_calendar_type_vevent">Termine</string>
@@ -368,10 +373,12 @@
   <string name="create_collection_color">Farbe</string>
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_home_set">Speicherort</string>
-  <string name="create_collection_description_optional">Beschreibung*</string>
+  <string name="create_collection_description_optional">Beschreibung (optional)</string>
   <string name="create_collection_create">Erstellen</string>
-  <string name="create_collection_optional">* optional</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">Kontakte</string>
+  <string name="collection_datatype_events">Termine</string>
+  <string name="collection_datatype_tasks">Aufgaben</string>
   <string name="collection_delete">Ordner löschen</string>
   <string name="collection_delete_warning">Dieser Ordner (%s) und alle enthaltenen Daten werden dauerhaft entfernt, sowohl lokal als auch auf dem Server.</string>
   <string name="collection_synchronization">Synchronisierung</string>
@@ -384,9 +391,9 @@
   <string name="collection_read_write">Lesen/Schreiben</string>
   <string name="collection_title">Titel</string>
   <string name="collection_description">Beschreibung</string>
-  <string name="collection_owner">Besitzer</string>
+  <string name="collection_owner">Besitzer:in</string>
   <string name="collection_push_support">Push-Unterstützung</string>
-  <string name="collection_push_web_push">Server wirbt mit Push-Unterstützung</string>
+  <string name="collection_push_web_push">Server bietet Push-Unterstützung</string>
   <string name="collection_push_subscribed_at">Um %1$s angemeldet, läuft ab %2$s</string>
   <string name="collection_last_sync">Letzte Synchronisierung (%s)</string>
   <string name="collection_url">Adresse (URL)</string>
@@ -408,7 +415,7 @@
   <string name="debug_info_view_details">Details anzeigen</string>
   <string name="debug_info_subtitle">Debug-Informationen wurden gesammelt</string>
   <string name="debug_info_involved_caption">Beteiligte Ressourcen</string>
-  <string name="debug_info_involved_subtitle">haben mit dem Problem zu tun</string>
+  <string name="debug_info_involved_subtitle">Im Zusammenhang mit dem Problem</string>
   <string name="debug_info_involved_remote">Entfernte Ressource:</string>
   <string name="debug_info_involved_local">Lokale Ressource:</string>
   <string name="debug_info_logs_caption">Protokoll</string>
@@ -432,9 +439,12 @@
   <string name="webdav_add_mount_display_name">Anzeigename</string>
   <string name="webdav_add_mount_url">WebDAV-Adresse</string>
   <string name="webdav_add_mount_url_invalid">Ungültige Adresse</string>
-  <string name="webdav_add_mount_authentication">Authentifizierung (optional)</string>
+  <string name="webdav_add_mount_mountpoint_displayname">Einhängepunkt und Anzeigename</string>
+  <string name="webdav_add_mount_authentication">Anmeldeinformationen</string>
   <string name="webdav_add_mount_username">Anmeldename</string>
   <string name="webdav_add_mount_password">Passwort</string>
+  <string name="webdav_add_mount_username_optional">Benutzername (optional)</string>
+  <string name="webdav_add_mount_password_optional">Passwort (optional)</string>
   <string name="webdav_add_mount_add">Einhängen</string>
   <string name="webdav_add_mount_no_support">Kein WebDAV-Dienst unter dieser Adresse</string>
   <string name="webdav_remove_mount_title">Einhängepunkt entfernen</string>

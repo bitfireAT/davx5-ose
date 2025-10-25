@@ -10,31 +10,26 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts.Data
 import androidx.core.content.contentValuesOf
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.resource.contactrow.CachedGroupMembershipHandler
 import at.bitfire.davdroid.resource.contactrow.GroupMembershipBuilder
 import at.bitfire.davdroid.resource.contactrow.GroupMembershipHandler
 import at.bitfire.davdroid.resource.contactrow.UnknownPropertiesBuilder
 import at.bitfire.davdroid.resource.contactrow.UnknownPropertiesHandler
+import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.ContactsBatchOperation
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidContactFactory
-import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
-import ezvcard.Ezvcard
 import java.io.FileNotFoundException
+import java.util.Optional
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 class LocalContact: AndroidContact, LocalAddress {
 
     companion object {
-
-        init {
-            Contact.productID = "+//IDN bitfire.at//DAVx5/${BuildConfig.VERSION_NAME} ez-vcard/" + Ezvcard.VERSION
-        }
-
         const val COLUMN_FLAGS = ContactsContract.RawContacts.SYNC4
         const val COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3
     }
@@ -45,9 +40,8 @@ class LocalContact: AndroidContact, LocalAddress {
     internal val cachedGroupMemberships = HashSet<Long>()
     internal val groupMemberships = HashSet<Long>()
 
-    override var scheduleTag: String?
+    override val scheduleTag: String?
         get() = null
-        set(_) = throw NotImplementedError()
 
     override var flags: Int = 0
 
@@ -95,13 +89,13 @@ class LocalContact: AndroidContact, LocalAddress {
         _contact = null
     }
 
-    override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
+    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             throw IllegalArgumentException("Contacts must not have a Schedule-Tag")
 
         val values = ContentValues(4)
-        if (fileName != null)
-            values.put(COLUMN_FILENAME, fileName)
+        if (fileName.isPresent)
+            values.put(COLUMN_FILENAME, fileName.get())
         values.put(COLUMN_ETAG, eTag)
         values.put(ContactsContract.RawContacts.DIRTY, 0)
 
@@ -110,19 +104,23 @@ class LocalContact: AndroidContact, LocalAddress {
 
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
-        if (fileName != null)
-            this.fileName = fileName
+        if (fileName.isPresent)
+            this.fileName = fileName.get()
         this.eTag = eTag
-    }
-
-    override fun resetDeleted() {
-        val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
     fun resetDirty() {
         val values = contentValuesOf(ContactsContract.RawContacts.DIRTY to 0)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+    }
+
+    override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        this.fileName = fileName
+        this.eTag = eTag
+        this.flags = flags
+
+        // processes this.{fileName, eTag, flags} and resets DIRTY flag
+        update(data)
     }
 
     override fun updateFlags(flags: Int) {
@@ -132,31 +130,39 @@ class LocalContact: AndroidContact, LocalAddress {
         this.flags = flags
     }
 
+    override fun deleteLocal() {
+        delete()
+    }
 
-    fun addToGroup(batch: BatchOperation, groupID: Long) {
-        batch.enqueue(BatchOperation.CpoBuilder
-                .newInsert(dataSyncURI())
-                .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
-                .withValue(GroupMembership.RAW_CONTACT_ID, id)
-                .withValue(GroupMembership.GROUP_ROW_ID, groupID))
+    override fun resetDeleted() {
+        val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+    }
+
+
+    fun addToGroup(batch: ContactsBatchOperation, groupID: Long) {
+        batch += BatchOperation.CpoBuilder
+            .newInsert(dataSyncURI())
+            .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
+            .withValue(GroupMembership.RAW_CONTACT_ID, id)
+            .withValue(GroupMembership.GROUP_ROW_ID, groupID)
         groupMemberships += groupID
 
-        batch.enqueue(BatchOperation.CpoBuilder
-                .newInsert(dataSyncURI())
-                .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
-                .withValue(CachedGroupMembership.GROUP_ID, groupID)
-        )
+        batch += BatchOperation.CpoBuilder
+            .newInsert(dataSyncURI())
+            .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+            .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
+            .withValue(CachedGroupMembership.GROUP_ID, groupID)
         cachedGroupMemberships += groupID
     }
 
     fun removeGroupMemberships(batch: BatchOperation) {
-        batch.enqueue(BatchOperation.CpoBuilder
-                .newDelete(dataSyncURI())
-                .withSelection(
-                        "${Data.RAW_CONTACT_ID}=? AND ${Data.MIMETYPE} IN (?,?)",
-                        arrayOf(id.toString(), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                ))
+        batch += BatchOperation.CpoBuilder
+            .newDelete(dataSyncURI())
+            .withSelection(
+                "${Data.RAW_CONTACT_ID}=? AND ${Data.MIMETYPE} IN (?,?)",
+                arrayOf(id.toString(), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+            )
         groupMemberships.clear()
         cachedGroupMemberships.clear()
     }

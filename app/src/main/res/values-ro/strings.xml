@@ -11,7 +11,6 @@
   <string name="field_required">Acest câmp este obligatoriu</string>
   <string name="help">Ajutor</string>
   <string name="navigate_up">Navigare în sus</string>
-  <string name="optional_label">* opțional</string>
   <string name="options_menu">Meniul Opțiuni</string>
   <string name="share">Distribuie</string>
   <string name="sync_started">Sincronizare începută/pusă în coadă</string>
@@ -34,7 +33,7 @@
   <string name="intro_battery_text">Pentru sincronizare la intervale regulate, %s trebuie să aibă voie să ruleze în fundal. În caz contrar, Android poate întrerupe sincronizarea în orice moment.</string>
   <string name="intro_battery_dont_show">Nu am nevoie de intervale regulate de sincronizare.*</string>
   <string name="intro_autostart_title">Compatibilitate %s </string>
-  <string name="intro_autostart_text">Acest dispozitiv probabil blochează sincronizarea. Dacă ești afectat, poți rezolva acest lucru numai manual.</string>
+  <string name="intro_autostart_text">Firmware-ul specific vendorului poate bloca sincronizarea. Dacă ești afectat, poți rezolva acest lucru manual.</string>
   <string name="intro_autostart_dont_show">Am făcut setările necesare. Nu-mi mai aminti.*</string>
   <string name="intro_leave_unchecked">* Lasă nebifat pentru a fi reamintit mai târziu. Poate fi resetat în setările aplicației / %s.</string>
   <string name="intro_more_info">Mai multe informații</string>
@@ -122,6 +121,7 @@
   <string name="navigation_drawer_website">Pagină web</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Întrebări frecvente</string>
+  <string name="navigation_drawer_managed">Pentru organizații</string>
   <string name="navigation_drawer_community">Comunitate</string>
   <string name="navigation_drawer_support_project">Susține proiectul</string>
   <string name="navigation_drawer_contribute">Cum să contribui</string>
@@ -205,7 +205,7 @@
   <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">Mesajele push sunt întotdeauna criptate.</string>
   <!--AccountScreen-->
-  <string name="account_invalid_account">Contul nu există</string>
+  <string name="account_invalid_account">Contul a fost eliminat</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -247,10 +247,10 @@
   <string name="login_password">Parolă</string>
   <string name="login_password_hide">Ascunde parola</string>
   <string name="login_password_show">Afișează parola</string>
-  <string name="login_password_optional">Parolă*</string>
+  <string name="login_password_optional">Parolă (opțional)</string>
   <string name="login_type_url">Conecteează-te cu adresa URL și numele de utilizator</string>
   <string name="login_user_name">Nume de utilizator</string>
-  <string name="login_user_name_optional">Nume de utilizator*</string>
+  <string name="login_user_name_optional">Nume de utilizator (opțional)</string>
   <string name="login_base_url">Adresa URL de bază</string>
   <string name="login_base_url_info"><![CDATA[Adresa URL de bază va fi verificată direct, dar <a href="%s">serviciile sunt de asemenea descoperite</a> folosind înregistrări DNS și adrese URL bine-cunoscute.]]></string>
   <string name="login_select_certificate">Selectează certificatul</string>
@@ -264,13 +264,14 @@
   <string name="login_account_not_added">Contul nu a putut fi adăugat</string>
   <string name="login_finish">Finalizează</string>
   <string name="login_type_advanced">Autentificare avansată</string>
-  <string name="login_no_client_certificate_optional">Fără certificat de client*</string>
+  <string name="login_no_client_certificate_optional">Fără certificat de client (opțional)</string>
   <string name="login_client_certificate_selected">Certificat de client: %s</string>
   <string name="login_no_certificate_found">Nu a fost găsit niciun certificat</string>
   <string name="login_install_certificate">Instalare certificat</string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Cont Fastmail</string>
+  <string name="login_fastmail_sign_in">Conectează-te cu Fastmail</string>
   <string name="login_type_google">Contacte Google / Calendar</string>
-  <string name="login_google_see_tested_with">Consultă pagina noastră „Testat cu Google” pentru informații actualizate.</string>
-  <string name="login_google_unexpected_warnings">Este posibil să ai avertismente neașteptate și/sau să fii nevoit să creezi propriul ID de client.</string>
   <string name="login_google_account">Cont Google</string>
   <string name="login_google">Conectează-te cu Google</string>
   <string name="login_google_client_id">ID client (opțional)</string>
@@ -322,9 +323,13 @@
   <string name="settings_ignore_vpns_off">VPN fără conexiune validată la Internet este suficient pentru a rula sincronizarea</string>
   <string name="settings_authentication">Autentificare</string>
   <string name="settings_username">Nume de utilizator</string>
-  <string name="settings_password">Parolă</string>
+  <string name="settings_password">Parolă sau parola aplicației</string>
+  <string name="settings_app_password_hint"><![CDATA[Poate preferi să utilizezi <a href="%1$s">parola aplicației</a>.]]></string>
   <string name="settings_new_password">Parolă nouă</string>
   <string name="settings_password_summary">Actualizează parola în funcție de server.</string>
+  <string name="settings_reauthorize_oauth">Autorizează din nou (OAuth)</string>
+  <string name="settings_reauthorize_oauth_summary">Utilizează atunci când accesul a fost revocat</string>
+  <string name="settings_reauthorize_oauth_success">Autorizare cu succes</string>
   <string name="settings_certificate_alias">Certificat de client</string>
   <string name="settings_certificate_alias_empty">Niciun certificat disponibil sau selectat</string>
   <string name="settings_certificate_install">Instalare certificat</string>
@@ -361,7 +366,7 @@
   <string name="create_addressbook">Creează agendă de adrese</string>
   <string name="create_addressbook_maybe_not_supported">Crearea agendei prin CardDAV poate să nu fie acceptată de server.</string>
   <string name="create_calendar">Creează un calendar</string>
-  <string name="create_calendar_time_zone_optional">Fus orar implicit*</string>
+  <string name="create_calendar_time_zone_optional">Fus orar implicit (opțional)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Posibile intrări din calendar</string>
   <string name="create_calendar_type_vevent">Evenimente</string>
@@ -371,10 +376,12 @@
   <string name="create_collection_color">Culoare</string>
   <string name="create_collection_display_name">Titlu</string>
   <string name="create_collection_home_set">Locația de stocare</string>
-  <string name="create_collection_description_optional">Descriere*</string>
+  <string name="create_collection_description_optional">Descriere (opțional)</string>
   <string name="create_collection_create">Crează</string>
-  <string name="create_collection_optional">* opțional</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">contacte</string>
+  <string name="collection_datatype_events">evenimente</string>
+  <string name="collection_datatype_tasks">sarcini</string>
   <string name="collection_delete">Șterge colecția</string>
   <string name="collection_delete_warning">Această colecție (%s) și toate datele sale vor fi șterse definitiv, atât local, cât și de pe server.</string>
   <string name="collection_synchronization">Sincronizare</string>
@@ -435,9 +442,12 @@
   <string name="webdav_add_mount_display_name">Numele afișat</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL greșit</string>
-  <string name="webdav_add_mount_authentication">Autentificare (opțional)</string>
+  <string name="webdav_add_mount_mountpoint_displayname">Punctul de montare și numele de afișare</string>
+  <string name="webdav_add_mount_authentication">Autentificare</string>
   <string name="webdav_add_mount_username">Nume de utilizator</string>
   <string name="webdav_add_mount_password">Parolă</string>
+  <string name="webdav_add_mount_username_optional">Nume de utilizator (opțional)</string>
+  <string name="webdav_add_mount_password_optional">Parolă (opțional)</string>
   <string name="webdav_add_mount_add">Adaugă montare</string>
   <string name="webdav_add_mount_no_support">Niciun serviciu WebDAV la această adresă URL</string>
   <string name="webdav_remove_mount_title">Elimină punctul de montare</string>

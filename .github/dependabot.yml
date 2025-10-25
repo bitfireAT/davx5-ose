@@ -9,3 +9,23 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "[CI] "
+    groups:
+      ci-actions:
+        patterns: ["*"]
+        
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      app-dependencies:
+        patterns: ["*"]
+    ignore:
+      # kotlin and ksp must be aligned and should only be updated together and manually
+      - dependency-name: "org.jetbrains.kotlin:kotlin-stdlib"
+      - dependency-name: "org.jetbrains.kotlin.plugin.compose"
+      - dependency-name: "org.jetbrains.kotlin.android"
+      - dependency-name: "com.google.devtools.ksp"
+      # dependencies without semantic versioning
+      - dependency-name: "com.github.bitfireat:dav4jvm"
+      - dependency-name: "com.github.bitfireat:synctools"

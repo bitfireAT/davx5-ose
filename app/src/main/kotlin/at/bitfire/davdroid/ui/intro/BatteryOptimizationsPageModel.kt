@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel.Companion.evilManufacturers
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,8 +56,9 @@ class BatteryOptimizationsPageModel @Inject constructor(
          * See https://www.davx5.com/faq/synchronization-is-not-run-as-expected for why this is evil.
          * See https://github.com/jaredrummler/AndroidDeviceNames/blob/master/json/ for manufacturer values.
          */
-        private val evilManufacturers = arrayOf("asus", "huawei", "lenovo", "letv", "meizu", "nokia",
-            "oneplus", "oppo", "samsung", "sony", "vivo", "wiko", "xiaomi", "zte")
+        private val evilManufacturers = arrayOf(
+            "asus", "lenovo", "letv", "meizu", "nokia",
+            "oneplus", "oppo", "sony", "vivo", "wiko", "xiaomi", "zte")
 
         /**
          * Whether the device has been produced by an evil manufacturer.

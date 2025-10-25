@@ -10,17 +10,18 @@ import androidx.annotation.WorkerThread
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
-import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.ForegroundTracker
+import com.google.common.net.HttpHeaders
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
-import net.openid.appauth.AuthorizationService
 import okhttp3.Authenticator
 import okhttp3.Cache
 import okhttp3.ConnectionSpec
@@ -38,17 +39,14 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.inject.Provider
 import javax.net.ssl.KeyManager
 import javax.net.ssl.SSLContext
 
 class HttpClient(
-    val okHttpClient: OkHttpClient,
-    private val authorizationService: AuthorizationService? = null
+    val okHttpClient: OkHttpClient
 ): AutoCloseable {
 
     override fun close() {
-        authorizationService?.dispose()
         okHttpClient.cache?.close()
     }
 
@@ -65,11 +63,11 @@ class HttpClient(
      */
     class Builder @Inject constructor(
         private val accountSettingsFactory: AccountSettings.Factory,
-        private val authorizationServiceProvider: Provider<AuthorizationService>,
         @ApplicationContext private val context: Context,
         defaultLogger: Logger,
         @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
         private val keyManagerFactory: ClientCertKeyManager.Factory,
+        private val oAuthInterceptorFactory: OAuthInterceptor.Factory,
         private val settingsManager: SettingsManager
     ) {
 
@@ -96,21 +94,29 @@ class HttpClient(
 
         private var authenticationInterceptor: Interceptor? = null
         private var authenticator: Authenticator? = null
-        private var authorizationService: AuthorizationService? = null
         private var certificateAlias: String? = null
-        fun authenticate(host: String?, credentials: Credentials, authStateCallback: BearerAuthInterceptor.AuthStateUpdateCallback? = null): Builder {
+        fun authenticate(host: String?, getCredentials: () -> Credentials, updateAuthState: ((AuthState) -> Unit)? = null): Builder {
+            val credentials = getCredentials()
             if (credentials.authState != null) {
                 // OAuth
-                val authService = authorizationServiceProvider.get()
-                authenticationInterceptor = BearerAuthInterceptor.fromAuthState(authService, credentials.authState, authStateCallback)
-                authorizationService = authService
+                authenticationInterceptor = oAuthInterceptorFactory.create(
+                    readAuthState = {
+                        // We don't use the "credentials" object from above because it may contain an outdated access token
+                        // when readAuthState is called. Instead, we fetch the up-to-date auth-state.
+                        getCredentials().authState
+                    },
+                    writeAuthState = { authState ->
+                        updateAuthState?.invoke(authState)
+                    }
+
+                )
 
             } else if (credentials.username != null && credentials.password != null) {
                 // basic/digest auth
                 val authHandler = BasicDigestAuthHandler(
                     domain = UrlUtils.hostToDomain(host),
                     username = credentials.username,
-                    password = credentials.password,
+                    password = credentials.password.asCharArray(),
                     insecurePreemptive = true
                 )
                 authenticationInterceptor = authHandler
@@ -163,9 +169,11 @@ class HttpClient(
             val accountSettings = accountSettingsFactory.create(account)
             authenticate(
                 host = onlyHost,
-                credentials = accountSettings.credentials(),
-                authStateCallback = { authState: AuthState ->
-                    accountSettings.credentials(Credentials(authState = authState))
+                getCredentials = {
+                    accountSettings.credentials()
+                },
+                updateAuthState = { authState ->
+                    accountSettings.updateAuthState(authState)
                 }
             )
             return this
@@ -222,14 +230,15 @@ class HttpClient(
             // add network logging, if requested
             if (logger.isLoggable(Level.FINEST)) {
                 val loggingInterceptor = HttpLoggingInterceptor { message -> logger.finest(message) }
+                loggingInterceptor.redactHeader(HttpHeaders.AUTHORIZATION)
+                loggingInterceptor.redactHeader(HttpHeaders.COOKIE)
+                loggingInterceptor.redactHeader(HttpHeaders.SET_COOKIE)
+                loggingInterceptor.redactHeader(HttpHeaders.SET_COOKIE2)
                 loggingInterceptor.level = loggerInterceptorLevel
                 okBuilder.addNetworkInterceptor(loggingInterceptor)
             }
 
-            return HttpClient(
-                okHttpClient = okBuilder.build(),
-                authorizationService = authorizationService
-            )
+            return HttpClient(okBuilder.build())
         }
 
         private fun buildAuthentication(okBuilder: OkHttpClient.Builder) {
@@ -258,7 +267,7 @@ class HttpClient(
             val certManager = CustomCertManager(
                 context = context,
                 trustSystemCerts = !settingsManager.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES),
-                appInForeground = if (/* davx5-ose */ true)
+                appInForeground = if (BuildConfig.customCertsUI)
                     ForegroundTracker.inForeground  // interactive mode
                 else
                     null                            // non-interactive mode

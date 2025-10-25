@@ -10,10 +10,10 @@ import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.di.SyncDispatcher
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -26,7 +26,6 @@ import org.junit.Assert.assertEquals
 
 class TestSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted authority: String,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTestCollection,
@@ -35,7 +34,7 @@ class TestSyncManager @AssistedInject constructor(
 ): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
     account,
     httpClient,
-    authority,
+    SyncDataType.EVENTS,
     syncResult,
     localCollection,
     collection,
@@ -47,7 +46,6 @@ class TestSyncManager @AssistedInject constructor(
     interface Factory {
         fun create(
             account: Account,
-            authority: String,
             httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalTestCollection,
