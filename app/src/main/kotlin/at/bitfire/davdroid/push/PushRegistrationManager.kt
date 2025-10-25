@@ -26,6 +26,8 @@ import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.settings.Settings.EXPLICIT_PUSH_DISABLE
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -64,7 +66,9 @@ class PushRegistrationManager @Inject constructor(
     private val httpClientBuilder: Provider<HttpClientBuilder>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
-    private val serviceRepository: DavServiceRepository
+    private val serviceRepository: DavServiceRepository,
+    private val settings: SettingsManager,
+    private val distributorPreferences: DistributorPreferences,
 ) {
 
     /**
@@ -87,8 +91,16 @@ class PushRegistrationManager @Inject constructor(
         }
     }
 
+    /**
+     * Get the distributor registered by the user.
+     * @return The distributor package name if any, else `null`.
+     */
     fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
 
+    /**
+     * Get a list of available distributors installed on the system.
+     * @return The list of distributor's package name.
+     */
     fun getDistributors() = UnifiedPush.getDistributors(context)
 
 
@@ -102,6 +114,27 @@ class PushRegistrationManager @Inject constructor(
      * with [update(serviceId)].
      */
     suspend fun update() = mutex.withLock {
+        val currentDistributor = getCurrentDistributor()
+        val isPushDisabled = settings.getBooleanOrNull(EXPLICIT_PUSH_DISABLE)
+        if (currentDistributor == null) {
+            if (isPushDisabled == true) {
+                logger.info("Push is explicitly disabled, no distributor will be selected.")
+            } else {
+                val availableDistributors = getDistributors()
+                if (availableDistributors.isNotEmpty()) {
+                    logger.fine("No Push distributor selected, but ${availableDistributors.size} distributors are available.")
+                    // select preferred distributor if available, otherwise first available
+                    val distributor = distributorPreferences.packageNames.firstNotNullOfOrNull { preferredPackageName ->
+                        availableDistributors.find { it == preferredPackageName }
+                    } ?: availableDistributors.first()
+                    logger.fine("Automatically selecting Push distributor: $distributor")
+                    UnifiedPush.saveDistributor(context, distributor)
+                } else {
+                    logger.fine("No Push distributor selected and no distributors are available.")
+                }
+            }
+        }
+
         for (service in serviceRepository.getAll())
             updateService(service.id)
 
@@ -349,6 +382,19 @@ class PushRegistrationManager @Inject constructor(
             logger.info("Cancelling periodic PushRegistrationWorker")
             workManager.cancelUniqueWork(WORKER_UNIQUE_NAME)
         }
+    }
+
+
+    /**
+     * Allows preferring certain distributors over others.
+     */
+    interface DistributorPreferences {
+        /**
+         * A list of package names ordered by preference.
+         * If any of those is available, it will be automatically selected.
+         * Otherwise, another available distributor will be chosen automatically.
+         */
+        val packageNames: List<String>
     }
 
 

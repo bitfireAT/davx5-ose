@@ -164,6 +164,13 @@ class AppSettingsModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             pushRegistrationManager.setPushDistributor(pushDistributor)
 
+            if (pushDistributor == null) {
+                // Disable push explicitly, this will disable the automatic distributor selector
+                settings.putBoolean(Settings.EXPLICIT_PUSH_DISABLE, true)
+            } else {
+                settings.remove(Settings.EXPLICIT_PUSH_DISABLE)
+            }
+
             _pushDistributor.value = pushDistributor
         }
     }
