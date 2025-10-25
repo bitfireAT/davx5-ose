@@ -1,0 +1,41 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.di
+
+import at.bitfire.davdroid.ui.intro.StandardAndGplayIntroPageFactory
+import at.bitfire.davdroid.ui.intro.IntroPageFactory
+import at.bitfire.davdroid.ui.setup.LoginTypesProvider
+import at.bitfire.davdroid.ui.setup.StandardLoginTypesProvider
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.components.SingletonComponent
+
+interface StandardAndGplayModules {
+
+    @Module
+    @InstallIn(ActivityComponent::class)
+    interface ForActivities {
+        @Binds
+        fun loginTypesProvider(impl: StandardLoginTypesProvider): LoginTypesProvider
+    }
+
+    @Module
+    @InstallIn(ViewModelComponent::class)
+    interface ForViewModels {
+        @Binds
+        fun loginTypesProvider(impl: StandardLoginTypesProvider): LoginTypesProvider
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    interface Global {
+        @Binds
+        fun introPageFactory(impl: StandardAndGplayIntroPageFactory): IntroPageFactory
+    }
+
+}
