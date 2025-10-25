@@ -1,0 +1,31 @@
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application android:icon="@mipmap/ic_launcher">
+
+        <activity
+            android:name="at.bitfire.davdroid.ui.EarnBadgesActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.account.AccountActivity"/>
+
+        <!-- AppAuth login flow redirect (duplicated in standard/AndroidManifest.xml) -->
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    tools:ignore="AppLinkUrlError"
+                    android:scheme="at.bitfire.davdroid"
+                    android:path="/oauth2/redirect"/>
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_rate_us">Recensisci su Google Play</string>
+    <string name="what_are_badges">Cosa sono i badge?</string>
+    <string name="what_are_badges_title">Cosa sono i badge?</string>
+    <string name="what_are_badges_body">I badge sono semplici pagamenti una tantum in-app. Guadagnerai un piccolo badge e puoi usarlo per supportarci nel tempo.</string>
+    <string name="button_buy_badge_free">GRATIS</string>
+    <string name="button_buy_badge_bought">Grazie!</string>
+    <string name="earn_badges">Guadagna badge per supportarci!</string>
+    </resources>

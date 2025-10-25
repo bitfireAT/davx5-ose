@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation drawer -->
+    <string name="nav_earn_badges">Support us with badges</string>
+    <string name="nav_rate_us">Review in Google Play</string>
+    <string name="nav_feedback_inapp_didnt_appear">In-app review didn\'t appear?</string>
+    <string name="nav_feedback_google_play">Send in Google Play</string>
+    <string name="nav_feedback_scroll_to_reviews">Scroll to review section to submit feedback</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">This version is only eligible for distribution over Google Play.</string>
+
+    <!-- EarnBadgesActivity -->
+    <plurals name="you_earned_badges">
+        <item quantity="one">You\'ve earned a badge, thank you!</item>
+        <item quantity="other">You have earned %d badges, thank you!</item>
+    </plurals>
+    <string name="available_badges">Available badges</string>
+    <string name="available_badges_empty">Sorry, could not load badges. Are you logged in to the Play Store?</string>
+    <string name="what_are_badges">What are badges?</string>
+    <string name="what_are_badges_title">What are badges?</string>
+    <string name="what_are_badges_body">Badges are simple in-app one-time-payments. You will earn a nice little badge and with it you can support us over time.</string>
+    <string name="why_badges_title">Why does DAVx5 offer feature-free badges?</string>
+    <string name="why_badges_body">DAVx5 has really grown over the years! We are still actively developing new features, providing support and we always update the app for upcoming Android versions. These badges are one-time payments where you can simply show your support by buying us a coffee, or two&#8230; or 10 :-) We want to be as open as possible, so there will never-ever be any new stuff locked to in-app payment.</string>
+    <string name="button_buy_badge_free">FREE</string>
+    <string name="button_buy_badge_bought">Thank you!</string>
+    <string name="earn_badges">Earn badges to support us!</string>
+    <string name="billing_unavailable">Billing API not available</string>
+    <string name="purchase_acknowledgement_failed">Failed to acknowledge purchase</string>
+    <string name="purchase_acknowledgement_successful">Thank you for the support!</string>
+    <string name="purchase_failed">Purchase failed</string>
+    <string name="network_problems">Network problems, please try again later.</string>
+
+</resources>

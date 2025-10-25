@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation drawer -->
+    <string name="nav_earn_badges">Támogatás jelvényekkel</string>
+    <string name="nav_rate_us">Értékelés a Google Playen</string>
+    <string name="nav_feedback_inapp_didnt_appear">Az alkalmazáson belüli értékelés nem jelent meg?</string>
+    <string name="nav_feedback_google_play">Küldés a Google Playen</string>
+    <string name="nav_feedback_scroll_to_reviews">Görgessen vissza a visszajelzési részhez, hogy visszajelzést küldjön</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">Ez a verzió csak a Google Playen keresztül terjeszthető</string>
+
+    <!-- EarnBadgesActivity -->
+    <plurals name="you_earned_badges">
+        <item quantity="one">Egy jelvényt szerzett, köszönjük!</item>
+        <item quantity="other">%d jelvényt szerzett, köszönjük!</item>
+    </plurals>
+    <string name="available_badges">Választható jelvények</string>
+    <string name="available_badges_empty">A jelvények betöltése nem sikerült.  Be van jelentkezve a Play Áruházba?</string>
+    <string name="what_are_badges">Mik azok a jelvények?</string>
+    <string name="what_are_badges_title">Mik azok a jelvények?</string>
+    <string name="what_are_badges_body">A jelvények egyszerű alkalmazáson belüli egyszeri fizetések. Egy szép kis jelvényt fog szerezni, miközben támogat minket.</string>
+    <string name="why_badges_title">Miért kínál a DAVx5 funkció nélküli jelvényeket?</string>
+    <string name="why_badges_body">A DAVx5 az évek során nagyon sokat fejlődött! Még mindig aktívan fejlesztünk új funkciókat, támogatást nyújtunk, és mindig frissítjük az alkalmazást az újabb Android-verziókhoz. Ezek a jelvények egyszeri befizetések, ahol egyszerűen megmutathatja a támogatását azzal, hogy vesz nekünk egy kávét, vagy kettőt&#8230; vagy 10-et :-) A lehető legnyitottabbak szeretnénk lenni, így soha-soha nem lesz semmilyen új funkcionalitás, ami alkalmazáson belüli fizetéshez kötött.</string>
+    <string name="button_buy_badge_free">INGYENES</string>
+    <string name="button_buy_badge_bought">Köszönjük!</string>
+    <string name="earn_badges">Szerezzen jelvényeket és támogasson minket!</string>
+    <string name="billing_unavailable">A számlázási API nem érhető el</string>
+    <string name="network_problems">Hálózati problémák, próbálja újra később.</string>
+
+</resources>

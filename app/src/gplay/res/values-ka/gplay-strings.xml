@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation drawer -->
+    <string name="nav_earn_badges">დაგვიჭირეთ მხარი ბეიჯებით</string>
+    <string name="nav_rate_us">Google Play-ში შეფასება</string>
+    <!-- EarnBadgesActivity -->
+    <plurals name="you_earned_badges">
+        <item quantity="one">თქვენ მიიღეთ ბეიჯი, გმადლობთ!</item>
+        <item quantity="other">თქვენ მიიღეთ %d ბეიჯი, გმადლობთ!</item>
+    </plurals>
+    <string name="available_badges">ხელმისაწვდომი ბეიჯები</string>
+    <string name="available_badges_empty">უკაცრავად, ბეიჯები ვერ ჩაიტვირთა. შესული ხართ Play მაღაზიაში?</string>
+    <string name="what_are_badges">რა არის ბეიჯები?</string>
+    <string name="what_are_badges_title">რა არის ბეიჯები?</string>
+    <string name="what_are_badges_body">ბეიჯები არის მარტივი აპის შიდა ერთჯერადი გადახდები. შეგიძლიათ მიიღოთ ლამაზი ბეიჯი და მის საშუალებით, დროის განმავლობაში, დაგვიჭიროთ მხარი.</string>
+    <string name="why_badges_title">რატომ სთავაზობს DAVx⁵ ფუნქციების გარეშე ბეიჯებს?</string>
+    <string name="why_badges_body">DAVx⁵ საკმაოდ გაიზარდა წლების განმავლობაში! ჩვენ კვლავ აქტიურად ვამატებთ ახალ ფუნქციების, ვუწევთ მხარდაჭერას და ყოველთვის ვანახლებთ აპს მომავალი Android-ის ვერსიებისთვის. ეს ბეიჯები წარმოადგენს ერთჯერად გადახდებს, რომლითაც თქვენ მარტივად გვიჩვენებთ თქვენს მხარდაჭერას ჩვენთვის ერთი-ორი&#8230; ან 10 ყავის შეძენით :-) ჩვენ გვინდა ვიყოთ ღია, რამდენადაც ეს არის შესაძლებელი, ამიტომ არასდროს არ იქნება ახალი რამ, რაც იქნება დაბლოკილი აპის შიდა გადახდაზე.</string>
+    <string name="button_buy_badge_free">უფასო</string>
+    <string name="button_buy_badge_bought">გმადლობთ!</string>
+    <string name="earn_badges">მიიღეთ ბეიჯები ჩვენს მხარდასაჭერად!</string>
+    </resources>

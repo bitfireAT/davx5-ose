@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation drawer -->
+    <string name="nav_earn_badges">Støt os med emblemer</string>
+    <string name="nav_rate_us">Bedøm i Google Play</string>
+    <!-- EarnBadgesActivity -->
+    <plurals name="you_earned_badges">
+        <item quantity="one">Du har fortjent et emblem, tak!</item>
+        <item quantity="other">Du har optjent %d emblemer, tak!</item>
+    </plurals>
+    <string name="available_badges">Mulige emblemer</string>
+    <string name="available_badges_empty">Beklager, kunne ikke indlæse emblemer. Er du logget ind i Play Store?</string>
+    <string name="what_are_badges">Hvad er emblemer?</string>
+    <string name="what_are_badges_title">Hvad er emblemer?</string>
+    <string name="what_are_badges_body">Badges er enkle engangsbetalinger i appen. Du optjener et fint lille emblem, og støtter os dermed.</string>
+    <string name="why_badges_title">Hvorfor tilbyder DAVx5 emblemer uden funktioner?</string>
+    <string name="why_badges_body">DAVx5 er virkelig vokset gennem årene! Vi udvikler stadig aktivt nye funktioner, yder support, og vi opdaterer altid appen til kommende Android-versioner. Disse badges er engangsbetalinger, hvor du blot kan vise din støtte ved at købe os en kaffe eller to&#8230; eller 10 :-) Vi prøver at være så åbne som muligt, så der vil aldrig være nye funktioner, der er gemt bag betaling i appen.</string>
+    <string name="button_buy_badge_free">GRATIS</string>
+    <string name="button_buy_badge_bought">Tak!</string>
+    <string name="earn_badges">Optjen emblemer for at støtte os!</string>
+    </resources>

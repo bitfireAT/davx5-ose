@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation drawer -->
+    <string name="nav_earn_badges">Υποστηρίξτε μας με τα εμβλήματα</string>
+    <string name="nav_rate_us">Κριτική στο Google Play</string>
+    <!-- EarnBadgesActivity -->
+    <plurals name="you_earned_badges">
+        <item quantity="one">Κερδίσατε ένα σήμα, σας ευχαριστούμε!</item>
+        <item quantity="other">Κερδίσατε %d εμβλήματα, σας ευχαριστούμε!</item>
+    </plurals>
+    <string name="available_badges">Διαθέσιμα εμβλήματα</string>
+    <string name="available_badges_empty">Συγγνώμη, αδυναμία φόρτωσης εμβλημάτων. Έχετε συνδεθεί στο Play Store;</string>
+    <string name="what_are_badges">Τι είναι τα εμβλήματα;</string>
+    <string name="what_are_badges_title">Τι είναι τα εμβλήματα;</string>
+    <string name="what_are_badges_body">Τα εμβλήματα είναι απλές πληρωμές μίας χρήσης εντός της εφαρμογής. Θα κερδίσετε ένα ωραίο μικρό έμβλημα και με αυτό μπορείτε να μας υποστηρίξετε με την πάροδο του χρόνου.</string>
+    <string name="why_badges_title">Γιατί το DAVx5 προσφέρει εμβλήματα χωρίς χαρακτηριστικά;</string>
+    <string name="why_badges_body">Το DAVx5 έχει πραγματικά μεγαλώσει με τα χρόνια! Εξακολουθούμε να αναπτύσσουμε ενεργά νέα χαρακτηριστικά, να παρέχουμε υποστήριξη και να ενημερώνουμε πάντα την εφαρμογή για τις επερχόμενες εκδόσεις Android. Αυτά τα εμβλήματα είναι εφάπαξ πληρωμές όπου μπορείτε απλά να δείξετε την υποστήριξή σας αγοράζοντας μας έναν καφέ, ή δύο&#8230; ή 10 :-) Θέλουμε να είμαστε όσο το δυνατόν πιο ανοιχτοί, οπότε δεν θα υπάρξουν ποτέ-ποτέ νέα πράγματα κλειδωμένα με πληρωμή εντός της εφαρμογής.</string>
+    <string name="button_buy_badge_free">ΔΩΡΕΑΝ</string>
+    <string name="button_buy_badge_bought">Σας ευχαριστούμε!</string>
+    <string name="earn_badges">Κερδίστε εμβλήματα για να μας υποστηρίξετε!</string>
+    </resources>

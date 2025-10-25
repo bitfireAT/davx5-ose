@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="available_badges">उपलब्ध बिल्ले </string>
+    <string name="what_are_badges">बिलयांचा अर्थ ?</string>
+    <string name="what_are_badges_title">बिलयांचा अर्थ ?</string>
+    <string name="button_buy_badge_free">मुफ्ट </string>
+    <string name="button_buy_badge_bought">धन्यवाद !</string>
+    </resources>

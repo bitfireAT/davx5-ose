@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation drawer -->
+    <string name="nav_earn_badges">Ajudeu-nos amb insígnies</string>
+    <string name="nav_rate_us">Ressenya al Google Play</string>
+    <string name="nav_feedback_inapp_didnt_appear">La revisió a l\'aplicació no ha aparegut?</string>
+    <string name="nav_feedback_google_play">Envia en Google Play</string>
+    <string name="nav_feedback_scroll_to_reviews">Desplaceu-vos a la secció de revisió per a enviar comentaris</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">Aquesta versió només pot ser distribuïda a través de Google Play.</string>
+
+    <!-- EarnBadgesActivity -->
+    <plurals name="you_earned_badges">
+        <item quantity="one">Heu guanyat una insígnia, gràcies!</item>
+        <item quantity="other">Heu guanyat %d insígnies, gràcies!</item>
+    </plurals>
+    <string name="available_badges">Insígnies disponibles</string>
+    <string name="available_badges_empty">No s\'han pogut carregar les insígnies. Heu iniciat la sessió a la Play Store?</string>
+    <string name="what_are_badges">Què són les insígnies?</string>
+    <string name="what_are_badges_title">Què són les insígnies?</string>
+    <string name="what_are_badges_body">Les insígnies són pagaments d\'un sol ús en l\'aplicació. Guanyareu una petita insígnia i amb ella podreu ajudar-nos al llarg del temps.</string>
+    <string name="why_badges_title">Perquè DAVx5 ofereix insígnies sense característiques?</string>
+    <string name="why_badges_body">DAVx5 ha crescut realment amb els anys! Encara estem desenvolupant activament característiques noves, proporcionant suport i sempre actualitzem l\'aplicació per a les properes versions d\'Android. Aquestes insígnies són pagaments puntuals en els quals simplement podeu mostrar el vostre suport comprant-nos un cafè, o dos&#8230; o 10 :-) Volem ser el més oberts possible, així que mai hi haurà noves coses bloquejades per a un pagament en l\'aplicació.</string>
+    <string name="button_buy_badge_free">Lliure</string>
+    <string name="button_buy_badge_bought">Gràcies!</string>
+    <string name="earn_badges">Guanyeu insígnies per ajudar-nos!</string>
+    <string name="billing_unavailable">L\'API de facturació no està disponible</string>
+    <string name="network_problems">Hi ha problemes de xarxa. Torneu-ho a provar més tard.</string>
+
+</resources>

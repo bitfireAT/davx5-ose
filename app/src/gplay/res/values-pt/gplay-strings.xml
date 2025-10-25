@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation drawer -->
+    <string name="nav_earn_badges">Nos apoie com emblemas</string>
+    <string name="nav_rate_us">Avalie na Google Play</string>
+    <string name="nav_feedback_inapp_didnt_appear">A avaliação dentro do app não apareceu?</string>
+    <string name="nav_feedback_google_play">Enviar no Google Play</string>
+    <string name="nav_feedback_scroll_to_reviews">Deslize para a seção de avaliações para enviar um retorno</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">Essa versão só é válida para distribuição pelo Google Play.</string>
+
+    <!-- EarnBadgesActivity -->
+    <plurals name="you_earned_badges">
+        <item quantity="one">Você ganhou um emblema, obrigado!</item>
+        <item quantity="many">Você ganhou %d emblemas, obrigado!</item>
+        <item quantity="other">Você ganhou %d emblemas, obrigado!</item>
+    </plurals>
+    <string name="available_badges">Emblemas disponíveis</string>
+    <string name="available_badges_empty">Desculpe, não foi possível carregar os emblemas. Você está logado na Play Store?</string>
+    <string name="what_are_badges">O que são emblemas?</string>
+    <string name="what_are_badges_title">O que são emblemas?</string>
+    <string name="what_are_badges_body">Emblemas são simples pagamentos feitos uma vez só no app. Você ganha um pequeno emblema legal e com ele você nos apoia ao correr do tempo.</string>
+    <string name="why_badges_title">Por que que o DAVx5 oferece emblemas sem função?</string>
+    <string name="why_badges_body">O DAVx5 cresceu muito ao longo dos anos! Nós ainda estamos desenvolvendo ativamente novas funções, dando suporte, e sempre atualizamos o app para novas versões do Android. Esses emblemas são pagamentos feito-só-uma-vez onde você pode mostrar seu apoio comprando a nos um café, ou dois&#8230; ou 10 :-) Nós queremos ser o mais abertos possível, por causa disso nunca teremos novas coisas bloqueadas por pagamentos dentro do app.</string>
+    <string name="button_buy_badge_free">GRÁTIS</string>
+    <string name="button_buy_badge_bought">Obrigado!</string>
+    <string name="earn_badges">Ganhe emblemas para nos apoiar!</string>
+    <string name="billing_unavailable">API de cobrança indisponível</string>
+    <string name="network_problems">Problemas de rede, tente novamente mais tarde.</string>
+
+</resources>

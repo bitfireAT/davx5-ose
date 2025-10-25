@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation drawer -->
+    <string name="nav_earn_badges">Soutenez-nous avec des badges</string>
+    <string name="nav_rate_us">Avis sur Google Play</string>
+    <string name="available_badges">Badges disponibles</string>
+    <string name="available_badges_empty">Désolé, impossible de charger les badges. Êtes-vous connecté au Play Store ?</string>
+    <string name="what_are_badges">Qu\'est-ce que sont les badges ?</string>
+    <string name="what_are_badges_title">Qu\'est-ce que sont les badges ?</string>
+    <string name="what_are_badges_body">Les badges sont des paiements unitaires dans l\'application. Vous gagnerez un petit badge sympathique, qui permet de nous soutenir dans le temps.</string>
+    <string name="why_badges_title">Pourquoi DAVx5 propose-t-il des badges sans fonctionnalité ?</string>
+    <string name="why_badges_body">DAVx5 a considérablement grandi au fil des années ! Nous continions à développer activement de nouvelles fonctionnalités, faire du support et nous mettrons toujours à jour l\'application pour les prochaines versions d\'Android. Ces badges sont un paiement unitaire, mais vous pouvez aussi nous montrer votre soutien en nous payant un café ou 2 ; ou 10 :-) Nous voulons rester open-source autant que possible, il n\'y aura jamais de fonctionnalités verrouillée, nécessitant de payer pour les débloquer.</string>
+    <string name="button_buy_badge_free">GRATUIT</string>
+    <string name="button_buy_badge_bought">Merci !</string>
+    <string name="earn_badges">Acheter des badges pour nous soutenir !</string>
+    </resources>
