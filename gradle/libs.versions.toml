@@ -23,6 +23,7 @@ bitfire-dav4jvm = "f11523619b"
 bitfire-synctools = "1a7f70b1a0"
 compose-accompanist = "0.37.3"
 compose-bom = "2025.10.01"
+confettikit = "0.6.0"
 dnsjava = "3.6.3"
 glance = "1.1.1"
 guava = "33.5.0-android"
@@ -39,6 +40,10 @@ openid-appauth = "0.11.1"
 room = "2.8.2"
 unifiedpush = "3.1.2"
 unifiedpush-fcm = "3.0.0"
+
+# gplay build variants
+android-billing = "8.0.0"
+android-review = "2.0.2"
 
 # Other libraries, especially ical4j, require Apache Commons. Some recent versions of Apache
 # Commons require a newer Java version than our minSdk provides. So we require these strict versions here:
@@ -81,6 +86,7 @@ compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
+confettikit = { module = "io.github.vinceglb:confettikit", version.ref = "confettikit" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
 glance-base = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
 glance-material = { module = "androidx.glance:glance-material", version.ref = "glance" }
@@ -107,6 +113,11 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 unifiedpush = { module = "org.unifiedpush.android:connector", version.ref = "unifiedpush" }
 unifiedpush-fcm = { module = "org.unifiedpush.android:embedded-fcm-distributor", version.ref = "unifiedpush-fcm" }
+
+# gplay build variant
+# Keep in sync with the allow list of the non-ose-dependencies in .github/dependabot.yml!
+android-billing = { module = "com.android.billingclient:billing-ktx", version.ref = "android-billing" }
+android-review = { module = "com.google.android.play:review-ktx", version.ref = "android-review" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-agp" }

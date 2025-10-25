@@ -232,3 +232,14 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.okhttp.mockwebserver)
 }
+
+// build variants (flavors)
+
+val gplayImplementation by configurations {
+    dependencies {
+        implementation(libs.android.billing)
+        implementation(libs.android.review)
+
+        implementation(libs.confettikit)
+    }
+}
