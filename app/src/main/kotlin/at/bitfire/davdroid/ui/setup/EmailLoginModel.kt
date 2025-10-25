@@ -40,7 +40,7 @@ class EmailLoginModel @AssistedInject constructor(
                 baseUri = uri,
                 credentials = Credentials(
                     username = email,
-                    password = password.toSensitiveString()
+                    password = password.text.toSensitiveString()
                 )
             )
         }

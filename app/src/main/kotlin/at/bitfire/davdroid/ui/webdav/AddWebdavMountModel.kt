@@ -82,7 +82,7 @@ class AddWebdavMountModel @Inject constructor(
         val displayName = uiState.displayName
         val credentials = Credentials(
             username = uiState.username.trimToNull(),
-            password = uiState.password.trimToNull()?.toSensitiveString(),
+            password = uiState.password.text.trimToNull()?.toSensitiveString(),
             certificateAlias = uiState.certificateAlias
         )
 
