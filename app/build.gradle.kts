@@ -55,6 +55,7 @@ android {
 
     flavorDimensions += "distribution"
     productFlavors {
+        create("standard")
         create("ose") {
             dimension = "distribution"
             versionNameSuffix = "-ose"
@@ -65,6 +66,10 @@ android {
     }
 
     sourceSets {
+        getByName("standard") {
+            kotlin.srcDirs("src/standard/kotlin", "src/davdroid/kotlin")
+            res.srcDirs("src/standard/res", "src/davdroid/res")
+        }
         getByName("androidTest") {
             assets.srcDir("$projectDir/schemas")
         }
