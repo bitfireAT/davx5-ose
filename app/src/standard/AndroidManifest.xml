@@ -1,0 +1,26 @@
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+
+        <!-- AppAuth login flow redirect (duplicated in gplay/AndroidManifest.xml) -->
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    tools:ignore="AppLinkUrlError"
+                        android:scheme="${applicationId}"
+                    android:path="/oauth2/redirect"/>
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
