@@ -221,7 +221,7 @@ fun AddWebDavMountScreen(
                 PasswordTextField(
                     password = password,
                     labelText = stringResource(R.string.login_password_optional),
-                    readOnly = isLoading,
+                    enabled = isLoading,
                     leadingIcon = {
                         Icon(Icons.Default.Password, null)
                     },

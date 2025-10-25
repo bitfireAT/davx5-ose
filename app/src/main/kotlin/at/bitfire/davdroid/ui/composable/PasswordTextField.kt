@@ -45,7 +45,6 @@ fun PasswordTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
     onKeyboardAction: KeyboardActionHandler? = null,
     enabled: Boolean = true,
-    readOnly: Boolean = false,
     isError: Boolean = false
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
@@ -57,7 +56,6 @@ fun PasswordTextField(
             leadingIcon = leadingIcon,
             isError = isError,
             enabled = enabled,
-            readOnly = readOnly,
             modifier = modifier.focusGroup(),
             keyboardOptions = keyboardOptions,
             onKeyboardAction = onKeyboardAction,
