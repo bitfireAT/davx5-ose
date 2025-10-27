@@ -7,12 +7,9 @@ package at.bitfire.davdroid.ui.webdav
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
@@ -165,7 +162,7 @@ fun AddWebDavMountScreen(
                     value = url,
                     onValueChange = onSetUrl,
                     singleLine = true,
-                    readOnly = isLoading,
+                    enabled = !isLoading,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Uri
@@ -187,7 +184,7 @@ fun AddWebDavMountScreen(
                     leadingIcon = {
                         Icon(Icons.Default.Sell, null)
                     },
-                    readOnly = isLoading,
+                    enabled = !isLoading,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -209,7 +206,7 @@ fun AddWebDavMountScreen(
                     leadingIcon = {
                         Icon(Icons.Default.AccountCircle, null)
                     },
-                    readOnly = isLoading,
+                    enabled = !isLoading,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Email
@@ -221,14 +218,18 @@ fun AddWebDavMountScreen(
                 PasswordTextField(
                     password = password,
                     labelText = stringResource(R.string.login_password_optional),
-                    enabled = isLoading,
+                    enabled = !isLoading,
                     leadingIcon = {
                         Icon(Icons.Default.Password, null)
                     },
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done
                     ),
-                    onKeyboardAction = { onAddMount() },
+                    onKeyboardAction = {
+                        // can only be called when not loading
+                        if (canContinue)
+                            onAddMount()
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)

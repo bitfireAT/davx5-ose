@@ -50,6 +50,7 @@ fun EditTextInputDialog(
         initialSelection = TextRange(initialValue?.length ?: 0)
     )
 
+    val confirmEnabled = state.text != initialValue
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -75,8 +76,10 @@ fun EditTextInputDialog(
                         imeAction = ImeAction.Done
                     ),
                     onKeyboardAction = {
-                        onValueEntered(state.text.toString())
-                        onDismiss()
+                        if (confirmEnabled) {
+                            onValueEntered(state.text.toString())
+                            onDismiss()
+                        }
                     },
                     modifier = Modifier.focusRequester(focusRequester)
                 )
@@ -90,7 +93,7 @@ fun EditTextInputDialog(
                     onValueEntered(state.text.toString())
                     onDismiss()
                 },
-                enabled = state.text != initialValue
+                enabled = confirmEnabled
             ) {
                 Text(stringResource(android.R.string.ok))
             }

@@ -136,7 +136,10 @@ fun EmailLoginScreen(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-                onKeyboardAction = { if (canContinue) onLogin() },
+                onKeyboardAction = {
+                    if (canContinue)
+                        onLogin()
+                },
                 modifier = Modifier.fillMaxWidth()
             )
         }
