@@ -83,7 +83,6 @@ class LocalJtxICalObject(
             .add("flags", flags)
             .toString()
 
-
     override fun getViewUri(context: Context) = null
 
 }

@@ -37,8 +37,8 @@ import kotlin.jvm.optionals.getOrNull
 class LocalContact: AndroidContact, LocalAddress {
 
     companion object {
-        const val COLUMN_FLAGS = ContactsContract.RawContacts.SYNC4
-        const val COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3
+        const val COLUMN_FLAGS = RawContacts.SYNC4
+        const val COLUMN_HASHCODE = RawContacts.SYNC3
     }
 
     override val addressBook: LocalAddressBook
@@ -104,7 +104,7 @@ class LocalContact: AndroidContact, LocalAddress {
         if (fileName.isPresent)
             values.put(COLUMN_FILENAME, fileName.get())
         values.put(COLUMN_ETAG, eTag)
-        values.put(ContactsContract.RawContacts.DIRTY, 0)
+        values.put(RawContacts.DIRTY, 0)
 
         // Android 7 workaround
         addressBook.dirtyVerifier.getOrNull()?.setHashCodeColumn(this, values)
@@ -117,7 +117,7 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
     fun resetDirty() {
-        val values = contentValuesOf(ContactsContract.RawContacts.DIRTY to 0)
+        val values = contentValuesOf(RawContacts.DIRTY to 0)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
