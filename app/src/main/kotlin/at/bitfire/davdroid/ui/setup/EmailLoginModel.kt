@@ -33,7 +33,8 @@ class EmailLoginModel @AssistedInject constructor(
     ) {
         val uri = "mailto:$email".toURIorNull()
 
-        val canContinue = uri != null && password.text.toString().isNotEmpty()
+        val canContinue     // we have to use get() because password is not immutable
+            get() = uri != null && password.text.toString().isNotEmpty()
 
         fun asLoginInfo(): LoginInfo {
             return LoginInfo(

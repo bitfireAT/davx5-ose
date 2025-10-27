@@ -41,7 +41,8 @@ class UrlLoginModel @AssistedInject constructor(
                 "https://$url"
         val uri = urlWithPrefix.trim().toURIorNull()
 
-        val canContinue = uri != null && username.isNotEmpty() && password.text.toString().isNotEmpty()
+        val canContinue     // we have to use get() because password is not immutable
+            get() = uri != null && username.isNotEmpty() && password.text.toString().isNotEmpty()
 
         fun asLoginInfo(): LoginInfo =
             LoginInfo(
