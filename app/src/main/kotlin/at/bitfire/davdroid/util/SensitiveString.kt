@@ -61,8 +61,8 @@ class SensitiveString private constructor(
         fun CharArray.toSensitiveString() =
             SensitiveString(this.concatToString())
 
-        fun String.toSensitiveString() =
-            SensitiveString(this)
+        fun CharSequence.toSensitiveString() =
+            SensitiveString(this.toString())
 
     }
 
