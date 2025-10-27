@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.sync
 
+import android.content.Context
 import at.bitfire.davdroid.resource.LocalResource
 import java.util.Optional
 
@@ -35,5 +36,9 @@ class LocalTestResource: LocalResource<Any> {
     override fun update(data: Any, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) = throw NotImplementedError()
     override fun deleteLocal() = throw NotImplementedError()
     override fun resetDeleted() = throw NotImplementedError()
+
+    override fun getDebugSummary() = "Test Resource"
+
+    override fun getViewUri(context: Context) = null
 
 }

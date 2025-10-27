@@ -100,7 +100,7 @@
         <activity
             android:name=".ui.DebugInfoActivity"
             android:parentActivityName=".ui.AppSettingsActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/debug_info_title">
             <intent-filter>
                 <action android:name="android.intent.action.BUG_REPORT"/>

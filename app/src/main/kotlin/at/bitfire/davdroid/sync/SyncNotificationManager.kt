@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
-import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.provider.CalendarContract
@@ -20,21 +19,15 @@ import at.bitfire.dav4jvm.exception.UnauthorizedException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalCollection
-import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
-import at.bitfire.ical4android.TaskProvider
-import com.google.common.base.Ascii
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
-import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -122,7 +115,6 @@ class SyncNotificationManager @AssistedInject constructor(
         remote: HttpUrl?
     ) = notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
         val contentIntent: Intent
-        var viewItemAction: NotificationCompat.Action? = null
         if (e is UnauthorizedException) {
             contentIntent = Intent(context, AccountSettingsActivity::class.java)
             contentIntent.putExtra(
@@ -131,8 +123,6 @@ class SyncNotificationManager @AssistedInject constructor(
             )
         } else {
             contentIntent = buildDebugInfoIntent(syncDataType, e, local, remote)
-            if (local != null)
-                viewItemAction = buildViewItemActionForLocalResource(local)
         }
 
         // to make the PendingIntent unique
@@ -162,7 +152,6 @@ class SyncNotificationManager @AssistedInject constructor(
             )
             .setPriority(priority)
             .setCategory(NotificationCompat.CATEGORY_ERROR)
-        viewItemAction?.let { builder.addAction(it) }
 
         builder.build()
     }
@@ -239,45 +228,19 @@ class SyncNotificationManager @AssistedInject constructor(
 
         if (local != null)
             try {
-                // Truncate the string to avoid the Intent to be > 1 MB, which doesn't work (IPC limit)
-                builder.withLocalResource(Ascii.truncate(local.toString(), 10000, "[…]"))
-            } catch (_: OutOfMemoryError) {
-                // For instance because of a huge contact photo; maybe we're lucky and can catch it
+                // Add local resource summary, if available
+                builder.withLocalResource(local.getDebugSummary())
+
+                // Add URI to view local resource, if available
+                builder.withLocalResourceUri(local.getViewUri(context))
+            } catch (_: Throwable) {
+                // Ignore all potential exceptions that arise from providing information about the local resource
             }
 
         if (remote != null)
             builder.withRemoteResource(remote)
 
         return builder.build()
-    }
-
-    /**
-     * Builds view action for notification, based on the given local resource.
-     */
-    private fun buildViewItemActionForLocalResource(local: LocalResource<*>): NotificationCompat.Action? {
-        logger.log(Level.FINE, "Adding view action for local resource", local)
-        val intent = local.id?.let { id ->
-            when (local) {
-                is LocalContact ->
-                    Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, id))
-                is LocalEvent ->
-                    Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id))
-                is LocalTask ->
-                    Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(TaskContract.Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority), id))
-                else ->
-                    null
-            }
-        }
-        return if (intent != null && context.packageManager.resolveActivity(intent, 0) != null)
-            NotificationCompat.Action(
-                android.R.drawable.ic_menu_view,
-                context.getString(R.string.sync_error_view_item),
-                TaskStackBuilder.create(context)
-                    .addNextIntent(intent)
-                    .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-            )
-        else
-            null
     }
 
 }

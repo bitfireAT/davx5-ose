@@ -19,7 +19,7 @@ class DebugInfoActivityTest {
         val expected = StringBuilder(DebugInfoActivity.IntentBuilder.MAX_ELEMENT_SIZE)
         expected.append(String(ByteArray(DebugInfoActivity.IntentBuilder.MAX_ELEMENT_SIZE - 3) { a }))
         expected.append("...")
-        assertEquals(expected.toString(), intent.getStringExtra("localResource"))
+        assertEquals(expected.toString(), intent.getStringExtra(DebugInfoActivity.EXTRA_LOCAL_RESOURCE_SUMMARY))
     }
 
     @Test

@@ -4,6 +4,9 @@
 
 package at.bitfire.davdroid.resource
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import at.bitfire.davdroid.resource.LocalResource.Companion.FLAG_REMOTELY_PRESENT
 import java.util.Optional
 
@@ -92,5 +95,21 @@ interface LocalResource<in TData: Any> {
      * Undoes deletion of the data object from the content provider.
      */
     fun resetDeleted()
+
+    /**
+     * User-readable debug summary of this local resource (used in debug info)
+     */
+    fun getDebugSummary(): String
+
+    /**
+     * Returns the content provider URI that opens the local resource for viewing ([Intent.ACTION_VIEW])
+     * in its respective app.
+     *
+     * For instance, in case of a local raw contact, this method could return the content provider URI
+     * that identifies the corresponding contact.
+     *
+     * @return content provider URI, or `null` if not available
+     */
+    fun getViewUri(context: Context): Uri?
 
 }

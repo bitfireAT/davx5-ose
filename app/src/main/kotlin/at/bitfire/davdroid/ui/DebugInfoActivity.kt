@@ -5,9 +5,15 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.CalendarContract
+import android.provider.ContactsContract
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
@@ -16,11 +22,14 @@ import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.sync.TasksAppManager
 import com.google.common.base.Ascii
+import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.HttpUrl
 import java.io.File
 import java.time.Instant
+import javax.inject.Inject
 
 /**
  * Debug info activity. Provides verbose information for debugging and support. Should enable users
@@ -33,46 +42,42 @@ import java.time.Instant
  * - enable App settings / Verbose logs, then open debug info activity (should provide debug info + logs; check logs, too)
  */
 @AndroidEntryPoint
-class DebugInfoActivity : AppCompatActivity() {
+class DebugInfoActivity: AppCompatActivity() {
 
-    companion object {
-        /** [android.accounts.Account] (as [android.os.Parcelable]) related to problem */
-        private const val EXTRA_ACCOUNT = "account"
-
-        /** sync data type related to problem */
-        private const val EXTRA_SYNC_DATA_TYPE = "syncDataType"
-
-        /** serialized [Throwable] that causes the problem */
-        private const val EXTRA_CAUSE = "cause"
-
-        /** dump of local resource related to the problem (plain-text [String]) */
-        private const val EXTRA_LOCAL_RESOURCE = "localResource"
-
-        /** logs related to the problem (plain-text [String]) */
-        private const val EXTRA_LOGS = "logs"
-
-        /** URL of remote resource related to the problem (plain-text [String]) */
-        private const val EXTRA_REMOTE_RESOURCE = "remoteResource"
-
-        /** A timestamp of the moment at which the error took place. */
-        private const val EXTRA_TIMESTAMP = "timestamp"
-    }
+    @Inject
+    lateinit var tasksAppManager: Lazy<TasksAppManager>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val extras = intent.extras
 
+        val extras = intent.extras
+        val viewResourceIntent = IntentCompat.getParcelableExtra(
+            intent,
+            EXTRA_LOCAL_RESOURCE_URI,
+            Uri::class.java
+        )?.let { uri ->
+            buildViewLocalResourceIntent(uri)
+        }
+
+        val remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE)
         setContent { 
             DebugInfoScreen(
                 account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
                 syncDataType = extras?.getString(EXTRA_SYNC_DATA_TYPE),
                 cause = IntentCompat.getSerializableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
-                localResource = extras?.getString(EXTRA_LOCAL_RESOURCE),
-                remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
+                canViewResource = viewResourceIntent != null,
+                localResource = extras?.getString(EXTRA_LOCAL_RESOURCE_SUMMARY),
+                remoteResource = remoteResource,
                 logs = extras?.getString(EXTRA_LOGS),
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,
+                onCopyRemoteUrl = {
+                    val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipData = ClipData.newPlainText("Remote resource", remoteResource)
+                    clipboard.setPrimaryClip(clipData)
+                },
+                onViewLocalResource = { viewResource(viewResourceIntent) },
                 onNavUp = ::onSupportNavigateUp
             )
         }
@@ -128,6 +133,39 @@ class DebugInfoActivity : AppCompatActivity() {
         startActivity(Intent.createChooser(intent, title))
     }
 
+    /**
+     * Starts activity to view the affected/problematic resource
+     */
+    private fun viewResource(intent: Intent?) = try {
+        startActivity(intent)
+    } catch (_: Exception) {
+        Toast.makeText(
+            this,
+            getString(R.string.debug_info_can_not_view_resource),
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    /**
+     * Builds intent to view the problematic local event, task or contact at given Uri.
+     *
+     * Note that only OpenTasks is supported as tasks provider. TasksOrg and jtxBoard
+     * do not support viewing tasks via intent-filter (yet). See also [at.bitfire.davdroid.sync.SyncNotificationManager.getLocalResourceUri]
+     */
+    private fun buildViewLocalResourceIntent(uri: Uri): Intent? {
+        val activeTasksAuthority = tasksAppManager.get().currentProvider()?.authority
+        return when (uri.authority) {
+            ContactsContract.AUTHORITY ->
+                Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(uri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
+                }
+
+            CalendarContract.AUTHORITY, activeTasksAuthority ->
+                Intent(Intent.ACTION_VIEW, uri)
+
+            else -> null
+        }
+    }
 
     /**
      * Builder for [DebugInfoActivity] intents
@@ -167,9 +205,17 @@ class DebugInfoActivity : AppCompatActivity() {
         fun withLocalResource(dump: String?): IntentBuilder {
             if (dump != null)
                 intent.putExtra(
-                    EXTRA_LOCAL_RESOURCE,
+                    EXTRA_LOCAL_RESOURCE_SUMMARY,
                     Ascii.truncate(dump, MAX_ELEMENT_SIZE, "...")
                 )
+            return this
+        }
+
+        fun withLocalResourceUri(uri: Uri?): IntentBuilder {
+            if (uri == null)
+                return this
+            intent.putExtra(EXTRA_LOCAL_RESOURCE_URI, uri)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             return this
         }
 
@@ -195,6 +241,32 @@ class DebugInfoActivity : AppCompatActivity() {
             action = Intent.ACTION_SEND
         }
 
+    }
+
+    companion object {
+        /** [android.accounts.Account] (as [android.os.Parcelable]) related to problem */
+        private const val EXTRA_ACCOUNT = "account"
+
+        /** sync data type related to problem */
+        private const val EXTRA_SYNC_DATA_TYPE = "syncDataType"
+
+        /** serialized [Throwable] that causes the problem */
+        private const val EXTRA_CAUSE = "cause"
+
+        /** Summary (dump of [at.bitfire.davdroid.resource.LocalResource] properties) of local resource related to the problem (plain-text [String]) */
+        internal const val EXTRA_LOCAL_RESOURCE_SUMMARY = "localResourceSummary"
+
+        /** [Uri] of local resource related to the problem (as [android.os.Parcelable]) */
+        internal const val EXTRA_LOCAL_RESOURCE_URI = "localResourceId"
+
+        /** logs related to the problem (plain-text [String]) */
+        private const val EXTRA_LOGS = "logs"
+
+        /** URL of remote resource related to the problem (plain-text [String]) */
+        private const val EXTRA_REMOTE_RESOURCE = "remoteResource"
+
+        /** A timestamp of the moment at which the error took place. */
+        private const val EXTRA_TIMESTAMP = "timestamp"
     }
 
 }

@@ -5,10 +5,12 @@
 package at.bitfire.davdroid.resource
 
 import android.content.ContentValues
+import android.content.Context
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.ical4android.JtxICalObjectFactory
 import at.techbee.jtx.JtxContract
+import com.google.common.base.MoreObjects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
@@ -71,5 +73,16 @@ class LocalJtxICalObject(
     override fun resetDeleted() {
         throw NotImplementedError()
     }
+
+    override fun getDebugSummary() =
+        MoreObjects.toStringHelper(this)
+            .add("id", id)
+            .add("fileName", fileName)
+            .add("eTag", eTag)
+            .add("scheduleTag", scheduleTag)
+            .add("flags", flags)
+            .toString()
+
+    override fun getViewUri(context: Context) = null
 
 }
