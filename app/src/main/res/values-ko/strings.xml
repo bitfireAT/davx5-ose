@@ -397,10 +397,6 @@
   <string name="debug_info_server_error">서버 에러</string>
   <string name="debug_info_webdav_error">WebDAV 에러</string>
   <string name="debug_info_io_error">I/O 에러</string>
-  <string name="debug_info_http_403_description">요청이 거부되었습니다. 자세한 내용은 관련 리소스 및 디버그 정보를 확인하십시오.</string>
-  <string name="debug_info_http_404_description">요청한 리소스가 (더 이상) 존재하지 않습니다. 자세한 내용은 관련 리소스 및 Debug info를 확인하십시오.</string>
-  <string name="debug_info_http_5xx_description">서버 측 문제가 발생했습니다. 서버 지원 담당자에게 문의해 주세요.</string>
-  <string name="debug_info_unexpected_error">예기치 않은 오류가 발생했습니다. 자세한 내용은 디버그 정보를 참조하십시오.</string>
   <string name="debug_info_view_details">상세 설명보기</string>
   <string name="debug_info_subtitle">디버그 정보가 수집되었습니다.</string>
   <string name="debug_info_involved_caption">관련 리소스</string>
@@ -410,6 +406,7 @@
   <string name="debug_info_logs_caption">Logs</string>
   <string name="debug_info_logs_subtitle">상세 logs를 사용할 수 있습니다.</string>
   <string name="debug_info_logs_view">logs 보기</string>
+  <string name="debug_info_copy_remote_url">URL 복사</string>
   <string name="debug_info_privacy_warning_title">개인정보 보호 고지</string>
   <string name="debug_info_privacy_warning_description">로그 및 디버그 정보에는 개인 정보가 포함될 수 있습니다. 이를 공개적으로 공유할 때 유의하시기 바랍니다.</string>
   <!--ExceptionInfoFragment-->
@@ -449,7 +446,6 @@
   <string name="sync_error_http_dav">HTTP 서버 오류 – %s</string>
   <string name="sync_error_local_storage">Local storage 오류 – %s</string>
   <string name="sync_error_retry_limit_reached">일시적 오류 (최대 재시도 횟수 도달)</string>
-  <string name="sync_error_view_item">항목 보기</string>
   <string name="sync_invalid_contact">서버로부터 잘못된 연락처를 받았습니다.</string>
   <string name="sync_invalid_event">서버에서 잘못된 이벤트를 수신했습니다.</string>
   <string name="sync_invalid_task">서버에서 잘못된 작업을 수신했습니다.</string>

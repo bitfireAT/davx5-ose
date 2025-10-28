@@ -408,8 +408,9 @@
   <string name="debug_info_server_error">Serveri viga</string>
   <string name="debug_info_webdav_error">WebDAVi viga</string>
   <string name="debug_info_io_error">Sisend-/väljundviga</string>
-  <string name="debug_info_http_403_description">Osapool keeldus päringule vastamast. Kontrolli asjaomaseid teenuseid ja tarvikuid ning üksikasjalikku teavet võid leida silumislogidest.</string>
-  <string name="debug_info_http_404_description">Soovitud teenust või tarvikud pole (enam) olemas. Kontrolli asjaomaseid teenuseid ja tarvikuid ning üksikasjalikku teavet võid leida silumislogidest.</string>
+  <string name="debug_info_http_403_description">Server keeldus päringule vastamast.</string>
+  <string name="debug_info_http_404_description">Päritud andmeressurssi ei leidu (enam).</string>
+  <string name="debug_info_http_405_description">Server ei võimalda antud päringu tüüpi kasutada või soovitud tegevust teha.</string>
   <string name="debug_info_http_5xx_description">Tekkis serveripoolne viga. Palun võta ühendust serveri haldajaga.</string>
   <string name="debug_info_unexpected_error">Tekkis ootamatu viga. Lisainfot leiad silumisteabest.</string>
   <string name="debug_info_view_details">Vaata üksikasju</string>
@@ -463,7 +464,6 @@
   <string name="sync_error_http_dav">HTTP serveri viga – %s</string>
   <string name="sync_error_local_storage">Kohaliku salvestusruumi viga – %s</string>
   <string name="sync_error_retry_limit_reached">Pehme viga (korduspäringute arvu ülempiir on käes)</string>
-  <string name="sync_error_view_item">Vaata objekti</string>
   <string name="sync_invalid_contact">Saime serverist vigase kontaktikirje</string>
   <string name="sync_invalid_event">Saime serverist vigase sündmusekirje</string>
   <string name="sync_invalid_task">Saime serverist vigase ülesandekirje</string>

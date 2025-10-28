@@ -357,10 +357,6 @@
   <string name="debug_info_server_error">Σφάλμα διακομιστή</string>
   <string name="debug_info_webdav_error">Σφάλμα WebDAV</string>
   <string name="debug_info_io_error">Σφάλμα I/O</string>
-  <string name="debug_info_http_403_description">Το αίτημα απορρίφθηκε. Ελέγξτε τους σχετικούς πόρους και τις πληροφορίες εντοπισμού σφαλμάτων για λεπτομέρειες.</string>
-  <string name="debug_info_http_404_description">Ο ζητούμενος πόρος δεν υπάρχει (πλέον). Ελέγξτε τους σχετικούς πόρους και τις πληροφορίες εντοπισμού σφαλμάτων για λεπτομέρειες.</string>
-  <string name="debug_info_http_5xx_description">Παρουσιάστηκε ένα πρόβλημα από την πλευρά του διακομιστή. Παρακαλούμε επικοινωνήστε με την υποστήριξη του διακομιστή σας.</string>
-  <string name="debug_info_unexpected_error">Προέκυψε ένα απροσδόκητο σφάλμα. Δείτε τις πληροφορίες εντοπισμού σφαλμάτων για λεπτομέρειες.</string>
   <string name="debug_info_view_details">Προβολή λεπτομερειών</string>
   <string name="debug_info_subtitle">Έχουν συλλεχθεί πληροφορίες εντοπισμού σφαλμάτων</string>
   <string name="debug_info_involved_caption">Εμπλεκόμενοι πόροι</string>
@@ -370,6 +366,7 @@
   <string name="debug_info_logs_caption">Ιστορικό</string>
   <string name="debug_info_logs_subtitle">Διατίθενται αναλυτικά αρχεία καταγραφής</string>
   <string name="debug_info_logs_view">Προβολή ιστορικού</string>
+  <string name="debug_info_copy_remote_url">Αντιγραφή URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Παρουσιάστηκε σφάλμα.</string>
   <string name="exception_httpexception">Παρουσιάστηκε σφάλμα HTTP.</string>
@@ -406,7 +403,6 @@
   <string name="sync_error_http_dav">Σφάλμα διακομιστής HTTP – %s</string>
   <string name="sync_error_local_storage">Σφάλμα τοπικού αποθηκευτικού χώρου – %s</string>
   <string name="sync_error_retry_limit_reached">Σφάλμα (φτάσατε στον μέγιστο αριθμό επαναλήψεων)</string>
-  <string name="sync_error_view_item">Προβολή αντικειμένου</string>
   <string name="sync_invalid_contact">Ελήφθη μη έγκυρη επαφή από το διακομιστή</string>
   <string name="sync_invalid_event">Ελήφθη μη έγκυρο συμβάν από το διακομιστή</string>
   <string name="sync_invalid_task">Έλαβε μη έγκυρη εργασία από το διακομιστή</string>

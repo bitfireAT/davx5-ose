@@ -168,6 +168,7 @@
   <string name="collection_description">Popis</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Ladiace informácie</string>
+  <string name="debug_info_copy_remote_url">Kopírovať URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Vyskytla sa chyba.</string>
   <string name="exception_httpexception">Vyskytla sa HTTP chyba.</string>
@@ -184,7 +185,6 @@
   <string name="sync_error_io">Sieťová alebo V/V chyba – %s</string>
   <string name="sync_error_http_dav">Chyba HTTP servera – %s</string>
   <string name="sync_error_local_storage">Chyba miestneho úložiska – %s</string>
-  <string name="sync_error_view_item">Zobraziť položku</string>
   <string name="sync_invalid_contact">Kontakt prijatý zo servera je neplatný</string>
   <string name="sync_invalid_event">Udalosť prijatá zo servera nie je platná</string>
   <string name="sync_invalid_task">Úloha prijatá zo servera nie je platná</string>

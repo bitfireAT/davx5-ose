@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="account_invalid">Аккаунт не существует (больше)</string>
+  <string name="account_invalid">Аккаунт (больше) не существует</string>
   <string name="account_title_address_book">Адресная книга DAVx⁵</string>
   <string name="account_prefs_use_app">Не меняйте аккаунт здесь! Вместо этого используйте приложение для управления учетными записями.</string>
   <string name="dialog_delete">Удалить</string>
@@ -258,7 +258,7 @@
   <string name="login_add_account">Добавить аккаунт</string>
   <string name="login_account_name">Название аккаунта</string>
   <string name="login_account_avoid_apostrophe">Использование апострофов (\'), как оказалось, вызывает проблемы на некоторых устройствах.</string>
-  <string name="login_account_name_info">Укажите ваш адрес email в качестве названия аккаунта, поскольку Android будет его использовать в поле ORGANIZER для создаваемых событий. У вас не может быть двух аккаунтов с тем же именем.</string>
+  <string name="login_account_name_info">Используйте свой адрес email в качестве названия аккаунта, поскольку Android будет использовать его в качестве поля ОРГАНИЗАТОР для создаваемых вами событий. Не допускается наличие двух аккаунтов с одинаковыми названиями.</string>
   <string name="login_account_contact_group_method">Метод группировки контактов:</string>
   <string name="login_account_name_required">Название аккаунта обязательно</string>
   <string name="login_account_name_already_taken">Название аккаунта уже используется</string>
@@ -414,8 +414,9 @@
   <string name="debug_info_server_error">Ошибка сервера</string>
   <string name="debug_info_webdav_error">Ошибка WebDAV</string>
   <string name="debug_info_io_error">Ошибка ввода/вывода</string>
-  <string name="debug_info_http_403_description">Запрос был отклонен. Для получения подробной информации проверьте задействованные ресурсы и отладочную информацию.</string>
-  <string name="debug_info_http_404_description">Запрошенного ресурса не существует (больше не существует). Проверьте задействованные ресурсы и отладочную информацию для получения подробной информации.</string>
+  <string name="debug_info_http_403_description">Запрос был отклонен сервером.</string>
+  <string name="debug_info_http_404_description">Запрошенный ресурс (больше) не существует.</string>
+  <string name="debug_info_http_405_description">Сервер не разрешает запрошенный тип операции.</string>
   <string name="debug_info_http_5xx_description">Возникла проблема на стороне сервера. Пожалуйста, свяжитесь со службой поддержки вашего сервера.</string>
   <string name="debug_info_unexpected_error">Произошла неожиданная ошибка. Просмотрите отладочную информацию, чтобы узнать подробности.</string>
   <string name="debug_info_view_details">Просмотр</string>
@@ -427,8 +428,11 @@
   <string name="debug_info_logs_caption">Логи</string>
   <string name="debug_info_logs_subtitle">Доступны подробные логи</string>
   <string name="debug_info_logs_view">Просмотр логов</string>
+  <string name="debug_info_copy_remote_url">Скопировать URL</string>
+  <string name="debug_info_view_local_resource">Проверить ресурс</string>
   <string name="debug_info_privacy_warning_title"> Предупреждение о конфиденциальности</string>
   <string name="debug_info_privacy_warning_description">Журналы и отладочная информация могут содержать конфиденциальную информацию. Пожалуйста, помните об этом, когда делитесь ими.</string>
+  <string name="debug_info_can_not_view_resource">Невозможно просмотреть ресурс</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Произошла ошибка.</string>
   <string name="exception_httpexception">Произошла ошибка HTTP</string>
@@ -469,7 +473,6 @@
   <string name="sync_error_http_dav">Ошибка HTTP-сервера – %s</string>
   <string name="sync_error_local_storage">Ошибка локального хранилища – %s</string>
   <string name="sync_error_retry_limit_reached">Ошибка (достигнуто максимальное количество повторных попыток)</string>
-  <string name="sync_error_view_item">Просмотр элемента</string>
   <string name="sync_invalid_contact">Получен неверный контакт с сервера</string>
   <string name="sync_invalid_event">Получено недействительное событие от сервера</string>
   <string name="sync_invalid_task">Получена недействительная задача от сервера</string>

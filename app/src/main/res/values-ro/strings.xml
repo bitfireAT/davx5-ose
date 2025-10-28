@@ -411,10 +411,6 @@
   <string name="debug_info_server_error">Eroare de server</string>
   <string name="debug_info_webdav_error">Eroare WebDAV</string>
   <string name="debug_info_io_error">Eroare I/O</string>
-  <string name="debug_info_http_403_description">Solicitarea a fost respinsă. Verifică resursele implicate și informațiile de depanare pentru detalii.</string>
-  <string name="debug_info_http_404_description">Resursa solicitată nu mai există (mai mult). Verifică resursele implicate și informațiile de depanare pentru detalii.</string>
-  <string name="debug_info_http_5xx_description">A apărut o problemă la nivelul serverului. Contactează asistența serverului.</string>
-  <string name="debug_info_unexpected_error">A apărut o eroare neașteptată. Vezi informațiile de depanare pentru detalii.</string>
   <string name="debug_info_view_details">Vezi detaliile</string>
   <string name="debug_info_subtitle">Au fost colectate informații de depanare</string>
   <string name="debug_info_involved_caption">Resurse implicate</string>
@@ -466,7 +462,6 @@
   <string name="sync_error_http_dav">Eroare de server HTTP – %s</string>
   <string name="sync_error_local_storage">Eroare de stocare locală – %s</string>
   <string name="sync_error_retry_limit_reached">Eroare soft (încercări maxime atinse)</string>
-  <string name="sync_error_view_item">Vezi elementul</string>
   <string name="sync_invalid_contact">S-a primit contact nevalid de la server</string>
   <string name="sync_invalid_event">S-a primit eveniment nevalid de la server</string>
   <string name="sync_invalid_task">S-a primit sarcină nevalidă de la server</string>

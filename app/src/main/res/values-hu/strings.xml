@@ -390,10 +390,6 @@
   <string name="debug_info_server_error">Kiszolgálóhiba</string>
   <string name="debug_info_webdav_error">WebDAV hiba</string>
   <string name="debug_info_io_error">Ki-/bemeneti hiba</string>
-  <string name="debug_info_http_403_description">A kérés megtagadva.  Ellenőrizze az érintett erőforrásokat és a hibakeresési információkat a további részletekért.</string>
-  <string name="debug_info_http_404_description">A kért erőforrás (már) nem létezik. A további részletekért ellenőrizze az érintett erőforrásokat és a hibakeresési információkat.</string>
-  <string name="debug_info_http_5xx_description">Kiszolgálóoldali hiba történt.  Vegye fel a kapcsolatot a kiszolgáló üzemeltetőjével.</string>
-  <string name="debug_info_unexpected_error">Váratlan hiba történt. Hibakereséshez használja a hibakeresési információkat.</string>
   <string name="debug_info_view_details">Részletek megtekintése</string>
   <string name="debug_info_subtitle">A hibakeresési információ összegyűjtése befejeződött</string>
   <string name="debug_info_involved_caption">Érintett erőforrások</string>
@@ -403,6 +399,7 @@
   <string name="debug_info_logs_caption">Naplók</string>
   <string name="debug_info_logs_subtitle">Rendelkezésre állnak részletes naplóbejegyzések </string>
   <string name="debug_info_logs_view">Naplóbejegyzések megtekintése</string>
+  <string name="debug_info_copy_remote_url">URL másolása</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Hiba történt.</string>
   <string name="exception_httpexception">HTTP hiba történt.</string>
@@ -440,7 +437,6 @@
   <string name="sync_error_http_dav">HTTP kiszolgálóhiba – %s</string>
   <string name="sync_error_local_storage">Helyi tárhelyhiba –%s</string>
   <string name="sync_error_retry_limit_reached">Nem végzetes hiba (az újrapróbálkozások száma elérte a maximumot)</string>
-  <string name="sync_error_view_item">Elem megtekintése</string>
   <string name="sync_invalid_contact">A kiszolgáló érvénytelen névjegyet küldött</string>
   <string name="sync_invalid_event">A kiszolgáló érvénytelen eseményt küldött</string>
   <string name="sync_invalid_task">A kiszolgáló érvénytelen feladatot küldött</string>

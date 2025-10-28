@@ -235,6 +235,7 @@
   <string name="debug_info_webdav_error">Помилка WebDAV</string>
   <string name="debug_info_io_error">Помилка I/O</string>
   <string name="debug_info_view_details">Переглянути деталі</string>
+  <string name="debug_info_copy_remote_url">Скопіювати URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Трапилась помилка.</string>
   <string name="exception_httpexception">Трапилась помилка HTTP.</string>
@@ -252,7 +253,6 @@
   <string name="sync_error_io">Помилка мережі та вводу/виводу — %s</string>
   <string name="sync_error_http_dav">Помилка сервера HTTP — %s</string>
   <string name="sync_error_local_storage">Помилка локального сховища — %s</string>
-  <string name="sync_error_view_item">Перегляд елементу</string>
   <string name="sync_invalid_contact">Отримано помилковий контакт від сервера</string>
   <string name="sync_invalid_event">Отримано помилкову подію від сервера</string>
   <string name="sync_invalid_task">Отримано помилкове завдання від сервера</string>

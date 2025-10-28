@@ -284,10 +284,6 @@
   <string name="debug_info_server_error">خطای سرور</string>
   <string name="debug_info_webdav_error">خطای WebDAV</string>
   <string name="debug_info_io_error">خطای ورودی خروجی</string>
-  <string name="debug_info_http_403_description">درخواست رد شده است منابع درگیر و اطلاعات اشکال زدایی را برای جزئیات بررسی کنید.</string>
-  <string name="debug_info_http_404_description">درخواست رد شده است منابع درگیر و اطلاعات اشکال زدایی را برای جزئیات بررسی کنید.</string>
-  <string name="debug_info_http_5xx_description">مشکلی در سمت سرور رخ داد. لطفا با پشتیبانی سرور خود تماس بگیرید.</string>
-  <string name="debug_info_unexpected_error">خطایی غیرمنتظره رخ داده است. برای جزئیات ، اطلاعات اشکال زدایی را مشاهده کنید.</string>
   <string name="debug_info_view_details">نمایش جزئیات</string>
   <string name="debug_info_subtitle">اطلاعات اشکال زدایی جمع آوری شده است</string>
   <string name="debug_info_involved_caption">منابع درگیر</string>
@@ -297,6 +293,7 @@
   <string name="debug_info_logs_caption">رویدادها</string>
   <string name="debug_info_logs_subtitle">رویدادهای مربوط به گفتار موجود است</string>
   <string name="debug_info_logs_view">دیدن رویدادها</string>
+  <string name="debug_info_copy_remote_url">URL را کپی کنید</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">خطایی رخ داده است.</string>
   <string name="exception_httpexception">خطای HTTP رخ داده است.</string>
@@ -322,7 +319,6 @@
   <string name="sync_error_io">شبکه یا خطای ورودی / خروجی – %s</string>
   <string name="sync_error_http_dav">خطای سرور HTTP – %s</string>
   <string name="sync_error_local_storage">خطای ذخیره سازی محلی – %s</string>
-  <string name="sync_error_view_item">مشاهده مورد</string>
   <string name="sync_invalid_contact">مخاطب نامعتبر از سرور دریافت شد</string>
   <string name="sync_invalid_event">رویداد نامعتبر از سرور دریافت شد</string>
   <string name="sync_invalid_task">کار نامعتبر از سرور دریافت شد</string>

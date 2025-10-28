@@ -400,10 +400,6 @@
   <string name="debug_info_server_error">Server-fel</string>
   <string name="debug_info_webdav_error">WebDAV-fel</string>
   <string name="debug_info_io_error">I/O-fel</string>
-  <string name="debug_info_http_403_description">Begäran har avslagits. Kontrollera involverade resurser och felsökningsinformation för detaljer.</string>
-  <string name="debug_info_http_404_description">Den begärda resursen finns inte (längre). Kontrollera involverade resurser och felsökningsinformation för detaljer.</string>
-  <string name="debug_info_http_5xx_description">Ett problem på serversidan uppstod. Kontakta din serversupport.</string>
-  <string name="debug_info_unexpected_error">Ett oväntat fel har uppstått. Se felsökningsinformation för detaljer.</string>
   <string name="debug_info_view_details">Visa detaljer</string>
   <string name="debug_info_subtitle">Felsökningsinformation har samlats in</string>
   <string name="debug_info_involved_caption">Inblandade resurser</string>
@@ -413,6 +409,7 @@
   <string name="debug_info_logs_caption">Loggar</string>
   <string name="debug_info_logs_subtitle">Utförliga loggar finns tillgängliga</string>
   <string name="debug_info_logs_view">Visa loggar</string>
+  <string name="debug_info_copy_remote_url">Kopiera URL</string>
   <string name="debug_info_privacy_warning_title">Integritetspolicy</string>
   <string name="debug_info_privacy_warning_description">Loggar och felsökningsinformation kan innehålla privat information. Var medveten om detta när du delar offentligt.</string>
   <!--ExceptionInfoFragment-->
@@ -452,7 +449,6 @@
   <string name="sync_error_http_dav">HTTP server fel - %s</string>
   <string name="sync_error_local_storage">Lokalt lagringsfel - %s</string>
   <string name="sync_error_retry_limit_reached">Mjukt fel (max antal återanslutningar nådda)</string>
-  <string name="sync_error_view_item">Visa objekt</string>
   <string name="sync_invalid_contact">Fick ogiltig kontakt från servern</string>
   <string name="sync_invalid_event">Fick ogiltig händelse från servern</string>
   <string name="sync_invalid_task">Fick ogiltigt ärende från servern</string>

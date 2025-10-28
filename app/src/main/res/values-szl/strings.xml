@@ -181,6 +181,7 @@
   <string name="collection_description">Ôpis</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informacyje debugowe</string>
+  <string name="debug_info_copy_remote_url">Skopiuj URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Trefiōł sie błōnd.</string>
   <string name="exception_httpexception">Trefiōł sie błōnd HTTP.</string>
@@ -197,7 +198,6 @@
   <string name="sync_error_io">Feler necu abo I/O – %s</string>
   <string name="sync_error_http_dav">Feler serwera HTTP – %s</string>
   <string name="sync_error_local_storage">Feler lokalnego przechowowanio – %s</string>
-  <string name="sync_error_view_item">Pokoż elymynt</string>
   <string name="sync_invalid_contact">Dostany kōntakt ze serwera je niynoleżny</string>
   <string name="sync_invalid_event">Dostane zdarzynie ze serwera je niynoleżne</string>
   <string name="sync_invalid_task">Dostane zadanie ze serwera je niynoleżne</string>

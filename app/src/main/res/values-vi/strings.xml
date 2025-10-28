@@ -273,10 +273,6 @@
   <string name="debug_info_server_error">Lỗi máy chủ</string>
   <string name="debug_info_webdav_error">Lỗi WebDAV</string>
   <string name="debug_info_io_error">Lỗi I/O</string>
-  <string name="debug_info_http_403_description">Yêu cầu đã bị từ chối. Hãy xem các tài nguyên và thông tin gỡ lỗi có liên quan để biết thêm chi tiết.</string>
-  <string name="debug_info_http_404_description">Tài nguyên được yêu cầu không tồn tại (nữa). Hãy kiểm tra các tài nguyên và thông tin gỡ lỗi có liên quan để biết thêm chi tiết.</string>
-  <string name="debug_info_http_5xx_description">Đã xảy ra vấn đề của máy chủ. Vui lòng liên hệ bộ phận hỗ trợ của máy chủ.</string>
-  <string name="debug_info_unexpected_error">Đã xảy ra lỗi không mong đợi. Hãy xem thông tin gỡ lỗi để biết thêm chi tiết.</string>
   <string name="debug_info_view_details">Xem chi tiết</string>
   <string name="debug_info_subtitle">Đã thu thập thông tin gỡ lỗi</string>
   <string name="debug_info_involved_caption">Tài nguyên có liên quan</string>
@@ -286,6 +282,7 @@
   <string name="debug_info_logs_caption">Nhật ký</string>
   <string name="debug_info_logs_subtitle">Có nhật ký chi tiết</string>
   <string name="debug_info_logs_view">Xem nhật ký</string>
+  <string name="debug_info_copy_remote_url">Sao chép URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Đã xảy ra lỗi.</string>
   <string name="exception_httpexception">Đã xảy ra lỗi HTTP.</string>
@@ -321,7 +318,6 @@
   <string name="sync_error_io">Lỗi mạng hoặc I/O – %s</string>
   <string name="sync_error_http_dav">Lỗi máy chủ HTTP – %s</string>
   <string name="sync_error_local_storage">Lỗi kho lưu trữ cục bộ – %s</string>
-  <string name="sync_error_view_item">Xem mục</string>
   <string name="sync_invalid_contact">Đã nhận liên hệ không hợp lệ từ máy chủ</string>
   <string name="sync_invalid_event">Đã nhận sự kiện không hợp lệ từ máy chủ</string>
   <string name="sync_invalid_task">Đã nhận công việc không hợp lệ từ máy chủ</string>

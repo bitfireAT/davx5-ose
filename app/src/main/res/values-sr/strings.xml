@@ -258,6 +258,7 @@
   <string name="debug_info_view_details">Прикажи детаље</string>
   <string name="debug_info_logs_caption">Записи</string>
   <string name="debug_info_logs_view">Прикажи записе</string>
+  <string name="debug_info_copy_remote_url">Копирај УРЛ</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Десила се грешка.</string>
   <string name="exception_httpexception">Десила се ХТТП грешка.</string>
@@ -275,7 +276,6 @@
   <string name="sync_error_io">Мрежна или У/И грешка – %s</string>
   <string name="sync_error_http_dav">Грешка ХТТП сервера – %s</string>
   <string name="sync_error_local_storage">Грешка локалног складишта – %s</string>
-  <string name="sync_error_view_item">Прикажи ставку</string>
   <!--widgets-->
   <string name="widget_sync_all_accounts">Синхронизуј све налоге</string>
   <!--cert4android-->

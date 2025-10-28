@@ -3,17 +3,18 @@
   <!--common strings-->
   <string name="account_invalid">Konto findes ikke (længere)</string>
   <string name="account_title_address_book">DAVx⁵ adressebog</string>
+  <string name="account_prefs_use_app">Foretag ikke ændringer i din konto her! Brug i stedet app\'en til direkte at håndtere konti.</string>
   <string name="dialog_delete">Slet</string>
   <string name="dialog_remove">Fjern</string>
   <string name="dialog_deny">Annullér</string>
-  <string name="dialog_enable">Aktivere</string>
+  <string name="dialog_enable">Aktivér</string>
   <string name="field_required">Feltet er påkrævet</string>
   <string name="help">Hjælp</string>
-  <string name="navigate_up">Naviger opad</string>
+  <string name="navigate_up">Navigér opad</string>
   <string name="options_menu">Indstillinger</string>
   <string name="share">Del</string>
-  <string name="sync_started">Synkroniseringen er startet/i kø</string>
-  <string name="database_destructive_migration_title">Databasen er  ødelagt</string>
+  <string name="sync_started">Synkroniseringen er startet/sat i kø</string>
+  <string name="database_destructive_migration_title">Databasen er korrupt</string>
   <string name="database_destructive_migration_text">Alle konti er fjernet lokalt.</string>
   <string name="notification_channel_debugging">Fejlfinding</string>
   <string name="notification_channel_general">Andre vigtige beskeder</string>
@@ -22,7 +23,7 @@
   <string name="notification_channel_sync_errors">Synkroniseringsfejl</string>
   <string name="notification_channel_sync_errors_desc">Vigtige fejl, såsom uventede serversvar, der stopper synkroniseringen</string>
   <string name="notification_channel_sync_warnings">Synkroniseringsadvarsler</string>
-  <string name="notification_channel_sync_warnings_desc">Ikke-kritiske synkroniseringproblemer som visse ugyldige filer</string>
+  <string name="notification_channel_sync_warnings_desc">Ikke-kritiske synkroniseringproblemer såsom ugyldige filer</string>
   <string name="notification_channel_sync_io_errors">Netværks- og I/O-fejl</string>
   <string name="notification_channel_sync_io_errors_desc">Timeouts, forbindelsesproblemer m.m. (ofte midlertidig)</string>
   <!--IntroActivity-->
@@ -358,10 +359,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="debug_info_server_error">Server fejl</string>
   <string name="debug_info_webdav_error">WebDAV fejl</string>
   <string name="debug_info_io_error">Ind/ud fejl</string>
-  <string name="debug_info_http_403_description">Anmodning blev afvist. Tjek involverede ressourcer og fejlsøgnings oplysninger for detaljer.</string>
-  <string name="debug_info_http_404_description">Den ønskede ressource findes ikke. Kontrollér involverede ressourcer og fejlsøgnings oplysninger for detaljer.</string>
-  <string name="debug_info_http_5xx_description">Der opstod et problem på server siden. Kontakt server brugerhjælp.</string>
-  <string name="debug_info_unexpected_error">En uventet fejl er opstået. Se fejlsøgnings info for detaljer.</string>
   <string name="debug_info_view_details">Vis detaljer</string>
   <string name="debug_info_subtitle">Fejlsøgnings information er indsamlet</string>
   <string name="debug_info_involved_caption">Involveret ressourcer</string>
@@ -371,6 +368,7 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="debug_info_logs_caption">Log</string>
   <string name="debug_info_logs_subtitle">Uddybende log er tilgængelig</string>
   <string name="debug_info_logs_view">Vis logfiler</string>
+  <string name="debug_info_copy_remote_url">Kopiere URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Der er opstået en fejl.</string>
   <string name="exception_httpexception">Der er opstået en HTTP-fejl.</string>
@@ -407,7 +405,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="sync_error_http_dav">HTTP-serverfejl - %s</string>
   <string name="sync_error_local_storage">Lokal lagringsfejl - %s</string>
   <string name="sync_error_retry_limit_reached">Blød fejl (maks forsøg nået)</string>
-  <string name="sync_error_view_item">Vis element</string>
   <string name="sync_invalid_contact">Modtaget ugyldig kontakt fra server</string>
   <string name="sync_invalid_event">Modtaget ugyldig begivenhed fra server</string>
   <string name="sync_invalid_task">Modtaget ugyldig opgave fra server</string>
