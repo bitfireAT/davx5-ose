@@ -8,14 +8,13 @@ import android.content.ContentUris
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
-import at.bitfire.synctools.mapping.calendar.LegacyAndroidEventBuilder2
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
 import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
 import at.bitfire.synctools.storage.calendar.CalendarBatchOperation
+import at.bitfire.synctools.storage.calendar.EventAndExceptions
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -63,22 +62,17 @@ class LocalCalendar @AssistedInject constructor(
     private val recurringCalendar = AndroidRecurringCalendar(androidCalendar)
 
 
-    fun add(event: Event, fileName: String, eTag: String?, scheduleTag: String?, flags: Int) {
-        val mapped = LegacyAndroidEventBuilder2(
-            calendar = androidCalendar,
-            event = event,
-            syncId = fileName,
-            eTag = eTag,
-            scheduleTag = scheduleTag,
-            flags = flags
-        ).build()
-        recurringCalendar.addEventAndExceptions(mapped)
+    fun add(event: EventAndExceptions, fileName: String, eTag: String?, scheduleTag: String?, flags: Int) {
+        recurringCalendar.addEventAndExceptions(event)
     }
 
     override fun findDeleted(): List<LocalEvent> {
         val result = LinkedList<LocalEvent>()
-        androidCalendar.iterateEvents( "${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null) { entity ->
-            result += LocalEvent(recurringCalendar, AndroidEvent2(androidCalendar, entity))
+        // TODO only one query, no null check
+        androidCalendar.iterateEventRows( arrayOf(Events._ID), "${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null) { values ->
+            val id = values.getAsLong(Events._ID)
+            val eventAndExceptions = recurringCalendar.getById(id)!!
+            result += LocalEvent(recurringCalendar, eventAndExceptions)
         }
         return result
     }
@@ -91,16 +85,21 @@ class LocalCalendar @AssistedInject constructor(
          * When a calendar component is created, its sequence number is 0. It is monotonically incremented by the "Organizer's"
          * CUA each time the "Organizer" makes a significant revision to the calendar component.
          */
-        androidCalendar.iterateEvents("${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null) { values ->
-            dirty += LocalEvent(recurringCalendar, AndroidEvent2(androidCalendar, values))
+        // TODO only one query, no null check
+        androidCalendar.iterateEventRows(arrayOf(Events._ID), "${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null) { values ->
+            val id = values.getAsLong(Events._ID)
+            val eventAndExceptions = recurringCalendar.getById(id)!!
+            dirty += LocalEvent(recurringCalendar, eventAndExceptions)
         }
 
         return dirty
     }
 
     override fun findByName(name: String) =
-        androidCalendar.findEvent("${Events._SYNC_ID}=? AND ${Events.ORIGINAL_SYNC_ID} IS null", arrayOf(name))?.let {
-            LocalEvent(recurringCalendar, it)
+        androidCalendar.findEventRow(arrayOf(Events._ID), "${Events._SYNC_ID}=? AND ${Events.ORIGINAL_SYNC_ID} IS null", arrayOf(name))?.let { values ->
+            val id = values.getAsLong(Events._ID)
+            val eventAndExceptions = recurringCalendar.getById(id)!!
+            LocalEvent(recurringCalendar, eventAndExceptions)
         }
 
     override fun markNotDirty(flags: Int) =

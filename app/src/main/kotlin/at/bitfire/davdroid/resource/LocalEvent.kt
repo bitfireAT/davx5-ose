@@ -9,71 +9,44 @@ import android.content.Context
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Event
-import at.bitfire.ical4android.LegacyAndroidCalendar
-import at.bitfire.synctools.mapping.calendar.LegacyAndroidEventBuilder2
-import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.davdroid.BuildConfig
+import at.bitfire.synctools.icalendar.ICalendarWriter
+import at.bitfire.synctools.mapping.calendar.AndroidEventProcessor
 import at.bitfire.synctools.storage.calendar.AndroidEvent2
 import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
-import com.google.common.base.Ascii
+import at.bitfire.synctools.storage.calendar.EventAndExceptions
 import com.google.common.base.MoreObjects
+import java.io.StringWriter
 import java.util.Optional
 import java.util.UUID
 
 class LocalEvent(
     val recurringCalendar: AndroidRecurringCalendar,
-    val androidEvent: AndroidEvent2
-) : LocalResource<Event> {
+    val androidEvent: EventAndExceptions
+) : LocalResource<EventAndExceptions> {
+    
+    private val mainValues = androidEvent.main.entityValues
 
     override val id: Long
-        get() = androidEvent.id
+        get() = mainValues.getAsLong(Events._ID)
 
     override val fileName: String?
-        get() = androidEvent.syncId
+        get() = mainValues.getAsString(Events._SYNC_ID)
 
     override val eTag: String?
-        get() = androidEvent.eTag
+        get() = mainValues.getAsString(AndroidEvent2.COLUMN_ETAG)
 
     override val scheduleTag: String?
-        get() = androidEvent.scheduleTag
+        get() = mainValues.getAsString(AndroidEvent2.COLUMN_SCHEDULE_TAG)
 
     override val flags: Int
-        get() = androidEvent.flags
+        get() = mainValues.getAsInteger(AndroidEvent2.COLUMN_FLAGS)
 
 
-    override fun update(data: Event, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
-        val eventAndExceptions = LegacyAndroidEventBuilder2(
-            calendar = androidEvent.calendar,
-            event = data,
-            syncId = fileName,
-            eTag = eTag,
-            scheduleTag = scheduleTag,
-            flags = flags
-        ).build()
-        recurringCalendar.updateEventAndExceptions(id, eventAndExceptions)
+    override fun update(data: EventAndExceptions, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        recurringCalendar.updateEventAndExceptions(id, data)
     }
 
-
-    private var _event: Event? = null
-    /**
-     * Retrieves the event from the content provider and converts it to a legacy data object.
-     *
-     * Caches the result: the content provider is only queried at the first call and then
-     * this method always returns the same object.
-     *
-     * @throws LocalStorageException    if there is no local event with the ID from [androidEvent]
-     */
-    @Synchronized
-    fun getCachedEvent(): Event {
-        _event?.let { return it }
-
-        val legacyCalendar = LegacyAndroidCalendar(androidEvent.calendar)
-        val event = legacyCalendar.getEvent(androidEvent.id)
-            ?: throw LocalStorageException("Event ${androidEvent.id} not found")
-
-        _event = event
-        return event
-    }
 
     /**
      * Generates the [Event] that should actually be uploaded:
@@ -86,10 +59,27 @@ class LocalEvent(
      *
      * @return data object that should be used for uploading
      */
-    fun eventToUpload(): Event {
-        val event = getCachedEvent()
+    fun eventToUpload(): String {
+        // map entity
+        val event = AndroidEventProcessor(
+            accountName = recurringCalendar.calendar.account.name,
+            prodIdGenerator = { packages ->
+                val str = StringBuilder("DAVx5/${BuildConfig.VERSION_NAME}")
+                if (packages.isNotEmpty()) {
+                    str.append(" (")
+                    str.append(packages.joinToString(", "))
+                    str.append(")")
+                }
+                str.toString()
+            }
+        ).populate(androidEvent)
 
-        val nonGroupScheduled = event.attendees.isEmpty()
+        // write to Calendar
+        val iCal = StringWriter()
+        ICalendarWriter().write(event, iCal)
+
+        // TODO
+        /*val nonGroupScheduled = event.attendees.isEmpty()
         val weAreOrganizer = event.isOrganizer == true
 
         // Increase sequence (event.sequence null/non-null behavior is defined by the Event, see KDoc of event.sequence):
@@ -97,9 +87,9 @@ class LocalEvent(
         // - If it's non-null, the event already exists on the server, so increase by one.
         val sequence = event.sequence
         if (sequence != null && (nonGroupScheduled || weAreOrganizer))
-            event.sequence = sequence + 1
+            event.sequence = sequence + 1*/
 
-        return event
+        return iCal.toString()
     }
 
     /**
@@ -108,9 +98,10 @@ class LocalEvent(
      * @param sequence  new sequence value
      */
     fun updateSequence(sequence: Int?) {
-        androidEvent.update(contentValuesOf(
+        // TODO
+        /*androidEvent.update(contentValuesOf(
             AndroidEvent2.COLUMN_SEQUENCE to sequence
-        ))
+        ))*/
     }
 
 
@@ -121,6 +112,9 @@ class LocalEvent(
      * @return file name to use at upload
      */
     override fun prepareForUpload(): String {
+        val uid = androidEvent.main.entityValues.getAsString(Events.UID_2445) ?: UUID.randomUUID().toString()
+        // TODO
+        /*
         // make sure that UID is set
         val uid: String = getCachedEvent().uid ?: run {
             // generate new UID
@@ -134,7 +128,7 @@ class LocalEvent(
             getCachedEvent().uid = newUid
 
             newUid
-        }
+        }*/
 
         val uidIsGoodFilename = uid.all { char ->
             // see RFC 2396 2.2
@@ -157,11 +151,11 @@ class LocalEvent(
         )
         if (fileName.isPresent)
             values.put(Events._SYNC_ID, fileName.get())
-        androidEvent.update(values)
+        recurringCalendar.calendar.updateEventRow(id, values)
     }
 
     override fun updateFlags(flags: Int) {
-        androidEvent.update(contentValuesOf(
+        recurringCalendar.calendar.updateEventRow(id, contentValuesOf(
             AndroidEvent2.COLUMN_FLAGS to flags
         ))
     }
@@ -171,7 +165,7 @@ class LocalEvent(
     }
 
     override fun resetDeleted() {
-        androidEvent.update(contentValuesOf(
+        recurringCalendar.calendar.updateEventRow(id, contentValuesOf(
             Events.DELETED to 0
         ))
     }
@@ -183,13 +177,13 @@ class LocalEvent(
             .add("eTag", eTag)
             .add("scheduleTag", scheduleTag)
             .add("flags", flags)
-            .add("event",
+            /*.add("event",
                 try {
                     Ascii.truncate(getCachedEvent().toString(), 1000, "…")
                 } catch (e: Exception) {
                     e
                 }
-            ).toString()
+            )*/.toString()
 
     override fun getViewUri(context: Context) =
         ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id)
