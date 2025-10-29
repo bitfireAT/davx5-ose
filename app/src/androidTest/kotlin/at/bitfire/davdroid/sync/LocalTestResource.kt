@@ -8,7 +8,7 @@ import android.content.Context
 import at.bitfire.davdroid.resource.LocalResource
 import java.util.Optional
 
-class LocalTestResource: LocalResource<Any> {
+class LocalTestResource: LocalResource {
 
     override val id: Long? = null
     override var fileName: String? = null

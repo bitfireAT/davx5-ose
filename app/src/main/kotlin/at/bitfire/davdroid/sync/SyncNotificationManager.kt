@@ -111,7 +111,7 @@ class SyncNotificationManager @AssistedInject constructor(
         message: String,
         localCollection: LocalCollection<*>,
         e: Throwable,
-        local: LocalResource<*>?,
+        local: LocalResource?,
         remote: HttpUrl?
     ) = notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
         val contentIntent: Intent
@@ -218,7 +218,7 @@ class SyncNotificationManager @AssistedInject constructor(
     private fun buildDebugInfoIntent(
         dataType: SyncDataType,
         e: Throwable,
-        local: LocalResource<*>?,
+        local: LocalResource?,
         remote: HttpUrl?
     ): Intent {
         val builder = DebugInfoActivity.IntentBuilder(context)

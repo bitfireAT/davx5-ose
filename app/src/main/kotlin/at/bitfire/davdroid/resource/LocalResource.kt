@@ -13,7 +13,7 @@ import java.util.Optional
 /**
  * Defines operations that are used by SyncManager for all sync data types.
  */
-interface LocalResource<in TData: Any> {
+interface LocalResource {
 
     companion object {
         /**
@@ -77,14 +77,6 @@ interface LocalResource<in TData: Any> {
      * At the moment, the only allowed values are 0 and [FLAG_REMOTELY_PRESENT].
      */
     fun updateFlags(flags: Int)
-
-    /**
-     * Updates the data object in the content provider and ensures that the dirty flag is clear.
-     * Does not affect `this` or the [data] object (which are both immutable).
-     *
-     * @return content URI of the updated row (e.g. event URI)
-     */
-    fun update(data: TData, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int)
 
     /**
      * Deletes the data object from the content provider.

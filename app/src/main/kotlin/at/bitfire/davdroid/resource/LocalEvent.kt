@@ -23,7 +23,7 @@ import java.util.UUID
 class LocalEvent(
     val recurringCalendar: AndroidRecurringCalendar,
     val androidEvent: AndroidEvent2
-) : LocalResource<Event> {
+) : LocalResource {
 
     override val id: Long
         get() = androidEvent.id
@@ -41,7 +41,7 @@ class LocalEvent(
         get() = androidEvent.flags
 
 
-    override fun update(data: Event, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+    fun update(data: Event, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
         val eventAndExceptions = LegacyAndroidEventBuilder2(
             calendar = androidEvent.calendar,
             event = data,
