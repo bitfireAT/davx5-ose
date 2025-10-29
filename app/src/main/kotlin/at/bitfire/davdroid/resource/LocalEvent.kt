@@ -23,7 +23,7 @@ import java.util.UUID
 class LocalEvent(
     val recurringCalendar: AndroidRecurringCalendar,
     val androidEvent: EventAndExceptions
-) : LocalResource<EventAndExceptions> {
+) : LocalResource {
     
     private val mainValues = androidEvent.main.entityValues
 
@@ -43,13 +43,13 @@ class LocalEvent(
         get() = mainValues.getAsInteger(AndroidEvent2.COLUMN_FLAGS)
 
 
-    override fun update(data: EventAndExceptions, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+    fun update(data: EventAndExceptions) {
         recurringCalendar.updateEventAndExceptions(id, data)
     }
 
 
     /**
-     * Generates the [Event] that should actually be uploaded:
+     * Generates the event that should actually be uploaded:
      *
      * 1. Takes the [getCachedEvent].
      * 2. Calculates the new SEQUENCE.

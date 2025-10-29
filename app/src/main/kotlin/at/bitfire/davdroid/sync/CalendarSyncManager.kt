@@ -297,22 +297,10 @@ class CalendarSyncManager @AssistedInject constructor(
         SyncException.wrapWithLocalResource(local) {
             if (local != null) {
                 logger.log(Level.INFO, "Updating $fileName in local calendar", event)
-                local.update(
-                    data = androidEvent,
-                    fileName = fileName,
-                    eTag = eTag,
-                    scheduleTag = scheduleTag,
-                    flags = LocalResource.FLAG_REMOTELY_PRESENT
-                )
+                local.update(androidEvent)
             } else {
                 logger.log(Level.INFO, "Adding $fileName to local calendar", event)
-                localCollection.add(
-                    event = androidEvent,
-                    fileName = fileName,
-                    eTag = eTag,
-                    scheduleTag = scheduleTag,
-                    flags = LocalResource.FLAG_REMOTELY_PRESENT
-                )
+                localCollection.add(androidEvent)
             }
         }
     }

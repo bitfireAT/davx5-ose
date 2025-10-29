@@ -22,7 +22,7 @@ class LocalJtxICalObject(
     flags: Int
 ) :
     JtxICalObject(collection),
-    LocalResource<JtxICalObject> {
+    LocalResource {
 
 
     init {
@@ -52,7 +52,7 @@ class LocalJtxICalObject(
 
     }
 
-    override fun update(data: JtxICalObject, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+    fun update(data: JtxICalObject, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
         this.fileName = fileName
         this.eTag = eTag
         this.scheduleTag = scheduleTag

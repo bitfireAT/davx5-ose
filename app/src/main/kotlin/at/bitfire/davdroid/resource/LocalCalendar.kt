@@ -62,7 +62,7 @@ class LocalCalendar @AssistedInject constructor(
     private val recurringCalendar = AndroidRecurringCalendar(androidCalendar)
 
 
-    fun add(event: EventAndExceptions, fileName: String, eTag: String?, scheduleTag: String?, flags: Int) {
+    fun add(event: EventAndExceptions) {
         recurringCalendar.addEventAndExceptions(event)
     }
 
