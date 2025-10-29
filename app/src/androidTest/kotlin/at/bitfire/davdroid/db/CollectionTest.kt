@@ -6,7 +6,7 @@ package at.bitfire.davdroid.db
 
 import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
-import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.network.HttpClient
 import dagger.hilt.android.testing.HiltAndroidRule
