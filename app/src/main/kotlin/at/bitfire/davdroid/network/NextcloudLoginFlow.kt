@@ -4,8 +4,8 @@
 
 package at.bitfire.davdroid.network
 
-import at.bitfire.dav4jvm.exception.DavException
-import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.okhttp.exception.DavException
+import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.ui.setup.LoginInfo
 import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString

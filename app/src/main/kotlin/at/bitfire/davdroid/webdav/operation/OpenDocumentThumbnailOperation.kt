@@ -14,7 +14,7 @@ import android.net.ConnectivityManager
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import androidx.core.content.getSystemService
-import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder

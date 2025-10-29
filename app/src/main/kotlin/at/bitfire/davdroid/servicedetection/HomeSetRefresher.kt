@@ -4,9 +4,9 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.DavResource
-import at.bitfire.dav4jvm.Response
-import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.Owner
