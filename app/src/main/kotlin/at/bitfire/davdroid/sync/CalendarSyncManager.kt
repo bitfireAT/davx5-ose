@@ -182,11 +182,11 @@ class CalendarSyncManager @AssistedInject constructor(
     override fun generateUpload(resource: LocalEvent): GeneratedResource {
         val event = resource.getCachedEvent()
 
-        // get/create UID
-        val uid = event.uid
+        // get/create UID and file name
+        val existingUid = event.uid
         val newUid: Optional<String>
         val suggestedBaseName: String?
-        if (uid == null) {
+        if (existingUid == null) {
             // no existing UID, generate
             val uuid = UUID.randomUUID().toString()
 
@@ -197,15 +197,13 @@ class CalendarSyncManager @AssistedInject constructor(
             newUid = Optional.of(uuid)
             suggestedBaseName = uuid
         } else {
-            // existing UID
-
-            // don't update in onSuccessContext
+            // existing UID, don't update in onSuccessContext
             newUid = Optional.empty()
 
             // verify for file name
             suggestedBaseName =
-                if (DavUtils.isGoodFileBaseName(uid))
-                    uid
+                if (DavUtils.isGoodFileBaseName(existingUid))
+                    existingUid
                 else
                     UUID.randomUUID().toString()
         }
@@ -233,6 +231,8 @@ class CalendarSyncManager @AssistedInject constructor(
             else ->
                 Optional.empty()
         }
+
+        logger.log(Level.FINE, "Preparing upload of iCalendar ${resource.fileName}", event)
 
         // generate iCalendar and convert to request body
         val iCalWriter = StringWriter()
