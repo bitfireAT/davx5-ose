@@ -24,6 +24,7 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.exception.InvalidICalendarException
@@ -38,7 +39,6 @@ import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
 import java.util.Optional
-import java.util.UUID
 import java.util.logging.Level
 
 /**
@@ -105,20 +105,10 @@ class TasksSyncManager @AssistedInject constructor(
     override fun generateUpload(resource: LocalTask): GeneratedResource {
         val task = requireNotNull(resource.task)
 
-        // get/create UID and file name
-        val existingUid = task.uid
-        val newUid: Optional<String>
-        val suggestedBaseName: String?
-        if (existingUid == null) {
-            // generate new UID
-            val uuid = UUID.randomUUID().toString()
-            task.uid = uuid
-            newUid = Optional.of(uuid)
-            suggestedBaseName = uuid
-        } else {
-            newUid = Optional.empty()
-            suggestedBaseName = existingUid
-        }
+        // get/create UID
+        val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(task.uid)
+        if (uidIsGenerated)
+            task.uid = uid
 
         // generate iCalendar and convert to request body
         logger.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
@@ -126,10 +116,10 @@ class TasksSyncManager @AssistedInject constructor(
         task.write(os, Constants.iCalProdId)
 
         return GeneratedResource(
-            suggestedFileName = "$suggestedBaseName.ics",
+            suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
             requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8),
             onSuccessContext = GeneratedResource.OnSuccessContext(
-                uid = newUid
+                uid = if (uidIsGenerated) Optional.of(uid) else Optional.empty()
             )
         )
     }

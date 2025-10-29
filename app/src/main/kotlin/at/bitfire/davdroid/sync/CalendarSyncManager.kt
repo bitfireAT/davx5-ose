@@ -50,7 +50,6 @@ import java.io.StringWriter
 import java.time.Duration
 import java.time.ZonedDateTime
 import java.util.Optional
-import java.util.UUID
 import java.util.logging.Level
 
 /**
@@ -182,31 +181,10 @@ class CalendarSyncManager @AssistedInject constructor(
     override fun generateUpload(resource: LocalEvent): GeneratedResource {
         val event = resource.getCachedEvent()
 
-        // get/create UID and file name
-        val existingUid = event.uid
-        val newUid: Optional<String>
-        val suggestedBaseName: String?
-        if (existingUid == null) {
-            // no existing UID, generate
-            val uuid = UUID.randomUUID().toString()
-
-            // add to event / iCalendar
-            event.uid = uuid
-
-            // remember for onSuccessContext
-            newUid = Optional.of(uuid)
-            suggestedBaseName = uuid
-        } else {
-            // existing UID, don't update in onSuccessContext
-            newUid = Optional.empty()
-
-            // verify for file name
-            suggestedBaseName =
-                if (DavUtils.isGoodFileName(existingUid))
-                    existingUid
-                else
-                    UUID.randomUUID().toString()
-        }
+        // get/create UID
+        val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(event.uid)
+        if (uidIsGenerated)
+            event.uid = uid
 
         // update SEQUENCE, if necessary
         val groupScheduled = event.attendees.isNotEmpty()
@@ -232,18 +210,17 @@ class CalendarSyncManager @AssistedInject constructor(
                 Optional.empty()
         }
 
-        logger.log(Level.FINE, "Preparing upload of iCalendar ${resource.fileName}", event)
-
         // generate iCalendar and convert to request body
+        logger.log(Level.FINE, "Preparing upload of iCalendar ${resource.fileName}", event)
         val iCalWriter = StringWriter()
         EventWriter(Constants.iCalProdId).write(event, iCalWriter)
         val requestBody = iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
 
         return GeneratedResource(
-            suggestedFileName = "$suggestedBaseName.ics",
+            suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
             requestBody = requestBody,
             onSuccessContext = GeneratedResource.OnSuccessContext(
-                uid = newUid,
+                uid = if (uidIsGenerated) Optional.of(uid) else Optional.empty(),
                 sequence = newSequence
             )
         )

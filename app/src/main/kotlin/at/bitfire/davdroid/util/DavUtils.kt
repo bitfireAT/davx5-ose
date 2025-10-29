@@ -10,6 +10,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.Locale
+import java.util.UUID
 
 /**
  * Some WebDAV and HTTP network utility methods.
@@ -44,21 +45,47 @@ object DavUtils {
     }
 
     /**
-     * Whether the given [name] (usually a UID) is a good resource (file) name for a
-     * file upload that probably won't cause problems.
+     * Generates a usable WebDAV resource name (file name) from an UID.
      *
-     * @param name  file name of part of a file name (like a file name without suffix) to evaluate
+     * If the UID contains only characters that are usually not problematic in file names,
+     * the returned value is `<uid>.<suffix>`. If there are problematic characters,
+     * the file name will be generated from a random UUID plus suffix instead.
      *
-     * @return *true*: [name] can be used to generate the file name without problems;
-     * *false*: better choose another file name that doesn't contain [name]
+     * @param uid       UID of the iCalendar or vCard
+     * @param suffix    suffix to use (without dot, for instance `ics` for iCalendar files)
+     *
+     * @return file name that can be used to upload the resource
      */
-    fun isGoodFileName(name: String) =
-        name.all { char ->
+    fun fileNameFromUid(uid: String, suffix: String): String {
+        val uidIsGoodBaseName: Boolean = uid.all { char ->
             // see RFC 2396 2.2
             char.isLetterOrDigit() || arrayOf(                  // allow letters and digits
                 ';', ':', '@', '&', '=', '+', '$', ',',         // allow reserved characters except '/' and '?'
                 '-', '_', '.', '!', '~', '*', '\'', '(', ')'    // allow unreserved characters
             ).contains(char)
+        }
+        val baseName = if (uidIsGoodBaseName) uid else UUID.randomUUID().toString()
+        return "$baseName.$suffix"
+    }
+
+    data class UidGenerationResult(
+        val uid: String,
+        val uidIsGenerated: Boolean
+    )
+    /**
+     * Generates a UID for an iCalendar/vCard if there is no existing UID.
+     *
+     * @param existingUid       existing UID (may be null)
+     *
+     * @return decomposable result that contains either the existing or the generated UID and whether it was generated
+     */
+    fun generateUidIfNecessary(existingUid: String?): UidGenerationResult =
+        if (existingUid == null) {
+            // generate new UID
+            UidGenerationResult(UUID.randomUUID().toString(), uidIsGenerated = true)
+        } else {
+            // use existing UID
+            UidGenerationResult(existingUid, uidIsGenerated = false)
         }
 
 

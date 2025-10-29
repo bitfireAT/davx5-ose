@@ -25,6 +25,7 @@ import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.exception.InvalidICalendarException
@@ -101,7 +102,7 @@ class JtxSyncManager @AssistedInject constructor(
         resource.write(os, Constants.iCalProdId)
 
         return GeneratedResource(
-            suggestedFileName = "${resource.uid}.ics",
+            suggestedFileName = DavUtils.fileNameFromUid(resource.uid, "ics"),
             requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8),
             onSuccessContext = GeneratedResource.OnSuccessContext()     // nothing special to update after upload
         )

@@ -57,7 +57,6 @@ import java.io.IOException
 import java.io.Reader
 import java.io.StringReader
 import java.util.Optional
-import java.util.UUID
 import java.util.logging.Level
 import kotlin.jvm.optionals.getOrNull
 
@@ -279,19 +278,10 @@ class ContactsSyncManager @AssistedInject constructor(
             else -> throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
         }
 
-        // get/create UID and file name
-        val existingUid = contact.uid
-        val newUid: Optional<String>
-        val suggestedBaseName: String?
-        if (existingUid == null) {
-            val newUuid = UUID.randomUUID().toString()
-            contact.uid = newUuid
-            newUid = Optional.of(newUuid)
-            suggestedBaseName = newUuid
-        } else {
-            newUid = Optional.empty()
-            suggestedBaseName = existingUid
-        }
+        // get/create UID
+        val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(contact.uid)
+        if (uidIsGenerated)
+            contact.uid = uid
 
         // generate vCard and convert to request body
         logger.log(Level.FINE, "Preparing upload of vCard ${resource.fileName}", contact)
@@ -313,10 +303,10 @@ class ContactsSyncManager @AssistedInject constructor(
         }
 
         return GeneratedResource(
-            suggestedFileName = "$suggestedBaseName.vcf",
+            suggestedFileName = DavUtils.fileNameFromUid(uid, "vcf"),
             requestBody = os.toByteArray().toRequestBody(mimeType),
             onSuccessContext = GeneratedResource.OnSuccessContext(
-                uid = newUid
+                uid = if (uidIsGenerated) Optional.of(uid) else Optional.empty()
             )
         )
     }
