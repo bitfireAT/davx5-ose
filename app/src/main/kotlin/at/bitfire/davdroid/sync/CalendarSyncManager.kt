@@ -27,6 +27,7 @@ import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.EventReader
@@ -42,7 +43,6 @@ import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.property.Action
 import okhttp3.HttpUrl
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.Reader
 import java.io.StringReader
@@ -178,23 +178,51 @@ class CalendarSyncManager @AssistedInject constructor(
         return modified or superModified
     }
 
-    override fun onSuccessfulUpload(local: LocalEvent, newFileName: String, eTag: String?, scheduleTag: String?) {
-        super.onSuccessfulUpload(local, newFileName, eTag, scheduleTag)
+    override fun generateUpload(resource: LocalEvent): GeneratedResource {
+        val event = resource.getCachedEvent()
+        logger.log(Level.FINE, "Preparing upload of iCalendar ${resource.fileName}", event)
 
-        // update local SEQUENCE to new value after successful upload
-        local.updateSequence(local.getCachedEvent().sequence)
-    }
+        // get/create UID
+        val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(event.uid)
+        if (uidIsGenerated)
+            event.uid = uid
 
-    override fun generateUpload(resource: LocalEvent): RequestBody =
-        SyncException.wrapWithLocalResource(resource) {
-            val event = resource.eventToUpload()
-            logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
+        // Increase sequence, if necessary:
+        // - If it's null, the event has just been created in the database, so we can start with SEQUENCE:0 (default).
+        // - If it's non-null, the event already exists on the server, so increase by one.
+        val groupScheduled = event.attendees.isNotEmpty()
+        val weAreOrganizer = event.isOrganizer == true
+        val sequence = event.sequence
+        val newSequence: Optional<Int> = when {
+            // first upload, set to 0 after upload
+            sequence == null ->
+                Optional.of(0)
 
-            // write iCalendar to string and convert to request body
-            val iCalWriter = StringWriter()
-            EventWriter(Constants.iCalProdId).write(event, iCalWriter)
-            iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+            // re-upload of group-scheduled event (and we're ORGANIZER), increase sequence in iCalendar and after upload
+            groupScheduled && weAreOrganizer -> {
+                event.sequence = sequence + 1
+                Optional.of(sequence + 1)
+            }
+
+            // standard re-upload, don't update sequence
+            else ->
+                Optional.empty()
         }
+
+        // generate iCalendar and convert to request body
+        val iCalWriter = StringWriter()
+        EventWriter(Constants.iCalProdId).write(event, iCalWriter)
+        val requestBody = iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+
+        return GeneratedResource(
+            suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
+            requestBody = requestBody,
+            onSuccessContext = GeneratedResource.OnSuccessContext(
+                uid = if (uidIsGenerated) Optional.of(uid) else Optional.empty(),
+                sequence = newSequence
+            )
+        )
+    }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
         // calculate time range limits

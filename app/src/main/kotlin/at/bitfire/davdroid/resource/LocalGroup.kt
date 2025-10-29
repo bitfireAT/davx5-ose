@@ -16,7 +16,6 @@ import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.resource.LocalGroup.Companion.COLUMN_PENDING_MEMBERS
-import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.ContactsBatchOperation
 import at.bitfire.vcard4android.AndroidAddressBook
@@ -28,7 +27,6 @@ import at.bitfire.vcard4android.Contact
 import com.google.common.base.MoreObjects
 import java.util.LinkedList
 import java.util.Optional
-import java.util.UUID
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
 
@@ -142,26 +140,6 @@ class LocalGroup: AndroidGroup, LocalAddress {
     }
 
 
-    override fun prepareForUpload(): String {
-        var uid: String? = null
-        addressBook.provider!!.query(groupSyncUri(), arrayOf(AndroidContact.COLUMN_UID), null, null, null)?.use { cursor ->
-            if (cursor.moveToNext())
-                uid = cursor.getString(0).trimToNull()
-        }
-
-        if (uid == null) {
-            // generate new UID
-            uid = UUID.randomUUID().toString()
-
-            val values = contentValuesOf(AndroidContact.COLUMN_UID to uid)
-            addressBook.provider!!.update(groupSyncUri(), values, null, null)
-
-            _contact?.uid = uid
-        }
-
-        return "$uid.vcf"
-    }
-
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             throw IllegalArgumentException("Contact groups must not have a Schedule-Tag")
@@ -227,6 +205,13 @@ class LocalGroup: AndroidGroup, LocalAddress {
         addressBook.provider!!.update(groupSyncUri(), values, null, null)
 
         this.flags = flags
+    }
+
+    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+
+    override fun updateUid(uid: String) {
+        val values = contentValuesOf(AndroidContact.COLUMN_UID to uid)
+        addressBook.provider!!.update(groupSyncUri(), values, null, null)
     }
 
     override fun deleteLocal() {

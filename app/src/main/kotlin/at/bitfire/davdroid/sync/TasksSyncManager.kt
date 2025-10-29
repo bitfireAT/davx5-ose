@@ -24,6 +24,7 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.exception.InvalidICalendarException
@@ -33,11 +34,11 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
+import java.util.Optional
 import java.util.logging.Level
 
 /**
@@ -101,16 +102,27 @@ class TasksSyncManager @AssistedInject constructor(
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
-    override fun generateUpload(resource: LocalTask): RequestBody =
-        SyncException.wrapWithLocalResource(resource) {
-            val task = requireNotNull(resource.task)
-            logger.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
+    override fun generateUpload(resource: LocalTask): GeneratedResource {
+        val task = requireNotNull(resource.task)
+        logger.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
 
-            val os = ByteArrayOutputStream()
-            task.write(os, Constants.iCalProdId)
+        // get/create UID
+        val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(task.uid)
+        if (uidIsGenerated)
+            task.uid = uid
 
-            os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
-        }
+        // generate iCalendar and convert to request body
+        val os = ByteArrayOutputStream()
+        task.write(os, Constants.iCalProdId)
+
+        return GeneratedResource(
+            suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
+            requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8),
+            onSuccessContext = GeneratedResource.OnSuccessContext(
+                uid = if (uidIsGenerated) Optional.of(uid) else Optional.empty()
+            )
+        )
+    }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {

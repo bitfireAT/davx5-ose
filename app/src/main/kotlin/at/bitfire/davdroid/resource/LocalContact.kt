@@ -31,7 +31,6 @@ import com.google.common.base.Ascii
 import com.google.common.base.MoreObjects
 import java.io.FileNotFoundException
 import java.util.Optional
-import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 class LocalContact: AndroidContact, LocalAddress {
@@ -69,25 +68,6 @@ class LocalContact: AndroidContact, LocalAddress {
         processor.registerBuilderFactory(UnknownPropertiesBuilder.Factory)
     }
 
-
-    override fun prepareForUpload(): String {
-        val contact = getContact()
-        val uid: String = contact.uid ?: run {
-            // generate new UID
-            val newUid = UUID.randomUUID().toString()
-
-            // update in contacts provider
-            val values = contentValuesOf(COLUMN_UID to newUid)
-            addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
-
-            // update this event
-            contact.uid = newUid
-
-            newUid
-        }
-
-        return "$uid.vcf"
-    }
 
     /**
      * Clears cached [contact] so that the next read of [contact] will query the content provider again.
@@ -135,6 +115,13 @@ class LocalContact: AndroidContact, LocalAddress {
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
         this.flags = flags
+    }
+
+    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+
+    override fun updateUid(uid: String) {
+        val values = contentValuesOf(COLUMN_UID to uid)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
     override fun deleteLocal() {

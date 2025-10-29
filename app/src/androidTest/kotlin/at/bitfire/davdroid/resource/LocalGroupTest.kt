@@ -24,8 +24,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -239,19 +237,6 @@ class LocalGroupTest {
             assertEquals(0, ab.findDirty().size)
             group.markMembersDirty()
             assertEquals(contact1.id, ab.findDirty().first().id)
-        }
-    }
-
-    @Test
-    fun testPrepareForUpload() {
-        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
-            val group = newGroup(ab)
-            assertNull(group.getContact().uid)
-
-            val fileName = group.prepareForUpload()
-            val newUid = group.getContact().uid
-            assertNotNull(newUid)
-            assertEquals("$newUid.vcf", fileName)
         }
     }
 

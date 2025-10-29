@@ -20,10 +20,7 @@ class LocalJtxICalObject(
     eTag: String?,
     scheduleTag: String?,
     flags: Int
-) :
-    JtxICalObject(collection),
-    LocalResource {
-
+) : JtxICalObject(collection), LocalResource {
 
     init {
         this.fileName = fileName
@@ -61,6 +58,10 @@ class LocalJtxICalObject(
         // processes this.{fileName, eTag, scheduleTag, flags} and resets DIRTY flag
         update(data)
     }
+
+    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+
+    override fun updateUid(uid: String)  = throw NotImplementedError()
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         clearDirty(fileName.getOrNull(), eTag, scheduleTag)

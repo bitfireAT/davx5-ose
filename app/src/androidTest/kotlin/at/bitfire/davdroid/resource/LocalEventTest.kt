@@ -29,7 +29,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -65,113 +64,6 @@ class LocalEventTest {
         client.closeCompat()
     }
 
-
-    @Test
-    fun testPrepareForUpload_NoUid() {
-        // create event
-        val event = Event().apply {
-            dtStart = DtStart("20220120T010203Z")
-            summary = "Event without uid"
-        }
-
-        calendar.add(
-            event = event,
-            fileName = "filename.ics",
-            eTag = null,
-            scheduleTag = null,
-            flags = LocalResource.FLAG_REMOTELY_PRESENT
-        )
-        val localEvent = calendar.findByName("filename.ics")!!
-
-        // prepare for upload - this should generate a new random uuid, returned as filename
-        val fileNameWithSuffix = localEvent.prepareForUpload()
-        val fileName = fileNameWithSuffix.removeSuffix(".ics")
-
-        // throws an exception if fileName is not an UUID
-        UUID.fromString(fileName)
-
-        // UID in calendar storage should be the same as file name
-        client.query(
-            ContentUris.withAppendedId(Events.CONTENT_URI, localEvent.id!!).asSyncAdapter(account),
-            arrayOf(Events.UID_2445), null, null, null
-        )!!.use { cursor ->
-            cursor.moveToFirst()
-            assertEquals(fileName, cursor.getString(0))
-        }
-    }
-
-    @Test
-    fun testPrepareForUpload_NormalUid() {
-        // create event
-        val event = Event().apply {
-            dtStart = DtStart("20220120T010203Z")
-            summary = "Event with normal uid"
-            uid = "some-event@hostname.tld"     // old UID format, UUID would be new format
-        }
-        calendar.add(
-            event = event,
-            fileName = "filename.ics",
-            eTag = null,
-            scheduleTag = null,
-            flags = LocalResource.FLAG_REMOTELY_PRESENT
-        )
-        val localEvent = calendar.findByName("filename.ics")!!
-
-        // prepare for upload - this should use the UID for the file name
-        val fileNameWithSuffix = localEvent.prepareForUpload()
-        val fileName = fileNameWithSuffix.removeSuffix(".ics")
-
-        assertEquals(event.uid, fileName)
-
-        // UID in calendar storage should still be set, too
-        client.query(
-            ContentUris.withAppendedId(Events.CONTENT_URI, localEvent.id!!).asSyncAdapter(account),
-            arrayOf(Events.UID_2445), null, null, null
-        )!!.use { cursor ->
-            cursor.moveToFirst()
-            assertEquals(fileName, cursor.getString(0))
-        }
-    }
-
-    @Test
-    fun testPrepareForUpload_UidHasDangerousChars() {
-        // create event
-        val event = Event().apply {
-            dtStart = DtStart("20220120T010203Z")
-            summary = "Event with funny uid"
-            uid = "https://www.example.com/events/asdfewfe-cxyb-ewrws-sadfrwerxyvser-asdfxye-"
-        }
-        calendar.add(
-            event = event,
-            fileName = "filename.ics",
-            eTag = null,
-            scheduleTag = null,
-            flags = LocalResource.FLAG_REMOTELY_PRESENT
-        )
-        val localEvent = calendar.findByName("filename.ics")!!
-
-        // prepare for upload - this should generate a new random uuid, returned as filename
-        val fileNameWithSuffix = localEvent.prepareForUpload()
-        val fileName = fileNameWithSuffix.removeSuffix(".ics")
-
-        // throws an exception if fileName is not an UUID
-        UUID.fromString(fileName)
-
-        // UID in calendar storage shouldn't have been changed
-        client.query(
-            ContentUris.withAppendedId(Events.CONTENT_URI, localEvent.id!!).asSyncAdapter(account),
-            arrayOf(Events.UID_2445), null, null, null
-        )!!.use { cursor ->
-            cursor.moveToFirst()
-            assertEquals(event.uid, cursor.getString(0))
-        }
-    }
-
-
-    @Test
-    fun testDeleteDirtyEventsWithoutInstances_NoInstances_Exdate() {
-        // TODO
-    }
 
     @Test
     fun testDeleteDirtyEventsWithoutInstances_NoInstances_CancelledExceptions() {
