@@ -42,7 +42,6 @@ import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.property.Action
 import okhttp3.HttpUrl
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.Reader
 import java.io.StringReader
@@ -50,6 +49,7 @@ import java.io.StringWriter
 import java.time.Duration
 import java.time.ZonedDateTime
 import java.util.Optional
+import java.util.UUID
 import java.util.logging.Level
 
 /**
@@ -178,23 +178,91 @@ class CalendarSyncManager @AssistedInject constructor(
         return modified or superModified
     }
 
-    override fun onSuccessfulUpload(local: LocalEvent, newFileName: String, eTag: String?, scheduleTag: String?) {
-        super.onSuccessfulUpload(local, newFileName, eTag, scheduleTag)
+    override fun generateUpload(resource: LocalEvent): GeneratedResource {
+        val event = resource.getCachedEvent()
 
-        // update local SEQUENCE to new value after successful upload
-        local.updateSequence(local.getCachedEvent().sequence)
+        // get/create UID
+        val uid = resource.getCachedEvent().uid
+        val newUid: Optional<String>
+        val resourceBaseName: String?
+        if (uid == null) {
+            // no existing UID, generate
+            val uuid = UUID.randomUUID().toString()
+            // add to event / iCalendar
+            event.uid = uuid
+            // remember for onSuccessContext
+            newUid = Optional.of(uuid)
+            resourceBaseName = uuid
+        } else {
+            // existing UID
+            // don't update in onSuccessContext
+            newUid = Optional.empty()
+            // verify for file name
+            resourceBaseName = uid.takeIf {
+                it.all { char ->
+                    // see RFC 2396 2.2
+                    char.isLetterOrDigit() || arrayOf(                  // allow letters and digits
+                        ';', ':', '@', '&', '=', '+', '$', ',',         // allow reserved characters except '/' and '?'
+                        '-', '_', '.', '!', '~', '*', '\'', '(', ')'    // allow unreserved characters
+                    ).contains(char)
+                }
+            } ?: UUID.randomUUID().toString()
+        }
+
+        // update SEQUENCE, if necessary
+        val groupScheduled = event.attendees.isNotEmpty()
+        val weAreOrganizer = event.isOrganizer == true
+
+        // Increase sequence :
+        // - If it's null, the event has just been created in the database, so we can start with SEQUENCE:0 (default).
+        // - If it's non-null, the event already exists on the server, so increase by one.
+        val sequence = event.sequence
+        val newSequence: Optional<Int> = when {
+            // first upload, set to 0 after upload
+            sequence == null ->
+                Optional.of(0)
+
+            // re-upload of group-scheduled event (and we're ORGANIZER), increase sequence
+            groupScheduled && weAreOrganizer ->
+                Optional.of(sequence + 1)
+
+            // standard re-upload, don't update sequence
+            else ->
+                Optional.empty()
+        }
+
+        // generate iCalendar and convert to request body
+        val iCalWriter = StringWriter()
+        EventWriter(Constants.iCalProdId).write(event, iCalWriter)
+        val requestBody = iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+
+        return GeneratedResource(
+            suggestedFileName = "$resourceBaseName.ics",
+            requestBody = requestBody,
+            onSuccessContext = GeneratedResource.OnSuccessContext(
+                uid = newUid,
+                sequence = newSequence
+            )
+        )
     }
 
-    override fun generateUpload(resource: LocalEvent): RequestBody =
-        SyncException.wrapWithLocalResource(resource) {
-            val event = resource.eventToUpload()
-            logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
+    override fun onSuccessfulUpload(
+        local: LocalEvent,
+        newFileName: String,
+        eTag: String?,
+        scheduleTag: String?,
+        context: GeneratedResource.OnSuccessContext
+    ) {
+        // update local UID to new value, if necessary
+        if (context.uid.isPresent)
+            local.updateUid(context.uid.get())
 
-            // write iCalendar to string and convert to request body
-            val iCalWriter = StringWriter()
-            EventWriter(Constants.iCalProdId).write(event, iCalWriter)
-            iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
-        }
+        // update local SEQUENCE to new value, if necessary
+        if (context.sequence.isPresent)
+            local.updateSequence(context.sequence.get())
+
+        super.onSuccessfulUpload(local, newFileName, eTag, scheduleTag, context)
+    }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
         // calculate time range limits

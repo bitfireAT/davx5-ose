@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.content.Context
 import android.os.DeadObjectException
 import android.os.RemoteException
+import androidx.annotation.CallSuper
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Error
@@ -46,7 +47,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
-import okhttp3.RequestBody
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
@@ -388,15 +388,10 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
      */
     protected open suspend fun uploadDirty(local: ResourceType, forceAsNew: Boolean = false) {
         val existingFileName = local.fileName
-        val fileName = if (existingFileName != null) {
-            // prepare upload (for UID etc), but ignore returned file name suggestion
-            local.prepareForUpload()
-            existingFileName
-        } else {
-            // prepare upload and use returned file name suggestion as new file name
-            local.prepareForUpload()
-        }
 
+        val upload = generateUpload(local)
+
+        val fileName = existingFileName ?: upload.suggestedFileName
         val uploadUrl = collection.url.newBuilder().addPathSegment(fileName).build()
         val remote = DavResource(httpClient.okHttpClient, uploadUrl)
 
@@ -405,13 +400,12 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
                 if (existingFileName == null || forceAsNew) {
                     // create new resource on server
                     logger.info("Uploading new resource ${local.id} -> $fileName")
-                    val bodyToUpload = generateUpload(local)
 
                     var newETag: String? = null
                     var newScheduleTag: String? = null
                     runInterruptible {
                         remote.put(
-                            bodyToUpload,
+                            upload.requestBody,
                             ifNoneMatch = true,     // fails if there's already a resource with that name
                             callback = { response ->
                                 newETag = GetETag.fromResponse(response)?.eTag
@@ -421,10 +415,8 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
                         )
                     }
 
-                    logger.fine("Upload successful; new ETag=$newETag / Schedule-Tag=$newScheduleTag")
-
                     // success (no exception thrown)
-                    onSuccessfulUpload(local, fileName, newETag, newScheduleTag)
+                    onSuccessfulUpload(local, fileName, newETag, newScheduleTag, upload.onSuccessContext)
 
                 } else {
                     // update resource on server
@@ -432,13 +424,12 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
                     val ifETag = if (ifScheduleTag == null) local.eTag else null
 
                     logger.info("Uploading modified resource ${local.id} -> $fileName (if ETag=$ifETag / Schedule-Tag=$ifScheduleTag)")
-                    val bodyToUpload = generateUpload(local)
 
                     var updatedETag: String? = null
                     var updatedScheduleTag: String? = null
                     runInterruptible {
                         remote.put(
-                            bodyToUpload,
+                            upload.requestBody,
                             ifETag = ifETag,
                             ifScheduleTag = ifScheduleTag,
                             callback = { response ->
@@ -449,10 +440,8 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
                         )
                     }
 
-                    logger.fine("Upload successful; updated ETag=$updatedETag / Schedule-Tag=$updatedScheduleTag")
-
                     // success (no exception thrown)
-                    onSuccessfulUpload(local, fileName, updatedETag, updatedScheduleTag)
+                    onSuccessfulUpload(local, fileName, updatedETag, updatedScheduleTag, upload.onSuccessContext)
                 }
             }
 
@@ -499,15 +488,28 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
      *
      * @return iCalendar or vCard (content + Content-Type) that can be uploaded to the server
      */
-    protected abstract fun generateUpload(resource: ResourceType): RequestBody
+    protected abstract fun generateUpload(resource: ResourceType): GeneratedResource
 
     /**
      * Called after a successful upload (either of a new or an updated resource) so that the local
      * _dirty_ state can be reset.
      *
-     * Note: [CalendarSyncManager] overrides this method to additionally store the updated SEQUENCE.
+     * Derived classes override this method to additionally store the generated UID, SEQUENCE etc.
      */
-    protected open fun onSuccessfulUpload(local: ResourceType, newFileName: String, eTag: String?, scheduleTag: String?) {
+    @CallSuper
+    protected open fun onSuccessfulUpload(
+        local: ResourceType,
+        newFileName: String,
+        eTag: String?,
+        scheduleTag: String?,
+        context: GeneratedResource.OnSuccessContext
+    ) {
+        logger.log(Level.FINE, "Upload successful", arrayOf(
+            "File name = $newFileName",
+            "ETag = $eTag",
+            "Schedule-Tag = $scheduleTag",
+            "context = $context"
+        ))
         local.clearDirty(Optional.of(newFileName), eTag, scheduleTag)
     }
 

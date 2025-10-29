@@ -33,8 +33,6 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
@@ -101,7 +99,7 @@ class TasksSyncManager @AssistedInject constructor(
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
-    override fun generateUpload(resource: LocalTask): RequestBody =
+    override fun generateUpload(resource: LocalTask): GeneratedResource =
         SyncException.wrapWithLocalResource(resource) {
             val task = requireNotNull(resource.task)
             logger.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
@@ -109,7 +107,8 @@ class TasksSyncManager @AssistedInject constructor(
             val os = ByteArrayOutputStream()
             task.write(os, Constants.iCalProdId)
 
-            os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+            TODO()
+            //os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {

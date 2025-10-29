@@ -51,8 +51,6 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
 import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.Reader
@@ -272,7 +270,7 @@ class ContactsSyncManager @AssistedInject constructor(
         return modified or superModified
     }
 
-    override fun generateUpload(resource: LocalAddress): RequestBody =
+    override fun generateUpload(resource: LocalAddress): GeneratedResource =
         SyncException.wrapWithLocalResource(resource) {
             val contact: Contact = when (resource) {
                 is LocalContact -> resource.getContact()
@@ -299,7 +297,8 @@ class ContactsSyncManager @AssistedInject constructor(
                 }
             }
 
-            return@wrapWithLocalResource os.toByteArray().toRequestBody(mimeType)
+            TODO()
+            //return@wrapWithLocalResource os.toByteArray().toRequestBody(mimeType)
         }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) =
