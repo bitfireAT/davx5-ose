@@ -23,8 +23,8 @@ class GeneratedResource(
     /**
      * Contains information that has been created for a [GeneratedResource], but has not been saved yet.
      *
-     * @param uid       new UID to persist on successful upload
-     * @param sequence  new SEQUENCE to persist on successful upload
+     * @param uid       new UID to persist on successful upload (empty: UID not modified)
+     * @param sequence  new SEQUENCE to persist on successful upload (empty: SEQUENCE not modified)
      */
     data class OnSuccessContext(
         val uid: Optional<String> = Optional.empty(),

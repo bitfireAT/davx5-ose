@@ -74,6 +74,8 @@ interface LocalResource {
 
     /**
      * Updates the local SEQUENCE of the resource in the content provider.
+     *
+     * @throws NotImplementedError  if SEQUENCE update is not supported
      */
     fun updateSequence(sequence: Int)
 
