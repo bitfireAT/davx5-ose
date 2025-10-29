@@ -21,7 +21,7 @@ import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
 import java.util.UUID
 
-class LocalTask: DmfsTask, LocalResource<Task> {
+class LocalTask: DmfsTask, LocalResource {
 
     companion object {
         const val COLUMN_ETAG = Tasks.SYNC1
@@ -100,7 +100,7 @@ class LocalTask: DmfsTask, LocalResource<Task> {
         this.eTag = eTag
     }
 
-    override fun update(data: Task, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+    fun update(data: Task, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
         this.fileName = fileName
         this.eTag = eTag
         this.scheduleTag = scheduleTag

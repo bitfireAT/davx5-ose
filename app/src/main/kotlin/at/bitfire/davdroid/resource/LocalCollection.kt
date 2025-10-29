@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.resource
 
-interface LocalCollection<out T: LocalResource<*>> {
+interface LocalCollection<out T: LocalResource> {
 
     /** a tag that uniquely identifies the collection (DAVx5-wide) */
     val tag: String
