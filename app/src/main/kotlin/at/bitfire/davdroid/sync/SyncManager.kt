@@ -510,6 +510,12 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
             "Schedule-Tag = $scheduleTag",
             "context = $context"
         ))
+
+        // update local UID to new value, if necessary
+        if (context.uid.isPresent)
+            local.updateUid(context.uid.get())
+
+        // clear dirty flag and update ETag/Schedule-Tag
         local.clearDirty(Optional.of(newFileName), eTag, scheduleTag)
     }
 

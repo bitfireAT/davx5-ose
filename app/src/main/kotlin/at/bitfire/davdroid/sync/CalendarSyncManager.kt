@@ -256,10 +256,6 @@ class CalendarSyncManager @AssistedInject constructor(
         scheduleTag: String?,
         context: GeneratedResource.OnSuccessContext
     ) {
-        // update local UID to new value, if necessary
-        if (context.uid.isPresent)
-            local.updateUid(context.uid.get())
-
         // update local SEQUENCE to new value, if necessary
         if (context.sequence.isPresent)
             local.updateSequence(context.sequence.get())

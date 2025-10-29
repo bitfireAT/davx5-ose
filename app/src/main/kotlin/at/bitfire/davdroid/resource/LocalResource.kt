@@ -80,6 +80,12 @@ interface LocalResource {
     fun updateFlags(flags: Int)
 
     /**
+     * Updates the local UID of the resource in the content provider.
+     * Does not affect `this` object itself.
+     */
+    fun updateUid(uid: String)
+
+    /**
      * Deletes the data object from the content provider.
      */
     fun deleteLocal()

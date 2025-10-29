@@ -103,7 +103,7 @@ class LocalEvent(
         ))
     }
 
-    fun updateUid(uid: String) {
+    override fun updateUid(uid: String) {
         androidEvent.update(contentValuesOf(
             Events.UID_2445 to uid
         ))

@@ -321,20 +321,6 @@ class ContactsSyncManager @AssistedInject constructor(
         )
     }
 
-    override fun onSuccessfulUpload(
-        local: LocalAddress,
-        newFileName: String,
-        eTag: String?,
-        scheduleTag: String?,
-        context: GeneratedResource.OnSuccessContext
-    ) {
-        // update local UID to new value, if necessary
-        if (context.uid.isPresent)
-            local.updateUid(context.uid.get())
-
-        super.onSuccessfulUpload(local, newFileName, eTag, scheduleTag, context)
-    }
-
     override suspend fun listAllRemote(callback: MultiResponseCallback) =
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             runInterruptible {
