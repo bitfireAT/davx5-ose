@@ -97,7 +97,7 @@ class JtxSyncManager @AssistedInject constructor(
         }
 
     override fun generateUpload(resource: LocalJtxICalObject): GeneratedResource {
-        logger.log(Level.FINE, "Preparing upload of icalobject ${resource.uid}")
+        logger.log(Level.FINE, "Preparing upload of icalobject #${resource.id}")
 
         val os = ByteArrayOutputStream()
         resource.write(os, Constants.iCalProdId)

@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.provider.CalendarContract
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.MultiResponseCallback
@@ -18,6 +17,7 @@ import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
@@ -31,8 +31,10 @@ import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidICalendarException
 import at.bitfire.synctools.icalendar.CalendarUidSplitter
+import at.bitfire.synctools.icalendar.ICalendarGenerator
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.mapping.calendar.AndroidEventBuilder
+import at.bitfire.synctools.mapping.calendar.AndroidEventProcessor
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -176,53 +178,34 @@ class CalendarSyncManager @AssistedInject constructor(
     }
 
     override fun generateUpload(resource: LocalEvent): GeneratedResource {
-        val event = resource.androidEvent
-        logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
+        val localEvent = resource.androidEvent
+        logger.log(Level.FINE, "Preparing upload of event #${resource.id}", localEvent)
 
-        // get/create UID
-        // TODO Google UID data row
-        val mainEventUid = event.main.entityValues.getAsString(CalendarContract.Events.UID_2445)
-        val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(mainEventUid)
-        if (uidIsGenerated) {
-            // TODO update all using EventsAndExceptions
-            event.main.entityValues.put(CalendarContract.Events.UID_2445, uid)
-        }
-
-        // Increase sequence, if necessary:
-        // - If it's null, the event has just been created in the database, so we can start with SEQUENCE:0 (default).
-        // - If it's non-null, the event already exists on the server, so increase by one.
-        // TODO
-        /*val groupScheduled = event.attendees.isNotEmpty()
-        val weAreOrganizer = event.isOrganizer == true
-        val sequence = event.sequence
-        val newSequence: Optional<Int> = when {
-            // first upload, set to 0 after upload
-            sequence == null ->
-                Optional.of(0)
-
-            // re-upload of group-scheduled event (and we're ORGANIZER), increase sequence in iCalendar and after upload
-            groupScheduled && weAreOrganizer -> {
-                event.sequence = sequence + 1
-                Optional.of(sequence + 1)
+        // map Android event to iCalendar (also generates UID and increases SEQUENCE, if necessary)
+        val processor = AndroidEventProcessor(
+            accountName = resource.recurringCalendar.calendar.account.name,
+            prodIdGenerator = { packages ->
+                val prodId = StringBuilder(Constants.iCalProdId.value)
+                if (packages.isNotEmpty())
+                    prodId.append(" (")
+                        .append(packages.joinToString(", "))
+                        .append(")")
+                prodId.toString()
             }
-
-            // standard re-upload, don't update sequence
-            else ->
-                Optional.empty()
-        }*/
+        )
+        val mappedEvents = processor.mapToVEvents(localEvent)
 
         // generate iCalendar and convert to request body
         val iCalWriter = StringWriter()
-        // TODO
-        //EventWriter(Constants.iCalProdId).write(event, iCalWriter)
+        ICalendarGenerator().write(mappedEvents.associatedEvents, iCalWriter)
         val requestBody = iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
 
         return GeneratedResource(
-            suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
+            suggestedFileName = DavUtils.fileNameFromUid(mappedEvents.uid, "ics"),
             requestBody = requestBody,
             onSuccessContext = GeneratedResource.OnSuccessContext(
-                uid = if (uidIsGenerated) Optional.of(uid) else Optional.empty(),
-                //TODO sequence = newSequence
+                uid = if (mappedEvents.generatedUid) mappedEvents.uid else null,
+                sequence = mappedEvents.updatedSequence
             )
         )
     }

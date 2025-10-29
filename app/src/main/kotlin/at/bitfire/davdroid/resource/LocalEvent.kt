@@ -9,6 +9,7 @@ import android.content.Context
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
+import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
 import at.bitfire.synctools.storage.calendar.EventsContract
@@ -20,6 +21,9 @@ class LocalEvent(
     val recurringCalendar: AndroidRecurringCalendar,
     val androidEvent: EventAndExceptions
 ) : LocalResource {
+
+    val calendar: AndroidCalendar
+        get() = recurringCalendar.calendar
     
     private val mainValues = androidEvent.main.entityValues
 
@@ -52,23 +56,25 @@ class LocalEvent(
         )
         if (fileName.isPresent)
             values.put(Events._SYNC_ID, fileName.get())
-        recurringCalendar.calendar.updateEventRow(id, values)
+        calendar.updateEventRow(id, values)
     }
 
     override fun updateFlags(flags: Int) {
-        recurringCalendar.calendar.updateEventRow(id, contentValuesOf(
+        calendar.updateEventRow(id, contentValuesOf(
             EventsContract.COLUMN_FLAGS to flags
         ))
     }
 
     override fun updateSequence(sequence: Int) {
-        recurringCalendar.calendar.updateEventRow(id, contentValuesOf(
+        calendar.updateEventRow(id, contentValuesOf(
             EventsContract.COLUMN_SEQUENCE to sequence
         ))
     }
 
     override fun updateUid(uid: String) {
-        recurringCalendar.calendar.updateEventRow(id, contentValuesOf(
+        // TODO update exceptions
+        // TODO remove Google UID row
+        calendar.updateEventRow(id, contentValuesOf(
             Events.UID_2445 to uid
         ))
     }
@@ -78,7 +84,7 @@ class LocalEvent(
     }
 
     override fun resetDeleted() {
-        recurringCalendar.calendar.updateEventRow(id, contentValuesOf(
+        calendar.updateEventRow(id, contentValuesOf(
             Events.DELETED to 0
         ))
     }

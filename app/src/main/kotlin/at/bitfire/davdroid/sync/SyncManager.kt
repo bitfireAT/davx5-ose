@@ -516,11 +516,11 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
         ))
 
         // update local UID and SEQUENCE, if necessary
-        if (context.uid.isPresent)
-            local.updateUid(context.uid.get())
+        if (context.uid != null)
+            local.updateUid(context.uid)
 
-        if (context.sequence.isPresent)
-            local.updateSequence(context.sequence.get())
+        if (context.sequence != null)
+            local.updateSequence(context.sequence)
 
         // clear dirty flag and update ETag/Schedule-Tag
         local.clearDirty(Optional.of(newFileName), eTag, scheduleTag)

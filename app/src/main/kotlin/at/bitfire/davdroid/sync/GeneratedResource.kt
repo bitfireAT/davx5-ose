@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import okhttp3.RequestBody
-import java.util.Optional
 
 /**
  * Represents a resource that has been generated for the purpose of being uploaded.
@@ -23,12 +22,12 @@ class GeneratedResource(
     /**
      * Contains information that has been created for a [GeneratedResource], but has not been saved yet.
      *
-     * @param uid       new UID to persist on successful upload (empty: UID not modified)
-     * @param sequence  new SEQUENCE to persist on successful upload (empty: SEQUENCE not modified)
+     * @param uid       new UID to persist on successful upload (*null*: UID not modified)
+     * @param sequence  new SEQUENCE to persist on successful upload (*null*: SEQUENCE not modified)
      */
     data class OnSuccessContext(
-        val uid: Optional<String> = Optional.empty(),
-        val sequence: Optional<Int> = Optional.empty()
+        val uid: String? = null,
+        val sequence: Int? = null
     )
 
 }
