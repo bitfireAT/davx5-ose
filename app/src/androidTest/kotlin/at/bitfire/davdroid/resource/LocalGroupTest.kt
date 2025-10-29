@@ -240,19 +240,6 @@ class LocalGroupTest {
         }
     }
 
-    /*@Test
-    fun testPrepareForUpload() {
-        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
-            val group = newGroup(ab)
-            assertNull(group.getContact().uid)
-
-            val fileName = group.prepareForUpload()
-            val newUid = group.getContact().uid
-            assertNotNull(newUid)
-            assertEquals("$newUid.vcf", fileName)
-        }
-    }*/
-
     @Test
     fun testUpdate() {
         localTestAddressBookProvider.provide(account, provider) { ab ->

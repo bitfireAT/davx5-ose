@@ -186,13 +186,11 @@ class CalendarSyncManager @AssistedInject constructor(
         if (uidIsGenerated)
             event.uid = uid
 
-        // update SEQUENCE, if necessary
-        val groupScheduled = event.attendees.isNotEmpty()
-        val weAreOrganizer = event.isOrganizer == true
-
-        // Increase sequence :
+        // Increase sequence, if necessary:
         // - If it's null, the event has just been created in the database, so we can start with SEQUENCE:0 (default).
         // - If it's non-null, the event already exists on the server, so increase by one.
+        val groupScheduled = event.attendees.isNotEmpty()
+        val weAreOrganizer = event.isOrganizer == true
         val sequence = event.sequence
         val newSequence: Optional<Int> = when {
             // first upload, set to 0 after upload

@@ -9,6 +9,7 @@ import android.content.Context
 import android.os.DeadObjectException
 import android.os.RemoteException
 import androidx.annotation.CallSuper
+import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Error
@@ -488,7 +489,8 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
      *
      * @return iCalendar or vCard (content + Content-Type) that can be uploaded to the server
      */
-    protected abstract fun generateUpload(resource: ResourceType): GeneratedResource
+    @VisibleForTesting
+    internal abstract fun generateUpload(resource: ResourceType): GeneratedResource
 
     /**
      * Called after a successful upload (either of a new or an updated resource) so that the local
