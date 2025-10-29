@@ -2,14 +2,12 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid
+package at.bitfire.davdroid.util
 
-import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.DavUtils.parent
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -28,14 +26,39 @@ class DavUtilsTest {
         assertEquals("#000000FF", DavUtils.ARGBtoCalDAVColor(0xFF000000.toInt()))
     }
 
+    @Test
+    fun `fileNameFromUid (good uid)`() {
+        assertEquals("good-uid.txt", DavUtils.fileNameFromUid("good-uid", "txt"))
+    }
+
+    @Test
+    fun `fileNameFromUid (bad uid)`() {
+        assertEquals("new-uuid.txt", DavUtils.fileNameFromUid("bad\\uid", "txt", generateUuid = { "new-uuid" }))
+    }
+
+    @Test
+    fun `generateUidIfNecessary (existing uid)`() {
+        assertEquals(
+            DavUtils.UidGenerationResult("existing", generated = false),
+            DavUtils.generateUidIfNecessary("existing")
+        )
+    }
+
+    @Test
+    fun `generateUidIfNecessary (no existing uid)`() {
+        assertEquals(
+            DavUtils.UidGenerationResult("new-uuid", generated = true),
+            DavUtils.generateUidIfNecessary(null, generateUuid = { "new-uuid" })
+        )
+    }
 
     @Test
     fun testHttpUrl_LastSegment() {
         val exampleURL = "http://example.com/"
-        Assert.assertEquals("/", exampleURL.toHttpUrl().lastSegment)
-        Assert.assertEquals("dir", (exampleURL + "dir").toHttpUrl().lastSegment)
-        Assert.assertEquals("dir", (exampleURL + "dir/").toHttpUrl().lastSegment)
-        Assert.assertEquals("file.html", (exampleURL + "dir/file.html").toHttpUrl().lastSegment)
+        assertEquals("/", exampleURL.toHttpUrl().lastSegment)
+        assertEquals("dir", (exampleURL + "dir").toHttpUrl().lastSegment)
+        assertEquals("dir", (exampleURL + "dir/").toHttpUrl().lastSegment)
+        assertEquals("file.html", (exampleURL + "dir/file.html").toHttpUrl().lastSegment)
     }
 
     @Test
