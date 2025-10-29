@@ -10,6 +10,4 @@ interface LocalAddress: LocalResource {
 
     fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int)
 
-    fun updateUid(uid: String)
-
 }

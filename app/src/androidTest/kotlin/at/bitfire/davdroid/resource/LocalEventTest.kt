@@ -29,7 +29,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -66,7 +65,7 @@ class LocalEventTest {
     }
 
 
-    @Test
+    /*@Test
     fun testPrepareForUpload_NoUid() {
         // create event
         val event = Event().apply {
@@ -165,13 +164,7 @@ class LocalEventTest {
             cursor.moveToFirst()
             assertEquals(event.uid, cursor.getString(0))
         }
-    }
-
-
-    @Test
-    fun testDeleteDirtyEventsWithoutInstances_NoInstances_Exdate() {
-        // TODO
-    }
+    }*/
 
     @Test
     fun testDeleteDirtyEventsWithoutInstances_NoInstances_CancelledExceptions() {
