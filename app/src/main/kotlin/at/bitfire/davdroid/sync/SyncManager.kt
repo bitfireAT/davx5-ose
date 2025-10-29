@@ -493,9 +493,13 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
 
     /**
      * Called after a successful upload (either of a new or an updated resource) so that the local
-     * _dirty_ state can be reset.
+     * _dirty_ state can be reset. Also updates some other local properties.
      *
-     * Derived classes override this method to additionally store the generated UID, SEQUENCE etc.
+     * @param local         local resource that has been uploaded successfully
+     * @param newFileName   file name that has been used for uploading
+     * @param eTag          resulting `ETag` of the upload (from the server)
+     * @param scheduleTag   resulting `Schedule-Tag` of the upload (from the server)
+     * @param context       properties that have been generated before the upload and that shall be persisted by this method
      */
     private fun onSuccessfulUpload(
         local: ResourceType,
