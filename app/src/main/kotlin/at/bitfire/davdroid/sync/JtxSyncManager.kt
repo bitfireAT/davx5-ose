@@ -34,6 +34,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
@@ -94,14 +95,17 @@ class JtxSyncManager @AssistedInject constructor(
             syncState
         }
 
-    override fun generateUpload(resource: LocalJtxICalObject): GeneratedResource =
-        SyncException.wrapWithLocalResource(resource) {
-            logger.log(Level.FINE, "Preparing upload of icalobject ${resource.fileName}", resource)
-            val os = ByteArrayOutputStream()
-            resource.write(os, Constants.iCalProdId)
-            TODO()
-            //os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
-        }
+    override fun generateUpload(resource: LocalJtxICalObject): GeneratedResource {
+        logger.log(Level.FINE, "Preparing upload of icalobject ${resource.fileName}", resource)
+        val os = ByteArrayOutputStream()
+        resource.write(os, Constants.iCalProdId)
+
+        return GeneratedResource(
+            suggestedFileName = "${resource.uid}.ics",
+            requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8),
+            onSuccessContext = GeneratedResource.OnSuccessContext()     // nothing special to update after upload
+        )
+    }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
