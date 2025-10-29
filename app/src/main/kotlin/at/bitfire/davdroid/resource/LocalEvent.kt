@@ -12,9 +12,9 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.synctools.icalendar.ICalendarWriter
 import at.bitfire.synctools.mapping.calendar.AndroidEventProcessor
-import at.bitfire.synctools.storage.calendar.AndroidEvent2
 import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
+import at.bitfire.synctools.storage.calendar.EventsContract
 import com.google.common.base.MoreObjects
 import java.io.StringWriter
 import java.util.Optional
@@ -34,13 +34,13 @@ class LocalEvent(
         get() = mainValues.getAsString(Events._SYNC_ID)
 
     override val eTag: String?
-        get() = mainValues.getAsString(AndroidEvent2.COLUMN_ETAG)
+        get() = mainValues.getAsString(EventsContract.COLUMN_ETAG)
 
     override val scheduleTag: String?
-        get() = mainValues.getAsString(AndroidEvent2.COLUMN_SCHEDULE_TAG)
+        get() = mainValues.getAsString(EventsContract.COLUMN_SCHEDULE_TAG)
 
     override val flags: Int
-        get() = mainValues.getAsInteger(AndroidEvent2.COLUMN_FLAGS)
+        get() = mainValues.getAsInteger(EventsContract.COLUMN_FLAGS)
 
 
     fun update(data: EventAndExceptions) {
@@ -146,8 +146,8 @@ class LocalEvent(
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         val values = contentValuesOf(
             Events.DIRTY to 0,
-            AndroidEvent2.COLUMN_ETAG to eTag,
-            AndroidEvent2.COLUMN_SCHEDULE_TAG to scheduleTag
+            EventsContract.COLUMN_ETAG to eTag,
+            EventsContract.COLUMN_SCHEDULE_TAG to scheduleTag
         )
         if (fileName.isPresent)
             values.put(Events._SYNC_ID, fileName.get())
@@ -156,7 +156,7 @@ class LocalEvent(
 
     override fun updateFlags(flags: Int) {
         recurringCalendar.calendar.updateEventRow(id, contentValuesOf(
-            AndroidEvent2.COLUMN_FLAGS to flags
+            EventsContract.COLUMN_FLAGS to flags
         ))
     }
 
