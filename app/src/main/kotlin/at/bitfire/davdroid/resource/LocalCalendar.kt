@@ -68,10 +68,8 @@ class LocalCalendar @AssistedInject constructor(
 
     override fun findDeleted(): List<LocalEvent> {
         val result = LinkedList<LocalEvent>()
-        // TODO null whereArgs
         recurringCalendar.iterateEventAndExceptions(
-            "${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL",
-            emptyArray()
+            "${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null
         ) { eventAndExceptions ->
             result += LocalEvent(recurringCalendar, eventAndExceptions)
         }
@@ -81,17 +79,8 @@ class LocalCalendar @AssistedInject constructor(
     override fun findDirty(): List<LocalEvent> {
         val dirty = LinkedList<LocalEvent>()
 
-        // TODO SEQUENCE
-        /*
-         * RFC 5545 3.8.7.4. Sequence Number
-         * When a calendar component is created, its sequence number is 0. It is monotonically incremented by the "Organizer's"
-         * CUA each time the "Organizer" makes a significant revision to the calendar component.
-         */
-
-        // TODO null whereArgs
         recurringCalendar.iterateEventAndExceptions(
-            "${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL",
-            emptyArray()
+            "${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null
         ) { eventAndExceptions ->
             dirty += LocalEvent(recurringCalendar, eventAndExceptions)
         }

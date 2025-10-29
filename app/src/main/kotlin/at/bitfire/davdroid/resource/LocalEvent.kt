@@ -72,8 +72,6 @@ class LocalEvent(
     }
 
     override fun updateUid(uid: String) {
-        // TODO update exceptions
-        // TODO remove Google UID row
         calendar.updateEventRow(id, contentValuesOf(
             Events.UID_2445 to uid
         ))
