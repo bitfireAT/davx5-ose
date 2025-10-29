@@ -33,9 +33,12 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
+import java.util.Optional
+import java.util.UUID
 import java.util.logging.Level
 
 /**
@@ -99,17 +102,37 @@ class TasksSyncManager @AssistedInject constructor(
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
-    override fun generateUpload(resource: LocalTask): GeneratedResource =
-        SyncException.wrapWithLocalResource(resource) {
-            val task = requireNotNull(resource.task)
-            logger.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
+    override fun generateUpload(resource: LocalTask): GeneratedResource {
+        val task = requireNotNull(resource.task)
 
-            val os = ByteArrayOutputStream()
-            task.write(os, Constants.iCalProdId)
-
-            TODO()
-            //os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+        // get/create UID and file name
+        val existingUid = task.uid
+        val newUid: Optional<String>
+        val suggestedBaseName: String?
+        if (existingUid == null) {
+            // generate new UID
+            val uuid = UUID.randomUUID().toString()
+            task.uid = uuid
+            newUid = Optional.of(uuid)
+            suggestedBaseName = uuid
+        } else {
+            newUid = Optional.empty()
+            suggestedBaseName = existingUid
         }
+
+        // generate iCalendar and convert to request body
+        logger.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
+        val os = ByteArrayOutputStream()
+        task.write(os, Constants.iCalProdId)
+
+        return GeneratedResource(
+            suggestedFileName = "$suggestedBaseName.ics",
+            requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8),
+            onSuccessContext = GeneratedResource.OnSuccessContext(
+                uid = newUid
+            )
+        )
+    }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {

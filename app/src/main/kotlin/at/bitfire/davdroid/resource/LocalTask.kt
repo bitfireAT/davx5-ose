@@ -19,7 +19,6 @@ import com.google.common.base.Ascii
 import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
-import java.util.UUID
 
 class LocalTask: DmfsTask, LocalResource {
 
@@ -65,23 +64,7 @@ class LocalTask: DmfsTask, LocalResource {
 
     /* custom queries */
 
-    override fun prepareForUpload(): String {
-        val uid: String = task!!.uid ?: run {
-            // generate new UID
-            val newUid = UUID.randomUUID().toString()
-
-            // update in tasks provider
-            val values = contentValuesOf(Tasks._UID to newUid)
-            taskList.provider.update(taskSyncURI(), values, null, null)
-
-            // update this task
-            task!!.uid = newUid
-
-            newUid
-        }
-
-        return "$uid.ics"
-    }
+    override fun prepareForUpload(): String = throw NotImplementedError()
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
@@ -117,6 +100,11 @@ class LocalTask: DmfsTask, LocalResource {
         }
 
         this.flags = flags
+    }
+
+    override fun updateUid(uid: String) {
+        val values = contentValuesOf(Tasks._UID to uid)
+        taskList.provider.update(taskSyncURI(), values, null, null)
     }
 
     override fun deleteLocal() {

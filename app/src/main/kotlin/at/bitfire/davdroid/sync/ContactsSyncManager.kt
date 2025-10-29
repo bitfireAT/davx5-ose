@@ -293,8 +293,8 @@ class ContactsSyncManager @AssistedInject constructor(
             suggestedBaseName = existingUid
         }
 
+        // generate vCard and convert to request body
         logger.log(Level.FINE, "Preparing upload of vCard ${resource.fileName}", contact)
-
         val os = ByteArrayOutputStream()
         val mimeType: MediaType
         when {
