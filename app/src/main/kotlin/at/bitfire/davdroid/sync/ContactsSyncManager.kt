@@ -51,7 +51,6 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -272,35 +271,45 @@ class ContactsSyncManager @AssistedInject constructor(
         return modified or superModified
     }
 
-    override fun generateUpload(resource: LocalAddress): RequestBody =
-        SyncException.wrapWithLocalResource(resource) {
-            val contact: Contact = when (resource) {
-                is LocalContact -> resource.getContact()
-                is LocalGroup -> resource.getContact()
-                else -> throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
-            }
-
-            logger.log(Level.FINE, "Preparing upload of vCard ${resource.fileName}", contact)
-
-            val os = ByteArrayOutputStream()
-            val mimeType: MediaType
-            when {
-                hasJCard -> {
-                    mimeType = DavAddressBook.MIME_JCARD
-                    contact.writeJCard(os, Constants.vCardProdId)
-                }
-                hasVCard4 -> {
-                    mimeType = DavAddressBook.MIME_VCARD4
-                    contact.writeVCard(VCardVersion.V4_0, os, Constants.vCardProdId)
-                }
-                else -> {
-                    mimeType = DavAddressBook.MIME_VCARD3_UTF8
-                    contact.writeVCard(VCardVersion.V3_0, os, Constants.vCardProdId)
-                }
-            }
-
-            return@wrapWithLocalResource os.toByteArray().toRequestBody(mimeType)
+    override fun generateUpload(resource: LocalAddress): GeneratedResource {
+        val contact: Contact = when (resource) {
+            is LocalContact -> resource.getContact()
+            is LocalGroup -> resource.getContact()
+            else -> throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
         }
+        logger.log(Level.FINE, "Preparing upload of vCard ${resource.fileName}", contact)
+
+        // get/create UID
+        val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(contact.uid)
+        if (uidIsGenerated)
+            contact.uid = uid
+
+        // generate vCard and convert to request body
+        val os = ByteArrayOutputStream()
+        val mimeType: MediaType
+        when {
+            hasJCard -> {
+                mimeType = DavAddressBook.MIME_JCARD
+                contact.writeJCard(os, Constants.vCardProdId)
+            }
+            hasVCard4 -> {
+                mimeType = DavAddressBook.MIME_VCARD4
+                contact.writeVCard(VCardVersion.V4_0, os, Constants.vCardProdId)
+            }
+            else -> {
+                mimeType = DavAddressBook.MIME_VCARD3_UTF8
+                contact.writeVCard(VCardVersion.V3_0, os, Constants.vCardProdId)
+            }
+        }
+
+        return GeneratedResource(
+            suggestedFileName = DavUtils.fileNameFromUid(uid, "vcf"),
+            requestBody = os.toByteArray().toRequestBody(mimeType),
+            onSuccessContext = GeneratedResource.OnSuccessContext(
+                uid = if (uidIsGenerated) Optional.of(uid) else Optional.empty()
+            )
+        )
+    }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) =
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {

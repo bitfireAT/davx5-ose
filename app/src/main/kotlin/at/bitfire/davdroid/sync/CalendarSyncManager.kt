@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
+import android.provider.CalendarContract
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.MultiResponseCallback
@@ -26,6 +27,7 @@ import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidICalendarException
 import at.bitfire.synctools.icalendar.CalendarUidSplitter
@@ -39,10 +41,10 @@ import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VEvent
 import okhttp3.HttpUrl
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.Reader
 import java.io.StringReader
+import java.io.StringWriter
 import java.time.ZonedDateTime
 import java.util.Optional
 import java.util.logging.Level
@@ -173,22 +175,57 @@ class CalendarSyncManager @AssistedInject constructor(
         return modified or superModified
     }
 
-    override fun onSuccessfulUpload(local: LocalEvent, newFileName: String, eTag: String?, scheduleTag: String?) {
-        super.onSuccessfulUpload(local, newFileName, eTag, scheduleTag)
+    override fun generateUpload(resource: LocalEvent): GeneratedResource {
+        val event = resource.androidEvent
+        logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
-        // update local SEQUENCE to new value after successful upload
-        // TODO
-        //local.updateSequence(local.getCachedEvent().sequence)
-    }
-
-    override fun generateUpload(resource: LocalEvent): RequestBody =
-        SyncException.wrapWithLocalResource(resource) {
-            logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", resource.androidEvent)
-
-            // write iCalendar to string and convert to request body
-            val iCal = resource.eventToUpload()
-            iCal.toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+        // get/create UID
+        // TODO Google UID data row
+        val mainEventUid = event.main.entityValues.getAsString(CalendarContract.Events.UID_2445)
+        val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(mainEventUid)
+        if (uidIsGenerated) {
+            // TODO update all using EventsAndExceptions
+            event.main.entityValues.put(CalendarContract.Events.UID_2445, uid)
         }
+
+        // Increase sequence, if necessary:
+        // - If it's null, the event has just been created in the database, so we can start with SEQUENCE:0 (default).
+        // - If it's non-null, the event already exists on the server, so increase by one.
+        // TODO
+        /*val groupScheduled = event.attendees.isNotEmpty()
+        val weAreOrganizer = event.isOrganizer == true
+        val sequence = event.sequence
+        val newSequence: Optional<Int> = when {
+            // first upload, set to 0 after upload
+            sequence == null ->
+                Optional.of(0)
+
+            // re-upload of group-scheduled event (and we're ORGANIZER), increase sequence in iCalendar and after upload
+            groupScheduled && weAreOrganizer -> {
+                event.sequence = sequence + 1
+                Optional.of(sequence + 1)
+            }
+
+            // standard re-upload, don't update sequence
+            else ->
+                Optional.empty()
+        }*/
+
+        // generate iCalendar and convert to request body
+        val iCalWriter = StringWriter()
+        // TODO
+        //EventWriter(Constants.iCalProdId).write(event, iCalWriter)
+        val requestBody = iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+
+        return GeneratedResource(
+            suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
+            requestBody = requestBody,
+            onSuccessContext = GeneratedResource.OnSuccessContext(
+                uid = if (uidIsGenerated) Optional.of(uid) else Optional.empty(),
+                //TODO sequence = newSequence
+            )
+        )
+    }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
         // calculate time range limits

@@ -20,7 +20,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.HttpUrl
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.junit.Assert.assertEquals
 
@@ -76,9 +75,13 @@ class TestSyncManager @AssistedInject constructor(
     }
 
     var didGenerateUpload = false
-    override fun generateUpload(resource: LocalTestResource): RequestBody {
+    override fun generateUpload(resource: LocalTestResource): GeneratedResource {
         didGenerateUpload = true
-        return resource.toString().toRequestBody()
+        return GeneratedResource(
+            suggestedFileName = resource.fileName ?: "generated-file.txt",
+            requestBody = resource.toString().toRequestBody(),
+            onSuccessContext = GeneratedResource.OnSuccessContext()
+        )
     }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT

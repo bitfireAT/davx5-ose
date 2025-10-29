@@ -19,8 +19,6 @@ class LocalTestResource: LocalResource {
     var deleted = false
     var dirty = false
 
-    override fun prepareForUpload() = "generated-file.txt"
-
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         dirty = false
         if (fileName.isPresent)
@@ -32,6 +30,9 @@ class LocalTestResource: LocalResource {
     override fun updateFlags(flags: Int) {
         this.flags = flags
     }
+
+    override fun updateUid(uid: String) { /* no-op */ }
+    override fun updateSequence(sequence: Int) = throw NotImplementedError()
 
     override fun deleteLocal() = throw NotImplementedError()
     override fun resetDeleted() = throw NotImplementedError()
