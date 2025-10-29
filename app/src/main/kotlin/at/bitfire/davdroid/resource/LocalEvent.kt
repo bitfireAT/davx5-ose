@@ -110,8 +110,6 @@ class LocalEvent(
     }
 
 
-    override fun prepareForUpload() = throw NotImplementedError()
-
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         val values = contentValuesOf(
             Events.DIRTY to 0,

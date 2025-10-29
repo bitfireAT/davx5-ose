@@ -64,8 +64,6 @@ class LocalTask: DmfsTask, LocalResource {
 
     /* custom queries */
 
-    override fun prepareForUpload(): String = throw NotImplementedError()
-
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             logger.fine("Schedule-Tag for tasks not supported yet, won't save")

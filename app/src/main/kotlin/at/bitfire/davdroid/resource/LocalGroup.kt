@@ -140,8 +140,6 @@ class LocalGroup: AndroidGroup, LocalAddress {
     }
 
 
-    override fun prepareForUpload(): String = throw NotImplementedError()
-
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             throw IllegalArgumentException("Contact groups must not have a Schedule-Tag")

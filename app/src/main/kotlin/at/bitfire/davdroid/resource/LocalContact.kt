@@ -69,8 +69,6 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
 
-    override fun prepareForUpload() = throw NotImplementedError()
-
     /**
      * Clears cached [contact] so that the next read of [contact] will query the content provider again.
      */
