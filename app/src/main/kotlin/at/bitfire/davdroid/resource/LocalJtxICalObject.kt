@@ -59,9 +59,9 @@ class LocalJtxICalObject(
         update(data)
     }
 
-    override fun updateUid(uid: String) {
-        throw NotImplementedError()
-    }
+    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+
+    override fun updateUid(uid: String)  = throw NotImplementedError()
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         clearDirty(fileName.getOrNull(), eTag, scheduleTag)

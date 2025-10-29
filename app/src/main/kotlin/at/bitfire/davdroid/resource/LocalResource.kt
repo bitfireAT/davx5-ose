@@ -69,10 +69,13 @@ interface LocalResource {
     /**
      * Updates the local UID of the resource in the content provider.
      * Usually used to persist a UID that has been created during an upload of a locally created resource.
-     *
-     * Does not affect `this` object itself.
      */
     fun updateUid(uid: String)
+
+    /**
+     * Updates the local SEQUENCE of the resource in the content provider.
+     */
+    fun updateSequence(sequence: Int)
 
     /**
      * Deletes the data object from the content provider.

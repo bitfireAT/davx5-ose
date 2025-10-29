@@ -100,6 +100,8 @@ class LocalTask: DmfsTask, LocalResource {
         this.flags = flags
     }
 
+    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+
     override fun updateUid(uid: String) {
         val values = contentValuesOf(Tasks._UID to uid)
         taskList.provider.update(taskSyncURI(), values, null, null)

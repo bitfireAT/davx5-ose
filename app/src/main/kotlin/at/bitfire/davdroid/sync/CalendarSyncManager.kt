@@ -224,20 +224,6 @@ class CalendarSyncManager @AssistedInject constructor(
         )
     }
 
-    override fun onSuccessfulUpload(
-        local: LocalEvent,
-        newFileName: String,
-        eTag: String?,
-        scheduleTag: String?,
-        context: GeneratedResource.OnSuccessContext
-    ) {
-        // update local SEQUENCE to new value, if necessary
-        if (context.sequence.isPresent)
-            local.updateSequence(context.sequence.get())
-
-        super.onSuccessfulUpload(local, newFileName, eTag, scheduleTag, context)
-    }
-
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
         // calculate time range limits
         val limitStart = accountSettings.getTimeRangePastDays()?.let { pastDays ->

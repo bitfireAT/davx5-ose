@@ -117,6 +117,8 @@ class LocalContact: AndroidContact, LocalAddress {
         this.flags = flags
     }
 
+    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+
     override fun updateUid(uid: String) {
         val values = contentValuesOf(COLUMN_UID to uid)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)

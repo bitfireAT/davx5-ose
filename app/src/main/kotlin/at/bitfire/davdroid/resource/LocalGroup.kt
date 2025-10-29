@@ -207,6 +207,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
         this.flags = flags
     }
 
+    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+
     override fun updateUid(uid: String) {
         val values = contentValuesOf(AndroidContact.COLUMN_UID to uid)
         addressBook.provider!!.update(groupSyncUri(), values, null, null)

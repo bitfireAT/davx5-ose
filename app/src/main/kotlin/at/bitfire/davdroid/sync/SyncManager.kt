@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.content.Context
 import android.os.DeadObjectException
 import android.os.RemoteException
-import androidx.annotation.CallSuper
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
@@ -498,8 +497,7 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
      *
      * Derived classes override this method to additionally store the generated UID, SEQUENCE etc.
      */
-    @CallSuper
-    protected open fun onSuccessfulUpload(
+    private fun onSuccessfulUpload(
         local: ResourceType,
         newFileName: String,
         eTag: String?,
@@ -513,9 +511,12 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
             "context = $context"
         ))
 
-        // update local UID to new value, if necessary
+        // update local UID and SEQUENCE, if necessary
         if (context.uid.isPresent)
             local.updateUid(context.uid.get())
+
+        if (context.sequence.isPresent)
+            local.updateSequence(context.sequence.get())
 
         // clear dirty flag and update ETag/Schedule-Tag
         local.clearDirty(Optional.of(newFileName), eTag, scheduleTag)
