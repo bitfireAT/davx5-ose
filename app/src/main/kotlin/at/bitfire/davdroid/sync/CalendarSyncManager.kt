@@ -180,6 +180,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalEvent): GeneratedResource {
         val event = resource.getCachedEvent()
+        logger.log(Level.FINE, "Preparing upload of iCalendar ${resource.fileName}", event)
 
         // get/create UID
         val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(event.uid)
@@ -209,7 +210,6 @@ class CalendarSyncManager @AssistedInject constructor(
         }
 
         // generate iCalendar and convert to request body
-        logger.log(Level.FINE, "Preparing upload of iCalendar ${resource.fileName}", event)
         val iCalWriter = StringWriter()
         EventWriter(Constants.iCalProdId).write(event, iCalWriter)
         val requestBody = iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)

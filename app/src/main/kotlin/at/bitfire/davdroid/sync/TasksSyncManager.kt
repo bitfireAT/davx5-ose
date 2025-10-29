@@ -104,6 +104,7 @@ class TasksSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalTask): GeneratedResource {
         val task = requireNotNull(resource.task)
+        logger.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
 
         // get/create UID
         val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(task.uid)
@@ -111,7 +112,6 @@ class TasksSyncManager @AssistedInject constructor(
             task.uid = uid
 
         // generate iCalendar and convert to request body
-        logger.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
         val os = ByteArrayOutputStream()
         task.write(os, Constants.iCalProdId)
 
