@@ -57,6 +57,7 @@ interface LocalResource {
      *
      * @return suggestion for new file name of the resource (like "<uid>.vcf")
      */
+    @Deprecated("Should be done by LocalResource.generateUpload")
     fun prepareForUpload(): String
 
     /**

@@ -493,6 +493,15 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
     }
 
     /**
+     * Generates the request body (iCalendar or vCard) from a local resource.
+     *
+     * @param resource local resource to generate the body from
+     *
+     * @return iCalendar or vCard (content + Content-Type) that can be uploaded to the server
+     */
+    protected abstract fun generateUpload(resource: ResourceType): RequestBody
+
+    /**
      * Called after a successful upload (either of a new or an updated resource) so that the local
      * _dirty_ state can be reset.
      *
@@ -501,15 +510,6 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
     protected open fun onSuccessfulUpload(local: ResourceType, newFileName: String, eTag: String?, scheduleTag: String?) {
         local.clearDirty(Optional.of(newFileName), eTag, scheduleTag)
     }
-
-    /**
-     * Generates the request body (iCalendar or vCard) from a local resource.
-     *
-     * @param resource local resource to generate the body from
-     *
-     * @return iCalendar or vCard (content + Content-Type) that can be uploaded to the server
-     */
-    protected abstract fun generateUpload(resource: ResourceType): RequestBody
 
 
     /**
