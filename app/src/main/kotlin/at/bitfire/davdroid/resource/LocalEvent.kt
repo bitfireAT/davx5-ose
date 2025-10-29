@@ -74,24 +74,6 @@ class LocalEvent(
         return event
     }
 
-    /**
-     * Generates the [Event] that should actually be uploaded:
-     *
-     * 1. Takes the [getCachedEvent].
-     * 2. Calculates the new SEQUENCE.
-     *
-     * _Note: This method currently modifies the object returned by [getCachedEvent], but
-     * this may change in the future._
-     *
-     * @return data object that should be used for uploading
-     */
-    fun eventToUpload(): Event {
-        val event = getCachedEvent()
-
-
-        return event
-    }
-
     override fun updateSequence(sequence: Int) {
         androidEvent.update(contentValuesOf(
             AndroidEvent2.COLUMN_SEQUENCE to sequence
