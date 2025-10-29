@@ -202,7 +202,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
             // verify for file name
             suggestedBaseName =
-                if (DavUtils.isGoodFileBaseName(existingUid))
+                if (DavUtils.isGoodFileName(existingUid))
                     existingUid
                 else
                     UUID.randomUUID().toString()

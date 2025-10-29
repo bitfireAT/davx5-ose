@@ -4,15 +4,12 @@
 
 package at.bitfire.davdroid.resource
 
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.ical4android.JtxICalObjectFactory
 import at.techbee.jtx.JtxContract
-import at.techbee.jtx.JtxContract.asSyncAdapter
 import com.google.common.base.MoreObjects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -63,12 +60,7 @@ class LocalJtxICalObject(
     }
 
     override fun updateUid(uid: String) {
-        collection.client.update(
-            ContentUris.withAppendedId(JtxContract.JtxICalObject.CONTENT_URI, this.id).asSyncAdapter(collection.account),
-            contentValuesOf(JtxContract.JtxICalObject.UID to uid),
-            "${JtxContract.JtxICalObject.ID} = ?",
-            arrayOf(this.id.toString())
-        )
+        throw NotImplementedError()
     }
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {

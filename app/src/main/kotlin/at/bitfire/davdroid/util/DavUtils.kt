@@ -44,16 +44,16 @@ object DavUtils {
     }
 
     /**
-     * Whether the given [baseName] (usually a UID) is a good base name for a file upload that probably
-     * won't cause problems.
+     * Whether the given [name] (usually a UID) is a good resource (file) name for a
+     * file upload that probably won't cause problems.
      *
-     * @param baseName  base name to evaluate
+     * @param name  file name of part of a file name (like a file name without suffix) to evaluate
      *
-     * @return *true*: base name can be used to generate the file name without problems;
-     *         *false*: better choose another file name
+     * @return *true*: [name] can be used to generate the file name without problems;
+     * *false*: better choose another file name that doesn't contain [name]
      */
-    fun isGoodFileBaseName(baseName: String) =
-        baseName.all { char ->
+    fun isGoodFileName(name: String) =
+        name.all { char ->
             // see RFC 2396 2.2
             char.isLetterOrDigit() || arrayOf(                  // allow letters and digits
                 ';', ':', '@', '&', '=', '+', '$', ',',         // allow reserved characters except '/' and '?'
