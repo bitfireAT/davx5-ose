@@ -27,6 +27,7 @@ import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.EventReader
@@ -182,31 +183,31 @@ class CalendarSyncManager @AssistedInject constructor(
         val event = resource.getCachedEvent()
 
         // get/create UID
-        val uid = resource.getCachedEvent().uid
+        val uid = event.uid
         val newUid: Optional<String>
-        val resourceBaseName: String?
+        val suggestedBaseName: String?
         if (uid == null) {
             // no existing UID, generate
             val uuid = UUID.randomUUID().toString()
+
             // add to event / iCalendar
             event.uid = uuid
+
             // remember for onSuccessContext
             newUid = Optional.of(uuid)
-            resourceBaseName = uuid
+            suggestedBaseName = uuid
         } else {
             // existing UID
+
             // don't update in onSuccessContext
             newUid = Optional.empty()
+
             // verify for file name
-            resourceBaseName = uid.takeIf {
-                it.all { char ->
-                    // see RFC 2396 2.2
-                    char.isLetterOrDigit() || arrayOf(                  // allow letters and digits
-                        ';', ':', '@', '&', '=', '+', '$', ',',         // allow reserved characters except '/' and '?'
-                        '-', '_', '.', '!', '~', '*', '\'', '(', ')'    // allow unreserved characters
-                    ).contains(char)
-                }
-            } ?: UUID.randomUUID().toString()
+            suggestedBaseName =
+                if (DavUtils.isGoodFileBaseName(uid))
+                    uid
+                else
+                    UUID.randomUUID().toString()
         }
 
         // update SEQUENCE, if necessary
@@ -222,9 +223,11 @@ class CalendarSyncManager @AssistedInject constructor(
             sequence == null ->
                 Optional.of(0)
 
-            // re-upload of group-scheduled event (and we're ORGANIZER), increase sequence
-            groupScheduled && weAreOrganizer ->
+            // re-upload of group-scheduled event (and we're ORGANIZER), increase sequence in iCalendar and after upload
+            groupScheduled && weAreOrganizer -> {
+                event.sequence = sequence + 1
                 Optional.of(sequence + 1)
+            }
 
             // standard re-upload, don't update sequence
             else ->
@@ -237,7 +240,7 @@ class CalendarSyncManager @AssistedInject constructor(
         val requestBody = iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
 
         return GeneratedResource(
-            suggestedFileName = "$resourceBaseName.ics",
+            suggestedFileName = "$suggestedBaseName.ics",
             requestBody = requestBody,
             onSuccessContext = GeneratedResource.OnSuccessContext(
                 uid = newUid,

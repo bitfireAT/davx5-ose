@@ -43,6 +43,24 @@ object DavUtils {
         return String.format(Locale.ROOT, "#%06X%02X", color, alpha)
     }
 
+    /**
+     * Whether the given [baseName] (usually a UID) is a good base name for a file upload that probably
+     * won't cause problems.
+     *
+     * @param baseName  base name to evaluate
+     *
+     * @return *true*: base name can be used to generate the file name without problems;
+     *         *false*: better choose another file name
+     */
+    fun isGoodFileBaseName(baseName: String) =
+        baseName.all { char ->
+            // see RFC 2396 2.2
+            char.isLetterOrDigit() || arrayOf(                  // allow letters and digits
+                ';', ':', '@', '&', '=', '+', '$', ',',         // allow reserved characters except '/' and '?'
+                '-', '_', '.', '!', '~', '*', '\'', '(', ')'    // allow unreserved characters
+            ).contains(char)
+        }
+
 
     // extension methods
 
