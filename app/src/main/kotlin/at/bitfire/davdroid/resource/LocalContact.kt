@@ -27,7 +27,6 @@ import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidContactFactory
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
-import com.google.common.base.Ascii
 import com.google.common.base.MoreObjects
 import java.io.FileNotFoundException
 import java.util.Optional
@@ -139,13 +138,15 @@ class LocalContact: AndroidContact, LocalAddress {
             .add("fileName", fileName)
             .add("eTag", eTag)
             .add("flags", flags)
-            .add("contact",
+            /*.add("contact",
                 try {
+                    // too dangerous, may contain unknown properties and cause another OOM
                     Ascii.truncate(getContact().toString(), 1000, "…")
                 } catch (e: Exception) {
                     e
                 }
-            ).toString()
+            )*/
+            .toString()
 
     override fun getViewUri(context: Context): Uri? =
         id?.let { idNotNull ->

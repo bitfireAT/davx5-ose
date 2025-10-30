@@ -43,6 +43,7 @@ import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VTimeZone
+import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.Version
 import okhttp3.HttpUrl
 import java.io.StringWriter
@@ -376,7 +377,7 @@ class DavCollectionRepository @Inject constructor(
                                         Calendar(
                                             PropertyList<Property>().apply {
                                                 add(Version.VERSION_2_0)
-                                                add(Constants.iCalProdId)
+                                                add(ProdId(Constants.iCalProdId))
                                             },
                                             ComponentList(
                                                 listOf(vTimezone)

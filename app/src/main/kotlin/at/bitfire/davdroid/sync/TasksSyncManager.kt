@@ -33,6 +33,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
+import net.fortuna.ical4j.model.property.ProdId
 import okhttp3.HttpUrl
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -115,7 +116,7 @@ class TasksSyncManager @AssistedInject constructor(
 
         // generate iCalendar and convert to request body
         val os = ByteArrayOutputStream()
-        task.write(os, Constants.iCalProdId)
+        task.write(os, ProdId(Constants.iCalProdId))
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),

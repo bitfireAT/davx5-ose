@@ -35,6 +35,7 @@ import at.bitfire.synctools.icalendar.ICalendarGenerator
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.mapping.calendar.AndroidEventBuilder
 import at.bitfire.synctools.mapping.calendar.AndroidEventProcessor
+import at.bitfire.synctools.mapping.calendar.DefaultProdIdGenerator
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -184,14 +185,7 @@ class CalendarSyncManager @AssistedInject constructor(
         // map Android event to iCalendar (also generates UID and increases SEQUENCE, if necessary)
         val processor = AndroidEventProcessor(
             accountName = resource.recurringCalendar.calendar.account.name,
-            prodIdGenerator = { packages ->
-                val prodId = StringBuilder(Constants.iCalProdId.value)
-                if (packages.isNotEmpty())
-                    prodId.append(" (")
-                        .append(packages.joinToString(", "))
-                        .append(")")
-                prodId.toString()
-            }
+            prodIdGenerator = DefaultProdIdGenerator(Constants.iCalProdId)
         )
         val mappedEvents = processor.mapToVEvents(localEvent)
 

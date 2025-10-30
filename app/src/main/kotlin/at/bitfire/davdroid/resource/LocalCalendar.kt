@@ -78,7 +78,6 @@ class LocalCalendar @AssistedInject constructor(
 
     override fun findDirty(): List<LocalEvent> {
         val dirty = LinkedList<LocalEvent>()
-
         recurringCalendar.iterateEventAndExceptions(
             "${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null
         ) { eventAndExceptions ->
@@ -88,10 +87,8 @@ class LocalCalendar @AssistedInject constructor(
     }
 
     override fun findByName(name: String) =
-        androidCalendar.findEventRow(arrayOf(Events._ID), "${Events._SYNC_ID}=? AND ${Events.ORIGINAL_SYNC_ID} IS null", arrayOf(name))?.let { values ->
-            val id = values.getAsLong(Events._ID)
-            val eventAndExceptions = recurringCalendar.getById(id)!!
-            LocalEvent(recurringCalendar, eventAndExceptions)
+        recurringCalendar.findEventAndExceptions("${Events._SYNC_ID}=? AND ${Events.ORIGINAL_SYNC_ID} IS null", arrayOf(name))?.let {
+            LocalEvent(recurringCalendar, it)
         }
 
     override fun markNotDirty(flags: Int) =

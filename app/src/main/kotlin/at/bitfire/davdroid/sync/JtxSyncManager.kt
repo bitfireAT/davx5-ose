@@ -34,6 +34,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
+import net.fortuna.ical4j.model.property.ProdId
 import okhttp3.HttpUrl
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -100,7 +101,7 @@ class JtxSyncManager @AssistedInject constructor(
         logger.log(Level.FINE, "Preparing upload of icalobject #${resource.id}")
 
         val os = ByteArrayOutputStream()
-        resource.write(os, Constants.iCalProdId)
+        resource.write(os, ProdId(Constants.iCalProdId))
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(resource.uid, "ics"),

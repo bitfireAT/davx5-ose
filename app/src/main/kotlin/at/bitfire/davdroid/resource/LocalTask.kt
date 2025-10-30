@@ -15,7 +15,6 @@ import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.storage.BatchOperation
-import com.google.common.base.Ascii
 import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
@@ -122,13 +121,15 @@ class LocalTask: DmfsTask, LocalResource {
             .add("eTag", eTag)
             .add("scheduleTag", scheduleTag)
             .add("flags", flags)
-            .add("task",
+            /*.add("task",
                 try {
+                    // too dangerous, may contain unknown properties and cause another OOM
                     Ascii.truncate(task.toString(), 1000, "…")
                 } catch (e: Exception) {
                     e
                 }
-            ).toString()
+            )*/
+            .toString()
 
     override fun getViewUri(context: Context): Uri? {
         val idNotNull = id ?: return null
