@@ -19,8 +19,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 405050004
-        versionName = "4.5.5"
+        versionCode = 405060000
+        versionName = "4.5.6-alpha.1"
 
         base.archivesName = "davx5-ose-$versionName"
 
