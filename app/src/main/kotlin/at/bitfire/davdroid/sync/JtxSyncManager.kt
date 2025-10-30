@@ -104,8 +104,7 @@ class JtxSyncManager @AssistedInject constructor(
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(resource.uid, "ics"),
-            requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8),
-            onSuccessContext = GeneratedResource.OnSuccessContext()     // nothing special to update after upload
+            requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         )
     }
 

@@ -107,8 +107,11 @@ class TasksSyncManager @AssistedInject constructor(
 
         // get/create UID
         val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(task.uid)
-        if (uidIsGenerated)
+        if (uidIsGenerated) {
+            // modify in Task and persist to tasks provider
             task.uid = uid
+            resource.updateUid(uid)
+        }
 
         // generate iCalendar and convert to request body
         val os = ByteArrayOutputStream()
@@ -116,10 +119,7 @@ class TasksSyncManager @AssistedInject constructor(
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
-            requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8),
-            onSuccessContext = GeneratedResource.OnSuccessContext(
-                uid = if (uidIsGenerated) uid else null
-            )
+            requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         )
     }
 

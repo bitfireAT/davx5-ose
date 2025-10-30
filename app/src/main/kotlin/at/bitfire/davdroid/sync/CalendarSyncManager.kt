@@ -195,6 +195,10 @@ class CalendarSyncManager @AssistedInject constructor(
         )
         val mappedEvents = processor.mapToVEvents(localEvent)
 
+        // persist UID if it was generated
+        if (mappedEvents.generatedUid)
+            resource.updateUid(mappedEvents.uid)
+
         // generate iCalendar and convert to request body
         val iCalWriter = StringWriter()
         ICalendarGenerator().write(mappedEvents.associatedEvents, iCalWriter)
@@ -204,7 +208,6 @@ class CalendarSyncManager @AssistedInject constructor(
             suggestedFileName = DavUtils.fileNameFromUid(mappedEvents.uid, "ics"),
             requestBody = requestBody,
             onSuccessContext = GeneratedResource.OnSuccessContext(
-                uid = if (mappedEvents.generatedUid) mappedEvents.uid else null,
                 sequence = mappedEvents.updatedSequence
             )
         )

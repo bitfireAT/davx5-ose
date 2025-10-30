@@ -506,7 +506,7 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
         newFileName: String,
         eTag: String?,
         scheduleTag: String?,
-        context: GeneratedResource.OnSuccessContext
+        context: GeneratedResource.OnSuccessContext?
     ) {
         logger.log(Level.FINE, "Upload successful", arrayOf(
             "File name = $newFileName",
@@ -515,11 +515,8 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
             "context = $context"
         ))
 
-        // update local UID and SEQUENCE, if necessary
-        if (context.uid != null)
-            local.updateUid(context.uid)
-
-        if (context.sequence != null)
+        // update SEQUENCE, if necessary
+        if (context?.sequence != null)
             local.updateSequence(context.sequence)
 
         // clear dirty flag and update ETag/Schedule-Tag
