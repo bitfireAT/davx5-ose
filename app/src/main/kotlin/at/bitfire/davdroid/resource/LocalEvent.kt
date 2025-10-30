@@ -39,7 +39,7 @@ class LocalEvent(
         get() = mainValues.getAsString(EventsContract.COLUMN_SCHEDULE_TAG)
 
     override val flags: Int
-        get() = mainValues.getAsInteger(EventsContract.COLUMN_FLAGS)
+        get() = mainValues.getAsInteger(EventsContract.COLUMN_FLAGS) ?: 0
 
 
     fun update(data: EventAndExceptions) {
