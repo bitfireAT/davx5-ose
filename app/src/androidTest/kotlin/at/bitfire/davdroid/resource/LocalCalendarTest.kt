@@ -6,7 +6,6 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
 import android.provider.CalendarContract
@@ -14,22 +13,16 @@ import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.ical4android.Event
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
-import at.bitfire.synctools.storage.calendar.AndroidEvent2
+import at.bitfire.synctools.storage.calendar.EventAndExceptions
+import at.bitfire.synctools.storage.calendar.EventsContract
 import at.bitfire.synctools.test.InitCalendarProviderRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import net.fortuna.ical4j.model.property.DtStart
-import net.fortuna.ical4j.model.property.RRule
-import net.fortuna.ical4j.model.property.RecurrenceId
-import net.fortuna.ical4j.model.property.Status
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
@@ -74,90 +67,83 @@ class LocalCalendarTest {
 
 
     @Test
-    fun testDeleteDirtyEventsWithoutInstances_NoInstances_CancelledExceptions() {
+    fun testDeleteDirtyEventsWithoutInstances_NoInstances() {
         // create recurring event with only deleted/cancelled instances
-        val event = Event().apply {
-            dtStart = DtStart("20220120T010203Z")
-            summary = "Event with 3 instances"
-            rRules.add(RRule("FREQ=DAILY;COUNT=3"))
-            exceptions.add(Event().apply {
-                recurrenceId = RecurrenceId("20220120T010203Z")
-                dtStart = DtStart("20220120T010203Z")
-                summary = "Cancelled exception on 1st day"
-                status = Status.VEVENT_CANCELLED
-            })
-            exceptions.add(Event().apply {
-                recurrenceId = RecurrenceId("20220121T010203Z")
-                dtStart = DtStart("20220121T010203Z")
-                summary = "Cancelled exception on 2nd day"
-                status = Status.VEVENT_CANCELLED
-            })
-            exceptions.add(Event().apply {
-                recurrenceId = RecurrenceId("20220122T010203Z")
-                dtStart = DtStart("20220122T010203Z")
-                summary = "Cancelled exception on 3rd day"
-                status = Status.VEVENT_CANCELLED
-            })
-        }
-        calendar.add(
-            event = event,
-            fileName = "filename.ics",
-            eTag = null,
-            scheduleTag = null,
-            flags = LocalResource.FLAG_REMOTELY_PRESENT
-        )
-        val localEvent = calendar.findByName("filename.ics")!!
-        val eventId = localEvent.id
-
-        // set event as dirty
-        client.update(ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId), ContentValues(1).apply {
-            put(Events.DIRTY, 1)
-        }, null, null)
+        val now = System.currentTimeMillis()
+        val id = calendar.add(EventAndExceptions(
+            main = Entity(contentValuesOf(
+                Events._SYNC_ID to "event-without-instances",
+                Events.CALENDAR_ID to calendar.androidCalendar.id,
+                Events.ALL_DAY to 0,
+                Events.DTSTART to now,
+                Events.RRULE to "FREQ=DAILY;COUNT=3",
+                Events.DIRTY to 1
+            )),
+            exceptions = listOf(
+                Entity(contentValuesOf(     // first instance: cancelled
+                    Events.CALENDAR_ID to calendar.androidCalendar.id,
+                    Events.ORIGINAL_INSTANCE_TIME to now,
+                    Events.ORIGINAL_ALL_DAY to 0,
+                    Events.DTSTART to now + 86400000,
+                    Events.STATUS to Events.STATUS_CANCELED
+                )),
+                Entity(contentValuesOf(     // second instance: cancelled
+                    Events.CALENDAR_ID to calendar.androidCalendar.id,
+                    Events.ORIGINAL_INSTANCE_TIME to now + 86400000,
+                    Events.ORIGINAL_ALL_DAY to 0,
+                    Events.DTSTART to now + 86400000,
+                    Events.STATUS to Events.STATUS_CANCELED
+                )),
+                Entity(contentValuesOf(     // third and last instance: cancelled
+                    Events.CALENDAR_ID to calendar.androidCalendar.id,
+                    Events.ORIGINAL_INSTANCE_TIME to now + 2*86400000,
+                    Events.ORIGINAL_ALL_DAY to 0,
+                    Events.DTSTART to now + 2*86400000,
+                    Events.STATUS to Events.STATUS_CANCELED
+                ))
+            )
+        ))
 
         // this method should mark the event as deleted
         calendar.deleteDirtyEventsWithoutInstances()
 
         // verify that event is now marked as deleted
-        client.query(
-            ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId),
-            arrayOf(Events.DELETED), null, null, null
-        )!!.use { cursor ->
-            cursor.moveToNext()
-            assertEquals(1, cursor.getInt(0))
-        }
+        val result = calendar.androidCalendar.getEventRow(id)!!
+        assertEquals(1, result.getAsInteger(Events.DELETED))
     }
 
     @Test
-    // Needs InitCalendarProviderRule
-    fun testDeleteDirtyEventsWithoutInstances_Recurring_Instances() {
-        val event = Event().apply {
-            dtStart = DtStart("20220120T010203Z")
-            summary = "Event with 3 instances"
-            rRules.add(RRule("FREQ=DAILY;COUNT=3"))
-        }
-        calendar.add(
-            event = event,
-            fileName = "filename.ics",
-            eTag = null,
-            scheduleTag = null,
-            flags = LocalResource.FLAG_REMOTELY_PRESENT
-        )
-        val localEvent = calendar.findByName("filename.ics")!!
-        val eventUrl = androidCalendar.eventUri(localEvent.id)
-
-        // set event as dirty
-        client.update(eventUrl, contentValuesOf(
-            Events.DIRTY to 1
-        ), null, null)
+    fun testDeleteDirtyEventsWithoutInstances_OneInstanceRemaining() {
+        // create recurring event with only deleted/cancelled instances
+        val now = System.currentTimeMillis()
+        val id = calendar.add(EventAndExceptions(
+            main = Entity(contentValuesOf(
+                Events._SYNC_ID to "event-with-instances",
+                Events.CALENDAR_ID to calendar.androidCalendar.id,
+                Events.ALL_DAY to 0,
+                Events.DTSTART to now,
+                Events.RRULE to "FREQ=DAILY;COUNT=2",
+                Events.DIRTY to 1
+            )),
+            exceptions = listOf(
+                Entity(contentValuesOf(     // first instance: cancelled
+                    Events.CALENDAR_ID to calendar.androidCalendar.id,
+                    Events.ORIGINAL_INSTANCE_TIME to now,
+                    Events.ORIGINAL_ALL_DAY to 0,
+                    Events.DTSTART to now + 86400000,
+                    Events.STATUS to Events.STATUS_CANCELED
+                ))
+                // however second instance is NOT cancelled
+            )
+        ))
 
         // this method should mark the event as deleted
         calendar.deleteDirtyEventsWithoutInstances()
 
-        // verify that event is not marked as deleted
-        client.query(eventUrl, arrayOf(Events.DELETED), null, null, null)!!.use { cursor ->
-            cursor.moveToNext()
-            assertEquals(0, cursor.getInt(0))
-        }
+        // verify that event is still marked as dirty, but not as deleted
+        val result = calendar.androidCalendar.getEventRow(id)!!
+        assertEquals(1, result.getAsInteger(Events.DIRTY))
+        assertEquals(0, result.getAsInteger(Events.DELETED))
     }
 
     /**
@@ -167,15 +153,16 @@ class LocalCalendarTest {
      * - [Events.DIRTY]
      */
     private fun testRemoveNotDirtyMarked(contentValues: ContentValues) {
-        val id = androidCalendar.addEvent(Entity(
+        val entity = Entity(
             contentValuesOf(
                 Events.CALENDAR_ID to androidCalendar.id,
                 Events.DTSTART to System.currentTimeMillis(),
                 Events.DTEND to System.currentTimeMillis(),
                 Events.TITLE to "Some Event",
-                AndroidEvent2.COLUMN_FLAGS to 123
+                EventsContract.COLUMN_FLAGS to 123
             ).apply { putAll(contentValues) }
-        ))
+        )
+        val id = androidCalendar.addEvent(entity)
 
         calendar.removeNotDirtyMarked(123)
 
@@ -210,13 +197,13 @@ class LocalCalendarTest {
                 Events.DTSTART to System.currentTimeMillis(),
                 Events.DTEND to System.currentTimeMillis(),
                 Events.TITLE to "Some Event",
-                AndroidEvent2.COLUMN_FLAGS to 123
+                EventsContract.COLUMN_FLAGS to 123
             ).apply { putAll(contentValues) }
         ))
 
         val updated = calendar.markNotDirty(321)
         assertEquals(1, updated)
-        assertEquals(321, androidCalendar.getEvent(id)?.flags)
+        assertEquals(321, androidCalendar.getEvent(id)?.entityValues?.getAsInteger(EventsContract.COLUMN_FLAGS))
     }
 
     @Test

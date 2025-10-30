@@ -277,12 +277,15 @@ class ContactsSyncManager @AssistedInject constructor(
             is LocalGroup -> resource.getContact()
             else -> throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
         }
-        logger.log(Level.FINE, "Preparing upload of vCard ${resource.fileName}", contact)
+        logger.log(Level.FINE, "Preparing upload of vCard #${resource.id}", contact)
 
         // get/create UID
         val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(contact.uid)
-        if (uidIsGenerated)
+        if (uidIsGenerated) {
+            // modify in Contact and persist to contacts provider
             contact.uid = uid
+            resource.updateUid(uid)
+        }
 
         // generate vCard and convert to request body
         val os = ByteArrayOutputStream()
@@ -304,10 +307,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(uid, "vcf"),
-            requestBody = os.toByteArray().toRequestBody(mimeType),
-            onSuccessContext = GeneratedResource.OnSuccessContext(
-                uid = if (uidIsGenerated) Optional.of(uid) else Optional.empty()
-            )
+            requestBody = os.toByteArray().toRequestBody(mimeType)
         )
     }
 
