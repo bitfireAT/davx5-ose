@@ -7,6 +7,7 @@ package at.bitfire.davdroid.resource
 import android.content.ContentUris
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
+import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
@@ -59,11 +60,12 @@ class LocalCalendar @AssistedInject constructor(
             androidCalendar.writeSyncState(state.toString())
         }
 
-    private val recurringCalendar = AndroidRecurringCalendar(androidCalendar)
+    @VisibleForTesting
+    internal val recurringCalendar = AndroidRecurringCalendar(androidCalendar)
 
 
-    fun add(event: EventAndExceptions) {
-        recurringCalendar.addEventAndExceptions(event)
+    fun add(event: EventAndExceptions): Long {
+        return recurringCalendar.addEventAndExceptions(event)
     }
 
     override fun findDeleted(): List<LocalEvent> {
