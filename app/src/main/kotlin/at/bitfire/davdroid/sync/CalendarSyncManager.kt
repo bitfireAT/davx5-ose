@@ -37,6 +37,7 @@ import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.mapping.calendar.AndroidEventBuilder
 import at.bitfire.synctools.mapping.calendar.AndroidEventProcessor
 import at.bitfire.synctools.mapping.calendar.DefaultProdIdGenerator
+import at.bitfire.synctools.mapping.calendar.SequenceUpdater
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -98,10 +99,12 @@ class CalendarSyncManager @AssistedInject constructor(
         davCollection = DavCalendar(httpClient.okHttpClient, collection.url)
 
         // if there are dirty exceptions for events, mark their master events as dirty, too
-        localCollection.processDirtyExceptions()
+        val recurringCalendar = localCollection.recurringCalendar
+        recurringCalendar.processDeletedExceptions()
+        recurringCalendar.processDirtyExceptions()
 
         // now find dirty events that have no instances and set them to deleted
-        localCollection.deleteDirtyEventsWithoutInstances()
+        localCollection.androidCalendar.deleteDirtyEventsWithoutInstances()
 
         return true
     }
@@ -186,6 +189,9 @@ class CalendarSyncManager @AssistedInject constructor(
         val localEvent = resource.androidEvent
         logger.log(Level.FINE, "Preparing upload of event #${resource.id}", localEvent)
 
+        // increase SEQUENCE of main event and remember value
+        val updatedSequence = SequenceUpdater().increaseSequence(localEvent.main)
+
         // map Android event to iCalendar (also generates UID and increases SEQUENCE, if necessary)
         val processor = AndroidEventProcessor(
             accountName = resource.recurringCalendar.calendar.account.name,
@@ -206,7 +212,7 @@ class CalendarSyncManager @AssistedInject constructor(
             suggestedFileName = DavUtils.fileNameFromUid(mappedEvents.uid, "ics"),
             requestBody = requestBody,
             onSuccessContext = GeneratedResource.OnSuccessContext(
-                sequence = mappedEvents.updatedSequence
+                sequence = updatedSequence
             )
         )
     }
