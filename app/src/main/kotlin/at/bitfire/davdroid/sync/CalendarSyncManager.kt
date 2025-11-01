@@ -192,7 +192,7 @@ class CalendarSyncManager @AssistedInject constructor(
         // increase SEQUENCE of main event and remember value
         val updatedSequence = SequenceUpdater().increaseSequence(localEvent.main)
 
-        // map Android event to iCalendar (also generates UID and increases SEQUENCE, if necessary)
+        // map Android event to iCalendar (also generates UID, if necessary)
         val processor = AndroidEventProcessor(
             accountName = resource.recurringCalendar.calendar.account.name,
             prodIdGenerator = DefaultProdIdGenerator(Constants.iCalProdId)
