@@ -4,12 +4,10 @@
 
 package at.bitfire.davdroid.resource
 
-import android.content.ContentUris
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
@@ -134,92 +132,6 @@ class LocalCalendar @AssistedInject constructor(
             contentValuesOf(EventsContract.COLUMN_ETAG to null),
             "${Events.CALENDAR_ID}=?", arrayOf(androidCalendar.id.toString())
         )
-    }
-
-
-    fun processDirtyExceptions() {
-        // process deleted exceptions
-        logger.info("Processing deleted exceptions")
-
-        androidCalendar.iterateEventRows(
-            arrayOf(Events._ID, Events.ORIGINAL_ID, EventsContract.COLUMN_SEQUENCE),
-            "${Events.CALENDAR_ID}=? AND ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NOT NULL",
-            arrayOf(androidCalendar.id.toString())
-        ) { values ->
-            logger.fine("Found deleted exception, removing and re-scheduling original event (if available)")
-
-            val id = values.getAsLong(Events._ID)                   // can't be null (by definition)
-            val originalID = values.getAsLong(Events.ORIGINAL_ID)   // can't be null (by query)
-
-            val batch = CalendarBatchOperation(androidCalendar.client)
-
-            // enqueue: increase sequence of main event
-            val originalEventValues = androidCalendar.getEventRow(originalID, arrayOf(EventsContract.COLUMN_SEQUENCE))
-            val originalSequence = originalEventValues?.getAsInteger(EventsContract.COLUMN_SEQUENCE) ?: 0
-
-            batch += BatchOperation.CpoBuilder
-                .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, originalID).asSyncAdapter(androidCalendar.account))
-                .withValue(EventsContract.COLUMN_SEQUENCE, originalSequence + 1)
-                .withValue(Events.DIRTY, 1)
-
-            // completely remove deleted exception
-            batch += BatchOperation.CpoBuilder.newDelete(ContentUris.withAppendedId(Events.CONTENT_URI, id).asSyncAdapter(androidCalendar.account))
-            batch.commit()
-        }
-
-        // process dirty exceptions
-        logger.info("Processing dirty exceptions")
-        androidCalendar.iterateEventRows(
-            arrayOf(Events._ID, Events.ORIGINAL_ID, EventsContract.COLUMN_SEQUENCE),
-            "${Events.CALENDAR_ID}=? AND ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NOT NULL",
-            arrayOf(androidCalendar.id.toString())
-        ) { values ->
-            logger.fine("Found dirty exception, increasing SEQUENCE to re-schedule")
-
-            val id = values.getAsLong(Events._ID)                   // can't be null (by definition)
-            val originalID = values.getAsLong(Events.ORIGINAL_ID)   // can't be null (by query)
-            val sequence = values.getAsInteger(EventsContract.COLUMN_SEQUENCE) ?: 0
-
-            val batch = CalendarBatchOperation(androidCalendar.client)
-
-            // enqueue: set original event to DIRTY
-            batch += BatchOperation.CpoBuilder
-                .newUpdate(androidCalendar.eventUri(originalID))
-                .withValue(Events.DIRTY, 1)
-
-            // enqueue: increase exception SEQUENCE and set DIRTY to 0
-            batch += BatchOperation.CpoBuilder
-                .newUpdate(androidCalendar.eventUri(id))
-                .withValue(EventsContract.COLUMN_SEQUENCE, sequence + 1)
-                .withValue(Events.DIRTY, 0)
-
-            batch.commit()
-        }
-    }
-
-    /**
-     * Marks dirty events (which are not already marked as deleted) which got no valid instances as "deleted"
-     *
-     * @return number of affected events
-     */
-    fun deleteDirtyEventsWithoutInstances() {
-        // Iterate dirty main events without exceptions
-        androidCalendar.iterateEventRows(
-            arrayOf(Events._ID),
-            "${Events.DIRTY} AND NOT ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL",
-            null
-        ) { values ->
-            val eventId = values.getAsLong(Events._ID)
-
-            // get number of instances
-            val numEventInstances = androidCalendar.numInstances(eventId)
-
-            // delete event if there are no instances
-            if (numEventInstances == 0) {
-                logger.fine("Marking event #$eventId without instances as deleted")
-                androidCalendar.updateEventRow(eventId, contentValuesOf(Events.DELETED to 1))
-            }
-        }
     }
 
 }

@@ -11,7 +11,9 @@ import at.bitfire.davdroid.resource.LocalResource.Companion.FLAG_REMOTELY_PRESEN
 import java.util.Optional
 
 /**
- * Defines operations that are used by SyncManager for all sync data types.
+ * This is an interface between the SyncManager and a resource in the local storage.
+ *
+ * It defines operations that are used by SyncManager for all sync data types.
  */
 interface LocalResource {
 
