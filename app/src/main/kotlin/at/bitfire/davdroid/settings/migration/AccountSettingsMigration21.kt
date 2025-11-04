@@ -55,7 +55,7 @@ class AccountSettingsMigration21 @Inject constructor(
                     SyncDataType.TASKS.possibleAuthorities()
             for (authority in possibleAuthorities) {
                 ContentResolver.requestSync(account, authority, extras)
-                logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $account")
+                logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $authority and $account")
                 ContentResolver.cancelSync(account, authority) // Ignores possibly set sync extras
             }
 
