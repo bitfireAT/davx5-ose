@@ -5,23 +5,18 @@
 package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.ContentResolver
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
-import kotlinx.coroutines.delay
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -57,6 +52,7 @@ class AccountSettingsMigration21 @Inject constructor(
             for (authority in possibleAuthorities) {
                 ContentResolver.requestSync(account, authority, extras)
                 logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $authority and $account")
+                Thread.sleep(100) // Allow some time for the request to be created
                 ContentResolver.cancelSync(account, null) // Ignores possibly set sync extras
             }
 
@@ -65,6 +61,7 @@ class AccountSettingsMigration21 @Inject constructor(
             for (addressBookAccount in addressBookAccounts) {
                 ContentResolver.requestSync(addressBookAccount, ContactsContract.AUTHORITY, extras)
                 logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $addressBookAccount")
+                Thread.sleep(100) // Allow some time for the request to be created
                 ContentResolver.cancelSync(addressBookAccount, null) // Ignores possibly set sync extras
             }
         }
