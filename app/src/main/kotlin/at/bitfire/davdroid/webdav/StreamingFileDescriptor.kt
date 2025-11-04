@@ -27,10 +27,10 @@ import java.util.logging.Logger
 import javax.annotation.WillClose
 
 /**
- * @param client    HTTP client ([StreamingFileDescriptor] is responsible to close it)
+ * @param client    HTTP client to use
  */
 class StreamingFileDescriptor @AssistedInject constructor(
-    @Assisted @WillClose private val client: HttpClient,
+    @Assisted private val client: HttpClient,
     @Assisted private val url: HttpUrl,
     @Assisted private val mimeType: MediaType?,
     @Assisted private val externalScope: CoroutineScope,
