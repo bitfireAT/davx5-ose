@@ -41,23 +41,23 @@ class LocalCalendarStoreTest {
     @Inject
     lateinit var localCalendarStore: LocalCalendarStore
 
-    private var provider: ContentProviderClient? = null
+    private lateinit var provider: ContentProviderClient
     private lateinit var account: Account
     private lateinit var calendarUri: Uri
 
     @Before
     fun setUp() {
         hiltRule.inject()
-        provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)
+        provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
         account = TestAccount.create(accountName = "InitialAccountName")
         calendarUri = createCalendarForAccount(account)
     }
 
     @After
     fun tearDown() {
-        provider?.delete(calendarUri, null, null)
+        provider.delete(calendarUri, null, null)
         TestAccount.remove(account)
-        provider?.closeCompat()
+        provider.closeCompat()
     }
 
 
@@ -82,7 +82,7 @@ class LocalCalendarStoreTest {
 
     private fun createCalendarForAccount(account: Account): Uri {
         var uri: Uri? = null
-        provider?.use { providerClient ->
+        provider.use { providerClient ->
             val values = contentValuesOf(
                 Calendars.ACCOUNT_NAME to account.name,
                 Calendars.ACCOUNT_TYPE to account.type,
@@ -101,7 +101,7 @@ class LocalCalendarStoreTest {
         return uri!!
     }
 
-    private fun verifyOwnerAccountIs(expectedOwnerAccount: String) = provider?.use {
+    private fun verifyOwnerAccountIs(expectedOwnerAccount: String) = provider.use {
         it.query(
             calendarUri,
             arrayOf(Calendars.OWNER_ACCOUNT),
