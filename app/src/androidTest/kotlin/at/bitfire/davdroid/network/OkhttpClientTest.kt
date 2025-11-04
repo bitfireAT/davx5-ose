@@ -31,16 +31,15 @@ class OkhttpClientTest {
     @Test
     @SdkSuppress(maxSdkVersion = 34)
     fun testIcloudWithSettings() {
-        httpClientBuilder.build().use { client ->
-            client.okHttpClient
-                .newCall(
-                    Request.Builder()
-                        .get()
-                        .url("https://icloud.com")
-                        .build()
-                )
-                .execute()
-        }
+        val client = httpClientBuilder.build()
+        client.okHttpClient
+            .newCall(
+                Request.Builder()
+                    .get()
+                    .url("https://icloud.com")
+                    .build()
+            )
+            .execute()
     }
 
 }
