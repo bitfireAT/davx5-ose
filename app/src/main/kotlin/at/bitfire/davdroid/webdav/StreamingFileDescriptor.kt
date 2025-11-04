@@ -75,7 +75,6 @@ class StreamingFileDescriptor @AssistedInject constructor(
                     writeFd.close()
                 } catch (_: IOException) {}
 
-                client.close()
                 finishedCallback.onFinished(transferred, success)
             }
         }

@@ -81,7 +81,6 @@ class PrincipalsRefresherTest {
 
     @After
     fun tearDown() {
-        client.close()
         mockServer.shutdown()
     }
 

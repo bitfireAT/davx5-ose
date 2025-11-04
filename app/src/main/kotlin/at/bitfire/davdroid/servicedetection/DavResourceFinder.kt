@@ -63,7 +63,7 @@ class DavResourceFinder @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val dnsRecordResolver: DnsRecordResolver,
     httpClientBuilder: HttpClient.Builder
-): AutoCloseable {
+) {
 
     @AssistedFactory
     interface Factory {
@@ -92,10 +92,6 @@ class DavResourceFinder @AssistedInject constructor(
                 )
             }
         .build()
-
-    override fun close() {
-        httpClient.close()
-    }
 
     private fun initLogging(): StringHandler {
         // don't use more than 1/4 of the available memory for a log string

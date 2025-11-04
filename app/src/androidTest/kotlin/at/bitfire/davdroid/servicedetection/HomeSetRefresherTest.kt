@@ -86,7 +86,6 @@ class HomeSetRefresherTest {
 
     @After
     fun tearDown() {
-        client.close()
         mockServer.shutdown()
     }
 

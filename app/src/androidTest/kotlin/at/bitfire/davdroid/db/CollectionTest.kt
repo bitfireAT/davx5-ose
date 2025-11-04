@@ -14,7 +14,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -43,11 +42,6 @@ class CollectionTest {
 
         httpClient = httpClientBuilder.build()
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
-    }
-
-    @After
-    fun teardown() {
-        httpClient.close()
     }
 
 

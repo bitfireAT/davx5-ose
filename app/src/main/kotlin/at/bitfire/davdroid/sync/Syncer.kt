@@ -273,8 +273,6 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 syncResult.numUnclassifiedErrors++ // Hard sync error
 
             } finally {
-                if (httpClient.isInitialized())
-                    httpClient.value.close()
                 logger.info("${dataStore.authority} sync of $account finished")
             }
         }

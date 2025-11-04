@@ -173,21 +173,20 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.getBlocking(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        httpClientBuilder.get().fromAccount(account).build().use { httpClient ->
-            runInterruptible(ioDispatcher) {
-                try {
-                    DavResource(httpClient.okHttpClient, collection.url).delete {
-                        // success, otherwise an exception would have been thrown → delete locally, too
-                        delete(collection)
-                    }
-                } catch (e: HttpException) {
-                    if (e is NotFoundException || e is GoneException) {
-                        // HTTP 404 Not Found or 410 Gone (collection is not there anymore) -> delete locally, too
-                        logger.info("Collection ${collection.url} not found on server, deleting locally")
-                        delete(collection)
-                    } else
-                        throw e
+        val httpClient = httpClientBuilder.get().fromAccount(account).build()
+        runInterruptible(ioDispatcher) {
+            try {
+                DavResource(httpClient.okHttpClient, collection.url).delete {
+                    // success, otherwise an exception would have been thrown → delete locally, too
+                    delete(collection)
                 }
+            } catch (e: HttpException) {
+                if (e is NotFoundException || e is GoneException) {
+                    // HTTP 404 Not Found or 410 Gone (collection is not there anymore) -> delete locally, too
+                    logger.info("Collection ${collection.url} not found on server, deleting locally")
+                    delete(collection)
+                } else
+                    throw e
             }
         }
     }
@@ -290,19 +289,17 @@ class DavCollectionRepository @Inject constructor(
     // helpers
 
     private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
-        httpClientBuilder.get()
+        val httpClient = httpClientBuilder.get()
             .fromAccount(account)
             .build()
-            .use { httpClient ->
-                runInterruptible(ioDispatcher) {
-                    DavResource(httpClient.okHttpClient, url).mkCol(
-                        xmlBody = xmlBody,
-                        method = method
-                    ) {
-                        // success, otherwise an exception would have been thrown
-                    }
-                }
+        runInterruptible(ioDispatcher) {
+            DavResource(httpClient.okHttpClient, url).mkCol(
+                xmlBody = xmlBody,
+                method = method
+            ) {
+                // success, otherwise an exception would have been thrown
             }
+        }
     }
 
     private fun generateMkColXml(

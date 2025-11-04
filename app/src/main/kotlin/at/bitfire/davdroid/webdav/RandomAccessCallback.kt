@@ -127,7 +127,6 @@ class RandomAccessCallback @AssistedInject constructor(
 
         // free resources
         ioThread.quitSafely()
-        httpClient.close()
     }
 
 

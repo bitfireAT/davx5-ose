@@ -102,10 +102,6 @@ class NextcloudLoginModel @AssistedInject constructor(
             state[STATE_TOKEN] = value
         }*/
 
-    override fun onCleared() {
-        loginFlow.close()
-    }
-
 
     /**
      * Starts the Login Flow.
