@@ -21,6 +21,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.delay
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -50,21 +51,21 @@ class AccountSettingsMigration21 @Inject constructor(
                 putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
             }
 
-            // Request calendar and tasks syncs
+            // Request calendar and tasks syncs and cancel all syncs account wide
             val possibleAuthorities = SyncDataType.EVENTS.possibleAuthorities() +
                     SyncDataType.TASKS.possibleAuthorities()
             for (authority in possibleAuthorities) {
                 ContentResolver.requestSync(account, authority, extras)
                 logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $authority and $account")
-                ContentResolver.cancelSync(account, authority) // Ignores possibly set sync extras
+                ContentResolver.cancelSync(account, null) // Ignores possibly set sync extras
             }
 
-            // Request contacts sync (per address book account)
+            // Request contacts sync (per address book account) and cancel all syncs address book account wide
             val addressBookAccounts = localAddressBookStore.getAddressBookAccounts(account) + account
             for (addressBookAccount in addressBookAccounts) {
                 ContentResolver.requestSync(addressBookAccount, ContactsContract.AUTHORITY, extras)
                 logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $addressBookAccount")
-                ContentResolver.cancelSync(addressBookAccount, ContactsContract.AUTHORITY) // Ignores possibly set sync extras
+                ContentResolver.cancelSync(addressBookAccount, null) // Ignores possibly set sync extras
             }
         }
     }
