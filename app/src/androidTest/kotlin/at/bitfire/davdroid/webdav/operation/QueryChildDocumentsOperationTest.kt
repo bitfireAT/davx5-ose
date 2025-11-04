@@ -84,7 +84,6 @@ class QueryChildDocumentsOperationTest {
 
     @After
     fun tearDown() {
-        client.close()
         server.shutdown()
 
         runBlocking {

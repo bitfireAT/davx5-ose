@@ -180,25 +180,23 @@ class PushRegistrationManager @Inject constructor(
             return
 
         val account = accountRepository.get().fromName(service.accountName)
-        httpClientBuilder.get()
+        val httpClient = httpClientBuilder.get()
             .fromAccountAsync(account)
             .build()
-            .use { httpClient ->
-                for (collection in subscribeTo)
-                    try {
-                        val expires = collection.pushSubscriptionExpires
-                        // calculate next run time, but use the duplicate interval for safety (times are not exact)
-                        val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
-                        if (expires != null && expires >= nextRun.epochSecond)
-                            logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
-                        else {
-                            // no existing subscription or expiring soon
-                            logger.fine("Registering push subscription for ${collection.url}")
-                            subscribe(httpClient, collection, endpoint)
-                        }
-                    } catch (e: Exception) {
-                        logger.log(Level.WARNING, "Couldn't register subscription at CalDAV/CardDAV server", e)
-                    }
+        for (collection in subscribeTo)
+            try {
+                val expires = collection.pushSubscriptionExpires
+                // calculate next run time, but use the duplicate interval for safety (times are not exact)
+                val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
+                if (expires != null && expires >= nextRun.epochSecond)
+                    logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
+                else {
+                    // no existing subscription or expiring soon
+                    logger.fine("Registering push subscription for ${collection.url}")
+                    subscribe(httpClient, collection, endpoint)
+                }
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Couldn't register subscription at CalDAV/CardDAV server", e)
             }
     }
 
@@ -294,15 +292,13 @@ class PushRegistrationManager @Inject constructor(
             return
 
         val account = accountRepository.get().fromName(service.accountName)
-        httpClientBuilder.get()
+        val httpClient = httpClientBuilder.get()
             .fromAccountAsync(account)
             .build()
-            .use { httpClient ->
-                for (collection in from)
-                    collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
-                        logger.info("Unsubscribing Push from ${collection.url}")
-                        unsubscribe(httpClient, collection, url)
-                    }
+        for (collection in from)
+            collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
+                logger.info("Unsubscribing Push from ${collection.url}")
+                unsubscribe(httpClient, collection, url)
             }
     }
 

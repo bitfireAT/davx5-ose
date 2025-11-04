@@ -35,29 +35,28 @@ class RenameDocumentOperation @Inject constructor(
         logger.fine("WebDAV renameDocument $documentId $displayName")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
-        httpClientBuilder.build(doc.mountId).use { client ->
-            for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
-                val newName = displayNameToMemberName(displayName, attempt)
-                val oldUrl = doc.toHttpUrl(db)
-                val newLocation = oldUrl.newBuilder()
-                    .removePathSegment(oldUrl.pathSegments.lastIndex)
-                    .addPathSegment(newName)
-                    .build()
-                try {
-                    val dav = DavResource(client.okHttpClient, oldUrl)
-                    runInterruptible(ioDispatcher) {
-                        dav.move(newLocation, false) {
-                            // successfully renamed
-                        }
+        val client = httpClientBuilder.build(doc.mountId)
+        for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
+            val newName = displayNameToMemberName(displayName, attempt)
+            val oldUrl = doc.toHttpUrl(db)
+            val newLocation = oldUrl.newBuilder()
+                .removePathSegment(oldUrl.pathSegments.lastIndex)
+                .addPathSegment(newName)
+                .build()
+            try {
+                val dav = DavResource(client.okHttpClient, oldUrl)
+                runInterruptible(ioDispatcher) {
+                    dav.move(newLocation, false) {
+                        // successfully renamed
                     }
-                    documentDao.update(doc.copy(name = newName))
-
-                    DocumentProviderUtils.notifyFolderChanged(context, doc.parentId)
-
-                    return@runBlocking doc.id.toString()
-                } catch (e: HttpException) {
-                    e.throwForDocumentProvider(context, true)
                 }
+                documentDao.update(doc.copy(name = newName))
+
+                DocumentProviderUtils.notifyFolderChanged(context, doc.parentId)
+
+                return@runBlocking doc.id.toString()
+            } catch (e: HttpException) {
+                e.throwForDocumentProvider(context, true)
             }
         }
 

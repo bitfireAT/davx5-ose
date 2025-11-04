@@ -128,58 +128,57 @@ class QueryChildDocumentsOperation @Inject constructor(
         val newChildrenList = hashMapOf<String, WebDavDocument>()
 
         val parentUrl = parent.toHttpUrl(db)
-        httpClientBuilder.build(parent.mountId).use { client ->
-            val folder = DavCollection(client.okHttpClient, parentUrl)
+        val client = httpClientBuilder.build(parent.mountId)
+        val folder = DavCollection(client.okHttpClient, parentUrl)
 
-            try {
-                runInterruptible(ioDispatcher) {
-                    folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
-                        logger.fine("$relation $response")
+        try {
+            runInterruptible(ioDispatcher) {
+                folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
+                    logger.fine("$relation $response")
 
-                        val resource: WebDavDocument =
-                            when (relation) {
-                                Response.HrefRelation.SELF ->       // it's about the parent
-                                    parent
+                    val resource: WebDavDocument =
+                        when (relation) {
+                            Response.HrefRelation.SELF ->       // it's about the parent
+                                parent
 
-                                Response.HrefRelation.MEMBER ->     // it's about a member
-                                    WebDavDocument(mountId = parent.mountId, parentId = parent.id, name = response.hrefName())
+                            Response.HrefRelation.MEMBER ->     // it's about a member
+                                WebDavDocument(mountId = parent.mountId, parentId = parent.id, name = response.hrefName())
 
-                                else -> {
-                                    // we didn't request this; log a warning and ignore it
-                                    logger.warning("Ignoring unexpected $response $relation in $parentUrl")
-                                    return@propfind
-                                }
+                            else -> {
+                                // we didn't request this; log a warning and ignore it
+                                logger.warning("Ignoring unexpected $response $relation in $parentUrl")
+                                return@propfind
                             }
-
-                        val updatedResource = resource.copy(
-                            isDirectory = response[ResourceType::class.java]?.types?.contains(ResourceType.COLLECTION)
-                                ?: resource.isDirectory,
-                            displayName = response[DisplayName::class.java]?.displayName,
-                            mimeType = response[GetContentType::class.java]?.type,
-                            eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
-                            lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
-                            size = response[GetContentLength::class.java]?.contentLength,
-                            mayBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind,
-                            mayUnbind = response[CurrentUserPrivilegeSet::class.java]?.mayUnbind,
-                            mayWriteContent = response[CurrentUserPrivilegeSet::class.java]?.mayWriteContent,
-                            quotaAvailable = response[QuotaAvailableBytes::class.java]?.quotaAvailableBytes,
-                            quotaUsed = response[QuotaUsedBytes::class.java]?.quotaUsedBytes,
-                        )
-
-                        if (resource == parent)
-                            documentDao.update(updatedResource)
-                        else {
-                            documentDao.insertOrUpdate(updatedResource)
-                            newChildrenList[resource.name] = updatedResource
                         }
 
-                        // remove resource from known child nodes, because not found on server
-                        oldChildren.remove(resource.name)
+                    val updatedResource = resource.copy(
+                        isDirectory = response[ResourceType::class.java]?.types?.contains(ResourceType.COLLECTION)
+                            ?: resource.isDirectory,
+                        displayName = response[DisplayName::class.java]?.displayName,
+                        mimeType = response[GetContentType::class.java]?.type,
+                        eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
+                        lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
+                        size = response[GetContentLength::class.java]?.contentLength,
+                        mayBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind,
+                        mayUnbind = response[CurrentUserPrivilegeSet::class.java]?.mayUnbind,
+                        mayWriteContent = response[CurrentUserPrivilegeSet::class.java]?.mayWriteContent,
+                        quotaAvailable = response[QuotaAvailableBytes::class.java]?.quotaAvailableBytes,
+                        quotaUsed = response[QuotaUsedBytes::class.java]?.quotaUsedBytes,
+                    )
+
+                    if (resource == parent)
+                        documentDao.update(updatedResource)
+                    else {
+                        documentDao.insertOrUpdate(updatedResource)
+                        newChildrenList[resource.name] = updatedResource
                     }
+
+                    // remove resource from known child nodes, because not found on server
+                    oldChildren.remove(resource.name)
                 }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't query children", e)
             }
+        } catch (e: Exception) {
+            logger.log(Level.WARNING, "Couldn't query children", e)
         }
 
         // Delete child nodes which were not rediscovered (deleted serverside)

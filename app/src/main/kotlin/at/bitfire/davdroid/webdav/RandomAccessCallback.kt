@@ -43,7 +43,7 @@ import javax.annotation.WillClose
 
 @RequiresApi(26)
 class RandomAccessCallback @AssistedInject constructor(
-    @Assisted @WillClose private val httpClient: HttpClient,
+    @Assisted private val httpClient: HttpClient,
     @Assisted private val url: HttpUrl,
     @Assisted private val mimeType: MediaType?,
     @Assisted headResponse: HeadResponse,
@@ -127,7 +127,6 @@ class RandomAccessCallback @AssistedInject constructor(
 
         // free resources
         ioThread.quitSafely()
-        httpClient.close()
     }
 
 

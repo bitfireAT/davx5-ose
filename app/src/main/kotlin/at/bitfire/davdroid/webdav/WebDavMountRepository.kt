@@ -127,21 +127,19 @@ class WebDavMountRepository @Inject constructor(
         val validVersions = arrayOf("1", "2", "3")
 
         val builder = httpClientBuilder.get()
-
         if (credentials != null)
             builder.authenticate(
                 host = null,
                 getCredentials = { credentials }
             )
+        val httpClient = builder.build()
 
         var webdavUrl: HttpUrl? = null
-        builder.build().use { httpClient ->
-            val dav = DavResource(httpClient.okHttpClient, url)
-            runInterruptible {
-                dav.options(followRedirects = true) { davCapabilities, response ->
-                    if (davCapabilities.any { it in validVersions })
-                        webdavUrl = dav.location
-                }
+        val dav = DavResource(httpClient.okHttpClient, url)
+        runInterruptible {
+            dav.options(followRedirects = true) { davCapabilities, response ->
+                if (davCapabilities.any { it in validVersions })
+                    webdavUrl = dav.location
             }
         }
 

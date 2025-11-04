@@ -83,7 +83,6 @@ class DavResourceFinderTest {
 
     @After
     fun tearDown() {
-        client.close()
         server.shutdown()
     }
 

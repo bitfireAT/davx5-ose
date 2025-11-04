@@ -45,7 +45,6 @@ class HttpClientTest {
     @After
     fun tearDown() {
         server.shutdown()
-        httpClient.close()
     }
 
 

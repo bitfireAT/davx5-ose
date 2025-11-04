@@ -485,25 +485,23 @@ class ContactsSyncManager @AssistedInject constructor(
             }
 
             // authenticate only against a certain host, and only upon request
-            httpClientBuilder
+            val hostHttpClient = httpClientBuilder
                 .fromAccount(account, onlyHost = baseUrl.host)
                 .followRedirects(true)      // allow redirects
                 .build()
-                .use { httpClient ->
-                    try {
-                        val response = httpClient.okHttpClient.newCall(Request.Builder()
-                            .get()
-                            .url(httpUrl)
-                            .build()).execute()
+            try {
+                val response = hostHttpClient.okHttpClient.newCall(Request.Builder()
+                    .get()
+                    .url(httpUrl)
+                    .build()).execute()
 
-                        if (response.isSuccessful)
-                            return response.body.bytes()
-                        else
-                            logger.warning("Couldn't download external resource")
-                    } catch(e: IOException) {
-                        logger.log(Level.SEVERE, "Couldn't download external resource", e)
-                    }
-                }
+                if (response.isSuccessful)
+                    return response.body.bytes()
+                else
+                    logger.warning("Couldn't download external resource")
+            } catch(e: IOException) {
+                logger.log(Level.SEVERE, "Couldn't download external resource", e)
+            }
 
             return null
         }

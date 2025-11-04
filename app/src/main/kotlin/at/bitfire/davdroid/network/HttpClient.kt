@@ -42,12 +42,7 @@ import javax.net.ssl.SSLContext
 
 class HttpClient(
     val okHttpClient: OkHttpClient
-): AutoCloseable {
-
-    override fun close() {
-        // nothing to do, can be removed
-    }
-
+) {
 
     // builder
 

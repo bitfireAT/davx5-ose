@@ -33,7 +33,7 @@ import javax.inject.Inject
  */
 class NextcloudLoginFlow @Inject constructor(
     httpClientBuilder: HttpClient.Builder
-): AutoCloseable {
+) {
 
     companion object {
         const val FLOW_V1_PATH = "index.php/login/flow"
@@ -45,10 +45,6 @@ class NextcloudLoginFlow @Inject constructor(
 
     val httpClient = httpClientBuilder
         .build()
-
-    override fun close() {
-        httpClient.close()
-    }
 
 
     // Login flow state
