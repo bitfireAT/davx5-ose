@@ -43,7 +43,7 @@ class MoveDocumentOperation @Inject constructor(
             .build()
 
         val client = httpClientBuilder.build(doc.mountId)
-        val dav = DavResource(client.okHttpClient, doc.toHttpUrl(db))
+        val dav = DavResource(client, doc.toHttpUrl(db))
         try {
             runInterruptible(ioDispatcher) {
                 dav.move(newLocation, false) {

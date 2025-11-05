@@ -29,7 +29,7 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.StringHandler
 import at.bitfire.davdroid.network.DnsRecordResolver
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Credentials
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -62,7 +62,7 @@ class DavResourceFinder @AssistedInject constructor(
     @Assisted private val credentials: Credentials? = null,
     @ApplicationContext val context: Context,
     private val dnsRecordResolver: DnsRecordResolver,
-    httpClientBuilder: HttpClient.Builder
+    httpClientBuilder: HttpClientBuilder
 ) {
 
     @AssistedFactory
@@ -224,7 +224,7 @@ class DavResourceFinder @AssistedInject constructor(
     private fun checkBaseURL(baseURL: HttpUrl, service: Service, config: Configuration.ServiceInfo) {
         log.info("Checking user-given URL: $baseURL")
 
-        val davBaseURL = DavResource(httpClient.okHttpClient, baseURL, log)
+        val davBaseURL = DavResource(httpClient, baseURL, log)
         try {
             when (service) {
                 Service.CARDDAV -> {
@@ -262,7 +262,7 @@ class DavResourceFinder @AssistedInject constructor(
     fun queryEmailAddress(principal: HttpUrl): List<String> {
         val mailboxes = LinkedList<String>()
         try {
-            DavResource(httpClient.okHttpClient, principal, log).propfind(0, CalendarUserAddressSet.NAME) { response, _ ->
+            DavResource(httpClient, principal, log).propfind(0, CalendarUserAddressSet.NAME) { response, _ ->
                 response[CalendarUserAddressSet::class.java]?.let { addressSet ->
                     for (href in addressSet.hrefs)
                         try {
@@ -361,7 +361,7 @@ class DavResourceFinder @AssistedInject constructor(
     fun providesService(url: HttpUrl, service: Service): Boolean {
         var provided = false
         try {
-            DavResource(httpClient.okHttpClient, url, log).options { capabilities, _ ->
+            DavResource(httpClient, url, log).options { capabilities, _ ->
                 if ((service == Service.CARDDAV && capabilities.contains("addressbook")) ||
                     (service == Service.CALDAV && capabilities.contains("calendar-access")))
                     provided = true
@@ -446,7 +446,7 @@ class DavResourceFinder @AssistedInject constructor(
      */
     fun getCurrentUserPrincipal(url: HttpUrl, service: Service?): HttpUrl? {
         var principal: HttpUrl? = null
-        DavResource(httpClient.okHttpClient, url, log).propfind(0, CurrentUserPrincipal.NAME) { response, _ ->
+        DavResource(httpClient, url, log).propfind(0, CurrentUserPrincipal.NAME) { response, _ ->
             response[CurrentUserPrincipal::class.java]?.href?.let { href ->
                 response.requestedUrl.resolve(href)?.let {
                     log.info("Found current-user-principal: $it")

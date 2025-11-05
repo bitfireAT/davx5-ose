@@ -32,7 +32,7 @@ import javax.inject.Inject
  * See https://docs.nextcloud.com/server/latest/developer_manual/client_apis/LoginFlow/index.html#login-flow-v2
  */
 class NextcloudLoginFlow @Inject constructor(
-    httpClientBuilder: HttpClient.Builder
+    httpClientBuilder: HttpClientBuilder
 ) {
 
     companion object {
@@ -43,8 +43,7 @@ class NextcloudLoginFlow @Inject constructor(
         const val DAV_PATH = "remote.php/dav"
     }
 
-    val httpClient = httpClientBuilder
-        .build()
+    val httpClient = httpClientBuilder.build()
 
 
     // Login flow state
@@ -116,7 +115,7 @@ class NextcloudLoginFlow @Inject constructor(
             .post(requestBody)
             .build()
         val response = runInterruptible {
-            httpClient.okHttpClient.newCall(postRq).execute()
+            httpClient.newCall(postRq).execute()
         }
 
         if (response.code != HttpURLConnection.HTTP_OK)

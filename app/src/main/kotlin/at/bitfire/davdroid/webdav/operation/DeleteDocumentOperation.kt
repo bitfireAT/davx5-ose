@@ -35,7 +35,7 @@ class DeleteDocumentOperation @Inject constructor(
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
         val client = httpClientBuilder.build(doc.mountId)
-        val dav = DavResource(client.okHttpClient, doc.toHttpUrl(db))
+        val dav = DavResource(client, doc.toHttpUrl(db))
         try {
             runInterruptible(ioDispatcher) {
                 dav.delete {

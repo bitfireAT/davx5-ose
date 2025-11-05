@@ -24,7 +24,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.exception.UnauthorizedException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
@@ -64,7 +64,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val collectionsWithoutHomeSetRefresherFactory: CollectionsWithoutHomeSetRefresher.Factory,
     private val homeSetRefresherFactory: HomeSetRefresher.Factory,
-    private val httpClientBuilder: HttpClient.Builder,
+    private val httpClientBuilder: HttpClientBuilder,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry,
     private val principalsRefresherFactory: PrincipalsRefresher.Factory,
@@ -157,7 +157,6 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 .fromAccount(account)
                 .build()
             runInterruptible {
-                val httpClient = httpClient.okHttpClient
                 val refresher = collectionsWithoutHomeSetRefresherFactory.create(service, httpClient)
 
                 // refresh home set list (from principal url)

@@ -21,7 +21,6 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
@@ -48,6 +47,7 @@ import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Action
 import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.Reader
 import java.io.StringReader
@@ -62,7 +62,7 @@ import java.util.logging.Level
  */
 class CalendarSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted httpClient: HttpClient,
+    @Assisted httpClient: OkHttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
     @Assisted collection: Collection,
@@ -84,7 +84,7 @@ class CalendarSyncManager @AssistedInject constructor(
     interface Factory {
         fun calendarSyncManager(
             account: Account,
-            httpClient: HttpClient,
+            httpClient: OkHttpClient,
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
             collection: Collection,
@@ -96,7 +96,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
 
     override fun prepare(): Boolean {
-        davCollection = DavCalendar(httpClient.okHttpClient, collection.url)
+        davCollection = DavCalendar(httpClient, collection.url)
 
         // if there are dirty exceptions for events, mark their master events as dirty, too
         val recurringCalendar = localCollection.recurringCalendar

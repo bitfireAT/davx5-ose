@@ -8,8 +8,8 @@ import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.davdroid.network.HttpClient
 import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
 import java.time.Instant
 
 /**
@@ -27,13 +27,13 @@ data class HeadResponse(
     companion object {
 
         @WorkerThread
-        fun fromUrl(client: HttpClient, url: HttpUrl): HeadResponse {
+        fun fromUrl(client: OkHttpClient, url: HttpUrl): HeadResponse {
             var size: Long? = null
             var eTag: String? = null
             var lastModified: Instant? = null
             var supportsPartial: Boolean? = null
 
-            DavResource(client.okHttpClient, url).head { response ->
+            DavResource(client, url).head { response ->
                 response.header("ETag", null)?.let {
                     val getETag = GetETag(it)
                     if (!getETag.weak)

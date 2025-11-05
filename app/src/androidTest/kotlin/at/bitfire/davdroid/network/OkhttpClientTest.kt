@@ -17,7 +17,7 @@ import javax.inject.Inject
 class OkhttpClientTest {
 
     @Inject
-    lateinit var httpClientBuilder: HttpClient.Builder
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -32,7 +32,7 @@ class OkhttpClientTest {
     @SdkSuppress(maxSdkVersion = 34)
     fun testIcloudWithSettings() {
         val client = httpClientBuilder.build()
-        client.okHttpClient
+        client
             .newCall(
                 Request.Builder()
                     .get()

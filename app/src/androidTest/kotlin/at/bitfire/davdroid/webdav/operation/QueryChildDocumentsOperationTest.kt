@@ -9,13 +9,14 @@ import android.security.NetworkSecurityPolicy
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -48,13 +49,13 @@ class QueryChildDocumentsOperationTest {
     lateinit var operation: QueryChildDocumentsOperation
 
     @Inject
-    lateinit var httpClientBuilder: HttpClient.Builder
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     @Inject
     lateinit var testDispatcher: TestDispatcher
 
     private lateinit var server: MockWebServer
-    private lateinit var client: HttpClient
+    private lateinit var client: OkHttpClient
 
     private lateinit var mount: WebDavMount
     private lateinit var rootDocument: WebDavDocument

@@ -41,7 +41,7 @@ class CopyDocumentOperation @Inject constructor(
             throw UnsupportedOperationException("Can't COPY between WebDAV servers")
 
         val client = httpClientBuilder.build(srcDoc.mountId)
-        val dav = DavResource(client.okHttpClient, srcDoc.toHttpUrl(db))
+        val dav = DavResource(client, srcDoc.toHttpUrl(db))
         val dstUrl = dstFolder.toHttpUrl(db).newBuilder()
             .addPathSegment(name)
             .build()

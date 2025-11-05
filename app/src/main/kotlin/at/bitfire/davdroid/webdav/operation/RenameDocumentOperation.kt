@@ -44,7 +44,7 @@ class RenameDocumentOperation @Inject constructor(
                 .addPathSegment(newName)
                 .build()
             try {
-                val dav = DavResource(client.okHttpClient, oldUrl)
+                val dav = DavResource(client, oldUrl)
                 runInterruptible(ioDispatcher) {
                     dav.move(newLocation, false) {
                         // successfully renamed

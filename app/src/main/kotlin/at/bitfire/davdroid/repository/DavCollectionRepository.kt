@@ -30,7 +30,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.CollectionType
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -59,7 +59,7 @@ class DavCollectionRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
-    private val httpClientBuilder: Provider<HttpClient.Builder>,
+    private val httpClientBuilder: Provider<HttpClientBuilder>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val serviceRepository: DavServiceRepository
 ) {
@@ -176,7 +176,7 @@ class DavCollectionRepository @Inject constructor(
         val httpClient = httpClientBuilder.get().fromAccount(account).build()
         runInterruptible(ioDispatcher) {
             try {
-                DavResource(httpClient.okHttpClient, collection.url).delete {
+                DavResource(httpClient, collection.url).delete {
                     // success, otherwise an exception would have been thrown → delete locally, too
                     delete(collection)
                 }
@@ -293,7 +293,7 @@ class DavCollectionRepository @Inject constructor(
             .fromAccount(account)
             .build()
         runInterruptible(ioDispatcher) {
-            DavResource(httpClient.okHttpClient, url).mkCol(
+            DavResource(httpClient, url).mkCol(
                 xmlBody = xmlBody,
                 method = method
             ) {

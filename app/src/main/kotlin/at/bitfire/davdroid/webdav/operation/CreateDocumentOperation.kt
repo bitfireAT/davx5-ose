@@ -48,7 +48,7 @@ class CreateDocumentOperation @Inject constructor(
             val newLocation = parentUrl.newBuilder()
                 .addPathSegment(newName)
                 .build()
-            val doc = DavResource(client.okHttpClient, newLocation)
+            val doc = DavResource(client, newLocation)
             try {
                 runInterruptible(ioDispatcher) {
                     if (createDirectory)
