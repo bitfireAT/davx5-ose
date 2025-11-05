@@ -12,13 +12,15 @@ import java.security.Security
 
 class ConscryptIntegrationTest {
 
+    val integration = ConscryptIntegration()
+
     @Test
     fun testInitialize_InstallsConscrypt() {
         uninstallConscrypt()
-        assertFalse(ConscryptIntegration.conscryptInstalled())
+        assertFalse(integration.conscryptInstalled())
 
-        ConscryptIntegration.initialize()
-        assertTrue(ConscryptIntegration.conscryptInstalled())
+        integration.initialize()
+        assertTrue(integration.conscryptInstalled())
     }
 
     private fun uninstallConscrypt() {
