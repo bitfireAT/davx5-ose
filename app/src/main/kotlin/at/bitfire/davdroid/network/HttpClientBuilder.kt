@@ -58,6 +58,11 @@ class HttpClientBuilder @Inject constructor(
     private val settingsManager: SettingsManager
 ) {
 
+    init {
+        // make sure Conscrypt is available
+        ConscryptIntegration.initialize()
+    }
+
     /**
      * Flag to prevent multiple [build] calls
      */
