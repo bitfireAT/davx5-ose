@@ -30,7 +30,6 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -47,6 +46,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
@@ -76,7 +76,7 @@ import javax.net.ssl.SSLHandshakeException
  */
 abstract class SyncManager<ResourceType: LocalResource, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
     val account: Account,
-    val httpClient: HttpClient,
+    val httpClient: OkHttpClient,
     val dataType: SyncDataType,
     val syncResult: SyncResult,
     val localCollection: CollectionType,
@@ -331,7 +331,7 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
                     logger.info("$fileName has been deleted locally -> deleting from server (ETag $lastETag / schedule-tag $lastScheduleTag)")
 
                     val url = collection.url.newBuilder().addPathSegment(fileName).build()
-                    val remote = DavResource(httpClient.okHttpClient, url)
+                    val remote = DavResource(httpClient, url)
                     SyncException.wrapWithRemoteResourceSuspending(url) {
                         try {
                             runInterruptible {
@@ -393,7 +393,7 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
 
         val fileName = existingFileName ?: upload.suggestedFileName
         val uploadUrl = collection.url.newBuilder().addPathSegment(fileName).build()
-        val remote = DavResource(httpClient.okHttpClient, uploadUrl)
+        val remote = DavResource(httpClient, uploadUrl)
 
         try {
             SyncException.wrapWithRemoteResourceSuspending(uploadUrl) {

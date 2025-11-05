@@ -24,7 +24,7 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
@@ -50,6 +50,7 @@ import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -99,7 +100,7 @@ import kotlin.jvm.optionals.getOrNull
  */
 class ContactsSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted httpClient: HttpClient,
+    @Assisted httpClient: OkHttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
     @Assisted localAddressBook: LocalAddressBook,
@@ -108,7 +109,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     accountSettingsFactory: AccountSettings.Factory,
-    private val httpClientBuilder: HttpClient.Builder,
+    private val httpClientBuilder: HttpClientBuilder,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
@@ -125,7 +126,7 @@ class ContactsSyncManager @AssistedInject constructor(
     interface Factory {
         fun contactsSyncManager(
             account: Account,
-            httpClient: HttpClient,
+            httpClient: OkHttpClient,
             syncResult: SyncResult,
             provider: ContentProviderClient,
             localAddressBook: LocalAddressBook,
@@ -161,7 +162,7 @@ class ContactsSyncManager @AssistedInject constructor(
                 return false
         }
 
-        davCollection = DavAddressBook(httpClient.okHttpClient, collection.url)
+        davCollection = DavAddressBook(httpClient, collection.url)
         resourceDownloader = ResourceDownloader(davCollection.location)
 
         logger.info("Contact group strategy: ${groupStrategy::class.java.simpleName}")
@@ -490,7 +491,7 @@ class ContactsSyncManager @AssistedInject constructor(
                 .followRedirects(true)      // allow redirects
                 .build()
             try {
-                val response = hostHttpClient.okHttpClient.newCall(Request.Builder()
+                val response = hostHttpClient.newCall(Request.Builder()
                     .get()
                     .url(httpUrl)
                     .build()).execute()

@@ -8,13 +8,13 @@ import android.os.ProxyFileDescriptorCallback
 import android.system.ErrnoException
 import android.system.OsConstants
 import androidx.annotation.RequiresApi
-import at.bitfire.davdroid.network.HttpClient
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineScope
 import okhttp3.HttpUrl
 import okhttp3.MediaType
+import okhttp3.OkHttpClient
 
 /**
  * Use this wrapper to ensure that all memory is released as soon as [onRelease] is called.
@@ -32,7 +32,7 @@ import okhttp3.MediaType
  */
 @RequiresApi(26)
 class RandomAccessCallbackWrapper @AssistedInject constructor(
-    @Assisted httpClient: HttpClient,
+    @Assisted httpClient: OkHttpClient,
     @Assisted url: HttpUrl,
     @Assisted mimeType: MediaType?,
     @Assisted headResponse: HeadResponse,
@@ -42,7 +42,7 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(httpClient: HttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallbackWrapper
+        fun create(httpClient: OkHttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallbackWrapper
     }
 
 

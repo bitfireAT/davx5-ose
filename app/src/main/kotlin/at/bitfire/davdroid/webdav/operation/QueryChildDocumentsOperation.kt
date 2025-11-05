@@ -129,7 +129,7 @@ class QueryChildDocumentsOperation @Inject constructor(
 
         val parentUrl = parent.toHttpUrl(db)
         val client = httpClientBuilder.build(parent.mountId)
-        val folder = DavCollection(client.okHttpClient, parentUrl)
+        val folder = DavCollection(client, parentUrl)
 
         try {
             runInterruptible(ioDispatcher) {

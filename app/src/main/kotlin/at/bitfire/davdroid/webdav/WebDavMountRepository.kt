@@ -12,7 +12,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Credentials
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -27,7 +27,7 @@ class WebDavMountRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val httpClientBuilder: Provider<HttpClient.Builder>
+    private val httpClientBuilder: Provider<HttpClientBuilder>
 ) {
 
     private val mountDao = db.webDavMountDao()
@@ -135,7 +135,7 @@ class WebDavMountRepository @Inject constructor(
         val httpClient = builder.build()
 
         var webdavUrl: HttpUrl? = null
-        val dav = DavResource(httpClient.okHttpClient, url)
+        val dav = DavResource(httpClient, url)
         runInterruptible {
             dav.options(followRedirects = true) { davCapabilities, response ->
                 if (davCapabilities.any { it in validVersions })

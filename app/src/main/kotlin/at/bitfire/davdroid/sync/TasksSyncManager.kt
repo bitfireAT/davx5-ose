@@ -19,7 +19,6 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
@@ -35,6 +34,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.property.ProdId
 import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
@@ -46,7 +46,7 @@ import java.util.logging.Level
  */
 class TasksSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted httpClient: HttpClient,
+    @Assisted httpClient: OkHttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTaskList,
     @Assisted collection: Collection,
@@ -67,7 +67,7 @@ class TasksSyncManager @AssistedInject constructor(
     interface Factory {
         fun tasksSyncManager(
             account: Account,
-            httpClient: HttpClient,
+            httpClient: OkHttpClient,
             syncResult: SyncResult,
             localCollection: LocalTaskList,
             collection: Collection,
@@ -77,7 +77,7 @@ class TasksSyncManager @AssistedInject constructor(
 
 
     override fun prepare(): Boolean {
-        davCollection = DavCalendar(httpClient.okHttpClient, collection.url)
+        davCollection = DavCalendar(httpClient, collection.url)
 
         return true
     }

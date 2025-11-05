@@ -9,7 +9,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.testing.BindValue
@@ -21,6 +21,7 @@ import io.mockk.junit4.MockKRule
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -47,7 +48,7 @@ class HomeSetRefresherTest {
     lateinit var db: AppDatabase
 
     @Inject
-    lateinit var httpClientBuilder: HttpClient.Builder
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     @Inject
     lateinit var logger: Logger
@@ -59,7 +60,7 @@ class HomeSetRefresherTest {
     @MockK(relaxed = true)
     lateinit var settings: SettingsManager
 
-    private lateinit var client: HttpClient
+    private lateinit var client: OkHttpClient
     private lateinit var mockServer: MockWebServer
     private lateinit var service: Service
 
@@ -100,7 +101,7 @@ class HomeSetRefresherTest {
         )
 
         // Refresh
-        homeSetRefresherFactory.create(service, client.okHttpClient)
+        homeSetRefresherFactory.create(service, client)
             .refreshHomesetsAndTheirCollections()
 
         // Check the collection defined in homeset is now in the database
@@ -136,7 +137,7 @@ class HomeSetRefresherTest {
         )
 
         // Refresh
-        homeSetRefresherFactory.create(service, client.okHttpClient).refreshHomesetsAndTheirCollections()
+        homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
 
         // Check the collection got updated
         assertEquals(
@@ -173,7 +174,7 @@ class HomeSetRefresherTest {
         )
 
         // Refresh
-        homeSetRefresherFactory.create(service, client.okHttpClient).refreshHomesetsAndTheirCollections()
+        homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
 
         // Check the collection got updated
         assertEquals(
@@ -213,7 +214,7 @@ class HomeSetRefresherTest {
         )
 
         // Refresh - should mark collection as homeless, because serverside homeset is empty.
-        homeSetRefresherFactory.create(service, client.okHttpClient).refreshHomesetsAndTheirCollections()
+        homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
 
         // Check the collection, is now marked as homeless
         assertEquals(null, db.collectionDao().get(collectionId)!!.homeSetId)
@@ -240,7 +241,7 @@ class HomeSetRefresherTest {
 
         // Refresh - homesets and their collections
         assertEquals(0, db.principalDao().getByService(service.id).size)
-        homeSetRefresherFactory.create(service, client.okHttpClient).refreshHomesetsAndTheirCollections()
+        homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
 
         // Check principal saved and the collection was updated with its reference
         val principals = db.principalDao().getByService(service.id)
@@ -277,7 +278,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        val refresher = homeSetRefresherFactory.create(service, client.okHttpClient)
+        val refresher = homeSetRefresherFactory.create(service, client)
         assertFalse(refresher.shouldPreselect(collection, homesets))
     }
 
@@ -302,7 +303,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        val refresher = homeSetRefresherFactory.create(service, client.okHttpClient)
+        val refresher = homeSetRefresherFactory.create(service, client)
         assertTrue(refresher.shouldPreselect(collection, homesets))
     }
 
@@ -329,7 +330,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        val refresher = homeSetRefresherFactory.create(service, client.okHttpClient)
+        val refresher = homeSetRefresherFactory.create(service, client)
         assertFalse(refresher.shouldPreselect(collection, homesets))
     }
 
@@ -354,7 +355,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        val refresher = homeSetRefresherFactory.create(service, client.okHttpClient)
+        val refresher = homeSetRefresherFactory.create(service, client)
         assertFalse(refresher.shouldPreselect(collection, homesets))
     }
 
@@ -379,7 +380,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        val refresher = homeSetRefresherFactory.create(service, client.okHttpClient)
+        val refresher = homeSetRefresherFactory.create(service, client)
         assertTrue(refresher.shouldPreselect(collection, homesets))
     }
 
@@ -406,7 +407,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        val refresher = homeSetRefresherFactory.create(service, client.okHttpClient)
+        val refresher = homeSetRefresherFactory.create(service, client)
         assertFalse(refresher.shouldPreselect(collection, homesets))
     }
 

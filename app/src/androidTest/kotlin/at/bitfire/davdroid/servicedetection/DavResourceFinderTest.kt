@@ -8,12 +8,13 @@ import android.security.NetworkSecurityPolicy
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
 import at.bitfire.dav4jvm.property.webdav.ResourceType
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -50,7 +51,7 @@ class DavResourceFinderTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var httpClientBuilder: HttpClient.Builder
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     @Inject
     lateinit var logger: Logger
@@ -59,7 +60,7 @@ class DavResourceFinderTest {
     lateinit var resourceFinderFactory: DavResourceFinder.Factory
 
     private lateinit var server: MockWebServer
-    private lateinit var client: HttpClient
+    private lateinit var client: OkHttpClient
     private lateinit var finder: DavResourceFinder
 
     @Before
@@ -91,7 +92,7 @@ class DavResourceFinderTest {
     fun testRememberIfAddressBookOrHomeset() {
         // recognize home set
         var info = ServiceInfo()
-        DavResource(client.okHttpClient, server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL))
+        DavResource(client, server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL))
                 .propfind(0, AddressbookHomeSet.NAME) { response, _ ->
             finder.scanResponse(ResourceType.ADDRESSBOOK, response, info)
         }
@@ -101,7 +102,7 @@ class DavResourceFinderTest {
 
         // recognize address book
         info = ServiceInfo()
-        DavResource(client.okHttpClient, server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK))
+        DavResource(client, server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK))
                 .propfind(0, ResourceType.NAME) { response, _ ->
             finder.scanResponse(ResourceType.ADDRESSBOOK, response, info)
         }

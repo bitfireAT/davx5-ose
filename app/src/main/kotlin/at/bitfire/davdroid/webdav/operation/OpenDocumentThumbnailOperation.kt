@@ -78,7 +78,7 @@ class OpenDocumentThumbnailOperation @Inject constructor(
                 withTimeout(THUMBNAIL_TIMEOUT_MS) {
                     val client = httpClientBuilder.build(doc.mountId, logBody = false)
                     val url = doc.toHttpUrl(db)
-                    val dav = DavResource(client.okHttpClient, url)
+                    val dav = DavResource(client, url)
                     var result: ByteArray? = null
                     runInterruptible(ioDispatcher) {
                         dav.get("image/*", null) { response ->

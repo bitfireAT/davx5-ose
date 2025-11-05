@@ -10,7 +10,6 @@ import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.HeadResponse
@@ -25,6 +24,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -100,7 +100,7 @@ class OpenDocumentOperation @Inject constructor(
         }
     }
 
-    private suspend fun headRequest(client: HttpClient, url: HttpUrl): HeadResponse = runInterruptible(ioDispatcher) {
+    private suspend fun headRequest(client: OkHttpClient, url: HttpUrl): HeadResponse = runInterruptible(ioDispatcher) {
         HeadResponse.fromUrl(client, url)
     }
 

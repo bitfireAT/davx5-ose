@@ -10,7 +10,6 @@ import android.content.ContentProviderClient
 import android.provider.ContactsContract
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.settings.AccountSettings
@@ -19,6 +18,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
 import java.util.logging.Level
 
 /**
@@ -58,7 +58,7 @@ class AddressBookSyncer @AssistedInject constructor(
         syncAddressBook(
             account = account,
             addressBook = localCollection,
-            httpClient = httpClient,
+            provideHttpClient = { httpClient },
             provider = provider,
             syncResult = syncResult,
             collection = remoteCollection
@@ -68,15 +68,16 @@ class AddressBookSyncer @AssistedInject constructor(
     /**
      * Synchronizes an address book
      *
-     * @param addressBook local address book
-     * @param provider Content provider to access android contacts
-     * @param syncResult Stores hard and soft sync errors
-     * @param collection The database collection associated with this address book
+     * @param addressBook       local address book
+     * @param provideHttpClient returns HTTP client on demand
+     * @param provider          content provider to access android contacts
+     * @param syncResult        stores hard and soft sync errors
+     * @param collection        the database collection associated with this address book
      */
     private fun syncAddressBook(
         account: Account,
         addressBook: LocalAddressBook,
-        httpClient: Lazy<HttpClient>,
+        provideHttpClient: () -> OkHttpClient,
         provider: ContentProviderClient,
         syncResult: SyncResult,
         collection: Collection
@@ -103,7 +104,7 @@ class AddressBookSyncer @AssistedInject constructor(
 
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(
                 account,
-                httpClient.value,
+                provideHttpClient(),
                 syncResult,
                 provider,
                 addressBook,
