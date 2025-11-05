@@ -169,7 +169,7 @@ class AccountRepository @Inject constructor(
     /**
      * Renames an account.
      *
-     * **Not**: It is highly advised to re-sync the account after renaming in order to restore
+     * **Note**: It is highly advised to re-sync the account after renaming in order to restore
      * a consistent state.
      *
      * @param oldName current name of the account

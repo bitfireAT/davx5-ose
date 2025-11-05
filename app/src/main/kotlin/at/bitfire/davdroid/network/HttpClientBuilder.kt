@@ -44,7 +44,7 @@ import javax.net.ssl.SSLContext
  * Builder for the [OkHttpClient].
  *
  * **Attention:** If the builder is injected, it shouldn't be used from multiple locations to generate different clients because then
- * there's only one [Builder] object and setting properties from one location would influence the others.
+ * there's only one [HttpClientBuilder] object and setting properties from one location would influence the others.
  *
  * To generate multiple clients, inject and use `Provider<HttpClientBuilder>` instead.
  */

@@ -8,6 +8,8 @@ import android.accounts.AccountManager
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.account.TestAccount.remove
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 
 object TestAccount {
@@ -28,6 +30,16 @@ object TestAccount {
         assertTrue(SystemAccountUtils.createAccount(targetContext, account, initialData))
 
         return account
+    }
+
+    /**
+     * Renames a test account in a blocking way (usually what you want in tests)
+     */
+    fun rename(account: Account, newName: String): Account {
+        val am = AccountManager.get(targetContext)
+        val newAccount = am.renameAccount(account, newName, null, null).result
+        assertEquals(newName, newAccount.name)
+        return newAccount
     }
 
     /**

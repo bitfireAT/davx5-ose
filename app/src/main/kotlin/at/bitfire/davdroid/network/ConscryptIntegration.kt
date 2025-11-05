@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.network
 
+import androidx.annotation.VisibleForTesting
 import org.conscrypt.Conscrypt
 import java.security.Security
 import java.util.logging.Logger
@@ -28,7 +29,7 @@ object ConscryptIntegration {
         if (initialized)
             return
 
-        val alreadyInstalled = Security.getProviders().any { Conscrypt.isConscrypt(it) }
+        val alreadyInstalled = conscryptInstalled()
         if (!alreadyInstalled) {
             // install Conscrypt as most preferred provider
             Security.insertProviderAt(Conscrypt.newProvider(), 1)
@@ -43,5 +44,9 @@ object ConscryptIntegration {
 
         initialized = true
     }
+
+    @VisibleForTesting
+    internal fun conscryptInstalled() =
+        Security.getProviders().any { Conscrypt.isConscrypt(it) }
 
 }
