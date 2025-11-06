@@ -186,7 +186,7 @@ dependencies {
     }
 
     // third-party libs
-    @Suppress("RedundantSuppression")
+    implementation(libs.conscrypt)
     implementation(libs.dnsjava)
     implementation(libs.guava)
     implementation(libs.mikepenz.aboutLibraries.m3)
