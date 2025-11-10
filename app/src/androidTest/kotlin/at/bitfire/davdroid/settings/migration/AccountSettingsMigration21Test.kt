@@ -90,7 +90,7 @@ class AccountSettingsMigration21Test {
 
         // Wait until we are in forever pending state (with timeout)
         withTimeout(10_000) {
-            inPendingState.filter { it }.first()
+            inPendingState.first { it }
         }
 
         // Assert again that we are now in the forever pending state
