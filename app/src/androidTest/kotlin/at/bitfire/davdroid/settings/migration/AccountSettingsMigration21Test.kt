@@ -15,13 +15,9 @@ import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
@@ -101,7 +97,7 @@ class AccountSettingsMigration21Test {
 
         // Wait for the state to change (with timeout)
         withTimeout(10_000) {
-            inPendingState.filter { !it }.first()
+            inPendingState.first { !it }
         }
 
         // Check the sync is now not pending anymore
