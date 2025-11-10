@@ -15,9 +15,13 @@ import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.After
@@ -50,8 +54,17 @@ class AccountSettingsMigration21Test {
     lateinit var account: Account
     val authority = CalendarContract.AUTHORITY
 
-    private val inPendingState = MutableStateFlow(false)
-    private lateinit var stateChangeListener: Any
+    private val inPendingState = callbackFlow {
+        val stateChangeListener = ContentResolver.addStatusChangeListener(
+            ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
+        ) {
+            trySend(ContentResolver.isSyncPending(account, authority))
+        }
+        trySend(ContentResolver.isSyncPending(account, authority))
+        awaitClose {
+            ContentResolver.removeStatusChangeListener(stateChangeListener)
+        }
+    }
 
     @Before
     fun setUp() {
@@ -61,18 +74,10 @@ class AccountSettingsMigration21Test {
 
         // Enable sync globally and for the test account
         ContentResolver.setIsSyncable(account, authority, 1)
-
-        // Watch pending sync framework state
-        stateChangeListener = ContentResolver.addStatusChangeListener(
-            ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
-        ) {
-            inPendingState.value = ContentResolver.isSyncPending(account, authority)
-        }
     }
 
     @After
     fun tearDown() {
-        ContentResolver.removeStatusChangeListener(stateChangeListener)
         TestAccount.remove(account)
     }
 
