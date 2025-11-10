@@ -8,8 +8,8 @@ import android.accounts.Account
 import android.content.Context
 import androidx.annotation.WorkerThread
 import at.bitfire.cert4android.CustomCertManager
-import at.bitfire.dav4jvm.BasicDigestAuthHandler
-import at.bitfire.dav4jvm.UrlUtils
+import at.bitfire.dav4jvm.okhttp.BasicDigestAuthHandler
+import at.bitfire.dav4jvm.okhttp.UrlUtils
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings

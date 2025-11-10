@@ -18,7 +18,6 @@ import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.okhttp.exception.DavException
 import at.bitfire.dav4jvm.okhttp.exception.HttpException
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.util.DavUtils
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader

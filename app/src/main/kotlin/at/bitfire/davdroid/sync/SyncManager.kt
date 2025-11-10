@@ -9,8 +9,6 @@ import android.content.Context
 import android.os.DeadObjectException
 import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
-import at.bitfire.dav4jvm.DavCollection
-import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.okhttp.DavCollection
