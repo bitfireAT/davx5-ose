@@ -232,9 +232,9 @@ class HttpClientBuilder @Inject constructor(
         // app-wide custom proxy support
         buildProxy(okBuilder)
 
-        // add authentication and connection security (including client certificates9
-        buildAuthentication(okBuilder)
+        // add connection security (including client certificates) and authentication
         buildConnectionSecurity(okBuilder)
+        buildAuthentication(okBuilder)
 
         // add network logging, if requested
         if (logger.isLoggable(Level.FINEST)) {
@@ -265,7 +265,7 @@ class HttpClientBuilder @Inject constructor(
                 logger.fine("Using certificate $alias for authentication")
 
                 // HTTP/2 doesn't support client certificates (yet)
-                // see https://tools.ietf.org/html/draft-ietf-httpbis-http2-secondary-certs-04
+                // see https://datatracker.ietf.org/doc/draft-ietf-httpbis-secondary-server-certs/
                 okBuilder.protocols(listOf(Protocol.HTTP_1_1))
 
                 manager
@@ -275,7 +275,7 @@ class HttpClientBuilder @Inject constructor(
             }
         }
 
-        // trust manager (depending on whether custom certificates are allowed)
+        // select trust manager and hostname verifier depending on whether custom certificates are allowed
         val customTrustManager: X509TrustManager?
         val customHostnameVerifier: HostnameVerifier?
 

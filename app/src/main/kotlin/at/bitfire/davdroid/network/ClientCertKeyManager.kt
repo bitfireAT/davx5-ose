@@ -6,6 +6,7 @@ package at.bitfire.davdroid.network
 
 import android.content.Context
 import android.security.KeyChain
+import android.security.KeyChainException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -19,9 +20,12 @@ import java.util.logging.Logger
 import javax.net.ssl.X509ExtendedKeyManager
 
 /**
- * KeyManager that provides a client certificate and private key from the Android KeyChain.
+ * KeyManager that provides a client certificate and private key from the Android [KeyChain].
  *
- * @throws IllegalArgumentException if the alias doesn't exist or is not accessible
+ * Requests for certificates / private keys for other aliases than the specified one
+ * will be ignored.
+ *
+ * @param alias     alias of the desired certificate / private key
  */
 class ClientCertKeyManager @AssistedInject constructor(
     @Assisted private val alias: String,
@@ -45,8 +49,12 @@ class ClientCertKeyManager @AssistedInject constructor(
             return null
 
         return try {
-            KeyChain.getCertificateChain(context, alias)
-        } catch (e: Exception) {
+            KeyChain.getCertificateChain(context, alias).also { result ->
+                if (result == null)
+                    logger.warning("Couldn't obtain certificate chain for alias $alias")
+            }
+        } catch (e: KeyChainException) {
+            // Android <Q throws an exception instead of returning null
             logger.log(Level.WARNING, "Couldn't obtain certificate chain for alias $alias", e)
             null
         }
@@ -57,8 +65,12 @@ class ClientCertKeyManager @AssistedInject constructor(
             return null
 
         return try {
-            KeyChain.getPrivateKey(context, alias)
-        } catch (e: Exception) {
+            KeyChain.getPrivateKey(context, alias).also { result ->
+                if (result == null)
+                    logger.log(Level.WARNING, "Couldn't obtain private key for alias $alias")
+            }
+        } catch (e: KeyChainException) {
+            // Android <Q throws an exception instead of returning null
             logger.log(Level.WARNING, "Couldn't obtain private key for alias $alias", e)
             null
         }
