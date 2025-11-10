@@ -52,7 +52,7 @@ class AccountSettingsMigration21 @Inject constructor(
             for (authority in possibleAuthorities) {
                 ContentResolver.requestSync(account, authority, extras)
                 logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $authority and $account")
-                Thread.sleep(100) // Allow some time for the request to be created
+                waitUntilPending(account, authority)
                 ContentResolver.cancelSync(account, null) // Ignores possibly set sync extras
             }
 
@@ -61,9 +61,20 @@ class AccountSettingsMigration21 @Inject constructor(
             for (addressBookAccount in addressBookAccounts) {
                 ContentResolver.requestSync(addressBookAccount, ContactsContract.AUTHORITY, extras)
                 logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $addressBookAccount")
-                Thread.sleep(100) // Allow some time for the request to be created
+                waitUntilPending(account, ContactsContract.AUTHORITY)
                 ContentResolver.cancelSync(addressBookAccount, null) // Ignores possibly set sync extras
             }
+        }
+    }
+
+    private fun waitUntilPending(account: Account, authority: String) {
+        if (ContentResolver.isSyncPending(account, authority)) return
+        val start = System.currentTimeMillis()
+        while (!ContentResolver.isSyncPending(account, authority)) {
+            // Wait max 5 sec
+            if (System.currentTimeMillis() - start > 5000)
+                break
+            Thread.sleep(10) // avoid busy-waiting
         }
     }
 
