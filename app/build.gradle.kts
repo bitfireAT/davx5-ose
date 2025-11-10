@@ -27,7 +27,8 @@ android {
         minSdk = 24        // Android 7.0
         targetSdk = 36     // Android 16
 
-        buildConfigField("boolean", "customCertsUI", "true")
+        // whether the build supports and allows to use custom certificates
+        buildConfigField("boolean", "allowCustomCerts", "true")
 
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
     }
