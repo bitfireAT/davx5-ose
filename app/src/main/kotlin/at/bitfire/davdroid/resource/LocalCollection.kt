@@ -4,6 +4,11 @@
 
 package at.bitfire.davdroid.resource
 
+/**
+ * This is an interface between the Syncer/SyncManager and a collection in the local storage.
+ *
+ * It defines operations that are used during sync for all sync data types.
+ */
 interface LocalCollection<out T: LocalResource> {
 
     /** a tag that uniquely identifies the collection (DAVx5-wide) */

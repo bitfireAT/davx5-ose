@@ -21,18 +21,22 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.Event
-import at.bitfire.ical4android.EventReader
-import at.bitfire.ical4android.EventWriter
 import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.synctools.exception.InvalidICalendarException
+import at.bitfire.synctools.icalendar.CalendarUidSplitter
+import at.bitfire.synctools.icalendar.ICalendarGenerator
+import at.bitfire.synctools.icalendar.ICalendarParser
+import at.bitfire.synctools.mapping.calendar.AndroidEventBuilder
+import at.bitfire.synctools.mapping.calendar.AndroidEventProcessor
+import at.bitfire.synctools.mapping.calendar.DefaultProdIdGenerator
+import at.bitfire.synctools.mapping.calendar.SequenceUpdater
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -40,9 +44,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
+import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Action
 import okhttp3.HttpUrl
-import okhttp3.RequestBody
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.Reader
 import java.io.StringReader
@@ -57,7 +62,7 @@ import java.util.logging.Level
  */
 class CalendarSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted httpClient: HttpClient,
+    @Assisted httpClient: OkHttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
     @Assisted collection: Collection,
@@ -79,7 +84,7 @@ class CalendarSyncManager @AssistedInject constructor(
     interface Factory {
         fun calendarSyncManager(
             account: Account,
-            httpClient: HttpClient,
+            httpClient: OkHttpClient,
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
             collection: Collection,
@@ -91,13 +96,15 @@ class CalendarSyncManager @AssistedInject constructor(
 
 
     override fun prepare(): Boolean {
-        davCollection = DavCalendar(httpClient.okHttpClient, collection.url)
+        davCollection = DavCalendar(httpClient, collection.url)
 
         // if there are dirty exceptions for events, mark their master events as dirty, too
-        localCollection.processDirtyExceptions()
+        val recurringCalendar = localCollection.recurringCalendar
+        recurringCalendar.processDeletedExceptions()
+        recurringCalendar.processDirtyExceptions()
 
         // now find dirty events that have no instances and set them to deleted
-        localCollection.deleteDirtyEventsWithoutInstances()
+        localCollection.androidCalendar.deleteDirtyEventsWithoutInstances()
 
         return true
     }
@@ -178,23 +185,37 @@ class CalendarSyncManager @AssistedInject constructor(
         return modified or superModified
     }
 
-    override fun onSuccessfulUpload(local: LocalEvent, newFileName: String, eTag: String?, scheduleTag: String?) {
-        super.onSuccessfulUpload(local, newFileName, eTag, scheduleTag)
+    override fun generateUpload(resource: LocalEvent): GeneratedResource {
+        val localEvent = resource.androidEvent
+        logger.log(Level.FINE, "Preparing upload of event #${resource.id}", localEvent)
 
-        // update local SEQUENCE to new value after successful upload
-        local.updateSequence(local.getCachedEvent().sequence)
+        // increase SEQUENCE of main event and remember value
+        val updatedSequence = SequenceUpdater().increaseSequence(localEvent.main)
+
+        // map Android event to iCalendar (also generates UID, if necessary)
+        val processor = AndroidEventProcessor(
+            accountName = resource.recurringCalendar.calendar.account.name,
+            prodIdGenerator = DefaultProdIdGenerator(Constants.iCalProdId)
+        )
+        val mappedEvents = processor.mapToVEvents(localEvent)
+
+        // persist UID if it was generated
+        if (mappedEvents.generatedUid)
+            resource.updateUid(mappedEvents.uid)
+
+        // generate iCalendar and convert to request body
+        val iCalWriter = StringWriter()
+        ICalendarGenerator().write(mappedEvents.associatedEvents, iCalWriter)
+        val requestBody = iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+
+        return GeneratedResource(
+            suggestedFileName = DavUtils.fileNameFromUid(mappedEvents.uid, "ics"),
+            requestBody = requestBody,
+            onSuccessContext = GeneratedResource.OnSuccessContext(
+                sequence = updatedSequence
+            )
+        )
     }
-
-    override fun generateUpload(resource: LocalEvent): RequestBody =
-        SyncException.wrapWithLocalResource(resource) {
-            val event = resource.eventToUpload()
-            logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
-
-            // write iCalendar to string and convert to request body
-            val iCalWriter = StringWriter()
-            EventWriter(Constants.iCalProdId).write(event, iCalWriter)
-            iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
-        }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
         // calculate time range limits
@@ -244,11 +265,11 @@ class CalendarSyncManager @AssistedInject constructor(
                             ?: throw DavException("Received multi-get response without ETag")
                         val scheduleTag = response[ScheduleTag::class.java]?.scheduleTag
 
-                        processVEvent(
-                            response.href.lastSegment,
-                            eTag,
-                            scheduleTag,
-                            StringReader(iCal)
+                        processICalendar(
+                            fileName = response.href.lastSegment,
+                            eTag = eTag,
+                            scheduleTag = scheduleTag,
+                            reader = StringReader(iCal)
                         )
                     }
                 }
@@ -261,56 +282,56 @@ class CalendarSyncManager @AssistedInject constructor(
 
     // helpers
 
-    private fun processVEvent(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
-        val events: List<Event>
-        try {
-            events = EventReader().readEvents(reader)
-        } catch (e: InvalidICalendarException) {
-            logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
-            notifyInvalidResource(e, fileName)
+    private fun processICalendar(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
+        val calendar =
+            try {
+                ICalendarParser().parse(reader)
+            } catch (e: InvalidICalendarException) {
+                logger.log(Level.WARNING, "Received invalid iCalendar, ignoring", e)
+                notifyInvalidResource(e, fileName)
+                return
+            }
+
+        val uidsAndEvents = CalendarUidSplitter<VEvent>().associateByUid(calendar, Component.VEVENT)
+        if (uidsAndEvents.size != 1) {
+            logger.warning("Received iCalendar with not exactly one UID; ignoring $fileName")
             return
         }
+        // Event: main VEVENT and potentially attached exceptions (further VEVENTs with RECURRENCE-ID)
+        val event = uidsAndEvents.values.first()
 
-        if (events.size == 1) {
-            val event = events.first()
-
-            // set default reminder for non-full-day events, if requested
-            val defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
-            if (defaultAlarmMinBefore != null && DateUtils.isDateTime(event.dtStart) && event.alarms.isEmpty()) {
-                val alarm = VAlarm(Duration.ofMinutes(-defaultAlarmMinBefore.toLong())).apply {
-                    // Sets METHOD_ALERT instead of METHOD_DEFAULT in the calendar provider.
-                    // Needed for calendars to actually show a notification.
-                    properties += Action.DISPLAY
-                }
-                logger.log(Level.FINE, "${event.uid}: Adding default alarm", alarm)
-                event.alarms += alarm
+        val defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
+        val mainEvent = event.main
+        if (mainEvent != null && defaultAlarmMinBefore != null && DateUtils.isDateTime(mainEvent.startDate) && mainEvent.alarms.isEmpty()) {
+            val alarm = VAlarm(Duration.ofMinutes(-defaultAlarmMinBefore.toLong())).apply {
+                // Sets METHOD_ALERT instead of METHOD_DEFAULT in the calendar provider.
+                // Needed for calendars to actually show a notification.
+                properties += Action.DISPLAY
             }
+            logger.log(Level.FINE, "${mainEvent.uid}: Adding default alarm", alarm)
+            mainEvent.components += alarm
+        }
 
-            // update local event, if it exists
-            val local = localCollection.findByName(fileName)
+        // map AssociatedEvents (VEVENTs) to EventAndExceptions (Android events)
+        val androidEvent = AndroidEventBuilder(
+            calendar = localCollection.androidCalendar,
+            syncId = fileName,
+            eTag = eTag,
+            scheduleTag = scheduleTag,
+            flags = LocalResource.FLAG_REMOTELY_PRESENT
+        ).build(event)
+
+        // update local event, if it exists
+        val local = localCollection.findByName(fileName)
+        if (local != null) {
             SyncException.wrapWithLocalResource(local) {
-                if (local != null) {
-                    logger.log(Level.INFO, "Updating $fileName in local calendar", event)
-                    local.update(
-                        data = event,
-                        fileName = fileName,
-                        eTag = eTag,
-                        scheduleTag = scheduleTag,
-                        flags = LocalResource.FLAG_REMOTELY_PRESENT
-                    )
-                } else {
-                    logger.log(Level.INFO, "Adding $fileName to local calendar", event)
-                    localCollection.add(
-                        event = event,
-                        fileName = fileName,
-                        eTag = eTag,
-                        scheduleTag = scheduleTag,
-                        flags = LocalResource.FLAG_REMOTELY_PRESENT
-                    )
-                }
+                logger.log(Level.INFO, "Updating $fileName in local calendar", event)
+                local.update(androidEvent)
             }
-        } else
-            logger.info("Received VCALENDAR with not exactly one VEVENT with UID and without RECURRENCE-ID; ignoring $fileName")
+        } else {
+            logger.log(Level.INFO, "Adding $fileName to local calendar", event)
+            localCollection.add(androidEvent)
+        }
     }
 
     override fun notifyInvalidResourceTitle(): String =

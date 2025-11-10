@@ -7,9 +7,10 @@ package at.bitfire.davdroid.servicedetection
 import android.security.NetworkSecurityPolicy
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -33,7 +34,7 @@ class ServiceRefresherTest {
     lateinit var db: AppDatabase
 
     @Inject
-    lateinit var httpClientBuilder: HttpClient.Builder
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     @Inject
     lateinit var logger: Logger
@@ -41,7 +42,7 @@ class ServiceRefresherTest {
     @Inject
     lateinit var serviceRefresherFactory: ServiceRefresher.Factory
 
-    private lateinit var client: HttpClient
+    private lateinit var client: OkHttpClient
     private lateinit var mockServer: MockWebServer
     private lateinit var service: Service
 
@@ -68,7 +69,6 @@ class ServiceRefresherTest {
 
     @After
     fun tearDown() {
-        client.close()
         mockServer.shutdown()
     }
 
@@ -78,7 +78,7 @@ class ServiceRefresherTest {
         val baseUrl = mockServer.url(PATH_CARDDAV + SUBPATH_PRINCIPAL)
 
         // Query home sets
-        serviceRefresherFactory.create(service, client.okHttpClient)
+        serviceRefresherFactory.create(service, client)
             .discoverHomesets(baseUrl)
 
         // Check home set has been saved correctly to database

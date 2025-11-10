@@ -26,7 +26,7 @@ import at.bitfire.dav4jvm.property.push.WebPushSubscription
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -41,6 +41,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.data.PushEndpoint
@@ -65,7 +66,7 @@ class PushRegistrationManager @Inject constructor(
     private val accountRepository: Lazy<AccountRepository>,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
-    private val httpClientBuilder: Provider<HttpClient.Builder>,
+    private val httpClientBuilder: Provider<HttpClientBuilder>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
@@ -180,25 +181,23 @@ class PushRegistrationManager @Inject constructor(
             return
 
         val account = accountRepository.get().fromName(service.accountName)
-        httpClientBuilder.get()
+        val httpClient = httpClientBuilder.get()
             .fromAccountAsync(account)
             .build()
-            .use { httpClient ->
-                for (collection in subscribeTo)
-                    try {
-                        val expires = collection.pushSubscriptionExpires
-                        // calculate next run time, but use the duplicate interval for safety (times are not exact)
-                        val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
-                        if (expires != null && expires >= nextRun.epochSecond)
-                            logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
-                        else {
-                            // no existing subscription or expiring soon
-                            logger.fine("Registering push subscription for ${collection.url}")
-                            subscribe(httpClient, collection, endpoint)
-                        }
-                    } catch (e: Exception) {
-                        logger.log(Level.WARNING, "Couldn't register subscription at CalDAV/CardDAV server", e)
-                    }
+        for (collection in subscribeTo)
+            try {
+                val expires = collection.pushSubscriptionExpires
+                // calculate next run time, but use the duplicate interval for safety (times are not exact)
+                val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
+                if (expires != null && expires >= nextRun.epochSecond)
+                    logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
+                else {
+                    // no existing subscription or expiring soon
+                    logger.fine("Registering push subscription for ${collection.url}")
+                    subscribe(httpClient, collection, endpoint)
+                }
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Couldn't register subscription at CalDAV/CardDAV server", e)
             }
     }
 
@@ -230,7 +229,7 @@ class PushRegistrationManager @Inject constructor(
      * @param collection    collection to subscribe to
      * @param endpoint      subscription to register
      */
-    private suspend fun subscribe(httpClient: HttpClient, collection: Collection, endpoint: PushEndpoint) {
+    private suspend fun subscribe(httpClient: OkHttpClient, collection: Collection, endpoint: PushEndpoint) {
         // requested expiration time: 3 days
         val requestedExpiration = Instant.now() + Duration.ofDays(3)
 
@@ -265,7 +264,7 @@ class PushRegistrationManager @Inject constructor(
 
         runInterruptible(ioDispatcher) {
             val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
-            DavCollection(httpClient.okHttpClient, collection.url).post(xml) { response ->
+            DavCollection(httpClient, collection.url).post(xml) { response ->
                 if (response.isSuccessful) {
                     // update subscription URL and expiration in DB
                     val subscriptionUrl = response.header("Location")
@@ -294,22 +293,20 @@ class PushRegistrationManager @Inject constructor(
             return
 
         val account = accountRepository.get().fromName(service.accountName)
-        httpClientBuilder.get()
+        val httpClient = httpClientBuilder.get()
             .fromAccountAsync(account)
             .build()
-            .use { httpClient ->
-                for (collection in from)
-                    collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
-                        logger.info("Unsubscribing Push from ${collection.url}")
-                        unsubscribe(httpClient, collection, url)
-                    }
+        for (collection in from)
+            collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
+                logger.info("Unsubscribing Push from ${collection.url}")
+                unsubscribe(httpClient, collection, url)
             }
     }
 
-    private suspend fun unsubscribe(httpClient: HttpClient, collection: Collection, url: HttpUrl) {
+    private suspend fun unsubscribe(httpClient: OkHttpClient, collection: Collection, url: HttpUrl) {
         try {
             runInterruptible(ioDispatcher) {
-                DavResource(httpClient.okHttpClient, url).delete {
+                DavResource(httpClient, url).delete {
                     // deleted
                 }
             }

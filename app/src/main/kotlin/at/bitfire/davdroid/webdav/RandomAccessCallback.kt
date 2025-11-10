@@ -37,13 +37,13 @@ import kotlinx.coroutines.runInterruptible
 import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.MediaType
+import okhttp3.OkHttpClient
 import java.io.InterruptedIOException
 import java.util.logging.Logger
-import javax.annotation.WillClose
 
 @RequiresApi(26)
 class RandomAccessCallback @AssistedInject constructor(
-    @Assisted @WillClose private val httpClient: HttpClient,
+    @Assisted private val httpClient: OkHttpClient,
     @Assisted private val url: HttpUrl,
     @Assisted private val mimeType: MediaType?,
     @Assisted headResponse: HeadResponse,
@@ -63,7 +63,7 @@ class RandomAccessCallback @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(httpClient: HttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallback
+        fun create(httpClient: OkHttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallback
     }
 
     data class PageIdentifier(
@@ -71,7 +71,7 @@ class RandomAccessCallback @AssistedInject constructor(
         val size: Int
     )
 
-    private val dav = DavResource(httpClient.okHttpClient, url)
+    private val dav = DavResource(httpClient, url)
 
     private val fileSize = headResponse.size ?: throw IllegalArgumentException("Can only be used with given file size")
     private val documentState = headResponse.toDocumentState() ?: throw IllegalArgumentException("Can only be used with ETag/Last-Modified")
@@ -127,7 +127,6 @@ class RandomAccessCallback @AssistedInject constructor(
 
         // free resources
         ioThread.quitSafely()
-        httpClient.close()
     }
 
 

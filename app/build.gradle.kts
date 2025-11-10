@@ -19,8 +19,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 405050004
-        versionName = "4.5.5"
+        versionCode = 405060002
+        versionName = "4.5.6-beta.1"
 
         base.archivesName = "davx5-ose-$versionName"
 
@@ -187,7 +187,7 @@ dependencies {
     }
 
     // third-party libs
-    @Suppress("RedundantSuppression")
+    implementation(libs.conscrypt)
     implementation(libs.dnsjava)
     implementation(libs.guava)
     implementation(libs.mikepenz.aboutLibraries.m3)

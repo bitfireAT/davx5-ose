@@ -11,7 +11,7 @@ import android.os.DeadObjectException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.ServiceType
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCollection
@@ -47,7 +47,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     lateinit var collectionRepository: DavCollectionRepository
 
     @Inject
-    lateinit var httpClientBuilder: HttpClient.Builder
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     @Inject
     lateinit var logger: Logger
@@ -65,7 +65,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         syncNotificationManagerFactory.create(account)
     }
 
-    val httpClient = lazy {
+    val httpClient by lazy {
         httpClientBuilder.fromAccount(account).build()
     }
 
@@ -273,8 +273,6 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 syncResult.numUnclassifiedErrors++ // Hard sync error
 
             } finally {
-                if (httpClient.isInitialized())
-                    httpClient.value.close()
                 logger.info("${dataStore.authority} sync of $account finished")
             }
         }

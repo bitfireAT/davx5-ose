@@ -27,11 +27,9 @@ import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidContactFactory
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
-import com.google.common.base.Ascii
 import com.google.common.base.MoreObjects
 import java.io.FileNotFoundException
 import java.util.Optional
-import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 class LocalContact: AndroidContact, LocalAddress {
@@ -69,25 +67,6 @@ class LocalContact: AndroidContact, LocalAddress {
         processor.registerBuilderFactory(UnknownPropertiesBuilder.Factory)
     }
 
-
-    override fun prepareForUpload(): String {
-        val contact = getContact()
-        val uid: String = contact.uid ?: run {
-            // generate new UID
-            val newUid = UUID.randomUUID().toString()
-
-            // update in contacts provider
-            val values = contentValuesOf(COLUMN_UID to newUid)
-            addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
-
-            // update this event
-            contact.uid = newUid
-
-            newUid
-        }
-
-        return "$uid.vcf"
-    }
 
     /**
      * Clears cached [contact] so that the next read of [contact] will query the content provider again.
@@ -137,6 +116,13 @@ class LocalContact: AndroidContact, LocalAddress {
         this.flags = flags
     }
 
+    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+
+    override fun updateUid(uid: String) {
+        val values = contentValuesOf(COLUMN_UID to uid)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+    }
+
     override fun deleteLocal() {
         delete()
     }
@@ -152,13 +138,15 @@ class LocalContact: AndroidContact, LocalAddress {
             .add("fileName", fileName)
             .add("eTag", eTag)
             .add("flags", flags)
-            .add("contact",
+            /*.add("contact",
                 try {
+                    // too dangerous, may contain unknown properties and cause another OOM
                     Ascii.truncate(getContact().toString(), 1000, "…")
                 } catch (e: Exception) {
                     e
                 }
-            ).toString()
+            )*/
+            .toString()
 
     override fun getViewUri(context: Context): Uri? =
         id?.let { idNotNull ->

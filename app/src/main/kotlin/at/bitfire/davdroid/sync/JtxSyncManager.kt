@@ -20,11 +20,11 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.exception.InvalidICalendarException
@@ -33,8 +33,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
+import net.fortuna.ical4j.model.property.ProdId
 import okhttp3.HttpUrl
-import okhttp3.RequestBody
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
@@ -43,7 +44,7 @@ import java.util.logging.Level
 
 class JtxSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted httpClient: HttpClient,
+    @Assisted httpClient: OkHttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
@@ -64,7 +65,7 @@ class JtxSyncManager @AssistedInject constructor(
     interface Factory {
         fun jtxSyncManager(
             account: Account,
-            httpClient: HttpClient,
+            httpClient: OkHttpClient,
             syncResult: SyncResult,
             localCollection: LocalJtxCollection,
             collection: Collection,
@@ -74,7 +75,7 @@ class JtxSyncManager @AssistedInject constructor(
 
 
     override fun prepare(): Boolean {
-        davCollection = DavCalendar(httpClient.okHttpClient, collection.url)
+        davCollection = DavCalendar(httpClient, collection.url)
 
         return true
     }
@@ -96,13 +97,17 @@ class JtxSyncManager @AssistedInject constructor(
             syncState
         }
 
-    override fun generateUpload(resource: LocalJtxICalObject): RequestBody =
-        SyncException.wrapWithLocalResource(resource) {
-            logger.log(Level.FINE, "Preparing upload of icalobject ${resource.fileName}", resource)
-            val os = ByteArrayOutputStream()
-            resource.write(os, Constants.iCalProdId)
-            os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
-        }
+    override fun generateUpload(resource: LocalJtxICalObject): GeneratedResource {
+        logger.log(Level.FINE, "Preparing upload of icalobject #${resource.id}")
+
+        val os = ByteArrayOutputStream()
+        resource.write(os, ProdId(Constants.iCalProdId))
+
+        return GeneratedResource(
+            suggestedFileName = DavUtils.fileNameFromUid(resource.uid, "ics"),
+            requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+        )
+    }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 

@@ -40,38 +40,37 @@ class CopyDocumentOperation @Inject constructor(
         if (srcDoc.mountId != dstFolder.mountId)
             throw UnsupportedOperationException("Can't COPY between WebDAV servers")
 
-        httpClientBuilder.build(srcDoc.mountId).use { client ->
-            val dav = DavResource(client.okHttpClient, srcDoc.toHttpUrl(db))
-            val dstUrl = dstFolder.toHttpUrl(db).newBuilder()
-                .addPathSegment(name)
-                .build()
+        val client = httpClientBuilder.build(srcDoc.mountId)
+        val dav = DavResource(client, srcDoc.toHttpUrl(db))
+        val dstUrl = dstFolder.toHttpUrl(db).newBuilder()
+            .addPathSegment(name)
+            .build()
 
-            try {
-                runInterruptible(ioDispatcher) {
-                    dav.copy(dstUrl, false) {
-                        // successfully copied
-                    }
+        try {
+            runInterruptible(ioDispatcher) {
+                dav.copy(dstUrl, false) {
+                    // successfully copied
                 }
-            } catch (e: HttpException) {
-                e.throwForDocumentProvider(context)
             }
-
-            val dstDocId = documentDao.insertOrReplace(
-                WebDavDocument(
-                    mountId = dstFolder.mountId,
-                    parentId = dstFolder.id,
-                    name = name,
-                    isDirectory = srcDoc.isDirectory,
-                    displayName = srcDoc.displayName,
-                    mimeType = srcDoc.mimeType,
-                    size = srcDoc.size
-                )
-            ).toString()
-
-            DocumentProviderUtils.notifyFolderChanged(context, targetParentDocumentId)
-
-            /* return */ dstDocId
+        } catch (e: HttpException) {
+            e.throwForDocumentProvider(context)
         }
+
+        val dstDocId = documentDao.insertOrReplace(
+            WebDavDocument(
+                mountId = dstFolder.mountId,
+                parentId = dstFolder.id,
+                name = name,
+                isDirectory = srcDoc.isDirectory,
+                displayName = srcDoc.displayName,
+                mimeType = srcDoc.mimeType,
+                size = srcDoc.size
+            )
+        ).toString()
+
+        DocumentProviderUtils.notifyFolderChanged(context, targetParentDocumentId)
+
+        /* return */ dstDocId
     }
 
 }

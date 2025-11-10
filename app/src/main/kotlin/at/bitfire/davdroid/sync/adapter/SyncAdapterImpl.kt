@@ -11,6 +11,7 @@ import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncResult
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import androidx.work.WorkInfo
@@ -25,6 +26,7 @@ import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import dagger.Lazy
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -59,6 +61,7 @@ class SyncAdapterImpl @Inject constructor(
     @ApplicationContext context: Context,
     private val logger: Logger,
     private val syncConditionsFactory: SyncConditions.Factory,
+    private val syncFrameworkIntegration: Lazy<SyncFrameworkIntegration>,
     private val syncWorkerManager: SyncWorkerManager
 ): AbstractThreadedSyncAdapter(
     /* context = */ context,
@@ -117,11 +120,11 @@ class SyncAdapterImpl @Inject constructor(
         // Android 14+ does not handle pending sync state correctly.
         // As a defensive workaround, we can cancel specifically this still pending sync only
         // See: https://github.com/bitfireAT/davx5-ose/issues/1458
-//        if (Build.VERSION.SDK_INT >= 34) {
-//            logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for " +
-//                    "account=$accountOrAddressBookAccount authority=$authority upload=$upload")
-//            syncFrameworkIntegration.cancelSync(accountOrAddressBookAccount, authority, extras)
-//        }
+        if (Build.VERSION.SDK_INT >= 34) {
+            logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for " +
+                    "account=$accountOrAddressBookAccount authority=$authority extras=$extras")
+            syncFrameworkIntegration.get().cancelSync(accountOrAddressBookAccount, authority, extras)
+        }
 
         /* Because we are not allowed to observe worker state on a background thread, we can not
         use it to block the sync adapter. Instead we use a Flow to get notified when the sync

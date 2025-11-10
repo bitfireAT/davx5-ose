@@ -8,7 +8,6 @@ import android.os.ParcelFileDescriptor
 import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.util.DavUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -19,18 +18,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.MediaType
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okio.BufferedSink
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
-import javax.annotation.WillClose
 
 /**
- * @param client    HTTP client ([StreamingFileDescriptor] is responsible to close it)
+ * @param client    HTTP client to use
  */
 class StreamingFileDescriptor @AssistedInject constructor(
-    @Assisted @WillClose private val client: HttpClient,
+    @Assisted private val client: OkHttpClient,
     @Assisted private val url: HttpUrl,
     @Assisted private val mimeType: MediaType?,
     @Assisted private val externalScope: CoroutineScope,
@@ -41,10 +40,10 @@ class StreamingFileDescriptor @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(client: HttpClient, url: HttpUrl, mimeType: MediaType?, externalScope: CoroutineScope, finishedCallback: OnSuccessCallback): StreamingFileDescriptor
+        fun create(client: OkHttpClient, url: HttpUrl, mimeType: MediaType?, externalScope: CoroutineScope, finishedCallback: OnSuccessCallback): StreamingFileDescriptor
     }
 
-    val dav = DavResource(client.okHttpClient, url)
+    val dav = DavResource(client, url)
     var transferred: Long = 0
 
     fun download() = doStreaming(false)
@@ -75,7 +74,6 @@ class StreamingFileDescriptor @AssistedInject constructor(
                     writeFd.close()
                 } catch (_: IOException) {}
 
-                client.close()
                 finishedCallback.onFinished(transferred, success)
             }
         }
@@ -124,7 +122,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
                 }
             }
         }
-        DavResource(client.okHttpClient, url).put(body) {
+        DavResource(client, url).put(body) {
             // upload successful
         }
     }

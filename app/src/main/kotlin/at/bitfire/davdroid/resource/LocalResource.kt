@@ -11,7 +11,9 @@ import at.bitfire.davdroid.resource.LocalResource.Companion.FLAG_REMOTELY_PRESEN
 import java.util.Optional
 
 /**
- * Defines operations that are used by SyncManager for all sync data types.
+ * This is an interface between the SyncManager and a resource in the local storage.
+ *
+ * It defines operations that are used by SyncManager for all sync data types.
  */
 interface LocalResource {
 
@@ -48,18 +50,6 @@ interface LocalResource {
     val flags: Int
 
     /**
-     * Prepares the resource for uploading:
-     *
-     *   1. If the resource doesn't have an UID yet, this method generates one and writes it to the content provider.
-     *   2. The new file name which can be used for the upload is derived from the UID and returned, but not
-     *   saved to the content provider. The sync manager is responsible for saving the file name that
-     *   was actually used.
-     *
-     * @return suggestion for new file name of the resource (like "<uid>.vcf")
-     */
-    fun prepareForUpload(): String
-
-    /**
      * Unsets the _dirty_ field of the resource and updates other sync-related fields in the content provider.
      * Does not affect `this` object itself (which is immutable).
      *
@@ -77,6 +67,19 @@ interface LocalResource {
      * At the moment, the only allowed values are 0 and [FLAG_REMOTELY_PRESENT].
      */
     fun updateFlags(flags: Int)
+
+    /**
+     * Updates the local UID of the resource in the content provider.
+     * Usually used to persist a UID that has been created during an upload of a locally created resource.
+     */
+    fun updateUid(uid: String)
+
+    /**
+     * Updates the local SEQUENCE of the resource in the content provider.
+     *
+     * @throws NotImplementedError  if SEQUENCE update is not supported
+     */
+    fun updateSequence(sequence: Int)
 
     /**
      * Deletes the data object from the content provider.

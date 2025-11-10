@@ -32,8 +32,8 @@ import javax.inject.Inject
  * See https://docs.nextcloud.com/server/latest/developer_manual/client_apis/LoginFlow/index.html#login-flow-v2
  */
 class NextcloudLoginFlow @Inject constructor(
-    httpClientBuilder: HttpClient.Builder
-): AutoCloseable {
+    httpClientBuilder: HttpClientBuilder
+) {
 
     companion object {
         const val FLOW_V1_PATH = "index.php/login/flow"
@@ -43,12 +43,7 @@ class NextcloudLoginFlow @Inject constructor(
         const val DAV_PATH = "remote.php/dav"
     }
 
-    val httpClient = httpClientBuilder
-        .build()
-
-    override fun close() {
-        httpClient.close()
-    }
+    val httpClient = httpClientBuilder.build()
 
 
     // Login flow state
@@ -120,7 +115,7 @@ class NextcloudLoginFlow @Inject constructor(
             .post(requestBody)
             .build()
         val response = runInterruptible {
-            httpClient.okHttpClient.newCall(postRq).execute()
+            httpClient.newCall(postRq).execute()
         }
 
         if (response.code != HttpURLConnection.HTTP_OK)

@@ -30,7 +30,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.CollectionType
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -43,6 +43,7 @@ import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VTimeZone
+import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.Version
 import okhttp3.HttpUrl
 import java.io.StringWriter
@@ -58,7 +59,7 @@ class DavCollectionRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
-    private val httpClientBuilder: Provider<HttpClient.Builder>,
+    private val httpClientBuilder: Provider<HttpClientBuilder>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val serviceRepository: DavServiceRepository
 ) {
@@ -172,21 +173,20 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.getBlocking(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        httpClientBuilder.get().fromAccount(account).build().use { httpClient ->
-            runInterruptible(ioDispatcher) {
-                try {
-                    DavResource(httpClient.okHttpClient, collection.url).delete {
-                        // success, otherwise an exception would have been thrown → delete locally, too
-                        delete(collection)
-                    }
-                } catch (e: HttpException) {
-                    if (e is NotFoundException || e is GoneException) {
-                        // HTTP 404 Not Found or 410 Gone (collection is not there anymore) -> delete locally, too
-                        logger.info("Collection ${collection.url} not found on server, deleting locally")
-                        delete(collection)
-                    } else
-                        throw e
+        val httpClient = httpClientBuilder.get().fromAccount(account).build()
+        runInterruptible(ioDispatcher) {
+            try {
+                DavResource(httpClient, collection.url).delete {
+                    // success, otherwise an exception would have been thrown → delete locally, too
+                    delete(collection)
                 }
+            } catch (e: HttpException) {
+                if (e is NotFoundException || e is GoneException) {
+                    // HTTP 404 Not Found or 410 Gone (collection is not there anymore) -> delete locally, too
+                    logger.info("Collection ${collection.url} not found on server, deleting locally")
+                    delete(collection)
+                } else
+                    throw e
             }
         }
     }
@@ -289,19 +289,17 @@ class DavCollectionRepository @Inject constructor(
     // helpers
 
     private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
-        httpClientBuilder.get()
+        val httpClient = httpClientBuilder.get()
             .fromAccount(account)
             .build()
-            .use { httpClient ->
-                runInterruptible(ioDispatcher) {
-                    DavResource(httpClient.okHttpClient, url).mkCol(
-                        xmlBody = xmlBody,
-                        method = method
-                    ) {
-                        // success, otherwise an exception would have been thrown
-                    }
-                }
+        runInterruptible(ioDispatcher) {
+            DavResource(httpClient, url).mkCol(
+                xmlBody = xmlBody,
+                method = method
+            ) {
+                // success, otherwise an exception would have been thrown
             }
+        }
     }
 
     private fun generateMkColXml(
@@ -376,7 +374,7 @@ class DavCollectionRepository @Inject constructor(
                                         Calendar(
                                             PropertyList<Property>().apply {
                                                 add(Version.VERSION_2_0)
-                                                add(Constants.iCalProdId)
+                                                add(ProdId(Constants.iCalProdId))
                                             },
                                             ComponentList(
                                                 listOf(vTimezone)
