@@ -10,7 +10,8 @@ import at.bitfire.davdroid.settings.AccountSettings
 interface AccountSettingsMigration {
 
     /**
-     * Migrate the account settings from the old version to the new version.
+     * Migrate the account settings from the old version to the new version which
+     * is set in [AccountSettings.CURRENT_VERSION].
      *
      * **The new (target) version number is registered in the Hilt module as [Int] key of the multi-binding of [AccountSettings].**
      *

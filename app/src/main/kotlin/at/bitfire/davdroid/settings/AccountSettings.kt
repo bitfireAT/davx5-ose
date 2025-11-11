@@ -355,7 +355,12 @@ class AccountSettings @AssistedInject constructor(
 
     companion object {
 
-        const val CURRENT_VERSION = 20
+        /**
+         * Current (usually the newest) account settings version. It's used to
+         * determine whether a migration ([AccountSettingsMigration])
+         * should be performed.
+         */
+        const val CURRENT_VERSION = 21
         const val KEY_SETTINGS_VERSION = "version"
 
         const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"
