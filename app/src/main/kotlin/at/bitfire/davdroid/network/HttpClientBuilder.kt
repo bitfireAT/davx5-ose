@@ -295,7 +295,7 @@ class HttpClientBuilder @Inject constructor(
             customHostnameVerifier = null
         }
 
-        // change settings only if we have at least only one cust component
+        // change settings only if we have at least only one custom component
         if (clientKeyManager != null || customTrustManager != null) {
             val trustManager = customTrustManager ?: defaultTrustManager()
 
