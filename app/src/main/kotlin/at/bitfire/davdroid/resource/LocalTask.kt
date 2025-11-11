@@ -21,11 +21,6 @@ import java.util.Optional
 
 class LocalTask: DmfsTask, LocalResource {
 
-    companion object {
-        const val COLUMN_ETAG = Tasks.SYNC1
-        const val COLUMN_FLAGS = Tasks.SYNC2
-    }
-
     override var fileName: String? = null
 
     override var scheduleTag: String? = null
@@ -144,5 +139,10 @@ class LocalTask: DmfsTask, LocalResource {
     object Factory: DmfsTaskFactory<LocalTask> {
         override fun fromProvider(taskList: DmfsTaskList<*>, values: ContentValues) =
                 LocalTask(taskList, values)
+    }
+
+    companion object {
+        const val COLUMN_ETAG = Tasks.SYNC1
+        const val COLUMN_FLAGS = Tasks.SYNC2
     }
 }
