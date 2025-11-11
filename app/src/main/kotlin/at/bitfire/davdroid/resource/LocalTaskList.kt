@@ -47,24 +47,28 @@ class LocalTaskList private constructor(
         get() = name ?: id.toString()
 
     override var lastSyncState: SyncState?
-        get() {
-            try {
-                provider.query(taskListSyncUri(), arrayOf(TaskLists.SYNC_VERSION),
-                        null, null, null)?.use { cursor ->
-                    if (cursor.moveToNext())
-                        cursor.getString(0)?.let {
-                            return SyncState.fromString(it)
-                        }
-                }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't read sync state", e)
-            }
-            return null
-        }
+        get() = readSyncState()?.let { SyncState.fromString(it) }
         set(state) {
-            val values = contentValuesOf(TaskLists.SYNC_VERSION to state?.toString())
-            provider.update(taskListSyncUri(), values, null, null)
+            writeSyncState(state.toString())
         }
+//        get() {
+//            try {
+//                provider.query(taskListSyncUri(), arrayOf(TaskLists.SYNC_VERSION),
+//                        null, null, null)?.use { cursor ->
+//                    if (cursor.moveToNext())
+//                        cursor.getString(0)?.let {
+//                            return SyncState.fromString(it)
+//                        }
+//                }
+//            } catch (e: Exception) {
+//                logger.log(Level.WARNING, "Couldn't read sync state", e)
+//            }
+//            return null
+//        }
+//        set(state) {
+//            val values = contentValuesOf(TaskLists.SYNC_VERSION to state?.toString())
+//            provider.update(taskListSyncUri(), values, null, null)
+//        }
 
 
     override fun populate(values: ContentValues) {
