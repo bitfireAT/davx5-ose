@@ -33,12 +33,16 @@ import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.security.KeyStore
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.KeyManager
 import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 /**
  * Builder for the [OkHttpClient].
@@ -79,6 +83,7 @@ class HttpClientBuilder @Inject constructor(
     }
 
     private var loggerInterceptorLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
+
     fun loggerInterceptorLevel(level: HttpLoggingInterceptor.Level): HttpClientBuilder {
         loggerInterceptorLevel = level
         return this
@@ -86,6 +91,7 @@ class HttpClientBuilder @Inject constructor(
 
     // default cookie store for non-persistent cookies (some services like Horde use cookies for session tracking)
     private var cookieStore: CookieJar = MemoryCookieStore()
+
     fun setCookieStore(cookieStore: CookieJar): HttpClientBuilder {
         this.cookieStore = cookieStore
         return this
@@ -94,6 +100,7 @@ class HttpClientBuilder @Inject constructor(
     private var authenticationInterceptor: Interceptor? = null
     private var authenticator: Authenticator? = null
     private var certificateAlias: String? = null
+
     fun authenticate(host: String?, getCredentials: () -> Credentials, updateAuthState: ((AuthState) -> Unit)? = null): HttpClientBuilder {
         val credentials = getCredentials()
         if (credentials.authState != null) {
@@ -130,6 +137,7 @@ class HttpClientBuilder @Inject constructor(
     }
 
     private var followRedirects = false
+
     fun followRedirects(follow: Boolean): HttpClientBuilder {
         followRedirects = follow
         return this
@@ -224,7 +232,8 @@ class HttpClientBuilder @Inject constructor(
         // app-wide custom proxy support
         buildProxy(okBuilder)
 
-        // add authentication
+        // add connection security (including client certificates) and authentication
+        buildConnectionSecurity(okBuilder)
         buildAuthentication(okBuilder)
 
         // add network logging, if requested
@@ -246,15 +255,17 @@ class HttpClientBuilder @Inject constructor(
         // basic/digest auth and OAuth
         authenticationInterceptor?.let { okBuilder.addInterceptor(it) }
         authenticator?.let { okBuilder.authenticator(it) }
+    }
 
+    private fun buildConnectionSecurity(okBuilder: OkHttpClient.Builder) {
         // client certificate
-        val keyManager: KeyManager? = certificateAlias?.let { alias ->
+        val clientKeyManager: KeyManager? = certificateAlias?.let { alias ->
             try {
                 val manager = keyManagerFactory.create(alias)
                 logger.fine("Using certificate $alias for authentication")
 
                 // HTTP/2 doesn't support client certificates (yet)
-                // see https://tools.ietf.org/html/draft-ietf-httpbis-http2-secondary-certs-04
+                // see https://datatracker.ietf.org/doc/draft-ietf-httpbis-secondary-server-certs/
                 okBuilder.protocols(listOf(Protocol.HTTP_1_1))
 
                 manager
@@ -264,25 +275,49 @@ class HttpClientBuilder @Inject constructor(
             }
         }
 
-        // cert4android integration
-        val certManager = CustomCertManager(
-            context = context,
-            trustSystemCerts = !settingsManager.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES),
-            appInForeground = if (BuildConfig.customCertsUI)
-                ForegroundTracker.inForeground  // interactive mode
-            else
-                null                            // non-interactive mode
-        )
+        // select trust manager and hostname verifier depending on whether custom certificates are allowed
+        val customTrustManager: X509TrustManager?
+        val customHostnameVerifier: HostnameVerifier?
 
-        val sslContext = SSLContext.getInstance("TLS")
-        sslContext.init(
-            /* km = */ if (keyManager != null) arrayOf(keyManager) else null,
-            /* tm = */ arrayOf(certManager),
-            /* random = */ null
-        )
-        okBuilder
-            .sslSocketFactory(sslContext.socketFactory, certManager)
-            .hostnameVerifier(certManager.HostnameVerifier(OkHostnameVerifier))
+        if (BuildConfig.allowCustomCerts) {
+            // use cert4android for custom certificate handling
+            customTrustManager = CustomCertManager(
+                context = context,
+                trustSystemCerts = !settingsManager.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES),
+                appInForeground = ForegroundTracker.inForeground
+            )
+            // allow users to accept certificates with wrong host names
+            customHostnameVerifier = customTrustManager.HostnameVerifier(OkHostnameVerifier)
+
+        } else {
+            // no custom certificates, use default trust manager and hostname verifier
+            customTrustManager = null
+            customHostnameVerifier = null
+        }
+
+        // change settings only if we have at least only one custom component
+        if (clientKeyManager != null || customTrustManager != null) {
+            val trustManager = customTrustManager ?: defaultTrustManager()
+
+            // use trust manager and client key manager (if defined) for TLS connections
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(
+                /* km = */ if (clientKeyManager != null) arrayOf(clientKeyManager) else null,
+                /* tm = */ arrayOf(trustManager),
+                /* random = */ null
+            )
+            okBuilder.sslSocketFactory(sslContext.socketFactory, trustManager)
+        }
+
+        // also add the custom hostname verifier (if defined)
+        if (customHostnameVerifier != null)
+            okBuilder.hostnameVerifier(customHostnameVerifier)
+    }
+
+    private fun defaultTrustManager(): X509TrustManager {
+        val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        factory.init(null as KeyStore?)
+        return factory.trustManagers.filterIsInstance<X509TrustManager>().first()
     }
 
     private fun buildProxy(okBuilder: OkHttpClient.Builder) {
