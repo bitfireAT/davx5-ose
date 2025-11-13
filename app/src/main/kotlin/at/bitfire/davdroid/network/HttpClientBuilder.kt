@@ -188,7 +188,7 @@ class HttpClientBuilder @Inject constructor(
     /**
      * Builds an [OkHttpClient] with the configured settings.
      *
-     * Must be called only once because multiple calls indicate this wrong usage pattern:
+     * [build] or [buildKtor] must be called only once because multiple calls indicate this wrong usage pattern:
      *
      * ```
      * val builder = HttpClientBuilder(/*injected*/)
@@ -352,7 +352,7 @@ class HttpClientBuilder @Inject constructor(
      * Set timeouts for the connection.
      *
      * **Note:** According to [android.content.AbstractThreadedSyncAdapter], when there is no network
-     *     // traffic within a minute, a sync will be cancelled.
+     * traffic within a minute, a sync will be cancelled.
      */
     private fun buildTimeouts(builder: OkHttpClient.Builder) {
         builder.connectTimeout(15, TimeUnit.SECONDS)
@@ -367,7 +367,7 @@ class HttpClientBuilder @Inject constructor(
     /**
      * Builds a Ktor [HttpClient] with the configured settings.
      *
-     * Must be called only once because multiple calls indicate this wrong usage pattern:
+     * [buildKtor] or [build] must be called only once because multiple calls indicate this wrong usage pattern:
      *
      * ```
      * val builder = HttpClientBuilder(/*injected*/)
