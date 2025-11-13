@@ -19,6 +19,8 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.ForegroundTracker
 import com.google.common.net.HttpHeaders
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
@@ -181,7 +183,7 @@ class HttpClientBuilder @Inject constructor(
     }
 
 
-    // actual builder
+    // okhttp builder
 
     /**
      * Builds the [OkHttpClient].
@@ -203,38 +205,34 @@ class HttpClientBuilder @Inject constructor(
         if (alreadyBuilt)
             throw IllegalStateException("build() must only be called once; use Provider<HttpClientBuilder>")
 
-        val okBuilder = OkHttpClient.Builder()
-            // Set timeouts. According to [AbstractThreadedSyncAdapter], when there is no network
-            // traffic within a minute, a sync will be cancelled.
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(120, TimeUnit.SECONDS)
-            .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
+        val builder = OkHttpClient.Builder()
+        buildOkhttp(builder)
 
-            // don't allow redirects by default because it would break PROPFIND handling
-            .followRedirects(followRedirects)
+        alreadyBuilt = true
+        return builder.build()
+    }
 
-            // add User-Agent to every request
-            .addInterceptor(UserAgentInterceptor)
+    private fun buildOkhttp(builder: OkHttpClient.Builder) {
+        buildTimeouts(builder)
 
-            // connection-private cookie store
-            .cookieJar(cookieStore)
+        // don't allow redirects by default because it would break PROPFIND handling
+        builder.followRedirects(followRedirects)
 
-            // allow cleartext and TLS 1.2+
-            .connectionSpecs(listOf(
-                ConnectionSpec.Companion.CLEARTEXT,
-                ConnectionSpec.Companion.MODERN_TLS
-            ))
+        // add User-Agent to every request
+        builder.addInterceptor(UserAgentInterceptor)
 
-            // offer Brotli and gzip compression (can be disabled per request with `Accept-Encoding: identity`)
-            .addInterceptor(BrotliInterceptor)
+        // connection-private cookie store
+        builder.cookieJar(cookieStore)
+
+        // offer Brotli and gzip compression (can be disabled per request with `Accept-Encoding: identity`)
+        builder.addInterceptor(BrotliInterceptor)
 
         // app-wide custom proxy support
-        buildProxy(okBuilder)
+        buildProxy(builder)
 
         // add connection security (including client certificates) and authentication
-        buildConnectionSecurity(okBuilder)
-        buildAuthentication(okBuilder)
+        buildConnectionSecurity(builder)
+        buildAuthentication(builder)
 
         // add network logging, if requested
         if (logger.isLoggable(Level.FINEST)) {
@@ -244,11 +242,8 @@ class HttpClientBuilder @Inject constructor(
             loggingInterceptor.redactHeader(HttpHeaders.SET_COOKIE)
             loggingInterceptor.redactHeader(HttpHeaders.SET_COOKIE2)
             loggingInterceptor.level = loggerInterceptorLevel
-            okBuilder.addNetworkInterceptor(loggingInterceptor)
+            builder.addNetworkInterceptor(loggingInterceptor)
         }
-
-        alreadyBuilt = true
-        return okBuilder.build()
     }
 
     private fun buildAuthentication(okBuilder: OkHttpClient.Builder) {
@@ -258,6 +253,12 @@ class HttpClientBuilder @Inject constructor(
     }
 
     private fun buildConnectionSecurity(okBuilder: OkHttpClient.Builder) {
+        // allow cleartext and TLS 1.2+
+        okBuilder.connectionSpecs(listOf(
+            ConnectionSpec.CLEARTEXT,
+            ConnectionSpec.MODERN_TLS
+        ))
+
         // client certificate
         val clientKeyManager: KeyManager? = certificateAlias?.let { alias ->
             try {
@@ -344,6 +345,43 @@ class HttpClientBuilder @Inject constructor(
         } catch (e: Exception) {
             logger.log(Level.SEVERE, "Can't set proxy, ignoring", e)
         }
+    }
+
+    /**
+     * Set timeouts for the connection.
+     *
+     * **Note:** According to [android.content.AbstractThreadedSyncAdapter], when there is no network
+     *     // traffic within a minute, a sync will be cancelled.
+     */
+    private fun buildTimeouts(builder: OkHttpClient.Builder) {
+        builder.connectTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(120, TimeUnit.SECONDS)
+            .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
+    }
+
+
+    // Ktor builder
+
+    fun buildKtor(): HttpClient {
+        if (alreadyBuilt)
+            throw IllegalStateException("build() must only be called once; use Provider<HttpClientBuilder>")
+
+        val client = HttpClient(OkHttp) {
+            // Ktor-level configuration here
+
+            engine {
+                // okhttp engine configuration here
+
+                config {
+                    // OkHttpClient.Builder configuration here
+                    buildOkhttp(this)
+                }
+            }
+        }
+
+        alreadyBuilt = true
+        return client
     }
 
 }
