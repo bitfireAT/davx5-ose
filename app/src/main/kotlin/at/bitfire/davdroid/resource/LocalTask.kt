@@ -121,7 +121,7 @@ class LocalTask: DmfsTask, LocalResource {
     }
 
     companion object {
-        const val COLUMN_ETAG = Tasks.SYNC1
-        const val COLUMN_FLAGS = Tasks.SYNC2
+        private const val COLUMN_ETAG = Tasks.SYNC1
+        private const val COLUMN_FLAGS = Tasks.SYNC2
     }
 }

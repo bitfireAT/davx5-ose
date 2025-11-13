@@ -7,6 +7,7 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import androidx.core.content.contentValuesOf
+import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.DmfsTaskListFactory
 import at.bitfire.ical4android.TaskProvider
@@ -73,7 +74,7 @@ class LocalTaskList private constructor(
 
 
     override fun markNotDirty(flags: Int): Int {
-        val values = contentValuesOf(LocalTask.COLUMN_FLAGS to flags)
+        val values = contentValuesOf(DmfsTask.COLUMN_FLAGS to flags)
         return provider.update(tasksSyncUri(), values,
                 "${Tasks.LIST_ID}=? AND ${Tasks._DIRTY}=0",
                 arrayOf(id.toString()))
@@ -81,11 +82,11 @@ class LocalTaskList private constructor(
 
     override fun removeNotDirtyMarked(flags: Int) =
             provider.delete(tasksSyncUri(),
-                    "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${LocalTask.COLUMN_FLAGS}=?",
+                    "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${DmfsTask.COLUMN_FLAGS}=?",
                     arrayOf(id.toString(), flags.toString()))
 
     override fun forgetETags() {
-        val values = contentValuesOf(LocalTask.COLUMN_ETAG to null)
+        val values = contentValuesOf(DmfsTask.COLUMN_ETAG to null)
         provider.update(tasksSyncUri(), values, "${Tasks.LIST_ID}=?",
                 arrayOf(id.toString()))
     }
