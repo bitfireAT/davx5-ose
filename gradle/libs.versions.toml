@@ -36,7 +36,7 @@ mikepenz-aboutLibraries = "13.1.0"
 mockk = "1.14.5"
 okhttp = "5.3.0"
 openid-appauth = "0.11.1"
-roboelectric = "4.16"
+robolectric = "4.16"
 room = "2.8.3"
 unifiedpush = "3.1.2"
 unifiedpush-fcm = "3.0.0"
@@ -102,7 +102,7 @@ okhttp-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version.ref = "
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 openid-appauth = { module = "net.openid:appauth", version.ref = "openid-appauth" }
-roboelectric = { module = "org.robolectric:robolectric", version.ref = "roboelectric" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 room-base = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
