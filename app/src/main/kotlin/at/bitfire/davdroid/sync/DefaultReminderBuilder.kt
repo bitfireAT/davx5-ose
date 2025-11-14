@@ -11,6 +11,12 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
 
+/**
+ * Builder for default reminders / alarms that can be added to events
+ * if this is enabled in app settings.
+ *
+ * @param minBefore     how many minutes before the entry the alarm should be added (usually taken from app settings)
+ */
 class DefaultReminderBuilder(
     private val minBefore: Int
 ) {
