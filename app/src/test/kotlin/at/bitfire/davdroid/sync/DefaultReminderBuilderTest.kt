@@ -10,6 +10,7 @@ import android.provider.CalendarContract.Events
 import android.provider.CalendarContract.Reminders
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
+import at.bitfire.synctools.test.assertEntitiesEqual
 import at.bitfire.synctools.test.assertEventAndExceptionsEqual
 import org.junit.Assert.assertFalse
 import org.junit.Test
@@ -34,19 +35,35 @@ class DefaultReminderBuilderTest {
         builder.add(to = event)
         assertEventAndExceptionsEqual(
             EventAndExceptions(
-                main = Entity(contentValuesOf(
-                    Reminders.MINUTES to 15,
-                    Reminders.METHOD to Reminders.METHOD_ALERT
-                )),
-                exceptions = listOf(
-                    Entity(contentValuesOf(
+                main = Entity(ContentValues()).apply {
+                    addSubValue(Reminders.CONTENT_URI, contentValuesOf(
                         Reminders.MINUTES to 15,
                         Reminders.METHOD to Reminders.METHOD_ALERT
                     ))
+                },
+                exceptions = listOf(
+                    Entity(ContentValues()).apply {
+                        addSubValue(Reminders.CONTENT_URI, contentValuesOf(
+                            Reminders.MINUTES to 15,
+                            Reminders.METHOD to Reminders.METHOD_ALERT
+                        ))
+                    }
                 )
             ),
             event
         )
+    }
+
+    @Test
+    fun `addToEvent() adds to non-all-day event without other reminder`() {
+        val entity = Entity(ContentValues())
+        builder.addToEvent(entity)
+        assertEntitiesEqual(Entity(ContentValues()).apply {
+            addSubValue(Reminders.CONTENT_URI, contentValuesOf(
+                Reminders.MINUTES to 15,
+                Reminders.METHOD to Reminders.METHOD_ALERT
+            ))
+        }, entity)
     }
 
     @Test
@@ -56,6 +73,23 @@ class DefaultReminderBuilderTest {
         ))
         builder.addToEvent(entity)
         assertFalse(entity.subValues.any { it.uri == Reminders.CONTENT_URI })
+    }
+
+    @Test
+    fun `addToEvent() doesn't add to event with another reminder`() {
+        val entity = Entity(ContentValues()).apply {
+            addSubValue(Reminders.CONTENT_URI, contentValuesOf(
+                Reminders.MINUTES to 30,
+                Reminders.METHOD to Reminders.METHOD_ALERT
+            ))
+        }
+        builder.addToEvent(entity)
+        assertEntitiesEqual(Entity(ContentValues()).apply {
+            addSubValue(Reminders.CONTENT_URI, contentValuesOf(
+                Reminders.MINUTES to 30,
+                Reminders.METHOD to Reminders.METHOD_ALERT
+            ))
+        }, entity)
     }
 
 }
