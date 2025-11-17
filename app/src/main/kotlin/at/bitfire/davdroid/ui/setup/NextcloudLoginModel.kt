@@ -10,13 +10,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.network.NextcloudLoginFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.ktor.http.URLParserException
 import io.ktor.http.Url
 import kotlinx.coroutines.launch
 import java.util.logging.Level
@@ -56,11 +56,7 @@ class NextcloudLoginModel @AssistedInject constructor(
                 baseUrl
             else
                 "https://$baseUrl"
-        val baseKtorUrl = try {
-            Url(baseUrlWithPrefix)
-        } catch (_: URLParserException) {
-            null
-        }
+        val baseKtorUrl = baseUrlWithPrefix.toUrlOrNull()
 
         val canContinue = !inProgress && baseKtorUrl != null
     }
