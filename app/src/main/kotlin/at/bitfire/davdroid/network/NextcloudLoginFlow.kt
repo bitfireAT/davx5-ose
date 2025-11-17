@@ -5,26 +5,21 @@
 package at.bitfire.davdroid.network
 
 import androidx.annotation.VisibleForTesting
-import at.bitfire.dav4jvm.exception.DavException
-import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.ui.setup.LoginInfo
 import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.davdroid.util.withTrailingSlash
 import at.bitfire.vcard4android.GroupMethod
+import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
 import io.ktor.http.path
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
+import kotlinx.serialization.Serializable
 import java.net.URI
 import javax.inject.Inject
 
@@ -40,28 +35,34 @@ class NextcloudLoginFlow @Inject constructor(
     private val httpClient = httpClientBuilder.buildKtor()
 
     // Login flow state
-    var loginUrl: Url? = null
     var pollUrl: Url? = null
     var token: String? = null
 
-    suspend fun initiate(baseUrl: Url): Url? {
-        loginUrl = null
+    /**
+     * Starts Nextcloud Login Flow v2.
+     *
+     * @param baseUrl   Nextcloud login flow or base URL
+     *
+     * @return URL that should be opened in the browser (login screen)
+     */
+    suspend fun start(baseUrl: Url): Url {
+        // reset fields in case something goes wrong
         pollUrl = null
         token = null
 
-        val json = postForJson(initiateUrl(baseUrl), "")
+        // POST to login flow URL in order to receive endpoint data
+        val result = httpClient.post(loginFlowUrl(baseUrl))
+        val endpointData: EndpointData = result.body()
 
-        loginUrl = Url(json.getString("login"))
-        json.getJSONObject("poll").let { poll ->
-            pollUrl = Url(poll.getString("endpoint"))
-            token = poll.getString("token")
-        }
+        // save endpoint data for polling
+        pollUrl = Url(endpointData.poll.endpoint)
+        token = endpointData.poll.token
 
-        return loginUrl
+        return Url(endpointData.login)
     }
 
     @VisibleForTesting      // TODO test
-    internal fun initiateUrl(baseUrl: Url): Url {
+    internal fun loginFlowUrl(baseUrl: Url): Url {
         return when {
             // already a Login Flow v2 URL
             baseUrl.encodedPath.endsWith(FLOW_V2_PATH) ->
@@ -89,44 +90,50 @@ class NextcloudLoginFlow @Inject constructor(
         val token = token ?: throw IllegalArgumentException("Missing token")
 
         // send HTTP request to request server, login name and app password
-        val json = postForJson(pollUrl, "token=$token", ContentType.Application.FormUrlEncoded)
+        val result = httpClient.post(pollUrl) {
+            contentType(ContentType.Application.FormUrlEncoded)
+            setBody("token=$token")
+        }
+        val loginData: LoginData = result.body()
 
         // make sure server URL ends with a slash so that DAV_PATH can be appended
-        val serverUrl = json.getString("server").withTrailingSlash()
+        val serverUrl = loginData.server.withTrailingSlash()
 
         return LoginInfo(
             baseUri = URI(serverUrl).resolve(DAV_PATH),
             credentials = Credentials(
-                username = json.getString("loginName"),
-                password = json.getString("appPassword").toSensitiveString()
+                username = loginData.loginName,
+                password = loginData.appPassword.toSensitiveString()
             ),
             suggestedGroupMethod = GroupMethod.CATEGORIES
         )
     }
 
-    private suspend fun postForJson(url: Url, body: String, contentType: ContentType? = null): JSONObject = withContext(Dispatchers.IO) {
-        val response = httpClient.post(url) {
-            if (contentType != null)
-                contentType(contentType)
-            setBody(body)
-        }
 
-        if (response.status != HttpStatusCode.OK)
-            throw HttpException(/* TODO replace by response */
-                response.status.description,
-                statusCode = response.status.value,
-                requestExcerpt = null,
-                responseExcerpt = null
-            )
-
-        val body = response.bodyAsText()
-        val mimeType = response.contentType() ?: throw DavException("Login Flow response without MIME type")
-        if (!mimeType.match(ContentType.Application.Json))
-            throw DavException("Invalid Login Flow response (not JSON)")
-
-        // decode JSON
-        return@withContext JSONObject(body)
+    /**
+     * Represents the JSON response that is returned on the first call to `/login/v2`.
+     */
+    @Serializable
+    private data class EndpointData(
+        val poll: Poll,
+        val login: String
+    ) {
+        @Serializable
+        data class Poll(
+            val token: String,
+            val endpoint: String
+        )
     }
+
+    /**
+     * Represents the JSON response that is returned by the polling endpoint.
+     */
+    @Serializable
+    private data class LoginData(
+        val server: String,
+        val loginName: String,
+        val appPassword: String
+    )
 
 
     companion object {

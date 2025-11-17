@@ -7,8 +7,8 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
-
     alias(libs.plugins.mikepenz.aboutLibraries.android)
 }
 
@@ -190,8 +190,10 @@ dependencies {
     implementation(libs.conscrypt)
     implementation(libs.dnsjava)
     implementation(libs.guava)
+    implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.mikepenz.aboutLibraries.m3)
     implementation(libs.okhttp.base)
     implementation(libs.okhttp.brotli)

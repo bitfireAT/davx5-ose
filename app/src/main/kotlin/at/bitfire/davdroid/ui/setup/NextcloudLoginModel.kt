@@ -112,13 +112,12 @@ class NextcloudLoginModel @AssistedInject constructor(
 
         viewModelScope.launch {
             try {
-                val loginUrl = loginFlow.initiate(baseUrl)
+                val loginUrl = loginFlow.start(baseUrl)
 
                 uiState = uiState.copy(
                     loginUrl = loginUrl,
                     inProgress = false
                 )
-
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Initiating Login Flow failed", e)
 
