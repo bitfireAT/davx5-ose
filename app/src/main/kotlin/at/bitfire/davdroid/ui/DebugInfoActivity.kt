@@ -155,16 +155,14 @@ class DebugInfoActivity: AppCompatActivity() {
      */
     private fun buildViewLocalResourceIntent(uri: Uri): Intent? =
         when (uri.authority) {
-            ContactsContract.AUTHORITY -> // Any contacts app
+            ContactsContract.AUTHORITY ->                       // Any contacts app
                 Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(uri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
                 }
 
-            CalendarContract.AUTHORITY,   // Any calendar app
-            tasksAppManager.get().currentProvider()?.authority ->  // Only JtxBoard or OpenTasks
-                Intent(Intent.ACTION_VIEW, uri)
-
-            JtxContract.JtxICalObject.VIEW_INTENT_HOST -> // JtxBoard only. For journals and notes
+            CalendarContract.AUTHORITY,                         // Any calendar app
+            tasksAppManager.get().currentProvider()?.authority, // Only JtxBoard or OpenTasks for tasks
+            JtxContract.JtxICalObject.VIEW_INTENT_HOST ->       // JtxBoard only for journals and notes
                 Intent(Intent.ACTION_VIEW, uri)
 
             else -> null
