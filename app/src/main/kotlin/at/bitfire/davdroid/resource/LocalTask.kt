@@ -136,7 +136,7 @@ class LocalTask: DmfsTask, LocalResource {
         val supportedProviders = listOf(
             TaskProvider.ProviderName.JtxBoard,
             TaskProvider.ProviderName.OpenTasks,
-            // Tasks.org can't handle view content URIs via (no intent-filter)
+            // Tasks.org can't handle view content URIs (missing intent-filter)
         )
         if (taskList.providerName !in supportedProviders)
             return null
