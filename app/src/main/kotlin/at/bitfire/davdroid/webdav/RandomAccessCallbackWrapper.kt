@@ -15,9 +15,6 @@ import io.ktor.client.HttpClient
 import io.ktor.http.ContentType
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
-import okhttp3.HttpUrl
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
 
 /**
  * Use this wrapper to ensure that all memory is released as soon as [onRelease] is called.
@@ -45,7 +42,7 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(httpClient: OkHttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallbackWrapper
+        fun create(httpClient: HttpClient, url: Url, mimeType: ContentType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallbackWrapper
     }
 
 

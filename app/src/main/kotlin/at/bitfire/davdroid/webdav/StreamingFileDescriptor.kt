@@ -23,9 +23,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.HttpUrl
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -45,7 +42,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(client: OkHttpClient, url: HttpUrl, mimeType: MediaType?, externalScope: CoroutineScope, finishedCallback: OnSuccessCallback): StreamingFileDescriptor
+        fun create(client: HttpClient, url: Url, mimeType: ContentType?, externalScope: CoroutineScope, finishedCallback: OnSuccessCallback): StreamingFileDescriptor
     }
 
     val dav = DavResource(client, url)

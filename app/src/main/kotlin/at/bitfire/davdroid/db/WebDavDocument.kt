@@ -13,13 +13,18 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.davdroid.util.DavUtils.MEDIA_TYPE_OCTET_STREAM
 import at.bitfire.davdroid.webdav.DocumentState
 import io.ktor.http.ContentType
+import io.ktor.http.URLBuilder
+import io.ktor.http.Url
+import io.ktor.http.appendPathSegments
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.FileNotFoundException
 import java.time.Instant
+import java.util.LinkedList
 
 @Entity(
     tableName = "webdav_document",
@@ -111,6 +116,7 @@ data class WebDavDocument(
         return bundle
     }
 
+    @Deprecated("Use toUrl instead")
     suspend fun toHttpUrl(db: AppDatabase): HttpUrl {
         val mount = db.webDavMountDao().getById(mountId)
 
@@ -126,6 +132,24 @@ data class WebDavDocument(
         for (segment in segments.reversed())
             builder.addPathSegment(segment)
         return builder.build()
+    }
+
+    suspend fun toUrl(db: AppDatabase): Url {
+        val mount = db.webDavMountDao().getById(mountId)
+
+        val segments = LinkedList<String>()
+        segments += name
+
+        var parentIter = parentId
+        while (parentIter != null) {
+            val parent = db.webDavDocumentDao().get(parentIter) ?: throw FileNotFoundException()
+            segments.addFirst(parent.name)
+            parentIter = parent.parentId
+        }
+
+        return URLBuilder(mount.url.toKtorUrl())
+            .appendPathSegments(segments)
+            .build()
     }
 
 

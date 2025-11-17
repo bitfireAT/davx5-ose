@@ -4,12 +4,12 @@
 
 package at.bitfire.davdroid.webdav
 
-import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.HttpUtils
-import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
+import io.ktor.client.HttpClient
+import io.ktor.http.HttpHeaders
+import io.ktor.http.Url
 import java.time.Instant
 
 /**
@@ -26,26 +26,25 @@ data class HeadResponse(
 
     companion object {
 
-        @WorkerThread
-        fun fromUrl(client: OkHttpClient, url: HttpUrl): HeadResponse {
+        suspend fun fromUrl(client: HttpClient, url: Url): HeadResponse {
             var size: Long? = null
             var eTag: String? = null
             var lastModified: Instant? = null
             var supportsPartial: Boolean? = null
 
             DavResource(client, url).head { response ->
-                response.header("ETag", null)?.let {
+                response.headers[HttpHeaders.ETag]?.let {
                     val getETag = GetETag(it)
                     if (!getETag.weak)
                         eTag = getETag.eTag
                 }
-                response.header("Last-Modified", null)?.let {
+                response.headers[HttpHeaders.LastModified]?.let {
                     lastModified = HttpUtils.parseDate(it)
                 }
-                response.headers["Content-Length"]?.let {
+                response.headers[HttpHeaders.ContentLength]?.let {
                     size = it.toLong()
                 }
-                response.headers["Accept-Ranges"]?.let { acceptRangesStr ->
+                response.headers[HttpHeaders.AcceptRanges]?.let { acceptRangesStr ->
                     val acceptRanges = acceptRangesStr.split(',').map { it.trim().lowercase() }
                     when {
                         acceptRanges.contains("none") -> supportsPartial = false

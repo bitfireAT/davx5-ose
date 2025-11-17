@@ -66,7 +66,7 @@ import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import at.bitfire.davdroid.util.DavUtils
+import io.ktor.http.ContentType
 import kotlinx.coroutines.delay
 import okhttp3.HttpUrl
 
@@ -312,7 +312,7 @@ fun WebdavMountsItem(
                 val browser = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
                     result.data?.data?.let { uri ->
                         ShareCompat.IntentBuilder(context)
-                            .setType(DavUtils.MIME_TYPE_ACCEPT_ALL)
+                            .setType(ContentType.Any.toString())
                             .addStream(uri)
                             .startChooser()
                     }

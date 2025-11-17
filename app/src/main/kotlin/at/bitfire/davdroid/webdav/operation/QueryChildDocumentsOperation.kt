@@ -28,12 +28,12 @@ import at.bitfire.davdroid.webdav.DocumentSortByMapper
 import at.bitfire.davdroid.webdav.DocumentsCursor
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.http.ContentType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.FileNotFoundException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
@@ -156,7 +156,7 @@ class QueryChildDocumentsOperation @Inject constructor(
                         isDirectory = response[ResourceType::class.java]?.types?.contains(ResourceType.COLLECTION)
                             ?: resource.isDirectory,
                         displayName = response[DisplayName::class.java]?.displayName,
-                        mimeType = response[GetContentType::class.java]?.type?.toMediaTypeOrNull(),
+                        mimeType = response[GetContentType::class.java]?.type?.let { ContentType.parse(it) },
                         eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
                         lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
                         size = response[GetContentLength::class.java]?.contentLength,

@@ -16,15 +16,15 @@ import at.bitfire.davdroid.webdav.HeadResponse
 import at.bitfire.davdroid.webdav.RandomAccessCallbackWrapper
 import at.bitfire.davdroid.webdav.StreamingFileDescriptor
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.client.HttpClient
+import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.runInterruptible
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
+import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -45,8 +45,8 @@ class OpenDocumentOperation @Inject constructor(
         logger.fine("WebDAV openDocument $documentId $mode $signal")
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
-        val url = doc.toHttpUrl(db)
-        val client = httpClientBuilder.build(doc.mountId, logBody = false)
+        val url = doc.toUrl(db)
+        val client = httpClientBuilder.buildKtor(doc.mountId, logBody = false)
 
         val readOnlyMode = when (mode) {
             "r" -> true
@@ -100,7 +100,7 @@ class OpenDocumentOperation @Inject constructor(
         }
     }
 
-    private suspend fun headRequest(client: OkHttpClient, url: HttpUrl): HeadResponse = runInterruptible(ioDispatcher) {
+    private suspend fun headRequest(client: HttpClient, url: Url): HeadResponse = withContext(ioDispatcher) {
         HeadResponse.fromUrl(client, url)
     }
 

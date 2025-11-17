@@ -16,10 +16,10 @@ import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.http.ContentType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import java.io.FileNotFoundException
 import java.util.logging.Logger
@@ -67,7 +67,7 @@ class CreateDocumentOperation @Inject constructor(
                         parentId = parent.id,
                         name = newName,
                         isDirectory = createDirectory,
-                        mimeType = mimeType.toMediaTypeOrNull(),
+                        mimeType = ContentType.parse(mimeType),
                         eTag = null,
                         lastModified = null,
                         size = if (createDirectory) null else 0
