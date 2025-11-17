@@ -11,6 +11,9 @@ import androidx.annotation.RequiresApi
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
+import io.ktor.http.ContentType
+import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
 import okhttp3.HttpUrl
 import okhttp3.MediaType
@@ -32,9 +35,9 @@ import okhttp3.OkHttpClient
  */
 @RequiresApi(26)
 class RandomAccessCallbackWrapper @AssistedInject constructor(
-    @Assisted httpClient: OkHttpClient,
-    @Assisted url: HttpUrl,
-    @Assisted mimeType: MediaType?,
+    @Assisted httpClient: HttpClient,
+    @Assisted url: Url,
+    @Assisted mimeType: ContentType?,
     @Assisted headResponse: HeadResponse,
     @Assisted externalScope: CoroutineScope,
     callbackFactory: RandomAccessCallback.Factory

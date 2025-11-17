@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.util
 
 import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
+import io.ktor.http.ContentType
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -18,8 +19,6 @@ import java.util.UUID
   */
 object DavUtils {
 
-    const val MIME_TYPE_ACCEPT_ALL = "*/*"
-
     val MEDIA_TYPE_JCARD = "application/vcard+json".toMediaType()
     val MEDIA_TYPE_OCTET_STREAM = "application/octet-stream".toMediaType()
     val MEDIA_TYPE_VCARD = "text/vcard".toMediaType()
@@ -32,11 +31,11 @@ object DavUtils {
      *
      * @return `media-range` for `Accept` header that accepts anything, but prefers [preferred] (if it was specified)
      */
-    fun acceptAnything(preferred: MediaType?): String =
+    fun acceptAnything(preferred: ContentType?): String =
         if (preferred != null)
-            "$preferred, $MIME_TYPE_ACCEPT_ALL;q=0.8"
+            "$preferred, ${ContentType.Any};q=0.8"
         else
-            MIME_TYPE_ACCEPT_ALL
+            ContentType.Any.toString()
 
     @Suppress("FunctionName")
     fun ARGBtoCalDAVColor(colorWithAlpha: Int): String {

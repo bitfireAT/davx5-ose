@@ -5,12 +5,11 @@
 package at.bitfire.davdroid.db
 
 import androidx.room.TypeConverter
+import io.ktor.http.ContentType
 import io.ktor.http.URLParserException
 import io.ktor.http.Url
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 
 class Converters {
 
@@ -19,16 +18,18 @@ class Converters {
         url?.toString()
 
     @TypeConverter
-    fun mediaTypeToString(mediaType: MediaType?) =
-        mediaType?.toString()
+    fun contentTypeToString(contentType: ContentType?) =
+        contentType?.toString()
 
     @TypeConverter
     fun stringToHttpUrl(url: String?): HttpUrl? =
         url?.toHttpUrlOrNull()
 
     @TypeConverter
-    fun stringToMediaType(mimeType: String?): MediaType? =
-        mimeType?.toMediaTypeOrNull()
+    fun stringToContentType(mimeType: String?): ContentType? =
+        mimeType?.let {
+            ContentType.parse(it)
+        }
 
     @TypeConverter
     fun stringToUrl(url: String?): Url? =

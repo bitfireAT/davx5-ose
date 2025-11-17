@@ -5,22 +5,27 @@
 package at.bitfire.davdroid.webdav
 
 import android.os.ParcelFileDescriptor
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.util.DavUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.http.ContentType
+import io.ktor.http.Url
+import io.ktor.http.isSuccess
+import io.ktor.utils.io.jvm.javaio.copyTo
+import io.ktor.utils.io.jvm.javaio.toByteReadChannel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
-import okhttp3.RequestBody
-import okio.BufferedSink
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -29,9 +34,9 @@ import java.util.logging.Logger
  * @param client    HTTP client to use
  */
 class StreamingFileDescriptor @AssistedInject constructor(
-    @Assisted private val client: OkHttpClient,
-    @Assisted private val url: HttpUrl,
-    @Assisted private val mimeType: MediaType?,
+    @Assisted private val client: HttpClient,
+    @Assisted private val url: Url,
+    @Assisted private val mimeType: ContentType?,
     @Assisted private val externalScope: CoroutineScope,
     @Assisted private val finishedCallback: OnSuccessCallback,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
@@ -89,20 +94,14 @@ class StreamingFileDescriptor @AssistedInject constructor(
      *
      * @param writeFd   destination file descriptor (could for instance represent a local file)
      */
-    private suspend fun downloadNow(writeFd: ParcelFileDescriptor) = runInterruptible(ioDispatcher) {
+    private suspend fun downloadNow(writeFd: ParcelFileDescriptor) = withContext(ioDispatcher) {
         dav.get(DavUtils.acceptAnything(preferred = mimeType), null) { response ->
-            response.body.use { body ->
-                if (response.isSuccessful) {
-                    ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { destination ->
-                        body.byteStream().use { source ->
-                            transferred += source.copyTo(destination)
-                        }
-                        logger.finer("Downloaded $transferred byte(s) from $url")
-                    }
-
-                } else
-                    writeFd.closeWithError("${response.code} ${response.message}")
-            }
+            if (response.status.isSuccess())
+                ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { destination ->
+                    response.bodyAsChannel().copyTo(destination)
+                }
+            else
+                writeFd.closeWithError(response.status.toString())
         }
     }
 
@@ -111,19 +110,14 @@ class StreamingFileDescriptor @AssistedInject constructor(
      *
      * @param readFd    source file descriptor (could for instance represent a local file)
      */
-    private suspend fun uploadNow(readFd: ParcelFileDescriptor) = runInterruptible(ioDispatcher) {
-        val body = object: RequestBody() {
-            override fun contentType(): MediaType? = mimeType
-            override fun isOneShot() = true
-            override fun writeTo(sink: BufferedSink) {
-                ParcelFileDescriptor.AutoCloseInputStream(readFd).use { input ->
-                    transferred += input.copyTo(sink.outputStream())
-                    logger.finer("Uploaded $transferred byte(s) to $url")
-                }
+    private suspend fun uploadNow(readFd: ParcelFileDescriptor) = withContext(ioDispatcher) {
+        ParcelFileDescriptor.AutoCloseInputStream(readFd).use { stream ->
+            DavResource(client, url).put(
+                stream.toByteReadChannel(),
+                mimeType ?: ContentType.Application.OctetStream
+            ) {
+                // upload successful
             }
-        }
-        DavResource(client, url).put(body) {
-            // upload successful
         }
     }
 

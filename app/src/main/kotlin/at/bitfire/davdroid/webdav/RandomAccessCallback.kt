@@ -28,6 +28,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
 import io.ktor.client.statement.bodyAsBytes
+import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
@@ -38,7 +39,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import okhttp3.MediaType
 import java.io.InterruptedIOException
 import java.util.logging.Logger
 
@@ -46,7 +46,7 @@ import java.util.logging.Logger
 class RandomAccessCallback @AssistedInject constructor(
     @Assisted private val httpClient: HttpClient,
     @Assisted private val url: Url,
-    @Assisted private val mimeType: MediaType?,
+    @Assisted private val mimeType: ContentType?,
     @Assisted headResponse: HeadResponse,
     @Assisted private val externalScope: CoroutineScope,
     @ApplicationContext private val context: Context,
@@ -64,7 +64,7 @@ class RandomAccessCallback @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(httpClient: HttpClient, url: Url, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallback
+        fun create(httpClient: HttpClient, url: Url, mimeType: ContentType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallback
     }
 
     data class PageIdentifier(

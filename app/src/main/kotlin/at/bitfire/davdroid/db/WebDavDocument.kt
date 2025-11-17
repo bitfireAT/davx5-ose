@@ -15,8 +15,8 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import at.bitfire.davdroid.util.DavUtils.MEDIA_TYPE_OCTET_STREAM
 import at.bitfire.davdroid.webdav.DocumentState
+import io.ktor.http.ContentType
 import okhttp3.HttpUrl
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.FileNotFoundException
 import java.time.Instant
@@ -49,7 +49,7 @@ data class WebDavDocument(
     val isDirectory: Boolean = false,
 
     val displayName: String? = null,
-    val mimeType: MediaType? = null,
+    val mimeType: ContentType? = null,
     val eTag: String? = null,
     val lastModified: Long? = null,
     val size: Long? = null,
@@ -97,7 +97,7 @@ data class WebDavDocument(
                 MEDIA_TYPE_OCTET_STREAM
 
             bundle.putString(Document.COLUMN_MIME_TYPE, reportedMimeType.toString())
-            if (mimeType?.type == "image")
+            if (mimeType?.contentType == "image")
                 flags += Document.FLAG_SUPPORTS_THUMBNAIL
             if (mayWriteContent != false)
                 flags += Document.FLAG_SUPPORTS_WRITE
