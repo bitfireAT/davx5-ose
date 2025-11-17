@@ -260,7 +260,7 @@ class DebugInfoActivity: AppCompatActivity() {
         internal const val EXTRA_LOCAL_RESOURCE_SUMMARY = "localResourceSummary"
 
         /** [Uri] of local resource related to the problem (as [android.os.Parcelable]) */
-        internal const val EXTRA_LOCAL_RESOURCE_URI = "localResourceId"
+        internal const val EXTRA_LOCAL_RESOURCE_URI = "localResourceUri"
 
         /** logs related to the problem (plain-text [String]) */
         private const val EXTRA_LOGS = "logs"
