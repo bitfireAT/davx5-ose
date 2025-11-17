@@ -6,6 +6,7 @@ package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
 import android.provider.DocumentsContract.Document
+import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
 import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
@@ -16,7 +17,6 @@ import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.ktor.http.ContentType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
@@ -67,7 +67,7 @@ class CreateDocumentOperation @Inject constructor(
                         parentId = parent.id,
                         name = newName,
                         isDirectory = createDirectory,
-                        mimeType = ContentType.parse(mimeType),
+                        mimeType = mimeType.toContentTypeOrNull(),
                         eTag = null,
                         lastModified = null,
                         size = if (createDirectory) null else 0

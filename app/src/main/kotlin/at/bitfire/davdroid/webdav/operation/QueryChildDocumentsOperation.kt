@@ -7,6 +7,7 @@ package at.bitfire.davdroid.webdav.operation
 import android.content.Context
 import android.provider.DocumentsContract.Document
 import android.provider.DocumentsContract.buildChildDocumentsUri
+import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
 import at.bitfire.dav4jvm.okhttp.DavCollection
 import at.bitfire.dav4jvm.okhttp.Response
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
@@ -28,7 +29,6 @@ import at.bitfire.davdroid.webdav.DocumentSortByMapper
 import at.bitfire.davdroid.webdav.DocumentsCursor
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.ktor.http.ContentType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -156,7 +156,7 @@ class QueryChildDocumentsOperation @Inject constructor(
                         isDirectory = response[ResourceType::class.java]?.types?.contains(ResourceType.COLLECTION)
                             ?: resource.isDirectory,
                         displayName = response[DisplayName::class.java]?.displayName,
-                        mimeType = response[GetContentType::class.java]?.type?.let { ContentType.parse(it) },
+                        mimeType = response[GetContentType::class.java]?.type?.toContentTypeOrNull(),
                         eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
                         lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
                         size = response[GetContentLength::class.java]?.contentLength,
