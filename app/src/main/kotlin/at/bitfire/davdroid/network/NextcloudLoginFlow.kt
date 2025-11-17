@@ -61,7 +61,7 @@ class NextcloudLoginFlow @Inject constructor(
         return Url(endpointData.login)
     }
 
-    @VisibleForTesting      // TODO test
+    @VisibleForTesting
     internal fun loginFlowUrl(baseUrl: Url): Url {
         return when {
             // already a Login Flow v2 URL
@@ -85,6 +85,9 @@ class NextcloudLoginFlow @Inject constructor(
         }
     }
 
+    /**
+     * Retrieves login info from the polling endpoint using [pollUrl]/[token].
+     */
     suspend fun fetchLoginInfo(): LoginInfo {
         val pollUrl = pollUrl ?: throw IllegalArgumentException("Missing pollUrl")
         val token = token ?: throw IllegalArgumentException("Missing token")
