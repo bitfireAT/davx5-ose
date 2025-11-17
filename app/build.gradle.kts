@@ -27,7 +27,8 @@ android {
         minSdk = 24        // Android 7.0
         targetSdk = 36     // Android 16
 
-        buildConfigField("boolean", "customCertsUI", "true")
+        // whether the build supports and allows to use custom certificates
+        buildConfigField("boolean", "allowCustomCerts", "true")
 
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
     }
@@ -190,6 +191,8 @@ dependencies {
     implementation(libs.conscrypt)
     implementation(libs.dnsjava)
     implementation(libs.guava)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.okhttp)
     implementation(libs.mikepenz.aboutLibraries.m3)
     implementation(libs.okhttp.base)
     implementation(libs.okhttp.brotli)
@@ -225,4 +228,5 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.robolectric)
 }

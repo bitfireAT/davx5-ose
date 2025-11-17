@@ -7,7 +7,9 @@ package at.bitfire.davdroid.network
 import android.security.NetworkSecurityPolicy
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import okhttp3.OkHttpClient
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
+import kotlinx.coroutines.test.runTest
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -20,24 +22,22 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
+import javax.inject.Provider
 
 @HiltAndroidTest
-class HttpClientTest {
+class HttpClientBuilderTest {
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var httpClientBuilder: HttpClientBuilder
+    lateinit var httpClientBuilder: Provider<HttpClientBuilder>
 
-    lateinit var httpClient: OkHttpClient
     lateinit var server: MockWebServer
 
     @Before
     fun setUp() {
         hiltRule.inject()
-
-        httpClient = httpClientBuilder.build()
 
         server = MockWebServer()
         server.start(30000)
@@ -50,6 +50,18 @@ class HttpClientTest {
 
 
     @Test
+    fun testBuildKtor_CreatesWorkingClient() = runTest {
+        server.enqueue(MockResponse()
+            .setResponseCode(200)
+            .setBody("Some Content"))
+
+        val client = httpClientBuilder.get().buildKtor()
+        val response = client.get(server.url("/").toString())
+        assertEquals(200, response.status.value)
+        assertEquals("Some Content", response.bodyAsText())
+    }
+
+    @Test
     fun testCookies() {
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
         val url = server.url("/test")
@@ -60,6 +72,8 @@ class HttpClientTest {
                 .addHeader("Set-Cookie", "cookie1=1; path=/")
                 .addHeader("Set-Cookie", "cookie2=2")
                 .setBody("Cookie set"))
+
+        val httpClient = httpClientBuilder.get().build()
         httpClient.newCall(Request.Builder()
                 .get().url(url)
                 .build()).execute()
