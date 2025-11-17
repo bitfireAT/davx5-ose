@@ -23,6 +23,7 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.techbee.jtx.JtxContract
 import com.google.common.base.Ascii
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
@@ -147,25 +148,27 @@ class DebugInfoActivity: AppCompatActivity() {
     }
 
     /**
-     * Builds intent to view the problematic local event, task or contact at given Uri.
+     * Builds intent to view the problematic local resource at given Uri.
      *
-     * Note that only OpenTasks is supported as tasks provider. TasksOrg and jtxBoard
-     * do not support viewing tasks via intent-filter (yet). See also [at.bitfire.davdroid.sync.SyncNotificationManager.getLocalResourceUri]
+     * Note that the TasksOrg app does not support viewing tasks via intent-filter.
+     * @see [at.bitfire.davdroid.resource.LocalResource.getViewUri]
      */
-    private fun buildViewLocalResourceIntent(uri: Uri): Intent? {
-        val activeTasksAuthority = tasksAppManager.get().currentProvider()?.authority
-        return when (uri.authority) {
-            ContactsContract.AUTHORITY ->
+    private fun buildViewLocalResourceIntent(uri: Uri): Intent? =
+        when (uri.authority) {
+            ContactsContract.AUTHORITY -> // Any contacts app
                 Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(uri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
                 }
 
-            CalendarContract.AUTHORITY, activeTasksAuthority ->
+            CalendarContract.AUTHORITY,   // Any calendar app
+            tasksAppManager.get().currentProvider()?.authority ->  // Only JtxBoard or OpenTasks
+                Intent(Intent.ACTION_VIEW, uri)
+
+            JtxContract.JtxICalObject.VIEW_INTENT_HOST -> // JtxBoard only. For journals and notes
                 Intent(Intent.ACTION_VIEW, uri)
 
             else -> null
         }
-    }
 
     /**
      * Builder for [DebugInfoActivity] intents

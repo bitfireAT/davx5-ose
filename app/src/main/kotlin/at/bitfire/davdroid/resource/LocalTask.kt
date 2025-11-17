@@ -133,11 +133,15 @@ class LocalTask: DmfsTask, LocalResource {
 
     override fun getViewUri(context: Context): Uri? {
         val idNotNull = id ?: return null
-        if (taskList.providerName == TaskProvider.ProviderName.OpenTasks) {
-            val contentUri = Tasks.getContentUri(taskList.providerName.authority)
-            return ContentUris.withAppendedId(contentUri, idNotNull)
-        }
-        return null
+        val supportedProviders = listOf(
+            TaskProvider.ProviderName.JtxBoard,
+            TaskProvider.ProviderName.OpenTasks,
+            // Tasks.org can't handle view content URIs via (no intent-filter)
+        )
+        if (taskList.providerName !in supportedProviders)
+            return null
+        val contentUri = Tasks.getContentUri(taskList.providerName.authority)
+        return ContentUris.withAppendedId(contentUri, idNotNull)
     }
 
 
