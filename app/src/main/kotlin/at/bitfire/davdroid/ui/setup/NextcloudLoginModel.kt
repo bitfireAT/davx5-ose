@@ -16,6 +16,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.http.URLParserException
 import io.ktor.http.Url
 import kotlinx.coroutines.launch
 import java.util.logging.Level
@@ -55,9 +56,13 @@ class NextcloudLoginModel @AssistedInject constructor(
                 baseUrl
             else
                 "https://$baseUrl"
-        val baseKtorUrl = Url(baseUrlWithPrefix)
+        val baseKtorUrl = try {
+            Url(baseUrlWithPrefix)
+        } catch (_: URLParserException) {
+            null
+        }
 
-        val canContinue = !inProgress
+        val canContinue = !inProgress && baseKtorUrl != null
     }
 
     var uiState by mutableStateOf(UiState())
@@ -102,7 +107,7 @@ class NextcloudLoginModel @AssistedInject constructor(
      */
     fun startLoginFlow() {
         val baseUrl = uiState.baseKtorUrl
-        if (uiState.inProgress)
+        if (uiState.inProgress || baseUrl == null)
             return
 
         uiState = uiState.copy(

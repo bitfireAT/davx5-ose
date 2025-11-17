@@ -17,7 +17,7 @@ class NextcloudLoginFlowTest {
     fun `loginFlowUrl accepts v2 URL`() {
         assertEquals(
             Url("http://example.com/index.php/login/v2"),
-            flow.loginFlowUrl(Url("http://example.com/index.php/login/flow"))
+            flow.loginFlowUrl(Url("http://example.com/index.php/login/v2"))
         )
     }
 
