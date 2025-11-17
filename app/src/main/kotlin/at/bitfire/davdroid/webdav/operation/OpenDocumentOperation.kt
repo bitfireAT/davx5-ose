@@ -16,15 +16,11 @@ import at.bitfire.davdroid.webdav.HeadResponse
 import at.bitfire.davdroid.webdav.RandomAccessCallbackWrapper
 import at.bitfire.davdroid.webdav.StreamingFileDescriptor
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.ktor.client.HttpClient
-import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -41,7 +37,7 @@ class OpenDocumentOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor = runBlocking {
+    suspend operator fun invoke(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor {
         logger.fine("WebDAV openDocument $documentId $mode $signal")
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
@@ -60,13 +56,13 @@ class OpenDocumentOperation @Inject constructor(
             accessScope.cancel()
         }
 
-        val fileInfo = accessScope.async {
-            headRequest(client, url)
+        val fileInfo = accessScope.async(ioDispatcher) {
+            HeadResponse.fromUrl(client, url)
         }.await()
         logger.fine("Received file info: $fileInfo")
 
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
-        return@runBlocking if (
+        return if (
             androidSupportsRandomAccess &&
             readOnlyMode &&                     // WebDAV doesn't support random write access (natively)
             fileInfo.size != null &&            // file descriptor must return a useful value on getFileSize()
@@ -98,10 +94,6 @@ class OpenDocumentOperation @Inject constructor(
             else
                 fd.upload()
         }
-    }
-
-    private suspend fun headRequest(client: HttpClient, url: Url): HeadResponse = withContext(ioDispatcher) {
-        HeadResponse.fromUrl(client, url)
     }
 
 
