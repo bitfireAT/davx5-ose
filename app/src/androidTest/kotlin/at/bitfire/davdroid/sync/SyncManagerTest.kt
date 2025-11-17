@@ -8,9 +8,9 @@ import android.accounts.Account
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
-import at.bitfire.dav4jvm.PropStat
-import at.bitfire.dav4jvm.Response
-import at.bitfire.dav4jvm.Response.HrefRelation
+import at.bitfire.dav4jvm.okhttp.PropStat
+import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.okhttp.Response.HrefRelation
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.assertWithin

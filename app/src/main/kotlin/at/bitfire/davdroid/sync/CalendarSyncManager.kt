@@ -6,10 +6,10 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.text.format.Formatter
-import at.bitfire.dav4jvm.DavCalendar
-import at.bitfire.dav4jvm.MultiResponseCallback
-import at.bitfire.dav4jvm.Response
-import at.bitfire.dav4jvm.exception.DavException
+import at.bitfire.dav4jvm.okhttp.DavCalendar
+import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
+import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.okhttp.exception.DavException
 import at.bitfire.dav4jvm.property.caldav.CalendarData
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
@@ -28,7 +28,6 @@ import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.synctools.exception.InvalidICalendarException
 import at.bitfire.synctools.icalendar.CalendarUidSplitter
 import at.bitfire.synctools.icalendar.ICalendarGenerator
@@ -43,16 +42,13 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Component
-import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.component.VEvent
-import net.fortuna.ical4j.model.property.Action
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
-import java.time.Duration
 import java.time.ZonedDateTime
 import java.util.Optional
 import java.util.logging.Level
@@ -300,18 +296,6 @@ class CalendarSyncManager @AssistedInject constructor(
         // Event: main VEVENT and potentially attached exceptions (further VEVENTs with RECURRENCE-ID)
         val event = uidsAndEvents.values.first()
 
-        val defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
-        val mainEvent = event.main
-        if (mainEvent != null && defaultAlarmMinBefore != null && DateUtils.isDateTime(mainEvent.startDate) && mainEvent.alarms.isEmpty()) {
-            val alarm = VAlarm(Duration.ofMinutes(-defaultAlarmMinBefore.toLong())).apply {
-                // Sets METHOD_ALERT instead of METHOD_DEFAULT in the calendar provider.
-                // Needed for calendars to actually show a notification.
-                properties += Action.DISPLAY
-            }
-            logger.log(Level.FINE, "${mainEvent.uid}: Adding default alarm", alarm)
-            mainEvent.components += alarm
-        }
-
         // map AssociatedEvents (VEVENTs) to EventAndExceptions (Android events)
         val androidEvent = AndroidEventBuilder(
             calendar = localCollection.androidCalendar,
@@ -321,7 +305,13 @@ class CalendarSyncManager @AssistedInject constructor(
             flags = LocalResource.FLAG_REMOTELY_PRESENT
         ).build(event)
 
-        // update local event, if it exists
+        // add default reminder (if desired)
+        accountSettings.getDefaultAlarm()?.let { minBefore ->
+            logger.log(Level.INFO, "Adding default alarm ($minBefore min before)", event)
+            DefaultReminderBuilder(minBefore = minBefore).add(to = androidEvent)
+        }
+
+        // create/update local event in calendar provider
         val local = localCollection.findByName(fileName)
         if (local != null) {
             SyncException.wrapWithLocalResource(local) {

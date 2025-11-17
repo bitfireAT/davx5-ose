@@ -4,8 +4,8 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.DavResource
-import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.dav4jvm.property.webdav.Owner
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection

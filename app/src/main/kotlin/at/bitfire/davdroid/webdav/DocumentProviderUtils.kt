@@ -13,7 +13,7 @@ import android.provider.DocumentsContract.buildChildDocumentsUri
 import android.provider.DocumentsContract.buildRootsUri
 import android.webkit.MimeTypeMap
 import androidx.core.app.TaskStackBuilder
-import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import java.io.FileNotFoundException

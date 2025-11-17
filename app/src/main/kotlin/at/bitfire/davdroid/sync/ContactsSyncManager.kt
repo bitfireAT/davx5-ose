@@ -7,10 +7,10 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.text.format.Formatter
-import at.bitfire.dav4jvm.DavAddressBook
-import at.bitfire.dav4jvm.MultiResponseCallback
-import at.bitfire.dav4jvm.Response
-import at.bitfire.dav4jvm.exception.DavException
+import at.bitfire.dav4jvm.okhttp.DavAddressBook
+import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
+import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.okhttp.exception.DavException
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.carddav.AddressData
 import at.bitfire.dav4jvm.property.carddav.MaxResourceSize
@@ -50,6 +50,7 @@ import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -357,7 +358,7 @@ class ContactsSyncManager @AssistedInject constructor(
                             ?: throw DavException("Received multi-get response without ETag")
 
                         var isJCard = hasJCard      // assume that server has sent what we have requested (we ask for jCard only when the server advertises it)
-                        response[GetContentType::class.java]?.type?.let { type ->
+                        response[GetContentType::class.java]?.type?.toMediaTypeOrNull()?.let { type ->
                             isJCard = type.sameTypeAs(DavUtils.MEDIA_TYPE_JCARD)
                         }
 
