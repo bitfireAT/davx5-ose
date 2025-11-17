@@ -180,7 +180,6 @@ dependencies {
     implementation(libs.bitfire.dav4jvm) {
         exclude(group="junit")
         exclude(group="org.ogce", module="xpp3")    // Android has its own XmlPullParser implementation
-        exclude(group="io.ktor")                    // We use OkHttp instead
     }
     implementation(libs.bitfire.synctools) {
         exclude(group="androidx.test")              // synctools declares test rules, but we don't want them in non-test code
