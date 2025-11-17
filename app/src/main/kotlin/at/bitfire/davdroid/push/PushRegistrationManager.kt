@@ -11,12 +11,12 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import at.bitfire.dav4jvm.DavCollection
-import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
-import at.bitfire.dav4jvm.exception.DavException
+import at.bitfire.dav4jvm.okhttp.DavCollection
+import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.okhttp.exception.DavException
 import at.bitfire.dav4jvm.property.push.AuthSecret
 import at.bitfire.dav4jvm.property.push.PushRegister
 import at.bitfire.dav4jvm.property.push.PushResource

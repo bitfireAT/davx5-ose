@@ -15,7 +15,7 @@ import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
-import at.bitfire.dav4jvm.exception.UnauthorizedException
+import at.bitfire.dav4jvm.okhttp.exception.UnauthorizedException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalCollection

@@ -5,8 +5,8 @@
 package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
-import at.bitfire.dav4jvm.DavResource
-import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder

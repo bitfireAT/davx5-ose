@@ -4,10 +4,10 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Property
-import at.bitfire.dav4jvm.UrlUtils
-import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.okhttp.UrlUtils
+import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
 import at.bitfire.dav4jvm.property.caldav.CalendarProxyReadFor
 import at.bitfire.dav4jvm.property.caldav.CalendarProxyWriteFor
