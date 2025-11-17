@@ -32,14 +32,16 @@ class ConscryptIntegration {
             val alreadyInstalled = conscryptInstalled()
             if (!alreadyInstalled) {
                 // install Conscrypt as most preferred provider
-                Security.insertProviderAt(Conscrypt.newProvider(), 1)
+                if (Conscrypt.isAvailable()) {
+                    Security.insertProviderAt(Conscrypt.newProvider(), 1)
 
-                val version = Conscrypt.version()
-                logger.info("Using Conscrypt/${version.major()}.${version.minor()}.${version.patch()} for TLS")
+                    val version = Conscrypt.version()
+                    logger.info("Using Conscrypt/${version.major()}.${version.minor()}.${version.patch()} for TLS")
 
-                val engine = SSLContext.getDefault().createSSLEngine()
-                logger.info("Enabled protocols: ${engine.enabledProtocols.joinToString(", ")}")
-                logger.info("Enabled ciphers: ${engine.enabledCipherSuites.joinToString(", ")}")
+                    val engine = SSLContext.getDefault().createSSLEngine()
+                    logger.info("Enabled protocols: ${engine.enabledProtocols.joinToString(", ")}")
+                    logger.info("Enabled ciphers: ${engine.enabledCipherSuites.joinToString(", ")}")
+                }
             }
 
             initialized = true
