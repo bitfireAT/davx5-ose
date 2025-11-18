@@ -15,6 +15,7 @@ import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.storage.BatchOperation
+import at.techbee.jtx.JtxContract
 import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
@@ -131,17 +132,17 @@ class LocalTask: DmfsTask, LocalResource {
             )*/
             .toString()
 
-    override fun getViewUri(context: Context): Uri? {
-        val idNotNull = id ?: return null
-        val supportedProviders = listOf(
-            TaskProvider.ProviderName.JtxBoard,
-            TaskProvider.ProviderName.OpenTasks,
+    override fun getViewUri(context: Context): Uri? = id?.let { id ->
+        when (taskList.providerName) {
+            TaskProvider.ProviderName.OpenTasks -> {
+                val contentUri = Tasks.getContentUri(taskList.providerName.authority)
+                return ContentUris.withAppendedId(contentUri, id)
+            }
+            TaskProvider.ProviderName.JtxBoard ->
+                JtxContract.JtxICalObject.getViewIntentUriFor(id)
             // Tasks.org can't handle view content URIs (missing intent-filter)
-        )
-        if (taskList.providerName !in supportedProviders)
-            return null
-        val contentUri = Tasks.getContentUri(taskList.providerName.authority)
-        return ContentUris.withAppendedId(contentUri, idNotNull)
+            else -> null
+        }
     }
 
 
