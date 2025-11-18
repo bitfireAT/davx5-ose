@@ -136,7 +136,7 @@ class LocalTask: DmfsTask, LocalResource {
         when (taskList.providerName) {
             TaskProvider.ProviderName.OpenTasks -> {
                 val contentUri = Tasks.getContentUri(taskList.providerName.authority)
-                return ContentUris.withAppendedId(contentUri, id)
+                ContentUris.withAppendedId(contentUri, id)
             }
             TaskProvider.ProviderName.JtxBoard ->
                 JtxContract.JtxICalObject.getViewIntentUriFor(id)
