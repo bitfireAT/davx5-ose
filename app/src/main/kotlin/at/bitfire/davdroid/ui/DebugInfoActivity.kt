@@ -158,8 +158,7 @@ class DebugInfoActivity: AppCompatActivity() {
         // Support ACTION_VIEW
         val supportActionView = listOf(
             CalendarContract.AUTHORITY, // any calendar app
-            TaskProvider.ProviderName.JtxBoard.authority, // jtx for tasks
-            JtxContract.JtxICalObject.VIEW_INTENT_HOST // jtx Board for journals, notes
+            JtxContract.JtxICalObject.VIEW_INTENT_HOST // jtx Board for journals, notes, tasks
         )
         if (uri.authority in supportActionView)
             return Intent(Intent.ACTION_VIEW, uri)
