@@ -154,28 +154,27 @@ class DebugInfoActivity: AppCompatActivity() {
      * Note that the TasksOrg app does not support viewing tasks via intent-filter.
      * @see [at.bitfire.davdroid.resource.LocalResource.getViewUri]
      */
-    private fun buildViewLocalResourceIntent(uri: Uri): Intent? = when (uri.authority) {
-        // Contacts: Any contacts app
-        ContactsContract.AUTHORITY ->
-            Intent(Intent.ACTION_VIEW).apply {
+    private fun buildViewLocalResourceIntent(uri: Uri): Intent? {
+        // Support ACTION_VIEW
+        val supportActionView = listOf(
+            CalendarContract.AUTHORITY, // any calendar app
+            TaskProvider.ProviderName.JtxBoard.authority, // jtx for tasks
+            JtxContract.JtxICalObject.VIEW_INTENT_HOST // jtx Board for journals, notes
+        )
+        if (uri.authority in supportActionView)
+            return Intent(Intent.ACTION_VIEW, uri)
+
+        // Need ACTION_EDIT (OpenTasks crashes on using ACTION_VIEW)
+        if (uri.authority == TaskProvider.ProviderName.OpenTasks.authority) // OpenTasks app
+            return Intent(Intent.ACTION_EDIT, uri)
+
+        // Need CONTENT_ITEM_TYPE to be set
+        if (uri.authority == ContactsContract.AUTHORITY) // any contacts app
+            return Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(uri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
             }
 
-        // Calendar: Any calendar app
-        CalendarContract.AUTHORITY ->
-            Intent(Intent.ACTION_VIEW, uri)
-
-        // Tasks: JtxBoard, OpenTasks
-        TaskProvider.ProviderName.JtxBoard.authority ->
-            Intent(Intent.ACTION_VIEW, uri)
-        TaskProvider.ProviderName.OpenTasks.authority ->
-            Intent(Intent.ACTION_EDIT, uri)
-
-        // Journals and notes: JtxBoard
-        JtxContract.JtxICalObject.VIEW_INTENT_HOST ->
-            Intent(Intent.ACTION_VIEW, uri)
-
-        else -> null
+        return null
     }
 
     /**
