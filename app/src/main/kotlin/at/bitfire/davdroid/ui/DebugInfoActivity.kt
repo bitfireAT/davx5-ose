@@ -23,6 +23,7 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract
 import com.google.common.base.Ascii
 import dagger.Lazy
@@ -155,14 +156,21 @@ class DebugInfoActivity: AppCompatActivity() {
      */
     private fun buildViewLocalResourceIntent(uri: Uri): Intent? =
         when (uri.authority) {
-            ContactsContract.AUTHORITY ->                       // Any contacts app
+            // Contacts: Any contacts app
+            ContactsContract.AUTHORITY ->
                 Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(uri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
                 }
 
-            CalendarContract.AUTHORITY,                         // Any calendar app
-            tasksAppManager.get().currentProvider()?.authority, // Only JtxBoard or OpenTasks for tasks
-            JtxContract.JtxICalObject.VIEW_INTENT_HOST ->       // JtxBoard only for journals and notes
+            // Calendar: Any calendar app
+            CalendarContract.AUTHORITY,
+
+            // Tasks: JtxBoard, OpenTasks
+            TaskProvider.ProviderName.JtxBoard.authority,
+            TaskProvider.ProviderName.OpenTasks.authority,
+
+            // Journals and notes: JtxBoard
+            JtxContract.JtxICalObject.VIEW_INTENT_HOST ->
                 Intent(Intent.ACTION_VIEW, uri)
 
             else -> null
