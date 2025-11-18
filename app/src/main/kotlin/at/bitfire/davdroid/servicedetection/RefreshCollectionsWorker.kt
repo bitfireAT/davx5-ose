@@ -22,7 +22,7 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import at.bitfire.dav4jvm.exception.UnauthorizedException
+import at.bitfire.dav4jvm.okhttp.exception.UnauthorizedException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager

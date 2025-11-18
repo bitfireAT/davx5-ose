@@ -7,7 +7,7 @@ package at.bitfire.davdroid.webdav
 import android.content.Context
 import android.provider.DocumentsContract
 import androidx.annotation.VisibleForTesting
-import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavMount

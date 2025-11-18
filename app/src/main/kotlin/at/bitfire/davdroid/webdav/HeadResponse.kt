@@ -5,8 +5,8 @@
 package at.bitfire.davdroid.webdav
 
 import androidx.annotation.WorkerThread
-import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
+import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient

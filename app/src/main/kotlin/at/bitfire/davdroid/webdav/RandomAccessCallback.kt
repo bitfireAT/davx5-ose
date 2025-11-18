@@ -14,10 +14,10 @@ import android.system.ErrnoException
 import android.system.OsConstants
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
-import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
-import at.bitfire.dav4jvm.exception.DavException
-import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.okhttp.exception.DavException
+import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.davdroid.util.DavUtils
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader

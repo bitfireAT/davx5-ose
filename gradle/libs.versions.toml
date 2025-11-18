@@ -19,7 +19,7 @@ androidx-test-rules = "1.7.0"
 androidx-test-junit = "1.3.0"
 androidx-work = "2.11.0"
 bitfire-cert4android = "b3160b02b8"
-bitfire-dav4jvm = "f11523619b"
+bitfire-dav4jvm = "0979bd7e56"
 bitfire-synctools = "5fb5d749da"
 compose-accompanist = "0.37.3"
 compose-bom = "2025.11.00"
@@ -32,10 +32,12 @@ hilt = "2.57.2"
 kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
 ksp = "2.3.2"
+ktor = "3.3.2"
 mikepenz-aboutLibraries = "13.1.0"
 mockk = "1.14.5"
 okhttp = "5.3.0"
 openid-appauth = "0.11.1"
+robolectric = "4.16"
 room = "2.8.3"
 unifiedpush = "3.1.2"
 unifiedpush-fcm = "3.0.0"
@@ -93,6 +95,8 @@ junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 mikepenz-aboutLibraries-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "mikepenz-aboutLibraries" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
@@ -101,6 +105,7 @@ okhttp-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version.ref = "
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 openid-appauth = { module = "net.openid:appauth", version.ref = "openid-appauth" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 room-base = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
