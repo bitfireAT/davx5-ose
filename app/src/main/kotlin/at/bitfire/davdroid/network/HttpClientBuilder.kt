@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.content.Context
 import androidx.annotation.WorkerThread
 import at.bitfire.cert4android.CustomCertManager
+import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.dav4jvm.okhttp.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.okhttp.UrlUtils
 import at.bitfire.davdroid.BuildConfig
@@ -284,7 +285,7 @@ class HttpClientBuilder @Inject constructor(
         if (BuildConfig.allowCustomCerts) {
             // use cert4android for custom certificate handling
             customTrustManager = CustomCertManager(
-                context = context,
+                certStore = CustomCertStore.getInstance(context),
                 trustSystemCerts = !settingsManager.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES),
                 appInForeground = ForegroundTracker.inForeground
             )
