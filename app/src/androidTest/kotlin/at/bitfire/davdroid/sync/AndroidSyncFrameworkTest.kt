@@ -88,11 +88,11 @@ class AndroidSyncFrameworkTest: SyncStatusObserver {
         )
     }
 
-    /**
+    /* SHOULD BE FIXED WITH https://github.com/bitfireAT/davx5-ose/issues/1748
      * Wrong behaviour of the sync framework on Android 14+.
      * Pending state stays true forever (after initial run), active state behaves correctly
      */
-    @SdkSuppress(minSdkVersion = 34 /*, maxSdkVersion = 36 */)
+    /*@SdkSuppress(minSdkVersion = 34 /*, maxSdkVersion = 36 */)
     @Test
     fun testVerifySyncAlwaysPending_wrongBehaviour_android14() {
         verifySyncStates(
@@ -103,7 +103,7 @@ class AndroidSyncFrameworkTest: SyncStatusObserver {
                 State(pending = true, active = false)                   // ... and finishes, but stays pending
             )
         )
-    }
+    }*/
 
 
     // helpers
