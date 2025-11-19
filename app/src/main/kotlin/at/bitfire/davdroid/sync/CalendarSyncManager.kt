@@ -33,7 +33,7 @@ import at.bitfire.synctools.icalendar.CalendarUidSplitter
 import at.bitfire.synctools.icalendar.ICalendarGenerator
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.mapping.calendar.AndroidEventBuilder
-import at.bitfire.synctools.mapping.calendar.AndroidEventProcessor
+import at.bitfire.synctools.mapping.calendar.AndroidEventHandler
 import at.bitfire.synctools.mapping.calendar.DefaultProdIdGenerator
 import at.bitfire.synctools.mapping.calendar.SequenceUpdater
 import dagger.assisted.Assisted
@@ -189,11 +189,11 @@ class CalendarSyncManager @AssistedInject constructor(
         val updatedSequence = SequenceUpdater().increaseSequence(localEvent.main)
 
         // map Android event to iCalendar (also generates UID, if necessary)
-        val processor = AndroidEventProcessor(
+        val handler = AndroidEventHandler(
             accountName = resource.recurringCalendar.calendar.account.name,
             prodIdGenerator = DefaultProdIdGenerator(Constants.iCalProdId)
         )
-        val mappedEvents = processor.mapToVEvents(localEvent)
+        val mappedEvents = handler.mapToVEvents(localEvent)
 
         // persist UID if it was generated
         if (mappedEvents.generatedUid)
