@@ -154,27 +154,26 @@ class DebugInfoActivity: AppCompatActivity() {
      * Note that the TasksOrg app does not support viewing tasks via intent-filter.
      * @see [at.bitfire.davdroid.resource.LocalResource.getViewUri]
      */
-    private fun buildViewLocalResourceIntent(uri: Uri): Intent? {
-        // Support ACTION_VIEW
-        val supportActionView = listOf(
-            CalendarContract.AUTHORITY, // any calendar app
-            JtxContract.JtxICalObject.VIEW_INTENT_HOST // jtx Board for journals, notes, tasks
-        )
-        if (uri.authority in supportActionView)
-            return Intent(Intent.ACTION_VIEW, uri)
+    private fun buildViewLocalResourceIntent(uri: Uri): Intent? =
+        when (uri.authority) {
+            // Support ACTION_VIEW
+            in listOf(
+                CalendarContract.AUTHORITY, // any calendar app
+                JtxContract.JtxICalObject.VIEW_INTENT_HOST // jtx Board for journals, notes, tasks
+            ) -> Intent(Intent.ACTION_VIEW, uri)
 
-        // Need ACTION_EDIT (OpenTasks crashes on using ACTION_VIEW)
-        if (uri.authority == TaskProvider.ProviderName.OpenTasks.authority) // OpenTasks app
-            return Intent(Intent.ACTION_EDIT, uri)
+            // Need ACTION_EDIT (OpenTasks crashes on using ACTION_VIEW)
+            TaskProvider.ProviderName.OpenTasks.authority // OpenTasks app
+                -> Intent(Intent.ACTION_EDIT, uri)
 
-        // Need CONTENT_ITEM_TYPE to be set
-        if (uri.authority == ContactsContract.AUTHORITY) // any contacts app
-            return Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(uri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
-            }
+            // Need CONTENT_ITEM_TYPE to be set
+            ContactsContract.AUTHORITY // any contacts app
+                -> Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(uri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
+                }
 
-        return null
-    }
+            else -> null
+        }
 
     /**
      * Builder for [DebugInfoActivity] intents
