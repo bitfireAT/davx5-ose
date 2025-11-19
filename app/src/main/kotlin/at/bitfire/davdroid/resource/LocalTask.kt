@@ -138,9 +138,8 @@ class LocalTask: DmfsTask, LocalResource {
                 val contentUri = Tasks.getContentUri(taskList.providerName.authority)
                 ContentUris.withAppendedId(contentUri, id)
             }
-            TaskProvider.ProviderName.JtxBoard ->
-                JtxContract.JtxICalObject.getViewIntentUriFor(id)
             // Tasks.org can't handle view content URIs (missing intent-filter)
+            // Jtx Board tasks are [LocalJtxICalObject]s
             else -> null
         }
     }
