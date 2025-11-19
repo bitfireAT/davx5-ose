@@ -41,8 +41,8 @@ import javax.inject.Singleton
  * no need to always get a separate logger for each class (only if the class wants to customize it).
  *
  * Note about choosing log levels: records with [Level.FINE] or higher will always be printed to adb logs
- * (regardless of whether verbose logging is active). Records with a lower level will only
- * by printed to adb logs when verbose logging is active.
+ * (regardless of whether verbose logging is active). Records with a lower level will only be
+ * printed to adb logs when verbose logging is active.
  */
 @Singleton
 class LogManager @Inject constructor(
