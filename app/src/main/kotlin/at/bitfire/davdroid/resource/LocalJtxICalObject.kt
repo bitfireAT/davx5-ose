@@ -15,6 +15,9 @@ import com.google.common.base.MoreObjects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
+/**
+ * Represents a Journal, Note or Task entry
+ */
 class LocalJtxICalObject(
     collection: JtxCollection<*>,
     fileName: String?,

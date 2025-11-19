@@ -20,6 +20,9 @@ import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
 
+/**
+ * Represents a Dmfs Task (OpenTasks and Tasks.org) entry
+ */
 class LocalTask: DmfsTask, LocalResource {
 
     companion object {
