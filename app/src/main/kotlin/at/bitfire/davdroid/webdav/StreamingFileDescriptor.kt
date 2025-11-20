@@ -97,7 +97,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
                         body.byteStream().use { source ->
                             transferred += source.copyTo(destination)
                         }
-                        logger.finer("Downloaded $transferred byte(s) from $url")
+                        logger.fine("Downloaded $transferred byte(s) from $url")
                     }
 
                 } else
@@ -118,7 +118,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
             override fun writeTo(sink: BufferedSink) {
                 ParcelFileDescriptor.AutoCloseInputStream(readFd).use { input ->
                     transferred += input.copyTo(sink.outputStream())
-                    logger.finer("Uploaded $transferred byte(s) to $url")
+                    logger.fine("Uploaded $transferred byte(s) to $url")
                 }
             }
         }
