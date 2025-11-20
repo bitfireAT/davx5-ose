@@ -84,9 +84,9 @@ class LogManager @Inject constructor(
         // root logger: set default log level and always log to logcat
         val rootLogger = Logger.getLogger("")
         rootLogger.level = if (logVerbose)
-            Level.ALL       // verbose logs, include everything (including HTTP interceptor logs)
+            Level.ALL       // include everything (including HTTP interceptor logs) in verbose logs
         else
-            Level.FINE      // include more detailed information like content provider operations
+            Level.FINE      // include detailed information like content provider operations in non-verbose logs
         rootLogger.addHandler(LogcatHandler(BuildConfig.APPLICATION_ID))
 
         // log to file, if requested
