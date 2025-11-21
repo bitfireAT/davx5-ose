@@ -19,6 +19,7 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.ForegroundTracker
 import com.google.common.net.HttpHeaders
+import com.google.errorprone.annotations.MustBeClosed
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -202,7 +203,6 @@ class HttpClientBuilder @Inject constructor(
      *
      * @throws IllegalStateException    on second and later calls
      */
-    @Deprecated("Use buildKtor instead", replaceWith = ReplaceWith("buildKtor()"))
     fun build(): OkHttpClient {
         if (alreadyBuilt)
             throw IllegalStateException("build() must only be called once; use Provider<HttpClientBuilder>")
@@ -378,7 +378,10 @@ class HttpClientBuilder @Inject constructor(
      *
      * However in this case the configuration of `client1` is still in `builder` and would be reused for `client2`,
      * which is usually not desired.
+     *
+     * @return the new HttpClient (with [OkHttp] engine) which **must be closed by the caller**
      */
+    @MustBeClosed
     fun buildKtor(): HttpClient {
         if (alreadyBuilt)
             throw IllegalStateException("build() must only be called once; use Provider<HttpClientBuilder>")
