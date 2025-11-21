@@ -55,10 +55,11 @@ class HttpClientBuilderTest {
             .setResponseCode(200)
             .setBody("Some Content"))
 
-        val client = httpClientBuilder.get().buildKtor()
-        val response = client.get(server.url("/").toString())
-        assertEquals(200, response.status.value)
-        assertEquals("Some Content", response.bodyAsText())
+        httpClientBuilder.get().buildKtor().use { client ->
+            val response = client.get(server.url("/").toString())
+            assertEquals(200, response.status.value)
+            assertEquals("Some Content", response.bodyAsText())
+        }
     }
 
     @Test
