@@ -26,7 +26,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import java.util.logging.Logger
@@ -79,7 +78,6 @@ class AccountSettingsMigration21Test {
     }
 
 
-    @Ignore("Sometimes failing, see https://github.com/bitfireAT/davx5-ose/issues/1835")
     @SdkSuppress(minSdkVersion = 34)
     @Test
     fun testCancelsSyncAndClearsPendingState() = runBlocking {
