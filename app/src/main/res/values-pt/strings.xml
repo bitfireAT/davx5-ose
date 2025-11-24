@@ -2,9 +2,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">A conta não existe (mais)</string>
-  <string name="account_title_address_book">Livro de endereços do DAVx⁵</string>
-  <string name="account_prefs_use_app">Não mude a conta por aqui! Em vez disso, use o app diretamente para gerenciar as contas.</string>
-  <string name="dialog_delete">Excluir</string>
+  <string name="account_title_address_book">Lista de contactos da DAVx⁵</string>
+  <string name="account_prefs_use_app">Não mude a conta por aqui! Em vez disso, use a aplicação diretamente para gerir as contas.</string>
+  <string name="dialog_delete">Eliminar</string>
   <string name="dialog_remove">Remover</string>
   <string name="dialog_deny">Cancelar</string>
   <string name="dialog_enable">Ativar</string>
@@ -23,31 +23,31 @@
   <string name="notification_channel_sync_errors">Erros de sincronização</string>
   <string name="notification_channel_sync_errors_desc">Erros importantes que interrompem a sincronização, como respostas inesperadas do servidor</string>
   <string name="notification_channel_sync_warnings">Avisos de sincronização</string>
-  <string name="notification_channel_sync_warnings_desc">Problemas de sincronização não graves, como determinados arquivos inválidos</string>
+  <string name="notification_channel_sync_warnings_desc">Problemas de sincronização não fatais, como determinados ficheiros inválidos</string>
   <string name="notification_channel_sync_io_errors">Erros de rede e E/S</string>
-  <string name="notification_channel_sync_io_errors_desc">Tempos de espera, problemas de conexão, etc. (geralmente temporários)</string>
+  <string name="notification_channel_sync_io_errors_desc">Tempos expirados, problemas de conexão, etc. (geralmente temporários)</string>
   <!--IntroActivity-->
   <string name="intro_slogan1">Seus dados. Sua escolha.</string>
   <string name="intro_slogan2">Assuma o controle.</string>
-  <string name="intro_battery_title">Intervalos de sincronização regulares</string>
-  <string name="intro_battery_text">Para sincronização em intervalos regulares, o %s deve ter permissão para executar em segundo plano. Caso contrário, o Android poderá pausar a sincronização a qualquer momento.</string>
-  <string name="intro_battery_dont_show">Eu não preciso de intervalos de sincronização regulares.*</string>
-  <string name="intro_autostart_title">Compatibilidade %s</string>
-  <string name="intro_autostart_dont_show">Fiz as configurações necessárias. Não me lembre novamente.*</string>
-  <string name="intro_leave_unchecked">* Deixe desmarcado para ser lembrado mais tarde. Pode ser redefinido nas configurações do aplicativo / %s.</string>
+  <string name="intro_battery_title">Intervalos periódicos de sincronização</string>
+  <string name="intro_battery_text">Para sincronização em intervalos periódicos, o %s deve ter permissão para executar em segundo plano. Caso contrário, o Android poderá pausar a sincronização a qualquer momento.</string>
+  <string name="intro_battery_dont_show">Eu não preciso de sincronização periódica.*</string>
+  <string name="intro_autostart_title">Compatibilidade com %s</string>
+  <string name="intro_autostart_dont_show">Fiz as definições necessárias. Não me lembre novamente.*</string>
+  <string name="intro_leave_unchecked">* Deixe desmarcado para ser lembrado mais tarde. Pode ser redefinido nas definições da aplicação / %s.</string>
   <string name="intro_more_info">Mais informações</string>
   <string name="intro_tasks_jtx">jtx Board</string>
-  <string name="intro_tasks_jtx_info"><![CDATA[Suporta a sincronização de tarefas, jornais, e notas.]]></string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Suporta a sincronização de tarefas, diários, e notas.]]></string>
   <string name="intro_tasks_title">Suporte a tarefas</string>
-  <string name="intro_tasks_text1">Se tarefas são suportadas por seu servidor, elas podem ser sincronizadas com um app suportado de tarefas:</string>
+  <string name="intro_tasks_text1">Se tarefas são suportadas por seu servidor, elas podem ser sincronizadas com uma aplicação suportada de tarefas:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Parece não ser mais desenvolvido -- não recomendado.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Alguns recursos <a href="https://www.davx5.com/faq/tasks/advanced-task-features">não são suportados</a>.]]></string>
-  <string name="intro_tasks_no_app_store">Nenhuma loja de aplicativos disponível</string>
+  <string name="intro_tasks_no_app_store">Nenhuma loja de aplicações disponível</string>
   <string name="intro_tasks_dont_show">Não preciso de suporte a tarefas.*</string>
-  <string name="intro_open_source_title">Software Livre</string>
-  <string name="intro_open_source_text">Estamos felizes por usar o %s, que é um software de código aberto. Desenvolvimento, manutenção e suporte são um trabalho árduo. Considere contribuir (existem várias maneiras) ou fazer uma doação. Seria muito apreciado!</string>
+  <string name="intro_open_source_title">Software livre</string>
+  <string name="intro_open_source_text">Estamos felizes que usa a %s, que é um software de código aberto. Desenvolvimento, manutenção e suporte são um trabalho árduo. Considere contribuir (existem várias maneiras) ou fazer uma doação. Seria muito apreciado!</string>
   <string name="intro_open_source_details">Como contribuir/doar</string>
   <string name="intro_open_source_dont_show">Não me lembrar por</string>
   <plurals name="intro_open_source_dont_show_months">
@@ -57,42 +57,42 @@
   </plurals>
   <string name="intro_next">Próximo</string>
   <!--PermissionsActivity-->
-  <string name="permissions_title">Permissões</string>
-  <string name="permissions_text">%s requer permissões para trabalhar corretamente.</string>
+  <string name="permissions_title">Autorizações</string>
+  <string name="permissions_text">%s requer autorizações para funcionar corretamente.</string>
   <string name="permissions_all_title">Todos os abaixo</string>
   <string name="permissions_all_status_off">Use isto para ativar todas as funcionalidades (recomendado)</string>
-  <string name="permissions_all_status_on">Todas as permissões concedidas</string>
-  <string name="permissions_contacts_title">Permissões de contatos</string>
-  <string name="permissions_contacts_status_off">Nenhum contato sincronizado (não recomendado)</string>
-  <string name="permissions_contacts_status_on">Possível sincronização de contatos</string>
-  <string name="permissions_calendar_title">Permissões de calendário</string>
+  <string name="permissions_all_status_on">Todas as autorizações</string>
+  <string name="permissions_contacts_title">Autorizações de contactos</string>
+  <string name="permissions_contacts_status_off">Nenhum contacto sincronizado (não recomendado)</string>
+  <string name="permissions_contacts_status_on">Possível sincronização de contactos</string>
+  <string name="permissions_calendar_title">Autorizações de calendário</string>
   <string name="permissions_calendar_status_off">Nenhum calendário sincronizado (não recomendado)</string>
   <string name="permissions_calendar_status_on">Possível sincronização de calendário</string>
-  <string name="permissions_notification_title">Permissão de notificação</string>
+  <string name="permissions_notification_title">Autorizações de notificação</string>
   <string name="permissions_notification_status_off">Notificações desativadas (não recomendado)</string>
   <string name="permissions_notification_status_on">Notificações ativadas</string>
-  <string name="permissions_jtx_title">Permissões do jtx Board</string>
-  <string name="permissions_opentasks_title">Permissões do OpenTasks</string>
-  <string name="permissions_tasksorg_title">Permissões das tarefas</string>
+  <string name="permissions_jtx_title">Autorizações da jtx Board</string>
+  <string name="permissions_opentasks_title">Autorizações da OpenTasks</string>
+  <string name="permissions_tasksorg_title">Autorizações da Tasks</string>
   <string name="permissions_tasks_status_off">Sem sincronização de tarefas</string>
   <string name="permissions_tasks_status_on">Sincronização de tarefas possível</string>
-  <string name="permissions_autoreset_title">Manter as permissões</string>
-  <string name="permissions_autoreset_status_off">As permissões podem ser redefinidas automaticamente (não recomendado)</string>
-  <string name="permissions_autoreset_status_on">As permissões não serão redefinidas automaticamente</string>
-  <string name="permissions_autoreset_instruction">Toque em Permissões &gt; desmarque \"Pausar atividade no app quando não usado\"</string>
-  <string name="permissions_app_settings_hint">Se uma opção não funcionar, use as configurações / permissões do aplicativo.</string>
-  <string name="permissions_app_settings">Configurações do aplicativo</string>
+  <string name="permissions_autoreset_title">Manter as autorizações</string>
+  <string name="permissions_autoreset_status_off">As autorizações podem ser redefinidas automaticamente (não recomendado)</string>
+  <string name="permissions_autoreset_status_on">As autorizações não serão redefinidas automaticamente</string>
+  <string name="permissions_autoreset_instruction">Toque em Autorizações &gt; desmarque \"Gerir app se não for usada\"</string>
+  <string name="permissions_app_settings_hint">Se uma opção não funcionar, use as definições / autorizações da aplicação.</string>
+  <string name="permissions_app_settings">Definições da aplicação</string>
   <!--WifiPermissionsActivity-->
-  <string name="wifi_permissions_label">Permissões WiFi SSID</string>
+  <string name="wifi_permissions_label">Autorizações de SSID do Wi-Fi</string>
   <string name="wifi_permissions_intro">Para que seja possível acessar o nome do WiFi atual (SSID), essas condições tem que ser compridas:</string>
-  <string name="wifi_permissions_location_permission">Permissão de localização precisa</string>
-  <string name="wifi_permissions_location_permission_on">Permissão de localização concedida</string>
-  <string name="wifi_permissions_location_permission_off">Permissão de localização negada</string>
-  <string name="wifi_permissions_background_location_permission">Permissão de acesso à localização em segundo plano</string>
-  <string name="wifi_permissions_background_location_permission_label">Permitir o tempo todo</string>
-  <string name="wifi_permissions_background_location_permission_on">Permissão de localização está definida como:%s</string>
-  <string name="wifi_permissions_background_location_permission_off">Permissão de localização não está definida como:%s</string>
-  <string name="wifi_permissions_background_location_disclaimer">O %susa dados de localização (somente os SSIDs de Wi-Fi) para restringir a sincronização em uma rede Wi-Fi específica. Isso pode acontecer mesmo quando a sincronização é executada em segundo plano.</string>
+  <string name="wifi_permissions_location_permission">Autorização de localização precisa</string>
+  <string name="wifi_permissions_location_permission_on">Autorização de localização concedida</string>
+  <string name="wifi_permissions_location_permission_off">Autorização de localização negada</string>
+  <string name="wifi_permissions_background_location_permission">Autorização de acesso à localização em segundo plano</string>
+  <string name="wifi_permissions_background_location_permission_label">Permitir sempre</string>
+  <string name="wifi_permissions_background_location_permission_on">Autorização de localização está definida como: %s</string>
+  <string name="wifi_permissions_background_location_permission_off">Autorização de localização não está definida como: %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">A %s usa dados de localização (somente os SSIDs de Wi-Fi) para restringir a sincronização em uma rede Wi-Fi específica. Isso pode acontecer mesmo quando a sincronização é executada em segundo plano.</string>
   <string name="wifi_permissions_background_location_disclaimer2">Todos os dados de localização (que são somente SSIDs de Wi-Fi) são usados somente localmente e não são enviados para qualquer servidor.</string>
   <string name="wifi_permissions_location_enabled">Localização sempre ativa</string>
   <string name="wifi_permissions_location_enabled_on">Serviço de localização está ativado</string>
@@ -104,87 +104,87 @@
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) e contribuidores</string>
   <string name="about_license_info_no_warranty">Este programa é distribuído SEM NENHUMA GARANTIA. Ele é software livre e pode ser redistribuído sob algumas condições.</string>
   <!--global settings-->
-  <string name="logging_couldnt_create_file">Não foi possível criar o arquivo de log</string>
+  <string name="logging_couldnt_create_file">Não foi possível criar o ficheiro de registos</string>
   <string name="logging_notification_text">Registrando todas as atividades de %s</string>
   <string name="logging_notification_view_share">Ver/partilhar</string>
   <string name="logging_notification_disable">Desativar</string>
   <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">Sincronização de CalDAV/CardDAV</string>
-  <string name="navigation_drawer_about">Sobre / Licença</string>
-  <string name="navigation_drawer_beta_feedback">Comentários sobre a versão beta</string>
+  <string name="navigation_drawer_about">Acerca / Licença</string>
+  <string name="navigation_drawer_beta_feedback">Comentários acerca da versão beta</string>
   <string name="install_browser">Instale um navegador Web</string>
-  <string name="navigation_drawer_settings">Configurações</string>
-  <string name="navigation_drawer_news_updates">Novidades e atualizações</string>
+  <string name="navigation_drawer_settings">Definições</string>
+  <string name="navigation_drawer_news_updates">Novidades e actualizações</string>
   <string name="navigation_drawer_tools">Ferramentas</string>
   <string name="navigation_drawer_external_links">Links externos</string>
-  <string name="navigation_drawer_website">Site na Web</string>
+  <string name="navigation_drawer_website">Sítio da web</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Perguntas fequentes</string>
   <string name="navigation_drawer_community">Comunidade</string>
   <string name="navigation_drawer_support_project">Apoie o projeto</string>
   <string name="navigation_drawer_contribute">Como contribuir</string>
   <string name="navigation_drawer_privacy_policy">Política de privacidade</string>
-  <string name="account_list_welcome">Bem-vindo ao DAVx⁵!</string>
-  <string name="account_list_empty">Conecte-se ao seu servidor e mantenha seus calendários e contatos sincronizados.</string>
+  <string name="account_list_welcome">Boas-vindas à DAVx⁵!</string>
+  <string name="account_list_empty">Conecte-se ao seu servidor e mantenha seus calendários e contactos sincronizados.</string>
   <string name="accounts_sync_all">Sincronizar todas as contas</string>
   <!--Sync warnings-->
-  <string name="sync_warning_no_notification_permission">As notificações estão desativadas. Você não será notificado sobre erros de sincronização.</string>
+  <string name="sync_warning_no_notification_permission">As notificações estão desativadas. Você não será notificado acerca erros de sincronização.</string>
   <string name="sync_warning_no_internet">Sincronização automática inativa (sem conexão à internet verificada).</string>
-  <string name="sync_warning_manage_connections">Gerenciar conexões</string>
-  <string name="sync_warning_datasaver_enabled">A economia de dados está ativada. A sincronização em segundo plano está restrita.</string>
-  <string name="sync_warning_manage_datasaver">Gerenciar a economia de dados</string>
-  <string name="sync_warning_battery_saver_enabled">A economia de bateria está ativada. A sincronização pode estar restrita.</string>
-  <string name="sync_warning_manage_battery_saver">Gerenciar a economia de bateria</string>
-  <string name="sync_warning_low_storage">Pouco espaço de armazenamento. O Android não sincronizará as mudanças locais imediatamente, mas sim na próxima sincronização regular.</string>
-  <string name="sync_warning_manage_storage">Gerenciar armazenamento</string>
+  <string name="sync_warning_manage_connections">Gerir conexões</string>
+  <string name="sync_warning_datasaver_enabled">A poupança de dados está ativada. A sincronização em segundo plano está restrita.</string>
+  <string name="sync_warning_manage_datasaver">Gerir a poupança de dados</string>
+  <string name="sync_warning_battery_saver_enabled">A poupança de bateria está ativada. A sincronização pode estar restrita.</string>
+  <string name="sync_warning_manage_battery_saver">Gerir a poupança de bateria</string>
+  <string name="sync_warning_low_storage">Pouco espaço de armazenamento. O Android não sincronizará as mudanças locais imediatamente, mas sim na próxima sincronização periódica.</string>
+  <string name="sync_warning_manage_storage">Gerir armazenamento</string>
   <string name="sync_warning_calendar_storage_disabled_title">Provedor de calendários ausente</string>
-  <string name="sync_warning_calendar_storage_disabled_description">Você desativou o app do sistema chamado \"Armazenamento de calendários\"?</string>
-  <string name="sync_warning_contacts_storage_disabled_title">Provedor de contatos ausente</string>
-  <string name="sync_warning_contacts_storage_disabled_description">Você desativou o app do sistema chamado \"Armazenamento de contatos\"?</string>
-  <string name="sync_warning_manage_apps">Gerenciar apps</string>
+  <string name="sync_warning_calendar_storage_disabled_description">Você desativou a app do sistema chamado \"Armazenamento de calendários\"?</string>
+  <string name="sync_warning_contacts_storage_disabled_title">Provedor de contactos ausente</string>
+  <string name="sync_warning_contacts_storage_disabled_description">Você desativou a app do sistema chamado \"Armazenamento de contactos\"?</string>
+  <string name="sync_warning_manage_apps">Gerir apps</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Falha na detecção do serviço</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Não foi possível atualizar a lista da coleção</string>
   <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Executando em primeiro plano</string>
-  <string name="foreground_service_notify_text">Em alguns dispositivos, isto é necessário para a sincronização automática.</string>
+  <string name="foreground_service_notify_text">Em alguns aparelhos, isto é necessário para a sincronização automática.</string>
   <!--AppSettingsActivity-->
-  <string name="app_settings">Configurações</string>
+  <string name="app_settings">Definições</string>
   <string name="app_settings_debug">Depuração</string>
   <string name="app_settings_show_debug_info">Mostrar informações de depuração</string>
-  <string name="app_settings_show_debug_info_details">Ver/compartilhar configurações de configuração e registros</string>
+  <string name="app_settings_show_debug_info_details">Ver/partilhar configurações de configuração e registos</string>
   <string name="app_settings_logging">Registro de atividades detalhado</string>
   <string name="app_settings_logging_on">O registro está ativo. Você pode ver os registros como parte das informações de depuração.</string>
   <string name="app_settings_logging_off">Registro de atividades desativado</string>
   <string name="app_settings_battery_optimization">Otimização da bateria</string>
-  <string name="app_settings_battery_optimization_exempted">O app está isento (recomendado)</string>
+  <string name="app_settings_battery_optimization_exempted">A app está isenta (recomendado)</string>
   <string name="app_settings_battery_optimization_optimized">As restrições de bateria se aplicam (não recomendado)</string>
   <string name="app_settings_connection">Conexão</string>
   <string name="app_settings_proxy">Tipo de proxy</string>
   <string-array name="app_settings_proxy_types">
-    <item>Padrão do sistema</item>
+    <item>Predefinição do sistema</item>
     <item>Sem proxy</item>
     <item>HTTP</item>
     <item>SOCKS (para Orbot)</item>
   </string-array>
-  <string name="app_settings_proxy_host">Nome do host da proxy</string>
+  <string name="app_settings_proxy_host">Nome do host do proxy</string>
   <string name="app_settings_proxy_port">Porta do proxy</string>
   <string name="app_settings_security">Segurança</string>
-  <string name="app_settings_security_app_permissions">Permissões do aplicativo</string>
-  <string name="app_settings_security_app_permissions_summary">Revise as permissões necessárias para sincronização</string>
+  <string name="app_settings_security_app_permissions">Autorizações da aplicação</string>
+  <string name="app_settings_security_app_permissions_summary">Revise as autorizações necessárias para sincronização</string>
   <string name="app_settings_distrust_system_certs">Desconfiar dos certificados de sistema</string>
   <string name="app_settings_distrust_system_certs_on">ACs adicionadas pelo usuário e pelo sistema não serão confiáveis</string>
   <string name="app_settings_distrust_system_certs_off">ACs adicionadas pelo usuário e pelo sistema serão confiáveis (recomendado)</string>
   <string name="app_settings_distrust_system_certs_dialog_message">Se essa configuração está ativa, os certificados do sistema não são tratados como confiáveis. Isso significa que você terá que manualmente aceitar cada certificado (e quando o servidor renova o seu certificado) ou a configuração da conta e a sincronização não funcionarão.</string>
-  <string name="app_settings_reset_certificates">Redefinir certificados não-confiáveis</string>
+  <string name="app_settings_reset_certificates">Redefinir certificados (não) confiados</string>
   <string name="app_settings_reset_certificates_summary">Restaura a confiança de todos os certificados personalizados</string>
   <string name="app_settings_reset_certificates_success">Todos os certificados personalizados foram restaurados</string>
   <string name="app_settings_user_interface">Interface de usuário</string>
-  <string name="app_settings_notification_settings">Configurações das notificações</string>
-  <string name="app_settings_notification_settings_summary">Gerenciar os canais de notificação e suas configurações</string>
+  <string name="app_settings_notification_settings">Definições das notificações</string>
+  <string name="app_settings_notification_settings_summary">Gerir os canais de notificação e suas definições</string>
   <string name="app_settings_theme_title">Escolha um tema</string>
   <string-array name="app_settings_theme_names">
-    <item>Padrão do sistema</item>
+    <item>Predefinição do sistema</item>
     <item>Claro</item>
     <item>Escuro</item>
   </string-array>
@@ -193,44 +193,44 @@
   <string name="app_settings_reset_hints_success">Todas as sugestões serão exibidas novamente</string>
   <string name="app_settings_integration">Integração</string>
   <string name="app_settings_tasks_provider">App de tarefas</string>
-  <string name="app_settings_tasks_provider_none">Nenhum app de tarefas compatível encontrado</string>
+  <string name="app_settings_tasks_provider_none">Nenhuma app de tarefas compatível encontrada</string>
   <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
   <string name="app_settings_unifiedpush_disable">Nenhum (desativar push)</string>
   <string name="app_settings_unifiedpush_choose_distributor">Escolha um distribuidor</string>
   <string name="app_settings_unifiedpush_no_distributor">Nenhum distribuidor push instalado</string>
   <string name="app_settings_unifiedpush_no_endpoint">Nenhum servidor configurado</string>
-  <string name="app_settings_unifiedpush_ready">Pronto para receber mensagems push pelo %s</string>
+  <string name="app_settings_unifiedpush_ready">Pronto para receber mensagens push pelo %s</string>
   <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
-  <string name="account_webcal">WebCal</string>
-  <string name="account_missing_permissions">Permissões adicionais são necessárias para sincronizar essas coleções.</string>
-  <string name="account_manage_permissions">Gerenciar permissões</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_missing_permissions">Autorizações adicionais são necessárias para sincronizar essas coleções.</string>
+  <string name="account_manage_permissions">Gerir autorizações</string>
   <string name="account_synchronize_now">Sincronizar agora</string>
-  <string name="account_settings">Configurações da conta</string>
+  <string name="account_settings">Definições da conta</string>
   <string name="account_rename">Renomear conta</string>
   <string name="account_rename_new_name_description">Dados locais que não foram salvos podem ser ignorados. Uma nova sincronização é necessária após uma renomeação.</string>
   <string name="account_rename_new_name">Nome novo da conta</string>
   <string name="account_rename_rename">Renomear</string>
   <string name="account_rename_exists_already">O nome da conta já foi utilizado</string>
   <string name="account_rename_couldnt_rename">Não foi possível renomear a conta</string>
-  <string name="account_delete">Excluir conta</string>
-  <string name="account_delete_confirmation_title">Deseja excluir a conta?</string>
-  <string name="account_delete_confirmation_text">Todas as cópias locais dos livros de endereços, calendários e listas de tarefas serão excluídas.</string>
+  <string name="account_delete">Eliminar conta</string>
+  <string name="account_delete_confirmation_title">Realmente eliminar a conta?</string>
+  <string name="account_delete_confirmation_text">Todas as cópias locais das listas de contactos, calendários e listas de tarefas serão eliminadas.</string>
   <string name="account_synchronize_this_collection">sincronizar esta coleção</string>
   <string name="account_read_only">Somente leitura</string>
   <string name="account_calendar">calendário</string>
-  <string name="account_contacts">contatos</string>
-  <string name="account_journal">jornal</string>
+  <string name="account_contacts">contactos</string>
+  <string name="account_journal">diário</string>
   <string name="account_task_list">tarefas</string>
   <string name="account_only_personal">Mostrar somente pessoal</string>
   <string name="account_refresh_collections">Recarregar lista</string>
-  <string name="account_webcal_external_app">Inscrições WebCAL podem ser sincronizadas com apps externos.</string>
-  <string name="account_no_webcal_handler_found">Não foi encontrado um aplicativo capaz de lidar com Webcal</string>
+  <string name="account_webcal_external_app">Inscrições WebCAL podem ser sincronizadas com apps externas.</string>
+  <string name="account_no_webcal_handler_found">Não foi encontrado uma aplicação capaz de lidar com Webcal</string>
   <string name="account_install_icsx5">Instalar ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Adicionar conta</string>
-  <string name="login_privacy_hint"><![CDATA[Todos os dados serão transferidos somente entre o servidor e o seu dispositivo. O %1$s não enviará eles para qualquer outro lugar. Leia a <a href="%2$s">política de privacidade</a>.]]></string>
+  <string name="login_privacy_hint"><![CDATA[Todos os dados serão transferidos somente entre o servidor e o seu aparelho. A %1$s não enviará eles para qualquer outro lugar. Leia a <a href="%2$s">política de privacidade</a>.]]></string>
   <string name="login_generic_login">Login genérico</string>
   <string name="login_provider_login">Login de provedor específico</string>
   <string name="login_continue">Continuar</string>
@@ -239,9 +239,9 @@
   <string name="login_email_address">Endereço de e-mail</string>
   <string name="login_email_address_error">É necessário um e-mail válido</string>
   <string name="login_email_address_info"><![CDATA[O domínio do email é usado como a URL base. <a href="%s">Serviços são descobertos</a> através do DNS e URLs conhecidas.]]></string>
-  <string name="login_password">Senha</string>
-  <string name="login_password_hide">Ocultar senha</string>
-  <string name="login_password_show">Mostrar senha</string>
+  <string name="login_password">Palavra-passe</string>
+  <string name="login_password_hide">Ocultar palavra-passe</string>
+  <string name="login_password_show">Mostrar palavra-passe</string>
   <string name="login_type_url">Autenticação com usuário e URL</string>
   <string name="login_user_name">Usuário</string>
   <string name="login_base_url">URL base</string>
@@ -249,9 +249,9 @@
   <string name="login_select_certificate">Selecionar certificado</string>
   <string name="login_add_account">Adicionar conta</string>
   <string name="login_account_name">Nome da conta</string>
-  <string name="login_account_avoid_apostrophe">O uso de apóstrofos (\') pode causar problemas em certos dispositivos.</string>
+  <string name="login_account_avoid_apostrophe">O uso de apóstrofos (\') pode causar problemas em certos aparelhos.</string>
   <string name="login_account_name_info">Use seu endereço de e-mail como nome da conta porque o Android irá usar esse nome como campo AGENDA nos eventos que você criar. Não é possível ter duas contas com o mesmo nome.</string>
-  <string name="login_account_contact_group_method">Método do grupo Contato:</string>
+  <string name="login_account_contact_group_method">Método de agrupamento de contactos:</string>
   <string name="login_account_name_required">É necessário um nome de conta</string>
   <string name="login_account_name_already_taken">O nome da conta já foi utilizado</string>
   <string name="login_account_not_added">A conta não pôde ser adicionada</string>
@@ -260,12 +260,12 @@
   <string name="login_client_certificate_selected">Certificado do cliente: %s</string>
   <string name="login_no_certificate_found">Nenhum certificado encontrado</string>
   <string name="login_install_certificate">Instalar certificado</string>
-  <string name="login_type_google">Google Contatos / Agenda</string>
+  <string name="login_type_google">Google Contactos / Agenda</string>
   <string name="login_google_account">Conta Google</string>
   <string name="login_google">Fazer login com o Google</string>
   <string name="login_google_client_id">ID do cliente (opcional)</string>
-  <string name="login_google_client_privacy_policy"><![CDATA[%1$s transfere seus dados do Google Contatos e Agenda somente para a sincronização com este dispositivo. Veja nossa <a href="%2$s">Política de Privacidade</a> para detalhes.]]></string>
-  <string name="login_google_client_limited_use"><![CDATA[%1$s age de acordo com a <a href="%2$s">Google API Services User Data Policy</a>, incluindo com os requisitos de Uso Limitado.]]></string>
+  <string name="login_google_client_privacy_policy"><![CDATA[A %1$s transfere seus dados do Google Contactos e Agenda somente para a sincronização com este aparelho. Veja nossa <a href="%2$s">Política de Privacidade</a> para detalhes.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[A %1$s age de acordo com a <a href="%2$s">Google API Services User Data Policy</a>, incluindo com os requisitos de Uso Limitado.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Não foi possível obter o código de autorização</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Fazer login com Nextcloud</string>
@@ -275,16 +275,16 @@
   <string name="login_nextcloud_login_flow_no_login_url">Não foi possível obter a URL de login</string>
   <string name="login_nextcloud_login_flow_no_login_data">Não foi possível obter os dados de login</string>
   <string name="login_configuration_detection">Detecção de configuração</string>
-  <string name="login_querying_server">Aguarde, procurando servidor…</string>
+  <string name="login_querying_server">Aguarde, a procurar o servidor…</string>
   <string name="login_no_service">Não foi possível encontrar o serviço CalDAV ou CardDAV.</string>
   <string name="login_no_service_info">A URL base não parece ser uma URL de CalDAV/CardDAV accesível e a detecção de serviço não foi sucedida.</string>
   <string name="login_see_tested_services"><![CDATA[Por favor, veja o manual do seu provedor de serviço e <a href="%s">nossa lista de serviços testados</a> e suas URLs base.]]></string>
-  <string name="login_check_credentials">Tenha certeza dos dados de autenticação (normalmente nome de usuário e senha)</string>
-  <string name="login_logs_available">Mais informações técnicas estão disponíveis nos logs.</string>
-  <string name="login_view_logs">Visualizar logs</string>
+  <string name="login_check_credentials">Tenha certeza dos dados de autenticação (normalmente nome de usuário e palavra-passe)</string>
+  <string name="login_logs_available">Mais informações técnicas estão disponíveis nos registos.</string>
+  <string name="login_view_logs">Visualizar registos</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Sincronização</string>
-  <string name="settings_sync_interval_contacts">Intervalo sinc. de contatos</string>
+  <string name="settings_sync_interval_contacts">Intervalo sinc. de contactos</string>
   <string name="settings_sync_summary_manually">Apenas manualmente</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">A cada %d minutos + imediatamente nas alterações locais</string>
   <string name="settings_sync_interval_calendars">Intervalo sinc. de calendários</string>
@@ -305,15 +305,15 @@
   <string name="settings_sync_wifi_only_ssids_on">Sincronizar apenas com %s</string>
   <string name="settings_sync_wifi_only_ssids_off">Todas as conexões WiFi serão usadas</string>
   <string name="settings_sync_wifi_only_ssids_message">Nomes separados por vírgula (SSIDs) das redes WiFi (deixe em branco para todas)</string>
-  <string name="settings_sync_wifi_only_ssids_permissions_required">A restrição de SSID de WiFi requer configuração adicional</string>
-  <string name="settings_sync_wifi_only_ssids_permissions_action">Gerenciar</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">A restrição de SSID de WiFi requer definições adicionais</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Gerir</string>
   <string name="settings_ignore_vpns">VPN requer conexão à internet</string>
   <string name="settings_ignore_vpns_on">VPN sem uma conexão à internet validada não é suficiente para executar uma sincronização (recomendado)</string>
   <string name="settings_ignore_vpns_off">VPN sem uma conexão à internet validada é suficiente para executar uma sincronização</string>
   <string name="settings_authentication">Autenticação</string>
   <string name="settings_username">Nome do usuário</string>
-  <string name="settings_new_password">Senha nova</string>
-  <string name="settings_password_summary">Atualize a senha de acordo com seu servidor</string>
+  <string name="settings_new_password">Palavra-passe nova</string>
+  <string name="settings_password_summary">Atualize a palavra-passe de acordo com seu servidor.</string>
   <string name="settings_certificate_alias">Certificado do cliente</string>
   <string name="settings_certificate_alias_empty">Nenhum certificado disponível ou selecionado</string>
   <string name="settings_certificate_install">Instalar certificado</string>
@@ -326,29 +326,29 @@
     <item quantity="other">Eventos que ocorreram a mais de %d dias serão ignorados</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Os eventos que ocorreram antes desse número de dias serão ignorados (pode ser 0). Deixe em branco para sincronizar todos os eventos.</string>
-  <string name="settings_default_alarm">Lembrete padrão</string>
+  <string name="settings_default_alarm">Lembrete predefinido</string>
   <plurals name="settings_default_alarm_on">
     <item quantity="one">Lembrete padrão um minuto antes do evento</item>
     <item quantity="many">Lembrete padrão %d minutos antes do evento</item>
-    <item quantity="other">Lembrete padrão %d minutos antes do evento</item>
+    <item quantity="other">Lembrete predefinido %d minutos antes do evento</item>
   </plurals>
-  <string name="settings_default_alarm_off">Nenhum lembrete padrão está criado</string>
-  <string name="settings_default_alarm_message">Se lembretes padrão devem ser criados para eventos sem lembrete: o número desejado de minutos antes do evento. Deixe em branco para desativar os lembretes padrão.</string>
-  <string name="settings_manage_calendar_colors">Gerenciar cores dos calendários</string>
+  <string name="settings_default_alarm_off">Nenhum lembrete predefinido está criado</string>
+  <string name="settings_default_alarm_message">Se lembretes predefinidos devem ser criados para eventos sem lembrete: o número desejado de minutos antes do evento. Deixe em branco para desativar os lembretes padrão.</string>
+  <string name="settings_manage_calendar_colors">Gerir cores dos calendários</string>
   <string name="settings_manage_calendar_colors_on">Cores dos calendários são redefinidas quando uma sincronização é feita</string>
-  <string name="settings_manage_calendar_colors_off">Cores dos calendários podem ser definidas por outros apps</string>
+  <string name="settings_manage_calendar_colors_off">Cores dos calendários podem ser definidas por outras apps</string>
   <string name="settings_event_colors">Suporte para cor de evento</string>
   <string name="settings_event_colors_on">Cores de eventos são sincronizadas</string>
   <string name="settings_event_colors_off">Cores de eventos não são sincronizadas</string>
   <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">Método do grupo Contato</string>
+  <string name="settings_contact_group_method">Método de agrupamento dos contactos</string>
   <string-array name="settings_contact_group_method_entries">
     <item>Grupos são vCards separados</item>
-    <item>Grupos são categorias por contato</item>
+    <item>Grupos são categorias por contacto</item>
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
-  <string name="create_addressbook">Criar livro de endereços</string>
-  <string name="create_addressbook_maybe_not_supported">A criação de livro de endereços por CardDAV pode não ser suportada pelo servidor.</string>
+  <string name="create_addressbook">Criar lista de contactos</string>
+  <string name="create_addressbook_maybe_not_supported">A criação de lista de contactos por CardDAV pode não ser suportada pelo servidor.</string>
   <string name="create_calendar">Criar calendário</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Possíveis itens de calendário</string>
@@ -362,9 +362,9 @@
   <string name="create_collection_description_optional">Descrição (opcional)</string>
   <string name="create_collection_create">Criar</string>
   <!--CollectionScreen-->
-  <string name="collection_datatype_contacts">contatos</string>
+  <string name="collection_datatype_contacts">contactos</string>
   <string name="collection_datatype_tasks">tarefas</string>
-  <string name="collection_delete">Excluir coleção</string>
+  <string name="collection_delete">Eliminar coleção</string>
   <string name="collection_delete_warning">Esta coleção (%s) e todos os seus dados serão removidos permanentemente, tanto localmente como no servidor.</string>
   <string name="collection_synchronization">Sincronização</string>
   <string name="collection_synchronization_on">Sincronização ativada</string>
@@ -385,23 +385,23 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informações de depuração</string>
   <string name="debug_info_archive_caption">Arquivo ZIP</string>
-  <string name="debug_info_archive_subtitle">Contém informações de debug e logs</string>
-  <string name="debug_info_archive_text">Compartilhe o arquivo para transferir ele para um computador, para enviar por e-mail ou para anexar ele à um ticket de suporte.</string>
+  <string name="debug_info_archive_subtitle">Contém informações de depuração e registos</string>
+  <string name="debug_info_archive_text">Partilhe o arquivo para transferir ele para um computador, para enviar por e-mail ou para anexar ele à um ticket de suporte.</string>
   <string name="debug_info_archive_share">Partilhar arquivo</string>
-  <string name="debug_info_attached">Informações de depuração anexadas a esta mensagem (requer suporte a anexo pelo aplicativo receptor).</string>
+  <string name="debug_info_attached">Informações de depuração anexadas a esta mensagem (requer suporte a anexo pela aplicação receptora).</string>
   <string name="debug_info_http_error">Erro HTTP</string>
   <string name="debug_info_server_error">Erro do servidor</string>
   <string name="debug_info_webdav_error">Erro do WebDAV</string>
   <string name="debug_info_io_error">Erro de E/S</string>
   <string name="debug_info_view_details">Veja detalhes</string>
-  <string name="debug_info_subtitle">Informações sobre depuração foram coletadas</string>
+  <string name="debug_info_subtitle">Informações acerca depuração foram coletadas</string>
   <string name="debug_info_involved_caption">Recursos envolvidos</string>
   <string name="debug_info_involved_subtitle">Relacionado ao problema</string>
   <string name="debug_info_involved_remote">Recurso remoto:</string>
   <string name="debug_info_involved_local">Recurso local:</string>
-  <string name="debug_info_logs_caption">Registros</string>
-  <string name="debug_info_logs_subtitle">Registros descritivos disponíveis</string>
-  <string name="debug_info_logs_view">Visualizar logs</string>
+  <string name="debug_info_logs_caption">Registos</string>
+  <string name="debug_info_logs_subtitle">Registos verbosos estão disponíveis</string>
+  <string name="debug_info_logs_view">Visualizar registos</string>
   <string name="debug_info_copy_remote_url">Copiar URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ocorreu um erro.</string>
@@ -409,29 +409,29 @@
   <string name="exception_ioexception">Ocorreu um erro de leitura/gravação.</string>
   <string name="exception_show_details">Mostrar detalhes</string>
   <!--WebDAV accounts-->
-  <string name="webdav_mounts_title">Pastas WebDAV</string>
-  <string name="webdav_mounts_quota_used_available">Quota utilizada: %1$s / disponível: %2$s</string>
+  <string name="webdav_mounts_title">Montagens WebDAV</string>
+  <string name="webdav_mounts_quota_used_available">Cota utilizada: %1$s / disponível: %2$s</string>
   <string name="webdav_mounts_share_content">Partilhar conteúdo</string>
   <string name="webdav_mounts_unmount">Desmontar</string>
-  <string name="webdav_add_mount_title">Adicionar uma pasta WebDAV</string>
-  <string name="webdav_mounts_empty">Acesse diretamente seus arquivos da nuvem adicionando uma pasta WebDAV!</string>
+  <string name="webdav_add_mount_title">Adicionar montagem WebDAV</string>
+  <string name="webdav_mounts_empty">Acesse diretamente seus ficheiros da nuvem adicionando uma montagem WebDAV!</string>
   <string name="webdav_add_mount_display_name">Nome de exibição</string>
   <string name="webdav_add_mount_url">URL do WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL inválida</string>
   <string name="webdav_add_mount_authentication">Autenticação</string>
   <string name="webdav_add_mount_username">Nome do usuário</string>
-  <string name="webdav_add_mount_password">Palavra passe</string>
-  <string name="webdav_add_mount_add">Adicionar pasta</string>
+  <string name="webdav_add_mount_password">Palavra-passe</string>
+  <string name="webdav_add_mount_add">Adicionar montagem</string>
   <string name="webdav_add_mount_no_support">Nenhum serviço WebDAV nesta URL</string>
-  <string name="webdav_remove_mount_title">Remover pasta</string>
-  <string name="webdav_remove_mount_text">Detalhes de conexão serão perdidos, mas nenhum arquivo será excluído.</string>
-  <string name="webdav_notification_access">Acessando arquivo do WebDAV</string>
-  <string name="webdav_notification_download">Baixando arquivo do WebDAV</string>
-  <string name="webdav_notification_upload">Enviando arquivo do WebDAV</string>
-  <string name="webdav_provider_root_title">Pasta WebDAV</string>
+  <string name="webdav_remove_mount_title">Remover ponto de montagem</string>
+  <string name="webdav_remove_mount_text">Detalhes de conexão serão perdidos, mas nenhum ficheiro será eliminado.</string>
+  <string name="webdav_notification_access">A acessar ficheiro do WebDAV</string>
+  <string name="webdav_notification_download">A descarregar ficheiro do WebDAV</string>
+  <string name="webdav_notification_upload">A enviar ficheiro do WebDAV</string>
+  <string name="webdav_provider_root_title">Montagem WebDAV</string>
   <!--sync-->
-  <string name="sync_error_permissions">Permissões do DAVx⁵</string>
-  <string name="sync_error_permissions_text">É necessário permissões adicionais</string>
+  <string name="sync_error_permissions">Autorizações da DAVx⁵</string>
+  <string name="sync_error_permissions_text">É necessário autorizações adicionais</string>
   <string name="sync_error_tasks_too_old">%s muito antigo</string>
   <string name="sync_error_tasks_required_version">Versão mínima exigida: %1$s</string>
   <string name="sync_error_authentication_failed">Falha de autenticação (verifique as credenciais)</string>
@@ -439,10 +439,10 @@
   <string name="sync_error_http_dav">Erro no servidor HTTP – %s</string>
   <string name="sync_error_local_storage">Erro de armazenamento local – %s</string>
   <string name="sync_error_retry_limit_reached">Erro simples (número de tentativas máximo atingido)</string>
-  <string name="sync_invalid_contact">Contato inválido recebido do servidor</string>
+  <string name="sync_invalid_contact">Contacto inválido recebido do servidor</string>
   <string name="sync_invalid_event">Evento inválido recebido do servidor</string>
   <string name="sync_invalid_task">Tarefa inválida recebida do servidor</string>
-  <string name="sync_invalid_resources_ignoring">Ignorando um ou mais recursos inválidos</string>
+  <string name="sync_invalid_resources_ignoring">A ignorar um ou mais recursos inválidos</string>
   <string name="sync_notification_pending_push_title">Sincronização em espera</string>
   <string name="sync_notification_pending_push_message">Dados remotos podem ter mudado</string>
   <!--widgets-->

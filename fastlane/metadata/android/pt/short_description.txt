@@ -1,1 +1,1 @@
-Sincronização e Cliente CalDAV/CardDAV
+Sincronização e cliente de CalDAV/CardDAV

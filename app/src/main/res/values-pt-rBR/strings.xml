@@ -426,8 +426,10 @@
   <string name="debug_info_logs_subtitle">Registros verbosos estão disponíveis</string>
   <string name="debug_info_logs_view">Visualizar registros</string>
   <string name="debug_info_copy_remote_url">Copiar URL</string>
+  <string name="debug_info_view_local_resource">Inspecionar recurso</string>
   <string name="debug_info_privacy_warning_title">Comunicado de privacidade</string>
   <string name="debug_info_privacy_warning_description">Os registros e as informações de depuração podem conter informações privadas. Tenha isso em mente ao compartilhá-os publicamente.</string>
+  <string name="debug_info_can_not_view_resource">Não é possível visualizar o recurso</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ocorreu um erro.</string>
   <string name="exception_httpexception">Ocorreu um erro de HTTP.</string>

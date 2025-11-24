@@ -33,6 +33,7 @@
   <string name="intro_battery_text">För att programmet skall kunna köra regelbunden synkronisering %s måste det tillåtas att köra i bakgrunden. Annars kan Android pausa synkroniseringen när som helst.</string>
   <string name="intro_battery_dont_show">Jag behöver inte regelbunden synkronisering.*</string>
   <string name="intro_autostart_title">%s kompatibilitet</string>
+  <string name="intro_autostart_text">Leverantörsspecifik firmware kan blockera synkronisering. Om du är drabbad kan du bara lösa detta manuellt.</string>
   <string name="intro_autostart_dont_show">Jag har gjort de nödvändiga inställningarna. Påminn mig inte igen.*</string>
   <string name="intro_leave_unchecked">* Lämna omarkerat för att bli påmind senare.. Kan återställas i appens inställningar / %s.</string>
   <string name="intro_more_info">Mer information</string>
@@ -119,6 +120,7 @@
   <string name="navigation_drawer_website">Websida</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_managed">För organisationer</string>
   <string name="navigation_drawer_community">Gemenskap</string>
   <string name="navigation_drawer_support_project">Stöd projektet</string>
   <string name="navigation_drawer_contribute">Hur man kan bidra</string>
@@ -199,8 +201,10 @@
   <string name="app_settings_unifiedpush_no_distributor">Ingen push leverantör installerad</string>
   <string name="app_settings_unifiedpush_no_endpoint">Ingen slutpunkt konfigurerad</string>
   <string name="app_settings_unifiedpush_ready">Redo att ta emot push meddelanden över %s</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
   <string name="app_settings_unifiedpush_encrypted">Push-meddelanden är alltid krypterade.</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">Konto har blivit borttaget</string>
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -243,8 +247,10 @@
   <string name="login_password">Lösenord</string>
   <string name="login_password_hide">Dölj lösenord</string>
   <string name="login_password_show">Visa lösenord</string>
+  <string name="login_password_optional">Lösenord (valfritt)</string>
   <string name="login_type_url">Logga in med URL och användarnamn</string>
   <string name="login_user_name">Användarnamn</string>
+  <string name="login_user_name_optional">Användarnamn (valfritt)</string>
   <string name="login_base_url">Bas-URL</string>
   <string name="login_base_url_info"><![CDATA[Bas URL kommer kontrolleras direkt, men <a href="%s">tjänster upptäcks även</a> genom DNS uppslag och välkända URL:er.]]></string>
   <string name="login_select_certificate">Välj certifikat</string>
@@ -258,6 +264,7 @@
   <string name="login_account_not_added">Konto kunde inte läggas till</string>
   <string name="login_finish">Klart</string>
   <string name="login_type_advanced">Avancerad inloggning</string>
+  <string name="login_no_client_certificate_optional">Inget klientcertifikat (valfritt)</string>
   <string name="login_client_certificate_selected">Klientcertifikat: %s</string>
   <string name="login_no_certificate_found">Inget certifikat funnet</string>
   <string name="login_install_certificate">Installera certifikat</string>
@@ -357,6 +364,7 @@
   <string name="create_addressbook">Skapa adressbok</string>
   <string name="create_addressbook_maybe_not_supported">Att skapa adressbok över CardDAV kanske inte stöds av servern.</string>
   <string name="create_calendar">Skapa kalender</string>
+  <string name="create_calendar_time_zone_optional">Standardtidszon (valfritt)</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Möjliga kalenderposter</string>
   <string name="create_calendar_type_vevent">Händelser</string>
@@ -366,6 +374,7 @@
   <string name="create_collection_color">Färg</string>
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_home_set">Lagringsplats</string>
+  <string name="create_collection_description_optional">Beskrivning (valfritt)</string>
   <string name="create_collection_create">Skapa</string>
   <!--CollectionScreen-->
   <string name="collection_datatype_contacts">kontakter</string>
@@ -400,6 +409,11 @@
   <string name="debug_info_server_error">Server-fel</string>
   <string name="debug_info_webdav_error">WebDAV-fel</string>
   <string name="debug_info_io_error">I/O-fel</string>
+  <string name="debug_info_http_403_description">Förfrågan har blivit nekad av servern.</string>
+  <string name="debug_info_http_404_description">Den begärda resursen finns inte (längre)</string>
+  <string name="debug_info_http_405_description">Servern tillåter inte den begärda typen av åtgärd.</string>
+  <string name="debug_info_http_5xx_description">Ett problem har uppstått på serversidan. Kontakta din serversupport.</string>
+  <string name="debug_info_unexpected_error">Ett oväntat problem har uppstått. Kolla felsökningsloggen för mer detaljer.</string>
   <string name="debug_info_view_details">Visa detaljer</string>
   <string name="debug_info_subtitle">Felsökningsinformation har samlats in</string>
   <string name="debug_info_involved_caption">Inblandade resurser</string>
@@ -410,8 +424,10 @@
   <string name="debug_info_logs_subtitle">Utförliga loggar finns tillgängliga</string>
   <string name="debug_info_logs_view">Visa loggar</string>
   <string name="debug_info_copy_remote_url">Kopiera URL</string>
+  <string name="debug_info_view_local_resource">Inspektera resurs.</string>
   <string name="debug_info_privacy_warning_title">Integritetspolicy</string>
   <string name="debug_info_privacy_warning_description">Loggar och felsökningsinformation kan innehålla privat information. Var medveten om detta när du delar offentligt.</string>
+  <string name="debug_info_can_not_view_resource">Det går inte att visa resursen</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ett fel har uppstått.</string>
   <string name="exception_httpexception">Ett HTTP-fel har uppstått.</string>
@@ -428,9 +444,12 @@
   <string name="webdav_add_mount_display_name">Visningsnamn</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Felaktig URL</string>
+  <string name="webdav_add_mount_mountpoint_displayname">Monteringspunkt och visningsnamn</string>
   <string name="webdav_add_mount_authentication">Autentisering</string>
   <string name="webdav_add_mount_username">Användarnamn</string>
   <string name="webdav_add_mount_password">Lösenord</string>
+  <string name="webdav_add_mount_username_optional">Användarnamn (valfritt)</string>
+  <string name="webdav_add_mount_password_optional">Lösenord (valfritt)</string>
   <string name="webdav_add_mount_add">Lägg till fäste</string>
   <string name="webdav_add_mount_no_support">Ingen WebDAV-tjänst på denna URL</string>
   <string name="webdav_remove_mount_title">Ta bort monteringspunkt</string>

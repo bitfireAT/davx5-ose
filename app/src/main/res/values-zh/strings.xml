@@ -405,6 +405,11 @@
   <string name="debug_info_server_error">服务器错误</string>
   <string name="debug_info_webdav_error">WebDAV错误</string>
   <string name="debug_info_io_error">I/O错误</string>
+  <string name="debug_info_http_403_description">服务器拒绝了该请求</string>
+  <string name="debug_info_http_404_description">所请求的资源（不再存在）不存在。</string>
+  <string name="debug_info_http_405_description">服务器不允许请求的操作类型。</string>
+  <string name="debug_info_http_5xx_description">发生服务器端问题。 请联系您的服务器支持</string>
+  <string name="debug_info_unexpected_error">发生意外错误。详情见调试信息。</string>
   <string name="debug_info_view_details">查看细节</string>
   <string name="debug_info_subtitle">已收集调试信息</string>
   <string name="debug_info_involved_caption">所涉资源</string>
@@ -415,8 +420,10 @@
   <string name="debug_info_logs_subtitle">详细日志可用</string>
   <string name="debug_info_logs_view">查看日志</string>
   <string name="debug_info_copy_remote_url">复制 URL</string>
+  <string name="debug_info_view_local_resource">查看资源</string>
   <string name="debug_info_privacy_warning_title">隐私声明</string>
   <string name="debug_info_privacy_warning_description">日志和调试信息可能包含私密信息。公开分享时请意识到这一点</string>
+  <string name="debug_info_can_not_view_resource">无法查看资源</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">出现错误</string>
   <string name="exception_httpexception">出现 HTTP 错误</string>
