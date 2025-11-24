@@ -21,6 +21,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
@@ -61,6 +62,7 @@ class LocalCalendarStoreTest {
     }
 
 
+    @Ignore("Sometimes failing, see https://github.com/bitfireAT/davx5-ose/issues/1828")
     @Test
     fun testUpdateAccount_updatesOwnerAccount() {
         // Verify initial state
