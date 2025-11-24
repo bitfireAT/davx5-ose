@@ -23,6 +23,8 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.bitfire.ical4android.TaskProvider
+import at.techbee.jtx.JtxContract
 import com.google.common.base.Ascii
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
@@ -147,25 +149,31 @@ class DebugInfoActivity: AppCompatActivity() {
     }
 
     /**
-     * Builds intent to view the problematic local event, task or contact at given Uri.
+     * Builds intent to view the problematic local resource at given Uri.
      *
-     * Note that only OpenTasks is supported as tasks provider. TasksOrg and jtxBoard
-     * do not support viewing tasks via intent-filter (yet). See also [at.bitfire.davdroid.sync.SyncNotificationManager.getLocalResourceUri]
+     * Note that the TasksOrg app does not support viewing tasks via intent-filter.
+     * @see [at.bitfire.davdroid.resource.LocalResource.getViewUri]
      */
-    private fun buildViewLocalResourceIntent(uri: Uri): Intent? {
-        val activeTasksAuthority = tasksAppManager.get().currentProvider()?.authority
-        return when (uri.authority) {
-            ContactsContract.AUTHORITY ->
-                Intent(Intent.ACTION_VIEW).apply {
+    private fun buildViewLocalResourceIntent(uri: Uri): Intent? =
+        when (uri.authority) {
+            // Support ACTION_VIEW
+            in listOf(
+                CalendarContract.AUTHORITY, // any calendar app
+                JtxContract.JtxICalObject.VIEW_INTENT_HOST // jtx Board for journals, notes, tasks
+            ) -> Intent(Intent.ACTION_VIEW, uri)
+
+            // Need ACTION_EDIT (OpenTasks crashes on using ACTION_VIEW)
+            TaskProvider.ProviderName.OpenTasks.authority // OpenTasks app
+                -> Intent(Intent.ACTION_EDIT, uri)
+
+            // Need CONTENT_ITEM_TYPE to be set
+            ContactsContract.AUTHORITY // any contacts app
+                -> Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(uri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
                 }
 
-            CalendarContract.AUTHORITY, activeTasksAuthority ->
-                Intent(Intent.ACTION_VIEW, uri)
-
             else -> null
-        }
-    }
+        }?.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
     /**
      * Builder for [DebugInfoActivity] intents
@@ -215,7 +223,6 @@ class DebugInfoActivity: AppCompatActivity() {
             if (uri == null)
                 return this
             intent.putExtra(EXTRA_LOCAL_RESOURCE_URI, uri)
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             return this
         }
 
@@ -257,7 +264,7 @@ class DebugInfoActivity: AppCompatActivity() {
         internal const val EXTRA_LOCAL_RESOURCE_SUMMARY = "localResourceSummary"
 
         /** [Uri] of local resource related to the problem (as [android.os.Parcelable]) */
-        internal const val EXTRA_LOCAL_RESOURCE_URI = "localResourceId"
+        internal const val EXTRA_LOCAL_RESOURCE_URI = "localResourceUri"
 
         /** logs related to the problem (plain-text [String]) */
         private const val EXTRA_LOGS = "logs"

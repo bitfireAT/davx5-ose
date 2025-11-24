@@ -10,10 +10,14 @@ import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.ical4android.JtxICalObjectFactory
 import at.techbee.jtx.JtxContract
+import at.techbee.jtx.JtxContract.JtxICalObject.getViewIntentUriFor
 import com.google.common.base.MoreObjects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
+/**
+ * Represents a Journal, Note or Task entry
+ */
 class LocalJtxICalObject(
     collection: JtxCollection<*>,
     fileName: String?,
@@ -84,6 +88,6 @@ class LocalJtxICalObject(
             .add("flags", flags)
             .toString()
 
-    override fun getViewUri(context: Context) = null
+    override fun getViewUri(context: Context) = getViewIntentUriFor(id)
 
 }

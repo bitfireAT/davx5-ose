@@ -14,10 +14,15 @@ import at.bitfire.ical4android.DmfsTaskFactory
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.BatchOperation
+import at.techbee.jtx.JtxContract
 import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
 
+/**
+ * Represents a Dmfs Task (OpenTasks and Tasks.org) entry
+ */
 class LocalTask: DmfsTask, LocalResource {
 
     override var fileName: String? = null
@@ -105,13 +110,16 @@ class LocalTask: DmfsTask, LocalResource {
             )*/
             .toString()
 
-    override fun getViewUri(context: Context): Uri? {
-        val idNotNull = id ?: return null
-        if (taskList.providerName == TaskProvider.ProviderName.OpenTasks) {
-            val contentUri = Tasks.getContentUri(taskList.providerName.authority)
-            return ContentUris.withAppendedId(contentUri, idNotNull)
+    override fun getViewUri(context: Context): Uri? = id?.let { id ->
+        when (taskList.providerName) {
+            TaskProvider.ProviderName.OpenTasks -> {
+                val contentUri = Tasks.getContentUri(taskList.providerName.authority)
+                ContentUris.withAppendedId(contentUri, id)
+            }
+            // Tasks.org can't handle view content URIs (missing intent-filter)
+            // Jtx Board tasks are [LocalJtxICalObject]s
+            else -> null
         }
-        return null
     }
 
 

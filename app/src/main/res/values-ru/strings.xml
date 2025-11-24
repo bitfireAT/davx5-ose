@@ -165,7 +165,7 @@
   <string name="app_settings_connection">Соединение</string>
   <string name="app_settings_proxy">Тип прокси</string>
   <string-array name="app_settings_proxy_types">
-    <item>Определен системой</item>
+    <item>Системный</item>
     <item>Без прокси</item>
     <item>HTTP</item>
     <item>SOCKS (для Orbot)</item>
@@ -187,7 +187,7 @@
   <string name="app_settings_notification_settings_summary">Управление каналами уведомлений и их настройками</string>
   <string name="app_settings_theme_title">Выбор темы</string>
   <string-array name="app_settings_theme_names">
-    <item>Определена системой</item>
+    <item>Системная</item>
     <item>Светлая</item>
     <item>Темная</item>
   </string-array>
@@ -324,7 +324,7 @@
   <string name="settings_ignore_vpns_off">VPN без основного интернета достаточно для выполнения синхронизации</string>
   <string name="settings_authentication">Аутентификация</string>
   <string name="settings_username">Имя пользователя</string>
-  <string name="settings_password"> Пароль или пароль приложения</string>
+  <string name="settings_password"> Пароль аккаунта или пароль приложения</string>
   <string name="settings_app_password_hint"><![CDATA[Возможно, вам больше понравится использовать <a href="%1$s">пароль приложения</a>.]]></string>
   <string name="settings_new_password">Новый пароль</string>
   <string name="settings_password_summary">Обновить пароль</string>
