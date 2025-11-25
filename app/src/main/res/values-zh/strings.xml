@@ -1,8 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
-  -->
-
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">账户（已）不存在</string>
