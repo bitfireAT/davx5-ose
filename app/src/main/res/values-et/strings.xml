@@ -1,4 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Kasutajakontot ei leidu (enam)</string>
@@ -422,8 +426,11 @@
   <string name="debug_info_logs_caption">Logid</string>
   <string name="debug_info_logs_subtitle">Saadaval on üksikasjalikud logid</string>
   <string name="debug_info_logs_view">Vaata logisid</string>
+  <string name="debug_info_copy_remote_url">Kopeeri võrguaadress</string>
+  <string name="debug_info_view_local_resource">Uuri ressurssi</string>
   <string name="debug_info_privacy_warning_title">Privaatsusteade</string>
   <string name="debug_info_privacy_warning_description">Logid ja veaotsingu teave võivad sisaldada privaatset teavet. Nende andmete avalikul jagamisel palun arvesta sellega.</string>
+  <string name="debug_info_can_not_view_resource">Ressurssi pole võimalik näha</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Tekkis viga.</string>
   <string name="exception_httpexception">Tekkis http-viga.</string>

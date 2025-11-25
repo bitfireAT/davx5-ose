@@ -39,6 +39,10 @@ import javax.inject.Singleton
  *
  * When using the global logger, the class name of the logging calls will still be logged, so there's
  * no need to always get a separate logger for each class (only if the class wants to customize it).
+ *
+ * Note about choosing log levels: records with [Level.FINE] or higher will always be printed to adb logs
+ * (regardless of whether verbose logging is active). Records with a lower level will only be
+ * printed to adb logs when verbose logging is active.
  */
 @Singleton
 class LogManager @Inject constructor(
@@ -79,7 +83,10 @@ class LogManager @Inject constructor(
 
         // root logger: set default log level and always log to logcat
         val rootLogger = Logger.getLogger("")
-        rootLogger.level = if (logVerbose) Level.ALL else Level.INFO
+        rootLogger.level = if (logVerbose)
+            Level.ALL       // include everything (including HTTP interceptor logs) in verbose logs
+        else
+            Level.FINE      // include detailed information like content provider operations in non-verbose logs
         rootLogger.addHandler(LogcatHandler(BuildConfig.APPLICATION_ID))
 
         // log to file, if requested

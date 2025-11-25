@@ -1,4 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Регистрацията (вече) не съществува</string>
@@ -423,8 +427,10 @@
   <string name="debug_info_logs_subtitle">Налични са подробни дневници</string>
   <string name="debug_info_logs_view">Преглед</string>
   <string name="debug_info_copy_remote_url">Копиране на адреса</string>
+  <string name="debug_info_view_local_resource">Проверка на ресурса</string>
   <string name="debug_info_privacy_warning_title">Съобщение за защита на личните данни</string>
   <string name="debug_info_privacy_warning_description">Дневниците и информацията за отстраняване на грешки могат да съдържат лична информация. Имайте  го предвид, когато ги споделяте публично.</string>
+  <string name="debug_info_can_not_view_resource">Ресурсът не може да бъде прегледан</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Възникна грешка.</string>
   <string name="exception_httpexception">Възникна грешка на HTTP.</string>

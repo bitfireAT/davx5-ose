@@ -1,4 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Konto nicht (mehr) vorhanden</string>
@@ -391,7 +395,7 @@
   <string name="collection_read_write">Lesen/Schreiben</string>
   <string name="collection_title">Titel</string>
   <string name="collection_description">Beschreibung</string>
-  <string name="collection_owner">Besitzer:in</string>
+  <string name="collection_owner">Besitzende Entität</string>
   <string name="collection_push_support">Push-Unterstützung</string>
   <string name="collection_push_web_push">Server bietet Push-Unterstützung</string>
   <string name="collection_push_subscribed_at">Um %1$s angemeldet, läuft ab %2$s</string>
@@ -423,8 +427,10 @@
   <string name="debug_info_logs_subtitle">Ausführliches Protokoll verfügbar</string>
   <string name="debug_info_logs_view">Logs anzeigen</string>
   <string name="debug_info_copy_remote_url">URL kopieren</string>
+  <string name="debug_info_view_local_resource">Ressource überprüfen</string>
   <string name="debug_info_privacy_warning_title">Datenschutzhinweis</string>
   <string name="debug_info_privacy_warning_description">Protokolle und Debug-Informationen können private Daten enthalten. Seien Sie sich dessen bewusst, wenn Sie diese öffentlich weitergeben.</string>
+  <string name="debug_info_can_not_view_resource">Ressource kann nicht angezeigt werden</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ein Fehler ist aufgetreten.</string>
   <string name="exception_httpexception">Ein HTTP-Fehler ist aufgetreten.</string>

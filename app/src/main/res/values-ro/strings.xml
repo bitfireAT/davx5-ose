@@ -1,4 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Contul nu (mai) există</string>
@@ -411,6 +415,11 @@
   <string name="debug_info_server_error">Eroare de server</string>
   <string name="debug_info_webdav_error">Eroare WebDAV</string>
   <string name="debug_info_io_error">Eroare I/O</string>
+  <string name="debug_info_http_403_description">Solicitarea a fost respinsă de server.</string>
+  <string name="debug_info_http_404_description">Resursa solicitată nu (mai) există.</string>
+  <string name="debug_info_http_405_description">Serverul nu permite tipul de operare solicitat.</string>
+  <string name="debug_info_http_5xx_description">A apărut o problemă la nivelul serverului. Contactează asistența serverului.</string>
+  <string name="debug_info_unexpected_error">A apărut o eroare neașteptată. Vezi informațiile de depanare pentru detalii.</string>
   <string name="debug_info_view_details">Vezi detaliile</string>
   <string name="debug_info_subtitle">Au fost colectate informații de depanare</string>
   <string name="debug_info_involved_caption">Resurse implicate</string>
@@ -420,8 +429,11 @@
   <string name="debug_info_logs_caption">Jurnale</string>
   <string name="debug_info_logs_subtitle">Jurnalele detaliate sunt disponibile</string>
   <string name="debug_info_logs_view">Vezi jurnalele</string>
+  <string name="debug_info_copy_remote_url">Copiază adresa URL</string>
+  <string name="debug_info_view_local_resource">Inspectează resursa</string>
   <string name="debug_info_privacy_warning_title">Notificare de confidențialitate</string>
   <string name="debug_info_privacy_warning_description">Jurnalele și informațiile de depanare pot conține informații private. Fii conștient de acest lucru atunci când îl publici.</string>
+  <string name="debug_info_can_not_view_resource">Nu se poate vizualiza resursa</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">A avut loc o eroare.</string>
   <string name="exception_httpexception">A apărut o eroare HTTP.</string>

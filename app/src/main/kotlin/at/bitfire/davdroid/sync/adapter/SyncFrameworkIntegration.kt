@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncRequest
-import android.os.Build
 import android.os.Bundle
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.resource.LocalAddressBookStore

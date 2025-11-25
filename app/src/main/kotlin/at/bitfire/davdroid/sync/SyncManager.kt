@@ -256,9 +256,10 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
             }
 
             when (e) {
-                // DeadObjectException (may occur when syncing takes too long and process is demoted to cached):
-                // re-throw to base Syncer → will cause soft error and restart the sync process
-                is DeadObjectException ->
+                /* LocalStorageException with cause DeadObjectException may occur when syncing takes too long
+                and process is demoted to cached. In this case, we re-throw to the base Syncer which will
+                treat it as a soft error and re-schedule the sync process. */
+                is LocalStorageException if e.cause is DeadObjectException ->
                     throw e
 
                 // sync was cancelled or account has been removed: re-throw to Syncer
