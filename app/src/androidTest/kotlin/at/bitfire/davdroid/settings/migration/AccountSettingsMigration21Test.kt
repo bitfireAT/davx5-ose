@@ -15,8 +15,7 @@ import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -50,17 +49,8 @@ class AccountSettingsMigration21Test {
     lateinit var account: Account
     val authority = CalendarContract.AUTHORITY
 
-    private val inPendingState = callbackFlow {
-        val stateChangeListener = ContentResolver.addStatusChangeListener(
-            ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
-        ) {
-            trySend(ContentResolver.isSyncPending(account, authority))
-        }
-        trySend(ContentResolver.isSyncPending(account, authority))
-        awaitClose {
-            ContentResolver.removeStatusChangeListener(stateChangeListener)
-        }
-    }
+    private val inPendingState = MutableStateFlow(false)
+    private var statusChangeListener: Any? = null
 
     @Before
     fun setUp() {
@@ -70,10 +60,14 @@ class AccountSettingsMigration21Test {
 
         // Enable sync globally and for the test account
         ContentResolver.setIsSyncable(account, authority, 1)
+
+        // Start hot flow
+        startInPendingStateHotFlow()
     }
 
     @After
     fun tearDown() {
+        stopInPendingStateHotFlow()
         TestAccount.remove(account)
     }
 
@@ -114,6 +108,22 @@ class AccountSettingsMigration21Test {
         .setExpedited(true)     // sync request will be scheduled at the front of the sync request queue
         .setManual(true)        // equivalent of setting both SYNC_EXTRAS_IGNORE_SETTINGS and SYNC_EXTRAS_IGNORE_BACKOFF
         .build()
+
+    private fun startInPendingStateHotFlow() {
+        // listener pushes updates immediately when sync status changes
+        statusChangeListener = ContentResolver.addStatusChangeListener(
+            ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
+        ) {
+            inPendingState.tryEmit(ContentResolver.isSyncPending(account, authority))
+        }
+
+        // Emit initial state
+        inPendingState.tryEmit(ContentResolver.isSyncPending(account, authority))
+    }
+
+    private fun stopInPendingStateHotFlow() {
+        statusChangeListener?.let { ContentResolver.removeStatusChangeListener(it) }
+    }
 
     companion object {
 
