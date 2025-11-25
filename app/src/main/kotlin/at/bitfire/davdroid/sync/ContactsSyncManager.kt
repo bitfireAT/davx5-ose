@@ -195,7 +195,7 @@ class ContactsSyncManager @AssistedInject constructor(
                             // hasJCard = supported.hasJCard()
                         }
                         response[SupportedReportSet::class.java]?.let { supported ->
-                            hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection.toString())
+                            hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
                         }
                         syncState = syncState(response)
                     }

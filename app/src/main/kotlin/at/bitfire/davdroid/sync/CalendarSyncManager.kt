@@ -14,7 +14,6 @@ import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
-import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -112,7 +111,7 @@ class CalendarSyncManager @AssistedInject constructor(
             runInterruptible {
                 davCollection.propfind(
                     0,
-                    CardDAV.MaxResourceSize,
+                    CalDAV.MaxResourceSize,
                     WebDAV.SupportedReportSet,
                     CalDAV.GetCTag,
                     WebDAV.SyncToken
@@ -123,7 +122,7 @@ class CalendarSyncManager @AssistedInject constructor(
                         }
 
                         response[SupportedReportSet::class.java]?.let { supported ->
-                            hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection.toString())
+                            hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
                         }
                         syncState = syncState(response)
                     }

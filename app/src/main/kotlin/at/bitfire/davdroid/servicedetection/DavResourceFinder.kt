@@ -226,7 +226,8 @@ class DavResourceFinder @AssistedInject constructor(
                 Service.CARDDAV -> {
                     davBaseURL.propfind(
                         0,
-                        WebDAV.ResourceType, WebDAV.DisplayName, WebDAV.CurrentUserPrincipal,
+                        WebDAV.ResourceType, WebDAV.DisplayName,
+                        WebDAV.CurrentUserPrincipal,
                         CardDAV.AddressbookHomeSet,
                         CardDAV.AddressbookDescription
                     ) { response, _ ->
@@ -236,7 +237,8 @@ class DavResourceFinder @AssistedInject constructor(
                 Service.CALDAV -> {
                     davBaseURL.propfind(
                         0,
-                        WebDAV.ResourceType, WebDAV.DisplayName, WebDAV.CurrentUserPrivilegeSet,
+                        WebDAV.ResourceType, WebDAV.DisplayName,
+                        WebDAV.CurrentUserPrincipal, WebDAV.CurrentUserPrivilegeSet,
                         CalDAV.CalendarHomeSet,
                         CalDAV.SupportedCalendarComponentSet, CalDAV.CalendarColor, CalDAV.CalendarDescription, CalDAV.CalendarTimezone
                     ) { response, _ ->
