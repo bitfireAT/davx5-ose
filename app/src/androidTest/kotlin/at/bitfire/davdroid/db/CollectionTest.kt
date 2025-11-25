@@ -66,7 +66,7 @@ class CollectionTest {
         lateinit var info: Collection
         DavResource(httpClient, server.url("/"))
                 .propfind(0, ResourceType.NAME) { response, _ ->
-            info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
+            info = Collection.fromDavResponse(response, null) ?: throw IllegalArgumentException()
         }
         assertEquals(Collection.TYPE_ADDRESSBOOK, info.type)
         assertTrue(info.privWriteContent)
@@ -122,7 +122,7 @@ class CollectionTest {
         lateinit var info: Collection
         DavResource(httpClient, server.url("/"))
             .propfind(0, ResourceType.NAME) { response, _ ->
-                info = Collection.fromDavResponse(response)!!
+                info = Collection.fromDavResponse(response, null)!!
             }
         assertEquals(Collection.TYPE_CALENDAR, info.type)
         assertFalse(info.privWriteContent)
@@ -158,7 +158,7 @@ class CollectionTest {
         lateinit var info: Collection
         DavResource(httpClient, server.url("/"))
             .propfind(0, ResourceType.NAME) { response, _ ->
-                info = Collection.fromDavResponse(response)!!
+                info = Collection.fromDavResponse(response, null)!!
             }
         assertEquals(Collection.TYPE_CALENDAR, info.type)
         assertFalse(info.privWriteContent)
@@ -192,7 +192,7 @@ class CollectionTest {
         lateinit var info: Collection
         DavResource(httpClient, server.url("/"))
                 .propfind(0, ResourceType.NAME) { response, _ ->
-                    info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
+                    info = Collection.fromDavResponse(response, null) ?: throw IllegalArgumentException()
                 }
         assertEquals(Collection.TYPE_WEBCAL, info.type)
         assertEquals("Sample Subscription", info.displayName)

@@ -1,0 +1,653 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 19,
+    "identityHash": "6a30d678208d0aa38dd86951c67c2abe",
+    "entities": [
+      {
+        "tableName": "service",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `accountName` TEXT NOT NULL, `type` TEXT NOT NULL, `principal` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "accountName",
+            "columnName": "accountName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "principal",
+            "columnName": "principal",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_service_accountName_type",
+            "unique": true,
+            "columnNames": [
+              "accountName",
+              "type"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_service_accountName_type` ON `${TABLE_NAME}` (`accountName`, `type`)"
+          }
+        ]
+      },
+      {
+        "tableName": "homeset",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `serviceId` INTEGER NOT NULL, `personal` INTEGER NOT NULL, `url` TEXT NOT NULL, `privBind` INTEGER NOT NULL, `displayName` TEXT, FOREIGN KEY(`serviceId`) REFERENCES `service`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serviceId",
+            "columnName": "serviceId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "personal",
+            "columnName": "personal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "privBind",
+            "columnName": "privBind",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_homeset_serviceId_url",
+            "unique": true,
+            "columnNames": [
+              "serviceId",
+              "url"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_homeset_serviceId_url` ON `${TABLE_NAME}` (`serviceId`, `url`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "service",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "serviceId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "collection",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `serviceId` INTEGER NOT NULL, `homeSetId` INTEGER, `ownerId` INTEGER, `type` TEXT NOT NULL, `url` TEXT NOT NULL, `privWriteContent` INTEGER NOT NULL, `privUnbind` INTEGER NOT NULL, `forceReadOnly` INTEGER NOT NULL, `personal` INTEGER, `displayName` TEXT, `description` TEXT, `color` INTEGER, `timezoneId` TEXT, `supportsVEVENT` INTEGER, `supportsVTODO` INTEGER, `supportsVJOURNAL` INTEGER, `source` TEXT, `sync` INTEGER NOT NULL, `pushTopic` TEXT, `supportsWebPush` INTEGER NOT NULL DEFAULT 0, `pushVapidKey` TEXT, `pushSubscription` TEXT, `pushSubscriptionExpires` INTEGER, `pushSubscriptionCreated` INTEGER, FOREIGN KEY(`serviceId`) REFERENCES `service`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`homeSetId`) REFERENCES `homeset`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`ownerId`) REFERENCES `principal`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serviceId",
+            "columnName": "serviceId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "homeSetId",
+            "columnName": "homeSetId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "ownerId",
+            "columnName": "ownerId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "privWriteContent",
+            "columnName": "privWriteContent",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "privUnbind",
+            "columnName": "privUnbind",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "forceReadOnly",
+            "columnName": "forceReadOnly",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "personal",
+            "columnName": "personal",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "color",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "timezoneId",
+            "columnName": "timezoneId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "supportsVEVENT",
+            "columnName": "supportsVEVENT",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "supportsVTODO",
+            "columnName": "supportsVTODO",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "supportsVJOURNAL",
+            "columnName": "supportsVJOURNAL",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sync",
+            "columnName": "sync",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pushTopic",
+            "columnName": "pushTopic",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "supportsWebPush",
+            "columnName": "supportsWebPush",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "pushVapidKey",
+            "columnName": "pushVapidKey",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "pushSubscription",
+            "columnName": "pushSubscription",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "pushSubscriptionExpires",
+            "columnName": "pushSubscriptionExpires",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "pushSubscriptionCreated",
+            "columnName": "pushSubscriptionCreated",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_collection_serviceId_type",
+            "unique": false,
+            "columnNames": [
+              "serviceId",
+              "type"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_collection_serviceId_type` ON `${TABLE_NAME}` (`serviceId`, `type`)"
+          },
+          {
+            "name": "index_collection_homeSetId_type",
+            "unique": false,
+            "columnNames": [
+              "homeSetId",
+              "type"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_collection_homeSetId_type` ON `${TABLE_NAME}` (`homeSetId`, `type`)"
+          },
+          {
+            "name": "index_collection_ownerId_type",
+            "unique": false,
+            "columnNames": [
+              "ownerId",
+              "type"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_collection_ownerId_type` ON `${TABLE_NAME}` (`ownerId`, `type`)"
+          },
+          {
+            "name": "index_collection_pushTopic_type",
+            "unique": false,
+            "columnNames": [
+              "pushTopic",
+              "type"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_collection_pushTopic_type` ON `${TABLE_NAME}` (`pushTopic`, `type`)"
+          },
+          {
+            "name": "index_collection_url",
+            "unique": false,
+            "columnNames": [
+              "url"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_collection_url` ON `${TABLE_NAME}` (`url`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "service",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "serviceId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "homeset",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "homeSetId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "principal",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "ownerId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "principal",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `serviceId` INTEGER NOT NULL, `url` TEXT NOT NULL, `displayName` TEXT, FOREIGN KEY(`serviceId`) REFERENCES `service`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serviceId",
+            "columnName": "serviceId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_principal_serviceId_url",
+            "unique": true,
+            "columnNames": [
+              "serviceId",
+              "url"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_principal_serviceId_url` ON `${TABLE_NAME}` (`serviceId`, `url`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "service",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "serviceId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "syncstats",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `collectionId` INTEGER NOT NULL, `dataType` TEXT NOT NULL, `lastSync` INTEGER NOT NULL, FOREIGN KEY(`collectionId`) REFERENCES `collection`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "collectionId",
+            "columnName": "collectionId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataType",
+            "columnName": "dataType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastSync",
+            "columnName": "lastSync",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_syncstats_collectionId_dataType",
+            "unique": true,
+            "columnNames": [
+              "collectionId",
+              "dataType"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_syncstats_collectionId_dataType` ON `${TABLE_NAME}` (`collectionId`, `dataType`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "collection",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "collectionId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "webdav_document",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mountId` INTEGER NOT NULL, `parentId` INTEGER, `name` TEXT NOT NULL, `isDirectory` INTEGER NOT NULL, `displayName` TEXT, `mimeType` TEXT, `eTag` TEXT, `lastModified` INTEGER, `size` INTEGER, `mayBind` INTEGER, `mayUnbind` INTEGER, `mayWriteContent` INTEGER, `quotaAvailable` INTEGER, `quotaUsed` INTEGER, FOREIGN KEY(`mountId`) REFERENCES `webdav_mount`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`parentId`) REFERENCES `webdav_document`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mountId",
+            "columnName": "mountId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parentId",
+            "columnName": "parentId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isDirectory",
+            "columnName": "isDirectory",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "mimeType",
+            "columnName": "mimeType",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "eTag",
+            "columnName": "eTag",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lastModified",
+            "columnName": "lastModified",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "size",
+            "columnName": "size",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "mayBind",
+            "columnName": "mayBind",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "mayUnbind",
+            "columnName": "mayUnbind",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "mayWriteContent",
+            "columnName": "mayWriteContent",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "quotaAvailable",
+            "columnName": "quotaAvailable",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "quotaUsed",
+            "columnName": "quotaUsed",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_webdav_document_mountId_parentId_name",
+            "unique": true,
+            "columnNames": [
+              "mountId",
+              "parentId",
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_webdav_document_mountId_parentId_name` ON `${TABLE_NAME}` (`mountId`, `parentId`, `name`)"
+          },
+          {
+            "name": "index_webdav_document_parentId",
+            "unique": false,
+            "columnNames": [
+              "parentId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_webdav_document_parentId` ON `${TABLE_NAME}` (`parentId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "webdav_mount",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "mountId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "webdav_document",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "parentId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "webdav_mount",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `url` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6a30d678208d0aa38dd86951c67c2abe')"
+    ]
+  }
+}

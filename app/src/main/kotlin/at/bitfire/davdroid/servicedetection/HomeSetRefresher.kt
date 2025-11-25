@@ -77,12 +77,13 @@ class HomeSetRefresher @AssistedInject constructor(
                         homeSetRepository.insertOrUpdateByUrlBlocking(
                             localHomeset.copy(
                                 displayName = response[DisplayName::class.java]?.displayName,
-                                privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
+                                privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false,
+                                personal = ServiceDetectionUtils.isPersonal(service.principal, response) == true
                             )
                         )
 
                     // in any case, check whether the response is about a usable collection
-                    var collection = Collection.fromDavResponse(response) ?: return@propfind
+                    var collection = Collection.fromDavResponse(response, service.principal) ?: return@propfind
                     collection = collection.copy(
                         serviceId = service.id,
                         homeSetId = localHomeset.id,

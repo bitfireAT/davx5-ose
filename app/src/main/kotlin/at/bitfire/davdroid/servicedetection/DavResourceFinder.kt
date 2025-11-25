@@ -320,7 +320,7 @@ class DavResourceFinder @AssistedInject constructor(
         davResponse[ResourceType::class.java]?.let {
             // Is it a calendar or an address book, ...
             if (it.types.contains(resourceType))
-                Collection.fromDavResponse(davResponse)?.let { info ->
+                Collection.fromDavResponse(davResponse, principal)?.let { info ->
                     log.info("Found resource of type $resourceType at ${info.url}")
                     config.collections[info.url] = info
                 }
