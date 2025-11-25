@@ -11,11 +11,11 @@ import at.bitfire.dav4jvm.okhttp.DavCalendar
 import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
 import at.bitfire.dav4jvm.okhttp.Response
 import at.bitfire.dav4jvm.okhttp.exception.DavException
+import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
-import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
@@ -84,7 +84,7 @@ class JtxSyncManager @AssistedInject constructor(
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
             runInterruptible {
-                davCollection.propfind(0, GetCTag.NAME, MaxResourceSize.NAME, SyncToken.NAME) { response, relation ->
+                davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
                         response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                             logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")

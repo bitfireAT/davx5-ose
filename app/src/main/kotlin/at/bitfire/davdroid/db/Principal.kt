@@ -12,6 +12,7 @@ import at.bitfire.dav4jvm.okhttp.Response
 import at.bitfire.dav4jvm.okhttp.UrlUtils
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.util.trimToNull
 import okhttp3.HttpUrl
 
@@ -46,7 +47,7 @@ data class Principal(
         fun fromDavResponse(serviceId: Long, dav: Response): Principal? {
             // Check if response is a principal
             val resourceType = dav[ResourceType::class.java] ?: return null
-            if (!resourceType.types.contains(ResourceType.PRINCIPAL))
+            if (!resourceType.types.contains(WebDAV.Principal))
                 return null
 
             // Try getting the display name of the principal

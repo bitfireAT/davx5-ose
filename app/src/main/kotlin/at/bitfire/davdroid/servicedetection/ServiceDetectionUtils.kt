@@ -5,19 +5,10 @@
 package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.Property
-import at.bitfire.dav4jvm.property.caldav.CalendarColor
-import at.bitfire.dav4jvm.property.caldav.CalendarDescription
-import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
-import at.bitfire.dav4jvm.property.caldav.CalendarTimezoneId
-import at.bitfire.dav4jvm.property.caldav.Source
-import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
-import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
-import at.bitfire.dav4jvm.property.push.PushTransports
-import at.bitfire.dav4jvm.property.push.Topic
-import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
-import at.bitfire.dav4jvm.property.webdav.DisplayName
-import at.bitfire.dav4jvm.property.webdav.Owner
-import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.dav4jvm.property.caldav.CalDAV
+import at.bitfire.dav4jvm.property.carddav.CardDAV
+import at.bitfire.dav4jvm.property.push.WebDAVPush
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
@@ -29,24 +20,24 @@ object ServiceDetectionUtils {
      */
     fun collectionQueryProperties(@ServiceType serviceType: String): Array<Property.Name> =
         arrayOf(                        // generic WebDAV properties
-            CurrentUserPrivilegeSet.NAME,
-            DisplayName.NAME,
-            Owner.NAME,
-            ResourceType.NAME,
-            PushTransports.NAME,        // WebDAV-Push
-            Topic.NAME
-        ) + when (serviceType) {       // service-specific CalDAV/CardDAV properties
+            WebDAV.CurrentUserPrivilegeSet,
+            WebDAV.DisplayName,
+            WebDAV.Owner,
+            WebDAV.ResourceType,
+            WebDAVPush.Transports,      // WebDAV-Push
+            WebDAVPush.Topic
+        ) + when (serviceType) {        // service-specific CalDAV/CardDAV properties
             Service.TYPE_CARDDAV -> arrayOf(
-                AddressbookDescription.NAME
+                CardDAV.AddressbookDescription
             )
 
             Service.TYPE_CALDAV -> arrayOf(
-                CalendarColor.NAME,
-                CalendarDescription.NAME,
-                CalendarTimezone.NAME,
-                CalendarTimezoneId.NAME,
-                SupportedCalendarComponentSet.NAME,
-                Source.NAME
+                CalDAV.CalendarColor,
+                CalDAV.CalendarDescription,
+                CalDAV.CalendarTimezone,
+                CalDAV.CalendarTimezoneId,
+                CalDAV.SupportedCalendarComponentSet,
+                CalDAV.Source
             )
 
             else -> throw IllegalArgumentException()

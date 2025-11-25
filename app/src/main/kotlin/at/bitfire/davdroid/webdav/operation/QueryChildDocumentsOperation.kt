@@ -18,6 +18,7 @@ import at.bitfire.dav4jvm.property.webdav.GetLastModified
 import at.bitfire.dav4jvm.property.webdav.QuotaAvailableBytes
 import at.bitfire.dav4jvm.property.webdav.QuotaUsedBytes
 import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
@@ -153,7 +154,7 @@ class QueryChildDocumentsOperation @Inject constructor(
                         }
 
                     val updatedResource = resource.copy(
-                        isDirectory = response[ResourceType::class.java]?.types?.contains(ResourceType.COLLECTION)
+                        isDirectory = response[ResourceType::class.java]?.types?.contains(WebDAV.Collection)
                             ?: resource.isDirectory,
                         displayName = response[DisplayName::class.java]?.displayName,
                         mimeType = response[GetContentType::class.java]?.type?.toMediaTypeOrNull(),
@@ -191,15 +192,15 @@ class QueryChildDocumentsOperation @Inject constructor(
     companion object {
 
         val DAV_FILE_FIELDS = arrayOf(
-            ResourceType.NAME,
-            CurrentUserPrivilegeSet.NAME,
-            DisplayName.NAME,
-            GetETag.NAME,
-            GetContentType.NAME,
-            GetContentLength.NAME,
-            GetLastModified.NAME,
-            QuotaAvailableBytes.NAME,
-            QuotaUsedBytes.NAME,
+            WebDAV.ResourceType,
+            WebDAV.CurrentUserPrivilegeSet,
+            WebDAV.DisplayName,
+            WebDAV.GetETag,
+            WebDAV.GetContentType,
+            WebDAV.GetContentLength,
+            WebDAV.GetLastModified,
+            WebDAV.QuotaAvailableBytes,
+            WebDAV.QuotaUsedBytes,
         )
 
         /** List of currently active [queryChildDocuments] runners.

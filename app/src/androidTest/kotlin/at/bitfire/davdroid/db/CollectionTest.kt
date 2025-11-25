@@ -7,7 +7,7 @@ package at.bitfire.davdroid.db
 import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
 import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.network.HttpClientBuilder
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -65,7 +65,7 @@ class CollectionTest {
 
         lateinit var info: Collection
         DavResource(httpClient, server.url("/"))
-                .propfind(0, ResourceType.NAME) { response, _ ->
+                .propfind(0, WebDAV.ResourceType) { response, _ ->
             info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
         }
         assertEquals(Collection.TYPE_ADDRESSBOOK, info.type)
@@ -121,7 +121,7 @@ class CollectionTest {
 
         lateinit var info: Collection
         DavResource(httpClient, server.url("/"))
-            .propfind(0, ResourceType.NAME) { response, _ ->
+            .propfind(0, WebDAV.ResourceType) { response, _ ->
                 info = Collection.fromDavResponse(response)!!
             }
         assertEquals(Collection.TYPE_CALENDAR, info.type)
@@ -157,7 +157,7 @@ class CollectionTest {
 
         lateinit var info: Collection
         DavResource(httpClient, server.url("/"))
-            .propfind(0, ResourceType.NAME) { response, _ ->
+            .propfind(0, WebDAV.ResourceType) { response, _ ->
                 info = Collection.fromDavResponse(response)!!
             }
         assertEquals(Collection.TYPE_CALENDAR, info.type)
@@ -191,7 +191,7 @@ class CollectionTest {
 
         lateinit var info: Collection
         DavResource(httpClient, server.url("/"))
-                .propfind(0, ResourceType.NAME) { response, _ ->
+                .propfind(0, WebDAV.ResourceType) { response, _ ->
                     info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
                 }
         assertEquals(Collection.TYPE_WEBCAL, info.type)

@@ -12,17 +12,9 @@ import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.okhttp.exception.GoneException
 import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.dav4jvm.okhttp.exception.NotFoundException
-import at.bitfire.dav4jvm.property.caldav.CalendarColor
-import at.bitfire.dav4jvm.property.caldav.CalendarDescription
-import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
-import at.bitfire.dav4jvm.property.caldav.CalendarTimezoneId
-import at.bitfire.dav4jvm.property.caldav.NS_CALDAV
-import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
-import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
-import at.bitfire.dav4jvm.property.carddav.NS_CARDDAV
-import at.bitfire.dav4jvm.property.webdav.DisplayName
-import at.bitfire.dav4jvm.property.webdav.NS_WEBDAV
-import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.dav4jvm.property.caldav.CalDAV
+import at.bitfire.dav4jvm.property.carddav.CardDAV
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -318,27 +310,27 @@ class DavCollectionRepository @Inject constructor(
             setOutput(writer)
 
             startDocument("UTF-8", null)
-            setPrefix("", NS_WEBDAV)
-            setPrefix("CAL", NS_CALDAV)
-            setPrefix("CARD", NS_CARDDAV)
+            setPrefix("", WebDAV.NS_WEBDAV)
+            setPrefix("CAL", CalDAV.NS_CALDAV)
+            setPrefix("CARD", CardDAV.NS_CARDDAV)
 
             if (addressBook)
-                startTag(NS_WEBDAV, "mkcol")
+                startTag(WebDAV.NS_WEBDAV, "mkcol")
             else
-                startTag(NS_CALDAV, "mkcalendar")
+                startTag(CalDAV.NS_CALDAV, "mkcalendar")
 
-            insertTag(DavResource.SET) {
-                insertTag(DavResource.PROP) {
-                    insertTag(ResourceType.NAME) {
-                        insertTag(ResourceType.COLLECTION)
+            insertTag(WebDAV.Set) {
+                insertTag(WebDAV.Prop) {
+                    insertTag(WebDAV.ResourceType) {
+                        insertTag(WebDAV.Collection)
                         if (addressBook)
-                            insertTag(ResourceType.ADDRESSBOOK)
+                            insertTag(CardDAV.Addressbook)
                         else
-                            insertTag(ResourceType.CALENDAR)
+                            insertTag(CalDAV.Calendar)
                     }
 
                     displayName?.let {
-                        insertTag(DisplayName.NAME) {
+                        insertTag(WebDAV.DisplayName) {
                             text(it)
                         }
                     }
@@ -346,7 +338,7 @@ class DavCollectionRepository @Inject constructor(
                     if (addressBook) {
                         // addressbook-specific properties
                         description?.let {
-                            insertTag(AddressbookDescription.NAME) {
+                            insertTag(CardDAV.AddressbookDescription) {
                                 text(it)
                             }
                         }
@@ -354,21 +346,21 @@ class DavCollectionRepository @Inject constructor(
                     } else {
                         // calendar-specific properties
                         description?.let {
-                            insertTag(CalendarDescription.NAME) {
+                            insertTag(CalDAV.CalendarDescription) {
                                 text(it)
                             }
                         }
                         color?.let {
-                            insertTag(CalendarColor.NAME) {
+                            insertTag(CalDAV.CalendarColor) {
                                 text(DavUtils.ARGBtoCalDAVColor(it))
                             }
                         }
                         timezoneId?.let { id ->
-                            insertTag(CalendarTimezoneId.NAME) {
+                            insertTag(CalDAV.CalendarTimezoneId) {
                                 text(id)
                             }
                             getVTimeZone(id)?.let { vTimezone ->
-                                insertTag(CalendarTimezone.NAME) {
+                                insertTag(CalDAV.CalendarTimezone) {
                                     text(
                                         // spec requires "an iCalendar object with exactly one VTIMEZONE component"
                                         Calendar(
@@ -386,19 +378,19 @@ class DavCollectionRepository @Inject constructor(
                         }
 
                         if (!supportsVEVENT || !supportsVTODO || !supportsVJOURNAL) {
-                            insertTag(SupportedCalendarComponentSet.NAME) {
+                            insertTag(CalDAV.SupportedCalendarComponentSet) {
                                 // Only if there's at least one not explicitly supported calendar component set,
                                 // otherwise don't include the property, which means "supports everything".
                                 if (supportsVEVENT)
-                                    insertTag(SupportedCalendarComponentSet.COMP) {
+                                    insertTag(CalDAV.Comp) {
                                         attribute(null, "name", Component.VEVENT)
                                     }
                                 if (supportsVTODO)
-                                    insertTag(SupportedCalendarComponentSet.COMP) {
+                                    insertTag(CalDAV.Comp) {
                                         attribute(null, "name", Component.VTODO)
                                     }
                                 if (supportsVJOURNAL)
-                                    insertTag(SupportedCalendarComponentSet.COMP) {
+                                    insertTag(CalDAV.Comp) {
                                         attribute(null, "name", Component.VJOURNAL)
                                     }
                             }
@@ -407,9 +399,9 @@ class DavCollectionRepository @Inject constructor(
                 }
             }
             if (addressBook)
-                endTag(NS_WEBDAV, "mkcol")
+                endTag(WebDAV.NS_WEBDAV, "mkcol")
             else
-                endTag(NS_CALDAV, "mkcalendar")
+                endTag(CalDAV.NS_CALDAV, "mkcalendar")
             endDocument()
         }
         return writer.toString()

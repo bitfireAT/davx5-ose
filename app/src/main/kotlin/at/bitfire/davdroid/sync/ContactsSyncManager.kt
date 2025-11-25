@@ -11,15 +11,15 @@ import at.bitfire.dav4jvm.okhttp.DavAddressBook
 import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
 import at.bitfire.dav4jvm.okhttp.Response
 import at.bitfire.dav4jvm.okhttp.exception.DavException
-import at.bitfire.dav4jvm.property.caldav.GetCTag
+import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.AddressData
+import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.carddav.MaxResourceSize
 import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
 import at.bitfire.dav4jvm.property.webdav.GetContentType
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
-import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
@@ -175,7 +175,14 @@ class ContactsSyncManager @AssistedInject constructor(
         return SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
             runInterruptible {
-                davCollection.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                davCollection.propfind(
+                    0,
+                    CardDAV.MaxResourceSize,
+                    CardDAV.SupportedAddressData,
+                    WebDAV.SupportedReportSet,
+                    CalDAV.GetCTag,
+                    WebDAV.SyncToken
+                ) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
                         response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                             logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
@@ -188,7 +195,7 @@ class ContactsSyncManager @AssistedInject constructor(
                             // hasJCard = supported.hasJCard()
                         }
                         response[SupportedReportSet::class.java]?.let { supported ->
-                            hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                            hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection.toString())
                         }
                         syncState = syncState(response)
                     }
@@ -317,7 +324,7 @@ class ContactsSyncManager @AssistedInject constructor(
     override suspend fun listAllRemote(callback: MultiResponseCallback) =
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             runInterruptible {
-                davCollection.propfind(1, ResourceType.NAME, GetETag.NAME, callback = callback)
+                davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag, callback = callback)
             }
         }
 
