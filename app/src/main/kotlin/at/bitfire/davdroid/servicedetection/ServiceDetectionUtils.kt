@@ -24,7 +24,7 @@ object ServiceDetectionUtils {
             WebDAV.DisplayName,
             WebDAV.Owner,
             WebDAV.ResourceType,
-            WebDAVPush.Transports,      // WebDAV-Push
+            WebDAVPush.Transports,
             WebDAVPush.Topic
         ) + when (serviceType) {        // service-specific CalDAV/CardDAV properties
             Service.TYPE_CARDDAV -> arrayOf(
