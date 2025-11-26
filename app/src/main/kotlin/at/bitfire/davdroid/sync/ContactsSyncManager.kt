@@ -50,8 +50,8 @@ import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
-import okhttp3.OkHttpClient
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -60,6 +60,7 @@ import java.io.Reader
 import java.io.StringReader
 import java.util.Optional
 import java.util.logging.Level
+import javax.inject.Provider
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -110,7 +111,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     accountSettingsFactory: AccountSettings.Factory,
-    private val httpClientBuilder: HttpClientBuilder,
+    private val httpClientBuilder: Provider<HttpClientBuilder>,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
@@ -488,6 +489,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
             // authenticate only against a certain host, and only upon request
             val hostHttpClient = httpClientBuilder
+                .get()
                 .fromAccount(account, onlyHost = baseUrl.host)
                 .followRedirects(true)      // allow redirects
                 .build()
