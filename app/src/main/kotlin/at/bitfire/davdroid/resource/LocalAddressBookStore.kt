@@ -87,7 +87,7 @@ class LocalAddressBookStore @Inject constructor(
             /* return */ null
     }
 
-    override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalAddressBook? {
+    override fun create(client: ContentProviderClient, fromCollection: Collection): LocalAddressBook? {
         val service = serviceRepository.getBlocking(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
@@ -98,7 +98,7 @@ class LocalAddressBookStore @Inject constructor(
             id = fromCollection.id
         ) ?: return null
 
-        val addressBook = localAddressBookFactory.create(account, addressBookAccount, provider)
+        val addressBook = localAddressBookFactory.create(account, addressBookAccount, client)
 
         // update settings
         addressBook.updateSyncFrameworkSettings()
@@ -125,12 +125,12 @@ class LocalAddressBookStore @Inject constructor(
         return addressBookAccount
     }
 
-    override fun getAll(account: Account, provider: ContentProviderClient): List<LocalAddressBook> =
+    override fun getAll(account: Account, client: ContentProviderClient): List<LocalAddressBook> =
         getAddressBookAccounts(account).map { addressBookAccount ->
-            localAddressBookFactory.create(account, addressBookAccount, provider)
+            localAddressBookFactory.create(account, addressBookAccount, client)
         }
 
-    override fun update(provider: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
+    override fun update(client: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
         var currentAccount = localCollection.addressBookAccount
         logger.log(Level.INFO, "Updating local address book $currentAccount from collection $fromCollection")
 

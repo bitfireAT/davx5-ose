@@ -196,7 +196,7 @@ class SyncerTest {
         override fun create(
             client: ContentProviderClient,
             fromCollection: Collection
-        ): LocalTestCollection? {
+        ): LocalTestCollection {
             throw NotImplementedError()
         }
 
