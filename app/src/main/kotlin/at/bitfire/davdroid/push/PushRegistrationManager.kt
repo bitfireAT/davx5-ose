@@ -17,12 +17,7 @@ import at.bitfire.dav4jvm.XmlUtils.insertTag
 import at.bitfire.dav4jvm.okhttp.DavCollection
 import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.okhttp.exception.DavException
-import at.bitfire.dav4jvm.property.push.AuthSecret
-import at.bitfire.dav4jvm.property.push.PushRegister
-import at.bitfire.dav4jvm.property.push.PushResource
-import at.bitfire.dav4jvm.property.push.Subscription
-import at.bitfire.dav4jvm.property.push.SubscriptionPublicKey
-import at.bitfire.dav4jvm.property.push.WebPushSubscription
+import at.bitfire.dav4jvm.property.push.WebDAVPush
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.IoDispatcher
@@ -237,26 +232,26 @@ class PushRegistrationManager @Inject constructor(
         val writer = StringWriter()
         serializer.setOutput(writer)
         serializer.startDocument("UTF-8", true)
-        serializer.insertTag(PushRegister.NAME) {
-            serializer.insertTag(Subscription.NAME) {
+        serializer.insertTag(WebDAVPush.PushRegister) {
+            serializer.insertTag(WebDAVPush.Subscription) {
                 // subscription URL
-                serializer.insertTag(WebPushSubscription.NAME) {
-                    serializer.insertTag(PushResource.NAME) {
+                serializer.insertTag(WebDAVPush.WebPushSubscription) {
+                    serializer.insertTag(WebDAVPush.PushResource) {
                         text(endpoint.url)
                     }
                     endpoint.pubKeySet?.let { pubKeySet ->
-                        serializer.insertTag(SubscriptionPublicKey.NAME) {
+                        serializer.insertTag(WebDAVPush.SubscriptionPublicKey) {
                             attribute(null, "type", "p256dh")
                             text(pubKeySet.pubKey)
                         }
-                        serializer.insertTag(AuthSecret.NAME) {
+                        serializer.insertTag(WebDAVPush.AuthSecret) {
                             text(pubKeySet.auth)
                         }
                     }
                 }
             }
             // requested expiration
-            serializer.insertTag(PushRegister.EXPIRES) {
+            serializer.insertTag(WebDAVPush.Expires) {
                 text(HttpUtils.formatDate(requestedExpiration))
             }
         }

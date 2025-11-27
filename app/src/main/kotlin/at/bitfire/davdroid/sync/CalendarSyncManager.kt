@@ -10,13 +10,13 @@ import at.bitfire.dav4jvm.okhttp.DavCalendar
 import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
 import at.bitfire.dav4jvm.okhttp.Response
 import at.bitfire.dav4jvm.okhttp.exception.DavException
+import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
-import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
-import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
@@ -109,14 +109,20 @@ class CalendarSyncManager @AssistedInject constructor(
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
             runInterruptible {
-                davCollection.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                davCollection.propfind(
+                    0,
+                    CalDAV.MaxResourceSize,
+                    WebDAV.SupportedReportSet,
+                    CalDAV.GetCTag,
+                    WebDAV.SyncToken
+                ) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
                         response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                             logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
                         }
 
                         response[SupportedReportSet::class.java]?.let { supported ->
-                            hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                            hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
                         }
                         syncState = syncState(response)
                     }

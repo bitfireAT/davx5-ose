@@ -6,8 +6,8 @@ package at.bitfire.davdroid.servicedetection
 
 import android.security.NetworkSecurityPolicy
 import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
-import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.dav4jvm.property.carddav.CardDAV
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.Credentials
@@ -93,8 +93,8 @@ class DavResourceFinderTest {
         // recognize home set
         var info = ServiceInfo()
         DavResource(client, server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL))
-                .propfind(0, AddressbookHomeSet.NAME) { response, _ ->
-            finder.scanResponse(ResourceType.ADDRESSBOOK, response, info)
+                .propfind(0, CardDAV.AddressbookHomeSet) { response, _ ->
+            finder.scanResponse(CardDAV.Addressbook, response, info)
         }
         assertEquals(0, info.collections.size)
         assertEquals(1, info.homeSets.size)
@@ -103,8 +103,8 @@ class DavResourceFinderTest {
         // recognize address book
         info = ServiceInfo()
         DavResource(client, server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK))
-                .propfind(0, ResourceType.NAME) { response, _ ->
-            finder.scanResponse(ResourceType.ADDRESSBOOK, response, info)
+                .propfind(0, WebDAV.ResourceType) { response, _ ->
+            finder.scanResponse(CardDAV.Addressbook, response, info)
         }
         assertEquals(1, info.collections.size)
         assertEquals(server.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"), info.collections.keys.first())

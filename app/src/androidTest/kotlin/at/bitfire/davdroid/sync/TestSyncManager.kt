@@ -8,6 +8,7 @@ import android.accounts.Account
 import at.bitfire.dav4jvm.okhttp.DavCollection
 import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
 import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
@@ -64,7 +65,7 @@ class TestSyncManager @AssistedInject constructor(
         didQueryCapabilities = true
 
         var cTag: SyncState? = null
-        davCollection.propfind(0, GetCTag.NAME) { response, rel ->
+        davCollection.propfind(0, CalDAV.GetCTag) { response, rel ->
             if (rel == Response.HrefRelation.SELF)
                 response[GetCTag::class.java]?.cTag?.let {
                     cTag = SyncState(SyncState.Type.CTAG, it)

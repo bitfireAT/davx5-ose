@@ -11,15 +11,15 @@ import at.bitfire.dav4jvm.okhttp.DavAddressBook
 import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
 import at.bitfire.dav4jvm.okhttp.Response
 import at.bitfire.dav4jvm.okhttp.exception.DavException
-import at.bitfire.dav4jvm.property.caldav.GetCTag
+import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.AddressData
+import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.carddav.MaxResourceSize
 import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
 import at.bitfire.dav4jvm.property.webdav.GetContentType
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
-import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
@@ -50,8 +50,8 @@ import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
-import okhttp3.OkHttpClient
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -60,6 +60,7 @@ import java.io.Reader
 import java.io.StringReader
 import java.util.Optional
 import java.util.logging.Level
+import javax.inject.Provider
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -110,7 +111,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     accountSettingsFactory: AccountSettings.Factory,
-    private val httpClientBuilder: HttpClientBuilder,
+    private val httpClientBuilder: Provider<HttpClientBuilder>,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
@@ -174,7 +175,14 @@ class ContactsSyncManager @AssistedInject constructor(
         return SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
             runInterruptible {
-                davCollection.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                davCollection.propfind(
+                    0,
+                    CardDAV.MaxResourceSize,
+                    CardDAV.SupportedAddressData,
+                    WebDAV.SupportedReportSet,
+                    CalDAV.GetCTag,
+                    WebDAV.SyncToken
+                ) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
                         response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                             logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
@@ -187,7 +195,7 @@ class ContactsSyncManager @AssistedInject constructor(
                             // hasJCard = supported.hasJCard()
                         }
                         response[SupportedReportSet::class.java]?.let { supported ->
-                            hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                            hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
                         }
                         syncState = syncState(response)
                     }
@@ -316,7 +324,7 @@ class ContactsSyncManager @AssistedInject constructor(
     override suspend fun listAllRemote(callback: MultiResponseCallback) =
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             runInterruptible {
-                davCollection.propfind(1, ResourceType.NAME, GetETag.NAME, callback = callback)
+                davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag, callback = callback)
             }
         }
 
@@ -488,6 +496,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
             // authenticate only against a certain host, and only upon request
             val hostHttpClient = httpClientBuilder
+                .get()
                 .fromAccount(account, onlyHost = baseUrl.host)
                 .followRedirects(true)      // allow redirects
                 .build()
