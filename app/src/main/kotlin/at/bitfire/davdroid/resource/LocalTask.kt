@@ -14,8 +14,6 @@ import at.bitfire.ical4android.DmfsTaskFactory
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
-import at.bitfire.synctools.storage.BatchOperation
-import at.techbee.jtx.JtxContract
 import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
@@ -28,13 +26,13 @@ class LocalTask: DmfsTask, LocalResource {
     override var fileName: String? = null
 
     /**
-     * Note: Schedule-Tag for tasks is not yet supported
+     * Note: Schedule-Tag for tasks is not supported
      */
     override var scheduleTag: String? = null
 
 
     constructor(taskList: DmfsTaskList<*>, task: Task, fileName: String?, eTag: String?, flags: Int)
-            : super(taskList, task, fileName, eTag, null, flags)
+            : super(taskList, task, fileName, eTag, flags)
 
     private constructor(taskList: DmfsTaskList<*>, values: ContentValues)
             : super(taskList, values)
@@ -44,7 +42,7 @@ class LocalTask: DmfsTask, LocalResource {
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
-            logger.fine("Schedule-Tag for tasks not supported yet, won't save")
+            logger.fine("Schedule-Tag for tasks not supported, won't save")
 
         val values = ContentValues(4)
         if (fileName.isPresent)
@@ -60,9 +58,11 @@ class LocalTask: DmfsTask, LocalResource {
     }
 
     fun update(data: Task, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        if (scheduleTag != null)
+            logger.fine("Schedule-Tag for tasks not supported, won't save")
+
         this.fileName = fileName
         this.eTag = eTag
-        this.scheduleTag = scheduleTag
         this.flags = flags
 
         // processes this.{fileName, eTag, scheduleTag, flags} and resets DIRTY flag
@@ -98,7 +98,6 @@ class LocalTask: DmfsTask, LocalResource {
             .add("id", id)
             .add("fileName", fileName)
             .add("eTag", eTag)
-            .add("scheduleTag", scheduleTag)
             .add("flags", flags)
             /*.add("task",
                 try {
