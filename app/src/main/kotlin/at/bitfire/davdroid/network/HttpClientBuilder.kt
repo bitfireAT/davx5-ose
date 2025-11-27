@@ -190,7 +190,7 @@ class HttpClientBuilder @Inject constructor(
     /**
      * Builds an [OkHttpClient] with the configured settings.
      *
-     * [build] or [buildKtor] must be called only once because multiple calls indicate this wrong usage pattern:
+     * [build] or [buildKtor] is usually called only once because multiple calls indicate this wrong usage pattern:
      *
      * ```
      * val builder = HttpClientBuilder(/*injected*/)
@@ -200,12 +200,10 @@ class HttpClientBuilder @Inject constructor(
      *
      * However in this case the configuration of `client1` is still in `builder` and would be reused for `client2`,
      * which is usually not desired.
-     *
-     * @throws IllegalStateException    on second and later calls
      */
     fun build(): OkHttpClient {
         if (alreadyBuilt)
-            throw IllegalStateException("build() must only be called once; use Provider<HttpClientBuilder>")
+            logger.warning("build() should only be called once; use Provider<HttpClientBuilder> instead")
 
         val builder = OkHttpClient.Builder()
         configureOkHttp(builder)
@@ -384,7 +382,7 @@ class HttpClientBuilder @Inject constructor(
     @MustBeClosed
     fun buildKtor(): HttpClient {
         if (alreadyBuilt)
-            throw IllegalStateException("build() must only be called once; use Provider<HttpClientBuilder>")
+            logger.warning("buildKtor() should only be called once; use Provider<HttpClientBuilder> instead")
 
         val client = HttpClient(OkHttp) {
             // Ktor-level configuration here
