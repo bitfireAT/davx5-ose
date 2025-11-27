@@ -64,7 +64,7 @@ class LocalCalendarStoreTest {
     @Test
     fun testUpdateAccount_updatesOwnerAccount() {
         // Verify initial state
-        verifyOwnerAccountIs(provider,"InitialAccountName")
+        verifyOwnerAccountIs(provider, "InitialAccountName")
 
         // Rename account
         val oldAccount = account
@@ -75,7 +75,7 @@ class LocalCalendarStoreTest {
         localCalendarStore.updateAccount(oldAccount, account, provider)
 
         // Verify [Calendar.OWNER_ACCOUNT] of local calendar was updated
-        verifyOwnerAccountIs(provider,"ChangedAccountName")
+        verifyOwnerAccountIs(provider, "ChangedAccountName")
 
     }
 
