@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.text.format.Formatter
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.okhttp.DavAddressBook
 import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
 import at.bitfire.dav4jvm.okhttp.Response
@@ -24,7 +25,6 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
-import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
@@ -46,21 +46,18 @@ import dagger.assisted.AssistedInject
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.io.Reader
 import java.io.StringReader
 import java.util.Optional
 import java.util.logging.Level
-import javax.inject.Provider
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -111,7 +108,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     accountSettingsFactory: AccountSettings.Factory,
-    private val httpClientBuilder: Provider<HttpClientBuilder>,
+    private val resourceDownloaderFactory: ResourceDownloader.Factory,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
@@ -151,11 +148,6 @@ class ContactsSyncManager @AssistedInject constructor(
         GroupMethod.CATEGORIES -> CategoriesStrategy(localAddressBook)
     }
 
-    /**
-     * Used to download images which are referenced by URL
-     */
-    private lateinit var resourceDownloader: ResourceDownloader
-
 
     override fun prepare(): Boolean {
         if (dirtyVerifier.isPresent) {
@@ -165,7 +157,6 @@ class ContactsSyncManager @AssistedInject constructor(
         }
 
         davCollection = DavAddressBook(httpClient, collection.url)
-        resourceDownloader = ResourceDownloader(davCollection.location)
 
         logger.info("Contact group strategy: ${groupStrategy::class.java.simpleName}")
         return true
@@ -371,11 +362,20 @@ class ContactsSyncManager @AssistedInject constructor(
                         }
 
                         processCard(
-                            response.href.lastSegment,
-                            eTag,
-                            StringReader(card),
-                            isJCard,
-                            resourceDownloader
+                            fileName = response.href.lastSegment,
+                            eTag = eTag,
+                            reader = StringReader(card),
+                            jCard = isJCard,
+                            downloader = object : Contact.Downloader {
+                                override fun download(url: String, accepts: String): ByteArray? {
+                                    // download external resource (like a photo) from an URL
+                                    val httpUrl = url.toUrlOrNull() ?: return null
+                                    val downloader = resourceDownloaderFactory.create(account, davCollection.location.host)
+                                    return runBlocking(syncDispatcher) {
+                                        downloader.download(httpUrl)
+                                    }
+                                }
+                            }
                         )
                     }
                 }
@@ -480,43 +480,6 @@ class ContactsSyncManager @AssistedInject constructor(
         }
     }
 
-
-    // downloader helper class
-
-    private inner class ResourceDownloader(
-        val baseUrl: HttpUrl
-    ): Contact.Downloader {
-
-        override fun download(url: String, accepts: String): ByteArray? {
-            val httpUrl = url.toHttpUrlOrNull()
-            if (httpUrl == null) {
-                logger.log(Level.SEVERE, "Invalid external resource URL", url)
-                return null
-            }
-
-            // authenticate only against a certain host, and only upon request
-            val hostHttpClient = httpClientBuilder
-                .get()
-                .fromAccount(account, onlyHost = baseUrl.host)
-                .followRedirects(true)      // allow redirects
-                .build()
-            try {
-                val response = hostHttpClient.newCall(Request.Builder()
-                    .get()
-                    .url(httpUrl)
-                    .build()).execute()
-
-                if (response.isSuccessful)
-                    return response.body.bytes()
-                else
-                    logger.warning("Couldn't download external resource")
-            } catch(e: IOException) {
-                logger.log(Level.SEVERE, "Couldn't download external resource", e)
-            }
-
-            return null
-        }
-    }
 
     override fun notifyInvalidResourceTitle(): String =
             context.getString(R.string.sync_invalid_contact)
