@@ -42,10 +42,19 @@ class ResourceDownloader @AssistedInject constructor(
         fun create(account: Account, originalHost: String): ResourceDownloader
     }
 
+    /**
+     * Downloads the given resource and returns it as an in-memory blob.
+     *
+     * Authentication is handled as described in [ResourceDownloader].
+     *
+     * @param url       URL of the resource to download
+     *
+     * @return blob of requested resource, or `null` on error
+     */
     suspend fun download(url: Url): ByteArray? {
         httpClientBuilder
             .get()
-            .fromAccount(account, onlyHost = originalHost)
+            .fromAccount(account, onlyHost = originalHost)  // restricts authentication to original domain
             .followRedirects(true)      // allow redirects
             .buildKtor()
             .use { httpClient ->
