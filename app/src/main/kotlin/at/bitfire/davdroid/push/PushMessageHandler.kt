@@ -7,6 +7,7 @@ package at.bitfire.davdroid.push
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.XmlReader
 import at.bitfire.dav4jvm.XmlUtils
+import at.bitfire.dav4jvm.property.push.WebDAVPush
 import at.bitfire.davdroid.db.Collection.Companion.TYPE_ADDRESSBOOK
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -105,7 +106,7 @@ class PushMessageHandler @Inject constructor(
         try {
             parser.setInput(StringReader(message))
 
-            XmlReader(parser).processTag(DavPushMessage.NAME) {
+            XmlReader(parser).processTag(WebDAVPush.PushMessage) {
                 val pushMessage = DavPushMessage.Factory.create(parser)
                 topic = pushMessage.topic?.topic
             }

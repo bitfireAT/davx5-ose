@@ -8,14 +8,16 @@ import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.okhttp.UrlUtils
 import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
 import at.bitfire.dav4jvm.property.caldav.CalendarProxyReadFor
 import at.bitfire.dav4jvm.property.caldav.CalendarProxyWriteFor
 import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
+import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.common.HrefListProperty
-import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.GroupMembership
 import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavHomeSetRepository
@@ -59,18 +61,18 @@ class ServiceRefresher @AssistedInject constructor(
      */
     private val homeSetProperties: Array<Property.Name> =
         arrayOf(                        // generic WebDAV properties
-            DisplayName.NAME,
-            GroupMembership.NAME,
-            ResourceType.NAME
+            WebDAV.DisplayName,
+            WebDAV.GroupMembership,
+            WebDAV.ResourceType
         ) + when (service.type) {       // service-specific CalDAV/CardDAV properties
             Service.TYPE_CARDDAV -> arrayOf(
-                AddressbookHomeSet.NAME,
+                CardDAV.AddressbookHomeSet,
             )
 
             Service.TYPE_CALDAV -> arrayOf(
-                CalendarHomeSet.NAME,
-                CalendarProxyReadFor.NAME,
-                CalendarProxyWriteFor.NAME
+                CalDAV.CalendarHomeSet,
+                CalDAV.CalendarProxyReadFor,
+                CalDAV.CalendarProxyWriteFor
             )
 
             else -> throw IllegalArgumentException()
@@ -147,8 +149,8 @@ class ServiceRefresher @AssistedInject constructor(
                 // If current resource is a calendar-proxy-read/write, it's likely that its parent is a principal, too.
                 davResponse[ResourceType::class.java]?.let { resourceType ->
                     val proxyProperties = arrayOf(
-                        ResourceType.CALENDAR_PROXY_READ,
-                        ResourceType.CALENDAR_PROXY_WRITE,
+                        CalDAV.CalendarProxyRead,
+                        CalDAV.CalendarProxyWrite
                     )
                     if (proxyProperties.any { resourceType.types.contains(it) })
                         relatedResources += davResponse.href.parent()
