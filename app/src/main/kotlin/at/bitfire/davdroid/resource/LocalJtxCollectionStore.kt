@@ -18,7 +18,6 @@ import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.JtxCollection
-import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -103,11 +102,11 @@ class LocalJtxCollectionStore @Inject constructor(
         localCollection.update(values)
     }
 
-    override fun updateAccount(oldAccount: Account, newAccount: Account) {
-        TaskProvider.acquire(context, TaskProvider.ProviderName.JtxBoard)?.use { provider ->
+    override fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?) {
+        client?.use { provider ->
             val values = contentValuesOf(JtxContract.JtxCollection.ACCOUNT_NAME to newAccount.name)
             val uri = JtxContract.JtxCollection.CONTENT_URI.asSyncAdapter(oldAccount)
-            provider.client.update(uri, values, "${JtxContract.JtxCollection.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
+            provider.update(uri, values, "${JtxContract.JtxCollection.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
         }
     }
 

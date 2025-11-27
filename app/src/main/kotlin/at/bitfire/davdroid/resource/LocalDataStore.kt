@@ -76,7 +76,8 @@ interface LocalDataStore<T: LocalCollection<*>> {
      *
      * @param oldAccount The old account.
      * @param newAccount The new account.
+     * @param client Respective content provider client for the local data store type
      */
-    fun updateAccount(oldAccount: Account, newAccount: Account)
+    fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?)
 
 }

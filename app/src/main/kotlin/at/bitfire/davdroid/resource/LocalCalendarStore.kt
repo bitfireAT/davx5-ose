@@ -138,7 +138,7 @@ class LocalCalendarStore @Inject constructor(
         return values
     }
 
-    override fun updateAccount(oldAccount: Account, newAccount: Account) {
+    override fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?) {
         val values = contentValuesOf(
             // Account name to be changed
             Calendars.ACCOUNT_NAME to newAccount.name,
@@ -147,7 +147,7 @@ class LocalCalendarStore @Inject constructor(
             Calendars.OWNER_ACCOUNT to newAccount.name
         )
         val uri = Calendars.CONTENT_URI.asSyncAdapter(oldAccount)
-        context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use {
+        client?.use {
             it.update(uri, values, "${Calendars.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
         }
     }

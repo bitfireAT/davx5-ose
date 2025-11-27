@@ -64,17 +64,19 @@ class LocalCalendarStoreTest {
     @Test
     fun testUpdateAccount_updatesOwnerAccount() {
         // Verify initial state
-        verifyOwnerAccountIs("InitialAccountName")
+        provider.use {
+            verifyOwnerAccountIs(provider,"InitialAccountName")
 
-        // Rename account
-        val oldAccount = account
-        account = TestAccount.rename(account, "ChangedAccountName")
+            // Rename account
+            val oldAccount = account
+            account = TestAccount.rename(account, "ChangedAccountName")
 
         // Update account name in local calendar
         localCalendarStore.updateAccount(oldAccount, account, provider)
 
-        // Verify [Calendar.OWNER_ACCOUNT] of local calendar was updated
-        verifyOwnerAccountIs("ChangedAccountName")
+            // Verify [Calendar.OWNER_ACCOUNT] of local calendar was updated
+            verifyOwnerAccountIs(provider,"ChangedAccountName")
+        }
     }
 
 
@@ -101,8 +103,8 @@ class LocalCalendarStoreTest {
         return uri!!
     }
 
-    private fun verifyOwnerAccountIs(expectedOwnerAccount: String) = provider.use {
-        it.query(
+    private fun verifyOwnerAccountIs(provider: ContentProviderClient, expectedOwnerAccount: String) {
+        provider.query(
             calendarUri,
             arrayOf(Calendars.OWNER_ACCOUNT),
             "${Calendars.ACCOUNT_NAME}=?",
