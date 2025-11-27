@@ -64,28 +64,28 @@ class LocalCalendarStoreTest {
     @Test
     fun testUpdateAccount_updatesOwnerAccount() {
         // Verify initial state
-        provider.use {
-            verifyOwnerAccountIs(provider,"InitialAccountName")
+        verifyOwnerAccountIs(provider,"InitialAccountName")
 
-            // Rename account
-            val oldAccount = account
-            account = TestAccount.rename(account, "ChangedAccountName")
+        // Rename account
+        val oldAccount = account
+        account = TestAccount.rename(account, "ChangedAccountName")
 
         // Update account name in local calendar
+
         localCalendarStore.updateAccount(oldAccount, account, provider)
 
-            // Verify [Calendar.OWNER_ACCOUNT] of local calendar was updated
-            verifyOwnerAccountIs(provider,"ChangedAccountName")
-        }
+        // Verify [Calendar.OWNER_ACCOUNT] of local calendar was updated
+        verifyOwnerAccountIs(provider,"ChangedAccountName")
+
     }
 
 
     // helpers
 
-    private fun createCalendarForAccount(account: Account): Uri {
-        var uri: Uri? = null
-        provider.use { providerClient ->
-            val values = contentValuesOf(
+    private fun createCalendarForAccount(account: Account): Uri =
+         provider.insert(
+            Calendars.CONTENT_URI.asSyncAdapter(account),
+            contentValuesOf(
                 Calendars.ACCOUNT_NAME to account.name,
                 Calendars.ACCOUNT_TYPE to account.type,
                 Calendars.OWNER_ACCOUNT to account.name,
@@ -94,14 +94,7 @@ class LocalCalendarStoreTest {
                 Calendars._SYNC_ID to 999,
                 Calendars.CALENDAR_DISPLAY_NAME to "displayName",
             )
-
-            uri = providerClient.insert(
-                Calendars.CONTENT_URI.asSyncAdapter(account),
-                values
-            )!!.asSyncAdapter(account)
-        }
-        return uri!!
-    }
+        )!!.asSyncAdapter(account)
 
     private fun verifyOwnerAccountIs(provider: ContentProviderClient, expectedOwnerAccount: String) {
         provider.query(
