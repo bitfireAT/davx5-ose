@@ -100,7 +100,7 @@ class ResourceDownloaderTest {
 
         // authentication was sent
         val sentAuth = server.takeRequest().getHeader(HttpHeaders.Authorization)
-        assertEquals(sentAuth, "Basic dGVzdDp0ZXN0")
+        assertEquals("Basic dGVzdDp0ZXN0", sentAuth)
 
         // and result is OK
         assertArrayEquals("TEST".toByteArray(), result)

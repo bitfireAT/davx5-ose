@@ -24,7 +24,7 @@ import javax.inject.Provider
  *
  * The [ResourceDownloader] only sends authentication for URLs on the same domain as the
  * original URL. For instance, if the vCard that references a photo is taken from
- * `example.com ([originalHost]), then [download] will send authentication
+ * `example.com` ([originalHost]), then [download] will send authentication
  * when downloading `https://example.com/photo.jpg`, but not for `https://external-hoster.com/photo.jpg`.
  *
  * @param account       account to build authentication from
