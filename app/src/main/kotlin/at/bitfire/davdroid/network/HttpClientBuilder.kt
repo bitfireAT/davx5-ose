@@ -156,7 +156,7 @@ class HttpClientBuilder @Inject constructor(
      * **Must not be run on main thread, because it creates [AccountSettings]!** Use [fromAccountAsync] if possible.
      *
      * @param account       the account to take authentication from
-     * @param authDomain    (optional) Send credentials only for the hosts of the given domain. Can be
+     * @param authDomain    (optional) Send credentials only for the hosts of the given domain. Can be:
      *
      * - a full host name (`caldav.example.com`): then credentials are only sent for the domain of that host name (`example.com`), or
      * - a domain name (`example.com`): then credentials are only sent for the given domain, or

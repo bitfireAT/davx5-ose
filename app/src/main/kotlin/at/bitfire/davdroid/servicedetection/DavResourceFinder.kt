@@ -83,7 +83,7 @@ class DavResourceFinder @AssistedInject constructor(
         .apply {
             if (credentials != null)
                 authenticate(
-                    host = null,
+                    domain = null,
                     getCredentials = { credentials }
                 )
             }
