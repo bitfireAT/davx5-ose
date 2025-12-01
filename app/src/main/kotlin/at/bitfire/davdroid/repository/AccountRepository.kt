@@ -229,7 +229,6 @@ class AccountRepository @Inject constructor(
                 store.acquireContentProvider(true)?.use { client ->
                     store.updateAccount(oldAccount, newAccount, client)
                 }
-
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't change calendars to renamed account", e)
             }
