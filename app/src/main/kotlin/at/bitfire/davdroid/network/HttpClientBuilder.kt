@@ -49,7 +49,7 @@ import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
 /**
- * Builder for the [OkHttpClient].
+ * Builder for the HTTP client.
  *
  * **Attention:** If the builder is injected, it shouldn't be used from multiple locations to generate different clients because then
  * there's only one [HttpClientBuilder] object and setting properties from one location would influence the others.
@@ -156,10 +156,11 @@ class HttpClientBuilder @Inject constructor(
      * **Must not be run on main thread, because it creates [AccountSettings]!** Use [fromAccountAsync] if possible.
      *
      * @param account       the account to take authentication from
-     * @param authDomain    (optional) Send credentials only for the hosts of the given domain. Can be a
+     * @param authDomain    (optional) Send credentials only for the hosts of the given domain. Can be
      *
-     * - full host name (`caldav.example.com`): then credentials are only sent for the domain of that host name (`example.com`),
-     * - domain name (`example.com`): then credentials are only sent for the given domain
+     * - a full host name (`caldav.example.com`): then credentials are only sent for the domain of that host name (`example.com`), or
+     * - a domain name (`example.com`): then credentials are only sent for the given domain, or
+     * - or _null_: then credentials are always sent, regardless of the resource host name.
      *
      * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
      */
