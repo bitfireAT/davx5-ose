@@ -62,12 +62,12 @@ class AccountSettingsMigration21Test {
         ContentResolver.setIsSyncable(account, authority, 1)
 
         // Start hot flow
-        startInPendingStateHotFlow()
+        registerSyncStateObserver()
     }
 
     @After
     fun tearDown() {
-        stopInPendingStateHotFlow()
+        unregisterSyncStateObserver()
         TestAccount.remove(account)
     }
 
@@ -109,7 +109,7 @@ class AccountSettingsMigration21Test {
         .setManual(true)        // equivalent of setting both SYNC_EXTRAS_IGNORE_SETTINGS and SYNC_EXTRAS_IGNORE_BACKOFF
         .build()
 
-    private fun startInPendingStateHotFlow() {
+    private fun registerSyncStateObserver() {
         // listener pushes updates immediately when sync status changes
         statusChangeListener = ContentResolver.addStatusChangeListener(
             ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
@@ -121,7 +121,7 @@ class AccountSettingsMigration21Test {
         inPendingState.tryEmit(ContentResolver.isSyncPending(account, authority))
     }
 
-    private fun stopInPendingStateHotFlow() {
+    private fun unregisterSyncStateObserver() {
         statusChangeListener?.let { ContentResolver.removeStatusChangeListener(it) }
     }
 
