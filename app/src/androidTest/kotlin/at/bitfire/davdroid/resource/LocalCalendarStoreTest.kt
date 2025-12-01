@@ -71,7 +71,6 @@ class LocalCalendarStoreTest {
         account = TestAccount.rename(account, "ChangedAccountName")
 
         // Update account name in local calendar
-
         localCalendarStore.updateAccount(oldAccount, account, provider)
 
         // Verify [Calendar.OWNER_ACCOUNT] of local calendar was updated
