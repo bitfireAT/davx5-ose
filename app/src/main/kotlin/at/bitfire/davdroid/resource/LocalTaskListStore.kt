@@ -28,6 +28,7 @@ import org.dmfs.tasks.contract.TaskContract.TaskLists
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 class LocalTaskListStore @AssistedInject constructor(
     @Assisted private val providerName: TaskProvider.ProviderName,
@@ -109,12 +110,13 @@ class LocalTaskListStore @AssistedInject constructor(
         localCollection.update(valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors()))
     }
 
+    @WillNotClose
     override fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?) {
-        client?.use { client ->
-            val values = contentValuesOf(Tasks.ACCOUNT_NAME to newAccount.name)
-            val uri = Tasks.getContentUri(providerName.authority)
-            client.update(uri, values, "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
-        }
+        if (client == null)
+            return
+        val values = contentValuesOf(Tasks.ACCOUNT_NAME to newAccount.name)
+        val uri = Tasks.getContentUri(providerName.authority)
+        client.update(uri, values, "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
     }
 
     override fun delete(localCollection: LocalTaskList) {

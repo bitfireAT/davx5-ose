@@ -22,6 +22,7 @@ import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 import javax.inject.Inject
 
 class LocalJtxCollectionStore @Inject constructor(
@@ -102,12 +103,13 @@ class LocalJtxCollectionStore @Inject constructor(
         localCollection.update(values)
     }
 
+    @WillNotClose
     override fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?) {
-        client?.use { client ->
-            val values = contentValuesOf(JtxContract.JtxCollection.ACCOUNT_NAME to newAccount.name)
-            val uri = JtxContract.JtxCollection.CONTENT_URI.asSyncAdapter(oldAccount)
-            client.update(uri, values, "${JtxContract.JtxCollection.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
-        }
+        if (client == null)
+            return
+        val values = contentValuesOf(JtxContract.JtxCollection.ACCOUNT_NAME to newAccount.name)
+        val uri = JtxContract.JtxCollection.CONTENT_URI.asSyncAdapter(oldAccount)
+        client.update(uri, values, "${JtxContract.JtxCollection.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
     }
 
     override fun delete(localCollection: LocalJtxCollection) {
