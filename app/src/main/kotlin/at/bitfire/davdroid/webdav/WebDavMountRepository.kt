@@ -129,7 +129,7 @@ class WebDavMountRepository @Inject constructor(
         val builder = httpClientBuilder.get()
         if (credentials != null)
             builder.authenticate(
-                host = null,
+                domain = null,
                 getCredentials = { credentials }
             )
         val httpClient = builder.build()

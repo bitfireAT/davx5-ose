@@ -32,7 +32,10 @@ class DavHttpClientBuilder @Inject constructor(
             .setCookieStore(cookieStore)
 
         credentialsStore.getCredentials(mountId)?.let { credentials ->
-            builder.authenticate(host = null, getCredentials = { credentials })
+            builder.authenticate(
+                domain = null,
+                getCredentials = { credentials }
+            )
         }
 
         return builder.build()

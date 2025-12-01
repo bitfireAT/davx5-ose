@@ -74,7 +74,7 @@ class DavResourceFinderTest {
 
         val credentials = Credentials(username = "mock", password = "12345".toSensitiveString())
         client = httpClientBuilder
-                .authenticate(host = null, getCredentials = { credentials })
+                .authenticate(domain = null, getCredentials = { credentials })
                 .build()
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
 

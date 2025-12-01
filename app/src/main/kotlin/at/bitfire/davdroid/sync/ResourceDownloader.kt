@@ -54,7 +54,7 @@ class ResourceDownloader @AssistedInject constructor(
     suspend fun download(url: Url): ByteArray? {
         httpClientBuilder
             .get()
-            .fromAccount(account, onlyHost = originalHost)  // restricts authentication to original domain
+            .fromAccount(account, authDomain = originalHost)  // restricts authentication to original domain
             .followRedirects(true)      // allow redirects
             .buildKtor()
             .use { httpClient ->
