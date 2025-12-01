@@ -225,21 +225,20 @@ class AccountRepository @Inject constructor(
 
             try {
                 // update calendar events
-                localCalendarStore.get().apply {
-                    acquireContentProvider(true)?.use { client ->
-                        updateAccount(oldAccount, newAccount, client)
-                    }
+                val store = localCalendarStore.get()
+                store.acquireContentProvider(true)?.use { client ->
+                    store.updateAccount(oldAccount, newAccount, client)
                 }
+
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't change calendars to renamed account", e)
             }
 
             try {
                 // update account_name of local tasks
-                tasksAppManager.get().getDataStore()?.apply {
-                    acquireContentProvider(true)?.use { client ->
-                        updateAccount(oldAccount, newAccount, client)
-                    }
+                val store = tasksAppManager.get().getDataStore()
+                store?.acquireContentProvider(true)?.use { client ->
+                    store.updateAccount(oldAccount, newAccount, client)
                 }
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't change task lists to renamed account", e)
