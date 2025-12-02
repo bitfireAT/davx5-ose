@@ -103,8 +103,7 @@ class LocalJtxCollectionStore @Inject constructor(
         localCollection.update(values)
     }
 
-    @WillNotClose
-    override fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?) {
+    override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?) {
         if (client == null)
             return
         val values = contentValuesOf(JtxContract.JtxCollection.ACCOUNT_NAME to newAccount.name)

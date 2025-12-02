@@ -110,8 +110,7 @@ class LocalTaskListStore @AssistedInject constructor(
         localCollection.update(valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors()))
     }
 
-    @WillNotClose
-    override fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?) {
+    override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?) {
         if (client == null)
             return
         val values = contentValuesOf(Tasks.ACCOUNT_NAME to newAccount.name)

@@ -139,8 +139,7 @@ class LocalCalendarStore @Inject constructor(
         return values
     }
 
-    @WillNotClose
-    override fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?) {
+    override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?) {
         if (client == null)
             return
         val values = contentValuesOf(
