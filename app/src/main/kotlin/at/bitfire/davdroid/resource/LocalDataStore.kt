@@ -7,6 +7,7 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import at.bitfire.davdroid.db.Collection
+import javax.annotation.WillNotClose
 
 /**
  * Represents a local data store for a specific collection type.
@@ -76,7 +77,8 @@ interface LocalDataStore<T: LocalCollection<*>> {
      *
      * @param oldAccount The old account.
      * @param newAccount The new account.
+     * @param client Content provider client for the local data store type or *null* when not needed for that data type.
      */
-    fun updateAccount(oldAccount: Account, newAccount: Account)
+    fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?)
 
 }

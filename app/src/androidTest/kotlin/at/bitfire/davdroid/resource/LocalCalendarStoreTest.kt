@@ -21,7 +21,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
@@ -62,30 +61,30 @@ class LocalCalendarStoreTest {
     }
 
 
-    @Ignore("Sometimes failing, see https://github.com/bitfireAT/davx5-ose/issues/1828")
     @Test
     fun testUpdateAccount_updatesOwnerAccount() {
         // Verify initial state
-        verifyOwnerAccountIs("InitialAccountName")
+        verifyOwnerAccountIs(provider, "InitialAccountName")
 
         // Rename account
         val oldAccount = account
         account = TestAccount.rename(account, "ChangedAccountName")
 
         // Update account name in local calendar
-        localCalendarStore.updateAccount(oldAccount, account)
+        localCalendarStore.updateAccount(oldAccount, account, provider)
 
         // Verify [Calendar.OWNER_ACCOUNT] of local calendar was updated
-        verifyOwnerAccountIs("ChangedAccountName")
+        verifyOwnerAccountIs(provider, "ChangedAccountName")
+
     }
 
 
     // helpers
 
-    private fun createCalendarForAccount(account: Account): Uri {
-        var uri: Uri? = null
-        provider.use { providerClient ->
-            val values = contentValuesOf(
+    private fun createCalendarForAccount(account: Account): Uri =
+         provider.insert(
+            Calendars.CONTENT_URI.asSyncAdapter(account),
+            contentValuesOf(
                 Calendars.ACCOUNT_NAME to account.name,
                 Calendars.ACCOUNT_TYPE to account.type,
                 Calendars.OWNER_ACCOUNT to account.name,
@@ -94,17 +93,10 @@ class LocalCalendarStoreTest {
                 Calendars._SYNC_ID to 999,
                 Calendars.CALENDAR_DISPLAY_NAME to "displayName",
             )
+        )!!.asSyncAdapter(account)
 
-            uri = providerClient.insert(
-                Calendars.CONTENT_URI.asSyncAdapter(account),
-                values
-            )!!.asSyncAdapter(account)
-        }
-        return uri!!
-    }
-
-    private fun verifyOwnerAccountIs(expectedOwnerAccount: String) = provider.use {
-        it.query(
+    private fun verifyOwnerAccountIs(provider: ContentProviderClient, expectedOwnerAccount: String) {
+        provider.query(
             calendarUri,
             arrayOf(Calendars.OWNER_ACCOUNT),
             "${Calendars.ACCOUNT_NAME}=?",

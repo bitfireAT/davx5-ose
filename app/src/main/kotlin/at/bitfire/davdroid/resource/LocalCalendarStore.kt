@@ -26,6 +26,7 @@ import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 import javax.inject.Inject
 
 class LocalCalendarStore @Inject constructor(
@@ -138,7 +139,9 @@ class LocalCalendarStore @Inject constructor(
         return values
     }
 
-    override fun updateAccount(oldAccount: Account, newAccount: Account) {
+    override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?) {
+        if (client == null)
+            return
         val values = contentValuesOf(
             // Account name to be changed
             Calendars.ACCOUNT_NAME to newAccount.name,
@@ -147,9 +150,7 @@ class LocalCalendarStore @Inject constructor(
             Calendars.OWNER_ACCOUNT to newAccount.name
         )
         val uri = Calendars.CONTENT_URI.asSyncAdapter(oldAccount)
-        context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use {
-            it.update(uri, values, "${Calendars.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
-        }
+        client.update(uri, values, "${Calendars.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
     }
 
     override fun delete(localCollection: LocalCalendar) {
