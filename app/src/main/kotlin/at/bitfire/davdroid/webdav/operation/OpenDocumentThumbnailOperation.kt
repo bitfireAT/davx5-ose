@@ -14,7 +14,7 @@ import android.net.ConnectivityManager
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import androidx.core.content.getSystemService
-import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
@@ -76,24 +76,23 @@ class OpenDocumentThumbnailOperation @Inject constructor(
             // create thumbnail
             val job = accessScope.async {
                 withTimeout(THUMBNAIL_TIMEOUT_MS) {
-                    httpClientBuilder.build(doc.mountId, logBody = false).use { client ->
-                        val url = doc.toHttpUrl(db)
-                        val dav = DavResource(client.okHttpClient, url)
-                        var result: ByteArray? = null
-                        runInterruptible(ioDispatcher) {
-                            dav.get("image/*", null) { response ->
-                                response.body.byteStream().use { data ->
-                                    BitmapFactory.decodeStream(data)?.let { bitmap ->
-                                        val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
-                                        val baos = ByteArrayOutputStream()
-                                        thumb.compress(Bitmap.CompressFormat.JPEG, 95, baos)
-                                        result = baos.toByteArray()
-                                    }
+                    val client = httpClientBuilder.build(doc.mountId, logBody = false)
+                    val url = doc.toHttpUrl(db)
+                    val dav = DavResource(client, url)
+                    var result: ByteArray? = null
+                    runInterruptible(ioDispatcher) {
+                        dav.get("image/*", null) { response ->
+                            response.body.byteStream().use { data ->
+                                BitmapFactory.decodeStream(data)?.let { bitmap ->
+                                    val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
+                                    val baos = ByteArrayOutputStream()
+                                    thumb.compress(Bitmap.CompressFormat.JPEG, 95, baos)
+                                    result = baos.toByteArray()
                                 }
                             }
                         }
-                        result
                     }
+                    result
                 }
             }
 

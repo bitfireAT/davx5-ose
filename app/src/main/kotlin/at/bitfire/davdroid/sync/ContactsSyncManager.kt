@@ -7,24 +7,24 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.text.format.Formatter
-import at.bitfire.dav4jvm.DavAddressBook
-import at.bitfire.dav4jvm.MultiResponseCallback
-import at.bitfire.dav4jvm.Response
-import at.bitfire.dav4jvm.exception.DavException
-import at.bitfire.dav4jvm.property.caldav.GetCTag
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
+import at.bitfire.dav4jvm.okhttp.DavAddressBook
+import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
+import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.okhttp.exception.DavException
+import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.AddressData
+import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.carddav.MaxResourceSize
 import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
 import at.bitfire.dav4jvm.property.webdav.GetContentType
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
-import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
@@ -46,15 +46,14 @@ import dagger.assisted.AssistedInject
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
-import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.io.Reader
 import java.io.StringReader
 import java.util.Optional
@@ -100,7 +99,7 @@ import kotlin.jvm.optionals.getOrNull
  */
 class ContactsSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted httpClient: HttpClient,
+    @Assisted httpClient: OkHttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
     @Assisted localAddressBook: LocalAddressBook,
@@ -109,7 +108,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     accountSettingsFactory: AccountSettings.Factory,
-    private val httpClientBuilder: HttpClient.Builder,
+    private val resourceDownloaderFactory: ResourceDownloader.Factory,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
@@ -126,7 +125,7 @@ class ContactsSyncManager @AssistedInject constructor(
     interface Factory {
         fun contactsSyncManager(
             account: Account,
-            httpClient: HttpClient,
+            httpClient: OkHttpClient,
             syncResult: SyncResult,
             provider: ContentProviderClient,
             localAddressBook: LocalAddressBook,
@@ -149,11 +148,6 @@ class ContactsSyncManager @AssistedInject constructor(
         GroupMethod.CATEGORIES -> CategoriesStrategy(localAddressBook)
     }
 
-    /**
-     * Used to download images which are referenced by URL
-     */
-    private lateinit var resourceDownloader: ResourceDownloader
-
 
     override fun prepare(): Boolean {
         if (dirtyVerifier.isPresent) {
@@ -162,8 +156,7 @@ class ContactsSyncManager @AssistedInject constructor(
                 return false
         }
 
-        davCollection = DavAddressBook(httpClient.okHttpClient, collection.url)
-        resourceDownloader = ResourceDownloader(davCollection.location)
+        davCollection = DavAddressBook(httpClient, collection.url)
 
         logger.info("Contact group strategy: ${groupStrategy::class.java.simpleName}")
         return true
@@ -173,7 +166,14 @@ class ContactsSyncManager @AssistedInject constructor(
         return SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
             runInterruptible {
-                davCollection.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                davCollection.propfind(
+                    0,
+                    CardDAV.MaxResourceSize,
+                    CardDAV.SupportedAddressData,
+                    WebDAV.SupportedReportSet,
+                    CalDAV.GetCTag,
+                    WebDAV.SyncToken
+                ) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
                         response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                             logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
@@ -186,7 +186,7 @@ class ContactsSyncManager @AssistedInject constructor(
                             // hasJCard = supported.hasJCard()
                         }
                         response[SupportedReportSet::class.java]?.let { supported ->
-                            hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                            hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
                         }
                         syncState = syncState(response)
                     }
@@ -272,40 +272,50 @@ class ContactsSyncManager @AssistedInject constructor(
         return modified or superModified
     }
 
-    override fun generateUpload(resource: LocalAddress): RequestBody =
-        SyncException.wrapWithLocalResource(resource) {
-            val contact: Contact = when (resource) {
-                is LocalContact -> resource.getContact()
-                is LocalGroup -> resource.getContact()
-                else -> throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
-            }
-
-            logger.log(Level.FINE, "Preparing upload of vCard ${resource.fileName}", contact)
-
-            val os = ByteArrayOutputStream()
-            val mimeType: MediaType
-            when {
-                hasJCard -> {
-                    mimeType = DavAddressBook.MIME_JCARD
-                    contact.writeJCard(os, Constants.vCardProdId)
-                }
-                hasVCard4 -> {
-                    mimeType = DavAddressBook.MIME_VCARD4
-                    contact.writeVCard(VCardVersion.V4_0, os, Constants.vCardProdId)
-                }
-                else -> {
-                    mimeType = DavAddressBook.MIME_VCARD3_UTF8
-                    contact.writeVCard(VCardVersion.V3_0, os, Constants.vCardProdId)
-                }
-            }
-
-            return@wrapWithLocalResource os.toByteArray().toRequestBody(mimeType)
+    override fun generateUpload(resource: LocalAddress): GeneratedResource {
+        val contact: Contact = when (resource) {
+            is LocalContact -> resource.getContact()
+            is LocalGroup -> resource.getContact()
+            else -> throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
         }
+        logger.log(Level.FINE, "Preparing upload of vCard #${resource.id}", contact)
+
+        // get/create UID
+        val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(contact.uid)
+        if (uidIsGenerated) {
+            // modify in Contact and persist to contacts provider
+            contact.uid = uid
+            resource.updateUid(uid)
+        }
+
+        // generate vCard and convert to request body
+        val os = ByteArrayOutputStream()
+        val mimeType: MediaType
+        when {
+            hasJCard -> {
+                mimeType = DavAddressBook.MIME_JCARD
+                contact.writeJCard(os, Constants.vCardProdId)
+            }
+            hasVCard4 -> {
+                mimeType = DavAddressBook.MIME_VCARD4
+                contact.writeVCard(VCardVersion.V4_0, os, Constants.vCardProdId)
+            }
+            else -> {
+                mimeType = DavAddressBook.MIME_VCARD3_UTF8
+                contact.writeVCard(VCardVersion.V3_0, os, Constants.vCardProdId)
+            }
+        }
+
+        return GeneratedResource(
+            suggestedFileName = DavUtils.fileNameFromUid(uid, "vcf"),
+            requestBody = os.toByteArray().toRequestBody(mimeType)
+        )
+    }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) =
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             runInterruptible {
-                davCollection.propfind(1, ResourceType.NAME, GetETag.NAME, callback = callback)
+                davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag, callback = callback)
             }
         }
 
@@ -347,16 +357,25 @@ class ContactsSyncManager @AssistedInject constructor(
                             ?: throw DavException("Received multi-get response without ETag")
 
                         var isJCard = hasJCard      // assume that server has sent what we have requested (we ask for jCard only when the server advertises it)
-                        response[GetContentType::class.java]?.type?.let { type ->
+                        response[GetContentType::class.java]?.type?.toMediaTypeOrNull()?.let { type ->
                             isJCard = type.sameTypeAs(DavUtils.MEDIA_TYPE_JCARD)
                         }
 
                         processCard(
-                            response.href.lastSegment,
-                            eTag,
-                            StringReader(card),
-                            isJCard,
-                            resourceDownloader
+                            fileName = response.href.lastSegment,
+                            eTag = eTag,
+                            reader = StringReader(card),
+                            jCard = isJCard,
+                            downloader = object : Contact.Downloader {
+                                override fun download(url: String, accepts: String): ByteArray? {
+                                    // download external resource (like a photo) from an URL
+                                    val httpUrl = url.toUrlOrNull() ?: return null
+                                    val downloader = resourceDownloaderFactory.create(account, davCollection.location.host)
+                                    return runBlocking(syncDispatcher) {
+                                        downloader.download(httpUrl)
+                                    }
+                                }
+                            }
                         )
                     }
                 }
@@ -461,44 +480,6 @@ class ContactsSyncManager @AssistedInject constructor(
         }
     }
 
-
-    // downloader helper class
-
-    private inner class ResourceDownloader(
-        val baseUrl: HttpUrl
-    ): Contact.Downloader {
-
-        override fun download(url: String, accepts: String): ByteArray? {
-            val httpUrl = url.toHttpUrlOrNull()
-            if (httpUrl == null) {
-                logger.log(Level.SEVERE, "Invalid external resource URL", url)
-                return null
-            }
-
-            // authenticate only against a certain host, and only upon request
-            httpClientBuilder
-                .fromAccount(account, onlyHost = baseUrl.host)
-                .followRedirects(true)      // allow redirects
-                .build()
-                .use { httpClient ->
-                    try {
-                        val response = httpClient.okHttpClient.newCall(Request.Builder()
-                            .get()
-                            .url(httpUrl)
-                            .build()).execute()
-
-                        if (response.isSuccessful)
-                            return response.body.bytes()
-                        else
-                            logger.warning("Couldn't download external resource")
-                    } catch(e: IOException) {
-                        logger.log(Level.SEVERE, "Couldn't download external resource", e)
-                    }
-                }
-
-            return null
-        }
-    }
 
     override fun notifyInvalidResourceTitle(): String =
             context.getString(R.string.sync_invalid_contact)

@@ -408,10 +408,9 @@
   <string name="debug_info_server_error">Error del servidor</string>
   <string name="debug_info_webdav_error">Error del WebDAV</string>
   <string name="debug_info_io_error">Error d\'E/S</string>
-  <string name="debug_info_http_403_description">S\'ha denegat la sol·licitud. Verifiqueu els recursos implicats i la informació de depuració dels detalls.</string>
-  <string name="debug_info_http_404_description">El recurs sol·licitat no existeix (mai més). Verifiqueu els recursos implicats i la informació de depuració dels detalls.</string>
-  <string name="debug_info_http_5xx_description">Hi ha hagut un problema a la banda del servidor. Poseu-vos en contacte amb el vostre suport del servidor.</string>
-  <string name="debug_info_unexpected_error">S\'ha produït un error inesperat. Visualitzeu la informació de depuració dels detalls.</string>
+  <string name="debug_info_http_405_description">El servidor no permet el tipus d\'operació sol·licitat.</string>
+  <string name="debug_info_http_5xx_description">S\'ha produït un problema a la banda del servidor. Poseu-vos en contacte amb l\'assistència del servidor.</string>
+  <string name="debug_info_unexpected_error">S\'ha produït un error inesperat. Vegeu els detalls a la informació de depuració.</string>
   <string name="debug_info_view_details">Vista dels detalls</string>
   <string name="debug_info_subtitle">S\'ha recopilat la informació de depuració</string>
   <string name="debug_info_involved_caption">Recursos implicats</string>
@@ -421,6 +420,7 @@
   <string name="debug_info_logs_caption">Registres</string>
   <string name="debug_info_logs_subtitle">Hi ha registres detallats disponibles</string>
   <string name="debug_info_logs_view">Visualitza els registres</string>
+  <string name="debug_info_copy_remote_url">Copia l\'URL</string>
   <string name="debug_info_privacy_warning_title">Avís de privadesa</string>
   <string name="debug_info_privacy_warning_description">Els registres i la informació de depuració poden contenir informació privada. Tingueu en compte això quan ho compartiu públicament.</string>
   <!--ExceptionInfoFragment-->
@@ -463,7 +463,6 @@
   <string name="sync_error_http_dav">Error del servidor HTTP: %s</string>
   <string name="sync_error_local_storage">Error d\'emmagatzematge local: %s</string>
   <string name="sync_error_retry_limit_reached">Error de programari (s\'ha arribat al màxim de reintents)</string>
-  <string name="sync_error_view_item">Veure element</string>
   <string name="sync_invalid_contact">S\'ha rebut un contacte no vàlid del servidor</string>
   <string name="sync_invalid_event">S\'ha rebut un esdeveniment no vàlid del servidor</string>
   <string name="sync_invalid_task">S\'ha rebut una tasca no vàlida del servidor</string>

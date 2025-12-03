@@ -7,6 +7,9 @@ package at.bitfire.davdroid.network
 import android.security.NetworkSecurityPolicy
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
+import kotlinx.coroutines.test.runTest
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -19,24 +22,22 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
+import javax.inject.Provider
 
 @HiltAndroidTest
-class HttpClientTest {
+class HttpClientBuilderTest {
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var httpClientBuilder: HttpClient.Builder
+    lateinit var httpClientBuilder: Provider<HttpClientBuilder>
 
-    lateinit var httpClient: HttpClient
     lateinit var server: MockWebServer
 
     @Before
     fun setUp() {
         hiltRule.inject()
-
-        httpClient = httpClientBuilder.build()
 
         server = MockWebServer()
         server.start(30000)
@@ -45,9 +46,21 @@ class HttpClientTest {
     @After
     fun tearDown() {
         server.shutdown()
-        httpClient.close()
     }
 
+
+    @Test
+    fun testBuildKtor_CreatesWorkingClient() = runTest {
+        server.enqueue(MockResponse()
+            .setResponseCode(200)
+            .setBody("Some Content"))
+
+        httpClientBuilder.get().buildKtor().use { client ->
+            val response = client.get(server.url("/").toString())
+            assertEquals(200, response.status.value)
+            assertEquals("Some Content", response.bodyAsText())
+        }
+    }
 
     @Test
     fun testCookies() {
@@ -60,7 +73,9 @@ class HttpClientTest {
                 .addHeader("Set-Cookie", "cookie1=1; path=/")
                 .addHeader("Set-Cookie", "cookie2=2")
                 .setBody("Cookie set"))
-        httpClient.okHttpClient.newCall(Request.Builder()
+
+        val httpClient = httpClientBuilder.get().build()
+        httpClient.newCall(Request.Builder()
                 .get().url(url)
                 .build()).execute()
         assertNull(server.takeRequest().getHeader("Cookie"))
@@ -71,7 +86,7 @@ class HttpClientTest {
                 .addHeader("Set-Cookie", "cookie1=1a; path=/; Max-Age=0")
                 .addHeader("Set-Cookie", "cookie2=2a")
                 .setResponseCode(200))
-        httpClient.okHttpClient.newCall(Request.Builder()
+        httpClient.newCall(Request.Builder()
                 .get().url(url)
                 .build()).execute()
         val header = server.takeRequest().getHeader("Cookie")
@@ -79,7 +94,7 @@ class HttpClientTest {
 
         server.enqueue(MockResponse()
                 .setResponseCode(200))
-        httpClient.okHttpClient.newCall(Request.Builder()
+        httpClient.newCall(Request.Builder()
                 .get().url(url)
                 .build()).execute()
         assertEquals("cookie2=2a", server.takeRequest().getHeader("Cookie"))

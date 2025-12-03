@@ -405,9 +405,10 @@
   <string name="debug_info_server_error">サーバーエラー</string>
   <string name="debug_info_webdav_error">WebDAV エラー</string>
   <string name="debug_info_io_error">I/O エラー</string>
-  <string name="debug_info_http_403_description">リクエストが拒否されました。詳細は関連するリソースとデバッグ情報を確認してください。</string>
-  <string name="debug_info_http_404_description">要求されたリソースは (もう) 存在しません。詳細は関連するリソースとデバッグ情報を確認してください。</string>
-  <string name="debug_info_http_5xx_description">サーバー側に問題が発生しました。お使いのサーバーのサポートに連絡してください。</string>
+  <string name="debug_info_http_403_description">リクエストはサーバーにより拒否されました。</string>
+  <string name="debug_info_http_404_description">リクエストされたリソースが存在しません。</string>
+  <string name="debug_info_http_405_description">サーバーがリクエストされた形式の操作を許可していません。</string>
+  <string name="debug_info_http_5xx_description">サーバー側で問題が発生しました。あなたのサーバーのサポートに連絡してください。</string>
   <string name="debug_info_unexpected_error">予期せぬエラーが発生しました。詳細はデバッグ情報を確認してください。</string>
   <string name="debug_info_view_details">詳細を表示</string>
   <string name="debug_info_subtitle">収集されたデバッグ情報</string>
@@ -418,6 +419,7 @@
   <string name="debug_info_logs_caption">ログ</string>
   <string name="debug_info_logs_subtitle">詳細なログが利用できます</string>
   <string name="debug_info_logs_view">ログを表示</string>
+  <string name="debug_info_copy_remote_url">URL をコピー</string>
   <string name="debug_info_privacy_warning_title">プライバシー通知</string>
   <string name="debug_info_privacy_warning_description">ログやデバッグ情報はプライベートな情報を含むことがあります。共有する場合には、注意して取り扱ってください。</string>
   <!--ExceptionInfoFragment-->
@@ -460,7 +462,6 @@
   <string name="sync_error_http_dav">HTTP サーバーエラー – %s</string>
   <string name="sync_error_local_storage">ローカルストレージエラー – %s</string>
   <string name="sync_error_retry_limit_reached">ソフトエラー (再試行回数の上限に到達)</string>
-  <string name="sync_error_view_item">アイテムを表示</string>
   <string name="sync_invalid_contact">サーバーから無効な連絡先を受信しました</string>
   <string name="sync_invalid_event">サーバーから無効な予定を受信しました</string>
   <string name="sync_invalid_task">サーバーから無効な ToDo リストを受信しました</string>

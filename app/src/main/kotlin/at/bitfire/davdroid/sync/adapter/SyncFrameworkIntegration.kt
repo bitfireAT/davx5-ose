@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncRequest
-import android.os.Build
 import android.os.Bundle
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.resource.LocalAddressBookStore
@@ -101,11 +100,9 @@ class SyncFrameworkIntegration @Inject constructor(
     }
 
     /**
-     * Cancels the sync request in the Sync Framework for Android 14+.
-     * This is a workaround for the bug that the sync framework does not handle pending syncs correctly
-     * on Android 14+ (API level 34+).
-     *
-     * See: https://github.com/bitfireAT/davx5-ose/issues/1458
+     * Cancels the sync request in the Sync Adapter Framework by sync request. This
+     * is the defensive approach canceling only one specific sync request with matching
+     * sync extras.
      *
      * @param account The account for which the sync request should be canceled.
      * @param authority The authority for which the sync request should be canceled.
@@ -193,12 +190,6 @@ class SyncFrameworkIntegration @Inject constructor(
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
-        // Android 14+ does not handle pending sync state correctly.
-        // For now we simply always return false
-        // See also sync cancellation in [SyncAdapterImpl.onPerformSync]
-        if (Build.VERSION.SDK_INT >= 34)
-            return flowOf(false)
-
         // Determine the pending state for each data type of the account as separate flows
         val pendingStateFlows: List<Flow<Boolean>> = dataTypes.mapNotNull { dataType ->
             // Map datatype to authority

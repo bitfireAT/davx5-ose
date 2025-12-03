@@ -7,12 +7,12 @@ package at.bitfire.davdroid.webdav
 import android.content.Context
 import android.provider.DocumentsContract
 import androidx.annotation.VisibleForTesting
-import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Credentials
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -27,7 +27,7 @@ class WebDavMountRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val httpClientBuilder: Provider<HttpClient.Builder>
+    private val httpClientBuilder: Provider<HttpClientBuilder>
 ) {
 
     private val mountDao = db.webDavMountDao()
@@ -127,21 +127,19 @@ class WebDavMountRepository @Inject constructor(
         val validVersions = arrayOf("1", "2", "3")
 
         val builder = httpClientBuilder.get()
-
         if (credentials != null)
             builder.authenticate(
-                host = null,
+                domain = null,
                 getCredentials = { credentials }
             )
+        val httpClient = builder.build()
 
         var webdavUrl: HttpUrl? = null
-        builder.build().use { httpClient ->
-            val dav = DavResource(httpClient.okHttpClient, url)
-            runInterruptible {
-                dav.options(followRedirects = true) { davCapabilities, response ->
-                    if (davCapabilities.any { it in validVersions })
-                        webdavUrl = dav.location
-                }
+        val dav = DavResource(httpClient, url)
+        runInterruptible {
+            dav.options(followRedirects = true) { davCapabilities, response ->
+                if (davCapabilities.any { it in validVersions })
+                    webdavUrl = dav.location
             }
         }
 

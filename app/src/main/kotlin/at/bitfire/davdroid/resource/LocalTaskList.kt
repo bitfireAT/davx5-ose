@@ -6,13 +6,12 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.ContentValues
 import androidx.core.content.contentValuesOf
+import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.DmfsTaskListFactory
 import at.bitfire.ical4android.TaskProvider
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
-import org.dmfs.tasks.contract.TaskContract.TaskLists
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -31,11 +30,10 @@ class LocalTaskList private constructor(
 
     private val logger = Logger.getGlobal()
 
-    private var accessLevel: Int = TaskListColumns.ACCESS_LEVEL_UNDEFINED
     override val readOnly
-        get() =
-            accessLevel != TaskListColumns.ACCESS_LEVEL_UNDEFINED &&
-            accessLevel <= TaskListColumns.ACCESS_LEVEL_READ
+        get() = accessLevel?.let {
+            it != TaskListColumns.ACCESS_LEVEL_UNDEFINED && it <= TaskListColumns.ACCESS_LEVEL_READ
+        } ?: false
 
     override val dbCollectionId: Long?
         get() = syncId?.toLongOrNull()
@@ -47,31 +45,10 @@ class LocalTaskList private constructor(
         get() = name ?: id.toString()
 
     override var lastSyncState: SyncState?
-        get() {
-            try {
-                provider.query(taskListSyncUri(), arrayOf(TaskLists.SYNC_VERSION),
-                        null, null, null)?.use { cursor ->
-                    if (cursor.moveToNext())
-                        cursor.getString(0)?.let {
-                            return SyncState.fromString(it)
-                        }
-                }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't read sync state", e)
-            }
-            return null
-        }
+        get() = readSyncState()?.let { SyncState.fromString(it) }
         set(state) {
-            val values = contentValuesOf(TaskLists.SYNC_VERSION to state?.toString())
-            provider.update(taskListSyncUri(), values, null, null)
+            writeSyncState(state.toString())
         }
-
-
-    override fun populate(values: ContentValues) {
-        super.populate(values)
-        accessLevel = values.getAsInteger(TaskListColumns.ACCESS_LEVEL)
-    }
-
 
     override fun findDeleted() = queryTasks(Tasks._DELETED, null)
 
@@ -97,7 +74,7 @@ class LocalTaskList private constructor(
 
 
     override fun markNotDirty(flags: Int): Int {
-        val values = contentValuesOf(LocalTask.COLUMN_FLAGS to flags)
+        val values = contentValuesOf(DmfsTask.COLUMN_FLAGS to flags)
         return provider.update(tasksSyncUri(), values,
                 "${Tasks.LIST_ID}=? AND ${Tasks._DIRTY}=0",
                 arrayOf(id.toString()))
@@ -105,11 +82,11 @@ class LocalTaskList private constructor(
 
     override fun removeNotDirtyMarked(flags: Int) =
             provider.delete(tasksSyncUri(),
-                    "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${LocalTask.COLUMN_FLAGS}=?",
+                    "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${DmfsTask.COLUMN_FLAGS}=?",
                     arrayOf(id.toString(), flags.toString()))
 
     override fun forgetETags() {
-        val values = contentValuesOf(LocalTask.COLUMN_ETAG to null)
+        val values = contentValuesOf(DmfsTask.COLUMN_ETAG to null)
         provider.update(tasksSyncUri(), values, "${Tasks.LIST_ID}=?",
                 arrayOf(id.toString()))
     }

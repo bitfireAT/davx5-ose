@@ -4,13 +4,18 @@
 
 package at.bitfire.davdroid.resource
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import at.bitfire.davdroid.resource.LocalResource.Companion.FLAG_REMOTELY_PRESENT
 import java.util.Optional
 
 /**
- * Defines operations that are used by SyncManager for all sync data types.
+ * This is an interface between the SyncManager and a resource in the local storage.
+ *
+ * It defines operations that are used by SyncManager for all sync data types.
  */
-interface LocalResource<in TData: Any> {
+interface LocalResource {
 
     companion object {
         /**
@@ -45,18 +50,6 @@ interface LocalResource<in TData: Any> {
     val flags: Int
 
     /**
-     * Prepares the resource for uploading:
-     *
-     *   1. If the resource doesn't have an UID yet, this method generates one and writes it to the content provider.
-     *   2. The new file name which can be used for the upload is derived from the UID and returned, but not
-     *   saved to the content provider. The sync manager is responsible for saving the file name that
-     *   was actually used.
-     *
-     * @return suggestion for new file name of the resource (like "<uid>.vcf")
-     */
-    fun prepareForUpload(): String
-
-    /**
      * Unsets the _dirty_ field of the resource and updates other sync-related fields in the content provider.
      * Does not affect `this` object itself (which is immutable).
      *
@@ -76,12 +69,17 @@ interface LocalResource<in TData: Any> {
     fun updateFlags(flags: Int)
 
     /**
-     * Updates the data object in the content provider and ensures that the dirty flag is clear.
-     * Does not affect `this` or the [data] object (which are both immutable).
-     *
-     * @return content URI of the updated row (e.g. event URI)
+     * Updates the local UID of the resource in the content provider.
+     * Usually used to persist a UID that has been created during an upload of a locally created resource.
      */
-    fun update(data: TData, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int)
+    fun updateUid(uid: String)
+
+    /**
+     * Updates the local SEQUENCE of the resource in the content provider.
+     *
+     * @throws NotImplementedError  if SEQUENCE update is not supported
+     */
+    fun updateSequence(sequence: Int)
 
     /**
      * Deletes the data object from the content provider.
@@ -92,5 +90,21 @@ interface LocalResource<in TData: Any> {
      * Undoes deletion of the data object from the content provider.
      */
     fun resetDeleted()
+
+    /**
+     * User-readable debug summary of this local resource (used in debug info)
+     */
+    fun getDebugSummary(): String
+
+    /**
+     * Returns the content provider URI that opens the local resource for viewing ([Intent.ACTION_VIEW])
+     * in its respective app.
+     *
+     * For instance, in case of a local raw contact, this method could return the content provider URI
+     * that identifies the corresponding contact.
+     *
+     * @return content provider URI, or `null` if not available
+     */
+    fun getViewUri(context: Context): Uri?
 
 }

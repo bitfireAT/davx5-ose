@@ -409,10 +409,6 @@
   <string name="debug_info_server_error">Zerbitzari errorea</string>
   <string name="debug_info_webdav_error">WebDAV errorea</string>
   <string name="debug_info_io_error">S/I errorea</string>
-  <string name="debug_info_http_403_description">Eskaera ukatu egin da. Egiaztatu parte hartzen dituzten baliabideak eta arazketa informazioa xehetasun gehiagorako.</string>
-  <string name="debug_info_http_404_description">Eskatutako baliabidea ez dago (jada). Egiaztatu parte hartzen dituzten baliabideak eta arazketa informazioa xehetasun gehiagorako.</string>
-  <string name="debug_info_http_5xx_description">Zerbitzariak arazo bat izan du. Mesedez jarri harremanetan zure zerbitzariaren laguntzarekin.</string>
-  <string name="debug_info_unexpected_error">Ustekabeko errore bat gertatu da. Ikusi arazketa informazioa xehetasunentzako.</string>
   <string name="debug_info_view_details">Ikusi xehetasunak</string>
   <string name="debug_info_subtitle">Arazketa informazioa lortu da</string>
   <string name="debug_info_involved_caption">Parte hartzen duten baliabideak</string>
@@ -422,6 +418,7 @@
   <string name="debug_info_logs_caption">Egunkariak</string>
   <string name="debug_info_logs_subtitle">Erregistro xehetuak eskuragarri daude</string>
   <string name="debug_info_logs_view">Ikusi egunkariak</string>
+  <string name="debug_info_copy_remote_url">Kopiatu URL</string>
   <string name="debug_info_privacy_warning_title">Pribatutasun oharra</string>
   <string name="debug_info_privacy_warning_description">Erregistroek eta arazketa-informazioak informazio pribatua izan dezakete. Kontuan izan hau publikoki partekatzerakoan.</string>
   <!--ExceptionInfoFragment-->
@@ -464,7 +461,6 @@
   <string name="sync_error_http_dav">HTTP zerbitzari-errorea – %s</string>
   <string name="sync_error_local_storage">Biltegiratze lokal errorea – %s</string>
   <string name="sync_error_retry_limit_reached">Errore leuna (saiakera maximora heldu da)</string>
-  <string name="sync_error_view_item">Ikusi elementua</string>
   <string name="sync_invalid_contact">Kontaktu baliogabea jaso da zerbitzaritik</string>
   <string name="sync_invalid_event">Gertaera baliogabea jaso da zerbitzaritik</string>
   <string name="sync_invalid_task">Zeregin baliogabea jaso da zerbitzaritik</string>

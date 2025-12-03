@@ -5,8 +5,8 @@
 package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
-import at.bitfire.dav4jvm.DavResource
-import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
@@ -34,21 +34,20 @@ class DeleteDocumentOperation @Inject constructor(
         logger.fine("WebDAV removeDocument $documentId")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
-        httpClientBuilder.build(doc.mountId).use { client ->
-            val dav = DavResource(client.okHttpClient, doc.toHttpUrl(db))
-            try {
-                runInterruptible(ioDispatcher) {
-                    dav.delete {
-                        // successfully deleted
-                    }
+        val client = httpClientBuilder.build(doc.mountId)
+        val dav = DavResource(client, doc.toHttpUrl(db))
+        try {
+            runInterruptible(ioDispatcher) {
+                dav.delete {
+                    // successfully deleted
                 }
-                logger.fine("Successfully removed")
-                documentDao.delete(doc)
-
-                DocumentProviderUtils.notifyFolderChanged(context, doc.parentId)
-            } catch (e: HttpException) {
-                e.throwForDocumentProvider(context)
             }
+            logger.fine("Successfully removed")
+            documentDao.delete(doc)
+
+            DocumentProviderUtils.notifyFolderChanged(context, doc.parentId)
+        } catch (e: HttpException) {
+            e.throwForDocumentProvider(context)
         }
     }
 

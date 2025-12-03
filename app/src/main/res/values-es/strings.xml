@@ -361,10 +361,6 @@
   <string name="debug_info_server_error">Error del servidor</string>
   <string name="debug_info_webdav_error">Error de WebDAV</string>
   <string name="debug_info_io_error">Error de E/S</string>
-  <string name="debug_info_http_403_description">La solicitud ha sido denegada. Comprueba los recursos implicados y la información de depuración para obtener más detalles.</string>
-  <string name="debug_info_http_404_description">El recurso solicitado (ya) no existe. Comprueba los recursos implicados y la información de depuración para obtener más detalles.</string>
-  <string name="debug_info_http_5xx_description">Se ha producido un problema en el servidor. Por favor, ponte en contacto con el soporte de su servidor.</string>
-  <string name="debug_info_unexpected_error">Se ha producido un error inesperado. Ve la información de depuración para más detalles.</string>
   <string name="debug_info_view_details">Ver detalles</string>
   <string name="debug_info_subtitle">Se ha recogido la información de depuración</string>
   <string name="debug_info_involved_caption">Recursos implicados</string>
@@ -374,6 +370,7 @@
   <string name="debug_info_logs_caption">Registros</string>
   <string name="debug_info_logs_subtitle">Los registros verbosos están disponibles</string>
   <string name="debug_info_logs_view">Ver registros</string>
+  <string name="debug_info_copy_remote_url">Copiar URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ocurrió un error.</string>
   <string name="exception_httpexception">Ha ocurrido un error HTTP.</string>
@@ -410,7 +407,6 @@
   <string name="sync_error_http_dav">Error de servidor – %s</string>
   <string name="sync_error_local_storage">Error de almacenamiento local – %s</string>
   <string name="sync_error_retry_limit_reached">Error no crítico (se ha llegado al número máximo de intentos)</string>
-  <string name="sync_error_view_item">Ver item</string>
   <string name="sync_invalid_contact">Contacto inválido recibido del servidor</string>
   <string name="sync_invalid_event">Evento inválido recibido del servidor</string>
   <string name="sync_invalid_task">Tarea inválida recibidas del servidor</string>

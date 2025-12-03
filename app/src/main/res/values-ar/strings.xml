@@ -186,6 +186,7 @@
   <string name="collection_description">الوصف</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">معلومات تصحيح العلل</string>
+  <string name="debug_info_copy_remote_url">نسخ عنوان URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">حدث خطأ.</string>
   <string name="exception_httpexception">حدث خطأ HTTP.</string>
@@ -202,7 +203,6 @@
   <string name="sync_error_io">خطأ شبكة أو الإدخال/الإخراج - %s</string>
   <string name="sync_error_http_dav">خطأ خادم HTTP - %s</string>
   <string name="sync_error_local_storage">خطأ تخزين محلي - %s</string>
-  <string name="sync_error_view_item">عرض العنصر</string>
   <string name="sync_invalid_contact">استلام جهة اتصال غير صالحة من الخادم</string>
   <string name="sync_invalid_event">استلام حدث غير صالح من الخادم</string>
   <string name="sync_invalid_task">استلام مهمة غير صالحة من الخادم</string>

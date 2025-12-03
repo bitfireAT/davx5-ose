@@ -149,6 +149,7 @@
   <string name="collection_description">Beskrivelse</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Feilrettingsinfo</string>
+  <string name="debug_info_copy_remote_url">Kopier nettadresse</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">En feil har inntruffet</string>
   <string name="exception_httpexception">En HTTP-feil har inntruffet.</string>

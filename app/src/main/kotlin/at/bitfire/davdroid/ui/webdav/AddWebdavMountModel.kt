@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.webdav
 
 import android.content.Context
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -36,7 +37,7 @@ class AddWebdavMountModel @Inject constructor(
         val displayName: String = "",
         val url: String = "",
         val username: String = "",
-        val password: String = "",
+        val password: TextFieldState = TextFieldState(),
         val certificateAlias: String? = null
     ) {
         val urlWithPrefix =
@@ -67,10 +68,6 @@ class AddWebdavMountModel @Inject constructor(
         uiState = uiState.copy(username = username)
     }
 
-    fun setPassword(password: String) {
-        uiState = uiState.copy(password = password)
-    }
-
     fun setCertificateAlias(certAlias: String) {
         uiState = uiState.copy(certificateAlias = certAlias)
     }
@@ -85,7 +82,7 @@ class AddWebdavMountModel @Inject constructor(
         val displayName = uiState.displayName
         val credentials = Credentials(
             username = uiState.username.trimToNull(),
-            password = uiState.password.trimToNull()?.toSensitiveString(),
+            password = uiState.password.text.trimToNull()?.toSensitiveString(),
             certificateAlias = uiState.certificateAlias
         )
 

@@ -4,10 +4,9 @@
 
 package at.bitfire.davdroid.util
 
-import com.google.common.base.Joiner
 import com.google.common.base.Strings
 
-fun String?.trimToNull() = Strings.emptyToNull(this?.trim())
+fun CharSequence?.trimToNull() = Strings.emptyToNull(this?.trim()?.toString())
 
 fun String.withTrailingSlash() =
     if (this.endsWith('/'))

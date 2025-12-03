@@ -391,7 +391,7 @@
   <string name="collection_read_write">Lesen/Schreiben</string>
   <string name="collection_title">Titel</string>
   <string name="collection_description">Beschreibung</string>
-  <string name="collection_owner">Besitzer:in</string>
+  <string name="collection_owner">Besitzende Entität</string>
   <string name="collection_push_support">Push-Unterstützung</string>
   <string name="collection_push_web_push">Server bietet Push-Unterstützung</string>
   <string name="collection_push_subscribed_at">Um %1$s angemeldet, läuft ab %2$s</string>
@@ -408,10 +408,11 @@
   <string name="debug_info_server_error">Serverfehler</string>
   <string name="debug_info_webdav_error">WebDAV-Fehler</string>
   <string name="debug_info_io_error">E/A-Fehler</string>
-  <string name="debug_info_http_403_description">Die Anfrage wurde abgelehnt. Details unter Beteiligte Ressourcen und in den Debug-Informationen.</string>
-  <string name="debug_info_http_404_description">Die Ressource existiert nicht (mehr). Details unter Beteiligte Ressourcen und in den Debug-Informationen.</string>
-  <string name="debug_info_http_5xx_description">Ein serverseitiges Problem ist aufgetreten. Bitte kontaktieren Sie den Server-Support.</string>
-  <string name="debug_info_unexpected_error">Ein unerwarteter Fehler ist aufgetreten. Details in den Debug-Informationen.</string>
+  <string name="debug_info_http_403_description">Die Anfrage wurde vom Server abgelehnt.</string>
+  <string name="debug_info_http_404_description">Die angeforderte Ressource existiert nicht (mehr).</string>
+  <string name="debug_info_http_405_description">Der Server erlaubt die angeforderte Art der Operation nicht.</string>
+  <string name="debug_info_http_5xx_description">Es trat ein serverseitiges Problem auf. Wenden Sie sich bitte an den Server-Support.</string>
+  <string name="debug_info_unexpected_error">Es trat ein unerwarteter Fehler auf. Einzelheiten dazu finden Sie in der Debug-Info.</string>
   <string name="debug_info_view_details">Details anzeigen</string>
   <string name="debug_info_subtitle">Debug-Informationen wurden gesammelt</string>
   <string name="debug_info_involved_caption">Beteiligte Ressourcen</string>
@@ -421,8 +422,11 @@
   <string name="debug_info_logs_caption">Protokoll</string>
   <string name="debug_info_logs_subtitle">Ausführliches Protokoll verfügbar</string>
   <string name="debug_info_logs_view">Logs anzeigen</string>
+  <string name="debug_info_copy_remote_url">URL kopieren</string>
+  <string name="debug_info_view_local_resource">Ressource überprüfen</string>
   <string name="debug_info_privacy_warning_title">Datenschutzhinweis</string>
   <string name="debug_info_privacy_warning_description">Protokolle und Debug-Informationen können private Daten enthalten. Seien Sie sich dessen bewusst, wenn Sie diese öffentlich weitergeben.</string>
+  <string name="debug_info_can_not_view_resource">Ressource kann nicht angezeigt werden</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ein Fehler ist aufgetreten.</string>
   <string name="exception_httpexception">Ein HTTP-Fehler ist aufgetreten.</string>
@@ -463,7 +467,6 @@
   <string name="sync_error_http_dav">HTTP-Serverfehler – %s</string>
   <string name="sync_error_local_storage">Lokaler Speicherfehler – %s</string>
   <string name="sync_error_retry_limit_reached">Weicher Fehler (maximale Anzahl an Wiederholungen erreicht)</string>
-  <string name="sync_error_view_item">Untersuchen</string>
   <string name="sync_invalid_contact">Ungültigen Kontakt vom Server erhalten</string>
   <string name="sync_invalid_event">Ungültigen Termin vom Server erhalten</string>
   <string name="sync_invalid_task">Ungültige Aufgabe vom Server erhalten</string>

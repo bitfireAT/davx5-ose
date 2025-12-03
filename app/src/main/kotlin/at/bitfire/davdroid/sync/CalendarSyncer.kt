@@ -60,7 +60,7 @@ class CalendarSyncer @AssistedInject constructor(
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
             account,
-            httpClient.value,
+            httpClient,
             syncResult,
             localCollection,
             remoteCollection,

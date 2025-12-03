@@ -5,13 +5,13 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import at.bitfire.dav4jvm.DavCollection
-import at.bitfire.dav4jvm.MultiResponseCallback
-import at.bitfire.dav4jvm.Response
+import at.bitfire.dav4jvm.okhttp.DavCollection
+import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
+import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -20,13 +20,13 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.HttpUrl
-import okhttp3.RequestBody
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.junit.Assert.assertEquals
 
 class TestSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted httpClient: HttpClient,
+    @Assisted httpClient: OkHttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTestCollection,
     @Assisted collection: Collection,
@@ -46,7 +46,7 @@ class TestSyncManager @AssistedInject constructor(
     interface Factory {
         fun create(
             account: Account,
-            httpClient: HttpClient,
+            httpClient: OkHttpClient,
             syncResult: SyncResult,
             localCollection: LocalTestCollection,
             collection: Collection
@@ -54,7 +54,7 @@ class TestSyncManager @AssistedInject constructor(
     }
 
     override fun prepare(): Boolean {
-        davCollection = DavCollection(httpClient.okHttpClient, collection.url)
+        davCollection = DavCollection(httpClient, collection.url)
         return true
     }
 
@@ -65,7 +65,7 @@ class TestSyncManager @AssistedInject constructor(
         didQueryCapabilities = true
 
         var cTag: SyncState? = null
-        davCollection.propfind(0, GetCTag.NAME) { response, rel ->
+        davCollection.propfind(0, CalDAV.GetCTag) { response, rel ->
             if (rel == Response.HrefRelation.SELF)
                 response[GetCTag::class.java]?.cTag?.let {
                     cTag = SyncState(SyncState.Type.CTAG, it)
@@ -76,9 +76,13 @@ class TestSyncManager @AssistedInject constructor(
     }
 
     var didGenerateUpload = false
-    override fun generateUpload(resource: LocalTestResource): RequestBody {
+    override fun generateUpload(resource: LocalTestResource): GeneratedResource {
         didGenerateUpload = true
-        return resource.toString().toRequestBody()
+        return GeneratedResource(
+            suggestedFileName = resource.fileName ?: "generated-file.txt",
+            requestBody = resource.toString().toRequestBody(),
+            onSuccessContext = GeneratedResource.OnSuccessContext()
+        )
     }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT

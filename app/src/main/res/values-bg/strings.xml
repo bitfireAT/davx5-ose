@@ -408,10 +408,11 @@
   <string name="debug_info_server_error">Грешка на сървъра</string>
   <string name="debug_info_webdav_error">Грешка на WebDAV</string>
   <string name="debug_info_io_error">Грешка на входа/изхода</string>
-  <string name="debug_info_http_403_description">Заявката е отказана. За подробности проверете свързаните със завката ресурси и информацията за отстраняване на дефекти.</string>
-  <string name="debug_info_http_404_description">Заявеният ресурс не съществува (вече). За подробности проверете свързаните със завката ресурси и информацията за отстраняване на дефекти.</string>
-  <string name="debug_info_http_5xx_description">Възникнал е проблем от страна на сървъра. Свържете се с поддръжката му.</string>
-  <string name="debug_info_unexpected_error">Възникнала е неочаквана грешка. За подробности проверете информацията за отстраняване на дефекти.</string>
+  <string name="debug_info_http_403_description">Заявката е отказана от сървъра.</string>
+  <string name="debug_info_http_404_description">Заявеният ресурс (вече) не съществува.</string>
+  <string name="debug_info_http_405_description">Сървърът не позволява този вид заявено действие.</string>
+  <string name="debug_info_http_5xx_description">Грешка на сървъра. Свържете се с поддръжката на сървъра.</string>
+  <string name="debug_info_unexpected_error">Неочаквана грешка. Прегледайте дневника за отстраняване на грешки за повече подробности.</string>
   <string name="debug_info_view_details">Подробности</string>
   <string name="debug_info_subtitle">Информацията за отстраняване на дефекта е събрана</string>
   <string name="debug_info_involved_caption">Ресурси, имащи отношение</string>
@@ -421,8 +422,11 @@
   <string name="debug_info_logs_caption">Дневници</string>
   <string name="debug_info_logs_subtitle">Налични са подробни дневници</string>
   <string name="debug_info_logs_view">Преглед</string>
+  <string name="debug_info_copy_remote_url">Копиране на адреса</string>
+  <string name="debug_info_view_local_resource">Проверка на ресурса</string>
   <string name="debug_info_privacy_warning_title">Съобщение за защита на личните данни</string>
   <string name="debug_info_privacy_warning_description">Дневниците и информацията за отстраняване на грешки могат да съдържат лична информация. Имайте  го предвид, когато ги споделяте публично.</string>
+  <string name="debug_info_can_not_view_resource">Ресурсът не може да бъде прегледан</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Възникна грешка.</string>
   <string name="exception_httpexception">Възникна грешка на HTTP.</string>
@@ -463,7 +467,6 @@
   <string name="sync_error_http_dav">Грешка в сървъра на HTTP – %s</string>
   <string name="sync_error_local_storage">Грешка в местното хранилище – %s</string>
   <string name="sync_error_retry_limit_reached">Грешка (достигнат максимален брой опити)</string>
-  <string name="sync_error_view_item">Преглед</string>
   <string name="sync_invalid_contact">Получен е недействителен контакт от сървъра</string>
   <string name="sync_invalid_event">Получено е недействително събитие от сървъра</string>
   <string name="sync_invalid_task">Получен е недействителен файл от сървъра</string>

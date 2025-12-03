@@ -476,8 +476,11 @@
     <string name="debug_info_logs_caption">Logs</string>
     <string name="debug_info_logs_subtitle">Verbose logs are available</string>
     <string name="debug_info_logs_view">View logs</string>
+    <string name="debug_info_copy_remote_url">Copy URL</string>
+    <string name="debug_info_view_local_resource">Inspect resource</string>
     <string name="debug_info_privacy_warning_title">Privacy notice</string>
     <string name="debug_info_privacy_warning_description">Logs and debug info may contain private information. Please be aware of this when sharing publicly.</string>
+    <string name="debug_info_can_not_view_resource">Unable to view resource</string>
 
     <!-- ExceptionInfoFragment -->
     <string name="exception">An error has occurred.</string>
@@ -522,7 +525,6 @@
     <string name="sync_error_http_dav">HTTP server error – %s</string>
     <string name="sync_error_local_storage">Local storage error – %s</string>
     <string name="sync_error_retry_limit_reached">Soft error (max retries reached)</string>
-    <string name="sync_error_view_item">View item</string>
     <string name="sync_invalid_contact">Received invalid contact from server</string>
     <string name="sync_invalid_event">Received invalid event from server</string>
     <string name="sync_invalid_task">Received invalid task from server</string>

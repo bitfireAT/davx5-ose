@@ -243,10 +243,6 @@
   <string name="debug_info_server_error">Greška na poslužitelju</string>
   <string name="debug_info_webdav_error">WebDAV greška</string>
   <string name="debug_info_io_error">I/O greška</string>
-  <string name="debug_info_http_403_description">Zahtjev je odbijen. Pojedinosti potražite u uključenim resursima i debug informacijama.</string>
-  <string name="debug_info_http_404_description">Traženi resurs ne postoji (više). Pojedinosti potražite u uključenim resursima i debug informacijama.</string>
-  <string name="debug_info_http_5xx_description">Greška sa poslužiteljske strane. Molimo obratite se podršci za poslužitelja.</string>
-  <string name="debug_info_unexpected_error">Dogodila se neočekivana pogreška. Pojedinosti potražite u debug informacijama.</string>
   <string name="debug_info_view_details">Pogledaj pojedinosti</string>
   <string name="debug_info_subtitle">Debug info je prikupljen</string>
   <string name="debug_info_involved_caption">Uključeni resursi</string>
@@ -256,6 +252,7 @@
   <string name="debug_info_logs_caption">Logovi</string>
   <string name="debug_info_logs_subtitle">Opsežniji logovi su dostupni</string>
   <string name="debug_info_logs_view">Pregledaj logove</string>
+  <string name="debug_info_copy_remote_url">Kopiraj URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Dogodila se greška.</string>
   <string name="exception_httpexception">Dogodila se HTTP greška.</string>
@@ -274,7 +271,6 @@
   <string name="sync_error_io">Mrežna ili I/O greška – %s</string>
   <string name="sync_error_http_dav">HTTP poslužiteljska greška – %s</string>
   <string name="sync_error_local_storage">Greška lokalne pohrane – %s</string>
-  <string name="sync_error_view_item">Pregledaj stavku</string>
   <string name="sync_invalid_contact">Primljen je nevažeći kontakt sa poslužitelja</string>
   <string name="sync_invalid_event">Primljen je nevažeći dogđaj sa poslužitelja</string>
   <string name="sync_invalid_task">Primljen je nevažeći zadatak sa poslužitelja</string>

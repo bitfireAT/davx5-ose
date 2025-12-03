@@ -37,10 +37,13 @@
   <string name="intro_autostart_dont_show">所需設定已完成，不用再提醒我*</string>
   <string name="intro_leave_unchecked">* 取消勾選則稍後會再次提醒，可於設定中重置 / %s</string>
   <string name="intro_more_info">更多資訊</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
   <string name="intro_tasks_jtx_info"><![CDATA[支持任務、日記及筆記同步]]></string>
   <string name="intro_tasks_title">待辦事項支援</string>
   <string name="intro_tasks_text1">如果你的服務器支持任務，它們可以與支援任務的app同步:</string>
+  <string name="intro_tasks_opentasks">OpenTasks </string>
   <string name="intro_tasks_opentasks_info">似乎已不再繼續開發 - 不建議使用。</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[某些功能 <a href="https://www.davx5.com/faq/tasks/advanced-task-features">不被支援</a>。]]></string>
   <string name="intro_tasks_no_app_store">沒有應用商店可用</string>
   <string name="intro_tasks_dont_show">我不需要任務支援。*</string>
@@ -75,7 +78,24 @@
   <string name="permissions_autoreset_title">保持權限</string>
   <string name="permissions_autoreset_status_off">權限可能會被自動重設（不推薦）</string>
   <string name="permissions_autoreset_status_on">權限不會被自動重設</string>
+  <string name="permissions_autoreset_instruction">點選權限 &gt; 取消勾選「若應用程式未使用則移除權限」</string>
+  <string name="permissions_app_settings_hint">如果開關無法使用，請前往應用程式設定 / 權限。</string>
+  <string name="permissions_app_settings">應用程式設定</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WiFi SSID 權限</string>
+  <string name="wifi_permissions_intro">要能夠存取目前的 WiFi 名稱（SSID），必須符合以下條件：</string>
+  <string name="wifi_permissions_location_permission">精確位置權限</string>
+  <string name="wifi_permissions_location_permission_on">已授予位置權限</string>
+  <string name="wifi_permissions_location_permission_off">已拒絕位置權限</string>
+  <string name="wifi_permissions_background_location_permission">背景位置權限</string>
+  <string name="wifi_permissions_background_location_permission_label">永遠允許</string>
+  <string name="wifi_permissions_background_location_permission_on">位置權限已設定為：%s</string>
+  <string name="wifi_permissions_background_location_permission_off">位置權限未設定為：%s</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s使用位置資料（僅限 WiFi SSID）僅用來限制同步至特定的 WiFi SSID。即使同步在背景執行時，也會套用此限制。</string>
+  <string name="wifi_permissions_background_location_disclaimer2">所有位置資料（僅限 WiFi SSID）皆僅在本機使用，不會傳送至任何地方。</string>
+  <string name="wifi_permissions_location_enabled">位置永遠啟用</string>
+  <string name="wifi_permissions_location_enabled_on">位置服務已啟用</string>
+  <string name="wifi_permissions_location_enabled_off">位置服務已停用</string>
   <!--AboutActivity-->
   <string name="about_translations">翻譯</string>
   <string name="about_libraries">函式庫</string>
@@ -84,6 +104,9 @@
   <string name="about_license_info_no_warranty">我們｢完全不保證｣本程式無瑕疵。這是個自由軟體，歡迎您在符合公用授權條款的情況下任意散布它。</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">無法創建事項記錄文檔</string>
+  <string name="logging_notification_text">現在正在記錄所有 %s 活動</string>
+  <string name="logging_notification_view_share">檢視/分享</string>
+  <string name="logging_notification_disable">停用</string>
   <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同步器</string>
   <string name="navigation_drawer_about">關於我們 / 授權條款</string>
@@ -96,40 +119,101 @@
   <string name="navigation_drawer_website">我們的網站</string>
   <string name="navigation_drawer_manual">使用説明書</string>
   <string name="navigation_drawer_faq">常見問答</string>
+  <string name="navigation_drawer_managed">適用於組織</string>
+  <string name="navigation_drawer_community">社群</string>
+  <string name="navigation_drawer_support_project">支持此項目</string>
+  <string name="navigation_drawer_contribute">如何貢獻</string>
   <string name="navigation_drawer_privacy_policy">隱私權政策</string>
+  <string name="account_list_welcome">歡迎使用 DAVx⁵！</string>
+  <string name="account_list_empty">連線到您的伺服器，並保持行事曆與聯絡人同步。</string>
+  <string name="accounts_sync_all">同步所有帳戶</string>
   <!--Sync warnings-->
+  <string name="sync_warning_no_notification_permission">通知已停用。您將不會收到同步錯誤的通知。</string>
+  <string name="sync_warning_no_internet">自動同步未啟用（沒有已驗證的網際網路連線）。</string>
+  <string name="sync_warning_manage_connections">管理連線</string>
+  <string name="sync_warning_datasaver_enabled">已啟用數據節省模式。背景同步受到限制。</string>
+  <string name="sync_warning_manage_datasaver">管理數據節省模式</string>
+  <string name="sync_warning_battery_saver_enabled">已啟用省電模式。同步可能會受到限制。</string>
+  <string name="sync_warning_manage_battery_saver">管理省電模式</string>
+  <string name="sync_warning_low_storage">儲存空間不足。Android 不會立即同步本機變更，而會在下次的定期同步時進行。</string>
+  <string name="sync_warning_manage_storage">管理儲存空間</string>
+  <string name="sync_warning_calendar_storage_disabled_title">缺少行事曆提供者</string>
+  <string name="sync_warning_calendar_storage_disabled_description">您是否已停用「行事曆儲存空間」系統應用程式？</string>
+  <string name="sync_warning_contacts_storage_disabled_title">缺少聯絡人提供者</string>
+  <string name="sync_warning_contacts_storage_disabled_description">您是否已停用「聯絡人儲存空間」系統應用程式？</string>
+  <string name="sync_warning_manage_apps">管理應用程式</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">未發現遠端服務</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">無法更新清單</string>
   <!--Foreground service used by WorkManager on Android <12-->
+  <string name="foreground_service_notify_title">在前景執行</string>
+  <string name="foreground_service_notify_text">在某些裝置上，這對自動同步是必要的。</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">設定</string>
   <string name="app_settings_debug">除錯</string>
   <string name="app_settings_show_debug_info">顯示除錯訊息</string>
+  <string name="app_settings_show_debug_info_details">檢視/分享組態詳細資料與日誌</string>
   <string name="app_settings_logging">詳細除錯記錄</string>
+  <string name="app_settings_logging_on">記錄功能已啟用。您可以在除錯資訊中檢視日誌。</string>
   <string name="app_settings_logging_off">日誌記錄已停用</string>
   <string name="app_settings_battery_optimization">電池最佳化</string>
+  <string name="app_settings_battery_optimization_exempted">排除本應用程式（建議）</string>
+  <string name="app_settings_battery_optimization_optimized">套用電池限制（不建議）</string>
   <string name="app_settings_connection">網路連線</string>
+  <string name="app_settings_proxy">代理類型</string>
+  <string-array name="app_settings_proxy_types">
+    <item>系統預設</item>
+    <item>無代理</item>
+    <item>HTTP</item>
+    <item>SOCKS（用於 Orbot）</item>
+  </string-array>
+  <string name="app_settings_proxy_host">代理主機名稱</string>
+  <string name="app_settings_proxy_port">代理連接埠</string>
   <string name="app_settings_security">安全性</string>
+  <string name="app_settings_security_app_permissions">應用程式權限</string>
+  <string name="app_settings_security_app_permissions_summary">檢視同步所需的權限</string>
   <string name="app_settings_distrust_system_certs">不信任系統憑證</string>
   <string name="app_settings_distrust_system_certs_on">系統憑證和使用者自訂憑證將不被信任</string>
   <string name="app_settings_distrust_system_certs_off">系統憑證和使用者自訂憑證將被信任 (推薦設定)</string>
+  <string name="app_settings_distrust_system_certs_dialog_message">若啟用此設定，系統憑證將不被視為可信任。這表示您必須手動接受每一張憑證（包含伺服器更新憑證時），否則帳戶設定與同步將無法運作。</string>
   <string name="app_settings_reset_certificates">重新開啟之前關閉的提示</string>
   <string name="app_settings_reset_certificates_summary">重設對所有自訂憑證的信任</string>
   <string name="app_settings_reset_certificates_success">所有自訂憑證已清除</string>
   <string name="app_settings_user_interface">使用介面</string>
   <string name="app_settings_notification_settings">通知設定</string>
   <string name="app_settings_notification_settings_summary">管理通知頻道和設定</string>
+  <string name="app_settings_theme_title">選擇主題</string>
+  <string-array name="app_settings_theme_names">
+    <item>系統預設</item>
+    <item>淺色</item>
+    <item>深色</item>
+  </string-array>
   <string name="app_settings_reset_hints">重新開啟提示</string>
   <string name="app_settings_reset_hints_summary">重新啟用之前取消的提示</string>
   <string name="app_settings_reset_hints_success">所有提示將再次顯示</string>
+  <string name="app_settings_integration">整合</string>
+  <string name="app_settings_tasks_provider">待辦事項 應用程式</string>
+  <string name="app_settings_tasks_provider_none">找不到相容的待辦事項應用程式</string>
+  <string name="app_settings_unifiedpush">UnifiedPush（實驗性）</string>
+  <string name="app_settings_unifiedpush_disable">無（停用推播）</string>
+  <string name="app_settings_unifiedpush_choose_distributor">選擇分發服務</string>
+  <string name="app_settings_unifiedpush_no_distributor">未安裝推播分發服務</string>
+  <string name="app_settings_unifiedpush_no_endpoint">未設定端點</string>
+  <string name="app_settings_unifiedpush_ready">已準備好透過 %s 接收推播訊息</string>
+  <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+  <string name="app_settings_unifiedpush_encrypted">推播訊息一律加密。</string>
   <!--AccountScreen-->
+  <string name="account_invalid_account">帳戶已被移除</string>
   <string name="account_carddav">CardDAV聯絡人檔案</string>
   <string name="account_caldav">CalDav行事曆檔案</string>
   <string name="account_webcal">Webcal網際網絡行事曆</string>
+  <string name="account_missing_permissions">需要額外的權限才能同步這些收藏。</string>
+  <string name="account_manage_permissions">管理權限</string>
   <string name="account_synchronize_now">立即同步</string>
   <string name="account_settings">帳號設定</string>
   <string name="account_rename">重新命名帳號</string>
+  <string name="account_rename_new_name_description">未儲存的本機資料可能會被捨棄。重新命名後需要再次同步。</string>
+  <string name="account_rename_new_name">新帳戶名稱</string>
   <string name="account_rename_rename">重新命名</string>
   <string name="account_rename_exists_already">這個賬號名稱已經被取過了</string>
   <string name="account_rename_couldnt_rename">無法重新命名帳號</string>
@@ -139,29 +223,74 @@
   <string name="account_synchronize_this_collection">同步這個行事曆或工作清單</string>
   <string name="account_read_only">唯讀</string>
   <string name="account_calendar">行事曆</string>
+  <string name="account_contacts">聯絡人</string>
+  <string name="account_journal">日誌</string>
+  <string name="account_task_list">待辦事項</string>
   <string name="account_only_personal">只顯示個人</string>
+  <string name="account_refresh_collections">重新整理清單</string>
+  <string name="account_webcal_external_app">Webcal 訂閱可與外部應用程式同步。</string>
   <string name="account_no_webcal_handler_found">未找到支援Webcal的APP</string>
   <string name="account_install_icsx5">安裝ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">新增帳號</string>
+  <string name="login_privacy_hint"><![CDATA[所有資料只會在您的伺服器與您的裝置之間傳輸。%1$s 不會將它們傳送至其他任何地方。請參閱 <a href="%2$s">隱私權政策</a>。]]></string>
+  <string name="login_generic_login">一般登入</string>
+  <string name="login_provider_login">特定提供者登入</string>
+  <string name="login_continue">繼續</string>
   <string name="login_login">登入</string>
   <string name="login_type_email">用 Email 地址登入</string>
   <string name="login_email_address">Email 地址</string>
   <string name="login_email_address_error">請輸入有效的 Email 地址</string>
+  <string name="login_email_address_info"><![CDATA[電子郵件網域將用作基礎 URL。<a href="%s">服務會透過 DNS 紀錄與 well-known URL 自動探索</a>。]]></string>
   <string name="login_password">密碼</string>
+  <string name="login_password_hide">隱藏密碼</string>
+  <string name="login_password_show">顯示密碼</string>
+  <string name="login_password_optional">密碼（可選）</string>
   <string name="login_type_url">用網址和帳號登入</string>
   <string name="login_user_name">使用者帳號</string>
+  <string name="login_user_name_optional">使用者名稱（可選）</string>
   <string name="login_base_url">根 URL</string>
+  <string name="login_base_url_info"><![CDATA[基礎 URL 將會直接檢查，但<a href="%s">服務也會透過 DNS 紀錄與 well-known URL 自動探索</a>。]]></string>
   <string name="login_select_certificate">點選憑證</string>
   <string name="login_add_account">新增帳號</string>
   <string name="login_account_name">帳號名稱</string>
+  <string name="login_account_avoid_apostrophe">在某些裝置上使用單引號 (\') 似乎會造成問題。</string>
   <string name="login_account_name_info">使用 Email 地址當作裝置上的帳號顯示名稱，因為當您在行事曆創建活動時，Android 會把帳號顯示名稱放到｢活動發起人」欄位。兩個帳號不能有相同的名稱。</string>
   <string name="login_account_contact_group_method">聯絡人群組的儲存格式</string>
   <string name="login_account_name_required">需要帳號名稱</string>
   <string name="login_account_name_already_taken">這個賬號名稱已經被取過了</string>
+  <string name="login_account_not_added">無法新增帳戶</string>
+  <string name="login_finish">完成</string>
+  <string name="login_type_advanced">進階登入</string>
+  <string name="login_no_client_certificate_optional">無用戶端憑證（可選）</string>
+  <string name="login_client_certificate_selected">用戶端憑證：%s</string>
+  <string name="login_no_certificate_found">找不到憑證</string>
+  <string name="login_install_certificate">安裝憑證</string>
+  <string name="login_fastmail">Fastmail</string>
+  <string name="login_fastmail_account">Fastmail 帳戶</string>
+  <string name="login_fastmail_sign_in">使用 Fastmail 登入</string>
+  <string name="login_type_google">Google 聯絡人 / 行事曆</string>
+  <string name="login_google_account">Google 帳戶</string>
+  <string name="login_google">使用 Google 登入</string>
+  <string name="login_google_client_id">用戶端 ID（可選）</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s 僅將您的 Google 聯絡人與行事曆資料傳輸，用於與此裝置同步。詳情請參閱我們的 <a href="%2$s">隱私權政策</a>。]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s 遵循 <a href="%2$s">Google API 服務使用者資料政策</a>，包括有限使用的相關要求。]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">無法取得授權碼</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">使用 Nextcloud 登入</string>
+  <string name="login_nextcloud_login_flow_text">這將在網頁瀏覽器中啟動 Nextcloud 登入流程。</string>
+  <string name="login_nextcloud_login_flow_server_address">Nextcloud 伺服器位址</string>
+  <string name="login_nextcloud_login_flow_sign_in">登入</string>
+  <string name="login_nextcloud_login_flow_no_login_url">無法取得登入 URL</string>
+  <string name="login_nextcloud_login_flow_no_login_data">無法取得登入資料</string>
   <string name="login_configuration_detection">設定錯誤</string>
   <string name="login_querying_server">請稍待，正在詢問伺服器…</string>
   <string name="login_no_service">找不到 CalDAV 或 CardDAV 服務。</string>
+  <string name="login_no_service_info">基礎 URL 似乎不是可存取的 CalDAV/CardDAV URL，且服務偵測未成功。</string>
+  <string name="login_see_tested_services"><![CDATA[請參閱您的服務提供者使用手冊，以及<a href="%s">我們的已測試服務清單</a>及其基礎 URL。]]></string>
+  <string name="login_check_credentials">請同時再次確認驗證資訊（通常是使用者名稱與密碼）。</string>
+  <string name="login_logs_available">更多技術資訊可在日誌中取得。</string>
+  <string name="login_view_logs">檢視日誌</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">同步設定</string>
   <string name="settings_sync_interval_contacts">聯絡人同步間隔</string>
@@ -185,10 +314,23 @@
   <string name="settings_sync_wifi_only_ssids_on">只在%s連線時同步</string>
   <string name="settings_sync_wifi_only_ssids_off">所有 WiFi 連線都可以使用</string>
   <string name="settings_sync_wifi_only_ssids_message">使用逗號分割的名稱 (SSIDs) 表示的 WiFi 連線（留空則代表全部）</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 限制需要進一步設定</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
+  <string name="settings_ignore_vpns">VPN 需要基礎網際網路連線</string>
+  <string name="settings_ignore_vpns_on">沒有基礎已驗證網際網路連線的 VPN 不足以執行同步（建議）</string>
+  <string name="settings_ignore_vpns_off">沒有基礎已驗證網際網路連線的 VPN 仍可執行同步</string>
   <string name="settings_authentication">認證</string>
   <string name="settings_username">使用者帳號</string>
+  <string name="settings_password">密碼或應用程式專用密碼</string>
+  <string name="settings_app_password_hint"><![CDATA[您可能會偏好使用<a href="%1$s">應用程式專用密碼</a>。]]></string>
+  <string name="settings_new_password">新密碼</string>
   <string name="settings_password_summary">您在伺服器上使用中的密碼</string>
+  <string name="settings_reauthorize_oauth">再次授權（OAuth）</string>
+  <string name="settings_reauthorize_oauth_summary">當存取權遭撤銷時使用</string>
+  <string name="settings_reauthorize_oauth_success">授權成功</string>
+  <string name="settings_certificate_alias">用戶端憑證</string>
+  <string name="settings_certificate_alias_empty">沒有可用或已選取的憑證</string>
+  <string name="settings_certificate_install">安裝憑證</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">過去活動的時間限制</string>
   <string name="settings_sync_time_range_past_none">將會同步所有活動</string>
@@ -203,7 +345,11 @@
   <string name="settings_default_alarm_off">未設定預設提醒</string>
   <string name="settings_default_alarm_message">當沒有提醒的活動需要加入預設提醒時，活動開始前多少分鐘出發提醒。留空則停用預設提醒。</string>
   <string name="settings_manage_calendar_colors">管理行事曆的顏色</string>
+  <string name="settings_manage_calendar_colors_on">行事曆顏色會在每次同步時重設</string>
+  <string name="settings_manage_calendar_colors_off">行事曆顏色可由其他應用程式設定</string>
   <string name="settings_event_colors">設定活動的顔色</string>
+  <string name="settings_event_colors_on">活動顏色已同步</string>
+  <string name="settings_event_colors_off">活動顏色未同步</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">聯絡人群組的儲存格式</string>
   <string-array name="settings_contact_group_method_entries">
@@ -212,27 +358,68 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">建立通訊錄</string>
+  <string name="create_addressbook_maybe_not_supported">伺服器可能不支援透過 CardDAV 建立通訊錄。</string>
   <string name="create_calendar">建立行事曆</string>
+  <string name="create_calendar_time_zone_optional">預設時區（可選）</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">可使用的行事曆項目</string>
   <string name="create_calendar_type_vevent">活動</string>
   <string name="create_calendar_type_vtodo">事務</string>
   <string name="create_calendar_type_vjournal">筆記/日誌</string>
+  <string name="create_calendar_maybe_not_supported">伺服器可能不支援透過 CalDAV 建立行事曆。</string>
   <string name="create_collection_color">顔色</string>
   <string name="create_collection_display_name">標題</string>
   <string name="create_collection_home_set">存儲位置</string>
+  <string name="create_collection_description_optional">描述（可選）</string>
   <string name="create_collection_create">建立</string>
   <!--CollectionScreen-->
+  <string name="collection_datatype_contacts">聯絡人</string>
+  <string name="collection_datatype_events">活動</string>
+  <string name="collection_datatype_tasks">待辦事項</string>
   <string name="collection_delete">刪除行事曆或工作清單</string>
+  <string name="collection_delete_warning">此收藏（%s）及其所有資料將被永久移除，包括本機與伺服器上的內容。</string>
   <string name="collection_synchronization">同步</string>
+  <string name="collection_synchronization_on">已啟用同步</string>
+  <string name="collection_synchronization_off">已停用同步</string>
+  <string name="collection_read_only">唯讀</string>
+  <string name="collection_read_only_by_server">唯讀（由伺服器設定）</string>
+  <string name="collection_read_only_by_setting">唯讀（由設定決定）</string>
+  <string name="collection_read_only_forced">唯讀（僅限本機）</string>
+  <string name="collection_read_write">讀取/寫入</string>
   <string name="collection_title">標題</string>
   <string name="collection_description">描述</string>
+  <string name="collection_owner">擁有者</string>
+  <string name="collection_push_support">Push support</string>
+  <string name="collection_push_web_push">伺服器宣告支援推播</string>
+  <string name="collection_push_subscribed_at">於 %1$s 訂閱，於 %2$s 到期</string>
+  <string name="collection_last_sync">上次同步（%s）</string>
+  <string name="collection_url">位址（URL）</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">除錯訊息</string>
   <string name="debug_info_archive_caption">ZIP 壓縮檔</string>
+  <string name="debug_info_archive_subtitle">包含除錯資訊與日誌</string>
+  <string name="debug_info_archive_text">分享此封存檔以傳輸至電腦、透過電子郵件傳送，或附加至支援服務單。</string>
+  <string name="debug_info_archive_share">分享封存檔</string>
+  <string name="debug_info_attached">已將除錯資訊附加至此訊息（需要接收應用程式支援附件）。</string>
   <string name="debug_info_http_error">HTTP 錯誤</string>
   <string name="debug_info_server_error">伺服器錯誤</string>
   <string name="debug_info_webdav_error">WebDAV 錯誤</string>
   <string name="debug_info_io_error">讀寫錯誤</string>
+  <string name="debug_info_http_405_description">伺服器不允許執行請求的操作類型。</string>
+  <string name="debug_info_http_5xx_description">發生伺服器端問題。請聯絡您的伺服器支援人員。</string>
+  <string name="debug_info_unexpected_error">發生非預期的錯誤。請檢視除錯資訊以取得詳細內容。</string>
+  <string name="debug_info_view_details">顯示詳細訊息</string>
+  <string name="debug_info_subtitle">已收集除錯資訊</string>
+  <string name="debug_info_involved_caption">相關資源</string>
+  <string name="debug_info_involved_subtitle">與問題相關</string>
+  <string name="debug_info_involved_remote">遠端資源：</string>
+  <string name="debug_info_involved_local">本機資源：</string>
+  <string name="debug_info_logs_caption">日誌</string>
+  <string name="debug_info_logs_subtitle">可用詳細日誌</string>
+  <string name="debug_info_logs_view">更多技術資訊可在日誌中取得。</string>
+  <string name="debug_info_copy_remote_url">拷貝URL</string>
+  <string name="debug_info_privacy_warning_title">隱私權通知</string>
+  <string name="debug_info_privacy_warning_description">日誌和除錯資訊可能包含私人資訊，請在公開分享時注意。</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">發生錯誤</string>
   <string name="exception_httpexception">HTTP 發生錯誤</string>
@@ -240,18 +427,25 @@
   <string name="exception_show_details">顯示細節</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV 掛載</string>
+  <string name="webdav_mounts_quota_used_available">已使用配額：%1$s / 可用配額：%2$s</string>
+  <string name="webdav_mounts_share_content">分享内容</string>
   <string name="webdav_mounts_unmount">取消掛載</string>
   <string name="webdav_add_mount_title">新增 WebDAV 掛載</string>
   <string name="webdav_mounts_empty">只要新增對應的 WebDAV 掛載就可以直接存取你的雲端檔案！</string>
   <string name="webdav_add_mount_empty_more_info"><![CDATA[關於 <a href="%1$s">WebDAV 如何運作</a>請見文件。]]></string>
   <string name="webdav_add_mount_display_name">顯示名稱</string>
   <string name="webdav_add_mount_url">WebDAV 網址</string>
+  <string name="webdav_add_mount_url_invalid">無效 URL</string>
+  <string name="webdav_add_mount_mountpoint_displayname">掛載點和顯示名稱</string>
   <string name="webdav_add_mount_authentication">認證</string>
   <string name="webdav_add_mount_username">使用者帳號</string>
   <string name="webdav_add_mount_password">密碼</string>
+  <string name="webdav_add_mount_username_optional">使用者名稱（可選）</string>
+  <string name="webdav_add_mount_password_optional">密碼（可選）</string>
   <string name="webdav_add_mount_add">新增掛載</string>
   <string name="webdav_add_mount_no_support">此網址沒有 WebDAV 服務</string>
   <string name="webdav_remove_mount_title">移除掛點點</string>
+  <string name="webdav_remove_mount_text">連線詳細資訊將會遺失，但不會刪除任何檔案。</string>
   <string name="webdav_notification_access">正在存取 WebDAV 檔案</string>
   <string name="webdav_notification_download">正在下載 WebDAV 檔案</string>
   <string name="webdav_notification_upload">正在上傳檔案至 WebDAV</string>
@@ -259,15 +453,24 @@
   <!--sync-->
   <string name="sync_error_permissions">DAVx⁵ 權限</string>
   <string name="sync_error_permissions_text">需要額外的權限</string>
+  <string name="sync_error_tasks_too_old">%s過舊</string>
+  <string name="sync_error_tasks_required_version">最低需求版本：%1$s</string>
   <string name="sync_error_authentication_failed">鑒權失敗（你需要檢查登錄憑證）</string>
   <string name="sync_error_io">網際網絡或者輸入輸出錯誤——%s</string>
   <string name="sync_error_http_dav">HTTP伺服器錯誤——%s</string>
   <string name="sync_error_local_storage">資料庫錯誤——%s</string>
-  <string name="sync_error_view_item">查閲項目</string>
+  <string name="sync_error_retry_limit_reached">非嚴重錯誤（已達到最大重試次數）</string>
   <string name="sync_invalid_contact">收到了無效的聯絡人</string>
-  <string name="sync_invalid_event">收到了無效的事件</string>
+  <string name="sync_invalid_event">收到了無效的活動</string>
   <string name="sync_invalid_task">收到了無效的任務</string>
   <string name="sync_invalid_resources_ignoring">略過了一個或多個無效的資料</string>
+  <string name="sync_notification_pending_push_title">同步處理中</string>
+  <string name="sync_notification_pending_push_message">遠端資料已變更</string>
   <!--widgets-->
+  <string name="widget_sync_all">全部同步</string>
+  <string name="widget_sync_all_accounts">同步所有帳戶</string>
+  <string name="widget_labeled_sync_label">標示的同步按鈕</string>
+  <string name="widget_icon_sync_label">同步按鈕圖示</string>
+  <string name="widget_sync_description">點擊以手動執行同步。</string>
   <!--cert4android-->
 </resources>

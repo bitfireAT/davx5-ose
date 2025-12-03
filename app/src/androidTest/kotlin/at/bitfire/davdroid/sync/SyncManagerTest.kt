@@ -8,14 +8,14 @@ import android.accounts.Account
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
-import at.bitfire.dav4jvm.PropStat
-import at.bitfire.dav4jvm.Response
-import at.bitfire.dav4jvm.Response.HrefRelation
+import at.bitfire.dav4jvm.okhttp.PropStat
+import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.okhttp.Response.HrefRelation
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.assertWithin
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
@@ -59,7 +59,7 @@ class SyncManagerTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var httpClientBuilder: HttpClient.Builder
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     @Inject
     lateinit var syncManagerFactory: TestSyncManager.Factory

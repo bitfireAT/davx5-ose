@@ -6,8 +6,8 @@ package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
 import android.provider.DocumentsContract.Document
-import at.bitfire.dav4jvm.DavResource
-import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.di.IoDispatcher
@@ -41,45 +41,44 @@ class CreateDocumentOperation @Inject constructor(
         val createDirectory = mimeType == Document.MIME_TYPE_DIR
 
         var docId: Long?
-        httpClientBuilder.build(parent.mountId).use { client ->
-            for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
-                val newName = displayNameToMemberName(displayName, attempt)
-                val parentUrl = parent.toHttpUrl(db)
-                val newLocation = parentUrl.newBuilder()
-                    .addPathSegment(newName)
-                    .build()
-                val doc = DavResource(client.okHttpClient, newLocation)
-                try {
-                    runInterruptible(ioDispatcher) {
-                        if (createDirectory)
-                            doc.mkCol(null) {
-                                // directory successfully created
-                            }
-                        else
-                            doc.put(RequestBody.EMPTY, ifNoneMatch = true) {
-                                // document successfully created
-                            }
-                    }
-
-                    docId = documentDao.insertOrReplace(
-                        WebDavDocument(
-                            mountId = parent.mountId,
-                            parentId = parent.id,
-                            name = newName,
-                            isDirectory = createDirectory,
-                            mimeType = mimeType.toMediaTypeOrNull(),
-                            eTag = null,
-                            lastModified = null,
-                            size = if (createDirectory) null else 0
-                        )
-                    )
-
-                    DocumentProviderUtils.notifyFolderChanged(context, parentDocumentId)
-
-                    return@runBlocking docId.toString()
-                } catch (e: HttpException) {
-                    e.throwForDocumentProvider(context, ignorePreconditionFailed = true)
+        val client = httpClientBuilder.build(parent.mountId)
+        for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
+            val newName = displayNameToMemberName(displayName, attempt)
+            val parentUrl = parent.toHttpUrl(db)
+            val newLocation = parentUrl.newBuilder()
+                .addPathSegment(newName)
+                .build()
+            val doc = DavResource(client, newLocation)
+            try {
+                runInterruptible(ioDispatcher) {
+                    if (createDirectory)
+                        doc.mkCol(null) {
+                            // directory successfully created
+                        }
+                    else
+                        doc.put(RequestBody.EMPTY, ifNoneMatch = true) {
+                            // document successfully created
+                        }
                 }
+
+                docId = documentDao.insertOrReplace(
+                    WebDavDocument(
+                        mountId = parent.mountId,
+                        parentId = parent.id,
+                        name = newName,
+                        isDirectory = createDirectory,
+                        mimeType = mimeType.toMediaTypeOrNull(),
+                        eTag = null,
+                        lastModified = null,
+                        size = if (createDirectory) null else 0
+                    )
+                )
+
+                DocumentProviderUtils.notifyFolderChanged(context, parentDocumentId)
+
+                return@runBlocking docId.toString()
+            } catch (e: HttpException) {
+                e.throwForDocumentProvider(context, ignorePreconditionFailed = true)
             }
         }
 

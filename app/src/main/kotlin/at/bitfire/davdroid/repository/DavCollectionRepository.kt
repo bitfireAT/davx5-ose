@@ -6,23 +6,15 @@ package at.bitfire.davdroid.repository
 
 import android.accounts.Account
 import android.content.Context
-import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
-import at.bitfire.dav4jvm.exception.GoneException
-import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.dav4jvm.exception.NotFoundException
-import at.bitfire.dav4jvm.property.caldav.CalendarColor
-import at.bitfire.dav4jvm.property.caldav.CalendarDescription
-import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
-import at.bitfire.dav4jvm.property.caldav.CalendarTimezoneId
-import at.bitfire.dav4jvm.property.caldav.NS_CALDAV
-import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
-import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
-import at.bitfire.dav4jvm.property.carddav.NS_CARDDAV
-import at.bitfire.dav4jvm.property.webdav.DisplayName
-import at.bitfire.dav4jvm.property.webdav.NS_WEBDAV
-import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.okhttp.exception.GoneException
+import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.okhttp.exception.NotFoundException
+import at.bitfire.dav4jvm.property.caldav.CalDAV
+import at.bitfire.dav4jvm.property.carddav.CardDAV
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -30,7 +22,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.CollectionType
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.di.IoDispatcher
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -43,6 +35,7 @@ import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VTimeZone
+import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.Version
 import okhttp3.HttpUrl
 import java.io.StringWriter
@@ -58,7 +51,7 @@ class DavCollectionRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
-    private val httpClientBuilder: Provider<HttpClient.Builder>,
+    private val httpClientBuilder: Provider<HttpClientBuilder>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val serviceRepository: DavServiceRepository
 ) {
@@ -172,21 +165,20 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.getBlocking(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        httpClientBuilder.get().fromAccount(account).build().use { httpClient ->
-            runInterruptible(ioDispatcher) {
-                try {
-                    DavResource(httpClient.okHttpClient, collection.url).delete {
-                        // success, otherwise an exception would have been thrown → delete locally, too
-                        delete(collection)
-                    }
-                } catch (e: HttpException) {
-                    if (e is NotFoundException || e is GoneException) {
-                        // HTTP 404 Not Found or 410 Gone (collection is not there anymore) -> delete locally, too
-                        logger.info("Collection ${collection.url} not found on server, deleting locally")
-                        delete(collection)
-                    } else
-                        throw e
+        val httpClient = httpClientBuilder.get().fromAccount(account).build()
+        runInterruptible(ioDispatcher) {
+            try {
+                DavResource(httpClient, collection.url).delete {
+                    // success, otherwise an exception would have been thrown → delete locally, too
+                    delete(collection)
                 }
+            } catch (e: HttpException) {
+                if (e is NotFoundException || e is GoneException) {
+                    // HTTP 404 Not Found or 410 Gone (collection is not there anymore) -> delete locally, too
+                    logger.info("Collection ${collection.url} not found on server, deleting locally")
+                    delete(collection)
+                } else
+                    throw e
             }
         }
     }
@@ -289,19 +281,17 @@ class DavCollectionRepository @Inject constructor(
     // helpers
 
     private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
-        httpClientBuilder.get()
+        val httpClient = httpClientBuilder.get()
             .fromAccount(account)
             .build()
-            .use { httpClient ->
-                runInterruptible(ioDispatcher) {
-                    DavResource(httpClient.okHttpClient, url).mkCol(
-                        xmlBody = xmlBody,
-                        method = method
-                    ) {
-                        // success, otherwise an exception would have been thrown
-                    }
-                }
+        runInterruptible(ioDispatcher) {
+            DavResource(httpClient, url).mkCol(
+                xmlBody = xmlBody,
+                method = method
+            ) {
+                // success, otherwise an exception would have been thrown
             }
+        }
     }
 
     private fun generateMkColXml(
@@ -320,27 +310,27 @@ class DavCollectionRepository @Inject constructor(
             setOutput(writer)
 
             startDocument("UTF-8", null)
-            setPrefix("", NS_WEBDAV)
-            setPrefix("CAL", NS_CALDAV)
-            setPrefix("CARD", NS_CARDDAV)
+            setPrefix("", WebDAV.NS_WEBDAV)
+            setPrefix("CAL", CalDAV.NS_CALDAV)
+            setPrefix("CARD", CardDAV.NS_CARDDAV)
 
             if (addressBook)
-                startTag(NS_WEBDAV, "mkcol")
+                startTag(WebDAV.NS_WEBDAV, "mkcol")
             else
-                startTag(NS_CALDAV, "mkcalendar")
+                startTag(CalDAV.NS_CALDAV, "mkcalendar")
 
-            insertTag(DavResource.SET) {
-                insertTag(DavResource.PROP) {
-                    insertTag(ResourceType.NAME) {
-                        insertTag(ResourceType.COLLECTION)
+            insertTag(WebDAV.Set) {
+                insertTag(WebDAV.Prop) {
+                    insertTag(WebDAV.ResourceType) {
+                        insertTag(WebDAV.Collection)
                         if (addressBook)
-                            insertTag(ResourceType.ADDRESSBOOK)
+                            insertTag(CardDAV.Addressbook)
                         else
-                            insertTag(ResourceType.CALENDAR)
+                            insertTag(CalDAV.Calendar)
                     }
 
                     displayName?.let {
-                        insertTag(DisplayName.NAME) {
+                        insertTag(WebDAV.DisplayName) {
                             text(it)
                         }
                     }
@@ -348,7 +338,7 @@ class DavCollectionRepository @Inject constructor(
                     if (addressBook) {
                         // addressbook-specific properties
                         description?.let {
-                            insertTag(AddressbookDescription.NAME) {
+                            insertTag(CardDAV.AddressbookDescription) {
                                 text(it)
                             }
                         }
@@ -356,27 +346,27 @@ class DavCollectionRepository @Inject constructor(
                     } else {
                         // calendar-specific properties
                         description?.let {
-                            insertTag(CalendarDescription.NAME) {
+                            insertTag(CalDAV.CalendarDescription) {
                                 text(it)
                             }
                         }
                         color?.let {
-                            insertTag(CalendarColor.NAME) {
+                            insertTag(CalDAV.CalendarColor) {
                                 text(DavUtils.ARGBtoCalDAVColor(it))
                             }
                         }
                         timezoneId?.let { id ->
-                            insertTag(CalendarTimezoneId.NAME) {
+                            insertTag(CalDAV.CalendarTimezoneId) {
                                 text(id)
                             }
                             getVTimeZone(id)?.let { vTimezone ->
-                                insertTag(CalendarTimezone.NAME) {
+                                insertTag(CalDAV.CalendarTimezone) {
                                     text(
                                         // spec requires "an iCalendar object with exactly one VTIMEZONE component"
                                         Calendar(
                                             PropertyList<Property>().apply {
                                                 add(Version.VERSION_2_0)
-                                                add(Constants.iCalProdId)
+                                                add(ProdId(Constants.iCalProdId))
                                             },
                                             ComponentList(
                                                 listOf(vTimezone)
@@ -388,19 +378,19 @@ class DavCollectionRepository @Inject constructor(
                         }
 
                         if (!supportsVEVENT || !supportsVTODO || !supportsVJOURNAL) {
-                            insertTag(SupportedCalendarComponentSet.NAME) {
+                            insertTag(CalDAV.SupportedCalendarComponentSet) {
                                 // Only if there's at least one not explicitly supported calendar component set,
                                 // otherwise don't include the property, which means "supports everything".
                                 if (supportsVEVENT)
-                                    insertTag(SupportedCalendarComponentSet.COMP) {
+                                    insertTag(CalDAV.Comp) {
                                         attribute(null, "name", Component.VEVENT)
                                     }
                                 if (supportsVTODO)
-                                    insertTag(SupportedCalendarComponentSet.COMP) {
+                                    insertTag(CalDAV.Comp) {
                                         attribute(null, "name", Component.VTODO)
                                     }
                                 if (supportsVJOURNAL)
-                                    insertTag(SupportedCalendarComponentSet.COMP) {
+                                    insertTag(CalDAV.Comp) {
                                         attribute(null, "name", Component.VJOURNAL)
                                     }
                             }
@@ -409,9 +399,9 @@ class DavCollectionRepository @Inject constructor(
                 }
             }
             if (addressBook)
-                endTag(NS_WEBDAV, "mkcol")
+                endTag(WebDAV.NS_WEBDAV, "mkcol")
             else
-                endTag(NS_CALDAV, "mkcalendar")
+                endTag(CalDAV.NS_CALDAV, "mkcalendar")
             endDocument()
         }
         return writer.toString()

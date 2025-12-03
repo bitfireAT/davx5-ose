@@ -391,10 +391,6 @@
   <string name="debug_info_server_error">Fallo no servidor</string>
   <string name="debug_info_webdav_error">Fallo WebDAV</string>
   <string name="debug_info_io_error">Fallo I/O</string>
-  <string name="debug_info_http_403_description">A solicitude foi denegada. Comproba os recursos implicados e o rexistro de depuración para máis info.</string>
-  <string name="debug_info_http_404_description">O recurso solicitado xa non existe. Comproba os recursos implicados e a información de depuración.</string>
-  <string name="debug_info_http_5xx_description">Hai un fallo no lado do servidor. Contacta co soporte do servidor.</string>
-  <string name="debug_info_unexpected_error">Aconteceu un fallo non agardado. Mira a info de depuración para detalles.</string>
   <string name="debug_info_view_details">Ver detalles</string>
   <string name="debug_info_subtitle">Recolleuse a info de depuración</string>
   <string name="debug_info_involved_caption">Recursos implicados</string>
@@ -404,6 +400,7 @@
   <string name="debug_info_logs_caption">Rexistros</string>
   <string name="debug_info_logs_subtitle">Están dispoñibles rexistros explicativos</string>
   <string name="debug_info_logs_view">Ver rexistros</string>
+  <string name="debug_info_copy_remote_url">Copiar URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Algo fallou.</string>
   <string name="exception_httpexception">Houbo un fallo HTTP.</string>
@@ -440,7 +437,6 @@
   <string name="sync_error_http_dav">Fallo servidor HTTP – %s</string>
   <string name="sync_error_local_storage">Fallo almacenamento local – %s</string>
   <string name="sync_error_retry_limit_reached">Erro (acadouse o máx. de reintentos)</string>
-  <string name="sync_error_view_item">Ver elemento</string>
   <string name="sync_invalid_contact">Recibido contacto non válido desde o servidor</string>
   <string name="sync_invalid_event">Recibido evento non válido desde o servidor</string>
   <string name="sync_invalid_task">Recibida tarefa non válida desde o servidor</string>

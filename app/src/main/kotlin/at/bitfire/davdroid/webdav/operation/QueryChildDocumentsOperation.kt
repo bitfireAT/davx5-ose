@@ -7,8 +7,8 @@ package at.bitfire.davdroid.webdav.operation
 import android.content.Context
 import android.provider.DocumentsContract.Document
 import android.provider.DocumentsContract.buildChildDocumentsUri
-import at.bitfire.dav4jvm.DavCollection
-import at.bitfire.dav4jvm.Response
+import at.bitfire.dav4jvm.okhttp.DavCollection
+import at.bitfire.dav4jvm.okhttp.Response
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.GetContentLength
@@ -18,6 +18,7 @@ import at.bitfire.dav4jvm.property.webdav.GetLastModified
 import at.bitfire.dav4jvm.property.webdav.QuotaAvailableBytes
 import at.bitfire.dav4jvm.property.webdav.QuotaUsedBytes
 import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
@@ -33,6 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.FileNotFoundException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
@@ -128,58 +130,57 @@ class QueryChildDocumentsOperation @Inject constructor(
         val newChildrenList = hashMapOf<String, WebDavDocument>()
 
         val parentUrl = parent.toHttpUrl(db)
-        httpClientBuilder.build(parent.mountId).use { client ->
-            val folder = DavCollection(client.okHttpClient, parentUrl)
+        val client = httpClientBuilder.build(parent.mountId)
+        val folder = DavCollection(client, parentUrl)
 
-            try {
-                runInterruptible(ioDispatcher) {
-                    folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
-                        logger.fine("$relation $response")
+        try {
+            runInterruptible(ioDispatcher) {
+                folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
+                    logger.fine("$relation $response")
 
-                        val resource: WebDavDocument =
-                            when (relation) {
-                                Response.HrefRelation.SELF ->       // it's about the parent
-                                    parent
+                    val resource: WebDavDocument =
+                        when (relation) {
+                            Response.HrefRelation.SELF ->       // it's about the parent
+                                parent
 
-                                Response.HrefRelation.MEMBER ->     // it's about a member
-                                    WebDavDocument(mountId = parent.mountId, parentId = parent.id, name = response.hrefName())
+                            Response.HrefRelation.MEMBER ->     // it's about a member
+                                WebDavDocument(mountId = parent.mountId, parentId = parent.id, name = response.hrefName())
 
-                                else -> {
-                                    // we didn't request this; log a warning and ignore it
-                                    logger.warning("Ignoring unexpected $response $relation in $parentUrl")
-                                    return@propfind
-                                }
+                            else -> {
+                                // we didn't request this; log a warning and ignore it
+                                logger.warning("Ignoring unexpected $response $relation in $parentUrl")
+                                return@propfind
                             }
-
-                        val updatedResource = resource.copy(
-                            isDirectory = response[ResourceType::class.java]?.types?.contains(ResourceType.COLLECTION)
-                                ?: resource.isDirectory,
-                            displayName = response[DisplayName::class.java]?.displayName,
-                            mimeType = response[GetContentType::class.java]?.type,
-                            eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
-                            lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
-                            size = response[GetContentLength::class.java]?.contentLength,
-                            mayBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind,
-                            mayUnbind = response[CurrentUserPrivilegeSet::class.java]?.mayUnbind,
-                            mayWriteContent = response[CurrentUserPrivilegeSet::class.java]?.mayWriteContent,
-                            quotaAvailable = response[QuotaAvailableBytes::class.java]?.quotaAvailableBytes,
-                            quotaUsed = response[QuotaUsedBytes::class.java]?.quotaUsedBytes,
-                        )
-
-                        if (resource == parent)
-                            documentDao.update(updatedResource)
-                        else {
-                            documentDao.insertOrUpdate(updatedResource)
-                            newChildrenList[resource.name] = updatedResource
                         }
 
-                        // remove resource from known child nodes, because not found on server
-                        oldChildren.remove(resource.name)
+                    val updatedResource = resource.copy(
+                        isDirectory = response[ResourceType::class.java]?.types?.contains(WebDAV.Collection)
+                            ?: resource.isDirectory,
+                        displayName = response[DisplayName::class.java]?.displayName,
+                        mimeType = response[GetContentType::class.java]?.type?.toMediaTypeOrNull(),
+                        eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
+                        lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
+                        size = response[GetContentLength::class.java]?.contentLength,
+                        mayBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind,
+                        mayUnbind = response[CurrentUserPrivilegeSet::class.java]?.mayUnbind,
+                        mayWriteContent = response[CurrentUserPrivilegeSet::class.java]?.mayWriteContent,
+                        quotaAvailable = response[QuotaAvailableBytes::class.java]?.quotaAvailableBytes,
+                        quotaUsed = response[QuotaUsedBytes::class.java]?.quotaUsedBytes,
+                    )
+
+                    if (resource == parent)
+                        documentDao.update(updatedResource)
+                    else {
+                        documentDao.insertOrUpdate(updatedResource)
+                        newChildrenList[resource.name] = updatedResource
                     }
+
+                    // remove resource from known child nodes, because not found on server
+                    oldChildren.remove(resource.name)
                 }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't query children", e)
             }
+        } catch (e: Exception) {
+            logger.log(Level.WARNING, "Couldn't query children", e)
         }
 
         // Delete child nodes which were not rediscovered (deleted serverside)
@@ -191,15 +192,15 @@ class QueryChildDocumentsOperation @Inject constructor(
     companion object {
 
         val DAV_FILE_FIELDS = arrayOf(
-            ResourceType.NAME,
-            CurrentUserPrivilegeSet.NAME,
-            DisplayName.NAME,
-            GetETag.NAME,
-            GetContentType.NAME,
-            GetContentLength.NAME,
-            GetLastModified.NAME,
-            QuotaAvailableBytes.NAME,
-            QuotaUsedBytes.NAME,
+            WebDAV.ResourceType,
+            WebDAV.CurrentUserPrivilegeSet,
+            WebDAV.DisplayName,
+            WebDAV.GetETag,
+            WebDAV.GetContentType,
+            WebDAV.GetContentLength,
+            WebDAV.GetLastModified,
+            WebDAV.QuotaAvailableBytes,
+            WebDAV.QuotaUsedBytes,
         )
 
         /** List of currently active [queryChildDocuments] runners.

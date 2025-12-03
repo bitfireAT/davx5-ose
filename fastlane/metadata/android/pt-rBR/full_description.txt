@@ -1,0 +1,5 @@
+O DAVx⁵ é um aplicativo de gerenciamento e sincronização de CalDAV/CardDAV para Android que se integra nativamente com aplicativos de calendário e de contatos do Android.
+
+Use-o com o seu próprio servidor ou com um hospedeiro confiado para manter seus contatos, eventos, e tarefas sob seu controle.
+
+Para mais informações, e uma lista de servidores/serviços testados, dê uma olhada no site.

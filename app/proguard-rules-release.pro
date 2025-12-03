@@ -24,3 +24,8 @@
 -dontwarn sun.net.spi.nameservice.NameService
 -dontwarn sun.net.spi.nameservice.NameServiceDescriptor
 -dontwarn org.xbill.DNS.spi.DnsjavaInetAddressResolverProvider
+
+# okhttp
+# https://github.com/bitfireAT/davx5/issues/711 / https://github.com/square/okhttp/issues/8574
+-keep class okhttp3.internal.idn.IdnaMappingTable { *; }
+-keep class okhttp3.internal.idn.IdnaMappingTableInstanceKt{ *; }

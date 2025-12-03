@@ -5,15 +5,16 @@
 package at.bitfire.davdroid.servicedetection
 
 import android.security.NetworkSecurityPolicy
-import at.bitfire.dav4jvm.DavResource
-import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
-import at.bitfire.dav4jvm.property.webdav.ResourceType
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.property.carddav.CardDAV
+import at.bitfire.dav4jvm.property.webdav.WebDAV
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -50,7 +51,7 @@ class DavResourceFinderTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var httpClientBuilder: HttpClient.Builder
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     @Inject
     lateinit var logger: Logger
@@ -59,7 +60,7 @@ class DavResourceFinderTest {
     lateinit var resourceFinderFactory: DavResourceFinder.Factory
 
     private lateinit var server: MockWebServer
-    private lateinit var client: HttpClient
+    private lateinit var client: OkHttpClient
     private lateinit var finder: DavResourceFinder
 
     @Before
@@ -73,7 +74,7 @@ class DavResourceFinderTest {
 
         val credentials = Credentials(username = "mock", password = "12345".toSensitiveString())
         client = httpClientBuilder
-                .authenticate(host = null, getCredentials = { credentials })
+                .authenticate(domain = null, getCredentials = { credentials })
                 .build()
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
 
@@ -83,7 +84,6 @@ class DavResourceFinderTest {
 
     @After
     fun tearDown() {
-        client.close()
         server.shutdown()
     }
 
@@ -92,9 +92,9 @@ class DavResourceFinderTest {
     fun testRememberIfAddressBookOrHomeset() {
         // recognize home set
         var info = ServiceInfo()
-        DavResource(client.okHttpClient, server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL))
-                .propfind(0, AddressbookHomeSet.NAME) { response, _ ->
-            finder.scanResponse(ResourceType.ADDRESSBOOK, response, info)
+        DavResource(client, server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL))
+                .propfind(0, CardDAV.AddressbookHomeSet) { response, _ ->
+            finder.scanResponse(CardDAV.Addressbook, response, info)
         }
         assertEquals(0, info.collections.size)
         assertEquals(1, info.homeSets.size)
@@ -102,9 +102,9 @@ class DavResourceFinderTest {
 
         // recognize address book
         info = ServiceInfo()
-        DavResource(client.okHttpClient, server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK))
-                .propfind(0, ResourceType.NAME) { response, _ ->
-            finder.scanResponse(ResourceType.ADDRESSBOOK, response, info)
+        DavResource(client, server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK))
+                .propfind(0, WebDAV.ResourceType) { response, _ ->
+            finder.scanResponse(CardDAV.Addressbook, response, info)
         }
         assertEquals(1, info.collections.size)
         assertEquals(server.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"), info.collections.keys.first())

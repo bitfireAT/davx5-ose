@@ -408,10 +408,11 @@
   <string name="debug_info_server_error">Serverfout</string>
   <string name="debug_info_webdav_error">WebDAV fout</string>
   <string name="debug_info_io_error">I/O-fout</string>
-  <string name="debug_info_http_403_description">Het verzoek is afgewezen. Controleer de betrokken bronnen en debug-info voor details.</string>
-  <string name="debug_info_http_404_description">De gevraagde bron bestaat niet (meer). Controleer de betrokken bronnen en debug-info voor details.</string>
-  <string name="debug_info_http_5xx_description">Er is bij de server een probleem opgetreden. Neem contact op met de server-ondersteuning.</string>
-  <string name="debug_info_unexpected_error">Er is een onverwachte fout opgetreden. Bekijk debug-info voor details.</string>
+  <string name="debug_info_http_403_description">Het verzoek is door de server afgewezen.</string>
+  <string name="debug_info_http_404_description">De gevraagde bron bestaat niet (meer).</string>
+  <string name="debug_info_http_405_description">De server staat het gevraagde type bewerking niet toe.</string>
+  <string name="debug_info_http_5xx_description">Er deed zich een probleem aan de serverzijde voor. Neem contact op met uw serverondersteuning.</string>
+  <string name="debug_info_unexpected_error">Er is een onverwachte fout opgetreden. Bekijk foutopsporingsinformatie voor details.</string>
   <string name="debug_info_view_details">Details bekijken</string>
   <string name="debug_info_subtitle">Debug-info is verzameld</string>
   <string name="debug_info_involved_caption">Betrokken bronnen</string>
@@ -421,8 +422,11 @@
   <string name="debug_info_logs_caption">Logboeken</string>
   <string name="debug_info_logs_subtitle">Uitgebreide logboeken zijn beschikbaar</string>
   <string name="debug_info_logs_view">Details bekijken</string>
+  <string name="debug_info_copy_remote_url">URL kopiëren</string>
+  <string name="debug_info_view_local_resource">Bron inspecteren</string>
   <string name="debug_info_privacy_warning_title">Privacyverklaring</string>
   <string name="debug_info_privacy_warning_description">Logboeken en foutopsporingsgegevens kunnen privé-informatie bevatten. Houd hier rekening mee als u ze openbaar deelt.</string>
+  <string name="debug_info_can_not_view_resource">Kan bron niet bekijken</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Er is een fout opgetreden.</string>
   <string name="exception_httpexception">Een HTTP-fout is opgetreden.</string>
@@ -463,7 +467,6 @@
   <string name="sync_error_http_dav">HTTP-server fout - %s</string>
   <string name="sync_error_local_storage">Lokale opslag fout - %s</string>
   <string name="sync_error_retry_limit_reached">Soft error (max. aantal pogingen bereikt)</string>
-  <string name="sync_error_view_item">Item bekijken</string>
   <string name="sync_invalid_contact">Ongeldig contact ontvangen van server</string>
   <string name="sync_invalid_event">Ongeldige gebeurtenis ontvangen van server</string>
   <string name="sync_invalid_task">Ongeldige taak ontvangen van server</string>

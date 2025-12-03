@@ -6,15 +6,15 @@ package at.bitfire.davdroid.db
 
 import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
-import at.bitfire.dav4jvm.DavResource
-import at.bitfire.dav4jvm.property.webdav.ResourceType
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.property.webdav.WebDAV
+import at.bitfire.davdroid.network.HttpClientBuilder
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -29,12 +29,12 @@ import javax.inject.Inject
 class CollectionTest {
 
     @Inject
-    lateinit var httpClientBuilder: HttpClient.Builder
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    private lateinit var httpClient: HttpClient
+    private lateinit var httpClient: OkHttpClient
     private val server = MockWebServer()
 
     @Before
@@ -43,11 +43,6 @@ class CollectionTest {
 
         httpClient = httpClientBuilder.build()
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
-    }
-
-    @After
-    fun teardown() {
-        httpClient.close()
     }
 
 
@@ -69,8 +64,8 @@ class CollectionTest {
                         "</multistatus>"))
 
         lateinit var info: Collection
-        DavResource(httpClient.okHttpClient, server.url("/"))
-                .propfind(0, ResourceType.NAME) { response, _ ->
+        DavResource(httpClient, server.url("/"))
+                .propfind(0, WebDAV.ResourceType) { response, _ ->
             info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
         }
         assertEquals(Collection.TYPE_ADDRESSBOOK, info.type)
@@ -125,8 +120,8 @@ class CollectionTest {
                     "</multistatus>"))
 
         lateinit var info: Collection
-        DavResource(httpClient.okHttpClient, server.url("/"))
-            .propfind(0, ResourceType.NAME) { response, _ ->
+        DavResource(httpClient, server.url("/"))
+            .propfind(0, WebDAV.ResourceType) { response, _ ->
                 info = Collection.fromDavResponse(response)!!
             }
         assertEquals(Collection.TYPE_CALENDAR, info.type)
@@ -161,8 +156,8 @@ class CollectionTest {
                     "</multistatus>"))
 
         lateinit var info: Collection
-        DavResource(httpClient.okHttpClient, server.url("/"))
-            .propfind(0, ResourceType.NAME) { response, _ ->
+        DavResource(httpClient, server.url("/"))
+            .propfind(0, WebDAV.ResourceType) { response, _ ->
                 info = Collection.fromDavResponse(response)!!
             }
         assertEquals(Collection.TYPE_CALENDAR, info.type)
@@ -195,8 +190,8 @@ class CollectionTest {
                         "</multistatus>"))
 
         lateinit var info: Collection
-        DavResource(httpClient.okHttpClient, server.url("/"))
-                .propfind(0, ResourceType.NAME) { response, _ ->
+        DavResource(httpClient, server.url("/"))
+                .propfind(0, WebDAV.ResourceType) { response, _ ->
                     info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
                 }
         assertEquals(Collection.TYPE_WEBCAL, info.type)

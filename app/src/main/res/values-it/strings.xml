@@ -350,10 +350,6 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="debug_info_server_error">Errore del Server</string>
   <string name="debug_info_webdav_error">Errore WebDAV</string>
   <string name="debug_info_io_error">Errore I/O</string>
-  <string name="debug_info_http_403_description">La richiesta è stata negata. Controlla le fonti coinvolte e le informazioni debug per dettagli.</string>
-  <string name="debug_info_http_404_description">La fonte richiesta non esiste (più). Controlla le fonti coinvolte e le informazioni debug per dettagli.</string>
-  <string name="debug_info_http_5xx_description">Si è verificato un problema del server. Per favore contatta il tuo server di supporto.</string>
-  <string name="debug_info_unexpected_error">Si è verificato un errore inaspettato. Vedi le informazioni di debug per maggiori dettagli.</string>
   <string name="debug_info_view_details">Vedi dettagli</string>
   <string name="debug_info_subtitle">Sono state raccolte informazioni di debug</string>
   <string name="debug_info_involved_caption">Fonti coinvolte</string>
@@ -363,6 +359,7 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="debug_info_logs_caption">Registri</string>
   <string name="debug_info_logs_subtitle">Sono disponibili registri verbali</string>
   <string name="debug_info_logs_view">Vedi i registri</string>
+  <string name="debug_info_copy_remote_url">Copia URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Si è verificato un errore.</string>
   <string name="exception_httpexception">Si è verificato un errore HTTP.</string>
@@ -398,7 +395,6 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="sync_error_io">Errore di rete o di I/O – %s</string>
   <string name="sync_error_http_dav">Errore server HTTP – %s</string>
   <string name="sync_error_local_storage">Errore di archiviazione locale – %s</string>
-  <string name="sync_error_view_item">Visualizza oggetto</string>
   <string name="sync_invalid_contact">Contatto non valido ricevuto dal server</string>
   <string name="sync_invalid_event">Evento non valido ricevuto dal server</string>
   <string name="sync_invalid_task">Attività non valida ricevuta dal server</string>

@@ -72,7 +72,7 @@ class TaskSyncer @AssistedInject constructor(
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
             account,
-            httpClient.value,
+            httpClient,
             syncResult,
             localCollection,
             remoteCollection,

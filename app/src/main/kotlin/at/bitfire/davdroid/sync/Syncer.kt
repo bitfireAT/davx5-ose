@@ -11,12 +11,13 @@ import android.os.DeadObjectException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.ServiceType
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.runBlocking
 import java.util.logging.Level
@@ -47,7 +48,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     lateinit var collectionRepository: DavCollectionRepository
 
     @Inject
-    lateinit var httpClientBuilder: HttpClient.Builder
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     @Inject
     lateinit var logger: Logger
@@ -65,7 +66,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         syncNotificationManagerFactory.create(account)
     }
 
-    val httpClient = lazy {
+    val httpClient by lazy {
         httpClientBuilder.fromAccount(account).build()
     }
 
@@ -259,22 +260,30 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 if (runSync)
                     sync(provider)
                 Unit
-            } catch (e: DeadObjectException) {
-                /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)
-                is suddenly forbidden because our sync process was demoted from a "service process" to a "cached process". */
-                logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
-                syncResult.numDeadObjectExceptions++
-
-            } catch (e: InvalidAccountException) {
-                logger.log(Level.WARNING, "Account was removed during synchronization", e)
 
             } catch (e: Exception) {
-                logger.log(Level.SEVERE, "Couldn't sync ${dataStore.authority}", e)
-                syncResult.numUnclassifiedErrors++ // Hard sync error
+                /* Handle sync exceptions. Note that most exceptions that occur during synchronization of a specific
+                collection are already handled in SyncManager. The exceptions here usually
+                - have occurred during Syncer operation (for instance when creating/deleting local collections),
+                - or have been re-thrown from SyncManager (like the wrapped DeadObjectException). */
+                when (e) {
+                    /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)
+                    is suddenly forbidden because our sync process was demoted from a "service process" to a "cached process". */
+                    is LocalStorageException if e.cause is DeadObjectException -> {
+                        logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
+                        syncResult.numDeadObjectExceptions++
+                    }
+
+                    is InvalidAccountException ->
+                        logger.log(Level.WARNING, "Account was removed during synchronization", e)
+
+                    else -> {
+                        logger.log(Level.SEVERE, "Couldn't sync ${dataStore.authority}", e)
+                        syncResult.numUnclassifiedErrors++ // Hard sync error
+                    }
+                }
 
             } finally {
-                if (httpClient.isInitialized())
-                    httpClient.value.close()
                 logger.info("${dataStore.authority} sync of $account finished")
             }
         }

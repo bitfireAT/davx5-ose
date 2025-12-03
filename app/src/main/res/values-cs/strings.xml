@@ -357,10 +357,6 @@
   <string name="debug_info_server_error">Chyba serveru</string>
   <string name="debug_info_webdav_error">Chyba WebDAV</string>
   <string name="debug_info_io_error">Chyba vstupu/výstupu</string>
-  <string name="debug_info_http_403_description">Požadavek byl odepřen. Podrobnosti naleznete v souvisejících prostředcích a ladících informacích.</string>
-  <string name="debug_info_http_404_description">Požadovaný prostředek (už) neexistuje. Podrobnosti naleznete v souvisejících prostředcích a ladících informacích.</string>
-  <string name="debug_info_http_5xx_description">Došlo k problému na straně serveru. Obraťte se na podporu serveru, který využíváte.</string>
-  <string name="debug_info_unexpected_error">Došlo k neočekávané chybě. Podrobnosti naleznete v ladících informacích.</string>
   <string name="debug_info_view_details">Zobrazit podrobnosti</string>
   <string name="debug_info_subtitle">Ladící informace byly shromážděny</string>
   <string name="debug_info_involved_caption">Prostředky, kterých se týká</string>
@@ -370,6 +366,7 @@
   <string name="debug_info_logs_caption">Záznamy událostí</string>
   <string name="debug_info_logs_subtitle">Jsou k dispozici podrobnější záznamy událostí</string>
   <string name="debug_info_logs_view">Zobrazit záznamy událostí</string>
+  <string name="debug_info_copy_remote_url">Zkopírovat URL adresu</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Došlo k chybě.</string>
   <string name="exception_httpexception">Došlo k HTTP chybě.</string>
@@ -406,7 +403,6 @@
   <string name="sync_error_http_dav">Chyba HTTP serveru – %s</string>
   <string name="sync_error_local_storage">Chyba místního úložiště – %s</string>
   <string name="sync_error_retry_limit_reached">Lehká chyba (maximální počet pokusů dosažen)</string>
-  <string name="sync_error_view_item">Zobrazit položku</string>
   <string name="sync_invalid_contact">Ze serveru obdržen neplaný kontakt</string>
   <string name="sync_invalid_event">Ze serveru obdržena neplatná událost</string>
   <string name="sync_invalid_task">Ze serveru obdržen neplatný úkol</string>

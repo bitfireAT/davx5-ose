@@ -6,24 +6,24 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.text.format.Formatter
-import at.bitfire.dav4jvm.DavCalendar
-import at.bitfire.dav4jvm.MultiResponseCallback
-import at.bitfire.dav4jvm.Response
-import at.bitfire.dav4jvm.exception.DavException
+import at.bitfire.dav4jvm.okhttp.DavCalendar
+import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
+import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.okhttp.exception.DavException
+import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
-import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.exception.InvalidICalendarException
@@ -32,8 +32,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
+import net.fortuna.ical4j.model.property.ProdId
 import okhttp3.HttpUrl
-import okhttp3.RequestBody
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.Reader
@@ -45,7 +46,7 @@ import java.util.logging.Level
  */
 class TasksSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted httpClient: HttpClient,
+    @Assisted httpClient: OkHttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTaskList,
     @Assisted collection: Collection,
@@ -66,7 +67,7 @@ class TasksSyncManager @AssistedInject constructor(
     interface Factory {
         fun tasksSyncManager(
             account: Account,
-            httpClient: HttpClient,
+            httpClient: OkHttpClient,
             syncResult: SyncResult,
             localCollection: LocalTaskList,
             collection: Collection,
@@ -76,7 +77,7 @@ class TasksSyncManager @AssistedInject constructor(
 
 
     override fun prepare(): Boolean {
-        davCollection = DavCalendar(httpClient.okHttpClient, collection.url)
+        davCollection = DavCalendar(httpClient, collection.url)
 
         return true
     }
@@ -85,7 +86,7 @@ class TasksSyncManager @AssistedInject constructor(
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
             runInterruptible {
-                davCollection.propfind(0, MaxResourceSize.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
                         response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                             logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
@@ -101,16 +102,27 @@ class TasksSyncManager @AssistedInject constructor(
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
-    override fun generateUpload(resource: LocalTask): RequestBody =
-        SyncException.wrapWithLocalResource(resource) {
-            val task = requireNotNull(resource.task)
-            logger.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
+    override fun generateUpload(resource: LocalTask): GeneratedResource {
+        val task = requireNotNull(resource.task)
+        logger.log(Level.FINE, "Preparing upload of task ${resource.id}", task)
 
-            val os = ByteArrayOutputStream()
-            task.write(os, Constants.iCalProdId)
-
-            os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+        // get/create UID
+        val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(task.uid)
+        if (uidIsGenerated) {
+            // modify in Task and persist to tasks provider
+            task.uid = uid
+            resource.updateUid(uid)
         }
+
+        // generate iCalendar and convert to request body
+        val os = ByteArrayOutputStream()
+        task.write(os, ProdId(Constants.iCalProdId))
+
+        return GeneratedResource(
+            suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
+            requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+        )
+    }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {

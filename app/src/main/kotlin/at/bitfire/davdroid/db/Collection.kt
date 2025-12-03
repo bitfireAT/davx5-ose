@@ -10,8 +10,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.dav4jvm.Response
-import at.bitfire.dav4jvm.UrlUtils
+import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.okhttp.UrlUtils
+import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarColor
 import at.bitfire.dav4jvm.property.caldav.CalendarDescription
 import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
@@ -19,6 +20,7 @@ import at.bitfire.dav4jvm.property.caldav.CalendarTimezoneId
 import at.bitfire.dav4jvm.property.caldav.Source
 import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
 import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
+import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.push.PushTransports
 import at.bitfire.dav4jvm.property.push.Topic
 import at.bitfire.dav4jvm.property.push.WebPush
@@ -166,9 +168,9 @@ data class Collection(
             val url = UrlUtils.withTrailingSlash(dav.href)
             val type: String = dav[ResourceType::class.java]?.let { resourceType ->
                 when {
-                    resourceType.types.contains(ResourceType.ADDRESSBOOK) -> TYPE_ADDRESSBOOK
-                    resourceType.types.contains(ResourceType.CALENDAR)    -> TYPE_CALENDAR
-                    resourceType.types.contains(ResourceType.SUBSCRIBED)  -> TYPE_WEBCAL
+                    resourceType.types.contains(CardDAV.Addressbook) -> TYPE_ADDRESSBOOK
+                    resourceType.types.contains(CalDAV.Calendar)     -> TYPE_CALENDAR
+                    resourceType.types.contains(CalDAV.Subscribed)   -> TYPE_WEBCAL
                     else -> null
                 }
             } ?: return null

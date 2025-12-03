@@ -4,11 +4,16 @@
 
 package at.bitfire.davdroid.resource
 
+import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
+import android.net.Uri
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
+import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
+import android.provider.ContactsContract.RawContacts.getContactLookupUri
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.resource.contactrow.CachedGroupMembershipHandler
 import at.bitfire.davdroid.resource.contactrow.GroupMembershipBuilder
@@ -22,16 +27,16 @@ import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidContactFactory
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
+import com.google.common.base.MoreObjects
 import java.io.FileNotFoundException
 import java.util.Optional
-import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 class LocalContact: AndroidContact, LocalAddress {
 
     companion object {
-        const val COLUMN_FLAGS = ContactsContract.RawContacts.SYNC4
-        const val COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3
+        const val COLUMN_FLAGS = RawContacts.SYNC4
+        const val COLUMN_HASHCODE = RawContacts.SYNC3
     }
 
     override val addressBook: LocalAddressBook
@@ -63,25 +68,6 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
 
-    override fun prepareForUpload(): String {
-        val contact = getContact()
-        val uid: String = contact.uid ?: run {
-            // generate new UID
-            val newUid = UUID.randomUUID().toString()
-
-            // update in contacts provider
-            val values = contentValuesOf(COLUMN_UID to newUid)
-            addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
-
-            // update this event
-            contact.uid = newUid
-
-            newUid
-        }
-
-        return "$uid.vcf"
-    }
-
     /**
      * Clears cached [contact] so that the next read of [contact] will query the content provider again.
      */
@@ -97,7 +83,7 @@ class LocalContact: AndroidContact, LocalAddress {
         if (fileName.isPresent)
             values.put(COLUMN_FILENAME, fileName.get())
         values.put(COLUMN_ETAG, eTag)
-        values.put(ContactsContract.RawContacts.DIRTY, 0)
+        values.put(RawContacts.DIRTY, 0)
 
         // Android 7 workaround
         addressBook.dirtyVerifier.getOrNull()?.setHashCodeColumn(this, values)
@@ -110,7 +96,7 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
     fun resetDirty() {
-        val values = contentValuesOf(ContactsContract.RawContacts.DIRTY to 0)
+        val values = contentValuesOf(RawContacts.DIRTY to 0)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
@@ -130,6 +116,13 @@ class LocalContact: AndroidContact, LocalAddress {
         this.flags = flags
     }
 
+    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+
+    override fun updateUid(uid: String) {
+        val values = contentValuesOf(COLUMN_UID to uid)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+    }
+
     override fun deleteLocal() {
         delete()
     }
@@ -138,6 +131,30 @@ class LocalContact: AndroidContact, LocalAddress {
         val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
+
+    override fun getDebugSummary() =
+        MoreObjects.toStringHelper(this)
+            .add("id", id)
+            .add("fileName", fileName)
+            .add("eTag", eTag)
+            .add("flags", flags)
+            /*.add("contact",
+                try {
+                    // too dangerous, may contain unknown properties and cause another OOM
+                    Ascii.truncate(getContact().toString(), 1000, "…")
+                } catch (e: Exception) {
+                    e
+                }
+            )*/
+            .toString()
+
+    override fun getViewUri(context: Context): Uri? =
+        id?.let { idNotNull ->
+            getContactLookupUri(
+                context.contentResolver,
+                ContentUris.withAppendedId(RawContacts.CONTENT_URI, idNotNull)
+            )
+        }
 
 
     fun addToGroup(batch: ContactsBatchOperation, groupID: Long) {
@@ -198,6 +215,7 @@ class LocalContact: AndroidContact, LocalAddress {
         builder.withValue(COLUMN_FLAGS, flags)
         super.buildContact(builder, update)
     }
+
 
     // factory
 

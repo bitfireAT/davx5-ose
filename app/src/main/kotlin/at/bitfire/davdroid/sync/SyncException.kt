@@ -18,12 +18,12 @@ class SyncException(cause: Throwable) : Exception(cause) {
 
         // provide lambda wrappers for setting the local/remote resource
 
-        fun <T> wrapWithLocalResource(localResource: LocalResource<*>?, body: () -> T): T =
+        fun <T> wrapWithLocalResource(localResource: LocalResource?, body: () -> T): T =
             runBlocking {
                 wrapWithLocalResourceSuspending(localResource, body)
             }
 
-        suspend fun <T> wrapWithLocalResourceSuspending(localResource: LocalResource<*>?, body: suspend () -> T): T {
+        suspend fun <T> wrapWithLocalResourceSuspending(localResource: LocalResource?, body: suspend () -> T): T {
             try {
                 return body()
             } catch (e: SyncException) {
@@ -68,12 +68,12 @@ class SyncException(cause: Throwable) : Exception(cause) {
     }
 
 
-    var localResource: LocalResource<*>? = null
+    var localResource: LocalResource? = null
         private set
     var remoteResource: HttpUrl? = null
         private set
 
-    fun setLocalResourceIfNull(local: LocalResource<*>): SyncException {
+    fun setLocalResourceIfNull(local: LocalResource): SyncException {
         if (localResource == null)
             localResource = local
 

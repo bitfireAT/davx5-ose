@@ -357,10 +357,6 @@
   <string name="debug_info_server_error">სერვერის შეცდომა</string>
   <string name="debug_info_webdav_error">WebDAV შეცდომა</string>
   <string name="debug_info_io_error">წაკითხვა/ჩაწერის შეცდომა</string>
-  <string name="debug_info_http_403_description">ეს მოთხოვნა იქნა უარყოფილი. შეამოწმეთ შესაბამისი რესურსები და დებაგის ინფო დეტალებისთვის.</string>
-  <string name="debug_info_http_404_description">მოთხოვნილი რესურსი (აღარ) არსებობს. შეამოწმეთ შესაბამისი რესურსები და დებაგის ინფო დეტალებისთვის.</string>
-  <string name="debug_info_http_5xx_description">მოხდა პრობლემა სერვერის მხარეს. გთხოვთ, დაუკავშირდეთ თქვენს სერვერის მხარდაჭერას.</string>
-  <string name="debug_info_unexpected_error">მოხდა მოულოდნელი შეცდომა. იხილეთ დებაგის ინფო დეტალებისთვის.</string>
   <string name="debug_info_view_details">დეტალების ნახვა</string>
   <string name="debug_info_subtitle">დებაგის ინფო შეგროვდა</string>
   <string name="debug_info_involved_caption">შესაბამისი რესურსები</string>
@@ -406,7 +402,6 @@
   <string name="sync_error_http_dav">HTTP სერვერის შეცდომა - %s</string>
   <string name="sync_error_local_storage">ადგილობრივი მეხსიერების შეცდომა - %s</string>
   <string name="sync_error_retry_limit_reached">რბილის შეცდომა (მიღწეულია თავიდან ცდის მაწსიმუმი)</string>
-  <string name="sync_error_view_item">ჩანაწერის ნახვა</string>
   <string name="sync_invalid_contact">მიღებულია არასწორი კონტაქტი სერვერიდან</string>
   <string name="sync_invalid_event">მიღებულია არასწორი ღონისძიება სერვერიდან</string>
   <string name="sync_invalid_task">მიღებული არასწორი დავალება სერვერიდან</string>

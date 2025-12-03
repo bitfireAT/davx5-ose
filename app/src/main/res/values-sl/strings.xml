@@ -185,6 +185,7 @@
   <string name="collection_description">Opis</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informacije razhroščevalnika</string>
+  <string name="debug_info_copy_remote_url">Kopiraj URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Zgodila se je napaka</string>
   <string name="exception_httpexception">Zgodila se je HTTP napaka.</string>
@@ -201,7 +202,6 @@
   <string name="sync_error_io">Omrežna ali I/O napaka -- %s</string>
   <string name="sync_error_http_dav">HTTP strežniška napaka -- %s</string>
   <string name="sync_error_local_storage">Napaka lokalne shrambe -- %s</string>
-  <string name="sync_error_view_item">Prikaži predmet</string>
   <string name="sync_invalid_contact">S strežnika so bili prejeti neveljavni kontakti</string>
   <string name="sync_invalid_event">S strežnika so bili prejeti neveljavni dogodki</string>
   <string name="sync_invalid_task">S strežnika so bili prejeti neveljavni dogodki</string>

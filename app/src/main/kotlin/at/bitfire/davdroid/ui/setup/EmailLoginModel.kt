@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -28,18 +29,19 @@ class EmailLoginModel @AssistedInject constructor(
 
     data class UiState(
         val email: String = "",
-        val password: String = ""
+        val password: TextFieldState = TextFieldState()
     ) {
         val uri = "mailto:$email".toURIorNull()
 
-        val canContinue = uri != null && password.isNotEmpty()
+        val canContinue     // we have to use get() because password is not immutable
+            get() = uri != null && password.text.toString().isNotEmpty()
 
         fun asLoginInfo(): LoginInfo {
             return LoginInfo(
                 baseUri = uri,
                 credentials = Credentials(
                     username = email,
-                    password = password.toSensitiveString()
+                    password = password.text.toSensitiveString()
                 )
             )
         }
@@ -51,16 +53,12 @@ class EmailLoginModel @AssistedInject constructor(
     init {
         uiState = uiState.copy(
             email = initialLoginInfo.credentials?.username ?: "",
-            password = initialLoginInfo.credentials?.password?.asString() ?: ""
+            password = TextFieldState(initialLoginInfo.credentials?.password?.asString() ?: "")
         )
     }
 
     fun setEmail(email: String) {
         uiState = uiState.copy(email = email)
-    }
-
-    fun setPassword(password: String) {
-        uiState = uiState.copy(password = password)
     }
 
 }

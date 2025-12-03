@@ -378,10 +378,6 @@
   <string name="debug_info_server_error">Erreur Serveur</string>
   <string name="debug_info_webdav_error">Erreur WebDAV</string>
   <string name="debug_info_io_error">Erreur d\'entrée/sortie</string>
-  <string name="debug_info_http_403_description">La demande a été rejetée. Vérifiez les ressources impliquées et les informations de débogage pour plus de détails.</string>
-  <string name="debug_info_http_404_description">La ressource demandée n\'existe plus. Vérifiez les ressources concernées et les informations de débogage pour plus de détails.</string>
-  <string name="debug_info_http_5xx_description">Un problème s\'est produit côté serveur. Veuillez contacter le support de votre serveur.</string>
-  <string name="debug_info_unexpected_error">Une erreur inattendue s\'est produite. Voir les informations de débogage pour plus de détails.</string>
   <string name="debug_info_view_details">Voir les détails</string>
   <string name="debug_info_subtitle">Les informations de débogage ont été collectées</string>
   <string name="debug_info_involved_caption">Ressources impliquées</string>
@@ -391,6 +387,7 @@
   <string name="debug_info_logs_caption">Journaux</string>
   <string name="debug_info_logs_subtitle">Des journaux verbeux sont disponibles</string>
   <string name="debug_info_logs_view">Voir les journaux</string>
+  <string name="debug_info_copy_remote_url">Copier l\'URL</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Une erreur est survenue.</string>
   <string name="exception_httpexception">Une erreur HTTP est survenue.</string>
@@ -427,7 +424,6 @@
   <string name="sync_error_http_dav">Erreur de serveur HTTP - %s</string>
   <string name="sync_error_local_storage">Erreur de stockage local - %s</string>
   <string name="sync_error_retry_limit_reached">Erreur logicielle (nombre maximum de tentatives atteint)</string>
-  <string name="sync_error_view_item">Voir l\'élément</string>
   <string name="sync_invalid_contact">Reçu un contact invalide du serveur</string>
   <string name="sync_invalid_event">Reçu un événement invalide du serveur</string>
   <string name="sync_invalid_task">Reçu une tâche invalide du serveur</string>

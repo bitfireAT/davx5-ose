@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -30,7 +31,7 @@ class UrlLoginModel @AssistedInject constructor(
     data class UiState(
         val url: String = "",
         val username: String = "",
-        val password: String = ""
+        val password: TextFieldState = TextFieldState()
     ) {
 
         val urlWithPrefix =
@@ -40,14 +41,15 @@ class UrlLoginModel @AssistedInject constructor(
                 "https://$url"
         val uri = urlWithPrefix.trim().toURIorNull()
 
-        val canContinue = uri != null && username.isNotEmpty() && password.isNotEmpty()
+        val canContinue     // we have to use get() because password is not immutable
+            get() = uri != null && username.isNotEmpty() && password.text.toString().isNotEmpty()
 
         fun asLoginInfo(): LoginInfo =
             LoginInfo(
                 baseUri = uri,
                 credentials = Credentials(
                     username = username.trimToNull(),
-                    password = password.trimToNull()?.toSensitiveString()
+                    password = password.text.toString().trimToNull()?.toSensitiveString()
                 )
             )
 
@@ -60,7 +62,7 @@ class UrlLoginModel @AssistedInject constructor(
         uiState = UiState(
             url = initialLoginInfo.baseUri?.toString()?.removePrefix("https://") ?: "",
             username = initialLoginInfo.credentials?.username ?: "",
-            password = initialLoginInfo.credentials?.password?.asString() ?: ""
+            password = TextFieldState(initialLoginInfo.credentials?.password?.asString() ?: "")
         )
     }
 
@@ -70,10 +72,6 @@ class UrlLoginModel @AssistedInject constructor(
 
     fun setUsername(username: String) {
         uiState = uiState.copy(username = username)
-    }
-
-    fun setPassword(password: String) {
-        uiState = uiState.copy(password = password)
     }
 
 }
