@@ -10,6 +10,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.DmfsTask
+import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
 import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -46,6 +47,12 @@ class LocalTask(
 
     override val flags: Int
         get() = dmfsTask.flags
+
+    fun add() = dmfsTask.add()
+
+    fun update(data: Task) = dmfsTask.update(data)
+
+    fun delete() = dmfsTask.delete()
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)

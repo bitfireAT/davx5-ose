@@ -25,6 +25,7 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.exception.InvalidICalendarException
 import dagger.assisted.Assisted
@@ -103,7 +104,7 @@ class TasksSyncManager @AssistedInject constructor(
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
     override fun generateUpload(resource: LocalTask): GeneratedResource {
-        val task = requireNotNull(resource.task)
+        val task = requireNotNull(resource.dmfsTask.task)
         logger.log(Level.FINE, "Preparing upload of task ${resource.id}", task)
 
         // get/create UID
@@ -191,7 +192,7 @@ class TasksSyncManager @AssistedInject constructor(
                     local.update(newData)
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local task list", newData)
-                    val newLocal = LocalTask(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                    val newLocal = LocalTask(DmfsTask(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT))
                     SyncException.wrapWithLocalResource(newLocal) {
                         newLocal.add()
                     }

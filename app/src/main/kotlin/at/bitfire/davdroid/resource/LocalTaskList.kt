@@ -26,7 +26,7 @@ class LocalTaskList private constructor(
     provider: ContentProviderClient,
     providerName: TaskProvider.ProviderName,
     id: Long
-): DmfsTaskList<LocalTask>(account, provider, providerName, LocalTask.Factory, id), LocalCollection<LocalTask> {
+): DmfsTaskList(account, provider, providerName, id), LocalCollection<LocalTask> {
 
     private val logger = Logger.getGlobal()
 
@@ -51,10 +51,11 @@ class LocalTaskList private constructor(
         }
 
     override fun findDeleted() = queryTasks(Tasks._DELETED, null)
+        .map { LocalTask(it) }
 
     override fun findDirty(): List<LocalTask> {
-        val tasks = queryTasks(Tasks._DIRTY, null)
-        for (localTask in tasks) {
+        val dmfsTasks = queryTasks(Tasks._DIRTY, null)
+        for (localTask in dmfsTasks) {
             try {
                 val task = requireNotNull(localTask.task)
                 val sequence = task.sequence
@@ -66,11 +67,14 @@ class LocalTaskList private constructor(
                 logger.log(Level.WARNING, "Couldn't check/increase sequence", e)
             }
         }
-        return tasks
+        return dmfsTasks.map { LocalTask(it) }
     }
 
     override fun findByName(name: String) =
-            queryTasks("${Tasks._SYNC_ID}=?", arrayOf(name)).firstOrNull()
+        queryTasks("${Tasks._SYNC_ID}=?", arrayOf(name))
+            .firstOrNull()?.let {
+                LocalTask(it)
+            }
 
 
     override fun markNotDirty(flags: Int): Int {
