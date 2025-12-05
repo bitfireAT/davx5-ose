@@ -20,7 +20,7 @@ androidx-test-junit = "1.3.0"
 androidx-work = "2.11.0"
 bitfire-cert4android = "42d883e958"
 bitfire-dav4jvm = "acd9bca096"
-bitfire-synctools = "ad0c68d820"
+bitfire-synctools = "5fb54ec88c"
 compose-accompanist = "0.37.3"
 compose-bom = "2025.11.01"
 conscrypt = "2.5.3"
@@ -74,7 +74,7 @@ androidx-work-base = { module = "androidx.work:work-runtime-ktx", version.ref = 
 androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
 bitfire-cert4android = { module = "com.github.bitfireat:cert4android", version.ref = "bitfire-cert4android" }
 bitfire-dav4jvm = { module = "com.github.bitfireat:dav4jvm", version.ref = "bitfire-dav4jvm" }
-bitfire-synctools = { module = "com.github.bitfireat:synctools", version.ref = "bitfire-synctools" }
+bitfire-synctools = { module = "com.github.bitfireAT:synctools", version.ref = "bitfire-synctools" }
 commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
