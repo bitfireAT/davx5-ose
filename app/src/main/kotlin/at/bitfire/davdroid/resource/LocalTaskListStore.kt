@@ -28,6 +28,7 @@ import org.dmfs.tasks.contract.TaskContract.TaskLists
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 class LocalTaskListStore @AssistedInject constructor(
     @Assisted private val providerName: TaskProvider.ProviderName,
@@ -56,13 +57,13 @@ class LocalTaskListStore @AssistedInject constructor(
             /* return */ null
     }
 
-    override fun create(provider: ContentProviderClient, fromCollection: Collection): LocalTaskList? {
+    override fun create(client: ContentProviderClient, fromCollection: Collection): LocalTaskList? {
         val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
         logger.log(Level.INFO, "Adding local task list", fromCollection)
-        val uri = create(account, provider, providerName, fromCollection)
-        return DmfsTaskList.findByID(account, provider, providerName, LocalTaskList.Factory, ContentUris.parseId(uri))
+        val uri = create(account, client, providerName, fromCollection)
+        return DmfsTaskList.findByID(account, client, providerName, LocalTaskList.Factory, ContentUris.parseId(uri))
     }
 
     private fun create(account: Account, provider: ContentProviderClient, providerName: TaskProvider.ProviderName, fromCollection: Collection): Uri {
@@ -100,21 +101,21 @@ class LocalTaskListStore @AssistedInject constructor(
         return values
     }
 
-    override fun getAll(account: Account, provider: ContentProviderClient) =
-        DmfsTaskList.find(account, LocalTaskList.Factory, provider, providerName, null, null)
+    override fun getAll(account: Account, client: ContentProviderClient) =
+        DmfsTaskList.find(account, LocalTaskList.Factory, client, providerName, null, null)
 
-    override fun update(provider: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
+    override fun update(client: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list ${fromCollection.url}", fromCollection)
         val accountSettings = accountSettingsFactory.create(localCollection.account)
         localCollection.update(valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors()))
     }
 
-    override fun updateAccount(oldAccount: Account, newAccount: Account) {
-        TaskProvider.acquire(context, providerName)?.use { provider ->
-            val values = contentValuesOf(Tasks.ACCOUNT_NAME to newAccount.name)
-            val uri = Tasks.getContentUri(providerName.authority)
-            provider.client.update(uri, values, "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
-        }
+    override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?) {
+        if (client == null)
+            return
+        val values = contentValuesOf(Tasks.ACCOUNT_NAME to newAccount.name)
+        val uri = Tasks.getContentUri(providerName.authority)
+        client.update(uri, values, "${Tasks.ACCOUNT_NAME}=?", arrayOf(oldAccount.name))
     }
 
     override fun delete(localCollection: LocalTaskList) {

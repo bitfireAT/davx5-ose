@@ -24,10 +24,13 @@ import at.bitfire.dav4jvm.okhttp.exception.NotFoundException
 import at.bitfire.dav4jvm.okhttp.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.okhttp.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.okhttp.exception.UnauthorizedException
+import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
+import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
@@ -62,19 +65,19 @@ import javax.net.ssl.SSLHandshakeException
 /**
  * Synchronizes a local collection with a remote collection.
  *
- * @param ResourceType      type of local resources
+ * @param LocalType         type of local resources
  * @param CollectionType    type of local collection
  * @param RemoteType        type of remote collection
  *
- * @param account               account to synchronize
- * @param httpClient            HTTP client to use for network requests, already authenticated with credentials from [account]
- * @param dataType              data type to synchronize
- * @param syncResult            receiver for result of the synchronization (will be updated by [performSync])
- * @param localCollection       local collection to synchronize (interface to content provider)
- * @param collection            collection info in the database
- * @param resync                whether re-synchronization is requested
+ * @param account           account to synchronize
+ * @param httpClient        HTTP client to use for network requests, already authenticated with credentials from [account]
+ * @param dataType          data type to synchronize
+ * @param syncResult        receiver for result of the synchronization (will be updated by [performSync])
+ * @param localCollection   local collection to synchronize (interface to content provider)
+ * @param collection        collection info in the database
+ * @param resync            whether re-synchronization is requested
  */
-abstract class SyncManager<ResourceType: LocalResource, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
+abstract class SyncManager<LocalType: LocalResource, out CollectionType: LocalCollection<LocalType>, RemoteType: DavCollection>(
     val account: Account,
     val httpClient: OkHttpClient,
     val dataType: SyncDataType,
@@ -209,7 +212,7 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
                                     syncState = SyncState.fromSyncToken(result.first, initialSync)
                                     furtherChanges = result.second
                                 } catch (e: HttpException) {
-                                    if (e.errors.contains(Error.VALID_SYNC_TOKEN)) {
+                                    if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
                                         logger.info("Sync token invalid, performing initial sync")
                                         initialSync = true
                                         resetPresentRemotely()
@@ -387,7 +390,7 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
      * @param forceAsNew    whether the ETag (and Schedule-Tag) of [local] are ignored and the resource
      *                      is created as a new resource on the server
      */
-    protected open suspend fun uploadDirty(local: ResourceType, forceAsNew: Boolean = false) {
+    protected open suspend fun uploadDirty(local: LocalType, forceAsNew: Boolean = false) {
         val existingFileName = local.fileName
 
         val upload = generateUpload(local)
@@ -451,7 +454,7 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
                 is ForbiddenException -> {
                     // HTTP 403 Forbidden
                     // If and only if the upload failed because of missing permissions, treat it like 412.
-                    if (ex.errors.contains(Error.NEED_PRIVILEGES))
+                    if (ex.errors.contains(Error(WebDAV.NeedPrivileges)))
                         logger.log(Level.INFO, "Couldn't upload because of missing permissions, ignoring", ex)
                     else
                         throw e
@@ -490,7 +493,7 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
      * @return iCalendar or vCard (content + Content-Type) that can be uploaded to the server
      */
     @VisibleForTesting
-    internal abstract fun generateUpload(resource: ResourceType): GeneratedResource
+    internal abstract fun generateUpload(resource: LocalType): GeneratedResource
 
     /**
      * Called after a successful upload (either of a new or an updated resource) so that the local
@@ -503,7 +506,7 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
      * @param context       properties that have been generated before the upload and that shall be persisted by this method
      */
     private fun onSuccessfulUpload(
-        local: ResourceType,
+        local: LocalType,
         newFileName: String,
         eTag: String?,
         scheduleTag: String?,
@@ -612,7 +615,7 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
                     return@listRemote
 
                 // ignore collections
-                if (response[at.bitfire.dav4jvm.property.webdav.ResourceType::class.java]?.types?.contains(at.bitfire.dav4jvm.property.webdav.ResourceType.COLLECTION) == true)
+                if (response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true)
                     return@listRemote
 
                 val name = response.hrefName()
@@ -670,7 +673,7 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
             davCollection.reportChanges(
                 syncState?.takeIf { syncState.type == SyncState.Type.SYNC_TOKEN }?.value,
                 false, null,
-                GetETag.NAME
+                WebDAV.GetETag
             ) { response, relation ->
                 when (relation) {
                     Response.HrefRelation.SELF ->
@@ -747,7 +750,7 @@ abstract class SyncManager<ResourceType: LocalResource, out CollectionType: Loca
     private suspend fun querySyncState(): SyncState? {
         var state: SyncState? = null
         runInterruptible {
-            davCollection.propfind(0, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+            davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken) { response, relation ->
                 if (relation == Response.HrefRelation.SELF)
                     state = syncState(response)
             }

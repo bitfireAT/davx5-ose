@@ -51,7 +51,7 @@ import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
 /**
- * Builder for the [OkHttpClient].
+ * Builder for the HTTP client.
  *
  * **Attention:** If the builder is injected, it shouldn't be used from multiple locations to generate different clients because then
  * there's only one [HttpClientBuilder] object and setting properties from one location would influence the others.
@@ -107,7 +107,7 @@ class HttpClientBuilder @Inject constructor(
     private var authenticator: Authenticator? = null
     private var certificateAlias: String? = null
 
-    fun authenticate(host: String?, getCredentials: () -> Credentials, updateAuthState: ((AuthState) -> Unit)? = null): HttpClientBuilder {
+    fun authenticate(domain: String?, getCredentials: () -> Credentials, updateAuthState: ((AuthState) -> Unit)? = null): HttpClientBuilder {
         val credentials = getCredentials()
         if (credentials.authState != null) {
             // OAuth
@@ -126,7 +126,7 @@ class HttpClientBuilder @Inject constructor(
         } else if (credentials.username != null && credentials.password != null) {
             // basic/digest auth
             val authHandler = BasicDigestAuthHandler(
-                domain = UrlUtils.hostToDomain(host),
+                domain = domain,
                 username = credentials.username,
                 password = credentials.password.asCharArray(),
                 insecurePreemptive = true
@@ -157,16 +157,20 @@ class HttpClientBuilder @Inject constructor(
      *
      * **Must not be run on main thread, because it creates [AccountSettings]!** Use [fromAccountAsync] if possible.
      *
-     * @param account   the account to take authentication from
-     * @param onlyHost  if set: only authenticate for this host name
+     * @param account       the account to take authentication from
+     * @param authDomain    (optional) Send credentials only for the hosts of the given domain. Can be:
+     *
+     * - a full host name (`caldav.example.com`): then credentials are only sent for the domain of that host name (`example.com`), or
+     * - a domain name (`example.com`): then credentials are only sent for the given domain, or
+     * - or _null_: then credentials are always sent, regardless of the resource host name.
      *
      * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
      */
     @WorkerThread
-    fun fromAccount(account: Account, onlyHost: String? = null): HttpClientBuilder {
+    fun fromAccount(account: Account, authDomain: String? = null): HttpClientBuilder {
         val accountSettings = accountSettingsFactory.create(account)
         authenticate(
-            host = onlyHost,
+            domain = UrlUtils.hostToDomain(authDomain),
             getCredentials = {
                 accountSettings.credentials()
             },
@@ -192,7 +196,7 @@ class HttpClientBuilder @Inject constructor(
     /**
      * Builds an [OkHttpClient] with the configured settings.
      *
-     * [build] or [buildKtor] must be called only once because multiple calls indicate this wrong usage pattern:
+     * [build] or [buildKtor] is usually called only once because multiple calls indicate this wrong usage pattern:
      *
      * ```
      * val builder = HttpClientBuilder(/*injected*/)
@@ -202,12 +206,10 @@ class HttpClientBuilder @Inject constructor(
      *
      * However in this case the configuration of `client1` is still in `builder` and would be reused for `client2`,
      * which is usually not desired.
-     *
-     * @throws IllegalStateException    on second and later calls
      */
     fun build(): OkHttpClient {
         if (alreadyBuilt)
-            throw IllegalStateException("build() must only be called once; use Provider<HttpClientBuilder>")
+            logger.warning("build() should only be called once; use Provider<HttpClientBuilder> instead")
 
         val builder = OkHttpClient.Builder()
         configureOkHttp(builder)
@@ -386,7 +388,7 @@ class HttpClientBuilder @Inject constructor(
     @MustBeClosed
     fun buildKtor(): HttpClient {
         if (alreadyBuilt)
-            throw IllegalStateException("build() must only be called once; use Provider<HttpClientBuilder>")
+            logger.warning("buildKtor() should only be called once; use Provider<HttpClientBuilder> instead")
 
         val client = HttpClient(OkHttp) {
             // Ktor-level configuration here

@@ -194,7 +194,7 @@ class SyncerTest {
         }
 
         override fun create(
-            provider: ContentProviderClient,
+            client: ContentProviderClient,
             fromCollection: Collection
         ): LocalTestCollection? {
             throw NotImplementedError()
@@ -202,13 +202,13 @@ class SyncerTest {
 
         override fun getAll(
             account: Account,
-            provider: ContentProviderClient
+            client: ContentProviderClient
         ): List<LocalTestCollection> {
             throw NotImplementedError()
         }
 
         override fun update(
-            provider: ContentProviderClient,
+            client: ContentProviderClient,
             localCollection: LocalTestCollection,
             fromCollection: Collection
         ) {
@@ -219,7 +219,7 @@ class SyncerTest {
             throw NotImplementedError()
         }
 
-        override fun updateAccount(oldAccount: Account, newAccount: Account) {
+        override fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?) {
             throw NotImplementedError()
         }
 

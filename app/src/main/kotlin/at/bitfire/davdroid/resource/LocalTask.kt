@@ -14,8 +14,6 @@ import at.bitfire.ical4android.DmfsTaskFactory
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
-import at.bitfire.synctools.storage.BatchOperation
-import at.techbee.jtx.JtxContract
 import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
@@ -25,51 +23,26 @@ import java.util.Optional
  */
 class LocalTask: DmfsTask, LocalResource {
 
-    companion object {
-        const val COLUMN_ETAG = Tasks.SYNC1
-        const val COLUMN_FLAGS = Tasks.SYNC2
-    }
-
     override var fileName: String? = null
 
+    /**
+     * Note: Schedule-Tag for tasks is not supported
+     */
     override var scheduleTag: String? = null
-    override var eTag: String? = null
-
-    override var flags = 0
-        private set
 
 
     constructor(taskList: DmfsTaskList<*>, task: Task, fileName: String?, eTag: String?, flags: Int)
-            : super(taskList, task) {
-        this.fileName = fileName
-        this.eTag = eTag
-        this.flags = flags
-    }
+            : super(taskList, task, fileName, eTag, flags)
 
-    private constructor(taskList: DmfsTaskList<*>, values: ContentValues): super(taskList) {
-        id = values.getAsLong(Tasks._ID)
-        fileName = values.getAsString(Tasks._SYNC_ID)
-        eTag = values.getAsString(COLUMN_ETAG)
-        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
-    }
-
-
-    /* process LocalTask-specific fields */
-
-    override fun buildTask(builder: BatchOperation.CpoBuilder, update: Boolean) {
-        super.buildTask(builder, update)
-
-        builder .withValue(Tasks._SYNC_ID, fileName)
-                .withValue(COLUMN_ETAG, eTag)
-                .withValue(COLUMN_FLAGS, flags)
-    }
+    private constructor(taskList: DmfsTaskList<*>, values: ContentValues)
+            : super(taskList, values)
 
 
     /* custom queries */
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
-            logger.fine("Schedule-Tag for tasks not supported yet, won't save")
+            logger.fine("Schedule-Tag for tasks not supported, won't save")
 
         val values = ContentValues(4)
         if (fileName.isPresent)
@@ -85,9 +58,11 @@ class LocalTask: DmfsTask, LocalResource {
     }
 
     fun update(data: Task, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        if (scheduleTag != null)
+            logger.fine("Schedule-Tag for tasks not supported, won't save")
+
         this.fileName = fileName
         this.eTag = eTag
-        this.scheduleTag = scheduleTag
         this.flags = flags
 
         // processes this.{fileName, eTag, scheduleTag, flags} and resets DIRTY flag
@@ -123,7 +98,6 @@ class LocalTask: DmfsTask, LocalResource {
             .add("id", id)
             .add("fileName", fileName)
             .add("eTag", eTag)
-            .add("scheduleTag", scheduleTag)
             .add("flags", flags)
             /*.add("task",
                 try {
@@ -152,4 +126,5 @@ class LocalTask: DmfsTask, LocalResource {
         override fun fromProvider(taskList: DmfsTaskList<*>, values: ContentValues) =
                 LocalTask(taskList, values)
     }
+
 }
