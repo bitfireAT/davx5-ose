@@ -12,7 +12,7 @@ concurrency:
 jobs:
   compile:
     name: Compile for build cache
-    if: ${{ github.ref == 'refs/heads/main-ose' }}
+    if: github.ref == 'refs/heads/main-ose'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -22,7 +22,7 @@ jobs:
           java-version: 21
 
       # See https://community.gradle.org/github-actions/docs/setup-gradle/ for more information
-      - uses: gradle/actions/setup-gradle@v5            # creates build cache when on main branch
+      - uses: gradle/actions/setup-gradle@v5            # creates build cache
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           dependency-graph: generate-and-submit         # submit Github Dependency Graph info
@@ -72,11 +72,19 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Cache AVD
-        uses: actions/cache@v4
+      - name: Restore cached AVD
+        id: restore-avd
+        uses: actions/cache/restore@v4
         with:
           path: ~/.config/.android/avd
           key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
 
       - name: Run device tests
         run: ./gradlew --build-cache --configuration-cache app:virtualCheck
+
+      - name: Cache AVD
+        uses: actions/cache/save@v4
+        if: steps.restore-avd.outputs.cache-hit != 'true'
+        with:
+          path: ~/.config/.android/avd
+          key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there

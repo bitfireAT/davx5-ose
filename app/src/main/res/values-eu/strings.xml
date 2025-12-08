@@ -409,6 +409,11 @@
   <string name="debug_info_server_error">Zerbitzari errorea</string>
   <string name="debug_info_webdav_error">WebDAV errorea</string>
   <string name="debug_info_io_error">S/I errorea</string>
+  <string name="debug_info_http_403_description">Zerbitzariak eskaera ukatu du.</string>
+  <string name="debug_info_http_404_description">Eskatutako baliabidea ez da existitzen (jada).</string>
+  <string name="debug_info_http_405_description">Zerbitzariak ez du baimentzen eskatutako eragiketa mota.</string>
+  <string name="debug_info_http_5xx_description">Zerbitzariaren aldetik arazo bat gertatu da. Mesedez, jarri harremanetan zure zerbitzariaren mantenuarekin.</string>
+  <string name="debug_info_unexpected_error">Ustekabeko errore bat gertatu da. Ikusi arazketa-informazioa xehetasunetarako.</string>
   <string name="debug_info_view_details">Ikusi xehetasunak</string>
   <string name="debug_info_subtitle">Arazketa informazioa lortu da</string>
   <string name="debug_info_involved_caption">Parte hartzen duten baliabideak</string>
@@ -419,8 +424,10 @@
   <string name="debug_info_logs_subtitle">Erregistro xehetuak eskuragarri daude</string>
   <string name="debug_info_logs_view">Ikusi egunkariak</string>
   <string name="debug_info_copy_remote_url">Kopiatu URL</string>
+  <string name="debug_info_view_local_resource">Ikuskatu baliabidea</string>
   <string name="debug_info_privacy_warning_title">Pribatutasun oharra</string>
   <string name="debug_info_privacy_warning_description">Erregistroek eta arazketa-informazioak informazio pribatua izan dezakete. Kontuan izan hau publikoki partekatzerakoan.</string>
+  <string name="debug_info_can_not_view_resource">Ezin da ikusi baliabidea</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Errore bat gertatu da</string>
   <string name="exception_httpexception">HTTP errore bat gertatu da.</string>

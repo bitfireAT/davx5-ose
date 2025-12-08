@@ -408,6 +408,8 @@
   <string name="debug_info_server_error">Error del servidor</string>
   <string name="debug_info_webdav_error">Error del WebDAV</string>
   <string name="debug_info_io_error">Error d\'E/S</string>
+  <string name="debug_info_http_403_description">El servidor ha denegat la petició</string>
+  <string name="debug_info_http_404_description">El recurs sol·licitat no existeix (mai mes).</string>
   <string name="debug_info_http_405_description">El servidor no permet el tipus d\'operació sol·licitat.</string>
   <string name="debug_info_http_5xx_description">S\'ha produït un problema a la banda del servidor. Poseu-vos en contacte amb l\'assistència del servidor.</string>
   <string name="debug_info_unexpected_error">S\'ha produït un error inesperat. Vegeu els detalls a la informació de depuració.</string>
@@ -421,8 +423,10 @@
   <string name="debug_info_logs_subtitle">Hi ha registres detallats disponibles</string>
   <string name="debug_info_logs_view">Visualitza els registres</string>
   <string name="debug_info_copy_remote_url">Copia l\'URL</string>
+  <string name="debug_info_view_local_resource">Inspecciona el recurs</string>
   <string name="debug_info_privacy_warning_title">Avís de privadesa</string>
   <string name="debug_info_privacy_warning_description">Els registres i la informació de depuració poden contenir informació privada. Tingueu en compte això quan ho compartiu públicament.</string>
+  <string name="debug_info_can_not_view_resource">No s\'ha pogut veure el recurs</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">S\'ha produït un error.</string>
   <string name="exception_httpexception">S\'ha produït un error HTTP.</string>
