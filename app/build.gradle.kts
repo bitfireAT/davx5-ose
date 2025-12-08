@@ -113,6 +113,7 @@ android {
                     // Suspected reason: https://developer.android.com/about/versions/15/behavior-changes-all#background-network-access
                     apiLevel = 34
                     systemImageSource = "aosp-atd"
+                    testedAbi = "x86_64"
                 }
             }
         }
