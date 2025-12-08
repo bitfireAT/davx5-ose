@@ -10,15 +10,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.network.NextcloudLoginFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.http.Url
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -46,24 +46,19 @@ class NextcloudLoginModel @AssistedInject constructor(
         val error: String? = null,
 
         /** URL to open in the browser (set during Login Flow) */
-        val loginUrl: HttpUrl? = null,
+        val loginUrl: Url? = null,
 
         /** login info (set after successful login) */
         val result: LoginInfo? = null
     ) {
+        val baseUrlWithPrefix =
+            if (baseUrl.startsWith("http://") || baseUrl.startsWith("https://"))
+                baseUrl
+            else
+                "https://$baseUrl"
+        val baseKtorUrl = baseUrlWithPrefix.toUrlOrNull()
 
-        val baseHttpUrl: HttpUrl? = run {
-            val baseUrlWithPrefix =
-                if (baseUrl.startsWith("http://") || baseUrl.startsWith("https://"))
-                    baseUrl
-                else
-                    "https://$baseUrl"
-
-            baseUrlWithPrefix.toHttpUrlOrNull()
-        }
-
-        val canContinue = !inProgress && baseHttpUrl != null
-
+        val canContinue = !inProgress && baseKtorUrl != null
     }
 
     var uiState by mutableStateOf(UiState())
@@ -107,7 +102,7 @@ class NextcloudLoginModel @AssistedInject constructor(
      * Starts the Login Flow.
      */
     fun startLoginFlow() {
-        val baseUrl = uiState.baseHttpUrl
+        val baseUrl = uiState.baseKtorUrl
         if (uiState.inProgress || baseUrl == null)
             return
 
@@ -118,13 +113,12 @@ class NextcloudLoginModel @AssistedInject constructor(
 
         viewModelScope.launch {
             try {
-                val loginUrl = loginFlow.initiate(baseUrl)
+                val loginUrl = loginFlow.start(baseUrl)
 
                 uiState = uiState.copy(
                     loginUrl = loginUrl,
                     inProgress = false
                 )
-
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Initiating Login Flow failed", e)
 

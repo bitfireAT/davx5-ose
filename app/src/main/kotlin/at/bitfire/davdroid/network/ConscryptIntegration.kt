@@ -29,8 +29,7 @@ class ConscryptIntegration {
             if (initialized)
                 return
 
-            val alreadyInstalled = conscryptInstalled()
-            if (!alreadyInstalled) {
+            if (Conscrypt.isAvailable() && !conscryptInstalled()) {
                 // install Conscrypt as most preferred provider
                 Security.insertProviderAt(Conscrypt.newProvider(), 1)
 
