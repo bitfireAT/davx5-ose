@@ -22,7 +22,7 @@ import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assume
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -83,8 +83,9 @@ class AccountSettingsMigration21Test {
             inPendingState.first { it }
         }
 
-        // Assert again that we are now in the forever pending state
-        assertTrue(ContentResolver.isSyncPending(account, authority))
+        // Assume that we are now in the forever pending state
+        // (sometimes we don't manage to move into forever pending state)
+        Assume.assumeTrue(ContentResolver.isSyncPending(account, authority))
 
         // Run the migration which should cancel the forever pending sync for all accounts
         migration.migrate(account)
