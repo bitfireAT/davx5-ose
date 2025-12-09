@@ -23,7 +23,9 @@ import java.util.Optional
  */
 class LocalTask: DmfsTask, LocalResource {
 
-    override var fileName: String? = null
+    override var fileName: String?
+        get() = syncId
+        set(value) { syncId = value }
 
     /**
      * Note: Schedule-Tag for tasks is not supported
