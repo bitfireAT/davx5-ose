@@ -83,8 +83,7 @@ class AccountSettingsMigration21Test {
             inPendingState.first { it }
         }
 
-        // Assume that we are now in the forever pending state
-        // (sometimes we don't manage to move into forever pending state)
+        // Assume that we are now in the forever pending state (Skips test otherwise)
         Assume.assumeTrue(ContentResolver.isSyncPending(account, authority))
 
         // Run the migration which should cancel the forever pending sync for all accounts
