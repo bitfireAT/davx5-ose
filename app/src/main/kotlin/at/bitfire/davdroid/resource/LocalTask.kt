@@ -10,37 +10,49 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.DmfsTask
-import at.bitfire.ical4android.DmfsTaskFactory
-import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
 import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
+import java.util.logging.Logger
 
 /**
  * Represents a Dmfs Task (OpenTasks and Tasks.org) entry
  */
-class LocalTask: DmfsTask, LocalResource {
+class LocalTask(
+    val dmfsTask: DmfsTask
+): LocalResource {
+
+    val logger: Logger = Logger.getLogger(javaClass.name)
+
+
+    // LocalResource implementation
+
+    override val id: Long?
+        get() = dmfsTask.id
 
     override var fileName: String?
-        get() = syncId
-        set(value) { syncId = value }
+        get() = dmfsTask.syncId
+        set(value) { dmfsTask.syncId = value }
+
+    override var eTag: String?
+        get() = dmfsTask.eTag
+        set(value) { dmfsTask.eTag = value }
 
     /**
      * Note: Schedule-Tag for tasks is not supported
      */
     override var scheduleTag: String? = null
 
+    override val flags: Int
+        get() = dmfsTask.flags
 
-    constructor(taskList: DmfsTaskList<*>, task: Task, fileName: String?, eTag: String?, flags: Int)
-            : super(taskList, task, fileName, eTag, flags)
+    fun add() = dmfsTask.add()
 
-    private constructor(taskList: DmfsTaskList<*>, values: ContentValues)
-            : super(taskList, values)
+    fun update(data: Task) = dmfsTask.update(data)
 
-
-    /* custom queries */
+    fun delete() = dmfsTask.delete()
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
@@ -49,46 +61,33 @@ class LocalTask: DmfsTask, LocalResource {
         val values = ContentValues(4)
         if (fileName.isPresent)
             values.put(Tasks._SYNC_ID, fileName.get())
-        values.put(COLUMN_ETAG, eTag)
-        values.put(Tasks.SYNC_VERSION, task!!.sequence)
+        values.put(DmfsTask.COLUMN_ETAG, eTag)
+        values.put(Tasks.SYNC_VERSION, dmfsTask.task!!.sequence)
         values.put(Tasks._DIRTY, 0)
-        taskList.provider.update(taskSyncURI(), values, null, null)
+        dmfsTask.update(values)
 
         if (fileName.isPresent)
             this.fileName = fileName.get()
         this.eTag = eTag
     }
 
-    fun update(data: Task, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
-        if (scheduleTag != null)
-            logger.fine("Schedule-Tag for tasks not supported, won't save")
-
-        this.fileName = fileName
-        this.eTag = eTag
-        this.flags = flags
-
-        // processes this.{fileName, eTag, scheduleTag, flags} and resets DIRTY flag
-        update(data)
-    }
-
     override fun updateFlags(flags: Int) {
         if (id != null) {
-            val values = contentValuesOf(COLUMN_FLAGS to flags)
-            taskList.provider.update(taskSyncURI(), values, null, null)
+            val values = contentValuesOf(DmfsTask.COLUMN_FLAGS to flags)
+            dmfsTask.update(values)
         }
-
-        this.flags = flags
+        dmfsTask.flags = flags
     }
 
     override fun updateSequence(sequence: Int) = throw NotImplementedError()
 
     override fun updateUid(uid: String) {
         val values = contentValuesOf(Tasks._UID to uid)
-        taskList.provider.update(taskSyncURI(), values, null, null)
+        dmfsTask.update(values)
     }
 
     override fun deleteLocal() {
-        delete()
+        dmfsTask.delete()
     }
 
     override fun resetDeleted() {
@@ -112,21 +111,15 @@ class LocalTask: DmfsTask, LocalResource {
             .toString()
 
     override fun getViewUri(context: Context): Uri? = id?.let { id ->
-        when (taskList.providerName) {
+        when (dmfsTask.taskList.providerName) {
             TaskProvider.ProviderName.OpenTasks -> {
-                val contentUri = Tasks.getContentUri(taskList.providerName.authority)
+                val contentUri = Tasks.getContentUri(dmfsTask.taskList.providerName.authority)
                 ContentUris.withAppendedId(contentUri, id)
             }
             // Tasks.org can't handle view content URIs (missing intent-filter)
             // Jtx Board tasks are [LocalJtxICalObject]s
             else -> null
         }
-    }
-
-
-    object Factory: DmfsTaskFactory<LocalTask> {
-        override fun fromProvider(taskList: DmfsTaskList<*>, values: ContentValues) =
-                LocalTask(taskList, values)
     }
 
 }
