@@ -64,7 +64,7 @@ class LocalCalendarStoreTest {
 
     @Test
     fun testUpdateAccount_updatesOwnerAccount() {
-        // Verify initial state
+        // Verify initial state (assume to skip and prevent flaky test failures)
         Assume.assumeTrue("InitialAccountName" == getOwnerAccount(provider))
 
         // Rename account
