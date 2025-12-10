@@ -23,6 +23,8 @@ import com.google.errorprone.annotations.MustBeClosed
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
@@ -390,6 +392,11 @@ class HttpClientBuilder @Inject constructor(
 
         val client = HttpClient(OkHttp) {
             // Ktor-level configuration here
+
+            // automatically convert JSON from/into data classes (if requested in respective code)
+            install(ContentNegotiation) {
+                json()
+            }
 
             engine {
                 // okhttp engine configuration here
