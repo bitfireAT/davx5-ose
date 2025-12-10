@@ -65,7 +65,7 @@ class LocalCalendarStoreTest {
     @Test
     fun testUpdateAccount_updatesOwnerAccount() {
         // Verify initial state (assume to skip and prevent flaky test failures)
-        Assume.assumeTrue("InitialAccountName" == getOwnerAccount(provider))
+        Assume.assumeTrue("InitialAccountName" == getOwnerAccount())
 
         // Rename account
         val oldAccount = account
@@ -75,7 +75,7 @@ class LocalCalendarStoreTest {
         localCalendarStore.updateAccount(oldAccount, account, provider)
 
         // Verify [Calendar.OWNER_ACCOUNT] of local calendar was updated
-        assertEquals("ChangedAccountName", getOwnerAccount(provider))
+        assertEquals("ChangedAccountName", getOwnerAccount())
 
     }
 
@@ -96,7 +96,7 @@ class LocalCalendarStoreTest {
             )
         )!!.asSyncAdapter(account)
 
-    private fun getOwnerAccount(provider: ContentProviderClient): String {
+    private fun getOwnerAccount(): String {
         provider.query(
             calendarUri,
             arrayOf(Calendars.OWNER_ACCOUNT),
