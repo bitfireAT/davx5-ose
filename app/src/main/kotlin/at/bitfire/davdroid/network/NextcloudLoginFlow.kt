@@ -5,11 +5,13 @@
 package at.bitfire.davdroid.network
 
 import androidx.annotation.VisibleForTesting
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.ui.setup.LoginInfo
 import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.davdroid.util.withTrailingSlash
 import at.bitfire.vcard4android.GroupMethod
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -18,10 +20,12 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
+import io.ktor.http.isSuccess
 import io.ktor.http.path
 import kotlinx.serialization.Serializable
 import java.net.URI
 import javax.inject.Inject
+import javax.inject.Provider
 
 /**
  * Implements Nextcloud Login Flow v2.
@@ -29,10 +33,8 @@ import javax.inject.Inject
  * See https://docs.nextcloud.com/server/latest/developer_manual/client_apis/LoginFlow/index.html#login-flow-v2
  */
 class NextcloudLoginFlow @Inject constructor(
-    httpClientBuilder: HttpClientBuilder
+    private val httpClientBuilder: Provider<HttpClientBuilder>
 ) {
-
-    private val httpClient = httpClientBuilder.buildKtor()
 
     // Login flow state
     var pollUrl: Url? = null
@@ -44,6 +46,8 @@ class NextcloudLoginFlow @Inject constructor(
      * @param baseUrl   Nextcloud login flow or base URL
      *
      * @return URL that should be opened in the browser (login screen)
+     *
+     * @throws HttpException on non-successful HTTP status
      */
     suspend fun start(baseUrl: Url): Url {
         // reset fields in case something goes wrong
@@ -51,14 +55,18 @@ class NextcloudLoginFlow @Inject constructor(
         token = null
 
         // POST to login flow URL in order to receive endpoint data
-        val result = httpClient.post(loginFlowUrl(baseUrl))
-        val endpointData: EndpointData = result.body()
+        createClient().use { client ->
+            val result = client.post(loginFlowUrl(baseUrl))
+            if (!result.status.isSuccess())
+                throw HttpException.fromResponse(result)
 
-        // save endpoint data for polling
-        pollUrl = Url(endpointData.poll.endpoint)
-        token = endpointData.poll.token
+            // save endpoint data for polling
+            val endpointData: EndpointData = result.body()
+            pollUrl = Url(endpointData.poll.endpoint)
+            token = endpointData.poll.token
 
-        return Url(endpointData.login)
+            return Url(endpointData.login)
+        }
     }
 
     @VisibleForTesting
@@ -87,30 +95,44 @@ class NextcloudLoginFlow @Inject constructor(
 
     /**
      * Retrieves login info from the polling endpoint using [pollUrl]/[token].
+     *
+     * @throws HttpException on non-successful HTTP status
      */
     suspend fun fetchLoginInfo(): LoginInfo {
         val pollUrl = pollUrl ?: throw IllegalArgumentException("Missing pollUrl")
         val token = token ?: throw IllegalArgumentException("Missing token")
 
         // send HTTP request to request server, login name and app password
-        val result = httpClient.post(pollUrl) {
-            contentType(ContentType.Application.FormUrlEncoded)
-            setBody("token=$token")
+        createClient().use { client ->
+            val result = client.post(pollUrl) {
+                contentType(ContentType.Application.FormUrlEncoded)
+                setBody("token=$token")
+            }
+            if (!result.status.isSuccess())
+                throw HttpException.fromResponse(result)
+
+            // make sure server URL ends with a slash so that DAV_PATH can be appended
+            val loginData: LoginData = result.body()
+            val serverUrl = loginData.server.withTrailingSlash()
+
+            return LoginInfo(
+                baseUri = URI(serverUrl).resolve(DAV_PATH),
+                credentials = Credentials(
+                    username = loginData.loginName,
+                    password = loginData.appPassword.toSensitiveString()
+                ),
+                suggestedGroupMethod = GroupMethod.CATEGORIES
+            )
         }
-        val loginData: LoginData = result.body()
-
-        // make sure server URL ends with a slash so that DAV_PATH can be appended
-        val serverUrl = loginData.server.withTrailingSlash()
-
-        return LoginInfo(
-            baseUri = URI(serverUrl).resolve(DAV_PATH),
-            credentials = Credentials(
-                username = loginData.loginName,
-                password = loginData.appPassword.toSensitiveString()
-            ),
-            suggestedGroupMethod = GroupMethod.CATEGORIES
-        )
     }
+
+    /**
+     * Creates a Ktor HTTP client that follows redirects.
+     */
+    private fun createClient(): HttpClient =
+        httpClientBuilder.get()
+            .followRedirects(true)
+            .buildKtor()
 
 
     /**

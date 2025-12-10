@@ -124,7 +124,7 @@ class NextcloudLoginModel @AssistedInject constructor(
 
                 uiState = uiState.copy(
                     inProgress = false,
-                    error = e.toString()
+                    error = e.localizedMessage
                 )
             }
         }
@@ -149,7 +149,7 @@ class NextcloudLoginModel @AssistedInject constructor(
             logger.log(Level.WARNING, "Fetching login info failed", e)
             uiState = uiState.copy(
                 inProgress = false,
-                error = e.toString()
+                error = e.localizedMessage
             )
             return@launch
         }
