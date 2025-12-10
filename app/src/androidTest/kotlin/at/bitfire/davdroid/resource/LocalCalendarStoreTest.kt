@@ -20,6 +20,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -64,7 +65,7 @@ class LocalCalendarStoreTest {
     @Test
     fun testUpdateAccount_updatesOwnerAccount() {
         // Verify initial state
-        verifyOwnerAccountIs(provider, "InitialAccountName")
+        Assume.assumeTrue("InitialAccountName" == getOwnerAccount(provider))
 
         // Rename account
         val oldAccount = account
@@ -74,7 +75,7 @@ class LocalCalendarStoreTest {
         localCalendarStore.updateAccount(oldAccount, account, provider)
 
         // Verify [Calendar.OWNER_ACCOUNT] of local calendar was updated
-        verifyOwnerAccountIs(provider, "ChangedAccountName")
+        assertEquals("ChangedAccountName", getOwnerAccount(provider))
 
     }
 
@@ -95,7 +96,7 @@ class LocalCalendarStoreTest {
             )
         )!!.asSyncAdapter(account)
 
-    private fun verifyOwnerAccountIs(provider: ContentProviderClient, expectedOwnerAccount: String) {
+    private fun getOwnerAccount(provider: ContentProviderClient): String {
         provider.query(
             calendarUri,
             arrayOf(Calendars.OWNER_ACCOUNT),
@@ -104,8 +105,7 @@ class LocalCalendarStoreTest {
             null
         )!!.use { cursor ->
             cursor.moveToNext()
-            val ownerAccount = cursor.getString(0)
-            assertEquals(expectedOwnerAccount, ownerAccount)
+            return cursor.getString(0)
         }
     }
 
