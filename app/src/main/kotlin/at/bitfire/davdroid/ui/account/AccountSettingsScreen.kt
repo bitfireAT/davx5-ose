@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.security.KeyChain
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -609,6 +610,7 @@ fun AuthenticationSettings(
                             onUpdateCredentials(credentials.copy(certificateAlias = newAlias))
                         else
                             scope.launch {
+                                @SuppressLint("LocalContextGetResourceValueCall")
                                 if (snackbarHostState.showSnackbar(
                                         context.getString(R.string.settings_certificate_alias_empty),
                                         actionLabel = context.getString(R.string.settings_certificate_install)

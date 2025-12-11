@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.account
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -189,6 +190,7 @@ fun CollectionsList_Item_Standard(
             modifier = Modifier
                 .padding(start = 4.dp, top = 4.dp, bottom = 4.dp)
                 .semantics {
+                    @SuppressLint("LocalContextGetResourceValueCall")
                     contentDescription = context.getString(R.string.account_synchronize_this_collection)
                 }
         )

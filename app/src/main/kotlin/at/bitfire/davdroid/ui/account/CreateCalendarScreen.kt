@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -210,6 +211,7 @@ fun CreateCalendarScreen(
                                 .fillMaxHeight()
                                 .aspectRatio(1f)
                                 .semantics {
+                                    @SuppressLint("LocalContextGetResourceValueCall")
                                     contentDescription = context.getString(R.string.create_collection_color)
                                 }
                         ) { /* no content */ }
