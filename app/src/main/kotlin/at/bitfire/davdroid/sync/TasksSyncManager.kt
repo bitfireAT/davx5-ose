@@ -164,7 +164,7 @@ class TasksSyncManager @AssistedInject constructor(
     }
 
     override fun postProcess() {
-        val touched = localCollection.touchRelations()
+        val touched = localCollection.dmfsTaskList.touchRelations()
         logger.info("Touched $touched relations")
     }
 
@@ -192,7 +192,7 @@ class TasksSyncManager @AssistedInject constructor(
                     local.update(newData)
                 } else {
                     logger.log(Level.INFO, "Adding $fileName to local task list", newData)
-                    val newLocal = LocalTask(DmfsTask(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT))
+                    val newLocal = LocalTask(DmfsTask(localCollection.dmfsTaskList, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT))
                     SyncException.wrapWithLocalResource(newLocal) {
                         newLocal.add()
                     }

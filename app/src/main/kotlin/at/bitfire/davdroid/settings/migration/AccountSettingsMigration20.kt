@@ -98,9 +98,9 @@ class AccountSettingsMigration20 @Inject constructor(
             for (taskList in taskListStore.getAll(account, provider)) {
                 when (taskList) {
                     is LocalTaskList -> {       // tasks.org, OpenTasks
-                        val url = taskList.syncId ?: continue
+                        val url = taskList.dmfsTaskList.syncId ?: continue
                         collectionRepository.getByServiceAndUrl(calDavServiceId, url)?.let { collection ->
-                            taskList.update(contentValuesOf(
+                            taskList.dmfsTaskList.update(contentValuesOf(
                                 TaskLists._SYNC_ID to collection.id.toString()
                             ))
                         }

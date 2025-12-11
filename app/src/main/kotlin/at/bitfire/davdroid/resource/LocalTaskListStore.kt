@@ -63,7 +63,7 @@ class LocalTaskListStore @AssistedInject constructor(
 
         logger.log(Level.INFO, "Adding local task list", fromCollection)
         val uri = create(account, client, providerName, fromCollection)
-        return DmfsTaskList.findByID(account, client, providerName, LocalTaskList.Factory, ContentUris.parseId(uri))
+        return LocalTaskList(DmfsTaskList.findByID(account, client, providerName, ContentUris.parseId(uri)))
     }
 
     private fun create(account: Account, provider: ContentProviderClient, providerName: TaskProvider.ProviderName, fromCollection: Collection): Uri {
@@ -81,7 +81,7 @@ class LocalTaskListStore @AssistedInject constructor(
             put(TaskLists.SYNC_ENABLED, 1)
             put(TaskLists.VISIBLE, 1)
         }
-        return DmfsTaskList.Companion.create(account, provider, providerName, values)
+        return DmfsTaskList.create(account, provider, providerName, values)
     }
 
     private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
@@ -102,12 +102,13 @@ class LocalTaskListStore @AssistedInject constructor(
     }
 
     override fun getAll(account: Account, client: ContentProviderClient) =
-        DmfsTaskList.find(account, LocalTaskList.Factory, client, providerName, null, null)
+        DmfsTaskList.find(account, client, providerName, null, null)
+            .map { LocalTaskList(it) }
 
     override fun update(client: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list ${fromCollection.url}", fromCollection)
-        val accountSettings = accountSettingsFactory.create(localCollection.account)
-        localCollection.update(valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors()))
+        val accountSettings = accountSettingsFactory.create(localCollection.dmfsTaskList.account)
+        localCollection.dmfsTaskList.update(valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors()))
     }
 
     override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?) {
@@ -119,7 +120,7 @@ class LocalTaskListStore @AssistedInject constructor(
     }
 
     override fun delete(localCollection: LocalTaskList) {
-        localCollection.delete()
+        localCollection.dmfsTaskList.delete()
     }
 
 }
