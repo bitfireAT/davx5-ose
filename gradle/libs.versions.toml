@@ -1,7 +1,7 @@
 # Comments apply to next line
 
 [versions]
-android-agp = "8.13.1"
+android-agp = "8.13.2"
 android-desugaring = "2.1.5"
 androidx-activityCompose = "1.12.1"
 androidx-appcompat = "1.7.1"
