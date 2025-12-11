@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.composable
 
 import android.accounts.Account
+import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material3.AlertDialog
@@ -48,6 +49,7 @@ fun ExceptionInfoDialog(
             Icon(Icons.Rounded.Error, null)
         },
         text = {
+            @SuppressLint("LocalContextGetResourceValueCall")
             val message = if (exception is HttpException) {
                  when (exception.statusCode) {
                     403 -> context.getString(R.string.debug_info_http_403_description)

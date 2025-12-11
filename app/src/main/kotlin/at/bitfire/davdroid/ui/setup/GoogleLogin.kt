@@ -213,7 +213,7 @@ fun GoogleLoginScreen(
         val privacyPolicyNote = HtmlCompat.fromHtml(
             stringResource(
                 R.string.login_google_client_privacy_policy,
-                context.getString(R.string.app_name),
+                stringResource(R.string.app_name),
                 privacyPolicyUrl.toString()
             ), 0
         ).toAnnotatedString()
@@ -223,7 +223,11 @@ fun GoogleLoginScreen(
         )
 
         val limitedUseNote = HtmlCompat.fromHtml(
-            stringResource(R.string.login_google_client_limited_use, context.getString(R.string.app_name), GOOGLE_POLICY_URL), 0
+            stringResource(
+                R.string.login_google_client_limited_use,
+                stringResource(R.string.app_name),
+                GOOGLE_POLICY_URL
+            ), 0
         ).toAnnotatedString()
         Text(
             text = limitedUseNote,

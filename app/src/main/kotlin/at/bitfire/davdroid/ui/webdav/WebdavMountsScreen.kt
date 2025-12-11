@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.webdav
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -107,6 +108,7 @@ fun WebdavMountsScreen(
     val uriHandler = LocalUriHandler.current
 
     var isRefreshing by remember { mutableStateOf(false) }
+    @SuppressLint("LocalContextGetResourceValueCall")
     LaunchedEffect(isRefreshing) {
         if (isRefreshing) {
             delay(300)
@@ -324,7 +326,11 @@ fun WebdavMountsItem(
                             addCategory(Intent.CATEGORY_OPENABLE)
                             type = "*/*"
                         }
-                        val uri = DocumentsContract.buildRootUri(context.getString(R.string.webdav_authority), info.mount.id.toString())
+                        @SuppressLint("LocalContextGetResourceValueCall")
+                        val uri = DocumentsContract.buildRootUri(
+                            context.getString(R.string.webdav_authority),
+                            info.mount.id.toString()
+                        )
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri)
                         }

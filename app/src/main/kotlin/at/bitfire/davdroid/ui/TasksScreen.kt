@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
@@ -118,6 +119,7 @@ fun TasksCard(
                 context.startActivity(intent)
             else
                 coroutineScope.launch {
+                    @SuppressLint("LocalContextGetResourceValueCall")
                     snackbarHostState.showSnackbar(
                         message = context.getString(R.string.intro_tasks_no_app_store),
                         duration = SnackbarDuration.Long
