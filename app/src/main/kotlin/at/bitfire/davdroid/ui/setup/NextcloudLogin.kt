@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.provider.Browser
@@ -104,6 +105,7 @@ object NextcloudLogin : LoginType {
                         checkResultCallback.launch(browser)
                     } else
                         this@LaunchedEffect.launch {
+                            @SuppressLint("LocalContextGetResourceValueCall")
                             snackbarHostState.showSnackbar(context.getString(R.string.install_browser))
                         }
                 }

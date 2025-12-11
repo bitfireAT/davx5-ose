@@ -4,6 +4,7 @@
 
 import android.Manifest
 import android.accounts.Account
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
@@ -420,6 +421,7 @@ fun AccountScreen(
                                 }
 
                                 idxWebcal -> {
+                                    @SuppressLint("LocalContextGetResourceValueCall")
                                     LaunchedEffect(showNoWebcalApp) {
                                         if (showNoWebcalApp) {
                                             if (snackbarHostState.showSnackbar(

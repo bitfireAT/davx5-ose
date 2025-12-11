@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.webdav
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -107,6 +108,7 @@ fun WebdavMountsScreen(
     val uriHandler = LocalUriHandler.current
 
     var isRefreshing by remember { mutableStateOf(false) }
+    @SuppressLint("LocalContextGetResourceValueCall")
     LaunchedEffect(isRefreshing) {
         if (isRefreshing) {
             delay(300)

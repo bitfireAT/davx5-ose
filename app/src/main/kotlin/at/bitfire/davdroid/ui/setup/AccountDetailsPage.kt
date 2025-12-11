@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,6 +58,7 @@ fun AccountDetailsPage(
     uiState.createdAccount?.let(onAccountCreated)
 
     val context = LocalContext.current
+    @SuppressLint("LocalContextGetResourceValueCall")
     LaunchedEffect(uiState.couldNotCreateAccount) {
         if (uiState.couldNotCreateAccount) {
             snackbarHostState.showSnackbar(context.getString(R.string.login_account_not_added))
