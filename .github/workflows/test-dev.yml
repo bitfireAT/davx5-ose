@@ -74,7 +74,7 @@ jobs:
 
       - name: Restore cached AVD
         id: restore-avd
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.config/.android/avd
           key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
@@ -83,7 +83,7 @@ jobs:
         run: ./gradlew --build-cache --configuration-cache app:virtualCheck
 
       - name: Cache AVD
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         if: steps.restore-avd.outputs.cache-hit != 'true'
         with:
           path: ~/.config/.android/avd
