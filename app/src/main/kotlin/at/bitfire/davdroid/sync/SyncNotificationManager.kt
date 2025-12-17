@@ -159,7 +159,7 @@ class SyncNotificationManager @AssistedInject constructor(
     /**
      * Sends a notification to inform the user that a push notification has been received, the
      * sync has been scheduled, but it still has not run.
-     * Use [dismissInvalidResource] to dismiss the notification.
+     * Use [dismissCollectionError] to dismiss the notification.
      *
      * @param dataType          The type of data which was synced.
      * @param notificationTag   The tag to use for the notification.
@@ -200,7 +200,7 @@ class SyncNotificationManager @AssistedInject constructor(
      *
      * @param localCollectionTag The tag of the local collection which is used as notification tag also.
      */
-    fun dismissInvalidResource(localCollectionTag: String) =
+    fun dismissCollectionError(localCollectionTag: String) =
         dismissNotification(localCollectionTag)
 
 
