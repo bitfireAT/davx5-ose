@@ -13,6 +13,7 @@ env:
   GRADLE_BUILDCACHE_URL: ${{ secrets.gradle_buildcache_url }}
   GRADLE_BUILDCACHE_USERNAME: ${{ secrets.gradle_buildcache_username }}
   GRADLE_BUILDCACHE_PASSWORD: ${{ secrets.gradle_buildcache_password }}
+  GRADLE_OPTS: -Dorg.gradle.caching=true -Dorg.gradle.configuration-cache=true
 
 jobs:
   compile:
@@ -33,14 +34,14 @@ jobs:
           gradle-home-cache-excludes: caches/build-cache-1  # don't cache local build cache because we use a remote cache
 
       - name: Compile
-        run: ./gradlew --build-cache --configuration-cache app:compileOseDebugSource
+        run: ./gradlew app:compileOseDebugSource
 
       # Cache configurations for the other jobs
       - name: Populate configuration cache
         run: |
-          ./gradlew --configuration-cache --dry-run app:lintOseDebug
-          ./gradlew --configuration-cache --dry-run app:testOseDebugUnitTest
-          ./gradlew --configuration-cache --dry-run app:virtualOseDebugAndroidTest
+          ./gradlew --dry-run app:lintOseDebug
+          ./gradlew --dry-run app:testOseDebugUnitTest
+          ./gradlew --dry-run app:virtualOseDebugAndroidTest
 
   unit_tests:
     needs: compile
@@ -58,9 +59,9 @@ jobs:
           cache-read-only: true
 
       - name: Lint checks
-        run: ./gradlew --build-cache --configuration-cache app:lintOseDebug
+        run: ./gradlew app:lintOseDebug
       - name: Unit tests
-        run: ./gradlew --build-cache --configuration-cache app:testOseDebugUnitTest
+        run: ./gradlew app:testOseDebugUnitTest
 
   instrumented_tests:
     needs: compile
@@ -100,7 +101,7 @@ jobs:
           swap-storage: false     # gradle needs much memory
 
       - name: Instrumented tests
-        run: ./gradlew --build-cache --configuration-cache app:virtualOseDebugAndroidTest
+        run: ./gradlew app:virtualOseDebugAndroidTest
 
       - name: Cache Android environment
         uses: actions/cache/save@v5
