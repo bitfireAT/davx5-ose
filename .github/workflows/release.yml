@@ -31,7 +31,7 @@ jobs:
 
       - name: Build signed package
         # Use build cache to speed up building of build variants, but clean caches from previous tests before
-        run: ./gradlew --build-cache --configuration-cache --no-daemon app:clean app:assembleRelease
+        run: ./gradlew --build-cache --no-daemon app:clean app:assembleRelease
         env:
           ANDROID_KEYSTORE: ${{ github.workspace }}/keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}

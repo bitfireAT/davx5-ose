@@ -26,23 +26,15 @@ jobs:
           java-version: 21
 
       # See https://community.gradle.org/github-actions/docs/setup-gradle/ for more information
+      # Note: configuration cache can't be shared between jobs [https://github.com/gradle/gradle/issues/13510]
       - uses: gradle/actions/setup-gradle@v5
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
-          cache-read-only: false                            # allow branches to update their configuration cache
           dependency-graph: generate-and-submit             # submit Github Dependency Graph info
           gradle-home-cache-excludes: caches/build-cache-1  # don't cache local build cache because we use a remote cache
 
-      - name: Populate configuration cache
-        run: |
-          ./gradlew --configuration-cache --dry-run \
-            app:compileOseDebugSource \
-            app:lintOseDebug \
-            app:testOseDebugUnitTest \
-            app:virtualOseDebugAndroidTest
-
       - name: Compile
-        run: ./gradlew --build-cache --configuration-cache app:compileOseDebugSource
+        run: ./gradlew --build-cache app:compileOseDebugSource
 
   unit_tests:
     needs: compile
@@ -102,7 +94,7 @@ jobs:
           swap-storage: false     # gradle needs much memory
 
       - name: Instrumented tests
-        run: ./gradlew --build-cache --configuration-cache app:virtualOseDebugAndroidTest
+        run: ./gradlew --build-cache app:virtualOseDebugAndroidTest
 
       - name: Cache Android environment
         uses: actions/cache/save@v5
