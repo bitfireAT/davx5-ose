@@ -9,10 +9,14 @@ concurrency:
   group: test-dev-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  GRADLE_BUILDCACHE_URL: ${{ secrets.gradle_buildcache_url }}
+  GRADLE_BUILDCACHE_USERNAME: ${{ secrets.gradle_buildcache_username }}
+  GRADLE_BUILDCACHE_PASSWORD: ${{ secrets.gradle_buildcache_password }}
+
 jobs:
   compile:
-    name: Compile for build cache
-    if: github.ref == 'refs/heads/main-ose'
+    name: Compile
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -22,16 +26,26 @@ jobs:
           java-version: 21
 
       # See https://community.gradle.org/github-actions/docs/setup-gradle/ for more information
-      - uses: gradle/actions/setup-gradle@v5            # creates build cache
+      - uses: gradle/actions/setup-gradle@v5
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
-          dependency-graph: generate-and-submit         # submit Github Dependency Graph info
+          cache-read-only: false                            # allow branches to update their configuration cache
+          dependency-graph: generate-and-submit             # submit Github Dependency Graph info
+          gradle-home-cache-excludes: caches/build-cache-1  # don't cache local build cache because we use a remote cache
 
-      - run: ./gradlew --build-cache --configuration-cache app:compileOseDebugSource
+      - name: Populate configuration cache
+        run: |
+          ./gradlew --configuration-cache --dry-run \
+            app:compileOseDebugSource \
+            app:lintOseDebug \
+            app:testOseDebugUnitTest \
+            app:virtualOseDebugAndroidTest
 
-  test:
+      - name: Compile
+        run: ./gradlew --build-cache --configuration-cache app:compileOseDebugSource
+
+  unit_tests:
     needs: compile
-    if: ${{ !cancelled() }}     # even if compile didn't run (because not on main branch)
     name: Lint and unit tests
     runs-on: ubuntu-latest
     steps:
@@ -45,14 +59,13 @@ jobs:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           cache-read-only: true
 
-      - name: Run lint
+      - name: Lint checks
         run: ./gradlew --build-cache --configuration-cache app:lintOseDebug
-      - name: Run unit tests
+      - name: Unit tests
         run: ./gradlew --build-cache --configuration-cache app:testOseDebugUnitTest
 
-  test_on_emulator:
+  instrumented_tests:
     needs: compile
-    if: ${{ !cancelled() }}     # even if compile didn't run (because not on main branch)
     name: Instrumented tests
     runs-on: ubuntu-latest
     steps:
@@ -72,19 +85,28 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Restore cached AVD
-        id: restore-avd
+      - name: Restore Android environment
+        id: restore-android
         uses: actions/cache/restore@v5
         with:
-          path: ~/.config/.android/avd
-          key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
+          path: ~/.config/.android
+          key: android-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
 
-      - name: Run device tests
-        run: ./gradlew --build-cache --configuration-cache app:virtualCheck
-
-      - name: Cache AVD
-        uses: actions/cache/save@v5
-        if: steps.restore-avd.outputs.cache-hit != 'true'
+      # gradle and Android SDK often take more space than what is available on the default runner.
+      # We try to free a few GB here to make gradle-managed devices more reliable.
+      - name: Free some disk space
+        uses: jlumbroso/free-disk-space@main
         with:
-          path: ~/.config/.android/avd
-          key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
+          android: false          # we need the Android SDK
+          large-packages: false   # apt takes too long
+          swap-storage: false     # gradle needs much memory
+
+      - name: Instrumented tests
+        run: ./gradlew --build-cache --configuration-cache app:virtualOseDebugAndroidTest
+
+      - name: Cache Android environment
+        uses: actions/cache/save@v5
+        if: steps.restore-android.outputs.cache-hit != 'true'
+        with:
+          path: ~/.config/.android
+          key: android-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there

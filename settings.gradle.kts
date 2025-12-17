@@ -19,4 +19,18 @@ dependencyResolutionManagement {
     }
 }
 
+// use remote build cache, if configured
+if (System.getenv("GRADLE_BUILDCACHE_URL") != null) {
+    buildCache {
+        remote<HttpBuildCache> {
+            url = uri(System.getenv("GRADLE_BUILDCACHE_URL"))
+            credentials {
+                username = System.getenv("GRADLE_BUILDCACHE_USERNAME")
+                password = System.getenv("GRADLE_BUILDCACHE_PASSWORD")
+            }
+            isPush = true        // read/write
+        }
+    }
+}
+
 include(":app")
