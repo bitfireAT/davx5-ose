@@ -30,13 +30,12 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           cache-read-only: false                            # allow branches to update their configuration cache
-          dependency-graph: generate-and-submit             # submit Github Dependency Graph info
           gradle-home-cache-excludes: caches/build-cache-1  # don't cache local build cache because we use a remote cache
 
       - name: Compile
         run: ./gradlew --build-cache --configuration-cache app:compileOseDebugSource
 
-      # Cached configurations for the other jobs
+      # Cache configurations for the other jobs
       - name: Populate configuration cache
         run: |
           ./gradlew --configuration-cache --dry-run app:lintOseDebug
