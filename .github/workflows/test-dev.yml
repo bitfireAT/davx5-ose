@@ -75,6 +75,7 @@ jobs:
 
       - name: Lint checks
         run: ./gradlew app:lintOseDebug
+
       - name: Unit tests
         run: ./gradlew app:testOseDebugUnitTest
 
@@ -112,7 +113,7 @@ jobs:
         id: restore-avd
         uses: actions/cache/restore@v5
         with:
-          path: ~/.config/.android                            # where AVD is stored
+          path: ~/.config/.android/avd                        # where AVD is stored
           key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
 
       # Enable virtualization for Android emulator
@@ -129,5 +130,5 @@ jobs:
         uses: actions/cache/save@v5
         if: steps.restore-avd.outputs.cache-hit != 'true'
         with:
-          path: ~/.config/.android/avd
+          path: ~/.config/.android/avd                        # where AVD is stored
           key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
