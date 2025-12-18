@@ -136,7 +136,7 @@ abstract class SyncManager<LocalType: LocalResource, out CollectionType: LocalCo
 
     suspend fun performSync() = withContext(syncDispatcher) {
         // dismiss previous error notifications
-        syncNotificationManager.dismissInvalidResource(localCollectionTag = localCollection.tag)
+        syncNotificationManager.dismissCollectionError(localCollectionTag = localCollection.tag)
 
         try {
             logger.info("Preparing synchronization")

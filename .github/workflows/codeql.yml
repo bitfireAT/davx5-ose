@@ -3,11 +3,12 @@ name: "CodeQL"
 on:
   push:
     branches: [ main-ose ]
-  pull_request:
+  # pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ main-ose ]
+    # branches: [ main-ose ]
   schedule:
     - cron: '22 10 * * 1'
+
 concurrency:
   group: codeql-${{ github.ref }}
   cancel-in-progress: true
@@ -50,7 +51,7 @@ jobs:
     #  uses: github/codeql-action/autobuild@v2
 
     - name: Build
-      run: ./gradlew --build-cache --configuration-cache --no-daemon app:assembleOseDebug
+      run: ./gradlew --no-daemon app:compileOseDebugSource
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
