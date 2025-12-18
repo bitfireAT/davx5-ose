@@ -51,12 +51,7 @@ jobs:
     #  uses: github/codeql-action/autobuild@v2
 
     - name: Build
-      run: ./gradlew --build-cache --configuration-cache --no-daemon app:assembleOseDebug
-      env:
-        GRADLE_BUILDCACHE_URL: ${{ secrets.gradle_buildcache_url }}
-        GRADLE_BUILDCACHE_USERNAME: ${{ secrets.gradle_buildcache_username }}
-        GRADLE_BUILDCACHE_PASSWORD: ${{ secrets.gradle_buildcache_password }}
-        GRADLE_OPTS: -Dorg.gradle.caching=true -Dorg.gradle.configuration-cache=true
+      run: ./gradlew --no-daemon app:compileOseDebugSource
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4

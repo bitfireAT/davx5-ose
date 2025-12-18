@@ -9,6 +9,8 @@ concurrency:
   group: test-dev-${{ github.ref }}
   cancel-in-progress: true
 
+# We provide a remote gradle build cache. Take the settings from the secrets and enable
+# configuration and build cache for all gradle jobs.
 env:
   GRADLE_BUILDCACHE_URL: ${{ secrets.gradle_buildcache_url }}
   GRADLE_BUILDCACHE_USERNAME: ${{ secrets.gradle_buildcache_username }}
@@ -45,9 +47,10 @@ jobs:
       # Cache configurations for the other jobs
       - name: Populate configuration cache
         run: |
-          ./gradlew --dry-run app:lintOseDebug
-          ./gradlew --dry-run app:testOseDebugUnitTest
-          ./gradlew --dry-run app:virtualOseDebugAndroidTest
+          ./gradlew --dry-run \
+            app:lintOseDebug \
+            app:testOseDebugUnitTest \
+            app:virtualOseDebugAndroidTest
 
   unit_tests:
     needs: compile
