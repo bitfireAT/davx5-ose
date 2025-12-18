@@ -33,6 +33,12 @@ jobs:
           cache-read-only: false                            # allow branches to update their configuration cache
           gradle-home-cache-excludes: caches/build-cache-1  # don't cache local build cache because we use a remote cache
 
+      - name: Cache Android environment
+        uses: actions/cache@v5
+        with:
+          path: ~/.config/.android                          # needs to be cached so that configuration cache can work
+          key: android-${{ hashFiles('app/build.gradle.kts') }}
+
       - name: Compile
         run: ./gradlew app:compileOseDebugSource
 
@@ -58,6 +64,12 @@ jobs:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           cache-read-only: true
 
+      - name: Restore Android environment
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.config/.android
+          key: android-${{ hashFiles('app/build.gradle.kts') }}
+
       - name: Lint checks
         run: ./gradlew app:lintOseDebug
       - name: Unit tests
@@ -78,18 +90,11 @@ jobs:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           cache-read-only: true
 
-      - name: Enable KVM group perms
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
       - name: Restore Android environment
-        id: restore-android
         uses: actions/cache/restore@v5
         with:
           path: ~/.config/.android
-          key: android-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
+          key: android-${{ hashFiles('app/build.gradle.kts') }}
 
       # gradle and Android SDK often take more space than what is available on the default runner.
       # We try to free a few GB here to make gradle-managed devices more reliable.
@@ -100,12 +105,26 @@ jobs:
           large-packages: false   # apt takes too long
           swap-storage: false     # gradle needs much memory
 
+      - name: Restore AVD
+        id: restore-avd
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.config/.android                            # where AVD is stored
+          key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
+
+      # Enable virtualization for Android emulator
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: Instrumented tests
         run: ./gradlew app:virtualOseDebugAndroidTest
 
-      - name: Cache Android environment
+      - name: Cache AVD
         uses: actions/cache/save@v5
-        if: steps.restore-android.outputs.cache-hit != 'true'
+        if: steps.restore-avd.outputs.cache-hit != 'true'
         with:
-          path: ~/.config/.android
-          key: android-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
+          path: ~/.config/.android/avd
+          key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
