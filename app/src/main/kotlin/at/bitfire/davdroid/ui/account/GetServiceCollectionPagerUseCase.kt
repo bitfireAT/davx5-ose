@@ -23,7 +23,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 /**
- * Gets a list of collections for a service and type, optionally filtered by "show only personal" setting.
+ * Gets PagingData flow of collections for a service and type, optionally filtered by "show only personal" setting and
+ * recreates (invalidates) pagers when collection count changes.
  *
  * Takes the "force read-only address books" setting into account: if set, all address books will have "forceReadOnly" set.
  */
@@ -32,12 +33,9 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
     val settings: SettingsManager
 ) {
 
-    companion object {
-        const val PAGER_SIZE = 20
-    }
-
     val forceReadOnlyAddressBooksFlow = settings.getBooleanFlow(Settings.FORCE_READ_ONLY_ADDRESSBOOKS, false)
 
+    val collectionsCount = collectionRepository.getCollectionCountFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(
@@ -45,7 +43,12 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
         @CollectionType collectionType: String,
         showOnlyPersonalFlow: Flow<Boolean>
     ): Flow<PagingData<Collection>> =
-        combine(serviceFlow, showOnlyPersonalFlow, forceReadOnlyAddressBooksFlow) { service, onlyPersonal, forceReadOnlyAddressBooks ->
+        combine(
+            serviceFlow,
+            showOnlyPersonalFlow,
+            forceReadOnlyAddressBooksFlow,
+            collectionsCount // triggers pager recreation when collection amount changes in DB
+        ) { service, onlyPersonal, forceReadOnlyAddressBooks, _ ->
             service?.let { service ->
                 val dataFlow = Pager(
                     config = PagingConfig(PAGER_SIZE),
@@ -68,5 +71,9 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
                     dataFlow
             } ?: flowOf(PagingData.empty())
         }.flatMapLatest { it }
+
+    companion object {
+        const val PAGER_SIZE = 20
+    }
 
 }

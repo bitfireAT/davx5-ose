@@ -27,6 +27,7 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
@@ -195,6 +196,8 @@ class DavCollectionRepository @Inject constructor(
     fun getByServiceAndUrl(serviceId: Long, url: String) = dao.getByServiceAndUrl(serviceId, url)
 
     fun getByServiceAndSync(serviceId: Long) = dao.getByServiceAndSync(serviceId)
+
+    fun getCollectionCountFlow(): Flow<Int> = dao.getCountFlow()
 
     fun getSyncCalendars(serviceId: Long) = dao.getSyncCalendars(serviceId)
 

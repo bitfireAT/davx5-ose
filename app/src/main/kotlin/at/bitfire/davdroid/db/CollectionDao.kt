@@ -69,6 +69,12 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND url=:url")
     fun getByServiceAndUrl(serviceId: Long, url: String): Collection?
 
+    /**
+     * Returns the amount of collections currently stored in database
+     */
+    @Query("SELECT COUNT(*) FROM collection")
+    fun getCountFlow(): Flow<Int>
+
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVEVENT AND sync ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
     fun getSyncCalendars(serviceId: Long): List<Collection>
 
