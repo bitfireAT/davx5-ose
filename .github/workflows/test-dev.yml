@@ -11,6 +11,8 @@ concurrency:
 
 # We provide a remote gradle build cache. Take the settings from the secrets and enable
 # configuration and build cache for all gradle jobs.
+#
+# Note: The secrets are not available for forks and Dependabot PRs.
 env:
   GRADLE_BUILDCACHE_URL: ${{ secrets.gradle_buildcache_url }}
   GRADLE_BUILDCACHE_USERNAME: ${{ secrets.gradle_buildcache_username }}
