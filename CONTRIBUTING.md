@@ -14,24 +14,11 @@ If you send us a pull request, our CLA bot will ask you to sign the
 Contributor's License Agreement so that we can use your contribution.
 
 
-# Copyright
+# Copyright notice
 
 Make sure that every file that contains significant work (at least every code file)
-starts with the copyright header:
-
-```
-/*
- * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- */
-```
-
-You can set this in Android Studio:
-
-1. Settings / Editor / Copyright / Copyright Profiles
-2. Paste the text above (without the stars).
-3. Set Formatting so that the preview exactly looks like above; one blank line after the block.
-4. Set this copyright profile as the default profile for the project.
-5. Apply copyright: right-click in file tree / Update copyright.
+starts with the copyright header. Android Studio should do so automatically because the
+configuration is stored in the repository (`.idea/copyright`).
 
 
 # Style guide
@@ -109,9 +96,4 @@ method, they may follow the calling method without separating blank lines.
 Test classes should be in the appropriate directory (see existing tests) and in the same package as the
 tested class. Tests are usually be named like `methodToBeTested_Condition()`, see
 [Test apps on Android](https://developer.android.com/training/testing/).
-
-
-# Authors
-
-If you make significant contributions, feel free to add yourself to the [AUTHORS file](AUTHORS).
 
