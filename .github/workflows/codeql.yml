@@ -3,9 +3,9 @@ name: "CodeQL"
 on:
   push:
     branches: [ main-ose ]
-  # pull_request:
+  pull_request:
     # The branches below must be a subset of the branches above
-    # branches: [ main-ose ]
+    branches: [ main-ose ]
   schedule:
     - cron: '22 10 * * 1'
 
@@ -21,11 +21,6 @@ jobs:
       actions: read
       contents: read
       security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'java' ]
 
     steps:
     - name: Checkout repository
@@ -43,15 +38,11 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4
       with:
-        languages: ${{ matrix.language }}
+        languages: java-kotlin
+        build-mode: manual            # autobuild uses older JDK
 
-    # Autobuild attempts to build any compiled languages  (C/C++, C#, Go, or Java).
-    # If this step fails, then you should remove it and run the build manually (see below)
-    #- name: Autobuild
-    #  uses: github/codeql-action/autobuild@v2
-
-    - name: Build
-      run: ./gradlew --no-daemon app:compileOseDebugSource
+    - name: Build                     # we must not use build cache here
+      run: ./gradlew --no-daemon --configuration-cache app:assembleDebug
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4

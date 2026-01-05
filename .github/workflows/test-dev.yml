@@ -46,9 +46,10 @@ jobs:
       - name: Compile
         run: ./gradlew app:compileOseDebugSource
 
-      # Cache configurations for the other jobs
+      # Cache configurations for the other jobs (including assemble for CodeQL)
       - name: Populate configuration cache
         run: |
+          ./gradlew --dry-run app:assembleDebug
           ./gradlew --dry-run app:lintOseDebug
           ./gradlew --dry-run app:testOseDebugUnitTest
           ./gradlew --dry-run app:virtualOseDebugAndroidTest
