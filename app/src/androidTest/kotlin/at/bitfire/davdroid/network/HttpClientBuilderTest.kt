@@ -50,7 +50,7 @@ class HttpClientBuilderTest {
 
 
     @Test
-    fun testBuild_ReusesConnectionAndDispatcher() {
+    fun testBuild_SharesConnectionPoolAndDispatcher() {
         val client1 = httpClientBuilder.get().build()
         val client2 = httpClientBuilder.get().build()
         assertEquals(client1.connectionPool, client2.connectionPool)

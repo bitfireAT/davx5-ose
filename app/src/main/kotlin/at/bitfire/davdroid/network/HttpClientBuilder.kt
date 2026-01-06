@@ -80,6 +80,9 @@ class HttpClientBuilder @Inject constructor(
          *
          * We need custom settings for each actual client, but we can use a shared client as a base. This also
          * enables sharing resources like connection and thread pool.
+         *
+         * The shared client is available for the lifetime of the application and must not be shut down or
+         * closed (which is not necessary, according to its documentation).
          */
         val sharedOkHttpClient = OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
@@ -220,6 +223,8 @@ class HttpClientBuilder @Inject constructor(
      *
      * However in this case the configuration of `client1` is still in `builder` and would be reused for `client2`,
      * which is usually not desired.
+     *
+     * Closing/shutting down the client is not necessary.
      */
     fun build(): OkHttpClient {
         if (alreadyBuilt)
