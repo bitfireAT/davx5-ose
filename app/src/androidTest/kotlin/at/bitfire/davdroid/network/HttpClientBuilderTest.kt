@@ -50,6 +50,14 @@ class HttpClientBuilderTest {
 
 
     @Test
+    fun testBuild_SharesConnectionPoolAndDispatcher() {
+        val client1 = httpClientBuilder.get().build()
+        val client2 = httpClientBuilder.get().build()
+        assertEquals(client1.connectionPool, client2.connectionPool)
+        assertEquals(client1.dispatcher, client2.dispatcher)
+    }
+
+    @Test
     fun testBuildKtor_CreatesWorkingClient() = runTest {
         server.enqueue(MockResponse()
             .setResponseCode(200)
