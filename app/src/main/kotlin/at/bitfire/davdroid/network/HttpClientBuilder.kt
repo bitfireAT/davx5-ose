@@ -73,6 +73,20 @@ class HttpClientBuilder @Inject constructor(
             // make sure Conscrypt is available when the HttpClientBuilder class is loaded the first time
             ConscryptIntegration().initialize()
         }
+
+        /**
+         * According to [OkHttpClient] documentation, [OkHttpClient]s should be shared, which allows it to use a
+         * shared connection and thread pool.
+         *
+         * We need custom settings for each actual client, but we can use a shared client as a base. This also
+         * enables sharing resources like connection and thread pool.
+         */
+        val sharedOkHttpClient = OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(120, TimeUnit.SECONDS)
+            .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
+            .build()
     }
 
     /**
@@ -211,7 +225,7 @@ class HttpClientBuilder @Inject constructor(
         if (alreadyBuilt)
             logger.warning("build() should only be called once; use Provider<HttpClientBuilder> instead")
 
-        val builder = OkHttpClient.Builder()
+        val builder = sharedOkHttpClient.newBuilder()
         configureOkHttp(builder)
 
         alreadyBuilt = true
@@ -219,8 +233,6 @@ class HttpClientBuilder @Inject constructor(
     }
 
     private fun configureOkHttp(builder: OkHttpClient.Builder) {
-        buildTimeouts(builder)
-
         // don't allow redirects by default because it would break PROPFIND handling
         builder.followRedirects(followRedirects)
 
@@ -351,19 +363,6 @@ class HttpClientBuilder @Inject constructor(
         } catch (e: Exception) {
             logger.log(Level.SEVERE, "Can't set proxy, ignoring", e)
         }
-    }
-
-    /**
-     * Set timeouts for the connection.
-     *
-     * **Note:** According to [android.content.AbstractThreadedSyncAdapter], when there is no network
-     * traffic within a minute, a sync will be cancelled.
-     */
-    private fun buildTimeouts(builder: OkHttpClient.Builder) {
-        builder.connectTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(120, TimeUnit.SECONDS)
-            .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
     }
 
 
