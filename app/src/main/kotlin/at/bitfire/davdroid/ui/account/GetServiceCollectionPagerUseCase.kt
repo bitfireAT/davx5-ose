@@ -52,10 +52,7 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
             val dataFlow = Pager(
                 config = PagingConfig(PAGER_SIZE),
                 pagingSourceFactory = {
-                    if (onlyPersonal == true)
-                        collectionRepository.pagePersonalByServiceAndType(service.id, collectionType)
-                    else
-                        collectionRepository.pageByServiceAndType(service.id, collectionType)
+                    collectionRepository.pageByServiceAndType(service.id, collectionType, onlyPersonal)
                 }
             ).flow
 

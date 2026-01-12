@@ -242,11 +242,11 @@ class DavCollectionRepository @Inject constructor(
         dao.insertOrUpdateByUrl(collection)
     }
 
-    fun pageByServiceAndType(serviceId: Long, @CollectionType type: String) =
-        dao.pageByServiceAndType(serviceId, type)
-
-    fun pagePersonalByServiceAndType(serviceId: Long, @CollectionType type: String) =
-        dao.pagePersonalByServiceAndType(serviceId, type)
+    fun pageByServiceAndType(serviceId: Long, @CollectionType type: String, onlyPersonal: Boolean) =
+        if (onlyPersonal)
+            dao.pagePersonalByServiceAndType(serviceId, type)
+        else
+            dao.pageByServiceAndType(serviceId, type)
 
     /**
      * Sets the flag for whether read-only should be enforced on the local collection
