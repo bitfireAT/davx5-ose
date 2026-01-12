@@ -45,9 +45,12 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
      * - any of the requested collections changes in DB or
      * - request matching collections are added/removed in DB.
      *
+     * Caches in provided viewModelScope to avoid reloading on configuration changes (screen rotation etc).
+     *
      * @param serviceFlow Flow emitting the Service which collections should be fetched (null for no service)
      * @param collectionType Type of collections to fetch (address books, calendars, etc.)
      * @param showOnlyPersonalFlow Flow to determine whether to show only personal collections
+     * @param viewModelScope ViewModelScope to cache the paging data
      * @return Flow of PagingData containing the requested collections
      */
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -78,6 +81,7 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
             else
                 dataFlow
         }.flatMapLatest { it }
+            // Avoids reloading by providing existing data instantly on configuration changes
             .cachedIn(viewModelScope)
 
     companion object {
