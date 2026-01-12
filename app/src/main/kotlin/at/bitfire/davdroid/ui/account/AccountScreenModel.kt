@@ -11,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.cachedIn
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.DefaultDispatcher
@@ -129,8 +128,12 @@ class AccountScreenModel @AssistedInject constructor(
         serviceFlow = cardDavSvc,
         dataTypes = listOf(SyncDataType.CONTACTS)
     )
-    val addressBooks = getServiceCollectionPager(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
-        .cachedIn(viewModelScope)
+    val addressBooks = getServiceCollectionPager(
+        cardDavSvc,
+        Collection.TYPE_ADDRESSBOOK,
+        showOnlyPersonal,
+        viewModelScope
+    )
 
     val calDavSvc = serviceRepository
         .getCalDavServiceFlow(account.name)
@@ -145,10 +148,18 @@ class AccountScreenModel @AssistedInject constructor(
         serviceFlow = calDavSvc,
         dataTypes = listOf(SyncDataType.EVENTS, SyncDataType.TASKS)
     )
-    val calendars = getServiceCollectionPager(calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal)
-        .cachedIn(viewModelScope)
-    val subscriptions = getServiceCollectionPager(calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal)
-        .cachedIn(viewModelScope)
+    val calendars = getServiceCollectionPager(
+        calDavSvc,
+        Collection.TYPE_CALENDAR,
+        showOnlyPersonal,
+        viewModelScope
+    )
+    val subscriptions = getServiceCollectionPager(
+        calDavSvc,
+        Collection.TYPE_WEBCAL,
+        showOnlyPersonal,
+        viewModelScope
+    )
 
 
     var error by mutableStateOf<String?>(null)

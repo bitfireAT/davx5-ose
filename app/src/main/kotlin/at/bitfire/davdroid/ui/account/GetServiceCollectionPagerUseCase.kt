@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui.account
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.CollectionType
@@ -14,6 +15,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -52,7 +54,8 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
     operator fun invoke(
         serviceFlow: Flow<Service?>,
         @CollectionType collectionType: String,
-        showOnlyPersonalFlow: Flow<Boolean>
+        showOnlyPersonalFlow: Flow<Boolean>,
+        viewModelScope: CoroutineScope
     ): Flow<PagingData<Collection>> =
         combine(serviceFlow, showOnlyPersonalFlow, forceReadOnlyAddressBooksFlow) { service, onlyPersonal, forceReadOnlyAddressBooks ->
             if (service == null)
@@ -75,6 +78,7 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
             else
                 dataFlow
         }.flatMapLatest { it }
+            .cachedIn(viewModelScope)
 
     companion object {
         const val PAGER_SIZE = 20
