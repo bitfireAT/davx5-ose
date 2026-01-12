@@ -32,10 +32,6 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
     val settings: SettingsManager
 ) {
 
-    companion object {
-        const val PAGER_SIZE = 20
-    }
-
     val forceReadOnlyAddressBooksFlow = settings.getBooleanFlow(Settings.FORCE_READ_ONLY_ADDRESSBOOKS, false)
 
 
@@ -66,5 +62,9 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
             else
                 dataFlow
         }.flatMapLatest { it }
+
+    companion object {
+        const val PAGER_SIZE = 20
+    }
 
 }
