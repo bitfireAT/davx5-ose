@@ -55,7 +55,14 @@ androidx-activityCompose = { module = "androidx.activity:activity-compose", vers
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-glance-base = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
+androidx-glance-material = { module = "androidx.glance:glance-material", version.ref = "glance" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hilt" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidx-hilt" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt" }
@@ -65,6 +72,11 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-paging = { module = "androidx.paging:paging-runtime-ktx", version.ref = "androidx-paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
 androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference" }
+androidx-room-base = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 androidx-security = { module = "androidx.security:security-crypto", version.ref = "androidx-security" }
 androidx-test-core = { module = "androidx.test:core-ktx", version.ref = "androidx-test-core" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
@@ -78,15 +90,8 @@ bitfire-synctools = { module = "com.github.bitfireAT:synctools", version.ref = "
 commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
-compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
 conscrypt = { module = "org.conscrypt:conscrypt-android", version.ref = "conscrypt" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
-glance-base = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
-glance-material = { module = "androidx.glance:glance-material", version.ref = "glance" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 hilt-android-base = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
@@ -108,11 +113,6 @@ okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 openid-appauth = { module = "net.openid:appauth", version.ref = "openid-appauth" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
-room-base = { module = "androidx.room:room-ktx", version.ref = "room" }
-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
-room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 unifiedpush = { module = "org.unifiedpush.android:connector", version.ref = "unifiedpush" }
 unifiedpush-fcm = { module = "org.unifiedpush.android:embedded-fcm-distributor", version.ref = "unifiedpush-fcm" }
 
