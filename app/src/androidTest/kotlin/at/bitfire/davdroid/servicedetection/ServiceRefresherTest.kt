@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import android.security.NetworkSecurityPolicy
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -17,7 +16,6 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -58,7 +56,6 @@ class ServiceRefresherTest {
 
         // build HTTP client
         client = httpClientBuilder.build()
-        Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
 
         // insert test service
         val serviceId = db.serviceDao().insertOrReplace(

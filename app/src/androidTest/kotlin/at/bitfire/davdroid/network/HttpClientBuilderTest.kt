@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.network
 
-import android.security.NetworkSecurityPolicy
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.request.get
@@ -17,7 +16,6 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -72,7 +70,6 @@ class HttpClientBuilderTest {
 
     @Test
     fun testCookies() {
-        Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
         val url = server.url("/test")
 
         // set cookie for root path (/) and /test path in first response
