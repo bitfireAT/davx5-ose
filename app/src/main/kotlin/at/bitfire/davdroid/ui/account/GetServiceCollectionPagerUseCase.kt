@@ -35,6 +35,19 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
     val forceReadOnlyAddressBooksFlow = settings.getBooleanFlow(Settings.FORCE_READ_ONLY_ADDRESSBOOKS, false)
 
 
+    /**
+     * Combines multiple flows into a flow of paged collections for the given service and collection type,
+     * with optional filtering for personal collections only. Applies the force read-only setting for address
+     * book collections if enabled. The returned flow will emit new up-to-date collection paging data when
+     * - any of the input flows changes,
+     * - any of the requested collections changes in DB or
+     * - request matching collections are added/removed in DB.
+     *
+     * @param serviceFlow Flow emitting the Service which collections should be fetched (null for no service)
+     * @param collectionType Type of collections to fetch (address books, calendars, etc.)
+     * @param showOnlyPersonalFlow Flow to determine whether to show only personal collections
+     * @return Flow of PagingData containing the requested collections
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(
         serviceFlow: Flow<Service?>,

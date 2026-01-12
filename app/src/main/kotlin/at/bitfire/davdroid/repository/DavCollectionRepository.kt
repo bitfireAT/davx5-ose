@@ -242,6 +242,10 @@ class DavCollectionRepository @Inject constructor(
         dao.insertOrUpdateByUrl(collection)
     }
 
+    /**
+     * Returns paging source to retrieve collections for given service, of given collection type and
+     * depending on whether they are considered personal or not (see [HomeSet.personal]).
+     */
     fun pageByServiceAndType(serviceId: Long, @CollectionType type: String, onlyPersonal: Boolean) =
         if (onlyPersonal)
             dao.pagePersonalByServiceAndType(serviceId, type)
