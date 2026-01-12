@@ -159,21 +159,21 @@ dependencies {
 
     // Jetpack Compose
     implementation(libs.compose.accompanist.permissions)
-    implementation(platform(libs.compose.bom))
-    implementation(libs.compose.material3)
-    implementation(libs.compose.materialIconsExtended)
-    debugImplementation(libs.compose.ui.tooling)
-    implementation(libs.compose.ui.toolingPreview)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.materialIconsExtended)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.ui.toolingPreview)
 
     // Glance Widgets
-    implementation(libs.glance.base)
-    implementation(libs.glance.material)
+    implementation(libs.androidx.glance.base)
+    implementation(libs.androidx.glance.material)
 
     // Jetpack Room
-    implementation(libs.room.runtime)
-    implementation(libs.room.base)
-    implementation(libs.room.paging)
-    ksp(libs.room.compiler)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.base)
+    implementation(libs.androidx.room.paging)
+    ksp(libs.androidx.room.compiler)
 
     // own libraries
     implementation(libs.bitfire.cert4android)
@@ -213,6 +213,7 @@ dependencies {
 
     // for tests
     androidTestImplementation(libs.androidx.arch.core.testing)
+    androidTestImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.rules)
@@ -223,7 +224,6 @@ dependencies {
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.okhttp.mockwebserver)
-    androidTestImplementation(libs.room.testing)
 
     testImplementation(libs.bitfire.dav4jvm)
     testImplementation(libs.junit)

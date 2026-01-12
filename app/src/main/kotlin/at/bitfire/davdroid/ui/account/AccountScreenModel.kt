@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.DefaultDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -28,6 +29,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,6 +51,7 @@ class AccountScreenModel @AssistedInject constructor(
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext val context: Context,
     private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     getBindableHomesetsFromService: GetBindableHomeSetsFromServiceUseCase,
     getServiceCollectionPager: GetServiceCollectionPagerUseCase,
     private val logger: Logger,
@@ -89,7 +92,7 @@ class AccountScreenModel @AssistedInject constructor(
         }
     }
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(defaultDispatcher) {
             accountSettings?.setShowOnlyPersonal(showOnlyPersonal)
             reloadShowOnlyPersonal()
         }
@@ -125,7 +128,12 @@ class AccountScreenModel @AssistedInject constructor(
         serviceFlow = cardDavSvc,
         dataTypes = listOf(SyncDataType.CONTACTS)
     )
-    val addressBooks = getServiceCollectionPager(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
+    val addressBooks = getServiceCollectionPager(
+        cardDavSvc,
+        Collection.TYPE_ADDRESSBOOK,
+        showOnlyPersonal,
+        viewModelScope
+    )
 
     val calDavSvc = serviceRepository
         .getCalDavServiceFlow(account.name)
@@ -140,8 +148,18 @@ class AccountScreenModel @AssistedInject constructor(
         serviceFlow = calDavSvc,
         dataTypes = listOf(SyncDataType.EVENTS, SyncDataType.TASKS)
     )
-    val calendars = getServiceCollectionPager(calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal)
-    val subscriptions = getServiceCollectionPager(calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal)
+    val calendars = getServiceCollectionPager(
+        calDavSvc,
+        Collection.TYPE_CALENDAR,
+        showOnlyPersonal,
+        viewModelScope
+    )
+    val subscriptions = getServiceCollectionPager(
+        calDavSvc,
+        Collection.TYPE_WEBCAL,
+        showOnlyPersonal,
+        viewModelScope
+    )
 
 
     var error by mutableStateOf<String?>(null)
