@@ -46,27 +46,28 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
         showOnlyPersonalFlow: Flow<Boolean>
     ): Flow<PagingData<Collection>> =
         combine(serviceFlow, showOnlyPersonalFlow, forceReadOnlyAddressBooksFlow) { service, onlyPersonal, forceReadOnlyAddressBooks ->
-            service?.let { service ->
-                val dataFlow = Pager(
-                    config = PagingConfig(PAGER_SIZE),
-                    pagingSourceFactory = {
-                        if (onlyPersonal == true)
-                            collectionRepository.pagePersonalByServiceAndType(service.id, collectionType)
-                        else
-                            collectionRepository.pageByServiceAndType(service.id, collectionType)
-                    }
-                ).flow
+            if (service == null)
+                return@combine flowOf(PagingData.empty())
 
-                // set "forceReadOnly" for every address book if requested
-                if (forceReadOnlyAddressBooks && collectionType == Collection.TYPE_ADDRESSBOOK)
-                    dataFlow.map { pagingData ->
-                        pagingData.map { collection ->
-                            collection.copy(forceReadOnly = true)
-                        }
+            val dataFlow = Pager(
+                config = PagingConfig(PAGER_SIZE),
+                pagingSourceFactory = {
+                    if (onlyPersonal == true)
+                        collectionRepository.pagePersonalByServiceAndType(service.id, collectionType)
+                    else
+                        collectionRepository.pageByServiceAndType(service.id, collectionType)
+                }
+            ).flow
+
+            // set "forceReadOnly" for every address book if requested
+            if (forceReadOnlyAddressBooks && collectionType == Collection.TYPE_ADDRESSBOOK)
+                dataFlow.map { pagingData ->
+                    pagingData.map { collection ->
+                        collection.copy(forceReadOnly = true)
                     }
-                else
-                    dataFlow
-            } ?: flowOf(PagingData.empty())
+                }
+            else
+                dataFlow
         }.flatMapLatest { it }
 
 }
