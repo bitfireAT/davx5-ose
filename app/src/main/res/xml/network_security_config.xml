@@ -1,9 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
 <network-security-config xmlns:tools="http://schemas.android.com/tools">
-    <base-config cleartextTrafficPermitted="true" tools:ignore="InsecureBaseConfiguration">
+
+    <!-- We need cleartext traffic because users
+    1. can use `http://` WebDAV servers (usually in the LAN),
+    2. can use a HTTP/SOCKS/Tor proxy without encryption (usually, but not necessarily on localhost). -->
+    <base-config cleartextTrafficPermitted="true">
+
         <trust-anchors>
+            <!-- Trust system certificates. -->
             <certificates src="system"/>
+
+            <!-- Trust CA certificates which have been installed by the user. -->
             <certificates src="user" tools:ignore="AcceptsUserCertificates" />
         </trust-anchors>
+
     </base-config>
+
+    <!-- If cleartextTrafficPermitted would be "false", we would need to put the following into
+    src/debug/xml/network_security_config.xml to allow cleartext traffic for instrumented tests
+    (mock webserver on localhost):
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain>localhost</domain>
+        <domain>127.0.0.1</domain>
+        <domain>[::1]</domain>
+    </domain-config>
+    -->
+
 </network-security-config>

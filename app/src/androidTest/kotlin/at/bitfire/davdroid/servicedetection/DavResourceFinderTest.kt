@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import android.security.NetworkSecurityPolicy
 import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -25,7 +24,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -76,7 +74,6 @@ class DavResourceFinderTest {
         client = httpClientBuilder
                 .authenticate(domain = null, getCredentials = { credentials })
                 .build()
-        Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
 
         val baseURI = URI.create("/")
         finder = resourceFinderFactory.create(baseURI, credentials)

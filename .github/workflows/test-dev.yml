@@ -11,6 +11,8 @@ concurrency:
 
 # We provide a remote gradle build cache. Take the settings from the secrets and enable
 # configuration and build cache for all gradle jobs.
+#
+# Note: The secrets are not available for forks and Dependabot PRs.
 env:
   GRADLE_BUILDCACHE_URL: ${{ secrets.gradle_buildcache_url }}
   GRADLE_BUILDCACHE_USERNAME: ${{ secrets.gradle_buildcache_username }}
@@ -44,9 +46,10 @@ jobs:
       - name: Compile
         run: ./gradlew app:compileOseDebugSource
 
-      # Cache configurations for the other jobs
+      # Cache configurations for the other jobs (including assemble for CodeQL)
       - name: Populate configuration cache
         run: |
+          ./gradlew --dry-run app:assembleDebug
           ./gradlew --dry-run app:lintOseDebug
           ./gradlew --dry-run app:testOseDebugUnitTest
           ./gradlew --dry-run app:virtualOseDebugAndroidTest

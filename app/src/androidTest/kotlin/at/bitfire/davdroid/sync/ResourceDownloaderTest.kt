@@ -20,7 +20,6 @@ import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -66,11 +65,11 @@ class ResourceDownloaderTest {
     @Test
     fun testDownload_ExternalDomain() = runTest {
         val baseUrl = server.url("/")
+        val localhostIp = InetAddress.getByName(baseUrl.host).hostAddress!!
 
         // URL should be http://localhost, replace with http://127.0.0.1 to have other domain
-        Assume.assumeTrue(baseUrl.host == "localhost")
         val baseUrlIp = baseUrl.newBuilder()
-            .host(InetAddress.getByName(baseUrl.host).hostAddress!!)
+            .host(localhostIp)
             .build()
 
         server.enqueue(MockResponse()

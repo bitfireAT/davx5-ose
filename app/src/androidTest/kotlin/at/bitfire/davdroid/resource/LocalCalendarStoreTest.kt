@@ -96,7 +96,7 @@ class LocalCalendarStoreTest {
             )
         )!!.asSyncAdapter(account)
 
-    private fun getOwnerAccount(): String {
+    private fun getOwnerAccount(): String? {
         provider.query(
             calendarUri,
             arrayOf(Calendars.OWNER_ACCOUNT),
@@ -104,7 +104,8 @@ class LocalCalendarStoreTest {
             arrayOf(account.name),
             null
         )!!.use { cursor ->
-            cursor.moveToNext()
+            if (!cursor.moveToNext())
+                return null
             return cursor.getString(0)
         }
     }
