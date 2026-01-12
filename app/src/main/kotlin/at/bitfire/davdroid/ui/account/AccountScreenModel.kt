@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.DefaultDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -29,6 +30,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,6 +52,7 @@ class AccountScreenModel @AssistedInject constructor(
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext val context: Context,
     private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     getBindableHomesetsFromService: GetBindableHomeSetsFromServiceUseCase,
     getServiceCollectionPager: GetServiceCollectionPagerUseCase,
     private val logger: Logger,
@@ -90,7 +93,7 @@ class AccountScreenModel @AssistedInject constructor(
         }
     }
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(defaultDispatcher) {
             accountSettings?.setShowOnlyPersonal(showOnlyPersonal)
             reloadShowOnlyPersonal()
         }
