@@ -28,7 +28,7 @@
     <string name="notification_channel_sync_io_errors_desc">超时、连接异常等问题（通常是临时错误）</string>
     <!--IntroActivity-->
   <string name="intro_slogan1">您的数据。您的选择。</string>
-    <string name="intro_slogan2">获得控制。</string>
+    <string name="intro_slogan2">掌控</string>
     <string name="intro_battery_title">定期同步间隔</string>
     <string name="intro_battery_text">为了定期进行同步，必须允许%s在后台运行。否则，Android可能会随时暂停同步。</string>
     <string name="intro_battery_dont_show">我不需要定期的同步。*</string>
@@ -42,7 +42,7 @@
     <string name="intro_tasks_title">任务支持</string>
     <string name="intro_tasks_text1">如果你的服务器支持任务，它们可以通过一个受支持的任务应用进行同步:</string>
     <string name="intro_tasks_opentasks">OpenTasks </string>
-    <string name="intro_tasks_opentasks_info">似乎已不再开发 — 不推荐。</string>
+    <string name="intro_tasks_opentasks_info">似乎已不再开发 — 不推荐</string>
     <string name="intro_tasks_tasks_org">Tasks.org</string>
     <string name="intro_tasks_tasks_org_info"><![CDATA[某些功能 <a href="https://www.davx5.com/faq/tasks/advanced-task-features">不被支持</a>。]]></string>
     <string name="intro_tasks_no_app_store">没有可用的应用商店</string>
@@ -57,7 +57,7 @@
     <string name="intro_next">继续</string>
     <!--PermissionsActivity-->
   <string name="permissions_title">权限</string>
-    <string name="permissions_text">%s需要权限才能正常工作。</string>
+    <string name="permissions_text">%s 需要权限才能正常工作</string>
     <string name="permissions_all_title">以下所有</string>
     <string name="permissions_all_status_off">使用它来启用所有特性 (推荐)</string>
     <string name="permissions_all_status_on">已授予全部权限</string>
@@ -79,7 +79,7 @@
     <string name="permissions_autoreset_status_off">权限可能被自动重置(不推荐)</string>
     <string name="permissions_autoreset_status_on">权限不会被自动重置</string>
     <string name="permissions_autoreset_instruction">点击权限 &gt; 取消选择 “移除权限，如果应用未使用”</string>
-    <string name="permissions_app_settings_hint">如果切换没有正常工作，请使用应用程序设置/权限。</string>
+    <string name="permissions_app_settings_hint">如果切换没有正常工作，请使用应用程序设置/权限</string>
     <string name="permissions_app_settings">应用设置</string>
     <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">WiFi SSID权限</string>
@@ -125,17 +125,17 @@
     <string name="navigation_drawer_contribute">如何作贡献</string>
     <string name="navigation_drawer_privacy_policy">隐私政策</string>
     <string name="account_list_welcome">欢迎来到 DAVx⁵！</string>
-    <string name="account_list_empty">连接到你的服务器，保持日历和联系人同步。</string>
+    <string name="account_list_empty">连接到你的服务器，保持日历和联系人同步</string>
     <string name="accounts_sync_all">同步所有账户</string>
     <!--Sync warnings-->
-  <string name="sync_warning_no_notification_permission">已禁用通知。你将不会收到同步出错的通知。</string>
-    <string name="sync_warning_no_internet">自动同步不活跃（无已验证的互联网连接）。</string>
+  <string name="sync_warning_no_notification_permission">已禁用通知。你将不会收到同步出错的通知</string>
+    <string name="sync_warning_no_internet">自动同步不活跃（无已验证的互联网连接）</string>
     <string name="sync_warning_manage_connections">管理连接</string>
-    <string name="sync_warning_datasaver_enabled">启用了流量节省程序。后台同步受限。</string>
+    <string name="sync_warning_datasaver_enabled">启用了流量节省程序。后台同步受限</string>
     <string name="sync_warning_manage_datasaver">管理流量节省程序</string>
     <string name="sync_warning_battery_saver_enabled">启用了节电程序。同步可能受限。</string>
     <string name="sync_warning_manage_battery_saver">管理节电程序</string>
-    <string name="sync_warning_low_storage">低存储空间。Android 不会立即同步本地更改，但会在下次定期同步时进行。</string>
+    <string name="sync_warning_low_storage">低存储空间。Android 不会立即同步本地更改，但会在下次定期同步时进行</string>
     <string name="sync_warning_manage_storage">管理存储</string>
     <string name="sync_warning_calendar_storage_disabled_title">缺少日历程序</string>
     <string name="sync_warning_calendar_storage_disabled_description">你禁用了“日历存储”系统应用吗？</string>
@@ -154,7 +154,7 @@
     <string name="app_settings_show_debug_info">显示调试信息</string>
     <string name="app_settings_show_debug_info_details">查看/分享配置详情和日志</string>
     <string name="app_settings_logging">记录完整日志</string>
-    <string name="app_settings_logging_on">日志记录处于活跃状态。你可以将日志作为调试信息的一部分来查看。</string>
+    <string name="app_settings_logging_on">日志记录处于活跃状态。你可以将日志作为调试信息的一部分来查看</string>
     <string name="app_settings_logging_off">日志记录已禁用</string>
     <string name="app_settings_battery_optimization">电池优化</string>
     <string name="app_settings_battery_optimization_exempted">排除本应用（推荐）</string>
@@ -201,7 +201,7 @@
     <string name="app_settings_unifiedpush_no_endpoint">未配置端点</string>
     <string name="app_settings_unifiedpush_ready">准备好通过 %s 接收推送消息</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-    <string name="app_settings_unifiedpush_encrypted">推送消息始终加密。</string>
+    <string name="app_settings_unifiedpush_encrypted">推送消息始终是加密的</string>
     <!--AccountScreen-->
   <string name="account_invalid_account">账户已被删除</string>
     <string name="account_carddav">CardDAV</string>
@@ -233,7 +233,7 @@
     <string name="account_install_icsx5">安装 ICSx⁵</string>
     <!--AddAccountActivity-->
   <string name="login_title">增加账户</string>
-    <string name="login_privacy_hint"><![CDATA[所有数据只会在你的服务器和设备之间传输。%1$s不会把它们发送到任何其他地方。  参见 <a href="%2$s">隐私政策</a>。]]></string>
+    <string name="login_privacy_hint"><![CDATA[所有数据只会在你的服务器和设备之间传输。%1$s不会把它们发送到任何其他地方。 参见 <a href="%2$s">隐私政策</a>。]]></string>
     <string name="login_generic_login">常规登录</string>
     <string name="login_provider_login">特定服务商的登录</string>
     <string name="login_continue">继续</string>
@@ -256,7 +256,7 @@
     <string name="login_account_name">账户显示名</string>
     <string name="login_account_avoid_apostrophe">使用撇号(\')似乎会在一些设备上造成问题</string>
     <string name="login_account_name_info">请使用你的邮箱地址作为帐户名，因为 Android 会将你创建的日历事件的创建者项设置为帐户名。你不能拥有多个帐户名相同的账户。</string>
-    <string name="login_account_contact_group_method">联系人分组方式</string>
+    <string name="login_account_contact_group_method">联系人分组方式：</string>
     <string name="login_account_name_required">请输入账户名</string>
     <string name="login_account_name_already_taken">账户名已被占用</string>
     <string name="login_account_not_added">无法添加账户</string>
@@ -273,7 +273,7 @@
     <string name="login_google_account">Google 账户</string>
     <string name="login_google">使用 Google 账户登录</string>
     <string name="login_google_client_id">Client ID (可选)</string>
-    <string name="login_google_client_privacy_policy"><![CDATA[%1$s传输你的  Google 联系人和日历数据的目的仅是为了与此设备同步。详情见我们的 <a href="%2$s">隐私政策</a> 。]]></string>
+    <string name="login_google_client_privacy_policy"><![CDATA[%1$s传输你的 Google 联系人和日历数据的目的仅是为了与此设备同步。详情见我们的 <a href="%2$s">隐私政策</a> 。]]></string>
     <string name="login_google_client_limited_use"><![CDATA[%1$s遵守 <a href="%2$s">Google API 服务用户数据政策</a>，包括有限使用的要求。]]></string>
     <string name="login_oauth_couldnt_obtain_auth_code">无法获得身份验证码</string>
     <string name="login_type_nextcloud">Nextcloud</string>
@@ -324,7 +324,7 @@
     <string name="settings_password">密码或应用密码</string>
     <string name="settings_app_password_hint"><![CDATA[你可能偏好使用 <a href="%1$s">应用密码</a>.]]></string>
     <string name="settings_new_password">新密码</string>
-    <string name="settings_password_summary">修改服务器密码</string>
+    <string name="settings_password_summary">更新服务器密码</string>
     <string name="settings_reauthorize_oauth">再次授权 (OAuth)</string>
     <string name="settings_reauthorize_oauth_summary">当访问权被撤销时使用</string>
     <string name="settings_reauthorize_oauth_success">授权成功</string>
@@ -408,7 +408,7 @@
     <string name="debug_info_http_403_description">服务器拒绝了该请求</string>
     <string name="debug_info_http_404_description">所请求的资源（不再存在）不存在。</string>
     <string name="debug_info_http_405_description">服务器不允许请求的操作类型。</string>
-    <string name="debug_info_http_5xx_description">发生服务器端问题。 请联系您的服务器支持</string>
+    <string name="debug_info_http_5xx_description">发生服务器端问题。 请联系您的服务器支持人员</string>
     <string name="debug_info_unexpected_error">发生意外错误。详情见调试信息。</string>
     <string name="debug_info_view_details">查看细节</string>
     <string name="debug_info_subtitle">已收集调试信息</string>
