@@ -28,7 +28,7 @@
     <string name="notification_channel_sync_io_errors_desc">超时、连接异常等问题（通常是临时错误）</string>
     <!--IntroActivity-->
   <string name="intro_slogan1">您的数据。您的选择。</string>
-    <string name="intro_slogan2">掌控</string>
+    <string name="intro_slogan2">尽在掌握</string>
     <string name="intro_battery_title">定期同步间隔</string>
     <string name="intro_battery_text">为了定期进行同步，必须允许%s在后台运行。否则，Android可能会随时暂停同步。</string>
     <string name="intro_battery_dont_show">我不需要定期的同步。*</string>

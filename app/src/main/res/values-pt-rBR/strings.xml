@@ -146,7 +146,7 @@
     <string name="sync_warning_manage_apps">Gerenciar apps</string>
     <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">A detecção de serviço falhou</string>
-    <string name="refresh_collections_worker_refresh_couldnt_refresh">Não foi possível recarregar a lista de coleções</string>
+    <string name="refresh_collections_worker_refresh_couldnt_refresh">Não foi possível recarregar a lista de conjuntos</string>
     <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Executando em primeiro plano</string>
     <string name="foreground_service_notify_text">Em alguns dispositivos, isto é necessário para a sincronização automática.</string>
@@ -209,7 +209,7 @@
     <string name="account_carddav">CardDAV</string>
     <string name="account_caldav">CalDAV</string>
     <string name="account_webcal">Webcal</string>
-    <string name="account_missing_permissions">São necessárias permissões adicionais para sincronizar essas coleções.</string>
+    <string name="account_missing_permissions">São necessárias permissões adicionais para sincronizar esses conjuntos.</string>
     <string name="account_manage_permissions">Gerenciar permissões</string>
     <string name="account_synchronize_now">Sincronizar agora</string>
     <string name="account_settings">Configurações da conta</string>
@@ -222,7 +222,7 @@
     <string name="account_delete">Apagar conta</string>
     <string name="account_delete_confirmation_title">Realmente apagar a conta?</string>
     <string name="account_delete_confirmation_text">Todas as cópias locais das listas de contatos, calendários e listas de tarefas serão apagadas.</string>
-    <string name="account_synchronize_this_collection">sincronizar esta coleção</string>
+    <string name="account_synchronize_this_collection">sincronizar este conjunto</string>
     <string name="account_read_only">somente leitura</string>
     <string name="account_calendar">calendário</string>
     <string name="account_contacts">contatos</string>
@@ -382,8 +382,8 @@
   <string name="collection_datatype_contacts">contatos</string>
     <string name="collection_datatype_events">eventos</string>
     <string name="collection_datatype_tasks">tarefas</string>
-    <string name="collection_delete">Apagar coleção</string>
-    <string name="collection_delete_warning">Esta coleção (%s) e todos os seus dados serão removidos para sempre, tanto localmente como no servidor.</string>
+    <string name="collection_delete">Apagar conjunto</string>
+    <string name="collection_delete_warning">Este conjunto (%s) e todos os seus dados serão removidos para sempre, tanto localmente como no servidor.</string>
     <string name="collection_synchronization">Sincronização</string>
     <string name="collection_synchronization_on">A sincronização está ativada</string>
     <string name="collection_synchronization_off">A sincronização está desativada</string>
