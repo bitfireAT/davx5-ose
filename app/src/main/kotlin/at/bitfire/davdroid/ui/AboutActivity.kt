@@ -8,6 +8,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -69,10 +70,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
+import org.json.JSONArray
 import java.text.Collator
 import java.util.LinkedList
-import java.util.Locale
 import java.util.Optional
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -209,20 +209,24 @@ class AboutActivity: AppCompatActivity() {
             emit(translations)
         }
 
-        private suspend fun loadTranslations(): List<Translation> = withContext(ioDispatcher) {
+        @VisibleForTesting
+        suspend fun loadTranslations(): List<Translation> = withContext(ioDispatcher) {
             try {
-                context.resources.assets.open("translators.json").use { stream ->
-                    val jsonTranslations = JSONObject(stream.readBytes().decodeToString())
+                context.resources.assets.open("credits.json").use { stream ->
+                    val jsonTranslations = JSONArray(stream.readBytes().decodeToString())
                     val result = LinkedList<Translation>()
-                    for (langCode in jsonTranslations.keys()) {
-                        val jsonTranslators = jsonTranslations.getJSONArray(langCode)
-                        val translators = Array<String>(jsonTranslators.length()) { idx ->
-                            jsonTranslators.getString(idx)
-                        }
+                    for (i in 0 until jsonTranslations.length()) {
+                        val jsonObject = jsonTranslations.getJSONObject(i)
+                        val language = jsonObject.keys().takeIf { it.hasNext() }?.next() ?: continue
+                        val jsonTranslators = jsonObject.getJSONArray(language)
+                        val translators = (0 until jsonTranslators.length()).map { idx ->
+                            val obj = jsonTranslators.getJSONObject(idx)
+                            val fullName = obj.getString("full_name")
+                            val username = obj.getString("username")
+                            "$fullName (@$username)"
+                        }.toSet()
 
-                        val langTag = langCode.replace('_', '-')
-                        val language = Locale.forLanguageTag(langTag).displayName
-                        result += Translation(language, translators.toSet())
+                        result += Translation(language, translators)
                     }
 
                     // sort translations by localized language name
