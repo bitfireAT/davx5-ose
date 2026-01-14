@@ -14,8 +14,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -44,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -71,8 +74,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
+import org.json.JSONObject
 import java.text.Collator
 import java.util.LinkedList
+import java.util.Locale
 import java.util.Optional
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -168,7 +173,8 @@ class AboutActivity: AppCompatActivity() {
                                 0 -> AboutApp(licenseInfoProvider = licenseInfoProvider.getOrNull())
                                 1 -> {
                                     val translations = model.translations.collectAsStateWithLifecycle(emptyList())
-                                    TranslatorsGallery(translations.value)
+                                    val transifexTranslations = model.transifexTranslations.collectAsStateWithLifecycle(emptyList())
+                                    TranslatorsGallery(translations.value, transifexTranslations.value)
                                 }
 
                                 2 -> LibrariesContainer(
@@ -209,6 +215,11 @@ class AboutActivity: AppCompatActivity() {
             emit(translations)
         }
 
+        val transifexTranslations: Flow<List<Translation>> = flow {
+            val translations = loadTransifexTranslations()
+            emit(translations)
+        }
+
         @VisibleForTesting
         suspend fun loadTranslations(): List<Translation> = withContext(ioDispatcher) {
             try {
@@ -235,6 +246,35 @@ class AboutActivity: AppCompatActivity() {
                         collator.compare(o1.language, o2.language)
                     }
 
+                    result
+                }
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Couldn't load translators", e)
+                emptyList()
+            }
+        }
+
+        private suspend fun loadTransifexTranslations(): List<Translation> = withContext(ioDispatcher) {
+            try {
+                context.resources.assets.open("translators.json").use { stream ->
+                    val jsonTranslations = JSONObject(stream.readBytes().decodeToString())
+                    val result = LinkedList<Translation>()
+                    for (langCode in jsonTranslations.keys()) {
+                        val jsonTranslators = jsonTranslations.getJSONArray(langCode)
+                        val translators = Array<String>(jsonTranslators.length()) { idx ->
+                            jsonTranslators.getString(idx)
+                        }
+
+                        val langTag = langCode.replace('_', '-')
+                        val language = Locale.forLanguageTag(langTag).displayName
+                        result += Translation(language, translators.toSet())
+                    }
+
+                    // sort translations by localized language name
+                    val collator = Collator.getInstance()
+                    result.sortWith { o1, o2 ->
+                        collator.compare(o1.language, o2.language)
+                    }
                     result
                 }
             } catch (e: Exception) {
@@ -333,7 +373,8 @@ fun AboutApp_Preview() {
 
 @Composable
 fun TranslatorsGallery(
-    translations: List<AboutActivity.Model.Translation>
+    translations: List<AboutActivity.Model.Translation>,
+    transifexTranslations: List<AboutActivity.Model.Translation>
 ) {
     val collator = Collator.getInstance()
     LazyColumn(Modifier.padding(8.dp)) {
@@ -347,9 +388,26 @@ fun TranslatorsGallery(
                 translation.translators
                     .sortedWith { a, b -> collator.compare(a, b) }
                     .joinToString(" · "),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(bottom = 16.dp)
+                style = MaterialTheme.typography.bodyLarge
             )
+
+            val transifexTranslation = transifexTranslations.find { it.language == translation.language }
+            if (transifexTranslation != null) {
+                Text(
+                    "Transifex:",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(bottom = 4.dp, top = 8.dp),
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    transifexTranslation.translators
+                        .sortedWith { a, b -> collator.compare(a, b) }
+                        .joinToString(" · "),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            
+            Spacer(Modifier.height(16.dp))
         }
     }
 }
@@ -360,5 +418,7 @@ fun TranslatorsGallery_Sample() {
     TranslatorsGallery(listOf(
         AboutActivity.Model.Translation("Some Language", setOf("User 1", "User 2")),
         AboutActivity.Model.Translation("Another Language", setOf("User 3", "User 4"))
+    ), listOf(
+        AboutActivity.Model.Translation("Some Language", setOf("User 5", "User 6")),
     ))
 }
