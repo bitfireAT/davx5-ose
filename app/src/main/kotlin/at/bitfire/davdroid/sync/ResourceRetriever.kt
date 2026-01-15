@@ -14,7 +14,6 @@ import ezvcard.util.DataUri
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsBytes
 import io.ktor.http.isSuccess
-import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Provider
@@ -54,35 +53,41 @@ class ResourceRetriever @AssistedInject constructor(
      * @return blob of requested resource, or `null` on error or when the URL scheme is not supported
      */
     suspend fun retrieve(url: String): ByteArray? =
-        when (url.toURIorNull()?.scheme?.lowercase()) {
-            "data" ->
-                DataUri.parse(url).data
+        try {
+            when (url.toURIorNull()?.scheme?.lowercase()) {
+                "data" ->
+                    DataUri.parse(url).data     // may throw IllegalArgumentException
 
-            "http", "https" ->
-                download(url)
+                "http", "https" ->
+                    download(url)                   // may throw various exceptions
 
-            else ->
-                null
+                else ->
+                    null
+            }
+        } catch (e: Exception) {
+            logger.log(Level.SEVERE, "Couldn't retrieve resource", e)
+            null
         }
 
-    private suspend fun download(url: String): ByteArray? {
+    /**
+     * Downloads the resource from the given HTTP/HTTPS URL.
+     *
+     * Doesn't catch any exceptions!
+     */
+    private suspend fun download(url: String): ByteArray? =
         httpClientBuilder
             .get()
             .fromAccount(account, authDomain = originalHost)  // restricts authentication to original domain
             .followRedirects(true)      // allow redirects
             .buildKtor()
             .use { httpClient ->
-                try {
-                    val response = httpClient.get(url)
-                    if (response.status.isSuccess())
-                        return response.bodyAsBytes()
-                    else
-                        logger.warning("Couldn't download external resource (${response.status})")
-                } catch(e: IOException) {
-                    logger.log(Level.SEVERE, "Couldn't download external resource", e)
+                val response = httpClient.get(url)
+                if (response.status.isSuccess())
+                    return response.bodyAsBytes()
+                else {
+                    logger.warning("Couldn't download external resource (${response.status})")
+                    null
                 }
             }
-        return null
-    }
 
 }

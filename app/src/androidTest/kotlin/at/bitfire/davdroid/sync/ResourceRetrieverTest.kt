@@ -69,6 +69,13 @@ class ResourceRetrieverTest {
     }
 
     @Test
+    fun testRetrieve_DataUri_Invalid() = runTest {
+        val downloader = resourceRetrieverFactory.create(account, "example.com")
+        val result = downloader.retrieve("data:;INVALID,INVALID")
+        assertNull(result)
+    }
+
+    @Test
     fun testRetrieve_ExternalDomain() = runTest {
         val baseUrl = server.url("/")
         val localhostIp = InetAddress.getByName(baseUrl.host).hostAddress!!
