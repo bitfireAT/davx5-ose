@@ -1,3 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="account_invalid">Paskyra ne(be)egzistuoja</string>
+    <string name="account_title_address_book">„DAVx⁵“ adresų knyga</string>
+    <string name="account_prefs_use_app">Čia nekeiskite paskyros! Vietoj to tiesiogiai naudokite programą paskyroms tvarkyti.</string>
+    <string name="dialog_delete">Ištrinti</string>
+    <string name="dialog_remove">Šalinti</string>
+    <string name="dialog_deny">Atšaukti</string>
+    <string name="dialog_enable">Įjungti</string>
+    <string name="field_required">Šis laukas privalomas.</string>
+    <string name="help">Pagalba</string>
+    <string name="navigate_up">Naršyti į viršų</string>
+    <string name="options_menu">Parinkčių meniu</string>
+    <string name="share">Bendrinti</string>
+    <string name="sync_started">Sinchronizavimas pradėtas / įtrauktas į eilę</string>
+    <string name="database_destructive_migration_title">Duomenų bazė sugadinta</string>
+    <string name="database_destructive_migration_text">Visos paskyros pašalintos vietoje.</string>
+    <string name="notification_channel_debugging">Derinimas</string>
+    <string name="notification_channel_general">Kiti svarbūs pranešimai</string>
+    <string name="notification_channel_status">Mažo prioriteto būsenos pranešimai</string>
+    <string name="notification_channel_sync">Sinchronizavimas</string>
+    <string name="notification_channel_sync_errors">Sinchronizavimo klaidos</string>
+    <string name="notification_channel_sync_errors_desc">Svarbios klaidos, kurios sustabdo sinchronizavimą, pavyzdžiui, netikėti serverio atsakymai.</string>
+    <string name="notification_channel_sync_warnings">Sinchronizavimo įspėjimai</string>
+    <string name="notification_channel_sync_warnings_desc">Ne lemtingos sinchronizavimo problemos, pvz., tam tikri netinkami failai.</string>
+    <string name="notification_channel_sync_io_errors">Tinklo ir įv./išv. klaidos</string>
+    <string name="notification_channel_sync_io_errors_desc">Baigimo laikai, ryšio problemos ir t. t. (dažnai laikinos).</string>
+    <string name="intro_slogan1">Jūsų duomenys. Jūsų pasirinkimas.</string>
+    <string name="intro_slogan2">Perimkite valdymą.</string>
+    <string name="intro_battery_title">Reguliarūs sinchronizavimo intervalai</string>
 </resources>
