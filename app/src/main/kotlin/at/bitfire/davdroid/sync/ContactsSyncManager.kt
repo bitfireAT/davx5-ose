@@ -367,10 +367,10 @@ class ContactsSyncManager @AssistedInject constructor(
                             jCard = isJCard,
                             downloader = object : Contact.Downloader {
                                 override fun download(url: String, accepts: String): ByteArray? {
-                                    // download external resource (like a photo) from an URL
-                                    val downloader = resourceRetrieverFactory.create(account, davCollection.location.host)
+                                    // retrieve external resource (like a photo) from an URL (not necessarily HTTP[S])
                                     return runBlocking(syncDispatcher) {
-                                        downloader.retrieve(url)
+                                        val retriever = resourceRetrieverFactory.create(account, davCollection.location.host)
+                                        retriever.retrieve(url)
                                     }
                                 }
                             }

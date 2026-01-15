@@ -6,9 +6,11 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import at.bitfire.davdroid.network.HttpClientBuilder
+import at.bitfire.davdroid.util.DavUtils.toURIorNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import ezvcard.util.DataUri
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsBytes
 import io.ktor.http.isSuccess
@@ -51,7 +53,19 @@ class ResourceRetriever @AssistedInject constructor(
      *
      * @return blob of requested resource, or `null` on error or when the URL scheme is not supported
      */
-    suspend fun retrieve(url: String): ByteArray? {
+    suspend fun retrieve(url: String): ByteArray? =
+        when (url.toURIorNull()?.scheme?.lowercase()) {
+            "data" ->
+                DataUri.parse(url).data
+
+            "http", "https" ->
+                download(url)
+
+            else ->
+                null
+        }
+
+    private suspend fun download(url: String): ByteArray? {
         httpClientBuilder
             .get()
             .fromAccount(account, authDomain = originalHost)  // restricts authentication to original domain

@@ -26,7 +26,7 @@ import java.net.InetAddress
 import javax.inject.Inject
 
 @HiltAndroidTest
-class ResourceDownloaderTest {
+class ResourceRetrieverTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -62,14 +62,14 @@ class ResourceDownloaderTest {
 
 
     @Test
-    fun testDownload_DataUri() = runTest {
+    fun testRetrieve_DataUri() = runTest {
         val downloader = resourceRetrieverFactory.create(account, "example.com")
-        val result = downloader.retrieve("data:image/png;base64,dGVzdAo=")
+        val result = downloader.retrieve("data:image/png;base64,dGVzdA==")
         assertArrayEquals("test".toByteArray(), result)
     }
 
     @Test
-    fun testDownload_ExternalDomain() = runTest {
+    fun testRetrieve_ExternalDomain() = runTest {
         val baseUrl = server.url("/")
         val localhostIp = InetAddress.getByName(baseUrl.host).hostAddress!!
 
@@ -94,7 +94,21 @@ class ResourceDownloaderTest {
     }
 
     @Test
-    fun testDownload_SameDomain() = runTest {
+    fun testRetrieve_FtpUrl() = runTest {
+        val downloader = resourceRetrieverFactory.create(account, "example.com")
+        val result = downloader.retrieve("ftp://example.com/photo.jpg")
+        assertNull(result)
+    }
+
+    @Test
+    fun testRetrieve_RelativeHttpsUrl() = runTest {
+        val downloader = resourceRetrieverFactory.create(account, "example.com")
+        val result = downloader.retrieve("https:photo.jpg")
+        assertNull(result)
+    }
+
+    @Test
+    fun testRetrieve_SameDomain() = runTest {
         server.enqueue(MockResponse()
             .setResponseCode(200)
             .setBody("TEST"))
