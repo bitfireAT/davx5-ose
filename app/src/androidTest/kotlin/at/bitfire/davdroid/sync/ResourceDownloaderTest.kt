@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.account.TestAccount
@@ -36,7 +35,7 @@ class ResourceDownloaderTest {
     lateinit var accountSettingsFactory: AccountSettings.Factory
 
     @Inject
-    lateinit var resourceDownloaderFactory: ResourceDownloader.Factory
+    lateinit var resourceRetrieverFactory: ResourceRetriever.Factory
 
     lateinit var account: Account
     lateinit var server: MockWebServer
@@ -63,6 +62,13 @@ class ResourceDownloaderTest {
 
 
     @Test
+    fun testDownload_DataUri() = runTest {
+        val downloader = resourceRetrieverFactory.create(account, "example.com")
+        val result = downloader.retrieve("data:image/png;base64,dGVzdAo=")
+        assertArrayEquals("test".toByteArray(), result)
+    }
+
+    @Test
     fun testDownload_ExternalDomain() = runTest {
         val baseUrl = server.url("/")
         val localhostIp = InetAddress.getByName(baseUrl.host).hostAddress!!
@@ -76,8 +82,8 @@ class ResourceDownloaderTest {
             .setResponseCode(200)
             .setBody("TEST"))
 
-        val downloader = resourceDownloaderFactory.create(account, baseUrl.host)
-        val result = downloader.download(baseUrlIp.toKtorUrl())
+        val downloader = resourceRetrieverFactory.create(account, baseUrl.host)
+        val result = downloader.retrieve(baseUrlIp.toString())
 
         // authentication was NOT sent because request is not for original domain
         val sentAuth = server.takeRequest().getHeader(HttpHeaders.Authorization)
@@ -94,8 +100,8 @@ class ResourceDownloaderTest {
             .setBody("TEST"))
 
         val baseUrl = server.url("/")
-        val downloader = resourceDownloaderFactory.create(account, baseUrl.host)
-        val result = downloader.download(baseUrl.toKtorUrl())
+        val downloader = resourceRetrieverFactory.create(account, baseUrl.host)
+        val result = downloader.retrieve(baseUrl.toString())
 
         // authentication was sent
         val sentAuth = server.takeRequest().getHeader(HttpHeaders.Authorization)

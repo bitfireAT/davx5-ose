@@ -11,7 +11,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsBytes
-import io.ktor.http.Url
 import io.ktor.http.isSuccess
 import java.io.IOException
 import java.util.logging.Level
@@ -22,15 +21,15 @@ import javax.inject.Provider
  * Downloads a separate resource that is referenced during synchronization, for instance in
  * a vCard with `PHOTO:<external URL>`.
  *
- * The [ResourceDownloader] only sends authentication for URLs on the same domain as the
+ * The [ResourceRetriever] only sends authentication for URLs on the same domain as the
  * original URL. For instance, if the vCard that references a photo is taken from
- * `example.com` ([originalHost]), then [download] will send authentication
+ * `example.com` ([originalHost]), then [retrieve] will send authentication
  * when downloading `https://example.com/photo.jpg`, but not for `https://external-hoster.com/photo.jpg`.
  *
  * @param account       account to build authentication from
  * @param originalHost  client only authenticates for the domain of this host
  */
-class ResourceDownloader @AssistedInject constructor(
+class ResourceRetriever @AssistedInject constructor(
     @Assisted private val account: Account,
     @Assisted private val originalHost: String,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
@@ -39,19 +38,20 @@ class ResourceDownloader @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, originalHost: String): ResourceDownloader
+        fun create(account: Account, originalHost: String): ResourceRetriever
     }
 
     /**
-     * Downloads the given resource and returns it as an in-memory blob.
+     * Retrieves the given resource and returns it as an in-memory blob.
+     * Supports HTTP/HTTPS (→ will download) and data (→ will decode) URLs.
      *
-     * Authentication is handled as described in [ResourceDownloader].
+     * Authentication is handled as described in [ResourceRetriever].
      *
-     * @param url       URL of the resource to download
+     * @param url       URL of the resource to download (`http`, `https` or `data` scheme)
      *
-     * @return blob of requested resource, or `null` on error
+     * @return blob of requested resource, or `null` on error or when the URL scheme is not supported
      */
-    suspend fun download(url: Url): ByteArray? {
+    suspend fun retrieve(url: String): ByteArray? {
         httpClientBuilder
             .get()
             .fromAccount(account, authDomain = originalHost)  // restricts authentication to original domain
