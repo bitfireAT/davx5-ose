@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.text.format.Formatter
-import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.okhttp.DavAddressBook
 import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
 import at.bitfire.dav4jvm.okhttp.Response
@@ -108,7 +107,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     accountSettingsFactory: AccountSettings.Factory,
-    private val resourceDownloaderFactory: ResourceDownloader.Factory,
+    private val resourceRetrieverFactory: ResourceRetriever.Factory,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
@@ -368,11 +367,10 @@ class ContactsSyncManager @AssistedInject constructor(
                             jCard = isJCard,
                             downloader = object : Contact.Downloader {
                                 override fun download(url: String, accepts: String): ByteArray? {
-                                    // download external resource (like a photo) from an URL
-                                    val httpUrl = url.toUrlOrNull() ?: return null
-                                    val downloader = resourceDownloaderFactory.create(account, davCollection.location.host)
+                                    // retrieve external resource (like a photo) from an URL (not necessarily HTTP[S])
                                     return runBlocking(syncDispatcher) {
-                                        downloader.download(httpUrl)
+                                        val retriever = resourceRetrieverFactory.create(account, davCollection.location.host)
+                                        retriever.retrieve(url)
                                     }
                                 }
                             }
