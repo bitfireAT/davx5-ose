@@ -391,22 +391,31 @@ fun TranslatorsGallery(
             }
 
             Text(
-                translation.language,
+                text = translation.language,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
-            Text(
-                translation.translators
-                    .sortedWith { a, b -> collator.compare(a, b) }
-                    .joinToString(" · "),
-                style = MaterialTheme.typography.bodyLarge
-            )
+            if (translation.translators.isNotEmpty()) {
+                Text(
+                    translation.translators
+                        .sortedWith { a, b -> collator.compare(a, b) }
+                        .joinToString(" · "),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+                // Since it's possible that we have translators from Transifex but not from the old credits.json,
+                // only add spacing if we also have old translators, which would be the same as adding top padding
+                // to the Transifex section.
+                if (transifexTranslation != null) {
+                    Spacer(Modifier.height(8.dp))
+                }
+            }
 
             if (transifexTranslation != null) {
                 Text(
                     "Transifex:",
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(bottom = 4.dp, top = 8.dp),
+                    modifier = Modifier.padding(bottom = 4.dp),
                     fontWeight = FontWeight.Bold
                 )
                 Text(
