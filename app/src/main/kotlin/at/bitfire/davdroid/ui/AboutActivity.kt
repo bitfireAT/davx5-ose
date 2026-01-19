@@ -230,12 +230,19 @@ class AboutActivity: AppCompatActivity() {
                         val jsonObject = jsonTranslations.getJSONObject(i)
                         val language = jsonObject.keys().takeIf { it.hasNext() }?.next() ?: continue
                         val jsonTranslators = jsonObject.getJSONArray(language)
-                        val translators = (0 until jsonTranslators.length()).map { idx ->
+                        val translators = (0 until jsonTranslators.length()).mapNotNull { idx ->
                             val obj = jsonTranslators.getJSONObject(idx)
                             val fullName = obj.getString("full_name")
                             val username = obj.getString("username")
+
+                            // Ricki did the migration from Weblate to Transifex, so the user is shown as contributor for the language. Filter it out
+                            if (username == "rfc2822") return@mapNotNull null
+
                             "$fullName (@$username)"
                         }.toSet()
+
+                        // Skip languages without contributors
+                        if (translators.isEmpty()) continue
 
                         result += Translation(language, translators)
                     }
