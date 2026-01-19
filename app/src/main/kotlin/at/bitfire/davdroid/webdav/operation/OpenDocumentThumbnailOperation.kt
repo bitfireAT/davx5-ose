@@ -29,8 +29,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -64,11 +62,6 @@ class OpenDocumentThumbnailOperation @Inject constructor(
             logger.warning("openDocumentThumbnail without cancellationSignal causes too much problems, please fix calling app")
             return null
         }
-        val accessScope = CoroutineScope(SupervisorJob())
-        signal.setOnCancelListener {
-            logger.fine("Cancelling thumbnail generation for $documentId")
-            accessScope.cancel()
-        }
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
@@ -79,17 +72,7 @@ class OpenDocumentThumbnailOperation @Inject constructor(
         }
 
         val thumbFile = thumbnailCache.get(docCacheKey, sizeHint) {
-            // create thumbnail
-            try {
-                runBlocking(ioDispatcher) {
-                    withTimeout(THUMBNAIL_TIMEOUT_MS) {
-                        downloadAndCreateThumbnail(doc, db, sizeHint)
-                    }
-                }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't generate thumbnail", e)
-                null
-            }
+            createThumbnail(doc, sizeHint, signal)
         }
 
         if (thumbFile != null)
@@ -101,6 +84,22 @@ class OpenDocumentThumbnailOperation @Inject constructor(
         return null
     }
 
+    private fun createThumbnail(doc: WebDavDocument, sizeHint: Point, signal: CancellationSignal): ByteArray? =
+        try {
+            runBlocking(ioDispatcher) {
+                signal.setOnCancelListener {
+                    logger.fine("Cancelling thumbnail generation for ${doc.id}")
+                    cancel()        // cancel current coroutine scope
+                }
+
+                withTimeout(THUMBNAIL_TIMEOUT_MS) {
+                    downloadAndCreateThumbnail(doc, db, sizeHint)
+                }
+            }
+        } catch (e: Exception) {
+            logger.log(Level.WARNING, "Couldn't generate thumbnail", e)
+            null
+        }
 
     private suspend fun downloadAndCreateThumbnail(doc: WebDavDocument, db: AppDatabase, sizeHint: Point): ByteArray? =
         httpClientBuilder
