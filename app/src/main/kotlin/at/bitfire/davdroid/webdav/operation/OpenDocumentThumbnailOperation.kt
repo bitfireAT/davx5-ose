@@ -14,19 +14,24 @@ import android.net.ConnectivityManager
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import androidx.core.content.getSystemService
-import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.cache.ThumbnailCache
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.statement.bodyAsBytes
+import io.ktor.http.Url
+import io.ktor.http.isSuccess
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
@@ -74,31 +79,11 @@ class OpenDocumentThumbnailOperation @Inject constructor(
 
         val thumbFile = thumbnailCache.get(docCacheKey, sizeHint) {
             // create thumbnail
-            val job = accessScope.async {
-                withTimeout(THUMBNAIL_TIMEOUT_MS) {
-                    val client = httpClientBuilder.build(doc.mountId, logBody = false)
-                    val url = doc.toHttpUrl(db)
-                    val dav = DavResource(client, url)
-                    var result: ByteArray? = null
-                    runInterruptible(ioDispatcher) {
-                        dav.get("image/*", null) { response ->
-                            response.body.byteStream().use { data ->
-                                BitmapFactory.decodeStream(data)?.let { bitmap ->
-                                    val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
-                                    val baos = ByteArrayOutputStream()
-                                    thumb.compress(Bitmap.CompressFormat.JPEG, 95, baos)
-                                    result = baos.toByteArray()
-                                }
-                            }
-                        }
-                    }
-                    result
-                }
-            }
-
             try {
                 runBlocking {
-                    job.await()
+                    withTimeout(THUMBNAIL_TIMEOUT_MS) {
+                        downloadAndCreateThumbnail(doc, db, sizeHint)
+                    }
                 }
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't generate thumbnail", e)
@@ -115,6 +100,42 @@ class OpenDocumentThumbnailOperation @Inject constructor(
         return null
     }
 
+
+    private suspend fun downloadAndCreateThumbnail(doc: WebDavDocument, db: AppDatabase, sizeHint: Point): ByteArray? {
+        return withContext(ioDispatcher) {
+            httpClientBuilder
+                .buildKtor(doc.mountId, logBody = false)
+                .use { httpClient ->
+                    val httpUrl = doc.toHttpUrl(db)
+                    val ktorUrl: Url = httpUrl.toString().toUrlOrNull() ?: run {
+                        logger.warning("Could not convert URL to Ktor Url: ${httpUrl}")
+                        return@withContext null
+                    }
+                    
+                    try {
+                        val response = httpClient.get(ktorUrl) {
+                            header("Accept", "image/*")
+                        }
+                        
+                        if (response.status.isSuccess()) {
+                            val bytes = response.bodyAsBytes()
+                            
+                            BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.let { bitmap ->
+                                val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
+                                val baos = ByteArrayOutputStream()
+                                thumb.compress(Bitmap.CompressFormat.JPEG, 95, baos)
+                                return@withContext baos.toByteArray()
+                            }
+                        } else {
+                            logger.warning("Couldn't download image for thumbnail (${response.status})")
+                        }
+                    } catch (e: Exception) {
+                        logger.log(Level.WARNING, "Couldn't download image for thumbnail", e)
+                    }
+                    null
+                }
+        }
+    }
 
     companion object {
 

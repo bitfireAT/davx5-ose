@@ -6,6 +6,7 @@ package at.bitfire.davdroid.webdav
 
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.network.MemoryCookieStore
+import io.ktor.client.HttpClient
 import okhttp3.CookieJar
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -39,6 +40,31 @@ class DavHttpClientBuilder @Inject constructor(
         }
 
         return builder.build()
+    }
+
+    /**
+     * Creates a Ktor HTTP client that can be used to access resources in the given mount.
+     *
+     * @param mountId    ID of the mount to access
+     * @param logBody    whether to log the body of HTTP requests (disable for potentially large files)
+     * @return the new HttpClient which **must be closed by the caller**
+     */
+    fun buildKtor(mountId: Long, logBody: Boolean = true): HttpClient {
+        val cookieStore = cookieStores.getOrPut(mountId) {
+            MemoryCookieStore()
+        }
+        val builder = httpClientBuilder.get()
+            .loggerInterceptorLevel(if (logBody) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.HEADERS)
+            .setCookieStore(cookieStore)
+
+        credentialsStore.getCredentials(mountId)?.let { credentials ->
+            builder.authenticate(
+                domain = null,
+                getCredentials = { credentials }
+            )
+        }
+
+        return builder.buildKtor()
     }
 
 
