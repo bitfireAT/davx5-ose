@@ -24,6 +24,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsBytes
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.CoroutineDispatcher
@@ -31,7 +33,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
@@ -80,7 +81,7 @@ class OpenDocumentThumbnailOperation @Inject constructor(
         val thumbFile = thumbnailCache.get(docCacheKey, sizeHint) {
             // create thumbnail
             try {
-                runBlocking {
+                runBlocking(ioDispatcher) {
                     withTimeout(THUMBNAIL_TIMEOUT_MS) {
                         downloadAndCreateThumbnail(doc, db, sizeHint)
                     }
@@ -101,41 +102,39 @@ class OpenDocumentThumbnailOperation @Inject constructor(
     }
 
 
-    private suspend fun downloadAndCreateThumbnail(doc: WebDavDocument, db: AppDatabase, sizeHint: Point): ByteArray? {
-        return withContext(ioDispatcher) {
-            httpClientBuilder
-                .buildKtor(doc.mountId, logBody = false)
-                .use { httpClient ->
-                    val httpUrl = doc.toHttpUrl(db)
-                    val ktorUrl: Url = httpUrl.toString().toUrlOrNull() ?: run {
-                        logger.warning("Could not convert URL to Ktor Url: ${httpUrl}")
-                        return@withContext null
-                    }
-                    
-                    try {
-                        val response = httpClient.get(ktorUrl) {
-                            header("Accept", "image/*")
-                        }
-                        
-                        if (response.status.isSuccess()) {
-                            val bytes = response.bodyAsBytes()
-                            
-                            BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.let { bitmap ->
-                                val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
-                                val baos = ByteArrayOutputStream()
-                                thumb.compress(Bitmap.CompressFormat.JPEG, 95, baos)
-                                return@withContext baos.toByteArray()
-                            }
-                        } else {
-                            logger.warning("Couldn't download image for thumbnail (${response.status})")
-                        }
-                    } catch (e: Exception) {
-                        logger.log(Level.WARNING, "Couldn't download image for thumbnail", e)
-                    }
-                    null
+    private suspend fun downloadAndCreateThumbnail(doc: WebDavDocument, db: AppDatabase, sizeHint: Point): ByteArray? =
+        httpClientBuilder
+            .buildKtor(doc.mountId, logBody = false)
+            .use { httpClient ->
+            val httpUrl = doc.toHttpUrl(db)
+            val ktorUrl: Url = httpUrl.toString().toUrlOrNull() ?: run {
+                logger.warning("Could not convert URL to Ktor Url: ${httpUrl}")
+                return null
+            }
+
+            try {
+                val response = httpClient.get(ktorUrl) {
+                    header(HttpHeaders.Accept, ContentType.Image.Any.toString())
                 }
+
+                if (response.status.isSuccess()) {
+                    val bytes = response.bodyAsBytes()
+
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.let { bitmap ->
+                        val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
+                        val baos = ByteArrayOutputStream()
+                        thumb.compress(Bitmap.CompressFormat.JPEG, 95, baos)
+                        return baos.toByteArray()
+                    }
+                } else
+                    logger.warning("Couldn't download image for thumbnail (${response.status})")
+
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Couldn't download image for thumbnail", e)
+            }
+            null
         }
-    }
+
 
     companion object {
 
