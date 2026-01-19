@@ -88,7 +88,7 @@ class OpenDocumentThumbnailOperation @Inject constructor(
         try {
             runBlocking(ioDispatcher) {
                 signal.setOnCancelListener {
-                    logger.fine("Cancelling thumbnail generation for ${doc.id}")
+                    logger.fine("Cancelling thumbnail generation for #${doc.id}")
                     cancel()        // cancel current coroutine scope
                 }
 
@@ -107,7 +107,7 @@ class OpenDocumentThumbnailOperation @Inject constructor(
             .use { httpClient ->
             val httpUrl = doc.toHttpUrl(db)
             val ktorUrl: Url = httpUrl.toString().toUrlOrNull() ?: run {
-                logger.warning("Could not convert URL to Ktor Url: ${httpUrl}")
+                logger.warning("Could not convert URL to Ktor Url: $httpUrl")
                 return null
             }
 
