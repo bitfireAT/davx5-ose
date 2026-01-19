@@ -13,8 +13,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.davdroid.util.DavUtils.MEDIA_TYPE_OCTET_STREAM
 import at.bitfire.davdroid.webdav.DocumentState
+import io.ktor.http.Url
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -127,6 +129,9 @@ data class WebDavDocument(
             builder.addPathSegment(segment)
         return builder.build()
     }
+
+    suspend fun toKtorUrl(db: AppDatabase): Url =
+        toHttpUrl(db).toKtorUrl()
 
 
     /**

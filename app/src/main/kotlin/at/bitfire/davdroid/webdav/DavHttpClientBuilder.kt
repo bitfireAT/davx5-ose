@@ -6,6 +6,7 @@ package at.bitfire.davdroid.webdav
 
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.network.MemoryCookieStore
+import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
 import okhttp3.CookieJar
 import okhttp3.OkHttpClient
@@ -36,6 +37,7 @@ class DavHttpClientBuilder @Inject constructor(
      * @param logBody    whether to log the body of HTTP requests (disable for potentially large files)
      * @return the new HttpClient which **must be closed by the caller**
      */
+    @MustBeClosed
     fun buildKtor(mountId: Long, logBody: Boolean = true): HttpClient {
         val builder = createBuilder(mountId, logBody)
         return builder.buildKtor()

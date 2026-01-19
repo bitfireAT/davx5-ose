@@ -14,7 +14,6 @@ import android.net.ConnectivityManager
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import androidx.core.content.getSystemService
-import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.di.IoDispatcher
@@ -26,7 +25,6 @@ import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsBytes
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.http.Url
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.cancel
@@ -105,14 +103,9 @@ class OpenDocumentThumbnailOperation @Inject constructor(
         httpClientBuilder
             .buildKtor(doc.mountId, logBody = false)
             .use { httpClient ->
-            val httpUrl = doc.toHttpUrl(db)
-            val ktorUrl: Url = httpUrl.toString().toUrlOrNull() ?: run {
-                logger.warning("Could not convert URL to Ktor Url: $httpUrl")
-                return null
-            }
-
+            val url = doc.toKtorUrl(db)
             try {
-                val response = httpClient.get(ktorUrl) {
+                val response = httpClient.get(url) {
                     header(HttpHeaders.Accept, ContentType.Image.Any.toString())
                 }
 
