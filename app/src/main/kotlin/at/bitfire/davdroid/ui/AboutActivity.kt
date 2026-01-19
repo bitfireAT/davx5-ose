@@ -241,9 +241,6 @@ class AboutActivity: AppCompatActivity() {
                             "$fullName (@$username)"
                         }.toSet()
 
-                        // Skip languages without contributors
-                        if (translators.isEmpty()) continue
-
                         result += Translation(language, translators)
                     }
 
@@ -386,6 +383,13 @@ fun TranslatorsGallery(
     val collator = Collator.getInstance()
     LazyColumn(Modifier.padding(8.dp)) {
         items(translations) { translation ->
+            val transifexTranslation = transifexTranslations.find { it.language == translation.language }
+
+            if (translation.translators.isEmpty() && (transifexTranslation == null || transifexTranslation.translators.isEmpty())) {
+                // skip empty entries
+                return@items
+            }
+
             Text(
                 translation.language,
                 style = MaterialTheme.typography.headlineMedium,
@@ -398,7 +402,6 @@ fun TranslatorsGallery(
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            val transifexTranslation = transifexTranslations.find { it.language == translation.language }
             if (transifexTranslation != null) {
                 Text(
                     "Transifex:",
