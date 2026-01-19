@@ -25,20 +25,7 @@ class DavHttpClientBuilder @Inject constructor(
      * @param logBody    whether to log the body of HTTP requests (disable for potentially large files)
      */
     fun build(mountId: Long, logBody: Boolean = true): OkHttpClient {
-        val cookieStore = cookieStores.getOrPut(mountId) {
-            MemoryCookieStore()
-        }
-        val builder = httpClientBuilder.get()
-            .loggerInterceptorLevel(if (logBody) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.HEADERS)
-            .setCookieStore(cookieStore)
-
-        credentialsStore.getCredentials(mountId)?.let { credentials ->
-            builder.authenticate(
-                domain = null,
-                getCredentials = { credentials }
-            )
-        }
-
+        val builder = createBuilder(mountId, logBody)
         return builder.build()
     }
 
@@ -50,6 +37,18 @@ class DavHttpClientBuilder @Inject constructor(
      * @return the new HttpClient which **must be closed by the caller**
      */
     fun buildKtor(mountId: Long, logBody: Boolean = true): HttpClient {
+        val builder = createBuilder(mountId, logBody)
+        return builder.buildKtor()
+    }
+
+    /**
+     * Creates and configures an HttpClientBuilder with authentication and cookie store.
+     *
+     * @param mountId    ID of the mount to access
+     * @param logBody    whether to log the body of HTTP requests (disable for potentially large files)
+     * @return configured HttpClientBuilder ready for building
+     */
+    private fun createBuilder(mountId: Long, logBody: Boolean = true): HttpClientBuilder {
         val cookieStore = cookieStores.getOrPut(mountId) {
             MemoryCookieStore()
         }
@@ -64,7 +63,7 @@ class DavHttpClientBuilder @Inject constructor(
             )
         }
 
-        return builder.buildKtor()
+        return builder
     }
 
 
