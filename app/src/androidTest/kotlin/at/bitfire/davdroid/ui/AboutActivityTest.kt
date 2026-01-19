@@ -13,6 +13,7 @@ import org.junit.Test
 import java.util.logging.Logger
 
 class AboutActivityTest {
+
     @Test
     fun test_loadTranslations() = runBlocking {
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -25,4 +26,5 @@ class AboutActivityTest {
         // And that it's not empty
         assertTrue("Expected translations to be non-empty", translations.isNotEmpty())
     }
+
 }
