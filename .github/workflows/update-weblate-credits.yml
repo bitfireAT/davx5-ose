@@ -1,16 +1,16 @@
 name: Update Weblate Credits
 
-# Run whenever a PR made by the user "weblate" is merged into the main branch
 on:
-  push:
-    branches:
-      - main-ose
-    authors:
-      - weblate
+  pull_request:
+    # Trigger when a PR is opened, or when Weblate pushes new commits to it
+    types: [ opened, synchronize ]
 
 jobs:
   update-credits:
     runs-on: ubuntu-latest
+
+    # Run only if the PR creator is 'weblate'
+    if: github.actor == 'weblate'
 
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
@@ -21,14 +21,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
       with:
-        ref: main-ose
+        # Checkout the head ref of the PR
+        ref: ${{ github.head_ref }}
+        # Fetch full history to ensure git operations work smoothly
+        fetch-depth: 0
     - name: Fetch Weblate credits
       run: ./scripts/fetch-weblate-credits.sh
       env:
         WEBLATE_API_TOKEN: ${{ secrets.WEBLATE_API_TOKEN }}
     - name: Commit and push changes
       uses: stefanzweifel/git-auto-commit-action@v7
-      branch: main-ose
       with:
-        commit_message: "Update Weblate credits"
+        commit_message: "Update credits"
         file_pattern: credits.json
