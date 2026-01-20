@@ -46,6 +46,31 @@ class AboutModel @Inject constructor(
     }
 
     @VisibleForTesting
+    suspend fun loadTransifexTranslators(): List<LanguageTranslators> = withContext(ioDispatcher) {
+        try {
+            context.resources.assets.open("transifex-translators.json").use { stream ->
+                val jsonTranslations = JSONObject(stream.readBytes().decodeToString())
+                val result = LinkedList<LanguageTranslators>()
+                for (langCode in jsonTranslations.keys()) {
+                    val jsonTranslators = jsonTranslations.getJSONArray(langCode)
+                    val translators = Array<String>(jsonTranslators.length()) { idx ->
+                        jsonTranslators.getString(idx)
+                    }
+
+                    val langTag = langCode.replace('_', '-')
+                    val language = Locale.forLanguageTag(langTag).displayName
+                    result += LanguageTranslators(language, translators.toSet())
+                }
+
+                sortLanguageTranslators(result)
+            }
+        } catch (e: Exception) {
+            logger.log(Level.WARNING, "Couldn't load Transifex translators", e)
+            emptyList()
+        }
+    }
+
+    @VisibleForTesting
     suspend fun loadWeblateTranslators(): List<LanguageTranslators> = withContext(ioDispatcher) {
         try {
             context.resources.assets.open("weblate-translators.json").use { stream ->
@@ -77,30 +102,6 @@ class AboutModel @Inject constructor(
             }
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't load Weblate translators", e)
-            emptyList()
-        }
-    }
-
-    private suspend fun loadTransifexTranslators(): List<LanguageTranslators> = withContext(ioDispatcher) {
-        try {
-            context.resources.assets.open("transifex-translators.json").use { stream ->
-                val jsonTranslations = JSONObject(stream.readBytes().decodeToString())
-                val result = LinkedList<LanguageTranslators>()
-                for (langCode in jsonTranslations.keys()) {
-                    val jsonTranslators = jsonTranslations.getJSONArray(langCode)
-                    val translators = Array<String>(jsonTranslators.length()) { idx ->
-                        jsonTranslators.getString(idx)
-                    }
-
-                    val langTag = langCode.replace('_', '-')
-                    val language = Locale.forLanguageTag(langTag).displayName
-                    result += LanguageTranslators(language, translators.toSet())
-                }
-
-                sortLanguageTranslators(result)
-            }
-        } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't load Transifex translators", e)
             emptyList()
         }
     }
