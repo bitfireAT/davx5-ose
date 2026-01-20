@@ -33,4 +33,4 @@ jobs:
       uses: stefanzweifel/git-auto-commit-action@v7
       with:
         commit_message: "Update credits"
-        file_pattern: credits.json
+        file_pattern: weblate-translators.json

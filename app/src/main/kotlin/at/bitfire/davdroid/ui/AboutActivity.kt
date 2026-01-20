@@ -298,7 +298,7 @@ fun TranslatorsGallery(
                     style = MaterialTheme.typography.bodyLarge
                 )
 
-                // Since it's possible that we have translators from Transifex but not from the old credits.json,
+                // Since it's possible that we have translators from Transifex but not from the old weblate-transifex-translators.json,
                 // only add spacing if we also have old translators, which would be the same as adding top padding
                 // to the Transifex section.
                 if (transifexTranslation != null) {
