@@ -30,27 +30,27 @@ class AboutModel @Inject constructor(
     private val logger: Logger
 ): ViewModel() {
 
-    data class Translation(
+    data class LanguageTranslators(
         val language: String,
         val translators: Set<String>
     )
 
-    val transifexTranslators: Flow<List<Translation>> = flow {
+    val transifexTranslators: Flow<List<LanguageTranslators>> = flow {
         val translators = loadTransifexTranslators()
         emit(translators)
     }
 
-    val weblateTranslators: Flow<List<Translation>> = flow {
+    val weblateTranslators: Flow<List<LanguageTranslators>> = flow {
         val translators = loadWeblateTranslators()
         emit(translators)
     }
 
     @VisibleForTesting
-    suspend fun loadWeblateTranslators(): List<Translation> = withContext(ioDispatcher) {
+    suspend fun loadWeblateTranslators(): List<LanguageTranslators> = withContext(ioDispatcher) {
         try {
             context.resources.assets.open("weblate-translators.json").use { stream ->
                 val jsonTranslations = JSONArray(stream.readBytes().decodeToString())
-                val result = LinkedList<Translation>()
+                val result = LinkedList<LanguageTranslators>()
                 for (i in 0 until jsonTranslations.length()) {
                     val jsonObject = jsonTranslations.getJSONObject(i)
                     val language = jsonObject.keys().takeIf { it.hasNext() }?.next() ?: continue
@@ -60,13 +60,13 @@ class AboutModel @Inject constructor(
                         val fullName = obj.getString("full_name")
                         val username = obj.getString("username")
 
-                        // Ricki did the migration from Weblate to Transifex, so the user is shown as contributor for the language. Filter it out
-                        if (username == "rfc2822") return@mapNotNull null
+                        if (username == EXCLUDED_USER)
+                            return@mapNotNull null
 
                         "$fullName (@$username)"
                     }.toSet()
 
-                    result += Translation(language, translators)
+                    result += LanguageTranslators(language, translators)
                 }
 
                 // sort translations by localized language name
@@ -83,11 +83,11 @@ class AboutModel @Inject constructor(
         }
     }
 
-    private suspend fun loadTransifexTranslators(): List<Translation> = withContext(ioDispatcher) {
+    private suspend fun loadTransifexTranslators(): List<LanguageTranslators> = withContext(ioDispatcher) {
         try {
             context.resources.assets.open("transifex-translators.json").use { stream ->
                 val jsonTranslations = JSONObject(stream.readBytes().decodeToString())
-                val result = LinkedList<Translation>()
+                val result = LinkedList<LanguageTranslators>()
                 for (langCode in jsonTranslations.keys()) {
                     val jsonTranslators = jsonTranslations.getJSONArray(langCode)
                     val translators = Array<String>(jsonTranslators.length()) { idx ->
@@ -96,7 +96,7 @@ class AboutModel @Inject constructor(
 
                     val langTag = langCode.replace('_', '-')
                     val language = Locale.forLanguageTag(langTag).displayName
-                    result += Translation(language, translators.toSet())
+                    result += LanguageTranslators(language, translators.toSet())
                 }
 
                 // sort translations by localized language name
@@ -111,4 +111,12 @@ class AboutModel @Inject constructor(
             emptyList()
         }
     }
+
+
+    companion object {
+        // Ricki did the migration from Weblate to Transifex, so the user is shown as
+        // contributor for many languages. Should be filtered out.
+        private const val EXCLUDED_USER = "rfc2822"
+    }
+
 }

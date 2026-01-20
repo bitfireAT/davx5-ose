@@ -272,13 +272,13 @@ fun AboutApp_Preview() {
 
 @Composable
 fun TranslatorsGallery(
-    translations: List<AboutModel.Translation>,
-    transifexTranslations: List<AboutModel.Translation>
+    weblateTranslators: List<AboutModel.LanguageTranslators>,
+    transifexTranslators: List<AboutModel.LanguageTranslators>
 ) {
     val collator = Collator.getInstance()
     LazyColumn(Modifier.padding(8.dp)) {
-        items(translations) { translation ->
-            val transifexTranslation = transifexTranslations.find { it.language == translation.language }
+        items(weblateTranslators) { translation ->
+            val transifexTranslation = transifexTranslators.find { it.language == translation.language }
 
             if (translation.translators.isEmpty() && (transifexTranslation == null || transifexTranslation.translators.isEmpty())) {
                 // skip empty entries
@@ -330,9 +330,9 @@ fun TranslatorsGallery(
 @Preview
 fun TranslatorsGallery_Sample() {
     TranslatorsGallery(listOf(
-        AboutModel.Translation("Some Language", setOf("User 1", "User 2")),
-        AboutModel.Translation("Another Language", setOf("User 3", "User 4"))
+        AboutModel.LanguageTranslators("Some Language", setOf("User 1", "User 2")),
+        AboutModel.LanguageTranslators("Another Language", setOf("User 3", "User 4"))
     ), listOf(
-        AboutModel.Translation("Some Language", setOf("User 5", "User 6")),
+        AboutModel.LanguageTranslators("Some Language", setOf("User 5", "User 6")),
     ))
 }
