@@ -155,9 +155,8 @@ class AboutActivity: AppCompatActivity() {
                             when (index) {
                                 0 -> AboutApp(licenseInfoProvider = licenseInfoProvider.getOrNull())
                                 1 -> {
-                                    val weblateTranslators = model.weblateTranslators.collectAsStateWithLifecycle(emptyList())
-                                    val transifexTranslators = model.transifexTranslators.collectAsStateWithLifecycle(emptyList())
-                                    TranslatorsGallery(weblateTranslators.value, transifexTranslators.value)
+                                    val translators = model.translators.collectAsStateWithLifecycle(emptyList())
+                                    TranslatorsGallery(translators.value)
                                 }
 
                                 2 -> LibrariesContainer(
@@ -271,47 +270,46 @@ fun AboutApp_Preview() {
 
 @Composable
 fun TranslatorsGallery(
-    weblateTranslators: List<AboutModel.LanguageTranslators>,
-    transifexTranslators: List<AboutModel.LanguageTranslators>
+    translators: List<AboutModel.LanguageTranslators>
 ) {
     val collator = Collator.getInstance()
     LazyColumn(Modifier.padding(8.dp)) {
-        items(weblateTranslators) { translation ->
-            val transifexTranslation = transifexTranslators.find { it.language == translation.language }
-
-            if (translation.translators.isEmpty() && (transifexTranslation == null || transifexTranslation.translators.isEmpty())) {
-                // skip empty entries
+        items(translators) { languageTranslators ->
+            // Skip empty entries
+            if (languageTranslators.weblateTranslators.isEmpty() && languageTranslators.transifexTranslators.isEmpty()) {
                 return@items
             }
 
             Text(
-                text = translation.language,
+                text = languageTranslators.language,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
-            if (translation.translators.isNotEmpty()) {
+            
+            // Display Weblate translators
+            if (languageTranslators.weblateTranslators.isNotEmpty()) {
                 Text(
-                    translation.translators
+                    languageTranslators.weblateTranslators
                         .sortedWith { a, b -> collator.compare(a, b) }
                         .joinToString(" · "),
                     style = MaterialTheme.typography.bodyLarge
                 )
 
-                // Since it's possible that we have translators from Transifex but not from the old weblate-transifex-translators.json,
-                // only add spacing if we also have old translators, which would be the same as adding top padding
-                // to the Transifex section.
-                if (transifexTranslation != null) {
+                // Add spacing if we also have Transifex translators
+                if (languageTranslators.transifexTranslators.isNotEmpty()) {
                     Spacer(Modifier.height(8.dp))
                 }
             }
 
-            if (transifexTranslation != null)
+            // Display Transifex translators
+            if (languageTranslators.transifexTranslators.isNotEmpty()) {
                 Text(
-                    transifexTranslation.translators
+                    languageTranslators.transifexTranslators
                         .sortedWith { a, b -> collator.compare(a, b) }
                         .joinToString(" · "),
                     style = MaterialTheme.typography.bodyLarge
                 )
+            }
             
             Spacer(Modifier.height(16.dp))
         }
@@ -322,9 +320,7 @@ fun TranslatorsGallery(
 @Preview
 fun TranslatorsGallery_Sample() {
     TranslatorsGallery(listOf(
-        AboutModel.LanguageTranslators("Some Language", setOf("User 1", "User 2")),
-        AboutModel.LanguageTranslators("Another Language", setOf("User 3", "User 4"))
-    ), listOf(
-        AboutModel.LanguageTranslators("Some Language", setOf("User 5", "User 6")),
+        AboutModel.LanguageTranslators("Some Language", setOf("User 1", "User 2"), setOf("User 5", "User 6")),
+        AboutModel.LanguageTranslators("Another Language", setOf("User 3", "User 4"), emptySet())
     ))
 }

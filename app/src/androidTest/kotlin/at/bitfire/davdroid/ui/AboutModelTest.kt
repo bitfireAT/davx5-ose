@@ -18,6 +18,7 @@ import org.junit.Test
 import java.util.logging.Logger
 import javax.inject.Inject
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @HiltAndroidTest
 class AboutModelTest {
 
@@ -52,7 +53,7 @@ class AboutModelTest {
         val translators = model.loadTransifexTranslators()
 
         // And that it's not empty
-        assertTrue("Expected Transifex translations to be non-empty", translators.isNotEmpty())
+        assertTrue(translators.isNotEmpty())
     }
 
     @Test
@@ -61,7 +62,24 @@ class AboutModelTest {
         val translators = model.loadWeblateTranslators()
 
         // And that it's not empty
-        assertTrue("Expected Weblate translations to be non-empty", translators.isNotEmpty())
+        assertTrue(translators.isNotEmpty())
+    }
+
+    @Test
+    fun test_combineTranslators() = runTest {
+        val translators = model.combineTranslators(
+            weblateTranslators = model.loadWeblateTranslators(),
+            transifexTranslators = model.loadTransifexTranslators()
+        )
+        assertTrue(translators.isNotEmpty())
+
+        // Check that each language has at least either Weblate or Transifex translators
+        translators.forEach { languageTranslators ->
+            logger.info("${languageTranslators.language}: ${languageTranslators.transifexTranslators.size} / ${languageTranslators.weblateTranslators.size}")
+
+            assertTrue("Neither Transifex nor Weblate translators for ${languageTranslators.language}",
+                languageTranslators.weblateTranslators.isNotEmpty() || languageTranslators.transifexTranslators.isNotEmpty())
+        }
     }
 
 }

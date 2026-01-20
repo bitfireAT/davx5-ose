@@ -13,7 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.flowOn
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.Collator
@@ -30,27 +30,39 @@ class AboutModel @Inject constructor(
     private val logger: Logger
 ): ViewModel() {
 
+    /**
+     * List of translated languages together with the tranlators (by source).
+     */
     data class LanguageTranslators(
+        val language: String,
+        val weblateTranslators: Set<String>,
+        val transifexTranslators: Set<String>
+    )
+
+    val translators: Flow<List<LanguageTranslators>> = flow {
+        val weblateTranslators = loadWeblateTranslators()
+        val transifexTranslators = loadTransifexTranslators()
+        
+        // Combine the translators by language
+        val combinedTranslators = combineTranslators(weblateTranslators, transifexTranslators)
+        emit(combinedTranslators)
+    }.flowOn(ioDispatcher)
+
+
+    /**
+     * List of translators (by language) for a single source, i.e. Transifex or Weblate.
+     */
+    internal data class SingleSourceTranslators(
         val language: String,
         val translators: Set<String>
     )
 
-    val transifexTranslators: Flow<List<LanguageTranslators>> = flow {
-        val translators = loadTransifexTranslators()
-        emit(translators)
-    }
-
-    val weblateTranslators: Flow<List<LanguageTranslators>> = flow {
-        val translators = loadWeblateTranslators()
-        emit(translators)
-    }
-
     @VisibleForTesting
-    suspend fun loadTransifexTranslators(): List<LanguageTranslators> = withContext(ioDispatcher) {
+    internal fun loadTransifexTranslators(): List<SingleSourceTranslators> =
         try {
             context.resources.assets.open("transifex-translators.json").use { stream ->
                 val jsonTranslations = JSONObject(stream.readBytes().decodeToString())
-                val result = LinkedList<LanguageTranslators>()
+                val result = LinkedList<SingleSourceTranslators>()
                 for (langCode in jsonTranslations.keys()) {
                     val jsonTranslators = jsonTranslations.getJSONArray(langCode)
                     val translators = Array<String>(jsonTranslators.length()) { idx ->
@@ -59,23 +71,22 @@ class AboutModel @Inject constructor(
 
                     val langTag = langCode.replace('_', '-')
                     val language = Locale.forLanguageTag(langTag).displayName
-                    result += LanguageTranslators(language, translators.toSet())
+                    result += SingleSourceTranslators(language, translators.toSet())
                 }
 
-                sortLanguageTranslators(result)
+                result
             }
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't load Transifex translators", e)
             emptyList()
         }
-    }
 
     @VisibleForTesting
-    suspend fun loadWeblateTranslators(): List<LanguageTranslators> = withContext(ioDispatcher) {
+    internal fun loadWeblateTranslators(): List<SingleSourceTranslators> =
         try {
             context.resources.assets.open("weblate-translators.json").use { stream ->
                 val jsonTranslations = JSONArray(stream.readBytes().decodeToString())
-                val result = LinkedList<LanguageTranslators>()
+                val result = LinkedList<SingleSourceTranslators>()
                 for (i in 0 until jsonTranslations.length()) {
                     val jsonObject = jsonTranslations.getJSONObject(i)
                     val language = jsonObject.keys().takeIf { it.hasNext() }?.next() ?: continue
@@ -95,30 +106,46 @@ class AboutModel @Inject constructor(
                         username
                     }.toSet()
 
-                    result += LanguageTranslators(language, translators)
+                    result += SingleSourceTranslators(language, translators)
                 }
 
-                sortLanguageTranslators(result)
+                result
             }
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't load Weblate translators", e)
             emptyList()
         }
-    }
 
     /**
-     * Sorts the list of language translators by localized language name and returns it.
+     * Combines Weblate and Transifex translators into a single list of LanguageTranslators.
      *
-     * @param langTranslators List of language translators to sort
-     * @return Sorted list of language translators
+     * @param weblateTranslators        list of Weblate translators
+     * @param transifexTranslators      list of Transifex translators
+     *
+     * @return combined list of language translators
      */
-    private fun sortLanguageTranslators(langTranslators: LinkedList<LanguageTranslators>): List<LanguageTranslators> {
-        // sort languages by localized language name
-        val collator = Collator.getInstance()
-        langTranslators.sortWith { o1, o2 ->
-            collator.compare(o1.language, o2.language)
+    @VisibleForTesting
+    internal fun combineTranslators(
+        weblateTranslators: List<SingleSourceTranslators>,
+        transifexTranslators: List<SingleSourceTranslators>
+    ): List<LanguageTranslators> {
+        // Create a list of all unique languages from both sources
+        val allLanguages = (weblateTranslators.map { it.language } + transifexTranslators.map { it.language }).toSet()
+        
+        // Create maps for quick lookup
+        val weblateMap = weblateTranslators.associateBy { it.language }
+        val transifexMap = transifexTranslators.associateBy { it.language }
+        
+        // Generate combined and sorted LanguageTranslators for each language
+        return allLanguages.map { language ->
+            LanguageTranslators(
+                language = language,
+                weblateTranslators = weblateMap[language]?.translators ?: emptySet(),
+                transifexTranslators = transifexMap[language]?.translators ?: emptySet()
+            )
+        }.sortedWith { o1, o2 ->
+            Collator.getInstance().compare(o1.language, o2.language)
         }
-        return langTranslators
     }
 
 
