@@ -172,9 +172,9 @@ class AboutActivity: AppCompatActivity() {
                             when (index) {
                                 0 -> AboutApp(licenseInfoProvider = licenseInfoProvider.getOrNull())
                                 1 -> {
-                                    val translations = model.translations.collectAsStateWithLifecycle(emptyList())
+                                    val weblateTranslations = model.weblateTranslations.collectAsStateWithLifecycle(emptyList())
                                     val transifexTranslations = model.transifexTranslations.collectAsStateWithLifecycle(emptyList())
-                                    TranslatorsGallery(translations.value, transifexTranslations.value)
+                                    TranslatorsGallery(weblateTranslations.value, transifexTranslations.value)
                                 }
 
                                 2 -> LibrariesContainer(
@@ -210,18 +210,18 @@ class AboutActivity: AppCompatActivity() {
             val translators: Set<String>
         )
 
-        val translations: Flow<List<Translation>> = flow {
-            val translations = loadTranslations()
-            emit(translations)
-        }
-
         val transifexTranslations: Flow<List<Translation>> = flow {
             val translations = loadTransifexTranslations()
             emit(translations)
         }
 
+        val weblateTranslations: Flow<List<Translation>> = flow {
+            val translations = loadWeblateTranslations()
+            emit(translations)
+        }
+
         @VisibleForTesting
-        suspend fun loadTranslations(): List<Translation> = withContext(ioDispatcher) {
+        suspend fun loadWeblateTranslations(): List<Translation> = withContext(ioDispatcher) {
             try {
                 context.resources.assets.open("credits.json").use { stream ->
                     val jsonTranslations = JSONArray(stream.readBytes().decodeToString())
