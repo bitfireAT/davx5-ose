@@ -1,4 +1,4 @@
-name: Update Weblate Credits
+name: Update Weblate translators
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
     types: [ opened, synchronize ]
 
 jobs:
-  update-credits:
+  update-translators:
     runs-on: ubuntu-latest
 
     # Run only if the PR creator is 'weblate'
@@ -23,14 +23,16 @@ jobs:
       with:
         # Checkout the head ref of the PR
         ref: ${{ github.head_ref }}
-        # Fetch full history to ensure git operations work smoothly
-        fetch-depth: 0
-    - name: Fetch Weblate credits
+        # Fetch recent history to ensure git operations work smoothly
+        # fetch-depth: 0
+
+    - name: Fetch Weblate translators
       run: ./scripts/fetch-weblate-translators.sh
       env:
         WEBLATE_API_TOKEN: ${{ secrets.WEBLATE_API_TOKEN }}
+
     - name: Commit and push changes
       uses: stefanzweifel/git-auto-commit-action@v7
       with:
-        commit_message: "Update credits"
+        commit_message: "Update translators"
         file_pattern: weblate-translators.json
