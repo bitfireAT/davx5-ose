@@ -57,19 +57,23 @@ class AboutModel @Inject constructor(
                     val jsonTranslators = jsonObject.getJSONArray(language)
                     val translators = (0 until jsonTranslators.length()).mapNotNull { idx ->
                         val obj = jsonTranslators.getJSONObject(idx)
-                        val fullName = obj.getString("full_name")
                         val username = obj.getString("username")
 
                         if (username == EXCLUDED_USER)
                             return@mapNotNull null
 
-                        "$fullName (@$username)"
+                        // I don't know whether it's a good idea to print the full names of people like this:
+                        // val fullName = obj.getString("full_name")
+                        // "$fullName (@$username)"
+
+                        // So only return the username for now (also consistent with Transifex):
+                        username
                     }.toSet()
 
                     result += LanguageTranslators(language, translators)
                 }
 
-                sortTranslators(result)
+                sortLanguageTranslators(result)
             }
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't load Weblate translators", e)
@@ -93,7 +97,7 @@ class AboutModel @Inject constructor(
                     result += LanguageTranslators(language, translators.toSet())
                 }
 
-                sortTranslators(result)
+                sortLanguageTranslators(result)
             }
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't load Transifex translators", e)
@@ -104,16 +108,16 @@ class AboutModel @Inject constructor(
     /**
      * Sorts the list of language translators by localized language name and returns it.
      *
-     * @param translators List of language translators to sort
+     * @param langTranslators List of language translators to sort
      * @return Sorted list of language translators
      */
-    private fun sortTranslators(translators: LinkedList<LanguageTranslators>): List<LanguageTranslators> {
-        // sort translations by localized language name
+    private fun sortLanguageTranslators(langTranslators: LinkedList<LanguageTranslators>): List<LanguageTranslators> {
+        // sort languages by localized language name
         val collator = Collator.getInstance()
-        translators.sortWith { o1, o2 ->
+        langTranslators.sortWith { o1, o2 ->
             collator.compare(o1.language, o2.language)
         }
-        return translators
+        return langTranslators
     }
 
 

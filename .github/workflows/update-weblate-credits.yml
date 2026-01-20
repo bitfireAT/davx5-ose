@@ -26,7 +26,7 @@ jobs:
         # Fetch full history to ensure git operations work smoothly
         fetch-depth: 0
     - name: Fetch Weblate credits
-      run: ./scripts/fetch-weblate-credits.sh
+      run: ./scripts/fetch-weblate-translators.sh
       env:
         WEBLATE_API_TOKEN: ${{ secrets.WEBLATE_API_TOKEN }}
     - name: Commit and push changes
