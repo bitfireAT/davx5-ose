@@ -21,7 +21,7 @@ class AboutActivityTest {
         val model = AboutActivity.Model(context, Dispatchers.IO, logger)
 
         // Check that the function doesn't crash
-        val translations = model.loadWeblateTranslations()
+        val translators = model.loadWeblateTranslators()
 
         // And that it's not empty
         assertTrue("Expected translations to be non-empty", translations.isNotEmpty())

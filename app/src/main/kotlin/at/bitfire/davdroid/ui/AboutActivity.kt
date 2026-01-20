@@ -172,9 +172,9 @@ class AboutActivity: AppCompatActivity() {
                             when (index) {
                                 0 -> AboutApp(licenseInfoProvider = licenseInfoProvider.getOrNull())
                                 1 -> {
-                                    val weblateTranslations = model.weblateTranslations.collectAsStateWithLifecycle(emptyList())
-                                    val transifexTranslations = model.transifexTranslations.collectAsStateWithLifecycle(emptyList())
-                                    TranslatorsGallery(weblateTranslations.value, transifexTranslations.value)
+                                    val weblateTranslators = model.weblateTranslators.collectAsStateWithLifecycle(emptyList())
+                                    val transifexTranslators = model.transifexTranslators.collectAsStateWithLifecycle(emptyList())
+                                    TranslatorsGallery(weblateTranslators.value, transifexTranslators.value)
                                 }
 
                                 2 -> LibrariesContainer(
@@ -210,18 +210,18 @@ class AboutActivity: AppCompatActivity() {
             val translators: Set<String>
         )
 
-        val transifexTranslations: Flow<List<Translation>> = flow {
-            val translations = loadTransifexTranslations()
-            emit(translations)
+        val transifexTranslators: Flow<List<Translation>> = flow {
+            val translators = loadTransifexTranslators()
+            emit(translators)
         }
 
-        val weblateTranslations: Flow<List<Translation>> = flow {
-            val translations = loadWeblateTranslations()
-            emit(translations)
+        val weblateTranslators: Flow<List<Translation>> = flow {
+            val translators = loadWeblateTranslators()
+            emit(translators)
         }
 
         @VisibleForTesting
-        suspend fun loadWeblateTranslations(): List<Translation> = withContext(ioDispatcher) {
+        suspend fun loadWeblateTranslators(): List<Translation> = withContext(ioDispatcher) {
             try {
                 context.resources.assets.open("credits.json").use { stream ->
                     val jsonTranslations = JSONArray(stream.readBytes().decodeToString())
@@ -258,7 +258,7 @@ class AboutActivity: AppCompatActivity() {
             }
         }
 
-        private suspend fun loadTransifexTranslations(): List<Translation> = withContext(ioDispatcher) {
+        private suspend fun loadTransifexTranslators(): List<Translation> = withContext(ioDispatcher) {
             try {
                 context.resources.assets.open("translators.json").use { stream ->
                     val jsonTranslations = JSONObject(stream.readBytes().decodeToString())
