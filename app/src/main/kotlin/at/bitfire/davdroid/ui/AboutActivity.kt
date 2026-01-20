@@ -4,11 +4,9 @@
 
 package at.bitfire.davdroid.ui
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -50,11 +48,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.composable.PixelBoxes
 import com.mikepenz.aboutlibraries.Libs
@@ -66,28 +62,16 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import org.json.JSONObject
 import java.text.Collator
-import java.util.LinkedList
-import java.util.Locale
 import java.util.Optional
-import java.util.logging.Level
-import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.jvm.optionals.getOrNull
 
 @AndroidEntryPoint
 class AboutActivity: AppCompatActivity() {
 
-    val model by viewModels<Model>()
+    val model by viewModels<AboutModel>()
 
     @Inject
     lateinit var licenseInfoProvider: Optional<AppLicenseInfoProvider>
@@ -198,96 +182,7 @@ class AboutActivity: AppCompatActivity() {
     }
 
 
-    @HiltViewModel
-    class Model @Inject constructor(
-        @ApplicationContext val context: Context,
-        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-        private val logger: Logger
-    ): ViewModel() {
 
-        data class Translation(
-            val language: String,
-            val translators: Set<String>
-        )
-
-        val transifexTranslators: Flow<List<Translation>> = flow {
-            val translators = loadTransifexTranslators()
-            emit(translators)
-        }
-
-        val weblateTranslators: Flow<List<Translation>> = flow {
-            val translators = loadWeblateTranslators()
-            emit(translators)
-        }
-
-        @VisibleForTesting
-        suspend fun loadWeblateTranslators(): List<Translation> = withContext(ioDispatcher) {
-            try {
-                context.resources.assets.open("credits.json").use { stream ->
-                    val jsonTranslations = JSONArray(stream.readBytes().decodeToString())
-                    val result = LinkedList<Translation>()
-                    for (i in 0 until jsonTranslations.length()) {
-                        val jsonObject = jsonTranslations.getJSONObject(i)
-                        val language = jsonObject.keys().takeIf { it.hasNext() }?.next() ?: continue
-                        val jsonTranslators = jsonObject.getJSONArray(language)
-                        val translators = (0 until jsonTranslators.length()).mapNotNull { idx ->
-                            val obj = jsonTranslators.getJSONObject(idx)
-                            val fullName = obj.getString("full_name")
-                            val username = obj.getString("username")
-
-                            // Ricki did the migration from Weblate to Transifex, so the user is shown as contributor for the language. Filter it out
-                            if (username == "rfc2822") return@mapNotNull null
-
-                            "$fullName (@$username)"
-                        }.toSet()
-
-                        result += Translation(language, translators)
-                    }
-
-                    // sort translations by localized language name
-                    val collator = Collator.getInstance()
-                    result.sortWith { o1, o2 ->
-                        collator.compare(o1.language, o2.language)
-                    }
-
-                    result
-                }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't load translators", e)
-                emptyList()
-            }
-        }
-
-        private suspend fun loadTransifexTranslators(): List<Translation> = withContext(ioDispatcher) {
-            try {
-                context.resources.assets.open("translators.json").use { stream ->
-                    val jsonTranslations = JSONObject(stream.readBytes().decodeToString())
-                    val result = LinkedList<Translation>()
-                    for (langCode in jsonTranslations.keys()) {
-                        val jsonTranslators = jsonTranslations.getJSONArray(langCode)
-                        val translators = Array<String>(jsonTranslators.length()) { idx ->
-                            jsonTranslators.getString(idx)
-                        }
-
-                        val langTag = langCode.replace('_', '-')
-                        val language = Locale.forLanguageTag(langTag).displayName
-                        result += Translation(language, translators.toSet())
-                    }
-
-                    // sort translations by localized language name
-                    val collator = Collator.getInstance()
-                    result.sortWith { o1, o2 ->
-                        collator.compare(o1.language, o2.language)
-                    }
-                    result
-                }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't load translators", e)
-                emptyList()
-            }
-        }
-
-    }
 
 
     interface AppLicenseInfoProvider {
@@ -377,8 +272,8 @@ fun AboutApp_Preview() {
 
 @Composable
 fun TranslatorsGallery(
-    translations: List<AboutActivity.Model.Translation>,
-    transifexTranslations: List<AboutActivity.Model.Translation>
+    translations: List<AboutModel.Translation>,
+    transifexTranslations: List<AboutModel.Translation>
 ) {
     val collator = Collator.getInstance()
     LazyColumn(Modifier.padding(8.dp)) {
@@ -435,9 +330,9 @@ fun TranslatorsGallery(
 @Preview
 fun TranslatorsGallery_Sample() {
     TranslatorsGallery(listOf(
-        AboutActivity.Model.Translation("Some Language", setOf("User 1", "User 2")),
-        AboutActivity.Model.Translation("Another Language", setOf("User 3", "User 4"))
+        AboutModel.Translation("Some Language", setOf("User 1", "User 2")),
+        AboutModel.Translation("Another Language", setOf("User 3", "User 4"))
     ), listOf(
-        AboutActivity.Model.Translation("Some Language", setOf("User 5", "User 6")),
+        AboutModel.Translation("Some Language", setOf("User 5", "User 6")),
     ))
 }

@@ -18,13 +18,13 @@ class AboutActivityTest {
     fun test_loadTranslations() = runBlocking {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val logger = Logger.getLogger("AboutActivityTest")
-        val model = AboutActivity.Model(context, Dispatchers.IO, logger)
+        val model = AboutModel(context, Dispatchers.IO, logger)
 
         // Check that the function doesn't crash
         val translators = model.loadWeblateTranslators()
 
         // And that it's not empty
-        assertTrue("Expected translations to be non-empty", translations.isNotEmpty())
+        assertTrue("Expected translations to be non-empty", translators.isNotEmpty())
     }
 
 }
