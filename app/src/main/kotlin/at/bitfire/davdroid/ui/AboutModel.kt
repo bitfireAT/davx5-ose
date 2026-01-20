@@ -69,16 +69,10 @@ class AboutModel @Inject constructor(
                     result += LanguageTranslators(language, translators)
                 }
 
-                // sort translations by localized language name
-                val collator = Collator.getInstance()
-                result.sortWith { o1, o2 ->
-                    collator.compare(o1.language, o2.language)
-                }
-
-                result
+                sortTranslators(result)
             }
         } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't load translators", e)
+            logger.log(Level.WARNING, "Couldn't load Weblate translators", e)
             emptyList()
         }
     }
@@ -99,17 +93,27 @@ class AboutModel @Inject constructor(
                     result += LanguageTranslators(language, translators.toSet())
                 }
 
-                // sort translations by localized language name
-                val collator = Collator.getInstance()
-                result.sortWith { o1, o2 ->
-                    collator.compare(o1.language, o2.language)
-                }
-                result
+                sortTranslators(result)
             }
         } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't load translators", e)
+            logger.log(Level.WARNING, "Couldn't load Transifex translators", e)
             emptyList()
         }
+    }
+
+    /**
+     * Sorts the list of language translators by localized language name and returns it.
+     *
+     * @param translators List of language translators to sort
+     * @return Sorted list of language translators
+     */
+    private fun sortTranslators(translators: LinkedList<LanguageTranslators>): List<LanguageTranslators> {
+        // sort translations by localized language name
+        val collator = Collator.getInstance()
+        translators.sortWith { o1, o2 ->
+            collator.compare(o1.language, o2.language)
+        }
+        return translators
     }
 
 
