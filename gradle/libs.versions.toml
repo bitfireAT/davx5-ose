@@ -27,7 +27,7 @@ conscrypt = "2.5.3"
 dnsjava = "3.6.4"
 glance = "1.1.1"
 guava = "33.5.0-android"
-hilt = "2.58"
+hilt = "2.59"
 # keep in sync with ksp version
 kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
@@ -120,7 +120,6 @@ unifiedpush-fcm = { module = "org.unifiedpush.android:embedded-fcm-distributor",
 android-application = { id = "com.android.application", version.ref = "android-agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mikepenz-aboutLibraries-android = { id = "com.mikepenz.aboutlibraries.plugin.android", version.ref = "mikepenz-aboutLibraries" }
