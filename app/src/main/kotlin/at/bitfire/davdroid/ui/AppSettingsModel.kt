@@ -20,6 +20,7 @@ import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.bitfire.davdroid.ui.intro.BackupsPage
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
 import at.bitfire.davdroid.util.PermissionUtils
@@ -102,6 +103,7 @@ class AppSettingsModel @Inject constructor(
         settings.remove(BatteryOptimizationsPageModel.HINT_BATTERY_OPTIMIZATIONS)
         settings.remove(BatteryOptimizationsPageModel.HINT_AUTOSTART_PERMISSION)
         settings.remove(TasksModel.HINT_OPENTASKS_NOT_INSTALLED)
+        settings.remove(BackupsPage.Model.SETTING_BACKUPS_ACCEPTED)
         settings.remove(OpenSourcePage.Model.SETTING_NEXT_DONATION_POPUP)
     }
 
