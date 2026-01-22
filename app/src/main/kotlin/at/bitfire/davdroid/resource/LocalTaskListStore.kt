@@ -6,10 +6,8 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import android.net.Uri
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
@@ -17,8 +15,9 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.tasks.DmfsTaskList
+import at.bitfire.synctools.storage.tasks.DmfsTaskListProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -62,11 +61,11 @@ class LocalTaskListStore @AssistedInject constructor(
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
         logger.log(Level.INFO, "Adding local task list", fromCollection)
-        val uri = create(account, client, providerName, fromCollection)
-        return LocalTaskList(DmfsTaskList.findByID(account, client, providerName, ContentUris.parseId(uri)))
+        val dmfsTaskList = create(account, client, providerName, fromCollection)
+        return LocalTaskList(dmfsTaskList)
     }
 
-    private fun create(account: Account, provider: ContentProviderClient, providerName: TaskProvider.ProviderName, fromCollection: Collection): Uri {
+    private fun create(account: Account, client: ContentProviderClient, providerName: TaskProvider.ProviderName, fromCollection: Collection): DmfsTaskList {
         // If the collection doesn't have a color, use a default color.
         val collectionWithColor = if (fromCollection.color != null)
             fromCollection
@@ -81,7 +80,8 @@ class LocalTaskListStore @AssistedInject constructor(
             put(TaskLists.SYNC_ENABLED, 1)
             put(TaskLists.VISIBLE, 1)
         }
-        return DmfsTaskList.create(account, provider, providerName, values)
+        val dmfsTaskListProvider = DmfsTaskListProvider(account, client, providerName)
+        return dmfsTaskListProvider.createAndGetTaskList(values)
     }
 
     private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
@@ -102,7 +102,7 @@ class LocalTaskListStore @AssistedInject constructor(
     }
 
     override fun getAll(account: Account, client: ContentProviderClient) =
-        DmfsTaskList.find(account, client, providerName, null, null)
+        DmfsTaskListProvider(account, client, providerName).findTaskLists()
             .map { LocalTaskList(it) }
 
     override fun update(client: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
