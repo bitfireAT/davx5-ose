@@ -112,6 +112,10 @@ class OpenDocumentThumbnailOperation @Inject constructor(
                     if (response.status.isSuccess()) {
                         val imageStream = response.bodyAsChannel().toInputStream()
                         BitmapFactory.decodeStream(imageStream)?.let { bitmap ->
+                            /* Now the whole decoded input bitmap is in memory. This could be improved in the future:
+                            1. By writing the input bitmap to a temporary file, and extracting the thumbnail from that file.
+                            2. By using a dedicated image loading library it could be possible to only extract potential
+                               embedded thumbnails and thus save network traffic. */
                             val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
                             val baos = ByteArrayOutputStream()
                             thumb.compress(Bitmap.CompressFormat.JPEG, 95, baos)
