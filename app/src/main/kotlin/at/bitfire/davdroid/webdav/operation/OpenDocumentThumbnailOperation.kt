@@ -20,12 +20,13 @@ import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.cache.ThumbnailCache
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.ktor.client.request.get
 import io.ktor.client.request.header
-import io.ktor.client.statement.bodyAsBytes
+import io.ktor.client.request.prepareGet
+import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
+import io.ktor.utils.io.jvm.javaio.toInputStream
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
@@ -105,22 +106,20 @@ class OpenDocumentThumbnailOperation @Inject constructor(
             .use { httpClient ->
             val url = doc.toKtorUrl(db)
             try {
-                val response = httpClient.get(url) {
+                httpClient.prepareGet(url) {
                     header(HttpHeaders.Accept, ContentType.Image.Any.toString())
+                }.execute { response ->
+                    if (response.status.isSuccess()) {
+                        val imageStream = response.bodyAsChannel().toInputStream()
+                        BitmapFactory.decodeStream(imageStream)?.let { bitmap ->
+                            val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
+                            val baos = ByteArrayOutputStream()
+                            thumb.compress(Bitmap.CompressFormat.JPEG, 95, baos)
+                            return@execute baos.toByteArray()
+                        }
+                    } else
+                        logger.warning("Couldn't download image for thumbnail (${response.status})")
                 }
-
-                if (response.status.isSuccess()) {
-                    val bytes = response.bodyAsBytes()
-
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.let { bitmap ->
-                        val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
-                        val baos = ByteArrayOutputStream()
-                        thumb.compress(Bitmap.CompressFormat.JPEG, 95, baos)
-                        return baos.toByteArray()
-                    }
-                } else
-                    logger.warning("Couldn't download image for thumbnail (${response.status})")
-
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't download image for thumbnail", e)
             }
