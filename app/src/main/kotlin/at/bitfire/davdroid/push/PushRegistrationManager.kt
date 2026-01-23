@@ -32,6 +32,7 @@ import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
+import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.ByteReadChannel
@@ -265,8 +266,8 @@ class PushRegistrationManager @Inject constructor(
         ) { response ->
             if (response.status.isSuccess()) {
                 // update subscription URL and expiration in DB
-                val subscriptionUrl = response.headers["Location"]
-                val expires = response.headers["Expires"]?.let { expiresDate ->
+                val subscriptionUrl = response.headers[HttpHeaders.Location]
+                val expires = response.headers[HttpHeaders.Expires]?.let { expiresDate ->
                     HttpUtils.parseDate(expiresDate)
                 } ?: requestedExpiration
 
