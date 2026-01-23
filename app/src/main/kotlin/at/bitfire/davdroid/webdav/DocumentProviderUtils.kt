@@ -13,7 +13,7 @@ import android.provider.DocumentsContract.buildChildDocumentsUri
 import android.provider.DocumentsContract.buildRootsUri
 import android.webkit.MimeTypeMap
 import androidx.core.app.TaskStackBuilder
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import java.io.FileNotFoundException
@@ -66,12 +66,20 @@ object DocumentProviderUtils  {
 }
 
 internal fun HttpException.throwForDocumentProvider(context: Context, ignorePreconditionFailed: Boolean = false) {
+    throwForDocumentProvider(context, statusCode, this, ignorePreconditionFailed)
+}
+
+internal fun at.bitfire.dav4jvm.okhttp.exception.HttpException.throwForDocumentProvider(context: Context, ignorePreconditionFailed: Boolean = false) {
+    throwForDocumentProvider(context, statusCode, this, ignorePreconditionFailed)
+}
+
+private fun throwForDocumentProvider(context: Context, statusCode: Int, ex: Exception, ignorePreconditionFailed: Boolean) {
     when (statusCode) {
         401 -> {
             if (Build.VERSION.SDK_INT >= 26) {
                 val intent = Intent(context, WebdavMountsActivity::class.java)
                 throw AuthenticationRequiredException(
-                    this,
+                    ex,
                     TaskStackBuilder.create(context)
                         .addNextIntentWithParentStack(intent)
                         .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
@@ -86,5 +94,5 @@ internal fun HttpException.throwForDocumentProvider(context: Context, ignorePrec
     }
 
     // re-throw
-    throw this
+    throw ex
 }
