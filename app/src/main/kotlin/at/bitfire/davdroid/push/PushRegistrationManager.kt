@@ -12,11 +12,13 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import at.bitfire.dav4jvm.HttpUtils
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
-import at.bitfire.dav4jvm.okhttp.DavCollection
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.exception.DavException
+import at.bitfire.dav4jvm.ktor.DavCollection
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.property.push.WebDAVPush
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -29,15 +31,14 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.client.HttpClient
+import io.ktor.http.HttpHeaders
+import io.ktor.http.Url
+import io.ktor.http.isSuccess
+import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.data.PushEndpoint
 import java.io.StringWriter
@@ -176,24 +177,26 @@ class PushRegistrationManager @Inject constructor(
             return
 
         val account = accountRepository.get().fromName(service.accountName)
-        val httpClient = httpClientBuilder.get()
+        httpClientBuilder.get()
             .fromAccountAsync(account)
-            .build()
-        for (collection in subscribeTo)
-            try {
-                val expires = collection.pushSubscriptionExpires
-                // calculate next run time, but use the duplicate interval for safety (times are not exact)
-                val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
-                if (expires != null && expires >= nextRun.epochSecond)
-                    logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
-                else {
-                    // no existing subscription or expiring soon
-                    logger.fine("Registering push subscription for ${collection.url}")
-                    subscribe(httpClient, collection, endpoint)
+            .buildKtor()
+            .use { httpClient ->
+            for (collection in subscribeTo)
+                try {
+                    val expires = collection.pushSubscriptionExpires
+                    // calculate next run time, but use the duplicate interval for safety (times are not exact)
+                    val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
+                    if (expires != null && expires >= nextRun.epochSecond)
+                        logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
+                    else {
+                        // no existing subscription or expiring soon
+                        logger.fine("Registering push subscription for ${collection.url}")
+                        subscribe(httpClient, collection, endpoint)
+                    }
+                } catch (e: Exception) {
+                    logger.log(Level.WARNING, "Couldn't register subscription at CalDAV/CardDAV server", e)
                 }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't register subscription at CalDAV/CardDAV server", e)
-            }
+        }
     }
 
     /**
@@ -224,7 +227,7 @@ class PushRegistrationManager @Inject constructor(
      * @param collection    collection to subscribe to
      * @param endpoint      subscription to register
      */
-    private suspend fun subscribe(httpClient: OkHttpClient, collection: Collection, endpoint: PushEndpoint) {
+    private suspend fun subscribe(httpClient: HttpClient, collection: Collection, endpoint: PushEndpoint) {
         // requested expiration time: 3 days
         val requestedExpiration = Instant.now() + Duration.ofDays(3)
 
@@ -257,26 +260,24 @@ class PushRegistrationManager @Inject constructor(
         }
         serializer.endDocument()
 
-        runInterruptible(ioDispatcher) {
-            val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
-            DavCollection(httpClient, collection.url).post(xml) { response ->
-                if (response.isSuccessful) {
-                    // update subscription URL and expiration in DB
-                    val subscriptionUrl = response.header("Location")
-                    val expires = response.header("Expires")?.let { expiresDate ->
-                        HttpUtils.parseDate(expiresDate)
-                    } ?: requestedExpiration
+        DavCollection(httpClient, collection.url.toKtorUrl()).post(
+            { ByteReadChannel(writer.toString()) },
+            DavResource.MIME_XML_UTF8
+        ) { response ->
+            if (response.status.isSuccess()) {
+                // update subscription URL and expiration in DB
+                val subscriptionUrl = response.headers[HttpHeaders.Location]
+                val expires = response.headers[HttpHeaders.Expires]?.let { expiresDate ->
+                    HttpUtils.parseDate(expiresDate)
+                } ?: requestedExpiration
 
-                    runBlocking {
-                        collectionRepository.updatePushSubscription(
-                            id = collection.id,
-                            subscriptionUrl = subscriptionUrl,
-                            expires = expires?.epochSecond
-                        )
-                    }
-                } else
-                    logger.warning("Couldn't register push for ${collection.url}: $response")
-            }
+                collectionRepository.updatePushSubscription(
+                    id = collection.id,
+                    subscriptionUrl = subscriptionUrl,
+                    expires = expires?.epochSecond
+                )
+            } else
+                logger.warning("Couldn't register push for ${collection.url}: $response")
         }
     }
 
@@ -288,22 +289,22 @@ class PushRegistrationManager @Inject constructor(
             return
 
         val account = accountRepository.get().fromName(service.accountName)
-        val httpClient = httpClientBuilder.get()
+        httpClientBuilder.get()
             .fromAccountAsync(account)
-            .build()
-        for (collection in from)
-            collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
-                logger.info("Unsubscribing Push from ${collection.url}")
-                unsubscribe(httpClient, collection, url)
-            }
+            .buildKtor()
+            .use { httpClient ->
+            for (collection in from)
+                collection.pushSubscription?.toUrlOrNull()?.let { url ->
+                    logger.info("Unsubscribing Push from ${collection.url}")
+                    unsubscribe(httpClient, collection, url)
+                }
+        }
     }
 
-    private suspend fun unsubscribe(httpClient: OkHttpClient, collection: Collection, url: HttpUrl) {
+    private suspend fun unsubscribe(httpClient: HttpClient, collection: Collection, url: Url) {
         try {
-            runInterruptible(ioDispatcher) {
-                DavResource(httpClient, url).delete {
-                    // deleted
-                }
+            DavResource(httpClient, url).delete {
+                // deleted
             }
         } catch (e: DavException) {
             logger.log(Level.WARNING, "Couldn't unregister push for ${collection.url}", e)
