@@ -32,7 +32,7 @@ class CopyDocumentOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(sourceDocumentId: String, targetParentDocumentId: String): String = runBlocking {
+    operator fun invoke(sourceDocumentId: String, targetParentDocumentId: String): String = runBlocking(ioDispatcher) {
         logger.fine("WebDAV copyDocument $sourceDocumentId $targetParentDocumentId")
         val srcDoc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
         val dstFolder = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()

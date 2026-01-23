@@ -31,7 +31,7 @@ class RenameDocumentOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(documentId: String, displayName: String): String? = runBlocking {
+    operator fun invoke(documentId: String, displayName: String): String? = runBlocking(ioDispatcher) {
         logger.fine("WebDAV renameDocument $documentId $displayName")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 

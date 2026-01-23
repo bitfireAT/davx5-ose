@@ -31,7 +31,7 @@ class MoveDocumentOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String): String = runBlocking {
+    operator fun invoke(sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String): String = runBlocking(ioDispatcher) {
         logger.fine("WebDAV moveDocument $sourceDocumentId $sourceParentDocumentId $targetParentDocumentId")
         val doc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
         val dstParent = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()
