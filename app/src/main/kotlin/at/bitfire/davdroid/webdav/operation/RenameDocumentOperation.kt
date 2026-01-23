@@ -41,7 +41,8 @@ class RenameDocumentOperation @Inject constructor(
                 for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
                     val newName = displayNameToMemberName(displayName, attempt)
                     val oldUrl = doc.toKtorUrl(db)
-                    val newLocation = URLBuilder(oldUrl).apply {
+                    val newLocation = URLBuilder(oldUrl)
+                        .apply {
                         // Remove the last path segment (current file name) and add the new name
                         pathSegments = pathSegments.dropLast(1) + newName
                     }.build()

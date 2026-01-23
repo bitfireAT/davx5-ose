@@ -17,7 +17,6 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.runInterruptible
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -43,16 +42,14 @@ class MoveDocumentOperation @Inject constructor(
         httpClientBuilder
             .buildKtor(doc.mountId)
             .use { httpClient ->
-                val newLocation = URLBuilder(dstParent.toKtorUrl(db)).apply {
-                    appendPathSegments(doc.name)
-                }.build()
+                val newLocation = URLBuilder(dstParent.toKtorUrl(db))
+                    .appendPathSegments(doc.name)
+                    .build()
 
                 val dav = DavResource(httpClient, doc.toKtorUrl(db))
                 try {
-                    runInterruptible(ioDispatcher) {
-                        dav.move(newLocation, false) {
-                            // successfully moved
-                        }
+                    dav.move(newLocation, false) {
+                        // successfully moved
                     }
 
                     documentDao.update(doc.copy(parentId = dstParent.id))

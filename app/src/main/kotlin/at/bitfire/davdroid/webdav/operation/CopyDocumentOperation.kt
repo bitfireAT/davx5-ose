@@ -45,9 +45,9 @@ class CopyDocumentOperation @Inject constructor(
             .buildKtor(srcDoc.mountId)
             .use { httpClient ->
                 val dav = DavResource(httpClient, srcDoc.toKtorUrl(db))
-                val dstUrl = URLBuilder(dstFolder.toKtorUrl(db)).apply {
-                    appendPathSegments(name)
-                }.build()
+                val dstUrl = URLBuilder(dstFolder.toKtorUrl(db))
+                    .appendPathSegments(name)
+                    .build()
 
                 try {
                     dav.copy(dstUrl, false) {
