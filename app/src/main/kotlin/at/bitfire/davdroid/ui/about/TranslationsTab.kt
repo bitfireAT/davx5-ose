@@ -14,7 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import at.bitfire.davdroid.ui.composable.WebViewCompat
@@ -96,17 +96,8 @@ fun Translations_Engage(modifier: Modifier = Modifier) {
 }
 
 @Composable
-@Preview
-fun TranslationsTab_Narrow() {
-    TranslationsTab(
-        weblateTranslators = "User A, User B, and User C",
-        transifexTranslators = "User A and User D"
-    )
-}
-
-@Composable
-@Preview(widthDp = 900)
-fun TranslationsTab_Wide() {
+@PreviewScreenSizes
+fun TranslationsTab_Previews() {
     TranslationsTab(
         weblateTranslators = "User A, User B, and User C",
         transifexTranslators = "User A and User D"
