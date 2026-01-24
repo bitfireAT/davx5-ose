@@ -20,11 +20,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import com.google.common.io.CharStreams
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class OpenSourceLicenseInfoProvider @Inject constructor(): AboutActivity.AppLicenseInfoProvider {
+class OpenSourceLicenseInfoProvider @Inject constructor(): at.bitfire.davdroid.ui.about.AboutActivity.AppLicenseInfoProvider {
 
     @Composable
     override fun LicenseInfo() {

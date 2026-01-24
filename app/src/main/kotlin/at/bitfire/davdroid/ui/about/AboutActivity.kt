@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.about
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -12,14 +12,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -37,6 +33,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.composable.PixelBoxes
 import com.mikepenz.aboutlibraries.Libs
@@ -62,7 +60,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.launch
-import java.text.Collator
 import java.util.Optional
 import javax.inject.Inject
 import kotlin.jvm.optionals.getOrNull
@@ -100,10 +97,12 @@ class AboutActivity: AppCompatActivity() {
                             },
                             actions = {
                                 IconButton(onClick = {
-                                    uriHandler.openUri(ExternalUris.Homepage.baseUrl
-                                        .buildUpon()
-                                        .withStatParams(javaClass.simpleName)
-                                        .build().toString())
+                                    uriHandler.openUri(
+                                        at.bitfire.davdroid.ui.ExternalUris.Homepage.baseUrl
+                                            .buildUpon()
+                                            .withStatParams(javaClass.simpleName)
+                                            .build().toString()
+                                    )
                                 }) {
                                     Icon(
                                         Icons.Default.Home,
@@ -155,8 +154,12 @@ class AboutActivity: AppCompatActivity() {
                             when (index) {
                                 0 -> AboutApp(licenseInfoProvider = licenseInfoProvider.getOrNull())
                                 1 -> {
-                                    val translators = model.translators.collectAsStateWithLifecycle(emptyList())
-                                    TranslatorsGallery(translators.value)
+                                    val weblateTranslators by model.weblateTranslators.collectAsStateWithLifecycle("")
+                                    val transifexTranslators by model.transifexTranslators.collectAsStateWithLifecycle("")
+                                    TranslationsTab(
+                                        weblateTranslators = weblateTranslators,
+                                        transifexTranslators = transifexTranslators
+                                    )
                                 }
 
                                 2 -> LibrariesContainer(
@@ -178,10 +181,6 @@ class AboutActivity: AppCompatActivity() {
             }
         }
     }
-
-
-
-
 
     interface AppLicenseInfoProvider {
         @Composable
@@ -206,7 +205,7 @@ fun AboutApp(licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null) 
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())) {
         Image(
-            UiUtils.adaptiveIconPainterResource(R.mipmap.ic_launcher),
+            at.bitfire.davdroid.ui.UiUtils.adaptiveIconPainterResource(R.mipmap.ic_launcher),
             contentDescription = stringResource(R.string.app_name),
             modifier = Modifier
                 .size(128.dp)
@@ -265,62 +264,4 @@ fun AboutApp_Preview() {
             Text("Some flavored License Info")
         }
     })
-}
-
-
-@Composable
-fun TranslatorsGallery(
-    translators: List<AboutModel.LanguageTranslators>
-) {
-    val collator = Collator.getInstance()
-    LazyColumn(Modifier.padding(8.dp)) {
-        items(translators) { languageTranslators ->
-            // Skip empty entries
-            if (languageTranslators.weblateTranslators.isEmpty() && languageTranslators.transifexTranslators.isEmpty()) {
-                return@items
-            }
-
-            Text(
-                text = languageTranslators.language,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-            
-            // Display Weblate translators
-            if (languageTranslators.weblateTranslators.isNotEmpty()) {
-                Text(
-                    languageTranslators.weblateTranslators
-                        .sortedWith { a, b -> collator.compare(a, b) }
-                        .joinToString(" · "),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
-                // Add spacing if we also have Transifex translators
-                if (languageTranslators.transifexTranslators.isNotEmpty()) {
-                    Spacer(Modifier.height(8.dp))
-                }
-            }
-
-            // Display Transifex translators
-            if (languageTranslators.transifexTranslators.isNotEmpty()) {
-                Text(
-                    languageTranslators.transifexTranslators
-                        .sortedWith { a, b -> collator.compare(a, b) }
-                        .joinToString(" · "),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-            
-            Spacer(Modifier.height(16.dp))
-        }
-    }
-}
-
-@Composable
-@Preview
-fun TranslatorsGallery_Sample() {
-    TranslatorsGallery(listOf(
-        AboutModel.LanguageTranslators("Some Language", setOf("User 1", "User 2"), setOf("User 5", "User 6")),
-        AboutModel.LanguageTranslators("Another Language", setOf("User 3", "User 4"), emptySet())
-    ))
 }
