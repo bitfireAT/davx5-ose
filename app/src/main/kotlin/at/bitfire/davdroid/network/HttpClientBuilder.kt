@@ -69,6 +69,7 @@ class HttpClientBuilder @Inject constructor(
 ) {
 
     companion object {
+
         init {
             // make sure Conscrypt is available when the HttpClientBuilder class is loaded the first time
             ConscryptIntegration().initialize()
@@ -84,12 +85,18 @@ class HttpClientBuilder @Inject constructor(
          * The shared client is available for the lifetime of the application and must not be shut down or
          * closed (which is not necessary, according to its documentation).
          */
-        val sharedOkHttpClient = OkHttpClient.Builder()
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(120, TimeUnit.SECONDS)
-            .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
-            .build()
+        val sharedOkHttpClient = OkHttpClient.Builder().apply {
+            configureTimeouts(this)
+        }.build()
+
+        private fun configureTimeouts(okBuilder: OkHttpClient.Builder) {
+            okBuilder
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
+        }
+
     }
 
     /**
@@ -407,6 +414,11 @@ class HttpClientBuilder @Inject constructor(
 
                 config {
                     // OkHttpClient.Builder configuration here
+
+                    // we don't use the sharedOkHttpClient, so we have to apply timeouts again
+                    configureTimeouts(this)
+
+                    // build most config on okhttp level
                     configureOkHttp(this)
                 }
             }

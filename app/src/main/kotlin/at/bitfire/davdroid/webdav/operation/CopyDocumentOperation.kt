@@ -5,8 +5,8 @@
 package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.di.IoDispatcher
@@ -14,9 +14,10 @@ import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.http.URLBuilder
+import io.ktor.http.appendPathSegments
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.runInterruptible
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -31,7 +32,7 @@ class CopyDocumentOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(sourceDocumentId: String, targetParentDocumentId: String): String = runBlocking {
+    operator fun invoke(sourceDocumentId: String, targetParentDocumentId: String): String = runBlocking(ioDispatcher) {
         logger.fine("WebDAV copyDocument $sourceDocumentId $targetParentDocumentId")
         val srcDoc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
         val dstFolder = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()
@@ -40,21 +41,22 @@ class CopyDocumentOperation @Inject constructor(
         if (srcDoc.mountId != dstFolder.mountId)
             throw UnsupportedOperationException("Can't COPY between WebDAV servers")
 
-        val client = httpClientBuilder.build(srcDoc.mountId)
-        val dav = DavResource(client, srcDoc.toHttpUrl(db))
-        val dstUrl = dstFolder.toHttpUrl(db).newBuilder()
-            .addPathSegment(name)
-            .build()
+        httpClientBuilder
+            .buildKtor(srcDoc.mountId)
+            .use { httpClient ->
+                val dav = DavResource(httpClient, srcDoc.toKtorUrl(db))
+                val dstUrl = URLBuilder(dstFolder.toKtorUrl(db))
+                    .appendPathSegments(name)
+                    .build()
 
-        try {
-            runInterruptible(ioDispatcher) {
-                dav.copy(dstUrl, false) {
-                    // successfully copied
+                try {
+                    dav.copy(dstUrl, false) {
+                        // successfully copied
+                    }
+                } catch (e: HttpException) {
+                    e.throwForDocumentProvider(context)
                 }
             }
-        } catch (e: HttpException) {
-            e.throwForDocumentProvider(context)
-        }
 
         val dstDocId = documentDao.insertOrReplace(
             WebDavDocument(
