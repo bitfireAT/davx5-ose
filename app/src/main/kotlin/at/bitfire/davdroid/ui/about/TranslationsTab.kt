@@ -65,24 +65,30 @@ fun Translations_Translators(
 ) {
     Column(modifier) {
         Text(
+            text = "❤\uFE0F Thanks to all who have contributed translations!",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Text(
             text = "Over Weblate",
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(vertical = 4.dp)
         )
         Text(
             text = weblateTranslators,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
         Text(
             text = "Over Transifex",
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(vertical = 4.dp)
         )
         Text(
             text = transifexTranslators,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
