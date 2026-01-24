@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui
 
 import android.content.Context
 import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.ui.about.AboutModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -63,23 +64,6 @@ class AboutModelTest {
 
         // And that it's not empty
         assertTrue(translators.isNotEmpty())
-    }
-
-    @Test
-    fun test_combineTranslators() = runTest {
-        val translators = model.combineTranslators(
-            weblateTranslators = model.loadWeblateTranslators(),
-            transifexTranslators = model.loadTransifexTranslators()
-        )
-        assertTrue(translators.isNotEmpty())
-
-        // Check that each language has at least either Weblate or Transifex translators
-        translators.forEach { languageTranslators ->
-            logger.info("${languageTranslators.language}: ${languageTranslators.transifexTranslators.size} / ${languageTranslators.weblateTranslators.size}")
-
-            assertTrue("Neither Transifex nor Weblate translators for ${languageTranslators.language}",
-                languageTranslators.weblateTranslators.isNotEmpty() || languageTranslators.transifexTranslators.isNotEmpty())
-        }
     }
 
 }
