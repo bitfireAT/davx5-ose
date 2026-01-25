@@ -9,8 +9,8 @@ jobs:
   update-translators:
     runs-on: ubuntu-latest
 
-    # Run only if the PR creator is 'weblate'
-    if: github.actor == 'weblate'
+    # Run only if the PR creator is 'weblate' (or in the PR that added the workflow, for testing)
+    if: github.actor == 'weblate' || github.ref == 'refs/heads/migrate-translation-contributors-credits-to-weblate'
 
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
@@ -23,8 +23,6 @@ jobs:
       with:
         # Checkout the head ref of the PR
         ref: ${{ github.head_ref }}
-        # Fetch recent history to ensure git operations work smoothly
-        # fetch-depth: 0
 
     - name: Fetch Weblate translators
       run: ./scripts/fetch-weblate-translators.sh
