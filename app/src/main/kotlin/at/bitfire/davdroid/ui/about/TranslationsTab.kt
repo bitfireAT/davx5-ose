@@ -14,9 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.WebViewCompat
 
 @Composable
@@ -65,13 +67,13 @@ fun Translations_Translators(
 ) {
     Column(modifier) {
         Text(
-            text = "❤\uFE0F Thanks to all who have contributed translations!",
+            text = stringResource(R.string.about_translations_thanks),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
         Text(
-            text = "Over Weblate",
+            text = stringResource(R.string.about_translations_over_weblate),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(vertical = 4.dp)
         )
@@ -82,7 +84,7 @@ fun Translations_Translators(
         )
 
         Text(
-            text = "Over Transifex",
+            text = stringResource(R.string.about_translations_over_transifex),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(vertical = 4.dp)
         )

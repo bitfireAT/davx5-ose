@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.about
 
 import android.app.Application
 import android.text.Spanned
@@ -24,7 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class OpenSourceLicenseInfoProvider @Inject constructor(): at.bitfire.davdroid.ui.about.AboutActivity.AppLicenseInfoProvider {
+class OpenSourceLicenseInfoProvider @Inject constructor(): AboutActivity.AppLicenseInfoProvider {
 
     @Composable
     override fun LicenseInfo() {
