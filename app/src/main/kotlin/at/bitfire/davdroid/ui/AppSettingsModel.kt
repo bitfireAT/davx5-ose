@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -99,12 +100,12 @@ class AppSettingsModel @Inject constructor(
         UiUtils.updateTheme(context)
     }
 
-    fun resetHints() {
+    fun resetHints() = runBlocking(ioDispatcher) {
+        settings.remove(BackupsPage.Model.SETTING_BACKUPS_ACCEPTED)
         settings.remove(BatteryOptimizationsPageModel.HINT_BATTERY_OPTIMIZATIONS)
         settings.remove(BatteryOptimizationsPageModel.HINT_AUTOSTART_PERMISSION)
-        settings.remove(TasksModel.HINT_OPENTASKS_NOT_INSTALLED)
-        settings.remove(BackupsPage.Model.SETTING_BACKUPS_ACCEPTED)
         settings.remove(OpenSourcePage.Model.SETTING_NEXT_DONATION_POPUP)
+        settings.remove(TasksModel.HINT_OPENTASKS_NOT_INSTALLED)
     }
 
 
