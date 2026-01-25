@@ -5,6 +5,8 @@
 package at.bitfire.davdroid.network
 
 import at.bitfire.cert4android.CustomCertManager
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import java.security.KeyStore
 import java.util.Optional
 import java.util.logging.Level
@@ -28,27 +30,30 @@ class ConnectionSecurityManager @Inject constructor(
     private val logger: Logger,
 ) {
 
-    // TODO: check HTTP/2
-
+    private val contextCache: Cache<Optional<String>, ConnectionSecurityContext> = CacheBuilder.newBuilder()
+        .build()
     private val trustManager = customTrustManager.getOrNull() ?: defaultTrustManager()
 
-    fun getContext(certificateAlias: String?): ConnectionSecurityContext {
-        val clientKeyManager = certificateAlias?.let { getClientKeyManager(it) }
+    fun getContext(certificateAlias: String?) =
+        // cache SSLContext by certificate alias
+        contextCache.get(Optional.ofNullable(certificateAlias)) {
+            val clientKeyManager = certificateAlias?.let { getClientKeyManager(it) }
 
-        val sslContext = SSLContext.getInstance("TLS")
-        sslContext.init(
-            /* km = */ if (clientKeyManager != null) arrayOf(clientKeyManager) else null,
-            /* tm = */ arrayOf(trustManager),
-            /* random = */ null
-        )
+            val sslContext = SSLContext.getInstance("TLS").apply {
+                init(
+                    /* km = */ if (clientKeyManager != null) arrayOf(clientKeyManager) else null,
+                    /* tm = */ arrayOf(trustManager),
+                    /* random = */ null
+                )
+            }
 
-        return ConnectionSecurityContext(
-            sslSocketFactory = sslContext.socketFactory,
-            trustManager = trustManager,
-            hostnameVerifier = customHostnameVerifier.getOrNull(),
-            disableHttp2 = certificateAlias != null
-        )
-    }
+            ConnectionSecurityContext(
+                sslSocketFactory = sslContext.socketFactory,
+                trustManager = trustManager,
+                hostnameVerifier = customHostnameVerifier.getOrNull(),
+                disableHttp2 = certificateAlias != null
+            )
+        }
 
     fun getClientKeyManager(alias: String): KeyManager? =
         try {
