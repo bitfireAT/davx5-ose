@@ -6,7 +6,6 @@ package at.bitfire.davdroid.network
 
 import android.accounts.Account
 import androidx.annotation.WorkerThread
-import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.okhttp.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.okhttp.UrlUtils
 import at.bitfire.davdroid.di.IoDispatcher
@@ -33,17 +32,10 @@ import okhttp3.brotli.BrotliInterceptor
 import okhttp3.logging.HttpLoggingInterceptor
 import java.net.InetSocketAddress
 import java.net.Proxy
-import java.security.KeyStore
-import java.util.Optional
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.net.ssl.KeyManager
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManagerFactory
-import javax.net.ssl.X509TrustManager
-import kotlin.jvm.optionals.getOrNull
 
 /**
  * Builder for the HTTP client.
@@ -55,11 +47,9 @@ import kotlin.jvm.optionals.getOrNull
  */
 class HttpClientBuilder @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
-    private val customTrustManager: Optional<CustomCertManager>,
-    private val customHostnameVerifier: Optional<CustomCertManager.HostnameVerifier>,
+    private val connectionSecurityManager: ConnectionSecurityManager,
     defaultLogger: Logger,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val keyManagerFactory: ClientCertKeyManager.Factory,
     private val oAuthInterceptorFactory: OAuthInterceptor.Factory,
     private val settingsManager: SettingsManager
 ) {
@@ -285,46 +275,17 @@ class HttpClientBuilder @Inject constructor(
             ConnectionSpec.MODERN_TLS
         ))
 
-        // client certificate
-        val clientKeyManager: KeyManager? = certificateAlias?.let { alias ->
-            try {
-                val manager = keyManagerFactory.create(alias)
-                logger.fine("Using certificate $alias for authentication")
+        // set SSLSocketFactory, TrustManager and HostnameVerifier (if needed)
+        val securityContext = connectionSecurityManager.getContext(certificateAlias)
 
-                // HTTP/2 doesn't support client certificates (yet)
-                // see https://datatracker.ietf.org/doc/draft-ietf-httpbis-secondary-server-certs/
-                okBuilder.protocols(listOf(Protocol.HTTP_1_1))
+        if (securityContext.disableHttp2)
+            okBuilder.protocols(listOf(Protocol.HTTP_1_1))
 
-                manager
-            } catch (e: IllegalArgumentException) {
-                logger.log(Level.SEVERE, "Couldn't create KeyManager for certificate $alias", e)
-                null
-            }
-        }
+        if (securityContext.sslSocketFactory != null && securityContext.trustManager != null)
+            okBuilder.sslSocketFactory(securityContext.sslSocketFactory, securityContext.trustManager)
 
-        // change settings only if we have at least only one custom component
-        if (clientKeyManager != null || customTrustManager.isPresent) {
-            val trustManager = customTrustManager.getOrNull() ?: defaultTrustManager()
-
-            // use trust manager and client key manager (if defined) for TLS connections
-            val sslContext = SSLContext.getInstance("TLS")
-            sslContext.init(
-                /* km = */ if (clientKeyManager != null) arrayOf(clientKeyManager) else null,
-                /* tm = */ arrayOf(trustManager),
-                /* random = */ null
-            )
-            okBuilder.sslSocketFactory(sslContext.socketFactory, trustManager)
-        }
-
-        // also add the custom hostname verifier (if defined)
-        if (customHostnameVerifier.isPresent)
-            okBuilder.hostnameVerifier(customHostnameVerifier.get())
-    }
-
-    private fun defaultTrustManager(): X509TrustManager {
-        val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-        factory.init(null as KeyStore?)
-        return factory.trustManagers.filterIsInstance<X509TrustManager>().first()
+        if (securityContext.hostnameVerifier != null)
+            okBuilder.hostnameVerifier(securityContext.hostnameVerifier)
     }
 
     private fun buildProxy(okBuilder: OkHttpClient.Builder) {
