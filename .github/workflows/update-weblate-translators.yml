@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Run only if the PR creator is 'weblate' (or in the PR that added the workflow, for testing)
-    if: github.actor == 'weblate' || github.ref == 'refs/heads/migrate-translation-contributors-credits-to-weblate'
+    if: github.actor == 'weblate' || github.ref == 'refs/pull/1918/merge'
 
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
