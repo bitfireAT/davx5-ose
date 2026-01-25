@@ -480,4 +480,11 @@
     <string name="widget_icon_sync_label">Ikooniga sünkroniseerimisnupp</string>
     <string name="widget_sync_description">Klõpsi sünkroniseerimise käsitsi käivitamiseks.</string>
     <!--cert4android-->
+<string name="intro_backups_title">Meeldetuletus varunduse kohta</string>
+    <string name="intro_backups_important">Võimaliku andmekao vältimiseks on oluline, et teed oma andmetest (sh kalendrid ja kontaktid) varukoopia.</string>
+    <string name="intro_backups_something_wrong">Alati võib midagi minna valesti kas serveris, rakenduses %s või mõnes kolmanda osapoole komponendis ja seetõttu näiteks võivad kõik või osad kalendrikirjed kustuda. (Ja selline kustutamine sünkroonitakse ka serverisse.)</string>
+    <string name="intro_backups_accept">Mul juba on olemas toimiv varundusstrateegia või ma ei vaja seda.</string>
+    <string name="about_translations_thanks">❤️ Suur tänu kõigile, kes on tõlkimisel abiks olnud!</string>
+    <string name="about_translations_over_transifex">Kasutades Transifexi</string>
+    <string name="about_translations_over_weblate">Kasutades Weblate\'i</string>
 </resources>
