@@ -5,22 +5,17 @@
 package at.bitfire.davdroid.network
 
 import android.accounts.Account
-import android.content.Context
 import androidx.annotation.WorkerThread
 import at.bitfire.cert4android.CustomCertManager
-import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.dav4jvm.okhttp.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.okhttp.UrlUtils
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.ForegroundTracker
 import com.google.common.net.HttpHeaders
 import com.google.errorprone.annotations.MustBeClosed
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -35,20 +30,20 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.brotli.BrotliInterceptor
-import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.security.KeyStore
+import java.util.Optional
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.KeyManager
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Builder for the HTTP client.
@@ -60,7 +55,8 @@ import javax.net.ssl.X509TrustManager
  */
 class HttpClientBuilder @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext private val context: Context,
+    private val customTrustManager: Optional<CustomCertManager>,
+    private val customHostnameVerifier: Optional<CustomCertManager.HostnameVerifier>,
     defaultLogger: Logger,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val keyManagerFactory: ClientCertKeyManager.Factory,
@@ -306,29 +302,9 @@ class HttpClientBuilder @Inject constructor(
             }
         }
 
-        // select trust manager and hostname verifier depending on whether custom certificates are allowed
-        val customTrustManager: X509TrustManager?
-        val customHostnameVerifier: HostnameVerifier?
-
-        if (BuildConfig.allowCustomCerts) {
-            // use cert4android for custom certificate handling
-            customTrustManager = CustomCertManager(
-                certStore = CustomCertStore.getInstance(context),
-                trustSystemCerts = !settingsManager.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES),
-                appInForeground = ForegroundTracker.inForeground
-            )
-            // allow users to accept certificates with wrong host names
-            customHostnameVerifier = customTrustManager.HostnameVerifier(OkHostnameVerifier)
-
-        } else {
-            // no custom certificates, use default trust manager and hostname verifier
-            customTrustManager = null
-            customHostnameVerifier = null
-        }
-
         // change settings only if we have at least only one custom component
-        if (clientKeyManager != null || customTrustManager != null) {
-            val trustManager = customTrustManager ?: defaultTrustManager()
+        if (clientKeyManager != null || customTrustManager.isPresent) {
+            val trustManager = customTrustManager.getOrNull() ?: defaultTrustManager()
 
             // use trust manager and client key manager (if defined) for TLS connections
             val sslContext = SSLContext.getInstance("TLS")
@@ -341,8 +317,8 @@ class HttpClientBuilder @Inject constructor(
         }
 
         // also add the custom hostname verifier (if defined)
-        if (customHostnameVerifier != null)
-            okBuilder.hostnameVerifier(customHostnameVerifier)
+        if (customHostnameVerifier.isPresent)
+            okBuilder.hostnameVerifier(customHostnameVerifier.get())
     }
 
     private fun defaultTrustManager(): X509TrustManager {
