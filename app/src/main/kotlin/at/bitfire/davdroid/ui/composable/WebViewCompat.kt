@@ -11,8 +11,9 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.viewinterop.AndroidView
+import io.ktor.http.HttpHeaders
 
 @Composable
 fun WebViewCompat(
@@ -23,10 +24,9 @@ fun WebViewCompat(
         ViewGroup.LayoutParams.WRAP_CONTENT
     )
 ) {
-    val context = LocalContext.current
     AndroidView(
         modifier = modifier,
-        factory = {
+        factory = { context ->
             WebView(context).apply {
                 this.layoutParams = layoutParams
                 webViewClient = object : WebViewClient() {
@@ -36,7 +36,9 @@ fun WebViewCompat(
                         return true
                     }
                 }
-                loadUrl(url)
+                loadUrl(url, mapOf(
+                    HttpHeaders.AcceptLanguage to Locale.current.toLanguageTag()
+                ))
             }
         }
     )
