@@ -101,6 +101,10 @@ fun BackupsPage(
             )
             Text(
                 text = stringResource(R.string.intro_backups_no_versioning, stringResource(R.string.app_name)),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Text(
+                text = stringResource(R.string.intro_backups_something_wrong, stringResource(R.string.app_name))
             )
 
             Row(

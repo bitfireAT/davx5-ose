@@ -61,6 +61,7 @@
     <string name="intro_backups_title">Backups reminder</string>
     <string name="intro_backups_important">It\'s important to back up your data (including contacts and calendars) regularly to prevent potential data loss.</string>
     <string name="intro_backups_no_versioning">%s synchronizes changes and deletions but does NOT function as a backup tool or provide version history.</string>
+    <string name="intro_backups_something_wrong">Something can always go wrong, whether on the server side, with %s, or another app that for instance might accidentally delete all calendar entries.</string>
     <string name="intro_backups_accept">I already have a backup solution in place or I don\'t need one.</string>
     <string name="intro_open_source_title">Open-source software</string>
     <string name="intro_open_source_text">We\'re happy that you use %s, which is open-source software. Development, maintenance and support are hard work. Please consider contributing (there are many ways) or a donation. It would be highly appreciated!</string>
