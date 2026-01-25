@@ -483,4 +483,11 @@
     <!--cert4android-->
 <string name="widget_labeled_sync_label">Botão de sincronização rotulado</string>
     <string name="widget_icon_sync_label">Ícone de sincronização</string>
+    <string name="intro_backups_title">Lembrete de backups</string>
+    <string name="intro_backups_important">É importante fazer backup dos seus dados periodicamente (incluindo contatos e calendários) para prevenir uma possível perda de dados.</string>
+    <string name="intro_backups_something_wrong">Algo sempre pode dar errado, pode ser no servidor, dentro do %s, ou em outros apps, que podem por exemplo acidentalmente apagar todas as entradas do calendário. (E os apagamentos seriam sincronizados ao servidor.)</string>
+    <string name="intro_backups_accept">Eu já tenho uma estratégia de backup funcional ou não preciso de uma.</string>
+    <string name="about_translations_thanks">❤️ Obrigado para todos que contribuíram com traduções!</string>
+    <string name="about_translations_over_transifex">Pelo Transifex</string>
+    <string name="about_translations_over_weblate">Pelo Weblate</string>
 </resources>
