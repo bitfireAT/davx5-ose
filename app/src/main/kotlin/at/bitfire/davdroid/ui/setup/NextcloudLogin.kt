@@ -49,6 +49,7 @@ import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.davdroid.ui.composable.ProgressBar
+import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.launch
 
 object NextcloudLogin : LoginType {
@@ -94,7 +95,7 @@ object NextcloudLogin : LoginType {
                     browser.intent.data = loginUri
                     browser.intent.putExtra(
                         Browser.EXTRA_HEADERS,
-                        bundleOf("Accept-Language" to Locale.current.toLanguageTag())
+                        bundleOf(HttpHeaders.AcceptLanguage to Locale.current.toLanguageTag())
                     )
                     checkResultCallback.launch(browser.intent)
                 } else {
