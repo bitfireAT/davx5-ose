@@ -269,13 +269,19 @@ class HttpClientBuilder @Inject constructor(
     }
 
     private fun buildConnectionSecurity(okBuilder: OkHttpClient.Builder) {
-        // allow cleartext and TLS 1.2+
+        // Allow cleartext and TLS 1.2+
         okBuilder.connectionSpecs(listOf(
             ConnectionSpec.CLEARTEXT,
             ConnectionSpec.MODERN_TLS
         ))
 
-        // set SSLSocketFactory, TrustManager and HostnameVerifier (if needed)
+        /* Set SSLSocketFactory, TrustManager and HostnameVerifier (if needed).
+         * We shouldn't create these things here, because
+         *
+         * a. it involves complex logic that should be the responsibility of a dedicated class, and
+         * b. we need to cache the instances because otherwise, HTTPS connection are not used
+         *    correctly. okhttp checks the SSLSocketFactory/TrustManager of a connection in the pool
+         *    and creates a new connection when they have changed. */
         val securityContext = connectionSecurityManager.getContext(certificateAlias)
 
         if (securityContext.disableHttp2)

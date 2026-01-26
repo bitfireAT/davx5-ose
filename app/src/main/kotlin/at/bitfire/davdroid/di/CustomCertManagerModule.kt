@@ -23,6 +23,9 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+/**
+ * cert4android integration module
+ */
 class CustomCertManagerModule {
 
     @Provides
@@ -34,7 +37,7 @@ class CustomCertManagerModule {
         if (BuildConfig.allowCustomCerts)
             Optional.of(
                 CustomCertManager(
-                certStore = CustomCertStore.Companion.getInstance(context),
+                certStore = CustomCertStore.getInstance(context),
                 settings = object : SettingsProvider {
 
                     override val appInForeground: Boolean
