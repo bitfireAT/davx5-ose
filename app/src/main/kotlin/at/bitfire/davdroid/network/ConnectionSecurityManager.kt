@@ -29,13 +29,19 @@ class ConnectionSecurityManager @Inject constructor(
 ) {
 
     /**
-     * Maps client certificate aliases (or `null` if no client authentication is used) to their SSLSocketFactory/TrustManager.
-     * Uses soft references for the socket factories so that they can be garbage-collected when not used anymore.
+     * Maps client certificate aliases (or `null` if no client authentication is used) to their SSLSocketFactory.
+     * Uses soft references for the values so that they can be garbage-collected when not used anymore.
      *
-     * Not thread-safe, access has to be synchronized by caller.
+     * Not thread-safe, access must be synchronized by caller.
      */
-    private val socketFactoryCache: MutableMap<Optional<String>, SoftReference<SocketFactoryAndTrustManager>> =
+    private val socketFactoryCache: MutableMap<Optional<String>, SoftReference<SSLSocketFactory>> =
         ConcurrentHashMap(2)    // usually not more than: one for no client certificates + one for a certain certificate alias
+
+    /**
+     * The default TrustManager to use for connections. If [customTrustManager] provides a value, that value is
+     * used. Otherwise, the platform's default trust manager is used.
+     */
+    private val trustManager by lazy { customTrustManager.getOrNull() ?: defaultTrustManager() }
 
     /**
      * Provides the [ConnectionSecurityContext] for a given [certificateAlias].
@@ -49,26 +55,21 @@ class ConnectionSecurityManager @Inject constructor(
         /* We only need a custom socket factory for
            - client certificates and/or
            - when cert4android is active (= there's a custom trustManager). */
-        val socketFactoryAndTrustManager = if (certificateAlias != null || customTrustManager.isPresent)
+        val socketFactory = if (certificateAlias != null || customTrustManager.isPresent)
             getSocketFactory(certificateAlias)
         else
             null
 
         return ConnectionSecurityContext(
-            sslSocketFactory = socketFactoryAndTrustManager?.sslSocketFactory,
-            trustManager = socketFactoryAndTrustManager?.trustManager,
+            sslSocketFactory = socketFactory,
+            trustManager = if (socketFactory != null) trustManager else null,
             hostnameVerifier = customHostnameVerifier.getOrNull(),
             disableHttp2 = certificateAlias != null
         )
     }
 
-    data class SocketFactoryAndTrustManager(
-        val sslSocketFactory: SSLSocketFactory,
-        val trustManager: X509TrustManager
-    )
-
     @VisibleForTesting
-    internal fun getSocketFactory(certificateAlias: String?): SocketFactoryAndTrustManager = synchronized(socketFactoryCache) {
+    internal fun getSocketFactory(certificateAlias: String?): SSLSocketFactory = synchronized(socketFactoryCache) {
         // look up cache first
         val certKey = Optional.ofNullable(certificateAlias)
         val cachedFactory = socketFactoryCache[certKey]?.get()
@@ -78,9 +79,6 @@ class ConnectionSecurityManager @Inject constructor(
 
         // when a client certificate alias is given, create and use the respective ClientKeyManager
         val clientKeyManager = certificateAlias?.let { keyManagerFactory.create(it) }
-
-        // cert4android TrustManager (if available and enabled by build flags), or default TrustManager
-        val trustManager: X509TrustManager = customTrustManager.getOrNull() ?: defaultTrustManager()
 
         // create SSLContext that provides the SSLSocketFactory
         val sslContext = SSLContext.getInstance("TLS").apply {
@@ -92,11 +90,8 @@ class ConnectionSecurityManager @Inject constructor(
         }
 
         // cache reference and return socket factory
-        return SocketFactoryAndTrustManager(
-            sslSocketFactory = sslContext.socketFactory,
-            trustManager = trustManager
-        ).also { result ->
-            socketFactoryCache[certKey] = SoftReference(result)
+        return sslContext.socketFactory.also { socketFactory ->
+            socketFactoryCache[certKey] = SoftReference(socketFactory)
         }
     }
 

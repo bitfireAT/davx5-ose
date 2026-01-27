@@ -92,9 +92,8 @@ class ConnectionSecurityManagerTest {
             customHostnameVerifier = Optional.empty(),
             keyManagerFactory = mockk()
         )
-        val (socketFactory, trustManager) = manager.getSocketFactory(null)
+        val socketFactory = manager.getSocketFactory(null)
         assertNotNull(socketFactory.javaClass)
-        assertEquals(manager.defaultTrustManager().javaClass, trustManager.javaClass)
     }
 
     @Test
@@ -105,9 +104,8 @@ class ConnectionSecurityManagerTest {
             customHostnameVerifier = Optional.empty(),
             keyManagerFactory = kmf
         )
-        val (socketFactory, trustManager) = manager.getSocketFactory("alias")
+        val socketFactory = manager.getSocketFactory("alias")
         assertNotNull(socketFactory.javaClass)
-        assertEquals(manager.defaultTrustManager().javaClass, trustManager.javaClass)
         verify(exactly = 1) {
             kmf.create("alias")
         }
@@ -122,9 +120,8 @@ class ConnectionSecurityManagerTest {
             customHostnameVerifier = Optional.of(customHostnameVerifier),
             keyManagerFactory = mockk()
         )
-        val (socketFactory, trustManager) = manager.getSocketFactory(null)
+        val socketFactory = manager.getSocketFactory(null)
         assertNotNull(socketFactory.javaClass)
-        assertEquals(customTrustManager, trustManager)
     }
 
     @Test
@@ -137,9 +134,8 @@ class ConnectionSecurityManagerTest {
             customHostnameVerifier = Optional.of(customHostnameVerifier),
             keyManagerFactory = kmf
         )
-        val (socketFactory, trustManager) = manager.getSocketFactory("alias")
+        val socketFactory = manager.getSocketFactory("alias")
         assertNotNull(socketFactory.javaClass)
-        assertEquals(customTrustManager, trustManager)
         verify(exactly = 1) {
             kmf.create("alias")
         }
