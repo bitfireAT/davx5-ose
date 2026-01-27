@@ -9,7 +9,6 @@ import at.bitfire.cert4android.CustomCertManager
 import java.lang.ref.SoftReference
 import java.security.KeyStore
 import java.util.Optional
-import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.net.ssl.SSLContext
@@ -34,8 +33,8 @@ class ConnectionSecurityManager @Inject constructor(
      *
      * Not thread-safe, access must be synchronized by caller.
      */
-    private val socketFactoryCache: MutableMap<Optional<String>, SoftReference<SSLSocketFactory>> =
-        ConcurrentHashMap(2)    // usually not more than: one for no client certificates + one for a certain certificate alias
+    private val socketFactoryCache: MutableMap<String?, SoftReference<SSLSocketFactory>> =
+        LinkedHashMap(2)    // usually not more than: one for no client certificates + one for a certain certificate alias
 
     /**
      * The default TrustManager to use for connections. If [customTrustManager] provides a value, that value is
@@ -62,7 +61,7 @@ class ConnectionSecurityManager @Inject constructor(
 
         return ConnectionSecurityContext(
             sslSocketFactory = socketFactory,
-            trustManager = if (socketFactory != null) trustManager else null,
+            trustManager = if (socketFactory != null) trustManager else null,   // when there's a customTrustManager, there's always a socketFactory, too
             hostnameVerifier = customHostnameVerifier.getOrNull(),
             disableHttp2 = certificateAlias != null
         )
@@ -71,8 +70,7 @@ class ConnectionSecurityManager @Inject constructor(
     @VisibleForTesting
     internal fun getSocketFactory(certificateAlias: String?): SSLSocketFactory = synchronized(socketFactoryCache) {
         // look up cache first
-        val certKey = Optional.ofNullable(certificateAlias)
-        val cachedFactory = socketFactoryCache[certKey]?.get()
+        val cachedFactory = socketFactoryCache[certificateAlias]?.get()
         if (cachedFactory != null)
             return cachedFactory
         // no cached value, calculate and store into cache
@@ -91,7 +89,7 @@ class ConnectionSecurityManager @Inject constructor(
 
         // cache reference and return socket factory
         return sslContext.socketFactory.also { socketFactory ->
-            socketFactoryCache[certKey] = SoftReference(socketFactory)
+            socketFactoryCache[certificateAlias] = SoftReference(socketFactory)
         }
     }
 
