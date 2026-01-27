@@ -17,6 +17,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.DavHomeSetRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -34,7 +35,8 @@ class LocalCalendarStore @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val localCalendarFactory: LocalCalendar.Factory,
     private val logger: Logger,
-    private val serviceRepository: DavServiceRepository
+    private val serviceRepository: DavServiceRepository,
+    private val davHomeSetRepository: DavHomeSetRepository
 ): LocalDataStore<LocalCalendar> {
 
     override val authority: String
@@ -121,6 +123,11 @@ class LocalCalendarStore @Inject constructor(
                 Reminders.METHOD_EMAIL
             ).joinToString(",") { it.toString() },
         )
+
+        // By convention, we determine whether a calendar is the primary one by checking the last segment of the URL. If it's "personal",
+        // the calendar is the primary one. This is determined by a common point among lots of different server providers.
+        val isPrimary = info.url.lastSegment.equals("personal", true)
+        values.put(Calendars.IS_PRIMARY, isPrimary)
 
         if (withColor && info.color != null)
             values.put(Calendars.CALENDAR_COLOR, info.color)
