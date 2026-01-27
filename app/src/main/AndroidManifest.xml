@@ -83,7 +83,7 @@
         </activity>
 
         <activity
-            android:name=".ui.AboutActivity"
+            android:name=".ui.about.AboutActivity"
             android:label="@string/navigation_drawer_about"
             android:parentActivityName=".ui.AccountsActivity"/>
 

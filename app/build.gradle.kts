@@ -18,8 +18,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 405080003
-        versionName = "4.5.8"
+        versionCode = 405090000
+        versionName = "4.5.9-alpha.1"
 
         base.archivesName = "davx5-ose-$versionName"
 
@@ -160,6 +160,7 @@ dependencies {
     implementation(libs.compose.accompanist.permissions)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3.adaptive)
     implementation(libs.androidx.compose.materialIconsExtended)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.toolingPreview)
