@@ -141,4 +141,57 @@ class ConnectionSecurityManagerTest {
         }
     }
 
+    @Test
+    fun `getContext caches socket factories for same certificateAlias`() {
+        val kmf: ClientCertKeyManager.Factory = mockk(relaxed = true)
+        val manager = ConnectionSecurityManager(
+            customTrustManager = Optional.empty(),
+            customHostnameVerifier = Optional.empty(),
+            keyManagerFactory = kmf
+        )
+        
+        // First call - should create new socket factory
+        val context1 = manager.getContext("alias")
+        assertNotNull(context1.sslSocketFactory)
+        
+        // Second call with same alias - should return cached socket factory
+        val context2 = manager.getContext("alias")
+        assertNotNull(context2.sslSocketFactory)
+        
+        // Both should return the same socket factory instance
+        assert(context1.sslSocketFactory === context2.sslSocketFactory)
+        
+        // Should only create key manager once
+        verify(exactly = 1) {
+            kmf.create("alias")
+        }
+    }
+
+    @Test
+    fun `getContext does not cache socket factories for different certificateAlias`() {
+        val kmf: ClientCertKeyManager.Factory = mockk(relaxed = true)
+        val manager = ConnectionSecurityManager(
+            customTrustManager = Optional.empty(),
+            customHostnameVerifier = Optional.empty(),
+            keyManagerFactory = kmf
+        )
+        
+        // Get context for first alias
+        val context1 = manager.getContext("alias1")
+        assertNotNull(context1.sslSocketFactory)
+        
+        // Get context for different alias
+        val context2 = manager.getContext("alias2")
+        assertNotNull(context2.sslSocketFactory)
+        
+        // Should be different instances
+        assert(context1.sslSocketFactory !== context2.sslSocketFactory)
+        
+        // Should create key managers for both aliases
+        verify(exactly = 1) {
+            kmf.create("alias1")
+            kmf.create("alias2")
+        }
+    }
+
 }
