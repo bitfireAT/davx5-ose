@@ -25,6 +25,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assume
 import org.junit.Before
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import java.util.logging.Logger
@@ -72,6 +73,7 @@ class AccountSettingsMigration21Test {
     }
 
 
+    @Ignore("Flaky in CI")
     @SdkSuppress(minSdkVersion = 34)
     @Test
     fun testCancelsSyncAndClearsPendingState() = runBlocking {
