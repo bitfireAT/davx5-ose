@@ -9,6 +9,7 @@ import at.bitfire.cert4android.CustomCertManager
 import java.lang.ref.SoftReference
 import java.security.KeyStore
 import java.util.Optional
+import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.net.ssl.SSLContext
@@ -24,7 +25,8 @@ import kotlin.jvm.optionals.getOrNull
 class ConnectionSecurityManager @Inject constructor(
     private val customHostnameVerifier: Optional<CustomCertManager.HostnameVerifier>,
     private val customTrustManager: Optional<CustomCertManager>,
-    private val keyManagerFactory: ClientCertKeyManager.Factory
+    private val keyManagerFactory: ClientCertKeyManager.Factory,
+    private val logger: Logger
 ) {
 
     /**
@@ -71,8 +73,11 @@ class ConnectionSecurityManager @Inject constructor(
     internal fun getSocketFactory(certificateAlias: String?): SSLSocketFactory = synchronized(socketFactoryCache) {
         // look up cache first
         val cachedFactory = socketFactoryCache[certificateAlias]?.get()
-        if (cachedFactory != null)
+        if (cachedFactory != null) {
+            logger.fine("Using cached SSLSocketFactory (certificateAlias=$certificateAlias)")
             return cachedFactory
+        } else
+            logger.fine("Creating new SSLSocketFactory (certificateAlias=$certificateAlias)")
         // no cached value, calculate and store into cache
 
         // when a client certificate alias is given, create and use the respective ClientKeyManager
