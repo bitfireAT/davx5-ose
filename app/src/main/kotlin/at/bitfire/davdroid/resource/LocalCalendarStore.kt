@@ -17,7 +17,6 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.repository.DavHomeSetRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -35,8 +34,7 @@ class LocalCalendarStore @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val localCalendarFactory: LocalCalendar.Factory,
     private val logger: Logger,
-    private val serviceRepository: DavServiceRepository,
-    private val davHomeSetRepository: DavHomeSetRepository
+    private val serviceRepository: DavServiceRepository
 ): LocalDataStore<LocalCalendar> {
 
     override val authority: String
