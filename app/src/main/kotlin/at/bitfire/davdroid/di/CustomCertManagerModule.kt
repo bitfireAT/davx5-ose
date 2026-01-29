@@ -35,8 +35,7 @@ class CustomCertManagerModule {
         settings: SettingsManager
     ): Optional<CustomCertManager> =
         if (BuildConfig.allowCustomCerts)
-            Optional.of(
-                CustomCertManager(
+            Optional.of(CustomCertManager(
                 certStore = CustomCertStore.getInstance(context),
                 settings = object : SettingsProvider {
 
