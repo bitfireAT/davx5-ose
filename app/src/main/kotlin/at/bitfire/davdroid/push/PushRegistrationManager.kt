@@ -22,14 +22,11 @@ import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.property.push.WebDAVPush
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.settings.Settings.EXPLICIT_PUSH_DISABLE
-import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -38,7 +35,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.ByteReadChannel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.unifiedpush.android.connector.UnifiedPush
@@ -65,45 +61,10 @@ class PushRegistrationManager @Inject constructor(
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
-    private val settings: SettingsManager,
-    private val distributorPreferences: DistributorPreferences,
+    private val distributorManager: PushDistributorManager
 ) {
-
-    /**
-     * Sets or removes (disable push) the distributor and updates the subscriptions + worker.
-     *
-     * Uses [update] which is protected by [mutex] so creating/deleting subscriptions doesn't
-     * interfere with other operations.
-     *
-     * @param pushDistributor  new distributor or `null` to disable Push
-     */
-    suspend fun setPushDistributor(pushDistributor: String?) {
-        // Disable UnifiedPush and remove all subscriptions
-        UnifiedPush.removeDistributor(context)
-        update()
-
-        if (pushDistributor != null) {
-            // If a distributor was passed, store it and create/register subscriptions
-            UnifiedPush.saveDistributor(context, pushDistributor)
-            update()
-        }
-    }
-
-    /**
-     * Get the distributor registered by the user.
-     * @return The distributor package name if any, else `null`.
-     */
-    fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
-
-    /**
-     * Get a list of available distributors installed on the system.
-     * @return The list of distributor's package name.
-     */
-    fun getDistributors() = UnifiedPush.getDistributors(context)
-
 
     /**
      * Updates all push registrations and subscriptions so that if Push is available, it's up-to-date and
@@ -111,30 +72,13 @@ class PushRegistrationManager @Inject constructor(
      *
      * Also makes sure that the [PushRegistrationWorker] is enabled if there's a Push-enabled collection.
      *
+     * Selects the distributor if none is selected yet and Push is not explicitly disabled in settings through the [PushDistributorManager].
+     *
      * Acquires [mutex] so that this method can't be called twice at the same time, or at the same time
      * with [update(serviceId)].
      */
     suspend fun update() = mutex.withLock {
-        val currentDistributor = getCurrentDistributor()
-        val isPushDisabled = settings.getBooleanOrNull(EXPLICIT_PUSH_DISABLE)
-        if (currentDistributor == null) {
-            if (isPushDisabled == true) {
-                logger.info("Push is explicitly disabled, no distributor will be selected.")
-            } else {
-                val availableDistributors = getDistributors()
-                if (availableDistributors.isNotEmpty()) {
-                    logger.fine("No Push distributor selected, but ${availableDistributors.size} distributors are available.")
-                    // select preferred distributor if available, otherwise first available
-                    val distributor = distributorPreferences.packageNames.firstNotNullOfOrNull { preferredPackageName ->
-                        availableDistributors.find { it == preferredPackageName }
-                    } ?: availableDistributors.first()
-                    logger.fine("Automatically selecting Push distributor: $distributor")
-                    UnifiedPush.saveDistributor(context, distributor)
-                } else {
-                    logger.fine("No Push distributor selected and no distributors are available.")
-                }
-            }
-        }
+        distributorManager.update()
 
         for (service in serviceRepository.getAll())
             updateService(service.id)
@@ -149,6 +93,7 @@ class PushRegistrationManager @Inject constructor(
      * as [update()].
      */
     suspend fun update(serviceId: Long) = mutex.withLock {
+        distributorManager.update()
         updateService(serviceId)
         updatePeriodicWorker()
     }
@@ -162,7 +107,7 @@ class PushRegistrationManager @Inject constructor(
         // use service ID from database as UnifiedPush instance name
         val instance = serviceId.toString()
 
-        val distributorAvailable = getCurrentDistributor() != null
+        val distributorAvailable = distributorManager.getCurrentDistributor() != null
         if (distributorAvailable)
             try {
                 val vapid = collectionRepository.getVapidKey(serviceId)
