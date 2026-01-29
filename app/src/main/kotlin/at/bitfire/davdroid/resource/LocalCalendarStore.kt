@@ -124,10 +124,8 @@ class LocalCalendarStore @Inject constructor(
             ).joinToString(",") { it.toString() },
         )
 
-        // By convention, we determine whether a calendar is the primary one by checking the last segment of the URL. If it's "personal",
-        // the calendar is the primary one. This is determined by a common point among lots of different server providers.
-        val isPrimary = info.url.lastSegment.equals("personal", true)
-        values.put(Calendars.IS_PRIMARY, isPrimary)
+        // By default, set all new calendars as non-primary. Right now we do not support actually fetching the primary calendar.
+        values.put(Calendars.IS_PRIMARY, 0)
 
         if (withColor && info.color != null)
             values.put(Calendars.CALENDAR_COLOR, info.color)
