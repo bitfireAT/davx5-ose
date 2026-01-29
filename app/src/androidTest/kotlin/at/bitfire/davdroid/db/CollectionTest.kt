@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.db
 
-import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
 import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -19,7 +18,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -42,7 +40,6 @@ class CollectionTest {
         hiltRule.inject()
 
         httpClient = httpClientBuilder.build()
-        Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
     }
 
 

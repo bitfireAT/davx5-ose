@@ -10,9 +10,11 @@ import at.bitfire.davdroid.ui.intro.OseIntroPageFactory
 
 import at.bitfire.davdroid.ui.AboutActivity
 import at.bitfire.davdroid.ui.AccountsDrawerHandler
-import at.bitfire.davdroid.ui.OpenSourceLicenseInfoProvider
 import at.bitfire.davdroid.ui.OseAccountsDrawerHandler
+import at.bitfire.davdroid.ui.about.AboutActivity
+import at.bitfire.davdroid.ui.about.OpenSourceLicenseInfoProvider
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
+import at.bitfire.davdroid.ui.intro.OseIntroPageFactory
 import at.bitfire.davdroid.ui.setup.LoginTypesProvider
 import at.bitfire.davdroid.ui.setup.StandardLoginTypesProvider
 import dagger.Binds
