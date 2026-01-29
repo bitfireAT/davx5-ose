@@ -86,7 +86,7 @@ class ConnectionSecurityManager @Inject constructor(
         // create SSLContext that provides the SSLSocketFactory
         val sslContext = SSLContext.getInstance("TLS").apply {
             init(
-                /* km = */ if (clientKeyManager != null) arrayOf(clientKeyManager) else null,
+                /* km = */ clientKeyManager?.let { arrayOf(it) },
                 /* tm = */ arrayOf(trustManager),
                 /* random = */ null /* default RNG */
             )
