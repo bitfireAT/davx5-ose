@@ -122,6 +122,11 @@ class LocalCalendarStore @Inject constructor(
             ).joinToString(",") { it.toString() },
         )
 
+        // By default, set all new calendars as non-primary. Right now we do not support actually fetching the primary calendar.
+        // Google Calendar uses this field to determine whether to read the calendar name together with the account name in TalkBack:
+        //   if primary, the calendar name is excluded, and as such, all calendars in the account sound the same.
+        values.put(Calendars.IS_PRIMARY, 0)
+
         if (withColor && info.color != null)
             values.put(Calendars.CALENDAR_COLOR, info.color)
 
