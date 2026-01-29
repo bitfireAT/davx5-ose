@@ -14,15 +14,19 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Optional
+import java.util.logging.Logger
 
 class ConnectionSecurityManagerTest {
+
+    private val logger = Logger.getLogger(javaClass.name)
 
     @Test
     fun `getContext(no customTrustManager, no client certificate)`() {
         val manager = ConnectionSecurityManager(
             customTrustManager = Optional.empty(),
             customHostnameVerifier = Optional.empty(),
-            keyManagerFactory = mockk()
+            keyManagerFactory = mockk(),
+            logger = logger
         )
         val context = manager.getContext(null)
         assertNull(context.sslSocketFactory)
@@ -37,7 +41,8 @@ class ConnectionSecurityManagerTest {
         val manager = ConnectionSecurityManager(
             customTrustManager = Optional.empty(),
             customHostnameVerifier = Optional.empty(),
-            keyManagerFactory = kmf
+            keyManagerFactory = kmf,
+            logger = logger
         )
         val context = manager.getContext("alias")
         assertNotNull(context.sslSocketFactory)
@@ -56,7 +61,8 @@ class ConnectionSecurityManagerTest {
         val manager = ConnectionSecurityManager(
             customTrustManager = Optional.of(customTrustManager),
             customHostnameVerifier = Optional.of(customHostnameVerifier),
-            keyManagerFactory = mockk()
+            keyManagerFactory = mockk(),
+            logger = logger
         )
         val context = manager.getContext(null)
         assertNotNull(context.sslSocketFactory)
@@ -73,7 +79,8 @@ class ConnectionSecurityManagerTest {
         val manager = ConnectionSecurityManager(
             customTrustManager = Optional.of(customTrustManager),
             customHostnameVerifier = Optional.of(customHostnameVerifier),
-            keyManagerFactory = kmf
+            keyManagerFactory = kmf,
+            logger = logger
         )
         val context = manager.getContext("alias")
         assertNotNull(context.sslSocketFactory)
@@ -90,7 +97,8 @@ class ConnectionSecurityManagerTest {
         val manager = ConnectionSecurityManager(
             customTrustManager = Optional.empty(),
             customHostnameVerifier = Optional.empty(),
-            keyManagerFactory = mockk()
+            keyManagerFactory = mockk(),
+            logger = logger
         )
         val socketFactory = manager.getSocketFactory(null)
         assertNotNull(socketFactory.javaClass)
@@ -102,7 +110,8 @@ class ConnectionSecurityManagerTest {
         val manager = ConnectionSecurityManager(
             customTrustManager = Optional.empty(),
             customHostnameVerifier = Optional.empty(),
-            keyManagerFactory = kmf
+            keyManagerFactory = kmf,
+            logger = logger
         )
         val socketFactory = manager.getSocketFactory("alias")
         assertNotNull(socketFactory.javaClass)
@@ -118,7 +127,8 @@ class ConnectionSecurityManagerTest {
         val manager = ConnectionSecurityManager(
             customTrustManager = Optional.of(customTrustManager),
             customHostnameVerifier = Optional.of(customHostnameVerifier),
-            keyManagerFactory = mockk()
+            keyManagerFactory = mockk(),
+            logger = logger
         )
         val socketFactory = manager.getSocketFactory(null)
         assertNotNull(socketFactory.javaClass)
@@ -132,7 +142,8 @@ class ConnectionSecurityManagerTest {
         val manager = ConnectionSecurityManager(
             customTrustManager = Optional.of(customTrustManager),
             customHostnameVerifier = Optional.of(customHostnameVerifier),
-            keyManagerFactory = kmf
+            keyManagerFactory = kmf,
+            logger = logger
         )
         val socketFactory = manager.getSocketFactory("alias")
         assertNotNull(socketFactory.javaClass)
@@ -147,7 +158,8 @@ class ConnectionSecurityManagerTest {
         val manager = ConnectionSecurityManager(
             customTrustManager = Optional.empty(),
             customHostnameVerifier = Optional.empty(),
-            keyManagerFactory = kmf
+            keyManagerFactory = kmf,
+            logger = logger
         )
         
         // First call - should create new socket factory
@@ -173,7 +185,8 @@ class ConnectionSecurityManagerTest {
         val manager = ConnectionSecurityManager(
             customTrustManager = Optional.empty(),
             customHostnameVerifier = Optional.empty(),
-            keyManagerFactory = kmf
+            keyManagerFactory = kmf,
+            logger = logger
         )
         
         // Get context for first alias
