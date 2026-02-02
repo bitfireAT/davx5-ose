@@ -480,4 +480,11 @@
     <string name="widget_icon_sync_label">Pictogram synchronisatieknop</string>
     <string name="widget_sync_description">Tik om de synchronisatie handmatig uit te voeren.</string>
     <!--cert4android-->
+<string name="intro_backups_title">Back-upherrinnering</string>
+    <string name="intro_backups_important">Het is belangrijk om regelmatig een back-up van je gegevens (inclusief contacten en agenda\'s) te maken om mogelijk gegevensverlies te voorkomen.</string>
+    <string name="intro_backups_something_wrong">Er kan altijd iets misgaan, of het nu op de server is, binnen %s of in andere apps, die bijvoorbeeld per ongeluk alle agenda-items kunnen verwijderen. (De verwijderingen zouden dan worden gesynchroniseerd met de server.)</string>
+    <string name="intro_backups_accept">Ik heb al een werkende back-upstrategie of ik heb er geen nodig.</string>
+    <string name="about_translations_thanks">❤️ Bedankt aan iedereen die heeft bijgedragen aan de vertalingen!</string>
+    <string name="about_translations_over_transifex">Op Transifex</string>
+    <string name="about_translations_over_weblate">Op Weblate</string>
 </resources>

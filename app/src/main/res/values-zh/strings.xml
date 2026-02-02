@@ -477,4 +477,11 @@
     <string name="widget_icon_sync_label">同步按钮图标</string>
     <string name="widget_sync_description">轻按手动运行同步</string>
     <!--cert4android-->
+<string name="intro_backups_title">备份提醒</string>
+    <string name="intro_backups_important">定期备份数据（包括联系人和日历）以防止潜在的数据丢失非常重要。</string>
+    <string name="intro_backups_something_wrong">总有东西可能出问题，不论是服务器、%s、或者其他应用。这些潜在问题可能会意外删除所有的日历项。（然后本地删除会被同步到服务器）</string>
+    <string name="intro_backups_accept">我已经有了有效的备份策略，或者我不需要备份策略。</string>
+    <string name="about_translations_thanks">❤️ 感谢所有贡献翻译的人！</string>
+    <string name="about_translations_over_transifex">在Transifex 上</string>
+    <string name="about_translations_over_weblate">在 Weblate 上</string>
 </resources>
