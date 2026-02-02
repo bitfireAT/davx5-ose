@@ -21,7 +21,7 @@ android {
         versionCode = 405090002
         versionName = "4.5.9-rc.1"
 
-        base.archivesName = "davx5-ose-$versionName"
+        base.archivesName = "davx5-$versionCode-$versionName"
 
         minSdk = 24        // Android 7.0
         targetSdk = 36     // Android 16
