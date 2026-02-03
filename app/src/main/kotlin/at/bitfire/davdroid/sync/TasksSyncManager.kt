@@ -27,6 +27,8 @@ import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.Task
+import at.bitfire.ical4android.TaskReader
+import at.bitfire.ical4android.TaskWriter
 import at.bitfire.synctools.exception.InvalidICalendarException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -37,9 +39,9 @@ import net.fortuna.ical4j.model.property.ProdId
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
+import java.io.StringWriter
 import java.util.logging.Level
 
 /**
@@ -116,12 +118,13 @@ class TasksSyncManager @AssistedInject constructor(
         }
 
         // generate iCalendar and convert to request body
-        val os = ByteArrayOutputStream()
-        task.write(os, ProdId(Constants.iCalProdId))
+        val icalWriter = StringWriter()
+        val taskWriter = TaskWriter(ProdId(Constants.iCalProdId))
+        taskWriter.write(task, icalWriter)
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
-            requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+            requestBody = icalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
         )
     }
 
@@ -168,12 +171,13 @@ class TasksSyncManager @AssistedInject constructor(
         logger.info("Touched $touched relations")
     }
 
+
     // helpers
 
     private fun processVTodo(fileName: String, eTag: String, reader: Reader) {
         val tasks: List<Task>
         try {
-            tasks = Task.tasksFromReader(reader)
+            tasks = TaskReader().readTasks(reader)
         } catch (e: InvalidICalendarException) {
             logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
