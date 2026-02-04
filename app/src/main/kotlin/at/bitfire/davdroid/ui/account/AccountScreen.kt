@@ -81,13 +81,13 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.account.AccountScreenModel
 import at.bitfire.davdroid.ui.account.CollectionsList
 import at.bitfire.davdroid.ui.account.RenameAccountDialog
 import at.bitfire.davdroid.ui.composable.ActionCard
+import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.ical4android.TaskProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi

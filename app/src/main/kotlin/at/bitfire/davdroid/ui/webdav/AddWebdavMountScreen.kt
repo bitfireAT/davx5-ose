@@ -41,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.davdroid.ui.composable.PasswordTextField
 import at.bitfire.davdroid.ui.composable.SelectClientCertificateCard

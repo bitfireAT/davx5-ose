@@ -10,7 +10,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.composable.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

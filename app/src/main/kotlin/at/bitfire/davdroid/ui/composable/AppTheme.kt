@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.composable
 
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.LocalActivity
@@ -28,7 +28,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import at.bitfire.davdroid.di.scopes.DarkColorScheme
 import at.bitfire.davdroid.di.scopes.LightColorScheme
-import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
+import at.bitfire.davdroid.ui.ForegroundTracker
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors

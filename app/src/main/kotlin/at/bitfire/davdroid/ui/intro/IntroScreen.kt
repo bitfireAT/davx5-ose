@@ -54,7 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.composable.AppTheme
 import kotlinx.coroutines.launch
 
 @Composable

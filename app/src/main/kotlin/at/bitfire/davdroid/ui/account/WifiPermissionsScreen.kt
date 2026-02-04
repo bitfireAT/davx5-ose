@@ -39,9 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
+import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
 

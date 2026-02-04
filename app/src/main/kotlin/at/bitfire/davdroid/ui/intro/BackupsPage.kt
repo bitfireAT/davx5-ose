@@ -28,7 +28,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

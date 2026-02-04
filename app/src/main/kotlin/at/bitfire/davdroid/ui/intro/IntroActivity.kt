@@ -15,7 +15,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.rememberCoroutineScope
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.composable.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -37,7 +37,7 @@ class IntroActivity : AppCompatActivity() {
 
                 BackHandler {
                     if (pagerState.settledPage == 0) {
-                        setResult(Activity.RESULT_CANCELED)
+                        setResult(RESULT_CANCELED)
                         finish()
                     } else scope.launch {
                         pagerState.animateScrollToPage(pagerState.settledPage - 1)
@@ -48,7 +48,7 @@ class IntroActivity : AppCompatActivity() {
                     pages = pages,
                     pagerState = pagerState,
                     onDonePressed = {
-                        setResult(Activity.RESULT_OK)
+                        setResult(RESULT_OK)
                         finish()
                     }
                 )

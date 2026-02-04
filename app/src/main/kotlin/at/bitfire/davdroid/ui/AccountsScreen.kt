@@ -75,6 +75,7 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
+import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -454,12 +455,14 @@ fun AccountList_Preview_Idle() {
 @Preview
 fun AccountList_Preview_SyncPending() {
     AppTheme {
-        AccountList(listOf(
-            AccountsModel.AccountInfo(
-                Account("Account Name", "test"),
-                AccountProgress.Pending
+        AccountList(
+            listOf(
+                AccountsModel.AccountInfo(
+                    Account("Account Name", "test"),
+                    AccountProgress.Pending
+                )
             )
-        ))
+        )
     }
 }
 
@@ -467,12 +470,14 @@ fun AccountList_Preview_SyncPending() {
 @Preview
 fun AccountList_Preview_Syncing() {
     AppTheme {
-        AccountList(listOf(
-            AccountsModel.AccountInfo(
-                Account("Account Name", "test"),
-                AccountProgress.Active
+        AccountList(
+            listOf(
+                AccountsModel.AccountInfo(
+                    Account("Account Name", "test"),
+                    AccountProgress.Active
+                )
             )
-        ))
+        )
     }
 }
 

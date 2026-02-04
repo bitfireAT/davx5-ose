@@ -63,9 +63,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.db.WebDavMountWithQuota
-import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
+import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.util.DavUtils
 import kotlinx.coroutines.delay

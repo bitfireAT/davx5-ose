@@ -28,9 +28,9 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
+import at.bitfire.davdroid.ui.composable.AppTheme
 
 @Composable
 fun LoginScreen(

@@ -53,6 +53,7 @@ import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.about.AboutActivity
+import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import kotlinx.coroutines.launch
 import java.net.URI
