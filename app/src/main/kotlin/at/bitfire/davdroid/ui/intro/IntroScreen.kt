@@ -55,7 +55,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
-import at.bitfire.davdroid.ui.M3ColorScheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -71,7 +70,7 @@ fun IntroScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(M3ColorScheme.primaryLight)
+                    .background(MaterialTheme.colorScheme.primary)
                     // consume bottom and side insets of safe drawing area, like BottomAppBar
                     .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
                     .height(90.dp)
@@ -99,7 +98,7 @@ fun IntroScreen(
                     modifier = Modifier
                         .padding(end = 16.dp)
                         .align(Alignment.CenterEnd),
-                    color = M3ColorScheme.tertiaryLight
+                    color = MaterialTheme.colorScheme.tertiary
                 ) {
                     if (pagerState.currentPage + 1 == pagerState.pageCount) {
                         onDonePressed()
