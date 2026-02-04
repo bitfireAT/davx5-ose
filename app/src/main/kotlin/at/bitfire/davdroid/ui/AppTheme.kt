@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -30,6 +31,8 @@ import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     windowInsets: WindowInsets = WindowInsets.safeDrawing,
+    lightColorScheme: ColorScheme = M3ColorScheme.lightScheme,
+    darkColorScheme: ColorScheme = M3ColorScheme.darkScheme,
     content: @Composable () -> Unit
 ) {
     val activity = LocalActivity.current
@@ -38,8 +41,8 @@ fun AppTheme(
         // When we have moved everything into one Activity with Compose navigation, we can call it there instead.
         (activity as? AppCompatActivity)?.enableEdgeToEdge(
             navigationBarStyle = SystemBarStyle.auto(
-                lightScrim = M3ColorScheme.lightScheme.scrim.toArgb(),
-                darkScrim = M3ColorScheme.darkScheme.scrim.toArgb()
+                lightScrim = lightColorScheme.scrim.toArgb(),
+                darkScrim = darkColorScheme.scrim.toArgb()
             ) { darkTheme }
         )
     }
@@ -48,10 +51,7 @@ fun AppTheme(
     val uriHandler = SafeAndroidUriHandler(LocalContext.current)
     CompositionLocalProvider(LocalUriHandler provides uriHandler) {
         MaterialTheme(
-            colorScheme = if (!darkTheme)
-                M3ColorScheme.lightScheme
-            else
-                M3ColorScheme.darkScheme,
+            colorScheme = if (!darkTheme) lightColorScheme else darkColorScheme
         ) {
             Box(Modifier.windowInsetsPadding(windowInsets).clipToBounds()) {
                 content()
