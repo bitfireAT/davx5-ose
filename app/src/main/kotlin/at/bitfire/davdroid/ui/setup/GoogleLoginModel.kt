@@ -33,7 +33,9 @@ class GoogleLoginModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
-    private val logger: Logger
+    private val logger: Logger,
+    private val oAuthGoogle: OAuthGoogle,
+    private val oAuthIntegration: OAuthIntegration
 ): ViewModel() {
 
     @AssistedFactory
@@ -81,7 +83,7 @@ class GoogleLoginModel @AssistedInject constructor(
     fun authorizationContract() = OAuthIntegration.AuthorizationContract(authService)
 
     fun signIn() =
-        OAuthGoogle.signIn(
+        oAuthGoogle.signIn(
             email = uiState.emailWithDomain,
             customClientId = uiState.customClientId.trimToNull(),
             locale = Locale.getDefault().toLanguageTag()
@@ -94,12 +96,12 @@ class GoogleLoginModel @AssistedInject constructor(
     fun authenticate(authResponse: AuthorizationResponse) {
         viewModelScope.launch {
             try {
-                val credentials = Credentials(authState = OAuthIntegration.authenticate(authService, authResponse))
+                val credentials = Credentials(authState = oAuthIntegration.authenticate(authService, authResponse))
 
                 // success, provide login info to continue
                 uiState = uiState.copy(
                     result = LoginInfo(
-                        baseUri = OAuthGoogle.baseUri(uiState.emailWithDomain),
+                        baseUri = oAuthGoogle.baseUri(uiState.emailWithDomain),
                         credentials = credentials,
                         suggestedAccountName = uiState.emailWithDomain
                     )

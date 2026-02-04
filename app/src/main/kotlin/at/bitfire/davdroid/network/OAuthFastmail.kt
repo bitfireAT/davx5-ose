@@ -9,11 +9,11 @@ import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import java.net.URI
+import javax.inject.Inject
 
-object OAuthFastmail {
-
-    // DAVx5 Client ID (issued by Fastmail)
-    private const val CLIENT_ID = "34ce41ae"
+class OAuthFastmail @Inject constructor(
+    private val oAuthIntegration: OAuthIntegration
+) {
 
     private val SCOPES = arrayOf(
         "https://www.fastmail.com/dev/protocol-caldav", // CalDAV
@@ -37,13 +37,21 @@ object OAuthFastmail {
             serviceConfig,
             CLIENT_ID,
             ResponseTypeValues.CODE,
-            OAuthIntegration.redirectUri
+            oAuthIntegration.redirectUri
         )
         return builder
             .setScopes(*SCOPES)
             .setLoginHint(email)
             .setUiLocales(locale)
             .build()
+    }
+
+
+    companion object {
+
+        // DAVx5 Client ID (issued by Fastmail)
+        private const val CLIENT_ID = "34ce41ae"
+
     }
 
 }

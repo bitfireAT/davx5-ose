@@ -31,7 +31,9 @@ class FastmailLoginModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
-    private val logger: Logger
+    private val logger: Logger,
+    private val oAuthFastmail: OAuthFastmail,
+    private val oAuthIntegration: OAuthIntegration
 ) : ViewModel() {
 
     @AssistedFactory
@@ -74,7 +76,7 @@ class FastmailLoginModel @AssistedInject constructor(
     fun authorizationContract() = OAuthIntegration.AuthorizationContract(authService)
 
     fun signIn() =
-        OAuthFastmail.signIn(
+        oAuthFastmail.signIn(
             email = uiState.emailWithDomain,
             locale = Locale.getDefault().toLanguageTag()
         )
@@ -86,12 +88,12 @@ class FastmailLoginModel @AssistedInject constructor(
     fun authenticate(authResponse: AuthorizationResponse) {
         viewModelScope.launch {
             try {
-                val credentials = Credentials(authState = OAuthIntegration.authenticate(authService, authResponse))
+                val credentials = Credentials(authState = oAuthIntegration.authenticate(authService, authResponse))
 
                 // success, provide login info to continue
                 uiState = uiState.copy(
                     result = LoginInfo(
-                        baseUri = OAuthFastmail.baseUri,
+                        baseUri = oAuthFastmail.baseUri,
                         credentials = credentials,
                         suggestedAccountName = uiState.emailWithDomain
                     )
