@@ -143,7 +143,11 @@ class AboutActivity: AppCompatActivity() {
                             verticalAlignment = Alignment.Top
                         ) { index ->
                             when (index) {
-                                0 -> AboutApp(licenseInfoProvider = licenseInfoProvider.getOrNull())
+                                0 -> AboutApp(
+                                    versionName = model.versionName,
+                                    versionCode = model.versionCode,
+                                    licenseInfoProvider = licenseInfoProvider.getOrNull()
+                                )
                                 1 -> {
                                     val weblateTranslators by model.weblateTranslators.collectAsStateWithLifecycle("")
                                     val transifexTranslators by model.transifexTranslators.collectAsStateWithLifecycle("")

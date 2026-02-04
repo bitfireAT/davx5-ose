@@ -39,6 +39,13 @@ class AboutModel @Inject constructor(
         val full_name: String
     )
 
+    private val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+    val versionCode: Long = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+        packageInfo.longVersionCode
+    else
+        packageInfo.versionCode.toLong()
+    val versionName = packageInfo.versionName ?: versionCode.toString()
+
     private val collator = Collator.getInstance()
     private val json = Json { ignoreUnknownKeys = true }
 
