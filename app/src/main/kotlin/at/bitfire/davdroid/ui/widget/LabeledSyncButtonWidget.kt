@@ -31,40 +31,23 @@ import androidx.glance.material3.ColorProviders
 import androidx.glance.text.Text
 import androidx.glance.text.TextDefaults
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.di.scopes.DarkColorScheme
-import at.bitfire.davdroid.di.scopes.LightColorScheme
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 
 /**
  * A widget with a "Sync all" button displaying an icon and a label.
  */
-class LabeledSyncButtonWidget : GlanceAppWidget() {
-
-    // Hilt over @AndroidEntryPoint is not available for widgets
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface SyncButtonWidgetEntryPoint {
-        fun model(): SyncWidgetModel
-
-        @LightColorScheme fun lightColorScheme(): ColorScheme
-        @DarkColorScheme fun darkColorScheme(): ColorScheme
-    }
-
+class LabeledSyncButtonWidget(
+    private val model: SyncWidgetModel,
+    private val lightColorScheme: ColorScheme,
+    private val darkColorScheme: ColorScheme
+) : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        // initial data
-        val entryPoint = EntryPointAccessors.fromApplication<SyncButtonWidgetEntryPoint>(context)
-        val model = entryPoint.model()
-
         // will be called when the widget is updated
         provideContent {
             GlanceTheme(
                 colors = ColorProviders(
-                    light = entryPoint.lightColorScheme(),
-                    dark = entryPoint.darkColorScheme()
+                    light = lightColorScheme,
+                    dark = darkColorScheme
                 )
             ) {
                 WidgetContent(model)
