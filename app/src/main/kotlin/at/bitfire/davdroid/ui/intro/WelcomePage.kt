@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
-import at.bitfire.davdroid.ui.M3ColorScheme
 
 class WelcomePage: IntroPage() {
 
@@ -53,7 +52,7 @@ class WelcomePage: IntroPage() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = M3ColorScheme.primaryLight)     // fill background color edge-to-edge
+                .background(color = MaterialTheme.colorScheme.primary)     // fill background color edge-to-edge
                 .safeContentPadding()
         ) {
             Image(
