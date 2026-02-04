@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -112,13 +113,14 @@ fun OpenSourcePage(
             ),
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
+            val context = LocalContext.current
             OutlinedButton(
                 modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
                 onClick = {
                     uriHandler.openUri(
                         ExternalUris.Homepage.baseUrl.buildUpon()
                             .appendPath(ExternalUris.Homepage.PATH_OPEN_SOURCE)
-                            .withStatParams("OpenSourcePage")
+                            .withStatParams(context, "OpenSourcePage")
                             .build()
                             .toString()
                     )

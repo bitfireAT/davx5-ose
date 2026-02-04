@@ -12,7 +12,6 @@ import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
-import at.bitfire.davdroid.BuildConfig
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,7 +30,7 @@ class AppSettingsActivity: AppCompatActivity() {
                     startActivity(
                         Intent(
                             Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                            ("package:" + BuildConfig.APPLICATION_ID).toUri()
+                            ("package:$packageName").toUri()
                         )
                     )
                 },
@@ -45,7 +44,7 @@ class AppSettingsActivity: AppCompatActivity() {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                         startActivity(
                             Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                putExtra(Settings.EXTRA_APP_PACKAGE, BuildConfig.APPLICATION_ID)
+                                putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
                             }
                         )
                 },

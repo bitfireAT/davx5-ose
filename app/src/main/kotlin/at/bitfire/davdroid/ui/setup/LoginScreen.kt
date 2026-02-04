@@ -24,6 +24,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -89,11 +90,11 @@ fun LoginScreenContent(
                         Text(stringResource(R.string.login_title))
                     },
                     actions = {
-                        val uriHandler = LocalUriHandler.current
                         val specificHelpUri = helpUri ?: ExternalUris.Homepage.baseUrl.buildUpon()
                             .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
-                            .withStatParams("LoginScreen")
+                            .withStatParams(LocalContext.current, "LoginScreen")
                             .build()
+                        val uriHandler = LocalUriHandler.current
                         IconButton(onClick = {
                             // show tested-with page
                             uriHandler.openUri(specificHelpUri.toString())

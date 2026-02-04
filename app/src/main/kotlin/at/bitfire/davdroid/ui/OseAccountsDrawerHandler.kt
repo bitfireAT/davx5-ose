@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,6 +32,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
     override fun MenuEntries(
         snackbarHostState: SnackbarHostState
     ) {
+        val context = LocalContext.current
         val uriHandler = LocalUriHandler.current
 
         // Most important entries
@@ -55,7 +57,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
             uriHandler.openUri(
                 Homepage.baseUrl.buildUpon()
                     .appendPath(Homepage.PATH_OPEN_SOURCE)
-                    .withStatParams(javaClass.simpleName)
+                    .withStatParams(context, javaClass.simpleName)
                     .build().toString()
             )
         })
@@ -77,7 +79,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
                 uriHandler.openUri(
                     Homepage.baseUrl
                     .buildUpon()
-                    .withStatParams(javaClass.simpleName)
+                    .withStatParams(context, javaClass.simpleName)
                     .build().toString())
             }
         )
@@ -95,7 +97,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
                 uriHandler.openUri(
                     Homepage.baseUrl.buildUpon()
                         .appendPath(Homepage.PATH_FAQ)
-                        .withStatParams(javaClass.simpleName)
+                        .withStatParams(context, javaClass.simpleName)
                         .build().toString()
                 )
             }
@@ -108,7 +110,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
                     Homepage.baseUrl.buildUpon()
                         .appendPath(Homepage.PATH_ORGANIZATIONS)
                         .appendPath(Homepage.PATH_ORGANIZATIONS_MANAGED)
-                        .withStatParams(javaClass.simpleName)
+                        .withStatParams(context, javaClass.simpleName)
                         .build().toString()
                 )
             }
@@ -120,7 +122,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
                 uriHandler.openUri(
                     Homepage.baseUrl.buildUpon()
                         .appendPath(Homepage.PATH_PRIVACY)
-                        .withStatParams(javaClass.simpleName)
+                        .withStatParams(context, javaClass.simpleName)
                         .build().toString()
                 )
             }

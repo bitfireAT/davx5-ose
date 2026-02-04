@@ -71,7 +71,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
@@ -280,7 +279,7 @@ fun AccountsScreen(
                                 onManageDataSaver = {
                                     val intent = Intent(
                                         /* action = */ Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS,
-                                        /* uri = */ "package:${BuildConfig.APPLICATION_ID}".toUri()
+                                        /* uri = */ "package:${context.packageName}".toUri()
                                     )
                                     if (intent.resolveActivity(context.packageManager) != null)
                                         context.startActivity(intent)

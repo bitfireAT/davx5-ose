@@ -49,6 +49,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.pm.PackageInfoCompat
 import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
@@ -167,8 +168,10 @@ abstract class AccountsDrawerHandler {
         context: Context,
         onShowSnackbar: (message: String, actionLabel: String, action: () -> Unit) -> Unit
     ) {
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        val versionCode = PackageInfoCompat.getLongVersionCode(packageInfo)
         val mailto = URI(
-            "mailto", "play@bitfire.at?subject=${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME} feedback (${BuildConfig.VERSION_CODE})", null
+            "mailto", "play@bitfire.at?subject=${context.packageName}/${packageInfo.versionName} feedback ($versionCode)", null
         )
         val intent = Intent(Intent.ACTION_SENDTO, mailto.toString().toUri())
         try {

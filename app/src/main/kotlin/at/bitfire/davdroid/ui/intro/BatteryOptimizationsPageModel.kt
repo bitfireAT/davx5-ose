@@ -71,7 +71,7 @@ class BatteryOptimizationsPageModel @Inject constructor(
             (evilManufacturers.contains(Build.MANUFACTURER.lowercase(Locale.ROOT)) || BuildConfig.DEBUG)
 
         fun isExempted(context: Context) =
-            context.getSystemService<PowerManager>()!!.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
+            context.getSystemService<PowerManager>()!!.isIgnoringBatteryOptimizations(context.packageName)
     }
 
     data class UiState(

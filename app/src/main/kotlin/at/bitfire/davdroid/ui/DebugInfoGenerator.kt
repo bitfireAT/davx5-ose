@@ -32,7 +32,6 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.dav4jvm.okhttp.exception.DavException
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.db.AppDatabase
@@ -139,7 +138,7 @@ class DebugInfoGenerator @Inject constructor(
             val pm = context.packageManager
 
             val packageNames = mutableSetOf(      // we always want info about these packages:
-                BuildConfig.APPLICATION_ID,            // DAVx5
+                context.packageName,
                 TaskProvider.ProviderName.JtxBoard.packageName,     // jtx Board
                 TaskProvider.ProviderName.OpenTasks.packageName,    // OpenTasks
                 TaskProvider.ProviderName.TasksOrg.packageName      // tasks.org
@@ -218,7 +217,7 @@ class DebugInfoGenerator @Inject constructor(
             }
         context.getSystemService<PowerManager>()?.let { powerManager ->
             writer.append("App exempted from power saving: ")
-                .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes (good)" else "no (bad)")
+                .append(if (powerManager.isIgnoringBatteryOptimizations(context.packageName)) "yes (good)" else "no (bad)")
                 .append('\n')
                 .append("System in power-save mode: ")
                 .append(if (powerManager.isPowerSaveMode) "yes (restrictions apply!)" else "no")
@@ -291,7 +290,7 @@ class DebugInfoGenerator @Inject constructor(
         writer.append('\n')
         // permissions
         writer.append("Permissions:\n")
-        val ownPkgInfo = context.packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, PackageManager.GET_PERMISSIONS)
+        val ownPkgInfo = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
         for (permission in ownPkgInfo.requestedPermissions.orEmpty()) {
             val shortPermission = permission.removePrefix("android.permission.")
             writer.append(" - $shortPermission: ")

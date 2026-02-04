@@ -37,7 +37,6 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.CardWithImage
@@ -105,7 +104,7 @@ fun PermissionsScreen(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val intent = Intent(
                     Intent.ACTION_AUTO_REVOKE_PERMISSIONS,
-                    Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                    Uri.fromParts("package", context.packageName, null)
                 )
                 try {
                     context.startActivity(intent)

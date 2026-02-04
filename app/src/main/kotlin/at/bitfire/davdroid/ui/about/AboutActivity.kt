@@ -91,7 +91,7 @@ class AboutActivity: AppCompatActivity() {
                                     uriHandler.openUri(
                                         ExternalUris.Homepage.baseUrl
                                             .buildUpon()
-                                            .withStatParams(javaClass.simpleName)
+                                            .withStatParams(this@AboutActivity, javaClass.simpleName)
                                             .build().toString()
                                     )
                                 }) {

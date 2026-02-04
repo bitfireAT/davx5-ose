@@ -120,9 +120,10 @@ fun DetectResourcesPageContent_NothingFound(
                     modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                 )
 
+                val context = LocalContext.current
                 val urlServices = ExternalUris.Homepage.baseUrl.buildUpon()
                     .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
-                    .withStatParams("DetectResourcesPage")
+                    .withStatParams(context, "DetectResourcesPage")
                     .build()
                 val testedServices = HtmlCompat.fromHtml(
                     stringResource(R.string.login_see_tested_services, urlServices),
@@ -148,7 +149,6 @@ fun DetectResourcesPageContent_NothingFound(
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
-                    val context = LocalContext.current
                     Button(
                         onClick = {
                             val intent = DebugInfoActivity.IntentBuilder(context)

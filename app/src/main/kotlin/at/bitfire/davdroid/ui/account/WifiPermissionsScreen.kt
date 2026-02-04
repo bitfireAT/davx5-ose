@@ -83,13 +83,14 @@ fun WifiPermissionsScreen(
                     },
                     title = { Text(stringResource(R.string.wifi_permissions_label)) },
                     actions = {
+                        val context = LocalContext.current
                         val uriHandler = LocalUriHandler.current
                         IconButton(onClick = {
                             uriHandler.openUri(
                                 ExternalUris.Homepage.baseUrl.buildUpon()
                                     .appendPath(ExternalUris.Homepage.PATH_FAQ)
                                     .appendPath(ExternalUris.Homepage.PATH_FAQ_LOCATION_PERMISSION)
-                                    .withStatParams("WifiPermissionsScreen")
+                                    .withStatParams(context, "WifiPermissionsScreen")
                                     .build().toString()
                             )
                         }) {

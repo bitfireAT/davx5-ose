@@ -8,6 +8,7 @@ import android.content.Context
 import android.icu.text.ListFormatter
 import android.os.Build
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.di.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,10 +41,7 @@ class AboutModel @Inject constructor(
     )
 
     private val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-    val versionCode: Long = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-        packageInfo.longVersionCode
-    else
-        packageInfo.versionCode.toLong()
+    val versionCode = PackageInfoCompat.getLongVersionCode(packageInfo)
     val versionName = packageInfo.versionName ?: versionCode.toString()
 
     private val collator = Collator.getInstance()

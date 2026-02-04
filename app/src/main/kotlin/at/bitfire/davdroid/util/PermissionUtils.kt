@@ -23,7 +23,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.util.PermissionUtils.WIFI_SSID_PERMISSIONS
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.flow.Flow
@@ -148,7 +148,7 @@ object PermissionUtils {
 
     fun showAppSettings(context: Context) {
         val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", BuildConfig.APPLICATION_ID, null))
+                Uri.fromParts("package", context.packageName, null))
         if (intent.resolveActivity(context.packageManager) != null)
             context.startActivity(intent)
         else
