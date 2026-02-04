@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.settings
 
-import at.bitfire.davdroid.TextTable
+import at.bitfire.davdroid.util.TextTable
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

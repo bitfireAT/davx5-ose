@@ -17,7 +17,7 @@ import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
@@ -64,6 +64,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     accountSettingsFactory: AccountSettings.Factory,
+    private val productIds: ProductIds,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
@@ -197,7 +198,7 @@ class CalendarSyncManager @AssistedInject constructor(
         // map Android event to iCalendar (also generates UID, if necessary)
         val handler = AndroidEventHandler(
             accountName = resource.recurringCalendar.calendar.account.name,
-            prodIdGenerator = DefaultProdIdGenerator(Constants.iCalProdId)
+            prodIdGenerator = DefaultProdIdGenerator(productIds.iCalProdId)
         )
         val mappedEvents = handler.mapToVEvents(localEvent)
 

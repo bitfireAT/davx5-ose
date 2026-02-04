@@ -33,7 +33,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.dav4jvm.okhttp.exception.DavException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -43,6 +42,7 @@ import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
+import at.bitfire.davdroid.util.TextTable
 import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext

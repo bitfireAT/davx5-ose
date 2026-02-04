@@ -21,12 +21,12 @@ import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.db.migration.AutoMigration12
 import at.bitfire.davdroid.db.migration.AutoMigration16
 import at.bitfire.davdroid.db.migration.AutoMigration18
 import at.bitfire.davdroid.ui.AccountsActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.util.TextTable
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

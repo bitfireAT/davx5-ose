@@ -4,21 +4,24 @@
 
 package at.bitfire.davdroid.network
 
-import android.os.Build
-import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.ProductIds
+import dagger.Reusable
 import okhttp3.Interceptor
-import okhttp3.OkHttp
 import okhttp3.Response
 import java.util.Locale
 import java.util.logging.Logger
+import javax.inject.Inject
 
-object UserAgentInterceptor: Interceptor {
+@Reusable
+class UserAgentInterceptor @Inject constructor(
+    logger: Logger,
+    productIds: ProductIds
+): Interceptor {
 
-    val userAgent = "DAVx5/${BuildConfig.VERSION_NAME} (dav4jvm; " +
-            "okhttp/${OkHttp.VERSION}) Android/${Build.VERSION.RELEASE}"
+    private val userAgent = productIds.httpUserAgent
 
     init {
-        Logger.getGlobal().info("Will set User-Agent: $userAgent")
+        logger.info("Will set User-Agent: $userAgent")
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {

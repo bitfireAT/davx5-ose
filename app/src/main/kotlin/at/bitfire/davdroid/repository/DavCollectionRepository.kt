@@ -15,7 +15,7 @@ import at.bitfire.dav4jvm.okhttp.exception.NotFoundException
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
@@ -25,6 +25,7 @@ import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
+import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
@@ -53,6 +54,7 @@ class DavCollectionRepository @Inject constructor(
     private val logger: Logger,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val productIds: Lazy<ProductIds>,
     private val serviceRepository: DavServiceRepository
 ) {
 
@@ -370,7 +372,7 @@ class DavCollectionRepository @Inject constructor(
                                         Calendar(
                                             PropertyList<Property>().apply {
                                                 add(Version.VERSION_2_0)
-                                                add(ProdId(Constants.iCalProdId))
+                                                add(ProdId(productIds.get().iCalProdId))
                                             },
                                             ComponentList(
                                                 listOf(vTimezone)

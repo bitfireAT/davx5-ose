@@ -20,7 +20,7 @@ import at.bitfire.dav4jvm.property.webdav.GetContentType
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
@@ -105,8 +105,9 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
-    val dirtyVerifier: Optional<ContactDirtyVerifier>,
     accountSettingsFactory: AccountSettings.Factory,
+    val dirtyVerifier: Optional<ContactDirtyVerifier>,
+    private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
@@ -293,15 +294,15 @@ class ContactsSyncManager @AssistedInject constructor(
         when {
             hasJCard -> {
                 mimeType = DavAddressBook.MIME_JCARD
-                contact.writeJCard(os, Constants.vCardProdId)
+                contact.writeJCard(os, productIds.vCardProdId)
             }
             hasVCard4 -> {
                 mimeType = DavAddressBook.MIME_VCARD4
-                contact.writeVCard(VCardVersion.V4_0, os, Constants.vCardProdId)
+                contact.writeVCard(VCardVersion.V4_0, os, productIds.vCardProdId)
             }
             else -> {
                 mimeType = DavAddressBook.MIME_VCARD3_UTF8
-                contact.writeVCard(VCardVersion.V3_0, os, Constants.vCardProdId)
+                contact.writeVCard(VCardVersion.V3_0, os, productIds.vCardProdId)
             }
         }
 

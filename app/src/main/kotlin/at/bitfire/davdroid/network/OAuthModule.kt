@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.network
 
 import android.content.Context
+import at.bitfire.davdroid.ProductIds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,13 +27,16 @@ object OAuthModule {
      * instance if not necessary (use Provider/Lazy).
      */
     @Provides
-    fun authorizationService(@ApplicationContext context: Context): AuthorizationService =
+    fun authorizationService(
+        @ApplicationContext context: Context,
+        productIds: ProductIds
+    ): AuthorizationService =
         AuthorizationService(context,
             AppAuthConfiguration.Builder()
                 .setConnectionBuilder { uri ->
                     val url = URL(uri.toString())
                     (url.openConnection() as HttpURLConnection).apply {
-                        setRequestProperty("User-Agent", UserAgentInterceptor.userAgent)
+                        setRequestProperty("User-Agent", productIds.httpUserAgent)
                     }
                 }.build()
         )

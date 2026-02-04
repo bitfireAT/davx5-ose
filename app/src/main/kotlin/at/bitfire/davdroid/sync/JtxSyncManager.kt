@@ -16,7 +16,7 @@ import at.bitfire.dav4jvm.property.caldav.CalendarData
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
@@ -49,6 +49,7 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
+    private val productIds: ProductIds,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(
     account,
@@ -101,7 +102,7 @@ class JtxSyncManager @AssistedInject constructor(
         logger.log(Level.FINE, "Preparing upload of icalobject #${resource.id}")
 
         val os = ByteArrayOutputStream()
-        resource.write(os, ProdId(Constants.iCalProdId))
+        resource.write(os, ProdId(productIds.iCalProdId))
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(resource.uid, "ics"),

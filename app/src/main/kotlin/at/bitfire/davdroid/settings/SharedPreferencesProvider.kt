@@ -9,7 +9,7 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import at.bitfire.davdroid.TextTable
+import at.bitfire.davdroid.util.TextTable
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

@@ -51,7 +51,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.core.net.toUri
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.about.AboutActivity
 import at.bitfire.davdroid.ui.composable.AppTheme
@@ -106,11 +105,14 @@ abstract class AccountsDrawerHandler {
         snackbarHostState: SnackbarHostState
     ) {
         val context = LocalContext.current
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        val versionName = packageInfo.versionName
         val isBeta =
-            LocalInspectionMode.current ||
-            BuildConfig.VERSION_NAME.contains("-alpha") ||
-            BuildConfig.VERSION_NAME.contains("-beta") ||
-            BuildConfig.VERSION_NAME.contains("-rc")
+            LocalInspectionMode.current || versionName != null && (
+                versionName.contains("-alpha") ||
+                versionName.contains("-beta") ||
+                versionName.contains("-rc")
+            )
         val scope = rememberCoroutineScope()
 
         MenuEntry(

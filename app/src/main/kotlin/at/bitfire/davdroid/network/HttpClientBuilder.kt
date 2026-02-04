@@ -51,7 +51,8 @@ class HttpClientBuilder @Inject constructor(
     defaultLogger: Logger,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthInterceptorFactory: OAuthInterceptor.Factory,
-    private val settingsManager: SettingsManager
+    private val settingsManager: SettingsManager,
+    private val userAgentInterceptor: UserAgentInterceptor
 ) {
 
     companion object {
@@ -235,7 +236,7 @@ class HttpClientBuilder @Inject constructor(
         builder.followRedirects(followRedirects)
 
         // add User-Agent to every request
-        builder.addInterceptor(UserAgentInterceptor)
+        builder.addInterceptor(userAgentInterceptor)
 
         // connection-private cookie store
         builder.cookieJar(cookieStore)
