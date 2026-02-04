@@ -8,8 +8,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
-@Suppress("MemberVisibilityCanBePrivate")
-object M3ColorScheme {
+object OseTheme {
 
     // All colors hand-crafted because Material Theme Builder generates unbelievably ugly colors
 

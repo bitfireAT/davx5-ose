@@ -7,7 +7,7 @@ package at.bitfire.davdroid.di
 import androidx.compose.material3.ColorScheme
 import at.bitfire.davdroid.di.scopes.DarkColorScheme
 import at.bitfire.davdroid.di.scopes.LightColorScheme
-import at.bitfire.davdroid.ui.M3ColorScheme
+import at.bitfire.davdroid.ui.OseTheme
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,9 +18,9 @@ import dagger.hilt.components.SingletonComponent
 class OseColorSchemes {
     @Provides
     @LightColorScheme
-    fun lightColorScheme(): ColorScheme = M3ColorScheme.lightScheme
+    fun lightColorScheme(): ColorScheme = OseTheme.lightScheme
 
     @Provides
     @DarkColorScheme
-    fun darkColorScheme(): ColorScheme = M3ColorScheme.darkScheme
+    fun darkColorScheme(): ColorScheme = OseTheme.darkScheme
 }
