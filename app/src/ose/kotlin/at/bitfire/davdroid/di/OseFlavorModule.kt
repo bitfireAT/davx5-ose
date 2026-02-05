@@ -4,6 +4,8 @@
 
 package at.bitfire.davdroid.di
 
+import at.bitfire.davdroid.push.DistributorPreferencesProvider
+import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.ui.AccountsDrawerHandler
 import at.bitfire.davdroid.ui.OseAccountsDrawerHandler
 import at.bitfire.davdroid.ui.about.AboutActivity
@@ -46,6 +48,9 @@ interface OseModules {
     interface Global {
         @Binds
         fun introPageFactory(impl: OseIntroPageFactory): IntroPageFactory
+
+        @Binds
+        fun pushDistributorPreferences(impl: DistributorPreferencesProvider): PushRegistrationManager.DistributorPreferences
     }
 
 }

@@ -22,7 +22,6 @@ import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.property.push.WebDAVPush
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
@@ -36,7 +35,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.ByteReadChannel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.unifiedpush.android.connector.UnifiedPush
@@ -63,35 +61,10 @@ class PushRegistrationManager @Inject constructor(
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
-    private val serviceRepository: DavServiceRepository
+    private val serviceRepository: DavServiceRepository,
+    private val distributorManager: PushDistributorManager
 ) {
-
-    /**
-     * Sets or removes (disable push) the distributor and updates the subscriptions + worker.
-     *
-     * Uses [update] which is protected by [mutex] so creating/deleting subscriptions doesn't
-     * interfere with other operations.
-     *
-     * @param pushDistributor  new distributor or `null` to disable Push
-     */
-    suspend fun setPushDistributor(pushDistributor: String?) {
-        // Disable UnifiedPush and remove all subscriptions
-        UnifiedPush.removeDistributor(context)
-        update()
-
-        if (pushDistributor != null) {
-            // If a distributor was passed, store it and create/register subscriptions
-            UnifiedPush.saveDistributor(context, pushDistributor)
-            update()
-        }
-    }
-
-    fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
-
-    fun getDistributors() = UnifiedPush.getDistributors(context)
-
 
     /**
      * Updates all push registrations and subscriptions so that if Push is available, it's up-to-date and
@@ -99,10 +72,14 @@ class PushRegistrationManager @Inject constructor(
      *
      * Also makes sure that the [PushRegistrationWorker] is enabled if there's a Push-enabled collection.
      *
+     * Selects the distributor if none is selected yet and Push is not explicitly disabled in settings through the [PushDistributorManager].
+     *
      * Acquires [mutex] so that this method can't be called twice at the same time, or at the same time
      * with [update(serviceId)].
      */
     suspend fun update() = mutex.withLock {
+        distributorManager.update()
+
         for (service in serviceRepository.getAll())
             updateService(service.id)
 
@@ -116,6 +93,7 @@ class PushRegistrationManager @Inject constructor(
      * as [update()].
      */
     suspend fun update(serviceId: Long) = mutex.withLock {
+        distributorManager.update()
         updateService(serviceId)
         updatePeriodicWorker()
     }
@@ -129,7 +107,7 @@ class PushRegistrationManager @Inject constructor(
         // use service ID from database as UnifiedPush instance name
         val instance = serviceId.toString()
 
-        val distributorAvailable = getCurrentDistributor() != null
+        val distributorAvailable = distributorManager.getCurrentDistributor() != null
         if (distributorAvailable)
             try {
                 val vapid = collectionRepository.getVapidKey(serviceId)
@@ -350,6 +328,19 @@ class PushRegistrationManager @Inject constructor(
             logger.info("Cancelling periodic PushRegistrationWorker")
             workManager.cancelUniqueWork(WORKER_UNIQUE_NAME)
         }
+    }
+
+
+    /**
+     * Allows preferring certain distributors over others.
+     */
+    interface DistributorPreferences {
+        /**
+         * A list of package names ordered by preference.
+         * If any of those is available, it will be automatically selected.
+         * Otherwise, another available distributor will be chosen automatically.
+         */
+        val packageNames: List<String>
     }
 
 

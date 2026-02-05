@@ -65,5 +65,12 @@ object Settings {
 
     /** max. number of accounts */
     const val MAX_ACCOUNTS = "max_accounts"
+
+
+    /**
+     * By default, a push distributor is automatically selected when needed. However, the user can choose to disable push completely.
+     * This setting reflects that choice.
+     */
+    const val EXPLICIT_PUSH_DISABLE = "push_disable"
     
 }
