@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.Bundle
 import androidx.test.runner.AndroidJUnitRunner
 import at.bitfire.davdroid.di.TestCoroutineDispatchersModule
-import at.bitfire.davdroid.test.BuildConfig
 import at.bitfire.synctools.log.LogcatHandler
 import dagger.hilt.android.testing.HiltTestApplication
 import java.util.logging.Level
@@ -29,7 +28,7 @@ class HiltTestRunner : AndroidJUnitRunner() {
         val rootLogger = Logger.getLogger("")
         rootLogger.level = Level.ALL
         rootLogger.handlers.forEach { rootLogger.removeHandler(it) }
-        rootLogger.addHandler(LogcatHandler(BuildConfig.APPLICATION_ID))
+        rootLogger.addHandler(LogcatHandler(javaClass.name))
 
         // MockK requirements
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P)

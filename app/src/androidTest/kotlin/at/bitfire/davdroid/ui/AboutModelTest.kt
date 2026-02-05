@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui
 
 import android.content.Context
-import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.di.scope.IoDispatcher
 import at.bitfire.davdroid.ui.about.AboutModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule

@@ -5,6 +5,10 @@
 package at.bitfire.davdroid.di
 
 import at.bitfire.davdroid.di.TestCoroutineDispatchersModule.standardTestDispatcher
+import at.bitfire.davdroid.di.scope.DefaultDispatcher
+import at.bitfire.davdroid.di.scope.IoDispatcher
+import at.bitfire.davdroid.di.scope.MainDispatcher
+import at.bitfire.davdroid.di.scope.SyncDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
