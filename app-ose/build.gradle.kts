@@ -78,6 +78,21 @@ android {
             keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
         }
     }
+
+    @Suppress("UnstableApiUsage")
+    testOptions {
+        managedDevices {
+            localDevices {
+                create("virtual") {
+                    device = "Pixel 3"
+                    // TBD: API level 35 and higher causes network tests to fail sometimes, see https://github.com/bitfireAT/davx5-ose/issues/1525
+                    // Suspected reason: https://developer.android.com/about/versions/15/behavior-changes-all#background-network-access
+                    apiLevel = 34
+                    systemImageSource = "aosp-atd"
+                }
+            }
+        }
+    }
 }
 
 dependencies {
