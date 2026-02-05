@@ -38,4 +38,4 @@ if (!buildCacheUrl.isNullOrEmpty()) {
     }
 }
 
-include(":app")
+include(":core")
