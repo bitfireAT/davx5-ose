@@ -13,12 +13,12 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.ForegroundTracker
 import dagger.Module
 import dagger.Provides
+import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.internal.tls.OkHostnameVerifier
 import java.util.Optional
-import javax.inject.Singleton
 
 /**
  * cert4android integration module
@@ -28,12 +28,11 @@ import javax.inject.Singleton
 class CustomCertManagerModule {
 
     @Provides
-    @Singleton
     fun customCertStore(@ApplicationContext context: Context): Optional<CustomCertStore> =
         Optional.of(CustomCertStore.getInstance(context))
 
     @Provides
-    @Singleton
+    @Reusable
     fun customCertManager(
         customCertStore: Optional<CustomCertStore>,
         settings: SettingsManager
@@ -53,7 +52,7 @@ class CustomCertManagerModule {
         ))
 
     @Provides
-    @Singleton
+    @Reusable
     fun customHostnameVerifier(
         customCertManager: Optional<CustomCertManager>
     ): Optional<CustomCertManager.HostnameVerifier> =
