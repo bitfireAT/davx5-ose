@@ -8,6 +8,7 @@ import android.content.Context
 import android.icu.text.ListFormatter
 import android.os.Build
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.di.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,6 +39,10 @@ class AboutModel @Inject constructor(
         val username: String,
         val full_name: String
     )
+
+    private val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+    val versionCode = PackageInfoCompat.getLongVersionCode(packageInfo)
+    val versionName = packageInfo.versionName ?: versionCode.toString()
 
     private val collator = Collator.getInstance()
     private val json = Json { ignoreUnknownKeys = true }

@@ -44,7 +44,6 @@ import androidx.core.net.toUri
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.AppTheme
@@ -114,7 +113,7 @@ fun TasksCard(
         },
         installApp = { packageName ->
             val uri = ("market://details?id=$packageName&referrer=" +
-                    Uri.encode("utm_source=" + BuildConfig.APPLICATION_ID)).toUri()
+                    Uri.encode("utm_source=" + context.packageName)).toUri()
             val intent = Intent(Intent.ACTION_VIEW, uri)
             if (intent.resolveActivity(context.packageManager) != null)
                 context.startActivity(intent)

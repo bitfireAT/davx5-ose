@@ -15,7 +15,7 @@ import at.bitfire.dav4jvm.property.caldav.CalendarData
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.SyncDispatcher
@@ -54,6 +54,7 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted localCollection: LocalTaskList,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
+    private val productIds: ProductIds,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalTask, LocalTaskList, DavCalendar>(
     account,
@@ -119,7 +120,7 @@ class TasksSyncManager @AssistedInject constructor(
 
         // generate iCalendar and convert to request body
         val icalWriter = StringWriter()
-        val taskWriter = TaskWriter(ProdId(Constants.iCalProdId))
+        val taskWriter = TaskWriter(ProdId(productIds.iCalProdId))
         taskWriter.write(task, icalWriter)
 
         return GeneratedResource(

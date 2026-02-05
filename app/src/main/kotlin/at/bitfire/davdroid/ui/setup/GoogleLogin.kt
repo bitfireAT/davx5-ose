@@ -58,7 +58,7 @@ object GoogleLogin : LoginType {
         get() = ExternalUris.Homepage.baseUrl.buildUpon()
             .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
             .appendPath("google")
-            .withStatParams(javaClass.name)
+            .withStatParams(screen = javaClass.name)
             .build()
 
 
@@ -208,7 +208,7 @@ fun GoogleLoginScreen(
 
         val privacyPolicyUrl = ExternalUris.Homepage.baseUrl.buildUpon()
             .appendPath(ExternalUris.Homepage.PATH_PRIVACY)
-            .withStatParams(javaClass.name)
+            .withStatParams(screen = javaClass.name)
             .build()
         val privacyPolicyNote = HtmlCompat.fromHtml(
             stringResource(

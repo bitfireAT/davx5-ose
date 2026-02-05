@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -86,9 +85,10 @@ class DebugInfoActivity: AppCompatActivity() {
     }
 
     private fun shareZipFile(file: File) {
+        val packageInfo = packageManager.getPackageInfo(packageName, 0)
         shareFile(
             file,
-            "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info",
+            "${packageInfo.packageName}/${packageInfo.versionName} debug info",
             getString(R.string.debug_info_attached),
             "*/*",    // application/zip won't show all apps that can manage binary files, like ShareViaHttp
         )

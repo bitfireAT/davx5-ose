@@ -51,7 +51,7 @@ object FastmailLogin : LoginType {
         get() = ExternalUris.Homepage.baseUrl.buildUpon()
             .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
             .appendPath("fastmail")
-            .withStatParams("LoginTypeFastmail")
+            .withStatParams(screen = "LoginTypeFastmail")
             .build()
 
 

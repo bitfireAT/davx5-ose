@@ -13,7 +13,6 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.di.IoDispatcher
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.PreferenceRepository
@@ -53,7 +52,7 @@ class AppSettingsModel @Inject constructor(
     private val powerManager = context.getSystemService<PowerManager>()!!
     val batterySavingExempted =
         broadcastReceiverFlow(context, IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED), immediate = true)
-            .map { powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID) }
+            .map { powerManager.isIgnoringBatteryOptimizations(context.packageName) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     fun verboseLogging() = preferences.logToFileFlow()

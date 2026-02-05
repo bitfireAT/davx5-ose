@@ -61,7 +61,7 @@ object NextcloudLogin : LoginType {
         get() = ExternalUris.Homepage.baseUrl.buildUpon()
             .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
             .appendPath("nextcloud")
-            .withStatParams(javaClass.simpleName)
+            .withStatParams(screen = javaClass.simpleName)
             .build()
 
 

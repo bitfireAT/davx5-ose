@@ -49,6 +49,7 @@ class AccountSettingsModel @AssistedInject constructor(
     db: AppDatabase,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val logger: Logger,
+    private val oAuthIntegration: OAuthIntegration,
     private val settings: SettingsManager,
     private val syncWorkerManager: SyncWorkerManager,
     private val tasksAppManager: TasksAppManager
@@ -192,7 +193,7 @@ class AccountSettingsModel @AssistedInject constructor(
         CoroutineScope(defaultDispatcher).launch {
             try {
                 // save new credentials
-                val authState = OAuthIntegration.authenticate(authService, authResponse)
+                val authState = oAuthIntegration.authenticate(authService, authResponse)
                 accountSettings.updateAuthState(authState)
 
                 _uiState.update {

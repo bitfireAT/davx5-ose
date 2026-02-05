@@ -21,12 +21,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.PixelBoxes
 
 @Composable
-fun AboutApp(licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null) {
+fun AboutApp(
+    versionName: String,
+    versionCode: Long,
+    licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null
+) {
     Column(
         modifier = Modifier
             .padding(8.dp)
@@ -49,7 +52,7 @@ fun AboutApp(licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null) 
         )
 
         Text(
-            stringResource(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
+            stringResource(R.string.about_version, versionName, versionCode),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -86,10 +89,14 @@ fun AboutApp(licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null) 
 @Composable
 @Preview
 fun AboutApp_Preview() {
-    AboutApp(licenseInfoProvider = object : AboutActivity.AppLicenseInfoProvider {
-        @Composable
-        override fun LicenseInfo() {
-            Text("Some flavored License Info")
+    AboutApp(
+        versionName = "1.0-sample",
+        versionCode = 12345,
+        licenseInfoProvider = object : AboutActivity.AppLicenseInfoProvider {
+            @Composable
+            override fun LicenseInfo() {
+                Text("Some flavored License Info")
+            }
         }
-    })
+    )
 }

@@ -26,13 +26,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
@@ -51,9 +51,10 @@ fun BatteryOptimizationsPageContent(
 
     val hintBatteryOptimizations by model.hintBatteryOptimizations.collectAsStateWithLifecycle(false)
     val uiState = model.uiState
+    val context = LocalContext.current
     LaunchedEffect(uiState) {
         if (uiState.shouldBeExempted && !uiState.isExempted)
-            ignoreBatteryOptimizationsResultLauncher.launch(BuildConfig.APPLICATION_ID)
+            ignoreBatteryOptimizationsResultLauncher.launch(context.packageName)
     }
 
     val hintAutostartPermission by model.hintAutostartPermission.collectAsStateWithLifecycle(false)
@@ -165,6 +166,8 @@ fun BatteryOptimizationsPageContent(
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(top = 12.dp)
                     )
+
+                    val context = LocalContext.current
                     OutlinedButton(
                         onClick = {
                             uriHandler.openUri(
@@ -175,7 +178,7 @@ fun BatteryOptimizationsPageContent(
                                         "manufacturer",
                                         Build.MANUFACTURER.lowercase(Locale.ROOT)
                                     )
-                                    .withStatParams("BatteryOptimizationsPage")
+                                    .withStatParams(context, "BatteryOptimizationsPage")
                                     .build().toString()
                             )
                         }

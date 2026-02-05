@@ -8,8 +8,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.net.toUri
-import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.network.OAuthIntegration.redirectUri
+import dagger.Reusable
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CompletableDeferred
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
@@ -17,15 +17,18 @@ import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.TokenResponse
+import javax.inject.Inject
 
 /**
  * Integration with OpenID AppAuth (Android)
  */
-object OAuthIntegration {
+@Reusable
+class OAuthIntegration @Inject constructor(
+    @ApplicationContext context: Context
+) {
 
     /** redirect URI, must be registered in Manifest */
-    val redirectUri =
-        (BuildConfig.APPLICATION_ID + ":/oauth2/redirect").toUri()
+    val redirectUri = (context.packageName + ":/oauth2/redirect").toUri()
 
     /**
      * Called by the authorization service when the login is finished and [redirectUri] is launched.

@@ -9,11 +9,11 @@ import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import java.net.URI
+import javax.inject.Inject
 
-object OAuthGoogle {
-
-    // davx5integration@gmail.com (for davx5-ose)
-    private const val CLIENT_ID = "1069050168830-eg09u4tk1cmboobevhm4k3bj1m4fav9i.apps.googleusercontent.com"
+class OAuthGoogle @Inject constructor(
+    private val oAuthIntegration: OAuthIntegration
+) {
 
     private val SCOPES = arrayOf(
         "https://www.googleapis.com/auth/calendar",     // CalDAV
@@ -41,13 +41,21 @@ object OAuthGoogle {
             serviceConfig,
             customClientId ?: CLIENT_ID,
             ResponseTypeValues.CODE,
-            OAuthIntegration.redirectUri
+            oAuthIntegration.redirectUri
         )
         return builder
             .setScopes(*SCOPES)
             .setLoginHint(email)
             .setUiLocales(locale)
             .build()
+    }
+
+
+    companion object {
+
+        // davx5integration@gmail.com (for davx5-ose)
+        private const val CLIENT_ID = "1069050168830-eg09u4tk1cmboobevhm4k3bj1m4fav9i.apps.googleusercontent.com"
+
     }
 
 }

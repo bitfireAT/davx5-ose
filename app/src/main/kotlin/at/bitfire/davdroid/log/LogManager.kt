@@ -87,7 +87,7 @@ class LogManager @Inject constructor(
             Level.ALL       // include everything (including HTTP interceptor logs) in verbose logs
         else
             Level.FINE      // include detailed information like content provider operations in non-verbose logs
-        rootLogger.addHandler(LogcatHandler(BuildConfig.APPLICATION_ID))
+        rootLogger.addHandler(LogcatHandler(context.packageName))
 
         // log to file, if requested
         if (logToFile)

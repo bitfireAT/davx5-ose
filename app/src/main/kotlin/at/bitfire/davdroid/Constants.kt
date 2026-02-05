@@ -3,20 +3,11 @@
  */
 package at.bitfire.davdroid
 
-import at.bitfire.synctools.icalendar.ical4jVersion
-import ezvcard.Ezvcard
-
 /**
  * Brand-specific constants like (non-theme) colors, homepage URLs etc.
  */
 object Constants {
 
     const val DAVDROID_GREEN_RGBA = 0xFF8bc34a.toInt()
-
-
-    // product IDs for iCalendar/vCard
-
-    val iCalProdId = "DAVx5/${BuildConfig.VERSION_NAME} ical4j/$ical4jVersion"
-    const val vCardProdId = "+//IDN bitfire.at//DAVx5/${BuildConfig.VERSION_NAME} ez-vcard/${Ezvcard.VERSION}"
 
 }
