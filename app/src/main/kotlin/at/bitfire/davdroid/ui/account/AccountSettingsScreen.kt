@@ -59,9 +59,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.AccountSettings.Companion.SYNC_INTERVAL_MANUALLY
 import at.bitfire.davdroid.settings.Credentials
-import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.composable.ActionCard
+import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.EditTextInputDialog
 import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
 import at.bitfire.davdroid.ui.composable.Setting

@@ -18,8 +18,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 405090004
-        versionName = "4.5.9-rc.2"
+        versionCode = 405090005
+        versionName = "4.5.9"
 
         base.archivesName = "davx5-$versionCode-$versionName"
 
@@ -167,7 +167,7 @@ dependencies {
 
     // Glance Widgets
     implementation(libs.androidx.glance.base)
-    implementation(libs.androidx.glance.material)
+    implementation(libs.androidx.glance.material3)
 
     // Jetpack Room
     implementation(libs.androidx.room.runtime)

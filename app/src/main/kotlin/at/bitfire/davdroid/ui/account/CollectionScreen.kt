@@ -54,7 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import java.time.Instant

@@ -14,15 +14,22 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.rememberCoroutineScope
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.di.scopes.LightColorScheme
+import at.bitfire.davdroid.ui.composable.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class IntroActivity : AppCompatActivity() {
 
     val model by viewModels<IntroModel>()
+
+    @Inject
+    @LightColorScheme
+    lateinit var lightColorScheme: ColorScheme
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +44,7 @@ class IntroActivity : AppCompatActivity() {
 
                 BackHandler {
                     if (pagerState.settledPage == 0) {
-                        setResult(Activity.RESULT_CANCELED)
+                        setResult(RESULT_CANCELED)
                         finish()
                     } else scope.launch {
                         pagerState.animateScrollToPage(pagerState.settledPage - 1)
@@ -45,10 +52,11 @@ class IntroActivity : AppCompatActivity() {
                 }
 
                 IntroScreen(
+                    lightColorScheme = lightColorScheme,
                     pages = pages,
                     pagerState = pagerState,
                     onDonePressed = {
-                        setResult(Activity.RESULT_OK)
+                        setResult(RESULT_OK)
                         finish()
                     }
                 )
