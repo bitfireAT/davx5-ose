@@ -128,4 +128,5 @@ dependencies {
     // third-party libs
     implementation(libs.guava)
     implementation(libs.okhttp.base)
+    implementation(libs.openid.appauth)
 }
