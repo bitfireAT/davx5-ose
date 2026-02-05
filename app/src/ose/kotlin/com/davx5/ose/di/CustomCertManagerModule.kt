@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.di
+package com.davx5.ose.di
 
 import android.content.Context
 import at.bitfire.cert4android.CustomCertManager

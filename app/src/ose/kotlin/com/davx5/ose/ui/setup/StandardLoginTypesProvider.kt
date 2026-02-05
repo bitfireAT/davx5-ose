@@ -2,12 +2,22 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.ui.setup
+package com.davx5.ose.ui.setup
 
 import android.content.Intent
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import at.bitfire.davdroid.ui.setup.AdvancedLogin
+import at.bitfire.davdroid.ui.setup.EmailLogin
+import at.bitfire.davdroid.ui.setup.FastmailLogin
+import at.bitfire.davdroid.ui.setup.GoogleLogin
+import at.bitfire.davdroid.ui.setup.LoginActivity
+import at.bitfire.davdroid.ui.setup.LoginInfo
+import at.bitfire.davdroid.ui.setup.LoginType
+import at.bitfire.davdroid.ui.setup.LoginTypesProvider
 import at.bitfire.davdroid.ui.setup.LoginTypesProvider.LoginAction
+import at.bitfire.davdroid.ui.setup.NextcloudLogin
+import at.bitfire.davdroid.ui.setup.UrlLogin
 import java.util.logging.Logger
 import javax.inject.Inject
 

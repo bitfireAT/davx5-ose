@@ -1,8 +1,8 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
-package at.bitfire.davdroid
+package com.davx5.ose
 
 import android.content.Context
 import at.bitfire.davdroid.ui.DebugInfoActivity
