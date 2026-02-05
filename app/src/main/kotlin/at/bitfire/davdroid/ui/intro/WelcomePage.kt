@@ -33,19 +33,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.di.scopes.LightColorScheme
 import at.bitfire.davdroid.ui.composable.AppTheme
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
+import at.bitfire.davdroid.ui.composable.AppThemeEntryPoint
 import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
-
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-private interface WelcomePageEntryPoint {
-    @LightColorScheme
-    fun lightColorScheme(): ColorScheme
-}
 
 class WelcomePage: IntroPage() {
 
@@ -66,7 +56,7 @@ class WelcomePage: IntroPage() {
     private fun ContentPortrait() {
         val context = LocalContext.current
         val lightColorScheme: ColorScheme = remember {
-            val entryPoint = EntryPointAccessors.fromApplication<WelcomePageEntryPoint>(context)
+            val entryPoint = EntryPointAccessors.fromApplication<AppThemeEntryPoint>(context)
             entryPoint.lightColorScheme()
         }
 

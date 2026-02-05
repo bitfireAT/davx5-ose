@@ -26,8 +26,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.compose.LifecycleResumeEffect
-import at.bitfire.davdroid.di.scopes.DarkColorScheme
-import at.bitfire.davdroid.di.scopes.LightColorScheme
+import at.bitfire.davdroid.di.scope.DarkColorScheme
+import at.bitfire.davdroid.di.scope.LightColorScheme
 import at.bitfire.davdroid.ui.ForegroundTracker
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -36,7 +36,7 @@ import dagger.hilt.components.SingletonComponent
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
-private interface AppThemeEntryPoint {
+internal interface AppThemeEntryPoint {
     @LightColorScheme
     fun lightColorScheme(): ColorScheme
 

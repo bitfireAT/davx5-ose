@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.di.scopes
+package at.bitfire.davdroid.di.scope
 
 import javax.inject.Qualifier
 

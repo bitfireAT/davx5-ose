@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.rememberCoroutineScope
-import at.bitfire.davdroid.di.scopes.LightColorScheme
+import at.bitfire.davdroid.di.scope.LightColorScheme
 import at.bitfire.davdroid.ui.composable.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

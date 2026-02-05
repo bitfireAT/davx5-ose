@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.di
 
+import at.bitfire.davdroid.di.scope.MainDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

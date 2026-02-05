@@ -13,7 +13,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
-import at.bitfire.davdroid.di.DefaultDispatcher
+import at.bitfire.davdroid.di.scope.DefaultDispatcher
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder

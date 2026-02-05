@@ -7,8 +7,8 @@ package at.bitfire.davdroid.ui.widget
 import androidx.compose.material3.ColorScheme
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
-import at.bitfire.davdroid.di.scopes.DarkColorScheme
-import at.bitfire.davdroid.di.scopes.LightColorScheme
+import at.bitfire.davdroid.di.scope.DarkColorScheme
+import at.bitfire.davdroid.di.scope.LightColorScheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -32,4 +32,5 @@ class LabeledSyncButtonWidgetReceiver : GlanceAppWidgetReceiver() {
             lightColorScheme = lightColorScheme,
             darkColorScheme = darkColorScheme
         )
+
 }
