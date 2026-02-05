@@ -49,10 +49,10 @@ jobs:
       # Cache configurations for the other jobs (including assemble for CodeQL)
       - name: Populate configuration cache
         run: |
-          ./gradlew --dry-run app:assembleDebug
-          ./gradlew --dry-run app:lintOseDebug
-          ./gradlew --dry-run app:testOseDebugUnitTest
-          ./gradlew --dry-run app:virtualOseDebugAndroidTest
+          ./gradlew --dry-run core:assembleDebug app:assembleDebug
+          ./gradlew --dry-run core:lintDebug app:lintOseDebug
+          ./gradlew --dry-run core:testDebugUnitTest app:testOseDebugUnitTest
+          ./gradlew --dry-run core:virtualDebugAndroidTest app:virtualOseDebugAndroidTest
 
   unit_tests:
     needs: compile
@@ -76,10 +76,10 @@ jobs:
           key: android-${{ hashFiles('app/build.gradle.kts') }}
 
       - name: Lint checks
-        run: ./gradlew app:lintOseDebug
+        run: ./gradlew core:lintDebug app:lintOseDebug
 
       - name: Unit tests
-        run: ./gradlew app:testOseDebugUnitTest
+        run: ./gradlew core:testDebugUnitTest app:testOseDebugUnitTest
 
   instrumented_tests:
     needs: compile
@@ -126,7 +126,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Instrumented tests
-        run: ./gradlew app:virtualOseDebugAndroidTest
+        run: ./gradlew core:virtualDebugAndroidTest app:virtualOseDebugAndroidTest
 
       - name: Cache AVD
         uses: actions/cache/save@v5
