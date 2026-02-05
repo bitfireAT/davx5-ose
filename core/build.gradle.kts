@@ -3,7 +3,7 @@
  */
 
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
@@ -16,15 +16,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "at.bitfire.davdroid"
-
-        versionCode = 405090005
-        versionName = "4.5.9"
-
-        base.archivesName = "davx5-$versionCode-$versionName"
-
         minSdk = 24        // Android 7.0
-        targetSdk = 36     // Android 16
 
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
     }
@@ -50,46 +42,14 @@ android {
     // Java namespace for our classes (not to be confused with Android package ID)
     namespace = "at.bitfire.davdroid"
 
-    flavorDimensions += "distribution"
-    productFlavors {
-        create("ose") {
-            dimension = "distribution"
-            versionNameSuffix = "-ose"
-        }
-    }
-
-    sourceSets {
-        getByName("androidTest") {
-            assets.srcDir("$projectDir/schemas")
-        }
-    }
-
-    signingConfigs {
-        create("bitfire") {
-            storeFile = file(System.getenv("ANDROID_KEYSTORE") ?: "/dev/null")
-            storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("ANDROID_KEY_ALIAS")
-            keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
-        }
-    }
-
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules-release.pro")
-
-            isShrinkResources = true
-
-            signingConfig = signingConfigs.findByName("bitfire")
+            isMinifyEnabled = false
         }
     }
 
     lint {
         disable += arrayOf("GoogleAppIndexingWarning", "ImpliedQuantity", "MissingQuantity", "MissingTranslation", "ExtraTranslation", "RtlEnabled", "RtlHardcoded", "Typos")
-    }
-
-    androidResources {
-        generateLocaleConfig = true
     }
 
     packaging {
@@ -127,7 +87,7 @@ aboutLibraries {
 }
 
 dependencies {
-    // core
+    // Kotlin / Android
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines)
     coreLibraryDesugaring(libs.android.desugaring)

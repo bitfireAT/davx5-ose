@@ -38,4 +38,5 @@ if (!buildCacheUrl.isNullOrEmpty()) {
     }
 }
 
+include(":app-ose")
 include(":core")

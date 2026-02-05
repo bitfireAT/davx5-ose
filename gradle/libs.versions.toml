@@ -119,6 +119,7 @@ unifiedpush-fcm = { module = "org.unifiedpush.android:embedded-fcm-distributor",
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-agp" }
+android-library = { id = "com.android.library", version.ref = "android-agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

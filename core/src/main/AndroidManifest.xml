@@ -4,8 +4,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          android:installLocation="internalOnly">
+          xmlns:tools="http://schemas.android.com/tools">
 
     <!-- normal permissions -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -43,7 +42,6 @@
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 
     <application
-        android:name=".App"
         android:allowBackup="false"
         android:networkSecurityConfig="@xml/network_security_config"
         android:icon="@mipmap/ic_launcher"

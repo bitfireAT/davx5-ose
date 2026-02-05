@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid
+package com.davx5.ose
 
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
@@ -27,7 +27,7 @@ class App: Application(), Configuration.Provider {
     lateinit var logger: Logger
 
     /**
-     * Creates the [LogManager] singleton and thus initializes logging.
+     * Creates the [at.bitfire.davdroid.log.LogManager] singleton and thus initializes logging.
      */
     @Inject
     lateinit var logManager: LogManager
@@ -67,7 +67,7 @@ class App: Application(), Configuration.Provider {
         @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch(defaultDispatcher) {
             // clean up orphaned accounts in DB from time to time
-            AccountsCleanupWorker.enable(this@App)
+            AccountsCleanupWorker.Companion.enable(this@App)
 
             // create/update app shortcuts
             UiUtils.updateShortcuts(this@App)
