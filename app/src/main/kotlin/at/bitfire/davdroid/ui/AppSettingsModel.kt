@@ -13,7 +13,7 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
-import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.di.scope.IoDispatcher
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
@@ -34,18 +34,20 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.util.Optional
 import javax.inject.Inject
+import kotlin.jvm.optionals.getOrNull
 
 @HiltViewModel
 class AppSettingsModel @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val customCertStore: Optional<CustomCertStore>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
     private val pushRegistrationManager: PushRegistrationManager,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
-
 
     // debugging
 
@@ -81,13 +83,15 @@ class AppSettingsModel @Inject constructor(
 
     // security
 
+    val hasCustomCertStore = customCertStore.isPresent
+
     fun distrustSystemCertificates() = settings.getBooleanFlow(Settings.DISTRUST_SYSTEM_CERTIFICATES)
     fun updateDistrustSystemCertificates(distrust: Boolean) {
         settings.putBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES, distrust)
     }
 
     fun resetCertificates() {
-        CustomCertStore.getInstance(context).clearUserDecisions()
+        customCertStore.getOrNull()?.clearUserDecisions()
     }
 
 

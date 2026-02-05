@@ -6,7 +6,7 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.Account
 import at.bitfire.davdroid.di.ApplicationScope
-import at.bitfire.davdroid.di.DefaultDispatcher
+import at.bitfire.davdroid.di.scope.DefaultDispatcher
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository

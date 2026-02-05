@@ -21,7 +21,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.CollectionType
 import at.bitfire.davdroid.db.HomeSet
-import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.di.scope.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils

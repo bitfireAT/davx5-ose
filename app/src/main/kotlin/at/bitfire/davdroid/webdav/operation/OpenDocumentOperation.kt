@@ -9,7 +9,7 @@ import android.os.Build
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.di.scope.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.HeadResponse

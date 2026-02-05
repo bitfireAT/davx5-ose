@@ -4,30 +4,17 @@
 
 package at.bitfire.davdroid.di
 
+import at.bitfire.davdroid.di.scope.DefaultDispatcher
+import at.bitfire.davdroid.di.scope.IoDispatcher
+import at.bitfire.davdroid.di.scope.MainDispatcher
+import at.bitfire.davdroid.di.scope.SyncDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import javax.inject.Qualifier
 import javax.inject.Singleton
-
-@Retention(AnnotationRetention.RUNTIME)
-@Qualifier
-annotation class DefaultDispatcher
-
-@Retention(AnnotationRetention.RUNTIME)
-@Qualifier
-annotation class IoDispatcher
-
-@Retention(AnnotationRetention.RUNTIME)
-@Qualifier
-annotation class MainDispatcher
-
-@Retention(AnnotationRetention.RUNTIME)
-@Qualifier
-annotation class SyncDispatcher
 
 @Module
 @InstallIn(SingletonComponent::class)

@@ -7,7 +7,7 @@ package at.bitfire.davdroid.webdav
 import android.os.ParcelFileDescriptor
 import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.okhttp.exception.HttpException
-import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.di.scope.IoDispatcher
 import at.bitfire.davdroid.util.DavUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

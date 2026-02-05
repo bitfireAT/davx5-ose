@@ -67,7 +67,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.AppSettingsModel.PushDistributorInfo
@@ -110,7 +109,7 @@ fun AppSettingsScreen(
 
             // Security
             onNavPermissionsScreen = onNavPermissionsScreen,
-            showCertSettings = BuildConfig.allowCustomCerts,
+            showCertSettings = model.hasCustomCertStore,
             distrustSystemCerts = model.distrustSystemCertificates().collectAsStateWithLifecycle(null).value ?: false,
             onDistrustSystemCertsUpdated = model::updateDistrustSystemCertificates,
             onResetCertificates = model::resetCertificates,

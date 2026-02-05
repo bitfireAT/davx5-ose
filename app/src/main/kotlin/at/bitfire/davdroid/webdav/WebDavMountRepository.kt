@@ -11,7 +11,7 @@ import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavMount
-import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.di.scope.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Credentials
 import dagger.hilt.android.qualifiers.ApplicationContext

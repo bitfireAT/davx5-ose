@@ -10,7 +10,7 @@ import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
-import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.di.scope.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName

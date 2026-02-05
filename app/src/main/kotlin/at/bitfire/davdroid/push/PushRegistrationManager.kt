@@ -22,7 +22,7 @@ import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.property.push.WebDAVPush
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.di.scope.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
