@@ -46,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.dav4jvm.okhttp.exception.DavException
 import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import java.io.File

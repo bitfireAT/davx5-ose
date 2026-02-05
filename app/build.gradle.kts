@@ -167,7 +167,7 @@ dependencies {
 
     // Glance Widgets
     implementation(libs.androidx.glance.base)
-    implementation(libs.androidx.glance.material)
+    implementation(libs.androidx.glance.material3)
 
     // Jetpack Room
     implementation(libs.androidx.room.runtime)

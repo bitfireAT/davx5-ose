@@ -6,11 +6,13 @@ package at.bitfire.davdroid.ui.widget
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
@@ -23,35 +25,29 @@ import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.size
-import androidx.glance.unit.ColorProvider
+import androidx.glance.material3.ColorProviders
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.M3ColorScheme
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 
 /**
  * A widget with a "Sync all" button displaying just an icon to indicate the action.
  */
-class IconSyncButtonWidget : GlanceAppWidget() {
-
-    // Hilt over @AndroidEntryPoint is not available for widgets
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface SyncButtonWidgetEntryPoint {
-        fun model(): SyncWidgetModel
-    }
-
+class IconSyncButtonWidget(
+    private val model: SyncWidgetModel,
+    private val lightColorScheme: ColorScheme,
+    private val darkColorScheme: ColorScheme
+) : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        // initial data
-        val entryPoint = EntryPointAccessors.fromApplication<SyncButtonWidgetEntryPoint>(context)
-        val model = entryPoint.model()
-
         // will be called when the widget is updated
         provideContent {
-            WidgetContent(model)
+            GlanceTheme(
+                colors = ColorProviders(
+                    light = lightColorScheme,
+                    dark = darkColorScheme
+                )
+            ) {
+                WidgetContent(model)
+            }
         }
     }
 
@@ -62,7 +58,7 @@ class IconSyncButtonWidget : GlanceAppWidget() {
         Box(
             modifier = GlanceModifier
                 .size(50.dp)
-                .background(ColorProvider(M3ColorScheme.primaryLight))
+                .background(GlanceTheme.colors.primary)
                 .cornerRadius(25.dp)
                 .clickable {
                     model.requestSync()
@@ -74,9 +70,7 @@ class IconSyncButtonWidget : GlanceAppWidget() {
                 provider = ImageProvider(R.drawable.ic_sync),
                 contentDescription = context.getString(R.string.widget_sync_all_accounts),
                 modifier = GlanceModifier.fillMaxSize().size(32.dp),
-                colorFilter = ColorFilter.tint(
-                    ColorProvider(M3ColorScheme.onPrimaryLight)
-                )
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.onPrimary)
             )
         }
     }

@@ -53,6 +53,7 @@ import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.about.AboutActivity
+import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import kotlinx.coroutines.launch
 import java.net.URI
@@ -258,7 +259,7 @@ fun BrandingHeader() {
         Spacer(Modifier.height(16.dp))
         Box(
             Modifier.background(
-                color = M3ColorScheme.primaryLight,
+                color = MaterialTheme.colorScheme.primary,
                 shape = RoundedCornerShape(16.dp)
             )
         ) {
