@@ -2,16 +2,16 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.di
+package com.davx5.ose.di
 
 import at.bitfire.davdroid.ui.AccountsDrawerHandler
 import at.bitfire.davdroid.ui.OseAccountsDrawerHandler
 import at.bitfire.davdroid.ui.about.AboutActivity
-import at.bitfire.davdroid.ui.about.OpenSourceLicenseInfoProvider
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
-import at.bitfire.davdroid.ui.intro.OseIntroPageFactory
 import at.bitfire.davdroid.ui.setup.LoginTypesProvider
-import at.bitfire.davdroid.ui.setup.StandardLoginTypesProvider
+import com.davx5.ose.ui.about.OpenSourceLicenseInfoProvider
+import com.davx5.ose.ui.intro.OseIntroPageFactory
+import com.davx5.ose.ui.setup.StandardLoginTypesProvider
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
