@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -59,6 +60,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun IntroScreen(
+    lightColorScheme: ColorScheme,
     pages: List<IntroPage>,
     pagerState: PagerState = rememberPagerState { pages.size },
     onDonePressed: () -> Unit
@@ -70,7 +72,7 @@ fun IntroScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(lightColorScheme.primary)
                     // consume bottom and side insets of safe drawing area, like BottomAppBar
                     .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
                     .height(90.dp)
@@ -98,7 +100,7 @@ fun IntroScreen(
                     modifier = Modifier
                         .padding(end = 16.dp)
                         .align(Alignment.CenterEnd),
-                    color = MaterialTheme.colorScheme.tertiary
+                    color = lightColorScheme.tertiary
                 ) {
                     if (pagerState.currentPage + 1 == pagerState.pageCount) {
                         onDonePressed()
@@ -139,6 +141,7 @@ fun IntroScreen(
 fun IntroScreen_Preview() {
     AppTheme {
         IntroScreen(
+            MaterialTheme.colorScheme,
             listOf(
                 object : IntroPage() {
                     override fun getShowPolicy(): ShowPolicy = ShowPolicy.SHOW_ALWAYS

@@ -15,7 +15,8 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-class OseColorSchemes {
+class OseColorSchemesModule {
+
     @Provides
     @LightColorScheme
     fun lightColorScheme(): ColorScheme = OseTheme.lightScheme
@@ -23,4 +24,5 @@ class OseColorSchemes {
     @Provides
     @DarkColorScheme
     fun darkColorScheme(): ColorScheme = OseTheme.darkScheme
+
 }

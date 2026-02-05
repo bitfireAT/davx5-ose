@@ -32,4 +32,5 @@ class LabeledSyncButtonWidgetReceiver : GlanceAppWidgetReceiver() {
             lightColorScheme = lightColorScheme,
             darkColorScheme = darkColorScheme
         )
+
 }
