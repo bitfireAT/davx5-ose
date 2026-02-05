@@ -71,7 +71,7 @@ fun AppTheme(
     val uriHandler = SafeAndroidUriHandler(LocalContext.current)
     CompositionLocalProvider(LocalUriHandler provides uriHandler) {
         MaterialTheme(
-            colorScheme = if (!darkTheme) lightColorScheme else darkColorScheme
+            colorScheme = if (darkTheme) darkColorScheme else lightColorScheme
         ) {
             Box(Modifier.windowInsetsPadding(windowInsets).clipToBounds()) {
                 content()
