@@ -36,7 +36,7 @@ import dagger.hilt.components.SingletonComponent
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
-private interface AppThemeEntryPoint {
+internal interface AppThemeEntryPoint {
     @LightColorScheme
     fun lightColorScheme(): ColorScheme
 
