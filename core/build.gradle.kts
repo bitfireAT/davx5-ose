@@ -59,6 +59,12 @@ android {
         }
     }
 
+    sourceSets {
+        getByName("androidTest") {
+            assets.srcDir("$projectDir/schemas")
+        }
+    }
+
     @Suppress("UnstableApiUsage")
     testOptions {
         managedDevices {
