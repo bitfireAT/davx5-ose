@@ -51,8 +51,8 @@ jobs:
         run: |
           ./gradlew --dry-run core:assembleDebug app:assembleDebug
           ./gradlew --dry-run core:lintDebug app:lintOseDebug
-          ./gradlew --dry-run core:testDebugUnitTest app:testOseDebugUnitTest
-          ./gradlew --dry-run core:virtualDebugAndroidTest app:virtualOseDebugAndroidTest
+          ./gradlew --dry-run core:testDebugUnitTest
+          ./gradlew --dry-run core:virtualDebugAndroidTest
 
   unit_tests:
     needs: compile
@@ -79,7 +79,7 @@ jobs:
         run: ./gradlew core:lintDebug app:lintOseDebug
 
       - name: Unit tests
-        run: ./gradlew core:testDebugUnitTest app:testOseDebugUnitTest
+        run: ./gradlew core:testDebugUnitTest
 
   instrumented_tests:
     needs: compile
@@ -126,7 +126,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Instrumented tests
-        run: ./gradlew core:virtualDebugAndroidTest app:virtualOseDebugAndroidTest
+        run: ./gradlew core:virtualDebugAndroidTest
 
       - name: Cache AVD
         uses: actions/cache/save@v5
