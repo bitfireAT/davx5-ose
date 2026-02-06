@@ -3,23 +3,21 @@
  */
 
 pluginManagement {
-    repositories {
-        google()
-        mavenCentral()
-
-        // AboutLibraries
-        maven("https://plugins.gradle.org/m2/")
+    repositories {              // used for resolving plugins
+        google()                // Android plugins
+        gradlePluginPortal()    // most plugins, including AboutLibraries
     }
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
+    // Repositories declared in settings.gradle(.kts) override those declared in a project.
+    repositoriesMode = RepositoriesMode.PREFER_SETTINGS
 
-        // AppIntro, dav4jvm
-        maven("https://jitpack.io")
+    repositories {              // used for resolving dependencies
+        mavenCentral()          // most Java stuff
+        google()                // Android libs
+
+        maven("https://jitpack.io")     // AppIntro, dav4jvm, synctools
     }
 }
 
