@@ -21,7 +21,7 @@ android {
         versionCode = 405090005
         versionName = "4.5.9"
 
-        //base.archivesName = "davx5-$versionCode-$versionName"
+        base.archivesName = "davx5-$versionCode-$versionName"
     }
 
     java {
@@ -90,7 +90,7 @@ android {
 }
 
 dependencies {
-    // include core module
+    // include core subproject (manages its own dependencies itself, however from same version catalog)
     implementation(project(":core"))
 
     // Kotlin / Android
