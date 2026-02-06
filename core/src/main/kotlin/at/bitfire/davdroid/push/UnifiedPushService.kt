@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.push
 
-import at.bitfire.davdroid.di.ApplicationScope
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope

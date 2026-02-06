@@ -5,8 +5,8 @@
 package com.davx5.ose.di
 
 import androidx.compose.material3.ColorScheme
-import at.bitfire.davdroid.di.scope.DarkColorScheme
-import at.bitfire.davdroid.di.scope.LightColorScheme
+import at.bitfire.davdroid.di.qualifier.DarkColorScheme
+import at.bitfire.davdroid.di.qualifier.LightColorScheme
 import at.bitfire.davdroid.ui.OseTheme
 import dagger.Module
 import dagger.Provides

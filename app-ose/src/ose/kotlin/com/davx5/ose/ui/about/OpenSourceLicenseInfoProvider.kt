@@ -17,7 +17,7 @@ import androidx.core.text.HtmlCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.di.scope.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.about.AboutActivity
 import com.google.common.io.CharStreams

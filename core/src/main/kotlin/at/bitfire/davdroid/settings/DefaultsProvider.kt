@@ -85,14 +85,4 @@ class DefaultsProvider @Inject constructor(): SettingsProvider {
         writer.write(table.toString())
     }
 
-
-    @Module
-    @InstallIn(SingletonComponent::class)
-    abstract class DefaultsProviderModule {
-        @Binds
-        @IntoMap
-        @IntKey(/* priority */ 0)
-        abstract fun defaultsProvider(impl: DefaultsProvider): SettingsProvider
-    }
-
 }
