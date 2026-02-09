@@ -16,7 +16,7 @@ import android.os.ParcelFileDescriptor
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
-import at.bitfire.davdroid.di.scope.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.cache.ThumbnailCache
 import dagger.hilt.android.qualifiers.ApplicationContext

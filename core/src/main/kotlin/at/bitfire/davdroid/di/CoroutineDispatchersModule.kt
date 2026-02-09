@@ -4,10 +4,10 @@
 
 package at.bitfire.davdroid.di
 
-import at.bitfire.davdroid.di.scope.DefaultDispatcher
-import at.bitfire.davdroid.di.scope.IoDispatcher
-import at.bitfire.davdroid.di.scope.MainDispatcher
-import at.bitfire.davdroid.di.scope.SyncDispatcher
+import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.MainDispatcher
+import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

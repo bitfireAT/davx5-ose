@@ -182,11 +182,4 @@ class AboutActivity: AppCompatActivity() {
         fun LicenseInfo()
     }
 
-    @Module
-    @InstallIn(ActivityComponent::class)
-    interface AppLicenseInfoProviderModule {
-        @BindsOptionalOf
-        fun appLicenseInfoProvider(): AppLicenseInfoProvider
-    }
-
 }

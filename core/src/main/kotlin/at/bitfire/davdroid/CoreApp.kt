@@ -6,7 +6,7 @@ package at.bitfire.davdroid
 
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
-import at.bitfire.davdroid.di.scope.DefaultDispatcher
+import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.log.LogManager
 import at.bitfire.davdroid.startup.StartupPlugin
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker

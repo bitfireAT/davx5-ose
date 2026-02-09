@@ -29,15 +29,6 @@ class TasksAppWatcher @Inject constructor(
     private val tasksAppManager: Provider<TasksAppManager>
 ): StartupPlugin {
 
-    @Module
-    @InstallIn(SingletonComponent::class)
-    interface TasksAppWatcherModule {
-        @Binds
-        @IntoSet
-        fun tasksAppWatcher(impl: TasksAppWatcher): StartupPlugin
-    }
-
-
     override fun onAppCreate() {
     }
 

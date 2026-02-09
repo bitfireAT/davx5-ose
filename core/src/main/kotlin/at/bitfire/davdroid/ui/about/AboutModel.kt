@@ -10,7 +10,7 @@ import android.os.Build
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.ViewModel
-import at.bitfire.davdroid.di.scope.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
