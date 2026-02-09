@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.di.scope.DefaultDispatcher
+import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.network.OAuthIntegration
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials

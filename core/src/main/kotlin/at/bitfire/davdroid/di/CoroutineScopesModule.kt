@@ -4,7 +4,8 @@
 
 package at.bitfire.davdroid.di
 
-import at.bitfire.davdroid.di.scope.MainDispatcher
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
+import at.bitfire.davdroid.di.qualifier.MainDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,10 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import javax.inject.Qualifier
 import javax.inject.Singleton
-
-@Retention(AnnotationRetention.RUNTIME)
-@Qualifier
-annotation class ApplicationScope
 
 @Module
 @InstallIn(SingletonComponent::class)

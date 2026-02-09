@@ -25,7 +25,7 @@ import java.util.Optional
  */
 @Module
 @InstallIn(SingletonComponent::class)
-class CustomCertManagerModule {
+class Cert4AndroidModule {
 
     @Provides
     fun customCertStore(@ApplicationContext context: Context): Optional<CustomCertStore> =

@@ -11,7 +11,7 @@ import at.bitfire.dav4jvm.okhttp.Response
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.scope.SyncDispatcher
+import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils.lastSegment

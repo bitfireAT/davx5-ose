@@ -31,19 +31,6 @@ class CrashHandlerSetup @Inject constructor(
     private val crashHandler: Optional<Thread.UncaughtExceptionHandler>
 ): StartupPlugin {
 
-    @Module
-    @InstallIn(SingletonComponent::class)
-    interface CrashHandlerSetupModule {
-        // allows to inject Optional<Thread.UncaughtExceptionHandler>
-        @BindsOptionalOf
-        fun optionalDebugInfoCrashHandler(): Thread.UncaughtExceptionHandler
-
-        @Binds
-        @IntoSet
-        fun crashHandlerSetup(impl: CrashHandlerSetup): StartupPlugin
-    }
-
-
     override fun onAppCreate() {
         if (BuildConfig.DEBUG) {
             logger.info("Debug build, enabling StrictMode with logging")

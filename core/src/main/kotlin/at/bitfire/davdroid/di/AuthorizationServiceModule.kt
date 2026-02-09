@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.network
+package at.bitfire.davdroid.di
 
 import android.content.Context
 import at.bitfire.davdroid.ProductIds
@@ -16,12 +16,15 @@ import net.openid.appauth.AuthorizationService
 import java.net.HttpURLConnection
 import java.net.URL
 
+/**
+ * AppAuth-Android integration
+ */
 @Module
 @InstallIn(SingletonComponent::class)
-object OAuthModule {
+class AuthorizationServiceModule {
 
     /**
-     * Make sure to call [AuthorizationService.dispose] when obtaining an instance.
+     * Make sure to call [net.openid.appauth.AuthorizationService.dispose] when obtaining an instance.
      *
      * Creating an instance is expensive (involves CustomTabsManager), so don't create an
      * instance if not necessary (use Provider/Lazy).
@@ -31,7 +34,8 @@ object OAuthModule {
         @ApplicationContext context: Context,
         productIds: ProductIds
     ): AuthorizationService =
-        AuthorizationService(context,
+        AuthorizationService(
+            context,
             AppAuthConfiguration.Builder()
                 .setConnectionBuilder { uri ->
                     val url = URL(uri.toString())

@@ -26,8 +26,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.compose.LifecycleResumeEffect
-import at.bitfire.davdroid.di.scope.DarkColorScheme
-import at.bitfire.davdroid.di.scope.LightColorScheme
+import at.bitfire.davdroid.di.qualifier.DarkColorScheme
+import at.bitfire.davdroid.di.qualifier.LightColorScheme
 import at.bitfire.davdroid.ui.ForegroundTracker
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn

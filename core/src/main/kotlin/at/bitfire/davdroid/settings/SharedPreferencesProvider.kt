@@ -142,14 +142,4 @@ class SharedPreferencesProvider @Inject constructor(
         }
     }
 
-
-    @Module
-    @InstallIn(SingletonComponent::class)
-    abstract class SharedPreferencesProviderModule {
-        @Binds
-        @IntoMap
-        @IntKey(/* priority */ 10)
-        abstract fun sharedPreferencesProvider(impl: SharedPreferencesProvider): SettingsProvider
-    }
-
 }
