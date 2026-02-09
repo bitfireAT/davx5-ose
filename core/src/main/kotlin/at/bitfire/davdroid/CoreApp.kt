@@ -22,7 +22,7 @@ import javax.inject.Inject
  * The actual app should extend this class. The derived class must then be set
  * as `@HiltAndroidApp.`
  */
-open class CoreApp: Application() {
+abstract class CoreApp: Application() {
 
     @Inject
     lateinit var logger: Logger
