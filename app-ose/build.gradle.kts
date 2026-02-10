@@ -22,6 +22,8 @@ android {
         versionName = "4.5.9"
 
         base.archivesName = "davx5-$versionCode-$versionName"
+
+        // currently no instrumentation tests for app-ose, so no testInstrumentationRunner
     }
 
     java {
