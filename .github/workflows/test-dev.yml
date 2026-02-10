@@ -18,6 +18,7 @@ env:
   GRADLE_BUILDCACHE_USERNAME: ${{ secrets.gradle_buildcache_username }}
   GRADLE_BUILDCACHE_PASSWORD: ${{ secrets.gradle_buildcache_password }}
   GRADLE_OPTS: -Dorg.gradle.caching=true -Dorg.gradle.configuration-cache=true
+  JAVA_VERSION: 21
 
 jobs:
   compile:
@@ -34,25 +35,19 @@ jobs:
       - uses: gradle/actions/setup-gradle@v5
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
-          cache-read-only: false                            # allow branches to update their configuration cache
+          cache-read-only: false                            # allow to update the cache
           gradle-home-cache-excludes: caches/build-cache-1  # don't cache local build cache because we use a remote cache
 
-      - name: Cache Android environment
-        uses: actions/cache@v5
-        with:
-          path: ~/.config/.android                          # needs to be cached so that configuration cache can work
-          key: android-${{ hashFiles('app/build.gradle.kts') }}
-
       - name: Compile
-        run: ./gradlew app:compileOseDebugSource
+        run: ./gradlew app-ose:assembleDebug
 
       # Cache configurations for the other jobs (including assemble for CodeQL)
+      # Doesn't work for tasks which need an Android environment because installing the SDK modifies
+      # environment variables and thus invalidates the cache.
       - name: Populate configuration cache
         run: |
-          ./gradlew --dry-run core:assembleDebug app:assembleDebug
-          ./gradlew --dry-run core:lintDebug app:lintOseDebug
-          ./gradlew --dry-run core:testDebugUnitTest
-          ./gradlew --dry-run core:virtualDebugAndroidTest
+          ./gradlew --dry-run core:lintDebug app-ose:lintOseDebug
+          ./gradlew --dry-run core:testDebugUnitTest app-ose:testOseDebugUnitTest
 
   unit_tests:
     needs: compile
@@ -69,17 +64,11 @@ jobs:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           cache-read-only: true
 
-      - name: Restore Android environment
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/.config/.android
-          key: android-${{ hashFiles('app/build.gradle.kts') }}
-
       - name: Lint checks
         run: ./gradlew core:lintDebug app:lintOseDebug
 
       - name: Unit tests
-        run: ./gradlew core:testDebugUnitTest
+        run: ./gradlew core:testDebugUnitTest app-ose:testOseDebugUnitTest
 
   instrumented_tests:
     needs: compile
@@ -95,12 +84,6 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           cache-read-only: true
-
-      - name: Restore Android environment
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/.config/.android
-          key: android-${{ hashFiles('app/build.gradle.kts') }}
 
       # gradle and Android SDK often take more space than what is available on the default runner.
       # We try to free a few GB here to make gradle-managed devices more reliable.
@@ -126,7 +109,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Instrumented tests
-        run: ./gradlew core:virtualDebugAndroidTest
+        run: ./gradlew core:virtualDebugAndroidTest app-ose:virtualOseDebugAndroidTest
 
       - name: Cache AVD
         uses: actions/cache/save@v5
