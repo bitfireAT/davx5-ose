@@ -19,6 +19,9 @@ android {
         minSdk = 24        // Android 7.0
 
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
+
+        // include these rules in the app that uses the core library
+        consumerProguardFile("core-proguard-rules.pro")
     }
 
     java {
