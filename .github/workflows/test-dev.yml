@@ -41,14 +41,6 @@ jobs:
       - name: Compile
         run: ./gradlew app-ose:assembleDebug
 
-      # Cache configurations for the other jobs (including assemble for CodeQL)
-      # Doesn't work for tasks which need an Android environment because installing the SDK modifies
-      # environment variables and thus invalidates the cache.
-      - name: Populate configuration cache
-        run: |
-          ./gradlew --dry-run core:lintDebug app-ose:lintOseDebug
-          ./gradlew --dry-run core:testDebugUnitTest app-ose:testOseDebugUnitTest
-
   unit_tests:
     needs: compile
     name: Lint and unit tests
@@ -68,7 +60,8 @@ jobs:
         run: ./gradlew core:lintDebug app:lintOseDebug
 
       - name: Unit tests
-        run: ./gradlew core:testDebugUnitTest app-ose:testOseDebugUnitTest
+        # currently no unit tests for app-ose
+        run: ./gradlew core:testDebugUnitTest
 
   instrumented_tests:
     needs: compile
@@ -109,7 +102,8 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Instrumented tests
-        run: ./gradlew core:virtualDebugAndroidTest app-ose:virtualOseDebugAndroidTest
+        # currently no instrumented tests for app-ose
+        run: ./gradlew core:virtualDebugAndroidTest
 
       - name: Cache AVD
         uses: actions/cache/save@v5
