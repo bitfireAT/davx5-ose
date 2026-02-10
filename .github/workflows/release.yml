@@ -10,6 +10,7 @@ concurrency:
 
 env:
   prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
+  JAVA_VERSION: 21
 
 jobs:
   build:
@@ -23,14 +24,14 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: 21
+          java-version: ${{ env.JAVA_VERSION }}
       - uses: gradle/actions/setup-gradle@v5
 
       - name: Prepare keystore
         run: echo ${{ secrets.android_keystore_base64 }} | base64 -d >$GITHUB_WORKSPACE/keystore.jks
 
       - name: Build signed package
-        # Use build cache to speed up building of build variants, but clean caches from previous tests before
+        # Use build cache to speed up building of build variants, but clean caches from previous tasks
         run: ./gradlew --build-cache --configuration-cache --no-daemon app:clean app:assembleRelease
         env:
           ANDROID_KEYSTORE: ${{ github.workspace }}/keystore.jks
