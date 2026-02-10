@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.mikepenz.aboutLibraries.android)
 }
 
 android {
@@ -22,6 +23,8 @@ android {
         versionName = "4.5.9"
 
         base.archivesName = "davx5-$versionCode-$versionName"
+
+        // currently no instrumentation tests for app-ose, so no testInstrumentationRunner
     }
 
     java {
