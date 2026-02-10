@@ -91,8 +91,8 @@ jobs:
         id: restore-avd
         uses: actions/cache/restore@v5
         with:
-          path: ~/.config/.android/avd                        # where AVD is stored
-          key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
+          path: ~/.config/.android/avd                          # where AVD is stored
+          key: avd-${{ hashFiles('app-ose/build.gradle.kts') }} # gradle-managed devices are defined there
 
       # Enable virtualization for Android emulator
       - name: Enable KVM group perms
@@ -109,5 +109,5 @@ jobs:
         uses: actions/cache/save@v5
         if: steps.restore-avd.outputs.cache-hit != 'true'
         with:
-          path: ~/.config/.android/avd                        # where AVD is stored
-          key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
+          path: ~/.config/.android/avd                          # where AVD is stored
+          key: avd-${{ hashFiles('app-ose/build.gradle.kts') }} # gradle-managed devices are defined there
