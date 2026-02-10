@@ -26,13 +26,15 @@ jobs:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
       - uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-encryption-key: ${{ secrets.gradle_encryption_key }}
 
       - name: Prepare keystore
         run: echo ${{ secrets.android_keystore_base64 }} | base64 -d >$GITHUB_WORKSPACE/keystore.jks
 
       - name: Build signed package
-        # Use build cache to speed up building of build variants, but clean caches from previous tasks
-        run: ./gradlew --build-cache --configuration-cache --no-daemon app:clean app:assembleRelease
+        # don't use build cache to guarantee deterministic, fresh builds
+        run: ./gradlew --no-build-cache --configuration-cache --no-daemon app:clean app-ose:assembleRelease
         env:
           ANDROID_KEYSTORE: ${{ github.workspace }}/keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
