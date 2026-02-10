@@ -12,8 +12,7 @@ import dagger.hilt.components.SingletonComponent
 interface SyncValidator {
 
     /**
-     * Called before synchronization within a sync adapter is started. Can be used for
-     * license checks etc. Must be thread-safe.
+     * Called before synchronization when a sync adapter is started. Can be used for license checks etc. Must be thread-safe.
      *
      * @return whether synchronization shall take place (false to abort)
      */
