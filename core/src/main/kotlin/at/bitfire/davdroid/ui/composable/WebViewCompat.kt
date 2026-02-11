@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.composable
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.ViewGroup
 import android.webkit.WebResourceRequest
@@ -15,6 +16,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.viewinterop.AndroidView
 import io.ktor.http.HttpHeaders
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun WebViewCompat(
     url: String,
@@ -29,6 +31,10 @@ fun WebViewCompat(
         factory = { context ->
             WebView(context).apply {
                 this.layoutParams = layoutParams
+                
+                // Enable JavaScript for are-you-human checks
+                settings.javaScriptEnabled = true
+
                 webViewClient = object : WebViewClient() {
                     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                         val loadingWeblatePage = request.url.toString().contains("weblate.org")
