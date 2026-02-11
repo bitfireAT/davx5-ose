@@ -31,9 +31,14 @@ fun WebViewCompat(
                 this.layoutParams = layoutParams
                 webViewClient = object : WebViewClient() {
                     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                        val intent = Intent(Intent.ACTION_VIEW, request.url)
-                        context.startActivity(intent)
-                        return true
+                        val loadingWeblatePage = request.url.toString().contains("weblate.org")
+                        return if (loadingWeblatePage) {
+                            false // Load Weblate pages in WebView (Don't override loading)
+                        } else {
+                            val intent = Intent(Intent.ACTION_VIEW, request.url)
+                            context.startActivity(intent) // Open external links in browser
+                            true // Abort non-weblate page load in webview
+                        }
                     }
                 }
                 loadUrl(url, mapOf(
