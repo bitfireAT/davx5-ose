@@ -35,6 +35,7 @@ fun WebViewCompat(
                 // Enable JavaScript for are-you-human checks
                 settings.javaScriptEnabled = true
 
+                // Load only weblate pages in WebView, other pages open in external browser
                 webViewClient = object : WebViewClient() {
                     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                         val loadingWeblatePage = request.url.toString().contains("weblate.org")
