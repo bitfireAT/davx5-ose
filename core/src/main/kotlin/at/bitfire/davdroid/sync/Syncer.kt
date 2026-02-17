@@ -263,7 +263,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             try {
                 val runSync = syncValidator.getOrNull()?.let { instance ->
                     logger.info("Registered sync validator: ${instance::class.java.name}")
-                    instance.beforeSync()
+                    instance.beforeSync(account)
                 } ?: /* no sync validator, in OSE for example */ true
 
                 if (runSync)

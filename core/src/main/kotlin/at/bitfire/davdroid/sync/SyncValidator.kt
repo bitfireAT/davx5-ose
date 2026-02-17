@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.sync
 
+import android.accounts.Account
 import dagger.BindsOptionalOf
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,9 +15,10 @@ interface SyncValidator {
     /**
      * Called before synchronization when a sync adapter is started. Can be used for license checks etc. Must be thread-safe.
      *
+     * @param account The account about to be synchronized
      * @return whether synchronization shall take place (false to abort)
      */
-    fun beforeSync(): Boolean
+    fun beforeSync(account: Account): Boolean
 
 }
 
