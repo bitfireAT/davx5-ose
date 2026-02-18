@@ -29,13 +29,13 @@ fun TranslationsTab(
         .padding(8.dp)
         .verticalScroll(rememberScrollState())) {
             Column {
+                Translations_Engage(
+                    modifier = Modifier.fillMaxWidth()
+                )
                 Translations_Translators(
                     weblateTranslators,
                     transifexTranslators,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                Translations_Engage(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.padding(top = 16.dp)
                 )
             }
     }
