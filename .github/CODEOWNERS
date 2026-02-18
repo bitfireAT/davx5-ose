@@ -3,6 +3,3 @@
 
 # Dependabot
 gradle/**   @bitfireAT/app-dev
-
-# everything else
-*   @rfc2822

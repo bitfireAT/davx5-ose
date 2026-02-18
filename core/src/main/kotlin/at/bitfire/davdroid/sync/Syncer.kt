@@ -20,9 +20,11 @@ import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.runBlocking
+import java.util.Optional
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Base class for sync code.
@@ -58,6 +60,9 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
     @Inject
     lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
+
+    @Inject
+    lateinit var syncValidator: Optional<SyncValidator>
 
     @ServiceType
     abstract val serviceType: String
@@ -256,10 +261,13 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
             // run sync
             try {
-                val runSync = /* ose */ true
+                val runSync = syncValidator.getOrNull()?.let { instance ->
+                    logger.info("Registered sync validator: ${instance::class.java.name}")
+                    instance.beforeSync(account)
+                } ?: /* no sync validator, in OSE for example */ true
+
                 if (runSync)
                     sync(provider)
-                Unit
 
             } catch (e: Exception) {
                 /* Handle sync exceptions. Note that most exceptions that occur during synchronization of a specific

@@ -31,7 +31,7 @@ class AutoMigration16 @Inject constructor(): AutoMigrationSpec {
                 val timezoneDef: String = cursor.getString(1) ?: continue
                 val vTimeZone = DateUtils.parseVTimeZone(timezoneDef)
                 val timezoneId = vTimeZone?.timeZoneId?.value
-                db.execSQL("UPDATE collection SET timezoneId=? WHERE id=?", arrayOf(timezoneId, id))
+                db.execSQL("UPDATE collection SET timezoneId=? WHERE id=?", arrayOf<Any?>(timezoneId, id))
             }
         }
     }

@@ -1,3 +1,7 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
 
 plugins {
     // These lines make sure that the plugins are applied in the same version to all subprojects.
@@ -6,4 +10,5 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.mikepenz.aboutLibraries.android) apply false
 }

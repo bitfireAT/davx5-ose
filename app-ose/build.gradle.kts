@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.mikepenz.aboutLibraries.android)
 }
 
 android {
@@ -18,10 +19,12 @@ android {
 
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 405090005
-        versionName = "4.5.9"
+        versionCode = 405100000
+        versionName = "4.5.10-alpha.1"
 
         base.archivesName = "davx5-$versionCode-$versionName"
+
+        // currently no instrumentation tests for app-ose, so no testInstrumentationRunner
     }
 
     java {
@@ -53,26 +56,6 @@ android {
         generateLocaleConfig = true
     }
 
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules-release.pro")
-
-            isShrinkResources = true
-
-            signingConfig = signingConfigs.findByName("bitfire")
-        }
-    }
-
-    signingConfigs {
-        create("bitfire") {
-            storeFile = file(System.getenv("ANDROID_KEYSTORE") ?: "/dev/null")
-            storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("ANDROID_KEY_ALIAS")
-            keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
-        }
-    }
-
     @Suppress("UnstableApiUsage")
     testOptions {
         managedDevices {
@@ -85,6 +68,27 @@ android {
                     systemImageSource = "aosp-atd"
                 }
             }
+        }
+    }
+
+    signingConfigs {
+        create("bitfire") {
+            storeFile = file(System.getenv("ANDROID_KEYSTORE") ?: "/dev/null")
+            storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+            keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules-release.pro")
+
+            isShrinkResources = true
+
+            // must be after signingConfigs {} block
+            signingConfig = signingConfigs.findByName("bitfire")
         }
     }
 }
