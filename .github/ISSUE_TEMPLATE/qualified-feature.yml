@@ -1,7 +1,7 @@
 name: Qualified Feature Request
 description: "For qualified feature requests. (Use Discussions if unsure.)"
 type: feature
-labels: ["needs-triage"]
+labels: ["needs triage"]
 body:
   - type: checkboxes
     attributes:
