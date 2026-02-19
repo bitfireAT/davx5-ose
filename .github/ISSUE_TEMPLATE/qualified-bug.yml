@@ -1,7 +1,7 @@
 name: Qualified Bug Report
 description: "For qualified bug reports. (Use Discussions if unsure.)"
 type: bug
-labels: ["needs-triage"]
+labels: ["needs triage"]
 body:
   - type: checkboxes
     attributes:
