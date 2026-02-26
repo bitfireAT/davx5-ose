@@ -306,7 +306,8 @@ class LoginScreenModel @AssistedInject constructor(
                     accountDetailsUiState.value.accountName,
                     loginInfo.credentials,
                     foundConfig!!,
-                    accountDetailsUiState.value.groupMethod
+                    accountDetailsUiState.value.groupMethod,
+                    loginInfo.metadata
                 )
             }
 

@@ -36,6 +36,7 @@ import io.mockk.verify
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -209,6 +210,16 @@ class AccountRepositoryTest {
 
         verify { AccountsCleanupWorker.lockAccountsCleanup() }
         coVerify { serviceRepository.renameAccount(account.name, newName) }
+    }
+
+    @Test
+    fun testCreate_withMeta() {
+        val account = TestAccount.create(
+            accountName = "Test Account with Meta",
+            meta = mapOf("meta1" to "value1", "meta2" to "value2")
+        )
+        assertEquals("value1", am.getUserData(account, "meta1"))
+        assertEquals("value2", am.getUserData(account, "meta2"))
     }
 
 }
