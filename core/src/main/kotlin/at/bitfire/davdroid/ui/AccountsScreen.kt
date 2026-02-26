@@ -332,7 +332,7 @@ fun AccountsScreen_Preview_Empty() {
             }
         },
         accounts = emptyList(),
-        customizations = Optional.ofNullable(null),
+        customizations = Optional.empty(),
         showAddAccount = AccountsModel.FABStyle.WithText,
         showSyncAll = false
     )
@@ -354,7 +354,7 @@ fun AccountsScreen_Preview_OneAccount() {
                 AccountProgress.Idle
             )
         ),
-        customizations = Optional.ofNullable(null)
+        customizations = Optional.empty()
     )
 }
 
@@ -459,7 +459,7 @@ fun AccountList_Preview_Idle() {
                     AccountProgress.Idle
                 )
             ),
-            customizations = Optional.ofNullable(null),
+            customizations = Optional.empty(),
         )
     }
 }
@@ -475,7 +475,7 @@ fun AccountList_Preview_SyncPending() {
                     AccountProgress.Pending
                 )
             ),
-            customizations = Optional.ofNullable(null)
+            customizations = Optional.empty()
         )
     }
 }
@@ -491,7 +491,7 @@ fun AccountList_Preview_Syncing() {
                     AccountProgress.Active
                 )
             ),
-            customizations = Optional.ofNullable(null)
+            customizations = Optional.empty()
         )
     }
 }
