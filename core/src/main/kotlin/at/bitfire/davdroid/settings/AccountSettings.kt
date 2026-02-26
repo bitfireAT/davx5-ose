@@ -426,7 +426,7 @@ class AccountSettings @AssistedInject constructor(
         /** Static property to remember which AccountSettings updates/migrations are currently running */
         val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<Account>())
 
-        fun initialUserData(credentials: Credentials?): Bundle {
+        fun initialUserData(credentials: Credentials?, meta: Map<String, String> = emptyMap()): Bundle {
             val bundle = bundleOf(KEY_SETTINGS_VERSION to CURRENT_VERSION.toString())
 
             if (credentials != null) {
@@ -438,6 +438,12 @@ class AccountSettings @AssistedInject constructor(
 
                 if (credentials.authState != null)
                     bundle.putString(KEY_AUTH_STATE, credentials.authState.jsonSerializeString())
+            }
+
+            if (meta.isNotEmpty()) {
+                for ((key, value) in meta) {
+                    bundle.putString(key, value)
+                }
             }
 
             return bundle

@@ -54,6 +54,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.text.Collator
+import java.util.Optional
 import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountsModel.Factory::class)
@@ -66,7 +67,8 @@ class AccountsModel @AssistedInject constructor(
     private val logger: Logger,
     private val settings: SettingsManager,
     private val syncWorkerManager: SyncWorkerManager,
-    private val syncFrameWork: SyncFrameworkIntegration
+    private val syncFrameWork: SyncFrameworkIntegration,
+    val accountCustomizations: Optional<AccountCustomizations>
 ): ViewModel() {
 
     @AssistedFactory

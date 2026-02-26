@@ -70,15 +70,16 @@ class AccountRepository @Inject constructor(
      * @param credentials   server credentials
      * @param config        discovered server capabilities for syncable authorities
      * @param groupMethod   whether CardDAV contact groups are separate VCards or as contact categories
+     * @param meta          additional data to be stored into the system account
      *
      * @return account if account creation was successful; null otherwise (for instance because an account with this name already exists)
      */
     @WorkerThread
-    fun createBlocking(accountName: String, credentials: Credentials?, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): Account? {
+    fun createBlocking(accountName: String, credentials: Credentials?, config: DavResourceFinder.Configuration, groupMethod: GroupMethod, meta: Map<String, String> = emptyMap()): Account? {
         val account = fromName(accountName)
 
         // create Android account
-        val userData = AccountSettings.initialUserData(credentials)
+        val userData = AccountSettings.initialUserData(credentials, meta)
         logger.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
 
         if (!SystemAccountUtils.createAccount(context, account, userData, credentials?.password))
