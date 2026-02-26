@@ -21,11 +21,11 @@ object TestAccount {
      *
      * Remove it with [remove].
      */
-    fun create(version: Int = AccountSettings.CURRENT_VERSION, accountName: String = "Test Account"): Account {
+    fun create(version: Int = AccountSettings.CURRENT_VERSION, accountName: String = "Test Account", meta: Map<String, String> = emptyMap()): Account {
         val accountType = targetContext.getString(R.string.account_type)
         val account = Account(accountName, accountType)
 
-        val initialData = AccountSettings.initialUserData(null)
+        val initialData = AccountSettings.initialUserData(null, meta)
         initialData.putString(AccountSettings.KEY_SETTINGS_VERSION, version.toString())
         assertTrue(SystemAccountUtils.createAccount(targetContext, account, initialData))
 
