@@ -57,4 +57,11 @@ class AccountSettingsTest {
         }
     }
 
+    @Test
+    fun test_initialUserData_meta() {
+        val bundle = AccountSettings.initialUserData(null, mapOf("key1" to "value1", "key2" to "value2"))
+        assertEquals("value1", bundle.getString("key1"))
+        assertEquals("value2", bundle.getString("key2"))
+    }
+
 }
