@@ -15,8 +15,5 @@ data class LoginInfo(
     val suggestedAccountName: String? = null,
 
     /** group method that should be pre-selected */
-    val suggestedGroupMethod: GroupMethod = GroupMethod.GROUP_VCARDS,
-
-    /** Optional extra metadata to be added to the account when stored into the system. */
-    val metadata: Map<String, String> = emptyMap()
+    val suggestedGroupMethod: GroupMethod = GroupMethod.GROUP_VCARDS
 )
