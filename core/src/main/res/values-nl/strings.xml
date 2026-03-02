@@ -313,7 +313,7 @@
     <string name="settings_sync_wifi_only_off">Type verbinding is niet relevant</string>
     <string name="settings_sync_wifi_only_ssids">Tot bepaalde WiFi-SSID beperken</string>
     <string name="settings_sync_wifi_only_ssids_on">Synchronisatie alleen via %s</string>
-    <string name="settings_sync_wifi_only_ssids_off">Elke WiFI-SSID toestaan</string>
+    <string name="settings_sync_wifi_only_ssids_off">Alle WiFi-verbindingen worden gebruikt</string>
     <string name="settings_sync_wifi_only_ssids_message">Door komma\'s gescheiden namen (SSID\'s) van toegestane WiFi-netwerken (laat leeg voor alle)</string>
     <string name="settings_sync_wifi_only_ssids_permissions_required">Beperking WiFi-SSID vereist verdere instellingen</string>
     <string name="settings_sync_wifi_only_ssids_permissions_action">Beheren</string>
@@ -487,4 +487,5 @@
     <string name="about_translations_thanks">❤️ Bedankt aan iedereen die heeft bijgedragen aan de vertalingen!</string>
     <string name="about_translations_over_transifex">Op Transifex</string>
     <string name="about_translations_over_weblate">Op Weblate</string>
+    <string name="about_translations_contribute">Help vertalen</string>
 </resources>
