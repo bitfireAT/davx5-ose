@@ -81,7 +81,6 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Optional
 
 @Composable
 fun AccountsScreen(
@@ -114,7 +113,6 @@ fun AccountsScreen(
     AccountsScreen(
         accountsDrawerHandler = accountsDrawerHandler,
         accounts = accounts,
-        customizations = model.accountCustomizations,
         showSyncAll = showSyncAll,
         onSyncAll = { model.syncAllAccounts() },
         showAddAccount = showAddAccount,
@@ -135,7 +133,6 @@ fun AccountsScreen(
 fun AccountsScreen(
     accountsDrawerHandler: AccountsDrawerHandler,
     accounts: List<AccountsModel.AccountInfo>,
-    customizations: Optional<AccountCustomizations>,
     showSyncAll: Boolean = true,
     onSyncAll: () -> Unit = {},
     showAddAccount: AccountsModel.FABStyle = AccountsModel.FABStyle.Standard,
@@ -305,7 +302,6 @@ fun AccountsScreen(
                             // account list
                             AccountList(
                                 accounts = accounts,
-                                customizations = customizations,
                                 onClickAccount = { account ->
                                     onShowAccount(account)
                                 },
@@ -332,7 +328,6 @@ fun AccountsScreen_Preview_Empty() {
             }
         },
         accounts = emptyList(),
-        customizations = Optional.empty(),
         showAddAccount = AccountsModel.FABStyle.WithText,
         showSyncAll = false
     )
@@ -353,15 +348,13 @@ fun AccountsScreen_Preview_OneAccount() {
                 Account("Account Name", "test"),
                 AccountProgress.Idle
             )
-        ),
-        customizations = Optional.empty()
+        )
     )
 }
 
 @Composable
 fun AccountList(
     accounts: List<AccountsModel.AccountInfo>,
-    customizations: Optional<AccountCustomizations>,
     modifier: Modifier = Modifier,
     onClickAccount: (Account) -> Unit = {}
 ) {
@@ -420,19 +413,13 @@ fun AccountList(
                         }
 
                         Column(Modifier.padding(vertical = 12.dp)) {
-                            if (customizations.isPresent) {
-                                with(customizations.get()) {
-                                    AccountImage(account)
-                                }
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Default.AccountCircle,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterHorizontally)
-                                        .size(48.dp)
-                                )
-                            }
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .size(48.dp)
+                            )
 
                             Text(
                                 text = account.name,
@@ -458,8 +445,7 @@ fun AccountList_Preview_Idle() {
                     Account("Account Name", "test"),
                     AccountProgress.Idle
                 )
-            ),
-            customizations = Optional.empty(),
+            )
         )
     }
 }
@@ -474,8 +460,7 @@ fun AccountList_Preview_SyncPending() {
                     Account("Account Name", "test"),
                     AccountProgress.Pending
                 )
-            ),
-            customizations = Optional.empty()
+            )
         )
     }
 }
@@ -490,8 +475,7 @@ fun AccountList_Preview_Syncing() {
                     Account("Account Name", "test"),
                     AccountProgress.Active
                 )
-            ),
-            customizations = Optional.empty()
+            )
         )
     }
 }
