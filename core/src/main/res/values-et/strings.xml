@@ -487,4 +487,5 @@
     <string name="about_translations_thanks">❤️ Suur tänu kõigile, kes on tõlkimisel abiks olnud!</string>
     <string name="about_translations_over_transifex">Kasutades Transifexi</string>
     <string name="about_translations_over_weblate">Kasutades Weblate\'i</string>
+    <string name="about_translations_contribute">Aita tõlkida</string>
 </resources>
