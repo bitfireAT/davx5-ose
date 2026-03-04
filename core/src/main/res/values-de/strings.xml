@@ -487,4 +487,5 @@
     <string name="about_translations_thanks">❤️ Vielen Dank an alle, die zu den Übersetzungen beigetragen haben!</string>
     <string name="about_translations_over_transifex">Über Transifex</string>
     <string name="about_translations_over_weblate">Über Weblate</string>
+    <string name="about_translations_contribute">Beim Übersetzen helfen</string>
 </resources>
