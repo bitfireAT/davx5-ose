@@ -17,7 +17,6 @@ import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.sync.account.TestAccount
-import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
@@ -77,7 +76,7 @@ class CalendarSyncManagerTest {
     @After
     fun tearDown() {
         localCalendar.androidCalendar.delete()
-        providerClient.closeCompat()
+        providerClient.close()
         TestAccount.remove(account)
     }
 

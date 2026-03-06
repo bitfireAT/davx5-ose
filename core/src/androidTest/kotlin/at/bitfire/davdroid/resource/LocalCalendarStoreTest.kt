@@ -13,7 +13,6 @@ import android.provider.CalendarContract.Calendars
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
-import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import at.bitfire.synctools.test.InitCalendarProviderRule
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -59,7 +58,7 @@ class LocalCalendarStoreTest {
     fun tearDown() {
         provider.delete(calendarUri, null, null)
         TestAccount.remove(account)
-        provider.closeCompat()
+        provider.close()
     }
 
 
