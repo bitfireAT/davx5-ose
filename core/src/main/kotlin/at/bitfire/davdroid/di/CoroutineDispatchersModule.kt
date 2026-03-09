@@ -34,10 +34,13 @@ class CoroutineDispatchersModule {
 
     /**
      * A dispatcher for background sync operations. They're not run on [ioDispatcher] because there can
-     * be many long-blocking operations at the same time which shouldn't never block other I/O operations
+     * be many long-blocking operations at the same time which should never block other I/O operations
      * like database access for the UI.
      *
      * It uses the I/O dispatcher and limits the number of parallel operations to the number of available processors.
+     *
+     * **Never use the syncDispatcher outside the SyncManager because this can cause deadlocks!**
+     * For instance don't use it for sync-related I/O.
      */
     @Provides
     @SyncDispatcher

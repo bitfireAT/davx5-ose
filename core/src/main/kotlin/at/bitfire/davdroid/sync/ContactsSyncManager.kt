@@ -23,6 +23,7 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -107,6 +108,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     accountSettingsFactory: AccountSettings.Factory,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
@@ -367,12 +369,10 @@ class ContactsSyncManager @AssistedInject constructor(
                             reader = StringReader(card),
                             jCard = isJCard,
                             downloader = object : Contact.Downloader {
-                                override fun download(url: String, accepts: String): ByteArray? {
-                                    // retrieve external resource (like a photo) from an URL (not necessarily HTTP[S])
-                                    return runBlocking(syncDispatcher) {
-                                        val retriever = resourceRetrieverFactory.create(account, davCollection.location.host)
-                                        retriever.retrieve(url)
-                                    }
+                                override suspend fun download(url: String, accepts: String): ByteArray? {
+                                    // retrieve external resource (like a photo) from a URL (not necessarily HTTP[S])
+                                    val retriever = resourceRetrieverFactory.create(account, davCollection.location.host)
+                                    return retriever.retrieve(url)
                                 }
                             }
                         )
@@ -393,7 +393,9 @@ class ContactsSyncManager @AssistedInject constructor(
         logger.info("Processing CardDAV resource $fileName")
 
         val contacts = try {
-            Contact.fromReader(reader, jCard, downloader)
+            runBlocking(ioDispatcher) {
+                Contact.fromReader(reader, jCard, downloader)
+            }
         } catch (e: CannotParseException) {
             logger.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
             notifyInvalidResource(e, fileName)
