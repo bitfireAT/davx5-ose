@@ -1,7 +1,7 @@
 # Comments apply to next line
 
 [versions]
-android-agp = "9.0.1"
+android-agp = "9.1.0"
 android-desugaring = "2.1.5"
 androidx-activityCompose = "1.12.4"
 androidx-appcompat = "1.7.1"
@@ -32,14 +32,14 @@ hilt = "2.59.2"
 kotlin = "2.3.10"
 kotlinx-coroutines = "1.10.2"
 ksp = "2.3.6"
-ktor = "3.4.0"
+ktor = "3.4.1"
 mikepenz-aboutLibraries = "13.2.1"
 mockk = "1.14.9"
 okhttp = "5.3.2"
 openid-appauth = "0.11.1"
 robolectric = "4.16.1"
 room = "2.8.4"
-unifiedpush = "3.3.1"
+unifiedpush = "3.3.2"
 unifiedpush-fcm = "3.0.0"
 
 # Other libraries, especially ical4j, require Apache Commons. Some recent versions of Apache
