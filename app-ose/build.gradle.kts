@@ -19,8 +19,8 @@ android {
 
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 405100001
-        versionName = "4.5.10-rc.1"
+        versionCode = 405100002
+        versionName = "4.5.10-rc.2"
 
         base.archivesName = "davx5-$versionCode-$versionName"
 
