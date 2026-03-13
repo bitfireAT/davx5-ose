@@ -7,6 +7,8 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -14,6 +16,7 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
@@ -25,6 +28,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Link
@@ -32,6 +36,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.SyncProblem
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.outlined.RuleFolder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -120,6 +125,53 @@ fun AccountScreen(
     val subscriptions = model.subscriptions.collectAsLazyPagingItems()
 
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    // Export dialog state
+    var showExportDialog by remember { mutableStateOf(false) }
+    var includeCredentials by remember { mutableStateOf(false) }
+
+    // Export: write JSON to chosen file
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        uri ?: return@rememberLauncherForActivityResult
+        val withCredentials = includeCredentials
+        scope.launch {
+            try {
+                val json = model.exportCollectionConfig(includeCredentials = withCredentials)
+                context.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+            } catch (e: Exception) {
+                model.showError(context.getString(R.string.account_export_collection_settings) + ": " + e.localizedMessage)
+            }
+        }
+    }
+
+    // Import: read JSON from chosen file
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri ?: return@rememberLauncherForActivityResult
+        try {
+            val json = context.contentResolver.openInputStream(uri)?.bufferedReader()?.readText()
+            if (json != null)
+                model.importCollectionConfig(json)
+        } catch (e: Exception) {
+            model.showError(context.getString(R.string.account_import_collection_settings_error))
+        }
+    }
+
+    if (showExportDialog)
+        ExportCollectionConfigDialog(
+            includeCredentials = includeCredentials,
+            onIncludeCredentialsChange = { includeCredentials = it },
+            onConfirm = {
+                showExportDialog = false
+                exportLauncher.launch("davx5-${account.name}-collections.json")
+            },
+            onDismiss = { showExportDialog = false }
+        )
+
     AccountScreen(
         accountName = account.name,
         error = model.error,
@@ -167,6 +219,12 @@ fun AccountScreen(
         onCreateCalendar = onCreateCalendar,
         onRenameAccount = model::renameAccount,
         onDeleteAccount = model::deleteAccount,
+        onExportCollectionConfig = {
+            showExportDialog = true
+        },
+        onImportCollectionConfig = {
+            importLauncher.launch(arrayOf("application/json"))
+        },
         onNavUp = onNavUp,
         onFinish = onFinish
     )
@@ -205,6 +263,8 @@ fun AccountScreen(
     onCreateCalendar: () -> Unit = {},
     onRenameAccount: (newName: String) -> Unit = {},
     onDeleteAccount: () -> Unit = {},
+    onExportCollectionConfig: () -> Unit = {},
+    onImportCollectionConfig: () -> Unit = {},
     onNavUp: () -> Unit = {},
     onFinish: () -> Unit = {}
 ) {
@@ -283,6 +343,8 @@ fun AccountScreen(
                             idxCalDav = idxCalDav,
                             onRenameAccount = onRenameAccount,
                             onDeleteAccount = onDeleteAccount,
+                            onExportCollectionConfig = onExportCollectionConfig,
+                            onImportCollectionConfig = onImportCollectionConfig,
                             onAccountSettings = onAccountSettings
                         )
                     }
@@ -530,6 +592,8 @@ fun AccountScreen_Actions(
     idxCalDav: Int?,
     onRenameAccount: (newName: String) -> Unit,
     onDeleteAccount: () -> Unit,
+    onExportCollectionConfig: () -> Unit,
+    onImportCollectionConfig: () -> Unit,
     onAccountSettings: () -> Unit
 ) {
     var showDeleteAccountDialog by remember { mutableStateOf(false) }
@@ -614,6 +678,42 @@ fun AccountScreen_Actions(
                 overflowOpen = false
             },
             enabled = !showOnlyPersonalLocked
+        )
+
+        // export collection settings
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    Icons.Default.Upload,
+                    contentDescription = stringResource(R.string.account_export_collection_settings),
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            },
+            text = {
+                Text(stringResource(R.string.account_export_collection_settings))
+            },
+            onClick = {
+                onExportCollectionConfig()
+                overflowOpen = false
+            }
+        )
+
+        // import collection settings
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    Icons.Default.Download,
+                    contentDescription = stringResource(R.string.account_import_collection_settings),
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            },
+            text = {
+                Text(stringResource(R.string.account_import_collection_settings))
+            },
+            onClick = {
+                onImportCollectionConfig()
+                overflowOpen = false
+            }
         )
 
         // rename account
@@ -749,6 +849,59 @@ fun AccountScreen_Preview() {
         currentTasksProvider = TaskProvider.ProviderName.JtxBoard,
         hasWebcal = true,
         subscriptions = null
+    )
+}
+
+@Composable
+fun ExportCollectionConfigDialog(
+    includeCredentials: Boolean,
+    onIncludeCredentialsChange: (Boolean) -> Unit,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.account_export_collection_settings)) },
+        text = {
+            Column {
+                Text(stringResource(R.string.account_export_collection_settings_text))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    CompositionLocalProvider(
+                        LocalMinimumInteractiveComponentSize provides Dp.Unspecified
+                    ) {
+                        Checkbox(
+                            checked = includeCredentials,
+                            onCheckedChange = onIncludeCredentialsChange
+                        )
+                    }
+                    Text(
+                        stringResource(R.string.account_export_include_credentials),
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+                if (includeCredentials) {
+                    Text(
+                        stringResource(R.string.account_export_credentials_warning),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 4.dp, start = 40.dp)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(stringResource(R.string.account_export_collection_settings))
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text(stringResource(android.R.string.cancel))
+            }
+        }
     )
 }
 

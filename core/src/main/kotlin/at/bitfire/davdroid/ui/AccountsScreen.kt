@@ -9,6 +9,9 @@ import android.accounts.Account
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -24,6 +27,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BatterySaver
 import androidx.compose.material.icons.filled.DataSaverOn
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.SignalCellularOff
@@ -110,6 +114,37 @@ fun AccountsScreen(
         }
     }
 
+    // Import account from file
+    val context = LocalContext.current
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri ?: return@rememberLauncherForActivityResult
+        try {
+            val json = context.contentResolver.openInputStream(uri)?.bufferedReader()?.readText()
+            if (json != null)
+                model.importAccount(json)
+        } catch (e: Exception) {
+            Toast.makeText(context, R.string.accounts_import_account_error, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    // Navigate to imported account
+    LaunchedEffect(model.importedAccount) {
+        model.importedAccount?.let { account ->
+            onShowAccount(account)
+            model.resetImportState()
+        }
+    }
+
+    // Show import error
+    LaunchedEffect(model.importError) {
+        model.importError?.let { error ->
+            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+            model.resetImportState()
+        }
+    }
+
     AccountsScreen(
         accountsDrawerHandler = accountsDrawerHandler,
         accounts = accounts,
@@ -117,6 +152,8 @@ fun AccountsScreen(
         onSyncAll = { model.syncAllAccounts() },
         showAddAccount = showAddAccount,
         onAddAccount = onAddAccount,
+        onImportAccount = { importLauncher.launch(arrayOf("application/json")) },
+        importingAccount = model.importingAccount,
         onShowAccount = onShowAccount,
         onManagePermissions = onManagePermissions,
         internetUnavailable = !model.networkAvailable.collectAsStateWithLifecycle(false).value,
@@ -137,6 +174,8 @@ fun AccountsScreen(
     onSyncAll: () -> Unit = {},
     showAddAccount: AccountsModel.FABStyle = AccountsModel.FABStyle.Standard,
     onAddAccount: () -> Unit = {},
+    onImportAccount: () -> Unit = {},
+    importingAccount: Boolean = false,
     onShowAccount: (Account) -> Unit = {},
     onManagePermissions: () -> Unit = {},
     internetUnavailable: Boolean = false,
@@ -216,12 +255,37 @@ fun AccountsScreen(
                                 Icon(Icons.Filled.Add, stringResource(R.string.login_add_account))
                             }
 
+                        // Import account from file
+                        if (!importingAccount) {
+                            if (showAddAccount == AccountsModel.FABStyle.WithText)
+                                ExtendedFloatingActionButton(
+                                    text = { Text(stringResource(R.string.accounts_import_account)) },
+                                    icon = { Icon(Icons.Filled.Download, stringResource(R.string.accounts_import_account)) },
+                                    containerColor = MaterialTheme.colorScheme.tertiary,
+                                    contentColor = MaterialTheme.colorScheme.onTertiary,
+                                    onClick = onImportAccount,
+                                    modifier = Modifier.padding(top = 16.dp)
+                                )
+                            else if (showAddAccount == AccountsModel.FABStyle.Standard)
+                                FloatingActionButton(
+                                    onClick = onImportAccount,
+                                    containerColor = MaterialTheme.colorScheme.tertiary,
+                                    contentColor = MaterialTheme.colorScheme.onTertiary,
+                                    modifier = Modifier.padding(top = 16.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Download,
+                                        contentDescription = stringResource(R.string.accounts_import_account)
+                                    )
+                                }
+                        }
+
                         if (showSyncAll)
                             FloatingActionButton(
                                 onClick = onSyncAll,
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                                modifier = Modifier.padding(top = 24.dp)
+                                modifier = Modifier.padding(top = 16.dp)
                             ) {
                                 Icon(
                                     Icons.Default.Sync,

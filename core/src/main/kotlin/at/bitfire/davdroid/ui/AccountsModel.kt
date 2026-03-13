@@ -18,12 +18,18 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.AccountRepository
+import at.bitfire.davdroid.repository.CollectionConfigSerializer
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -44,6 +50,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -281,6 +288,44 @@ class AccountsModel @AssistedInject constructor(
         // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
         for (account in accountRepository.getAll())
             syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+    }
+
+    // Import account state
+    var importingAccount by mutableStateOf(false)
+        private set
+    var importedAccount by mutableStateOf<Account?>(null)
+        private set
+    var importError by mutableStateOf<String?>(null)
+        private set
+
+    fun resetImportState() {
+        importedAccount = null
+        importError = null
+    }
+
+    fun importAccount(json: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            importingAccount = true
+            importError = null
+            try {
+                val config = CollectionConfigSerializer.parse(json)
+                if (config.credentials == null) {
+                    importError = context.getString(R.string.accounts_import_account_no_credentials)
+                    return@launch
+                }
+                if (config.baseUrl == null) {
+                    importError = context.getString(R.string.accounts_import_account_no_base_url)
+                    return@launch
+                }
+                val account = accountRepository.importAccountFromConfig(config)
+                importedAccount = account
+            } catch (e: Exception) {
+                logger.warning("Failed to import account: ${e.message}")
+                importError = context.getString(R.string.accounts_import_account_error) + ": " + e.localizedMessage
+            } finally {
+                importingAccount = false
+            }
+        }
     }
 
 
