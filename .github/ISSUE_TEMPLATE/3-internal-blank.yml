@@ -10,7 +10,5 @@ body:
     id: body
     attributes:
       label: ""
-      description: ""
-      placeholder: ""
     validations:
       required: false
