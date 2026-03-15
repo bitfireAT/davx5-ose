@@ -1,6 +1,16 @@
 name: Blank issue (internal use only)
 description: "For internal use (DAVx5 team) only"
+- type: markdown
+  attributes:
+    value: |
+      This form is for internal use only and doesn't set the triage label. That means your issue won't be handled properly.
+      **Please use one of the other issue templates instead.**"
 body:
-  - type: textarea
-    attributes:
-      label: Issue body
+- type: textarea
+  id: body
+  attributes:
+    label: ""
+    description: ""
+    placeholder: ""
+  validations:
+    required: false
