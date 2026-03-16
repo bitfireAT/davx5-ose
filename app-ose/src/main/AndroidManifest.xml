@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:installLocation="internalOnly">
+
+    <application android:name=".App">
+
+        <!-- Required for Hilt/WorkManager integration. See
+        - https://developer.android.com/develop/background-work/background-tasks/persistent/configuration/custom-configuration#remove-default
+        - https://developer.android.com/training/dependency-injection/hilt-jetpack#workmanager
+        However, we must not disable AndroidX startup completely, as it's needed by other libraries like okhttp. -->
+        <provider
+                android:name="androidx.startup.InitializationProvider"
+                android:authorities="${applicationId}.androidx-startup"
+                android:exported="false"
+                tools:node="merge">
+            <meta-data
+                    android:name="androidx.work.WorkManagerInitializer"
+                    android:value="androidx.startup"
+                    tools:node="remove" />
+        </provider>
+
+    </application>
+
+</manifest>
