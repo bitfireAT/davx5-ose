@@ -376,7 +376,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
         val contacts = try {
             runBlocking(ioDispatcher) {
-                Contact.fromReader(reader, false, downloader)
+                Contact.fromReader(reader, jCard = false, downloader)
             }
         } catch (e: CannotParseException) {
             logger.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
