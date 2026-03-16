@@ -5,7 +5,7 @@
 [![F-Droid](https://img.shields.io/f-droid/v/at.bitfire.davdroid?style=flat-square)](https://f-droid.org/packages/at.bitfire.davdroid/)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/bitfireAT/davx5-ose/total?label=GitHub%20downloads)
 
-![DAVx⁵ logo](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
+![DAVx⁵ logo](core/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
 
 DAVx⁵
@@ -28,20 +28,8 @@ Parts of DAVx⁵ have been outsourced into these libraries:
 
 * [cert4android](https://github.com/bitfireAT/cert4android) – custom certificate management
 * [dav4jvm](https://github.com/bitfireAT/dav4jvm) – WebDAV/CalDav/CardDAV framework
-* [synctools](https://github.com/bitfireAT/synctools) – iCalendar/vCard/Tasks processing and content provider access
+* [synctools](https://github.com/bitfireAT/synctools) – iCalendar/vCard processing and content provider access
 
 **If you want to support DAVx⁵, please consider [donating to DAVx⁵](https://www.davx5.com/donate)
 or [purchasing it](https://www.davx5.com/download).**
 
-
-USED THIRD-PARTY LIBRARIES
-==========================
-
-The most important libraries which are used by DAVx⁵ (alphabetically):
-
-* [dnsjava](https://github.com/dnsjava/dnsjava) – [BSD License](https://github.com/dnsjava/dnsjava/blob/master/LICENSE)
-* [ez-vcard](https://github.com/mangstadt/ez-vcard) – [New BSD License](https://github.com/mangstadt/ez-vcard/blob/master/LICENSE)
-* [iCal4j](https://github.com/ical4j/ical4j) – [New BSD License](https://github.com/ical4j/ical4j/blob/develop/LICENSE.txt)
-* [okhttp](https://square.github.io/okhttp) – [Apache License, Version 2.0](https://square.github.io/okhttp/#license)
-
-See _About / Libraries_ in the app for all used libraries and their licenses.
