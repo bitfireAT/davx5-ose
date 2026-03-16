@@ -13,7 +13,6 @@ import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventsContract
@@ -61,7 +60,7 @@ class LocalCalendarTest {
     @After
     fun tearDown() {
         androidCalendar.delete()
-        client.closeCompat()
+        client.close()
     }
 
 

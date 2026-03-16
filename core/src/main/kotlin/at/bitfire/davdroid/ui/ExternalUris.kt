@@ -32,6 +32,7 @@ object ExternalUris {
         const val PATH_TESTED_SERVICES = "tested-with"
 
         const val PATH_ORGANIZATIONS = "organizations"
+        const val PATH_ORGANIZATIONS_DAVX5_SELECT = "davx5-select"
         const val PATH_ORGANIZATIONS_MANAGED = "managed-davx5"
         const val PATH_ORGANIZATIONS_TRY_IT = "try-it-for-free"
     }

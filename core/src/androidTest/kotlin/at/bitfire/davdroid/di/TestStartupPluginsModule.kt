@@ -5,20 +5,20 @@
 package at.bitfire.davdroid.di
 
 import at.bitfire.davdroid.startup.StartupPlugin
-import at.bitfire.davdroid.startup.TasksAppWatcher
 import dagger.Module
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import dagger.multibindings.Multibinds
 
-// remove TasksAppWatcherModule from Android tests
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [TasksAppWatcher.TasksAppWatcherModule::class]
+    replaces = [StartupPluginsModule::class]
 )
-abstract class TestTasksAppWatcherModule {
-    // provides empty set of plugins
+abstract class TestStartupPluginsModule {
+
+    // provides empty set of startup plugins so that nothing interferes with tests
     @Multibinds
     abstract fun empty(): Set<StartupPlugin>
+
 }

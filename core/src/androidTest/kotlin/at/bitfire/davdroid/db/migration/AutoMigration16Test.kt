@@ -28,11 +28,11 @@ class AutoMigration16Test: DatabaseMigrationTest(toVersion = 16) {
             """.trimIndent()
             db.execSQL(
                 "INSERT INTO service (id, accountName, type) VALUES (?, ?, ?)",
-                arrayOf(1, "test", Service.Companion.TYPE_CALDAV)
+                arrayOf<Any>(1, "test", Service.Companion.TYPE_CALDAV)
             )
             db.execSQL(
                 "INSERT INTO collection (id, serviceId, type, url, privWriteContent, privUnbind, forceReadOnly, sync, timezone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                arrayOf(1, 1, TYPE_CALENDAR, "https://example.com", true, true, false, false, minimalVTimezone)
+                arrayOf<Any>(1, 1, TYPE_CALENDAR, "https://example.com", true, true, false, false, minimalVTimezone)
             )
         }
     ) { db ->
@@ -47,11 +47,11 @@ class AutoMigration16Test: DatabaseMigrationTest(toVersion = 16) {
         prepare = { db ->
             db.execSQL(
                 "INSERT INTO service (id, accountName, type) VALUES (?, ?, ?)",
-                arrayOf(1, "test", Service.Companion.TYPE_CALDAV)
+                arrayOf<Any>(1, "test", Service.Companion.TYPE_CALDAV)
             )
             db.execSQL(
                 "INSERT INTO collection (id, serviceId, type, url, privWriteContent, privUnbind, forceReadOnly, sync, timezone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                arrayOf(1, 1, TYPE_CALENDAR, "https://example.com", true, true, false, false, "Some Garbage Content")
+                arrayOf<Any>(1, 1, TYPE_CALENDAR, "https://example.com", true, true, false, false, "Some Garbage Content")
             )
         }
     ) { db ->
@@ -66,11 +66,11 @@ class AutoMigration16Test: DatabaseMigrationTest(toVersion = 16) {
         prepare = { db ->
             db.execSQL(
                 "INSERT INTO service (id, accountName, type) VALUES (?, ?, ?)",
-                arrayOf(1, "test", Service.Companion.TYPE_CALDAV)
+                arrayOf<Any>(1, "test", Service.Companion.TYPE_CALDAV)
             )
             db.execSQL(
                 "INSERT INTO collection (id, serviceId, type, url, privWriteContent, privUnbind, forceReadOnly, sync) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                arrayOf(1, 1, TYPE_CALENDAR, "https://example.com", true, true, false, false)
+                arrayOf<Any>(1, 1, TYPE_CALENDAR, "https://example.com", true, true, false, false)
             )
         }
     ) { db ->

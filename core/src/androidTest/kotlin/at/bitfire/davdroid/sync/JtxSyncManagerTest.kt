@@ -16,7 +16,6 @@ import at.bitfire.davdroid.resource.LocalJtxCollectionStore
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
-import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -110,7 +109,7 @@ class JtxSyncManagerTest {
         serviceRepository.deleteAllBlocking()
 
         if (this::provider.isInitialized)
-            provider.closeCompat()
+            provider.close()
 
         if (this::account.isInitialized)
             TestAccount.remove(account)

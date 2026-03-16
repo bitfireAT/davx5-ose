@@ -13,7 +13,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface Global {
+interface IntroPageFactoryModule {
     @Binds
     fun introPageFactory(impl: OseIntroPageFactory): IntroPageFactory
 }

@@ -483,4 +483,11 @@
     <string name="widget_icon_sync_label">Pictograma butonului de sincronizare</string>
     <string name="widget_sync_description">Atinge pentru a rula sincronizarea manual.</string>
     <!--cert4android-->
+<string name="intro_backups_title">Memento copii de rezervă</string>
+    <string name="intro_backups_important">Este important să faci o copie de rezervă (inclusiv contacte și calendare) în mod regulat pentru a preveni potențiala pierdere a datelor.</string>
+    <string name="intro_backups_something_wrong">Ceva poate merge prost oricând, fie pe server, în %s sau în alte aplicații, care, de exemplu, ar putea șterge accidental toate intrările din calendar. (Ștergerile vor fi apoi sincronizate cu serverul.)</string>
+    <string name="intro_backups_accept">Am deja o strategie de backup funcțională sau nu am nevoie de una.</string>
+    <string name="about_translations_thanks">❤️ Mulțumim tuturor celor care au contribuit la traduceri!</string>
+    <string name="about_translations_over_transifex">În Transifex</string>
+    <string name="about_translations_over_weblate">În Weblate</string>
 </resources>
