@@ -1,6 +1,0 @@
-name: Blank issue (internal use only)
-description: "For internal use (DAVx5 team) only"
-body:
-  - type: textarea
-    attributes:
-      label: Issue body
