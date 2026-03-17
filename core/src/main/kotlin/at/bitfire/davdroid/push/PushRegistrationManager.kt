@@ -34,8 +34,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
+import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
-import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -261,8 +261,7 @@ class PushRegistrationManager @Inject constructor(
         serializer.endDocument()
 
         DavCollection(httpClient, collection.url.toKtorUrl()).post(
-            { ByteReadChannel(writer.toString()) },
-            DavResource.MIME_XML_UTF8
+            TextContent(writer.toString(), DavResource.MIME_XML_UTF8)
         ) { response ->
             if (response.status.isSuccess()) {
                 // update subscription URL and expiration in DB
