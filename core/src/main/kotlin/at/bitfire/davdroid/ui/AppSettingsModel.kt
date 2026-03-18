@@ -147,12 +147,10 @@ class AppSettingsModel @Inject constructor(
         _pushDistributor.value = currentPushDistributor
 
         val preferredDistributors = distributorPreferences.getOrNull()?.packageNames.orEmpty()
-        println("Preferred Distributors: $preferredDistributors")
 
         val pushDistributors = pushDistributorManager.getDistributors()
             .map { pushDistributor ->
                 val isPreferred = pushDistributor in preferredDistributors
-                println("Distributor: $pushDistributor")
                 try {
                     val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
                     val label = pm.getApplicationLabel(applicationInfo).toString()
