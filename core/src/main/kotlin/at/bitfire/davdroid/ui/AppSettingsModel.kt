@@ -14,8 +14,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.push.DistributorPreferences
 import at.bitfire.davdroid.push.PushDistributorManager
-import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -45,8 +45,8 @@ class AppSettingsModel @Inject constructor(
     private val customCertStore: Optional<CustomCertStore>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
-    private val pushRegistrationManager: PushRegistrationManager,
     private val pushDistributorManager: PushDistributorManager,
+    private val distributorPreferences: Optional<DistributorPreferences>,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -146,16 +146,21 @@ class AppSettingsModel @Inject constructor(
         val currentPushDistributor = pushDistributorManager.getCurrentDistributor()
         _pushDistributor.value = currentPushDistributor
 
+        val preferredDistributors = distributorPreferences.getOrNull()?.packageNames.orEmpty()
+        println("Preferred Distributors: $preferredDistributors")
+
         val pushDistributors = pushDistributorManager.getDistributors()
             .map { pushDistributor ->
+                val isPreferred = pushDistributor in preferredDistributors
+                println("Distributor: $pushDistributor")
                 try {
                     val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
                     val label = pm.getApplicationLabel(applicationInfo).toString()
                     val icon = pm.getApplicationIcon(applicationInfo)
-                    PushDistributorInfo(pushDistributor, label, icon)
+                    PushDistributorInfo(pushDistributor, label, icon, isPreferred)
                 } catch (_: PackageManager.NameNotFoundException) {
                     // The app is not available for some reason, do not include the app data.
-                    PushDistributorInfo(pushDistributor)
+                    PushDistributorInfo(pushDistributor, isPreferred = isPreferred)
                 }
             }
         _pushDistributors.value = pushDistributors
@@ -194,7 +199,8 @@ class AppSettingsModel @Inject constructor(
     data class PushDistributorInfo(
         val packageName: String,
         val appName: String? = null,
-        val appIcon: Drawable? = null
+        val appIcon: Drawable? = null,
+        val isPreferred: Boolean = false
     )
 
 }

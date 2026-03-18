@@ -22,7 +22,6 @@ import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.property.push.WebDAVPush
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
@@ -329,19 +328,6 @@ class PushRegistrationManager @Inject constructor(
             logger.info("Cancelling periodic PushRegistrationWorker")
             workManager.cancelUniqueWork(WORKER_UNIQUE_NAME)
         }
-    }
-
-
-    /**
-     * Allows preferring certain distributors over others.
-     */
-    interface DistributorPreferences {
-        /**
-         * A list of package names ordered by preference.
-         * If any of those is available, it will be automatically selected.
-         * Otherwise, another available distributor will be chosen automatically.
-         */
-        val packageNames: List<String>
     }
 
 

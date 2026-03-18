@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.SyncProblem
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Badge
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -610,7 +611,7 @@ private fun PushDistributorSelectionDialog(
                     )
                 }
 
-                items(pushDistributors.orEmpty()) { (distributor, name, icon) ->
+                items(pushDistributors.orEmpty()) { (distributor, name, icon, isPreferred) ->
                     val isSelf = distributor == context.packageName
                     val headline = if (isSelf) stringResource(R.string.app_settings_unifiedpush_distributor_fcm) else name ?: distributor
                     ListItem(
@@ -642,6 +643,9 @@ private fun PushDistributorSelectionDialog(
                         },
                         headlineContent = {
                             Text(headline)
+                        },
+                        supportingContent = {
+                            if (isPreferred) Badge { Text(stringResource(R.string.app_settings_unifiedpush_recommended)) }
                         },
                         modifier = Modifier.clickable {
                             selectedDistributor = distributor
