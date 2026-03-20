@@ -22,7 +22,6 @@ import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.property.push.WebDAVPush
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
@@ -36,7 +35,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.unifiedpush.android.connector.UnifiedPush
@@ -63,7 +61,6 @@ class PushRegistrationManager @Inject constructor(
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
 ) {
@@ -133,17 +130,19 @@ class PushRegistrationManager @Inject constructor(
         if (distributorAvailable)
             try {
                 val vapid = collectionRepository.getVapidKey(serviceId)
-                logger.fine("Registering UnifiedPush instance $serviceId (${service.accountName})")
+                if (vapid != null) {    // only register when there's a VAPID key
+                    logger.fine("Registering UnifiedPush instance $serviceId (account=${service.accountName})")
 
-                // message for distributor
-                val message = "${service.accountName} (${service.type})"
+                    // message for distributor
+                    val message = "${service.accountName} (${service.type})"
 
-                UnifiedPush.register(context, instance, message, vapid)
+                    UnifiedPush.register(context, instance, message, vapid)
+                }
             } catch (e: UnifiedPush.VapidNotValidException) {
                 logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
             }
         else {
-            logger.fine("Unregistering UnifiedPush instance $serviceId (${service.accountName})")
+            logger.fine("No push distributor, unregistering UnifiedPush instance $serviceId (${service.accountName})")
             UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
             unsubscribeAll(service)
         }
