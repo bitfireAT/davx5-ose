@@ -10,7 +10,6 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.PowerManager
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.compose.material.icons.Icons
 import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +18,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushDistributorDefaults
 import at.bitfire.davdroid.push.PushDistributorManager
+import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -48,8 +48,9 @@ class AppSettingsModel @Inject constructor(
     private val customCertStore: Optional<CustomCertStore>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
-    private val pushDistributorManager: PushDistributorManager,
     private val pushDistributorDefaults: Optional<PushDistributorDefaults>,
+    private val pushDistributorManager: PushDistributorManager,
+    private val pushRegistrationManager: PushRegistrationManager,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -186,7 +187,12 @@ class AppSettingsModel @Inject constructor(
      */
     fun updatePushDistributor(pushDistributor: String?) {
         viewModelScope.launch(ioDispatcher) {
+            // update push distributor
             pushDistributorManager.setPushDistributor(pushDistributor)
+
+            // update push registrations
+            pushRegistrationManager.update()
+
             _pushDistributor.value = pushDistributor
         }
     }

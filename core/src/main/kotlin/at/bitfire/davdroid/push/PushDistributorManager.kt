@@ -20,9 +20,12 @@ class PushDistributorManager @Inject constructor(
     private val logger: Logger,
     private val settings: SettingsManager
 ) {
+
     /**
      * Get the distributor registered by the user.
-     * @return The distributor package name if any, else `null`.
+     *
+     * @return The distributor package name if any, else `null`. Will also return `null`
+     * if the previously selected distributor isn't installed anymore.
      */
     fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
 

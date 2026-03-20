@@ -624,8 +624,11 @@ private fun PushDistributorSelectionDialog(
                         },
                         trailingContent = {
                             icon?.let {
+                                val cachedBitmap = remember(icon) {
+                                    icon.toBitmap().asImageBitmap()
+                                }
                                 Image(
-                                    bitmap = icon.toBitmap().asImageBitmap(),
+                                    bitmap = cachedBitmap,
                                     contentDescription = headline,
                                     modifier = Modifier.size(32.dp)
                                 )
