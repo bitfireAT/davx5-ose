@@ -131,18 +131,22 @@ class PushRegistrationManager @Inject constructor(
             try {
                 val vapid = collectionRepository.getVapidKey(serviceId)
                 if (vapid != null) {    // only register when there's a VAPID key
-                    logger.fine("Registering UnifiedPush instance $serviceId (account=${service.accountName})")
+                    logger.fine("Registering UnifiedPush instance for service $instance / ${service.accountName}")
 
                     // message for distributor
                     val message = "${service.accountName} (${service.type})"
 
                     UnifiedPush.register(context, instance, message, vapid)
+                } else {
+                    logger.fine("No VAPID key for service $serviceId / ${service.accountName}")
+                    /* We don't call UnifiedPush.unregister(context, instance) here because it can
+                    remove the push distributor. May be improved in the future. */
                 }
             } catch (e: UnifiedPush.VapidNotValidException) {
                 logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
             }
         else {
-            logger.fine("No push distributor, unregistering UnifiedPush instance $serviceId (${service.accountName})")
+            logger.fine("No push distributor, unregistering UnifiedPush service $serviceId / ${service.accountName}")
             UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
             unsubscribeAll(service)
         }
