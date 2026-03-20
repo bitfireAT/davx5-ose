@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
-import at.bitfire.davdroid.settings.Settings.EXPLICIT_PUSH_DISABLE
+import at.bitfire.davdroid.settings.Settings.PUSH_DISABLE
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.unifiedpush.android.connector.UnifiedPush
@@ -55,12 +55,18 @@ class PushDistributorManager @Inject constructor(
      * Uses preferences from [distributorDefaults].
      */
     fun update() {
-        val currentDistributor = getCurrentDistributor()
-        val isPushDisabled = settings.getBooleanOrNull(EXPLICIT_PUSH_DISABLE)
-        if (currentDistributor == null) {
-            if (isPushDisabled == true) {
-                logger.info("Push is explicitly disabled, no distributor will be selected.")
-            } else {
+        val pushDisabled = settings.getBooleanOrNull(PUSH_DISABLE) ?: false
+        if (pushDisabled) {
+            // push has been disabled by user
+            logger.info("Push is explicitly disabled, no distributor will be selected.")
+            UnifiedPush.removeDistributor(context)
+
+        } else {
+            // push has not been disabled by user
+            val currentDistributor = getCurrentDistributor()
+
+            // If no distributor is selected yet, select the preferred (or first available) one
+            if (currentDistributor == null) {
                 val availableDistributors = getDistributors()
                 if (availableDistributors.isNotEmpty()) {
                     logger.fine("No Push distributor selected, but ${availableDistributors.size} distributors are available.")
@@ -71,13 +77,12 @@ class PushDistributorManager @Inject constructor(
                     // select preferred distributor if available, otherwise first available
                     val distributor =
                         preferredDistributor.takeIf { availableDistributors.contains(preferredDistributor) }
-                        ?: availableDistributors.first()
+                            ?: availableDistributors.first()
 
                     logger.fine("Automatically selecting Push distributor: $distributor")
                     UnifiedPush.saveDistributor(context, distributor)
-                } else {
-                    logger.fine("No Push distributor selected and no distributors are available.")
-                }
+                } else
+                    logger.fine("Can't select a push distributor because none are available.")
             }
         }
     }

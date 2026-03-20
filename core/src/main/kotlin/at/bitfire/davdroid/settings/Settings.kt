@@ -68,9 +68,11 @@ object Settings {
 
 
     /**
-     * By default, a push distributor is automatically selected when needed. However, the user can choose to disable push completely.
-     * This setting reflects that choice.
+     * By default, a push distributor is automatically selected when needed. However,
+     * the user can choose to explicitly disable push.
+     *
+     * Value type: Boolean.
      */
-    const val EXPLICIT_PUSH_DISABLE = "push_disable"
+    const val PUSH_DISABLE = "push_disable"
     
 }

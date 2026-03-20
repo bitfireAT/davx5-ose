@@ -9,10 +9,12 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.PowerManager
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushDistributorDefaults
 import at.bitfire.davdroid.push.PushDistributorManager
@@ -139,8 +141,6 @@ class AppSettingsModel @Inject constructor(
      *
      * - Loads the currently selected distributor into [pushDistributor].
      * - Loads all the available distributors into [pushDistributors].
-     * - If there's only one push distributor available, and none is selected, it's selected automatically.
-     * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
      */
     private fun loadPushDistributors() {
         val currentPushDistributor = pushDistributorManager.getCurrentDistributor()
@@ -153,8 +153,20 @@ class AppSettingsModel @Inject constructor(
                 val isPreferred = pushDistributor in preferredDistributors
                 try {
                     val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
-                    val label = pm.getApplicationLabel(applicationInfo).toString()
-                    val icon = pm.getApplicationIcon(applicationInfo)
+
+                    // FCM distributor is built-in (shipped with UnifiedPush library) and thus appears with our own package name
+                    val isSelf = applicationInfo.packageName == context.packageName
+
+                    val label = if (isSelf)
+                        context.getString(R.string.app_settings_unifiedpush_distributor_fcm)
+                    else
+                        pm.getApplicationLabel(applicationInfo).toString()
+
+                    val icon = if (isSelf)
+                        AppCompatResources.getDrawable(context, R.drawable.product_logomark_cloud_messaging_full_color)
+                    else
+                        pm.getApplicationIcon(applicationInfo)
+
                     PushDistributorInfo(pushDistributor, label, icon, isPreferred)
                 } catch (_: PackageManager.NameNotFoundException) {
                     // The app is not available for some reason, do not include the app data.
@@ -173,14 +185,14 @@ class AppSettingsModel @Inject constructor(
      */
     fun updatePushDistributor(pushDistributor: String?) {
         viewModelScope.launch(ioDispatcher) {
-            pushDistributorManager.setPushDistributor(pushDistributor)
+            // update "disable push" setting
+            if (pushDistributor == null)
+                settings.putBoolean(Settings.PUSH_DISABLE, true)
+            else
+                settings.remove(Settings.PUSH_DISABLE)
 
-            if (pushDistributor == null) {
-                // Disable push explicitly, this will disable the automatic distributor selector
-                settings.putBoolean(Settings.EXPLICIT_PUSH_DISABLE, true)
-            } else {
-                settings.remove(Settings.EXPLICIT_PUSH_DISABLE)
-            }
+            // now update push distributor
+            pushDistributorManager.setPushDistributor(pushDistributor)
 
             _pushDistributor.value = pushDistributor
         }
