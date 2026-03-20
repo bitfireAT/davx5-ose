@@ -186,15 +186,7 @@ class AppSettingsModel @Inject constructor(
      */
     fun updatePushDistributor(pushDistributor: String?) {
         viewModelScope.launch(ioDispatcher) {
-            // update "disable push" setting
-            if (pushDistributor == null)
-                settings.putBoolean(Settings.PUSH_DISABLE, true)
-            else
-                settings.remove(Settings.PUSH_DISABLE)
-
-            // now update push distributor
             pushDistributorManager.setPushDistributor(pushDistributor)
-
             _pushDistributor.value = pushDistributor
         }
     }

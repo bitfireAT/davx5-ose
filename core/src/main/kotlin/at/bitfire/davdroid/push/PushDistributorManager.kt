@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
-import at.bitfire.davdroid.settings.Settings.PUSH_DISABLE
+import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.unifiedpush.android.connector.UnifiedPush
@@ -35,27 +35,30 @@ class PushDistributorManager @Inject constructor(
     /**
      * Sets or removes (disable push) the distributor.
      *
-     * @param pushDistributor  new distributor or `null` to disable Push
+     * @param pushDistributor  new distributor or `null` to explicitly disable Push
      */
     fun setPushDistributor(pushDistributor: String?) {
-        // Disable UnifiedPush and remove all subscriptions
-        UnifiedPush.removeDistributor(context)
-        update()
+        // Update "disable push" setting
+        if (pushDistributor == null)
+            settings.putBoolean(Settings.PUSH_DISABLE, true)
+        else {
+            settings.remove(Settings.PUSH_DISABLE)
 
-        if (pushDistributor != null) {
             // If a distributor was passed, store it and create/register subscriptions
             UnifiedPush.saveDistributor(context, pushDistributor)
-            update()
         }
+
+        update()
     }
 
     /**
-     * Makes sure a distributor is selected if Push is enabled.
+     * Makes sure a distributor is selected if Push is enabled
+     * (takes [Settings.PUSH_DISABLE] into account).
      *
-     * Uses preferences from [distributorDefaults].
+     * Uses preferred push distributor from [distributorDefaults].
      */
     fun update() {
-        val pushDisabled = settings.getBooleanOrNull(PUSH_DISABLE) ?: false
+        val pushDisabled = settings.getBooleanOrNull(Settings.PUSH_DISABLE) ?: false
         if (pushDisabled) {
             // push has been disabled by user
             logger.info("Push is explicitly disabled, no distributor will be selected.")

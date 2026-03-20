@@ -16,6 +16,6 @@ interface PushDistributorDefaultsModule {
 
     // allows binding empty Optional<PushDistributorDefaults>
     @BindsOptionalOf
-    fun pushDistributorPreferences(): PushDistributorDefaults
+    fun pushDistributorDefaults(): PushDistributorDefaults
 
 }

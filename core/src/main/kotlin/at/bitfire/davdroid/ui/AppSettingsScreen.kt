@@ -579,12 +579,12 @@ private fun PushDistributorSelectionDialog(
         },
         text = {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                // no push distributor available
                 if (pushDistributors.isNullOrEmpty()) item {
+                    // no push distributor available
                     Text(stringResource(R.string.app_settings_unifiedpush_no_distributor))
 
-                // push distributors available – add "None" at top of list
                 } else item {
+                    // push distributors available – add "None" at top of list
                     ListItem(
                         leadingContent = {
                             Icon(
@@ -608,8 +608,8 @@ private fun PushDistributorSelectionDialog(
                     )
                 }
 
-                // add push distributors to list
                 items(pushDistributors.orEmpty()) { (distributor, name, icon, isPreferred) ->
+                    // add push distributors to list
                     val headline = name ?: distributor
                     ListItem(
                         leadingContent = {
