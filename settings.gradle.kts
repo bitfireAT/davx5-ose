@@ -38,3 +38,10 @@ if (!buildCacheUrl.isNullOrEmpty()) {
 
 include(":app-ose")
 include(":core")
+
+// uncomment for debugging / working in the subprojects
+includeBuild("../synctools") {
+    dependencySubstitution {
+        substitute(module("com.github.bitfireAT:synctools")).using(project(":lib"))
+    }
+}
