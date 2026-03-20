@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.push.DistributorPreferences
+import at.bitfire.davdroid.push.PushDistributorDefaults
 import at.bitfire.davdroid.push.PushDistributorManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
@@ -46,7 +46,7 @@ class AppSettingsModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
     private val pushDistributorManager: PushDistributorManager,
-    private val distributorPreferences: Optional<DistributorPreferences>,
+    private val pushDistributorDefaults: Optional<PushDistributorDefaults>,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -146,7 +146,7 @@ class AppSettingsModel @Inject constructor(
         val currentPushDistributor = pushDistributorManager.getCurrentDistributor()
         _pushDistributor.value = currentPushDistributor
 
-        val preferredDistributors = distributorPreferences.getOrNull()?.packageNames.orEmpty()
+        val preferredDistributors = pushDistributorDefaults.getOrNull()?.preferredDistributor.orEmpty()
 
         val pushDistributors = pushDistributorManager.getDistributors()
             .map { pushDistributor ->

@@ -16,9 +16,9 @@ import kotlin.jvm.optionals.getOrNull
 
 class PushDistributorManager @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val distributorDefaults: Optional<PushDistributorDefaults>,
     private val logger: Logger,
-    private val settings: SettingsManager,
-    private val distributorPreferences: Optional<DistributorPreferences>,
+    private val settings: SettingsManager
 ) {
     /**
      * Get the distributor registered by the user.
@@ -52,7 +52,7 @@ class PushDistributorManager @Inject constructor(
     /**
      * Makes sure a distributor is selected if Push is enabled.
      *
-     * Uses preferences from [distributorPreferences].
+     * Uses preferences from [distributorDefaults].
      */
     fun update() {
         val currentDistributor = getCurrentDistributor()
@@ -64,14 +64,15 @@ class PushDistributorManager @Inject constructor(
                 val availableDistributors = getDistributors()
                 if (availableDistributors.isNotEmpty()) {
                     logger.fine("No Push distributor selected, but ${availableDistributors.size} distributors are available.")
+
+                    // preferred distributor (varies by build variant, may be null)
+                    val preferredDistributor = distributorDefaults.getOrNull()?.preferredDistributor
+
                     // select preferred distributor if available, otherwise first available
-                    val distributor = distributorPreferences.getOrNull()
-                        ?.packageNames
-                        .orEmpty()
-                        .firstNotNullOfOrNull { preferredPackageName ->
-                            availableDistributors.find { it == preferredPackageName }
-                        }
+                    val distributor =
+                        preferredDistributor.takeIf { availableDistributors.contains(preferredDistributor) }
                         ?: availableDistributors.first()
+
                     logger.fine("Automatically selecting Push distributor: $distributor")
                     UnifiedPush.saveDistributor(context, distributor)
                 } else {
@@ -80,4 +81,5 @@ class PushDistributorManager @Inject constructor(
             }
         }
     }
+
 }
