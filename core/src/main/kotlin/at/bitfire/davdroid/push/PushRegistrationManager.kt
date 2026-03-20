@@ -33,8 +33,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
+import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
-import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.unifiedpush.android.connector.UnifiedPush
@@ -111,17 +111,23 @@ class PushRegistrationManager @Inject constructor(
         if (distributorAvailable)
             try {
                 val vapid = collectionRepository.getVapidKey(serviceId)
-                logger.fine("Registering UnifiedPush instance $serviceId (${service.accountName})")
+                if (vapid != null) {    // only register when there's a VAPID key
+                    logger.fine("Registering UnifiedPush instance for service $instance / ${service.accountName}")
 
-                // message for distributor
-                val message = "${service.accountName} (${service.type})"
+                    // message for distributor
+                    val message = "${service.accountName} (${service.type})"
 
-                UnifiedPush.register(context, instance, message, vapid)
+                    UnifiedPush.register(context, instance, message, vapid)
+                } else {
+                    logger.fine("No VAPID key for service $serviceId / ${service.accountName}")
+                    /* We don't call UnifiedPush.unregister(context, instance) here because it can
+                    remove the push distributor. May be improved in the future. */
+                }
             } catch (e: UnifiedPush.VapidNotValidException) {
                 logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
             }
         else {
-            logger.fine("Unregistering UnifiedPush instance $serviceId (${service.accountName})")
+            logger.fine("No push distributor, unregistering UnifiedPush service $serviceId / ${service.accountName}")
             UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
             unsubscribeAll(service)
         }
@@ -239,8 +245,7 @@ class PushRegistrationManager @Inject constructor(
         serializer.endDocument()
 
         DavCollection(httpClient, collection.url.toKtorUrl()).post(
-            { ByteReadChannel(writer.toString()) },
-            DavResource.MIME_XML_UTF8
+            TextContent(writer.toString(), DavResource.MIME_XML_UTF8)
         ) { response ->
             if (response.status.isSuccess()) {
                 // update subscription URL and expiration in DB
