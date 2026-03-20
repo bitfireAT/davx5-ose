@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.PowerManager
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.material.icons.Icons
 import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -146,11 +147,11 @@ class AppSettingsModel @Inject constructor(
         val currentPushDistributor = pushDistributorManager.getCurrentDistributor()
         _pushDistributor.value = currentPushDistributor
 
-        val preferredDistributors = pushDistributorDefaults.getOrNull()?.preferredDistributor.orEmpty()
+        val preferredDistributor = pushDistributorDefaults.getOrNull()?.preferredDistributor
 
         val pushDistributors = pushDistributorManager.getDistributors()
             .map { pushDistributor ->
-                val isPreferred = pushDistributor in preferredDistributors
+                val isPreferred = pushDistributor == preferredDistributor
                 try {
                     val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
 

@@ -67,34 +67,41 @@ class PushRegistrationManager @Inject constructor(
 ) {
 
     /**
-     * Updates all push registrations and subscriptions so that if Push is available, it's up-to-date and
-     * working for all database services. If Push is not available, existing subscriptions are unregistered.
+     * Updates the push registration state for all services and the periodic worker:
      *
-     * Also makes sure that the [PushRegistrationWorker] is enabled if there's a Push-enabled collection.
+     * 1. Updates the push distributor (selects default push distributor if no distributor has been selected yet).
+     * 2. Iterates through all services and updates each service's push registration state by calling.
+     * 3. Updates the periodic worker state by calling [updatePeriodicWorker].
      *
-     * Selects the distributor if none is selected yet and Push is not explicitly disabled in settings through the [PushDistributorManager].
-     *
-     * Acquires [mutex] so that this method can't be called twice at the same time, or at the same time
-     * with [update(serviceId)].
+     * This method is thread-safe and will acquire a lock on [mutex] to ensure it cannot be executed concurrently
+     * with itself or `update(serviceId)`.
      */
     suspend fun update() = mutex.withLock {
+        // update push distributor
         distributorManager.update()
 
+        // update push subscriptions
         for (service in serviceRepository.getAll())
             updateService(service.id)
 
+        // update worker
         updatePeriodicWorker()
     }
 
     /**
      * Same as [update], but for a specific database service.
      *
-     * Acquires [mutex] so that this method can't be called twice at the same time, or at the same time
-     * as [update()].
+     * This method is thread-safe and will acquire a lock on [mutex] to ensure it cannot be executed concurrently
+     * with itself or [update].
      */
     suspend fun update(serviceId: Long) = mutex.withLock {
+        // update push distributor
         distributorManager.update()
+
+        // update push subscriptions
         updateService(serviceId)
+
+        // update worker
         updatePeriodicWorker()
     }
 
