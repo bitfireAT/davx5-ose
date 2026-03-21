@@ -14,6 +14,9 @@ import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.jvm.optionals.getOrNull
 
+/**
+ * Manages the selection and configuration of UnifiedPush distributors.
+ */
 class PushDistributorManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val distributorDefaults: Optional<PushDistributorDefaults>,
@@ -36,7 +39,8 @@ class PushDistributorManager @Inject constructor(
     fun getDistributors() = UnifiedPush.getDistributors(context)
 
     /**
-     * Sets or removes (disable push) the distributor.
+     * Sets or removes (disable push) the distributor by updating the settings
+     * and then calling [updateDistributor].
      *
      * @param pushDistributor  new distributor or `null` to explicitly disable Push
      */
@@ -47,20 +51,20 @@ class PushDistributorManager @Inject constructor(
         else {
             settings.remove(Settings.PUSH_DISABLE)
 
-            // If a distributor was passed, store it and create/register subscriptions
+            // If a distributor was passed, store it
             UnifiedPush.saveDistributor(context, pushDistributor)
         }
 
-        update()
+        updateDistributor()
     }
 
     /**
-     * Makes sure a distributor is selected if Push is enabled
-     * (takes [Settings.PUSH_DISABLE] into account).
+     * Ensures that the UnifiedPush distributor is set according to the settings:
      *
-     * Uses preferred push distributor from [distributorDefaults].
+     * - [Settings.PUSH_DISABLE] to disable push,
+     * - preferred push distributor for initial selection from [distributorDefaults].
      */
-    fun update() {
+    fun updateDistributor() {
         val pushDisabled = settings.getBooleanOrNull(Settings.PUSH_DISABLE) ?: false
         if (pushDisabled) {
             // push has been disabled by user

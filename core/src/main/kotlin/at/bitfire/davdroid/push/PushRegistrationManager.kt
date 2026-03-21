@@ -70,38 +70,38 @@ class PushRegistrationManager @Inject constructor(
      * Updates the push registration state for all services and the periodic worker:
      *
      * 1. Updates the push distributor (selects default push distributor if no distributor has been selected yet).
-     * 2. Iterates through all services and updates each service's push registration state by calling.
+     * 2. Iterates through all services and updates each service's push registration state by calling [updateService].
      * 3. Updates the periodic worker state by calling [updatePeriodicWorker].
      *
-     * This method is thread-safe and will acquire a lock on [mutex] to ensure it cannot be executed concurrently
+     * This method is thread-safe and protected with [mutex] to ensure it cannot be executed concurrently
      * with itself or `update(serviceId)`.
      */
     suspend fun update() = mutex.withLock {
-        // update push distributor
-        distributorManager.update()
+        // update push distributor selection
+        distributorManager.updateDistributor()
 
-        // update push subscriptions
+        // update push subscription/registrations
         for (service in serviceRepository.getAll())
             updateService(service.id)
 
-        // update worker
+        // update worker that periodically refreshes the registrations
         updatePeriodicWorker()
     }
 
     /**
      * Same as [update], but for a specific database service.
      *
-     * This method is thread-safe and will acquire a lock on [mutex] to ensure it cannot be executed concurrently
-     * with itself or [update].
+     * This method is thread-safe and protected with [mutex] to ensure it cannot be executed concurrently
+     * with itself or `update()`.
      */
     suspend fun update(serviceId: Long) = mutex.withLock {
-        // update push distributor
-        distributorManager.update()
+        // update push distributor selection
+        distributorManager.updateDistributor()
 
-        // update push subscriptions
+        // update push subscription/registrations
         updateService(serviceId)
 
-        // update worker
+        // update worker that periodically refreshes the registrations
         updatePeriodicWorker()
     }
 
@@ -125,6 +125,14 @@ class PushRegistrationManager @Inject constructor(
                     val message = "${service.accountName} (${service.type})"
 
                     UnifiedPush.register(context, instance, message, vapid)
+                    /* After registration (now), the distributor MUST call one of the following callbacks,
+                    which are implemented in UnifiedPushService:
+                    [ https://unifiedpush.org/developers/spec/android/#orgunifiedpushandroiddistributorregister ]
+
+                    - new endpoint → continues with processSubscription()
+                    - registration failed → continues with removeSubscription()
+                    - temp unavailable → handled by UP Android connector */
+
                 } else {
                     logger.fine("No VAPID key for service $serviceId / ${service.accountName}")
                     /* We don't call UnifiedPush.unregister(context, instance) here because it can
@@ -135,12 +143,9 @@ class PushRegistrationManager @Inject constructor(
             }
         else {
             logger.fine("No push distributor, unregistering UnifiedPush service $serviceId / ${service.accountName}")
-            UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
-            unsubscribeAll(service)
+            UnifiedPush.unregister(context, instance)   // Doesn't call UnifiedPushService.onUnregistered …
+            unsubscribeAll(service)                     // … so we have to unsubscribe explicitly.
         }
-
-        // UnifiedPush has now been called. It will do its work and then asynchronously call back to UnifiedPushService, which
-        // will then call processSubscription or removeSubscription.
     }
 
     /**
@@ -148,7 +153,7 @@ class PushRegistrationManager @Inject constructor(
      *
      * Uses the subscription to subscribe to syncable collections, and then unsubscribes from non-syncable collections.
      */
-    suspend fun processSubscription(serviceId: Long, endpoint: PushEndpoint) = mutex.withLock {
+    suspend fun processSubscription(serviceId: Long, endpoint: PushEndpoint): Unit = mutex.withLock {
         val service = serviceRepository.get(serviceId) ?: return
 
         try {
@@ -195,7 +200,7 @@ class PushRegistrationManager @Inject constructor(
      *
      * Unsubscribes from all subscribed collections.
      */
-    suspend fun removeSubscription(serviceId: Long) = mutex.withLock {
+    suspend fun removeSubscription(serviceId: Long): Unit = mutex.withLock {
         val service = serviceRepository.get(serviceId) ?: return
         unsubscribeAll(service)
     }
