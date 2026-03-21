@@ -136,7 +136,8 @@ class PushRegistrationManager @Inject constructor(
                 } else {
                     logger.fine("No VAPID key for service $serviceId / ${service.accountName}")
                     /* We don't call UnifiedPush.unregister(context, instance) here because it can
-                    remove the push distributor. May be improved in the future. */
+                    remove the push distributor (when the last instance is unregistered), making it
+                    inaccessible for other services/accounts. */
                 }
             } catch (e: UnifiedPush.VapidNotValidException) {
                 logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
