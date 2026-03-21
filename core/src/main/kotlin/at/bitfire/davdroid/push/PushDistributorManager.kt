@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
+import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
  * Manages the selection and configuration of UnifiedPush distributors.
  */
 class PushDistributorManager @Inject constructor(
+    private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
     private val distributorDefaults: Optional<PushDistributorDefaults>,
     private val logger: Logger,
@@ -44,15 +46,21 @@ class PushDistributorManager @Inject constructor(
      *
      * @param pushDistributor  new distributor or `null` to explicitly disable Push
      */
-    fun setPushDistributor(pushDistributor: String?) {
+    suspend fun setPushDistributor(pushDistributor: String?) {
         // Update "disable push" setting
         if (pushDistributor == null)
             settings.putBoolean(Settings.PUSH_DISABLE, true)
         else {
             settings.remove(Settings.PUSH_DISABLE)
 
-            // If a distributor was passed, store it
-            UnifiedPush.saveDistributor(context, pushDistributor)
+            if (pushDistributor != getCurrentDistributor()) {
+                // if the distributor is changed, invalidate registered subscriptions
+                // because they may have been registered to the old endpoint
+                invalidateSubscriptions()
+
+                // store new distributor
+                UnifiedPush.saveDistributor(context, pushDistributor)
+            }
         }
 
         updateDistributor()
@@ -64,7 +72,7 @@ class PushDistributorManager @Inject constructor(
      * - [Settings.PUSH_DISABLE] to disable push,
      * - preferred push distributor for initial selection from [distributorDefaults].
      */
-    fun updateDistributor() {
+    suspend fun updateDistributor() {
         val pushDisabled = settings.getBooleanOrNull(Settings.PUSH_DISABLE) ?: false
         if (pushDisabled) {
             // push has been disabled by user
@@ -89,12 +97,19 @@ class PushDistributorManager @Inject constructor(
                         preferredDistributor.takeIf { availableDistributors.contains(preferredDistributor) }
                             ?: availableDistributors.first()
 
+                    // invalidate subscription registrations because they may have been registered to the old endpoint
+                    invalidateSubscriptions()
+
                     logger.fine("Automatically selecting Push distributor: $distributor")
                     UnifiedPush.saveDistributor(context, distributor)
+
                 } else
                     logger.fine("Can't select a push distributor because none are available.")
             }
         }
     }
+
+    private suspend fun invalidateSubscriptions() =
+        collectionRepository.invalidatePushSubscriptions()
 
 }

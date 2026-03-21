@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushDistributorDefaults
 import at.bitfire.davdroid.push.PushDistributorManager
@@ -31,6 +32,7 @@ import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,6 +46,7 @@ import kotlin.jvm.optionals.getOrNull
 
 @HiltViewModel
 class AppSettingsModel @Inject constructor(
+    @ApplicationScope private val applicationScope: CoroutineScope,
     @ApplicationContext private val context: Context,
     private val customCertStore: Optional<CustomCertStore>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
@@ -186,7 +189,7 @@ class AppSettingsModel @Inject constructor(
      * @param pushDistributor The package name of the push distributor, _null_ to disable push.
      */
     fun updatePushDistributor(pushDistributor: String?) {
-        viewModelScope.launch(ioDispatcher) {
+        applicationScope.launch(ioDispatcher) {     // shouldn't be interrupted when view is closed
             // update push distributor
             pushDistributorManager.setPushDistributor(pushDistributor)
 
