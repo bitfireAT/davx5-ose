@@ -1,5 +1,8 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
   - name: DAVx⁵ Community Support
     url: https://github.com/bitfireAT/davx5-ose/discussions
     about: Ask and answer questions (including feature requests and bug reports) here.
+  - name: DAVx⁵ Support Form
+    url: https://www.davx5.com/support
+    about: Official support form (for submitting private data)
