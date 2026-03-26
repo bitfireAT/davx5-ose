@@ -29,7 +29,6 @@ import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.trimToNull
-import at.bitfire.ical4android.util.DateUtils
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
@@ -201,7 +200,7 @@ data class Collection(
                     dav[CalendarTimezoneId::class.java]?.let { timezoneId = it.identifier }
                     if (timezoneId == null)
                         dav[CalendarTimezone::class.java]?.vTimeZone?.let {
-                            timezoneId = DateUtils.parseVTimeZone(it)?.timeZoneId?.value
+                            timezoneId = getVTimeZoneId(it)
                         }
 
                     if (type == TYPE_CALENDAR) {
@@ -256,6 +255,17 @@ data class Collection(
                 pushVapidKey = vapidPublicKey,
                 pushTopic = pushTopic
             )
+        }
+
+        /**
+         * Extracts the timezone ID from a VTimeZone definition string.
+         *
+         * @param vTimeZoneDef The VTimeZone definition string from which to extract the timezone ID.
+         * @return The extracted timezone ID as a String, or null if the timezone ID could not be parsed.
+         */
+        fun getVTimeZoneId(vTimeZoneDef: String): String? {
+            // timezoneId = DateUtils.parseVTimeZone(it)?.timeZoneId?.value
+            TODO()
         }
 
     }
