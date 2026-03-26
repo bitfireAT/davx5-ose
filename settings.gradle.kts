@@ -39,7 +39,18 @@ if (!buildCacheUrl.isNullOrEmpty()) {
 include(":app-ose")
 include(":core")
 
-// uncomment for debugging / working in the subprojects
+// Uncomment for debugging / working in the subprojects.
+// Make sure that you have checked out the desired branch in the respective subproject!
+/*includeBuild("../cert4android") {
+    dependencySubstitution {
+        substitute(module("com.github.bitfireat:cert4android")).using(project(":lib"))
+    }
+}*/
+/*includeBuild("../dav4jvm") {
+    dependencySubstitution {
+        substitute(module("com.github.bitfireat:dav4jvm")).using(project(":"))
+    }
+}*/
 includeBuild("../synctools") {
     dependencySubstitution {
         substitute(module("com.github.bitfireAT:synctools")).using(project(":lib"))
