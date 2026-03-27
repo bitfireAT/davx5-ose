@@ -25,6 +25,7 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.synctools.icalendar.propertyListOf
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -32,12 +33,10 @@ import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.ComponentList
-import net.fortuna.ical4j.model.Property
-import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.property.ProdId
-import net.fortuna.ical4j.model.property.Version
+import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
 import okhttp3.HttpUrl
 import java.io.StringWriter
 import java.util.UUID
@@ -370,10 +369,10 @@ class DavCollectionRepository @Inject constructor(
                                     text(
                                         // spec requires "an iCalendar object with exactly one VTIMEZONE component"
                                         Calendar(
-                                            PropertyList<Property>().apply {
-                                                add(Version.VERSION_2_0)
-                                                add(ProdId(productIds.get().iCalProdId))
-                                            },
+                                            propertyListOf(
+                                                ImmutableVersion.VERSION_2_0,
+                                                ProdId(productIds.get().iCalProdId)
+                                            ),
                                             ComponentList(
                                                 listOf(vTimezone)
                                             )
