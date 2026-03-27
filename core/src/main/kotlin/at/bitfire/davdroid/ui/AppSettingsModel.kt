@@ -9,11 +9,16 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.PowerManager
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.push.PushDistributorDefaults
+import at.bitfire.davdroid.push.PushDistributorManager
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
@@ -27,6 +32,7 @@ import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,10 +46,13 @@ import kotlin.jvm.optionals.getOrNull
 
 @HiltViewModel
 class AppSettingsModel @Inject constructor(
+    @ApplicationScope private val applicationScope: CoroutineScope,
     @ApplicationContext private val context: Context,
     private val customCertStore: Optional<CustomCertStore>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
+    private val pushDistributorDefaults: Optional<PushDistributorDefaults>,
+    private val pushDistributorManager: PushDistributorManager,
     private val pushRegistrationManager: PushRegistrationManager,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
@@ -137,23 +146,36 @@ class AppSettingsModel @Inject constructor(
      *
      * - Loads the currently selected distributor into [pushDistributor].
      * - Loads all the available distributors into [pushDistributors].
-     * - If there's only one push distributor available, and none is selected, it's selected automatically.
-     * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
      */
     private fun loadPushDistributors() {
-        val currentPushDistributor = pushRegistrationManager.getCurrentDistributor()
+        val currentPushDistributor = pushDistributorManager.getCurrentDistributor()
         _pushDistributor.value = currentPushDistributor
 
-        val pushDistributors = pushRegistrationManager.getDistributors()
+        val preferredDistributor = pushDistributorDefaults.getOrNull()?.preferredDistributor
+
+        val pushDistributors = pushDistributorManager.getDistributors()
             .map { pushDistributor ->
+                val isPreferred = pushDistributor == preferredDistributor
                 try {
                     val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
-                    val label = pm.getApplicationLabel(applicationInfo).toString()
-                    val icon = pm.getApplicationIcon(applicationInfo)
-                    PushDistributorInfo(pushDistributor, label, icon)
+
+                    // FCM distributor is built-in (shipped with UnifiedPush library) and thus appears with our own package name
+                    val isSelf = applicationInfo.packageName == context.packageName
+
+                    val label = if (isSelf)
+                        context.getString(R.string.app_settings_unifiedpush_distributor_fcm)
+                    else
+                        pm.getApplicationLabel(applicationInfo).toString()
+
+                    val icon = if (isSelf)
+                        AppCompatResources.getDrawable(context, R.drawable.product_logomark_cloud_messaging_full_color)
+                    else
+                        pm.getApplicationIcon(applicationInfo)
+
+                    PushDistributorInfo(pushDistributor, label, icon, isPreferred)
                 } catch (_: PackageManager.NameNotFoundException) {
                     // The app is not available for some reason, do not include the app data.
-                    PushDistributorInfo(pushDistributor)
+                    PushDistributorInfo(pushDistributor, isPreferred = isPreferred)
                 }
             }
         _pushDistributors.value = pushDistributors
@@ -167,8 +189,12 @@ class AppSettingsModel @Inject constructor(
      * @param pushDistributor The package name of the push distributor, _null_ to disable push.
      */
     fun updatePushDistributor(pushDistributor: String?) {
-        viewModelScope.launch(ioDispatcher) {
-            pushRegistrationManager.setPushDistributor(pushDistributor)
+        applicationScope.launch(ioDispatcher) {     // shouldn't be interrupted when view is closed
+            // update push distributor
+            pushDistributorManager.setPushDistributor(pushDistributor)
+
+            // update push registrations
+            pushRegistrationManager.update()
 
             _pushDistributor.value = pushDistributor
         }
@@ -185,7 +211,8 @@ class AppSettingsModel @Inject constructor(
     data class PushDistributorInfo(
         val packageName: String,
         val appName: String? = null,
-        val appIcon: Drawable? = null
+        val appIcon: Drawable? = null,
+        val isPreferred: Boolean = false
     )
 
 }

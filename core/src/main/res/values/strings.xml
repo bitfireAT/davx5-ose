@@ -244,6 +244,7 @@
     <string name="app_settings_unifiedpush_ready">Ready to receive push messages over %s</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
     <string name="app_settings_unifiedpush_encrypted">Push messages are always encrypted.</string>
+    <string name="app_settings_unifiedpush_recommended">Recommended</string>
 
     <!-- AccountScreen -->
     <string name="account_invalid_account">Account has been removed</string>

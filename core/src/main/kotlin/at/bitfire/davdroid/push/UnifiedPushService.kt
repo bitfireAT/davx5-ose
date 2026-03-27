@@ -44,7 +44,7 @@ class UnifiedPushService : PushService() {
 
     override fun onNewEndpoint(endpoint: PushEndpoint, instance: String) {
         val serviceId = instance.toLongOrNull() ?: return
-        logger.warning("Got UnifiedPush endpoint for service $serviceId: ${endpoint.url}")
+        logger.info("Got UnifiedPush endpoint for service $serviceId: ${endpoint.url}")
 
         // register new endpoint at CalDAV/CardDAV servers
         applicationScope.launch {
@@ -54,7 +54,7 @@ class UnifiedPushService : PushService() {
 
     override fun onRegistrationFailed(reason: FailedReason, instance: String) {
         val serviceId = instance.toLongOrNull() ?: return
-        logger.warning("UnifiedPush registration failed for service $serviceId: $reason")
+        logger.info("UnifiedPush registration failed for service $serviceId: $reason")
 
         // unregister subscriptions
         applicationScope.launch {
@@ -64,7 +64,7 @@ class UnifiedPushService : PushService() {
 
     override fun onUnregistered(instance: String) {
         val serviceId = instance.toLongOrNull() ?: return
-        logger.warning("UnifiedPush unregistered for service $serviceId")
+        logger.info("UnifiedPush unregistered for service $serviceId")
 
         applicationScope.launch {
             pushRegistrationManager.get().removeSubscription(serviceId)

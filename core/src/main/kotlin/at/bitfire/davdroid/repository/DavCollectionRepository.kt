@@ -277,6 +277,13 @@ class DavCollectionRepository @Inject constructor(
     }
 
     /**
+     * Sets the `expires` of all push subscriptions to `null`.
+     */
+    suspend fun invalidatePushSubscriptions() {
+        dao.invalidatePushSubscriptions()
+    }
+
+    /**
      * Deletes the collection locally
      */
     fun delete(collection: Collection) {
