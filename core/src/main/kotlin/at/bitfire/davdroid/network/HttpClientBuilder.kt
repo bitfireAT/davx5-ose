@@ -350,6 +350,7 @@ class HttpClientBuilder @Inject constructor(
 
             // automatically convert JSON from/into data classes (if requested in respective code)
             install(ContentNegotiation) {
+                // use lenient parser that ignores unknown keys
                 json(lenientJson)
             }
 
