@@ -2,13 +2,12 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.db
+package at.bitfire.davdroid.util
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import org.junit.Assert
 import org.junit.Test
 
-class CollectionTest {
+class ICalendarUtilsTest {
 
     @Test
     fun testGetVTimeZoneId_Valid() {
@@ -28,23 +27,23 @@ class CollectionTest {
                 "RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3\r\n" +
                 "END:DAYLIGHT\r\n" +
                 "END:VTIMEZONE\r\n"
-        val result = Collection.getVTimeZoneId(vTimeZoneDef)
-        assertEquals("Europe/Vienna", result)
+        val result = ICalendarUtils.getVTimeZoneId(vTimeZoneDef)
+        Assert.assertEquals("Europe/Vienna", result)
     }
 
     @Test
     fun testGetVTimeZoneId_Invalid() {
         // Test with empty string
-        assertNull(Collection.getVTimeZoneId(""))
-        
+        Assert.assertNull(ICalendarUtils.getVTimeZoneId(""))
+
         // Test with malformed VTimeZone (missing BEGIN/END)
         val malformed = "TZID:America/New_York\r\n"
-        assertNull(Collection.getVTimeZoneId(malformed))
-        
+        Assert.assertNull(ICalendarUtils.getVTimeZoneId(malformed))
+
         // Test with incomplete VTimeZone
         val incomplete = "BEGIN:VTIMEZONE\r\n" +
                 "TZID:Asia/Tokyo\r\n"
-        assertNull(Collection.getVTimeZoneId(incomplete))
+        Assert.assertNull(ICalendarUtils.getVTimeZoneId(incomplete))
     }
 
     @Test
@@ -57,8 +56,8 @@ class CollectionTest {
                 "TZOFFSETTO:+0100\r\n" +
                 "END:STANDARD\r\n" +
                 "END:VTIMEZONE\r\n"
-        
-        assertNull(Collection.getVTimeZoneId(noTzId))
+
+        Assert.assertNull(ICalendarUtils.getVTimeZoneId(noTzId))
     }
 
 }

@@ -28,14 +28,10 @@ import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.davdroid.util.ICalendarUtils
 import at.bitfire.davdroid.util.trimToNull
-import net.fortuna.ical4j.data.CalendarBuilder
-import net.fortuna.ical4j.model.Component
-import net.fortuna.ical4j.model.component.VTimeZone
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import java.io.StringReader
-import kotlin.jvm.optionals.getOrNull
 
 @Retention(AnnotationRetention.SOURCE)
 @StringDef(
@@ -205,7 +201,7 @@ data class Collection(
                     dav[CalendarTimezoneId::class.java]?.let { timezoneId = it.identifier }
                     if (timezoneId == null)
                         dav[CalendarTimezone::class.java]?.vTimeZone?.let {
-                            timezoneId = getVTimeZoneId(it)
+                            timezoneId = ICalendarUtils.getVTimeZoneId(it)
                         }
 
                     if (type == TYPE_CALENDAR) {
@@ -260,23 +256,6 @@ data class Collection(
                 pushVapidKey = vapidPublicKey,
                 pushTopic = pushTopic
             )
-        }
-
-        /**
-         * Extracts the timezone ID from a VTimeZone definition string.
-         *
-         * @param vTimeZoneDef The VTimeZone definition string from which to extract the timezone ID.
-         * @return The extracted timezone ID as a String, or null if the timezone ID could not be parsed.
-         */
-        fun getVTimeZoneId(vTimeZoneDef: String): String? {
-            // CalendarBuilder requires a whole iCalendar and not only a VTIMEZONE.
-            val iCalendar = "BEGIN:VCALENDAR\r\n" +
-                    "VERSION:2.0\r\n" +
-                    vTimeZoneDef +
-                    "END:VCALENDAR\r\n"
-            val calendar = CalendarBuilder().build(StringReader(iCalendar))
-            val timezone = calendar.getComponent<VTimeZone>(Component.VTIMEZONE).getOrNull() ?: return null
-            return timezone.timeZoneId?.value
         }
 
     }

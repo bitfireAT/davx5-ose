@@ -8,7 +8,7 @@ import androidx.room.ProvidedAutoMigrationSpec
 import androidx.room.RenameColumn
 import androidx.room.migration.AutoMigrationSpec
 import androidx.sqlite.db.SupportSQLiteDatabase
-import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.util.ICalendarUtils
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -29,7 +29,7 @@ class AutoMigration16 @Inject constructor(): AutoMigrationSpec {
             while (cursor.moveToNext()) {
                 val id: Long = cursor.getLong(0)
                 val timezoneDef: String = cursor.getString(1) ?: continue
-                val timezoneId = Collection.getVTimeZoneId(timezoneDef)
+                val timezoneId = ICalendarUtils.getVTimeZoneId(timezoneDef)
                 db.execSQL("UPDATE collection SET timezoneId=? WHERE id=?", arrayOf<Any?>(timezoneId, id))
             }
         }
