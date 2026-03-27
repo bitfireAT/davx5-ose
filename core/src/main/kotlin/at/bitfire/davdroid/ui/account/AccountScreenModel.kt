@@ -15,6 +15,8 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
+import at.bitfire.davdroid.repository.AccountCredentials
+import at.bitfire.davdroid.repository.CollectionConfigSerializer
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -55,7 +57,7 @@ class AccountScreenModel @AssistedInject constructor(
     getBindableHomesetsFromService: GetBindableHomeSetsFromServiceUseCase,
     getServiceCollectionPager: GetServiceCollectionPagerUseCase,
     private val logger: Logger,
-    serviceRepository: DavServiceRepository,
+    private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: SyncWorkerManager,
     tasksAppManager: TasksAppManager
 ): ViewModel() {
@@ -166,6 +168,7 @@ class AccountScreenModel @AssistedInject constructor(
         private set
 
     fun resetError() { error = null }
+    fun showError(message: String) { error = message }
 
 
     var showNoWebcalApp by mutableStateOf(false)
@@ -222,6 +225,55 @@ class AccountScreenModel @AssistedInject constructor(
 
     fun sync() {
         syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+    }
+
+    /** Exports collection sync settings as JSON. Optionally includes credentials. */
+    suspend fun exportCollectionConfig(includeCredentials: Boolean = false): String = withContext(defaultDispatcher) {
+        val allCollections = mutableListOf<at.bitfire.davdroid.db.Collection>()
+        // Find a principal URL to use as base URL for re-discovery
+        var baseUrl: String? = null
+        for (serviceId in serviceRepository.getServiceIds(account.name)) {
+            allCollections.addAll(collectionRepository.getByService(serviceId))
+            if (baseUrl == null) {
+                serviceRepository.get(serviceId)?.principal?.let { baseUrl = it.toString() }
+            }
+        }
+        val credentials = if (includeCredentials) {
+            accountSettings?.credentials()?.let { creds ->
+                AccountCredentials(
+                    username = creds.username,
+                    password = creds.password?.asString()
+                )
+            }
+        } else null
+        CollectionConfigSerializer.export(account.name, allCollections, credentials, baseUrl)
+    }
+
+    /** Imports collection sync settings from JSON, matching by URL. */
+    fun importCollectionConfig(json: String) {
+        viewModelScope.launch(defaultDispatcher) {
+            try {
+                val config = CollectionConfigSerializer.parse(json)
+                val configByUrl = config.collections.associateBy { it.url }
+
+                var matched = 0
+                for (serviceId in serviceRepository.getServiceIds(account.name)) {
+                    for (collection in collectionRepository.getByService(serviceId)) {
+                        val entry = configByUrl[collection.url.toString()] ?: continue
+                        if (collection.sync != entry.sync)
+                            collectionRepository.setSync(collection.id, entry.sync)
+                        if (collection.forceReadOnly != entry.forceReadOnly)
+                            collectionRepository.setForceReadOnly(collection.id, entry.forceReadOnly)
+                        matched++
+                    }
+                }
+
+                logger.info("Imported collection config: $matched collections matched out of ${config.collections.size}")
+            } catch (e: Exception) {
+                logger.log(Level.SEVERE, "Failed to import collection config", e)
+                error = context.getString(R.string.account_import_collection_settings_error)
+            }
+        }
     }
 
 }

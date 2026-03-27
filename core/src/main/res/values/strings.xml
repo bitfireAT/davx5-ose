@@ -263,6 +263,16 @@
     <string name="account_delete">Delete account</string>
     <string name="account_delete_confirmation_title">Really delete account?</string>
     <string name="account_delete_confirmation_text">All local copies of address books, calendars and task lists will be deleted.</string>
+    <string name="account_export_collection_settings">Export collection settings</string>
+    <string name="account_export_collection_settings_text">Export which collections are selected for sync and their read-only settings.</string>
+    <string name="account_export_include_credentials">Include credentials (username/password)</string>
+    <string name="account_export_credentials_warning">Warning: Credentials will be stored in plain text!</string>
+    <string name="account_import_collection_settings">Import collection settings</string>
+    <string name="account_import_collection_settings_error">Couldn\'t import collection settings</string>
+    <string name="accounts_import_account">Import account</string>
+    <string name="accounts_import_account_error">Couldn\'t import account</string>
+    <string name="accounts_import_account_no_credentials">The import file doesn\'t contain credentials. Export with \"Include credentials\" enabled.</string>
+    <string name="accounts_import_account_no_base_url">The import file doesn\'t contain a server URL. Please re-export from a configured account.</string>
     <string name="account_synchronize_this_collection">synchronize this collection</string>
     <string name="account_read_only">read-only</string>
     <string name="account_calendar">calendar</string>

@@ -14,12 +14,17 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
+import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runInterruptible
+import java.net.URI
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -51,9 +56,11 @@ class AccountRepository @Inject constructor(
     private val collectionRepository: DavCollectionRepository,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val homeSetRepository: DavHomeSetRepository,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger,
+    private val resourceFinderFactory: DavResourceFinder.Factory,
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: Lazy<SyncWorkerManager>,
     private val tasksAppManager: Lazy<TasksAppManager>
@@ -249,6 +256,76 @@ class AccountRepository @Inject constructor(
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()
         }
+    }
+
+
+    /**
+     * Imports an account from an exported configuration file.
+     * Discovers services from the server, creates the account, and applies collection sync settings.
+     *
+     * @return the created Account, or null if creation failed
+     * @throws Exception if discovery or account creation fails
+     */
+    suspend fun importAccountFromConfig(config: CollectionConfigExport): Account? {
+        val baseUrl = config.baseUrl ?: throw IllegalArgumentException("No base URL in config")
+        val creds = config.credentials ?: throw IllegalArgumentException("No credentials in config")
+
+        val credentials = Credentials(
+            username = creds.username,
+            password = creds.password?.toSensitiveString()
+        )
+
+        // Discover services (same as login wizard)
+        val discoveredConfig = withContext(ioDispatcher) {
+            runInterruptible {
+                val finder = resourceFinderFactory.create(URI(baseUrl), credentials)
+                finder.findInitialConfiguration()
+            }
+        }
+
+        if (discoveredConfig.cardDAV == null && discoveredConfig.calDAV == null) {
+            throw IllegalStateException("No CalDAV or CardDAV services found at $baseUrl")
+        }
+
+        // Create the account
+        val account = withContext(defaultDispatcher) {
+            createBlocking(
+                config.accountName,
+                credentials,
+                discoveredConfig,
+                GroupMethod.GROUP_VCARDS
+            )
+        } ?: throw IllegalStateException("Could not create account")
+
+        // Wait for RefreshCollectionsWorker to discover collections, then apply sync settings
+        val configByUrl = config.collections.associateBy { it.url }
+        withContext(defaultDispatcher) {
+            // Poll for collections to appear (RefreshCollectionsWorker runs async)
+            val serviceIds = serviceRepository.getServiceIds(account.name)
+            var attempts = 0
+            while (attempts < 20) {
+                delay(500)
+                attempts++
+                var totalCollections = 0
+                for (serviceId in serviceIds) {
+                    totalCollections += collectionRepository.getByService(serviceId).size
+                }
+                if (totalCollections > 0) break
+            }
+
+            // Apply sync/forceReadOnly settings
+            for (serviceId in serviceIds) {
+                for (collection in collectionRepository.getByService(serviceId)) {
+                    val entry = configByUrl[collection.url.toString()] ?: continue
+                    if (collection.sync != entry.sync)
+                        collectionRepository.setSync(collection.id, entry.sync)
+                    if (collection.forceReadOnly != entry.forceReadOnly)
+                        collectionRepository.setForceReadOnly(collection.id, entry.forceReadOnly)
+                }
+            }
+        }
+
+        return account
     }
 
 
