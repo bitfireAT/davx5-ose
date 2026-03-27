@@ -16,7 +16,6 @@ import at.bitfire.dav4jvm.property.carddav.AddressData
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.carddav.MaxResourceSize
 import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
-import at.bitfire.dav4jvm.property.webdav.GetContentType
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -37,7 +36,6 @@ import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.davdroid.util.DavUtils.sameTypeAs
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
@@ -50,7 +48,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -191,7 +188,6 @@ class ContactsSyncManager @AssistedInject constructor(
                 }
             }
 
-            // logger.info("Server supports jCard: $hasJCard")
             logger.info("Address book supports vCard4: $hasVCard4")
             logger.info("Address book supports Collection Sync: $hasCollectionSync")
 
@@ -376,7 +372,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
         val contacts = try {
             runBlocking(ioDispatcher) {
-                Contact.fromReader(reader, jCard = false, downloader)
+                Contact.fromReader(reader, downloader)
             }
         } catch (e: CannotParseException) {
             logger.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
