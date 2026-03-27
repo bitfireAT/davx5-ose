@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.network.lenientJson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import java.text.Collator
 import java.util.logging.Level
@@ -45,7 +45,6 @@ class AboutModel @Inject constructor(
     val versionName = packageInfo.versionName ?: versionCode.toString()
 
     private val collator = Collator.getInstance()
-    private val json = Json { ignoreUnknownKeys = true }
 
     val transifexTranslators = flow {
         val translators = loadTransifexTranslators().sortedWith(collator)
@@ -63,7 +62,7 @@ class AboutModel @Inject constructor(
         try {
             context.resources.assets.open("transifex-translators.json").use { stream ->
                 // format:   {"de_AT":["userA","userB"], ...}
-                val langTranslators = json.decodeFromStream<Map<String, List<String>>>(stream)
+                val langTranslators = lenientJson.decodeFromStream<Map<String, List<String>>>(stream)
 
                 // ignore languages and put user names into set
                 langTranslators.values.flatten().toSet()
@@ -77,7 +76,7 @@ class AboutModel @Inject constructor(
     internal fun loadWeblateTranslators(): Set<String> =
         try {
             context.resources.assets.open("weblate-translators.json").use { stream ->
-                val langTranslators = json.decodeFromStream<List<Map<String, List<WeblateTranslator>>>>(stream)
+                val langTranslators = lenientJson.decodeFromStream<List<Map<String, List<WeblateTranslator>>>>(stream)
                 langTranslators.map { languageAndTranslators ->
                     languageAndTranslators.values.map { translators ->
                         // Ricki did the migration from Weblate to Transifex, so the user is shown as
