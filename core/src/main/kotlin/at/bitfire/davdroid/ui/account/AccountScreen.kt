@@ -59,6 +59,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -247,7 +248,7 @@ fun AccountScreen(
             (if (idxCalDav != null) 1 else 0) +
                     (if (idxCardDav != null) 1 else 0) +
                     (if (idxWebcal != null) 1 else 0)
-        val pagerState = rememberPagerState(pageCount = { nrPages })
+        val pagerState = key(nrPages) { rememberPagerState(pageCount = { nrPages }) }
 
         val calDavScrollState = rememberLazyListState()
         val cardDavScrollState = rememberLazyListState()
