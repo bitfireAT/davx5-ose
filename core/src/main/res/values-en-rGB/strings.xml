@@ -367,4 +367,26 @@
     <string name="intro_next">Suivant</string>
     <string name="wifi_permissions_background_location_permission_on">Autorisation d\'emplacement définie sur : %s</string>
     <string name="wifi_permissions_background_location_permission_off">Autorisation d\'emplacement non définie sur : %s</string>
+    <string name="account_prefs_use_app">Don\'t change the account here! Directly use the app to manage accounts instead.</string>
+    <string name="navigate_up">Navigate up</string>
+    <string name="options_menu">Options menu</string>
+    <string name="sync_started">Synchronisation started/enqueued</string>
+    <string name="intro_autostart_text">Vendor-specific firmware may block synchronisation. If you\'re affected, you can only resolve this manually.</string>
+    <string name="intro_tasks_tasks_org_info"><![CDATA[Some features <a href="https://www.davx5.com/faq/tasks/advanced-task-features">are not supported</a>.]]></string>
+    <string name="intro_backups_something_wrong">Something can always go wrong, whether on the server, within %s, or in other apps, which for instance might accidentally delete all calendar entries. (The deletions would then be synchronised to the server.)</string>
+    <string name="intro_open_source_dont_show">Don\'t remind me for</string>
+    <string name="wifi_permissions_background_location_disclaimer">%s uses location data (only Wi-Fi SSID) solely to restrict synchronisation to a specific Wi-Fi SSID. This will happen even when the synchronisation runs in background.</string>
+    <string name="wifi_permissions_background_location_disclaimer2">All location data (only Wi-Fi SSID) are only used locally and are not sent anywhere.</string>
+    <string name="about_translations_thanks">❤️ Thanks to all who have contributed translations!</string>
+    <string name="about_translations_over_transifex">Over Transifex</string>
+    <string name="about_translations_over_weblate">Over Weblate</string>
+    <string name="about_translations_contribute">Help Translating</string>
+    <string name="navigation_drawer_managed">For organisations</string>
+    <string name="navigation_drawer_support_project">Support the project</string>
+    <string name="navigation_drawer_contribute">How to contribute</string>
+    <string name="account_list_welcome">Welcome to DAVx⁵!</string>
+    <string name="account_list_empty">Connect to your server and keep your calendars and contacts synchronised.</string>
+    <string name="sync_warning_no_internet">Automatic synchronisation not active (no verified Internet connection).</string>
+    <string name="sync_warning_battery_saver_enabled">Battery saver enabled. Synchronisation may be restricted.</string>
+    <string name="sync_warning_manage_battery_saver">Manage battery saver</string>
 </resources>
