@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import at.bitfire.davdroid.di.qualifier.DarkColorScheme
 import at.bitfire.davdroid.di.qualifier.LightColorScheme
 import at.bitfire.davdroid.ui.ForegroundTracker
+import at.bitfire.davdroid.ui.OseTheme
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -50,10 +51,17 @@ fun AppTheme(
     windowInsets: WindowInsets = WindowInsets.safeDrawing,
     content: @Composable () -> Unit
 ) {
+    // get application-defined theme (from the Gradle project that actually defines the Application and theme)
     val context = LocalContext.current
-    val entryPoint by lazy { EntryPointAccessors.fromApplication<AppThemeEntryPoint>(context) }
-    val lightColorScheme = remember { entryPoint.lightColorScheme() }
-    val darkColorScheme = remember { entryPoint.darkColorScheme() }
+    val entryPoint: AppThemeEntryPoint? = try {
+        EntryPointAccessors.fromApplication<AppThemeEntryPoint>(context)
+    } catch (_: IllegalStateException) {
+        /* The core submodule doesn't define a Hilt Application, which is necessary to get an
+        application EntryPoint. So in that case we will use the OSE theme as fallback. */
+        null
+    }
+    val lightColorScheme = remember { entryPoint?.lightColorScheme() ?: OseTheme.lightScheme }
+    val darkColorScheme = remember { entryPoint?.darkColorScheme() ?: OseTheme.darkScheme }
 
     val activity = LocalActivity.current
     SideEffect {
