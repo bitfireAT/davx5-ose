@@ -19,14 +19,14 @@
 
     <!--
     To test DavDocumentsProvider or FileProvider from core instrumentation tests, declare them here
-    using the same hardcoded authority values as in core/src/main/res/values/strings.xml so that
+    using the same authority values as in core/src/main/res/values/strings.xml so that
     getString(R.string.webdav_authority) and the registered provider authority always match.
     Example:
 
     <application>
         <provider
             android:name="at.bitfire.davdroid.webdav.DavDocumentsProvider"
-            android:authorities="at.bitfire.davdroid.webdav"
+            android:authorities="core.test.provider.webdav"
             android:exported="false"
             android:grantUriPermissions="true"
             android:permission="android.permission.MANAGE_DOCUMENTS" />
