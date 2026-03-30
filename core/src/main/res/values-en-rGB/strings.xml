@@ -360,4 +360,11 @@
         <item quantity="one">%d month</item>
         <item quantity="other">%d months</item>
     </plurals>
+    <string name="dialog_delete">Supprimer</string>
+    <string name="intro_backups_title">Rappel de sauvegarde</string>
+    <string name="intro_backups_important">Il est important de sauvegarder vos données régulièrement (dont les contacts et calendriers) pour prévenir toute perte de données potentielle.</string>
+    <string name="intro_backups_accept">Je dispose déjà d\'une stratégie de sauvegarde fonctionnelle ou je n\'en ai pas besoin.</string>
+    <string name="intro_next">Suivant</string>
+    <string name="wifi_permissions_background_location_permission_on">Autorisation d\'emplacement définie sur : %s</string>
+    <string name="wifi_permissions_background_location_permission_off">Autorisation d\'emplacement non définie sur : %s</string>
 </resources>
