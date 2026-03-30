@@ -24,6 +24,10 @@ android {
 
         base.archivesName = "davx5-$versionCode-$versionName"
 
+        // Derive authority names from package ID
+        manifestPlaceholders["webdavAuthority"] = "${applicationId}.webdav"
+        manifestPlaceholders["debugInfoAuthority"] = "${applicationId}.debug"
+
         // currently no instrumentation tests for app-ose, so no testInstrumentationRunner
     }
 

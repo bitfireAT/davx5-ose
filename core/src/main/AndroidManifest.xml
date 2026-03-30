@@ -206,7 +206,7 @@
                 android:resource="@xml/sync_tasks_org"/>
         </service>
         <provider
-            android:authorities="@string/webdav_authority"
+            android:authorities="${webdavAuthority}"
             android:name=".webdav.DavDocumentsProvider"
             android:exported="true"
             android:grantUriPermissions="true"
@@ -248,7 +248,7 @@
         <!-- provider to share debug info/logs -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/authority_debug_provider"
+            android:authorities="${debugInfoAuthority}"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data
