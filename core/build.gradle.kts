@@ -25,8 +25,12 @@ android {
 
         // Placeholder values so the manifest merger succeeds when the core module is built/tested
         // independently. The actual app module (like app-ose) overrides these with ${applicationId}-derived values.
-        manifestPlaceholders["webdavAuthority"] = "overridden.packageid.webdav"
-        manifestPlaceholders["debugInfoAuthority"] = "overridden.packageid.debug"
+        val webdavAuthority = "overridden.packageid.webdav"
+        val debugInfoAuthority = "overridden.packageid.debug"
+        manifestPlaceholders["webdavAuthority"] = webdavAuthority
+        manifestPlaceholders["debugInfoAuthority"] = debugInfoAuthority
+        resValue("string", "webdav_authority", webdavAuthority)
+        resValue("string", "authority_debug_provider", debugInfoAuthority)
     }
 
     java {
