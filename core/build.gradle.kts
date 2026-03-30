@@ -22,6 +22,11 @@ android {
 
         // include these rules in the app that uses the core library
         consumerProguardFile("core-proguard-rules.pro")
+
+        // Placeholder values so the manifest merger succeeds when the core module is built/tested
+        // independently. The actual app module (like app-ose) overrides these with ${applicationId}-derived values.
+        manifestPlaceholders["webdavAuthority"] = "overridden.packageid.webdav"
+        manifestPlaceholders["debugInfoAuthority"] = "overridden.packageid.debug"
     }
 
     java {

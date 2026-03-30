@@ -24,11 +24,11 @@ android {
 
         base.archivesName = "davx5-$versionCode-$versionName"
 
-        /* Derive authority names from package ID so that build variants and close will
-        have their own authority names so they can be installed together with DAVx5.
-        (Android prevents two apps have the same provider name. In case of a conflict,
+        /* Android prevents two apps from having the same provider name. In case of a conflict,
         the second app can't be installed and Google Play just shows a generic "Can't
-        install DAVx5" message.) */
+        install DAVx5" message.
+        So we derive the authority names from the package ID so that the build variants and clones
+        have their own authority names and can be installed beside DAVx5. */
         manifestPlaceholders["webdavAuthority"] = "${applicationId}.webdav"
         manifestPlaceholders["debugInfoAuthority"] = "${applicationId}.debug"
 
