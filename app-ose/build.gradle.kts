@@ -24,17 +24,16 @@ android {
 
         base.archivesName = "davx5-$versionCode-$versionName"
 
-        /* Android prevents two apps from having the same provider name. In case of a conflict,
-        the second app can't be installed and Google Play just shows a generic "Can't
-        install DAVx5" message.
-        So we derive the authority names from the package ID so that the build variants and clones
-        have their own authority names and can be installed beside DAVx5. */
+        /* Android prevents having two apps installed with the same provider authority name. In that case,
+        Google Play just shows a generic "Can't install DAVx5" message. So we derive the authority names
+        from the package ID, so that the build variants (and clones) have their own authority names and
+        can be installed beside DAVx5. */
         val webdavAuthority = "${applicationId}.webdav"
         val debugInfoAuthority = "${applicationId}.debug"
         manifestPlaceholders["webdavAuthority"] = webdavAuthority
         manifestPlaceholders["debugInfoAuthority"] = debugInfoAuthority
-        // Override the default string values from the core library (core/src/main/res/values/strings.xml)
-        // so that code using getString(R.string.webdav_authority) etc. also gets the correct authority.
+        /* Override the default string values from the core library (core/src/main/res/values/strings.xml)
+        so that code using getString(R.string.webdav_authority) etc. gets the correct authority. */
         resValue("string", "webdav_authority", webdavAuthority)
         resValue("string", "authority_debug_provider", debugInfoAuthority)
 
