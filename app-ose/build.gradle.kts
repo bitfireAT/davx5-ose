@@ -33,6 +33,8 @@ android {
         val debugInfoAuthority = "${applicationId}.debug"
         manifestPlaceholders["webdavAuthority"] = webdavAuthority
         manifestPlaceholders["debugInfoAuthority"] = debugInfoAuthority
+        // Override the default string values from the core library (core/src/main/res/values/strings.xml)
+        // so that code using getString(R.string.webdav_authority) etc. also gets the correct authority.
         resValue("string", "webdav_authority", webdavAuthority)
         resValue("string", "authority_debug_provider", debugInfoAuthority)
 
@@ -51,6 +53,7 @@ android {
 
     buildFeatures {
         compose = true
+        resValues = true
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)

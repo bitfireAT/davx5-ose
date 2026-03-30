@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="internalOnly">
@@ -12,5 +16,21 @@
     Since Mockk 1.14.7 it's required to use minSdk 26. We use 24, so override for tests.
     -->
     <uses-sdk tools:overrideLibrary="io.mockk.android,io.mockk.proxy.android" />
+
+    <!--
+    To test DavDocumentsProvider or FileProvider from core instrumentation tests, declare them here
+    using the same hardcoded authority values as in core/src/main/res/values/strings.xml so that
+    getString(R.string.webdav_authority) and the registered provider authority always match.
+    Example:
+
+    <application>
+        <provider
+            android:name="at.bitfire.davdroid.webdav.DavDocumentsProvider"
+            android:authorities="at.bitfire.davdroid.webdav"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS" />
+    </application>
+    -->
 
 </manifest>
