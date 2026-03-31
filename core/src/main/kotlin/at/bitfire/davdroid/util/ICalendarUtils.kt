@@ -8,7 +8,6 @@ import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VTimeZone
 import java.io.StringReader
-import kotlin.jvm.optionals.getOrNull
 
 object ICalendarUtils {
 
@@ -25,7 +24,7 @@ object ICalendarUtils {
                 vTimeZoneDef +
                 "END:VCALENDAR\r\n"
         val calendar = CalendarBuilder().build(StringReader(iCalendar))
-        val timezone = calendar.getComponent<VTimeZone>(Component.VTIMEZONE).getOrNull() ?: return null
+        val timezone = calendar.getComponent<VTimeZone>(Component.VTIMEZONE) ?: return null
         return timezone.timeZoneId?.value
     }
 
