@@ -23,7 +23,6 @@ data class SyncStats(
 
     val collectionId: Long,
     val dataType: String,
-    val count: Long? = null,
 
     val lastSync: Long
 )
