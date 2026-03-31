@@ -16,7 +16,6 @@ import at.bitfire.dav4jvm.property.carddav.AddressData
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.carddav.MaxResourceSize
 import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
-import at.bitfire.dav4jvm.property.webdav.GetContentType
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -37,7 +36,6 @@ import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.davdroid.util.DavUtils.sameTypeAs
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
@@ -50,7 +48,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -144,7 +141,6 @@ class ContactsSyncManager @AssistedInject constructor(
     private val accountSettings = accountSettingsFactory.create(account)
 
     private var hasVCard4 = false
-    private var hasJCard = false
     private val groupStrategy = when (accountSettings.getGroupMethod()) {
         GroupMethod.GROUP_VCARDS -> VCard4Strategy(localAddressBook)
         GroupMethod.CATEGORIES -> CategoriesStrategy(localAddressBook)
@@ -183,9 +179,6 @@ class ContactsSyncManager @AssistedInject constructor(
 
                         response[SupportedAddressData::class.java]?.let { supported ->
                             hasVCard4 = supported.hasVCard4()
-
-                            // temporarily disable jCard because of https://github.com/nextcloud/server/issues/29693
-                            // hasJCard = supported.hasJCard()
                         }
                         response[SupportedReportSet::class.java]?.let { supported ->
                             hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
@@ -195,7 +188,6 @@ class ContactsSyncManager @AssistedInject constructor(
                 }
             }
 
-            // logger.info("Server supports jCard: $hasJCard")
             logger.info("Address book supports vCard4: $hasVCard4")
             logger.info("Address book supports Collection Sync: $hasCollectionSync")
 
@@ -294,10 +286,6 @@ class ContactsSyncManager @AssistedInject constructor(
         val os = ByteArrayOutputStream()
         val mimeType: MediaType
         when {
-            hasJCard -> {
-                mimeType = DavAddressBook.MIME_JCARD
-                contact.writeJCard(os, productIds.vCardProdId)
-            }
             hasVCard4 -> {
                 mimeType = DavAddressBook.MIME_VCARD4
                 contact.writeVCard(VCardVersion.V4_0, os, productIds.vCardProdId)
@@ -327,10 +315,6 @@ class ContactsSyncManager @AssistedInject constructor(
             val contentType: String?
             val version: String?
             when {
-                hasJCard -> {
-                    contentType = DavUtils.MEDIA_TYPE_JCARD.toString()
-                    version = VCardVersion.V4_0.version
-                }
                 hasVCard4 -> {
                     contentType = DavUtils.MEDIA_TYPE_VCARD.toString()
                     version = VCardVersion.V4_0.version
@@ -358,16 +342,10 @@ class ContactsSyncManager @AssistedInject constructor(
                         val eTag = response[GetETag::class.java]?.eTag
                             ?: throw DavException("Received multi-get response without ETag")
 
-                        var isJCard = hasJCard      // assume that server has sent what we have requested (we ask for jCard only when the server advertises it)
-                        response[GetContentType::class.java]?.type?.toMediaTypeOrNull()?.let { type ->
-                            isJCard = type.sameTypeAs(DavUtils.MEDIA_TYPE_JCARD)
-                        }
-
                         processCard(
                             fileName = response.href.lastSegment,
                             eTag = eTag,
                             reader = StringReader(card),
-                            jCard = isJCard,
                             downloader = object : Contact.Downloader {
                                 override suspend fun download(url: String, accepts: String): ByteArray? {
                                     // retrieve external resource (like a photo) from a URL (not necessarily HTTP[S])
@@ -389,12 +367,12 @@ class ContactsSyncManager @AssistedInject constructor(
 
     // helpers
 
-    private fun processCard(fileName: String, eTag: String, reader: Reader, jCard: Boolean, downloader: Contact.Downloader) {
+    private fun processCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
         logger.info("Processing CardDAV resource $fileName")
 
         val contacts = try {
             runBlocking(ioDispatcher) {
-                Contact.fromReader(reader, jCard, downloader)
+                Contact.fromReader(reader, downloader)
             }
         } catch (e: CannotParseException) {
             logger.log(Level.SEVERE, "Received invalid vCard, ignoring", e)

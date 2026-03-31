@@ -20,7 +20,6 @@ object DavUtils {
 
     const val MIME_TYPE_ACCEPT_ALL = "*/*"
 
-    val MEDIA_TYPE_JCARD = "application/vcard+json".toMediaType()
     val MEDIA_TYPE_OCTET_STREAM = "application/octet-stream".toMediaType()
     val MEDIA_TYPE_VCARD = "text/vcard".toMediaType()
 
