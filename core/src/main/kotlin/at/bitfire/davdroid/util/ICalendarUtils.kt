@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.util
 
 import net.fortuna.ical4j.data.CalendarBuilder
+import net.fortuna.ical4j.data.ParserException
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VTimeZone
 import java.io.StringReader
@@ -24,9 +25,14 @@ object ICalendarUtils {
                 "VERSION:2.0\r\n" +
                 vTimeZoneDef +
                 "END:VCALENDAR\r\n"
-        val calendar = CalendarBuilder().build(StringReader(iCalendar))
-        val timezone = calendar.getComponent<VTimeZone>(Component.VTIMEZONE).getOrNull() ?: return null
-        return timezone.timeZoneId?.value
+
+        return try {
+            val calendar = CalendarBuilder().build(StringReader(iCalendar))
+            val timezone = calendar.getComponent<VTimeZone>(Component.VTIMEZONE).getOrNull() ?: return null
+            timezone.timeZoneId?.value
+        } catch (_: ParserException) {
+            null
+        }
     }
 
 }
