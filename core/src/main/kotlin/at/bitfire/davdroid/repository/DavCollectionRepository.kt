@@ -36,7 +36,7 @@ import net.fortuna.ical4j.model.ComponentList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.property.ProdId
-import net.fortuna.ical4j.model.property.Version
+import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
 import okhttp3.HttpUrl
 import java.io.StringWriter
 import java.util.UUID
@@ -370,7 +370,7 @@ class DavCollectionRepository @Inject constructor(
                                         // spec requires "an iCalendar object with exactly one VTIMEZONE component"
                                         Calendar(
                                             propertyListOf(
-                                                Version.VERSION_2_0,
+                                                ImmutableVersion.VERSION_2_0,
                                                 ProdId(productIds.get().iCalProdId)
                                             ),
                                             ComponentList(
