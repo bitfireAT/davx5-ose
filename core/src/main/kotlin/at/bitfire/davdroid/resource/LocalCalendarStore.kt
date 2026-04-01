@@ -20,10 +20,10 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.time.ZoneId
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
@@ -138,7 +138,13 @@ class LocalCalendarStore @Inject constructor(
             values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ)
 
         info.timezoneId?.let { tzId ->
-            values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(tzId))
+            val validSystemTzId = try {
+                ZoneId.of(tzId)
+                true
+            } catch (_: Exception) {
+                false
+            }
+            values.put(Calendars.CALENDAR_TIME_ZONE, tzId.takeIf { validSystemTzId })
         }
 
         return values
