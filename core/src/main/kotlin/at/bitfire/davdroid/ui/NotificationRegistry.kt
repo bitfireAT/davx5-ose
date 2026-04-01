@@ -51,8 +51,12 @@ class NotificationRegistry @Inject constructor(
         const val NOTIFY_TASKS_PROVIDER_TOO_OLD = 20
         const val NOTIFY_PERMISSIONS = 21
 
+        /**
+         * Used in managed and select flavors when a [at.bitfire.davdroid.sync.SyncValidator]
+         * prevents sync due to invalid license or failed server validation.
+         */
         @Suppress("unused")     // for build variants
-        const val NOTIFY_LICENSE = 100
+        const val NOTIFY_VALIDATION = 100
 
     }
 
