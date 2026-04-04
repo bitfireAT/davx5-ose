@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  java-version: 21
+  java-version: 21   # keep in sync with gradle/gradle-daemon-jvm.properties
   prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
 
       - name: Build signed package
         # don't use build cache to guarantee deterministic, fresh builds
-        run: ./gradlew --no-build-cache --configuration-cache --no-daemon app:clean app-ose:assembleRelease
+        run: ./gradlew --no-build-cache --configuration-cache app:clean app-ose:assembleRelease
         env:
           ANDROID_KEYSTORE: ${{ github.workspace }}/keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
