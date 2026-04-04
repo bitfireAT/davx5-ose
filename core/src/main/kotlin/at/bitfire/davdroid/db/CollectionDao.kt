@@ -97,6 +97,9 @@ interface CollectionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAsync(collection: Collection): Long
 
+    @Query("UPDATE collection SET pushSubscriptionExpires=NULL")
+    suspend fun invalidatePushSubscriptions()
+
     @Update
     fun update(collection: Collection)
 

@@ -54,7 +54,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
@@ -268,38 +267,36 @@ fun AppSettingsScreen(
 @Composable
 @Preview
 fun AppSettingsScreen_Preview() {
-    AppTheme {
-        AppSettingsScreen(
-            onNavDebugInfo = {},
-            verboseLogging = true,
-            batterySavingExempted = true,
-            proxyType = 0,
-            proxyHostName = "true",
-            proxyPort = 0,
-            distrustSystemCerts = true,
-            theme = 0,
-            onUpdateVerboseLogging = {},
-            onProxyHostNameUpdated = {},
-            onExemptFromBatterySaving = {},
-            onBatterySavingSettings = {},
-            onShowNotificationSettings = {},
-            onNavUp = {},
-            onProxyTypeUpdated = {},
-            onProxyPortUpdated = {},
-            onNavPermissionsScreen = {},
-            showCertSettings = true,
-            onDistrustSystemCertsUpdated = {},
-            onResetCertificates = {},
-            onThemeSelected = {},
-            onResetHints = {},
-            tasksAppName = "No tasks app",
-            tasksAppIcon = null,
-            pushDistributors = null,
-            pushDistributor = null,
-            onPushDistributorChange = {},
-            onNavTasksScreen = {}
-        )
-    }
+    AppSettingsScreen(
+        onNavDebugInfo = {},
+        verboseLogging = true,
+        batterySavingExempted = true,
+        proxyType = 0,
+        proxyHostName = "true",
+        proxyPort = 0,
+        distrustSystemCerts = true,
+        theme = 0,
+        onUpdateVerboseLogging = {},
+        onProxyHostNameUpdated = {},
+        onExemptFromBatterySaving = {},
+        onBatterySavingSettings = {},
+        onShowNotificationSettings = {},
+        onNavUp = {},
+        onProxyTypeUpdated = {},
+        onProxyPortUpdated = {},
+        onNavPermissionsScreen = {},
+        showCertSettings = true,
+        onDistrustSystemCertsUpdated = {},
+        onResetCertificates = {},
+        onThemeSelected = {},
+        onResetHints = {},
+        tasksAppName = "No tasks app",
+        tasksAppIcon = null,
+        pushDistributors = null,
+        pushDistributor = null,
+        onPushDistributorChange = {},
+        onNavTasksScreen = {}
+    )
 }
 
 @Composable
@@ -501,9 +498,7 @@ fun DistrustSystemCertificatesAlertDialog(
 @Preview
 @Composable
 fun DistrustSystemCertificatesAlertDialog_Preview() {
-    AppTheme {
-        DistrustSystemCertificatesAlertDialog({}, {})
-    }
+    DistrustSystemCertificatesAlertDialog({}, {})
 }
 
 @Composable
@@ -585,8 +580,11 @@ private fun PushDistributorSelectionDialog(
         text = {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 if (pushDistributors.isNullOrEmpty()) item {
+                    // no push distributor available
                     Text(stringResource(R.string.app_settings_unifiedpush_no_distributor))
+
                 } else item {
+                    // push distributors available – add "None" at top of list
                     ListItem(
                         leadingContent = {
                             Icon(
@@ -610,9 +608,9 @@ private fun PushDistributorSelectionDialog(
                     )
                 }
 
-                items(pushDistributors.orEmpty()) { (distributor, name, icon) ->
-                    val isSelf = distributor == context.packageName
-                    val headline = if (isSelf) stringResource(R.string.app_settings_unifiedpush_distributor_fcm) else name ?: distributor
+                items(pushDistributors.orEmpty()) { (distributor, name, icon, isPreferred) ->
+                    // add push distributors to list
+                    val headline = name ?: distributor
                     ListItem(
                         leadingContent = {
                             Icon(
@@ -625,23 +623,26 @@ private fun PushDistributorSelectionDialog(
                             )
                         },
                         trailingContent = {
-                            if (isSelf)
+                            icon?.let {
+                                val cachedBitmap = remember(icon) {
+                                    icon.toBitmap().asImageBitmap()
+                                }
                                 Image(
-                                    painter = painterResource(R.drawable.product_logomark_cloud_messaging_full_color),
+                                    bitmap = cachedBitmap,
                                     contentDescription = headline,
                                     modifier = Modifier.size(32.dp)
                                 )
-                            else
-                                icon?.let {
-                                    Image(
-                                        bitmap = icon.toBitmap().asImageBitmap(),
-                                        contentDescription = headline,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
+                            }
                         },
                         headlineContent = {
                             Text(headline)
+                        },
+                        supportingContent = {
+                            if (isPreferred)
+                                Text(
+                                    stringResource(R.string.app_settings_unifiedpush_recommended),
+                                    style = MaterialTheme.typography.labelMedium
+                                )
                         },
                         modifier = Modifier.clickable {
                             selectedDistributor = distributor
