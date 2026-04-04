@@ -57,6 +57,7 @@ import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
 import at.bitfire.davdroid.ui.composable.ProgressBar
+import at.bitfire.davdroid.ui.icon.FolderMatch
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -96,6 +97,9 @@ fun CollectionScreen(
         description = collection.description,
         owner = model.owner.collectAsStateWithLifecycle(null).value,
         lastSynced = model.lastSynced.collectAsStateWithLifecycle(emptyList()).value,
+        totalEntries = model.totalEntries.collectAsStateWithLifecycle(null).value,
+        modifiedEntries = model.dirtyEntries.collectAsStateWithLifecycle(null).value,
+        deletedEntries = model.deletedEntries.collectAsStateWithLifecycle(null).value,
         supportsWebPush = collection.supportsWebPush,
         pushSubscriptionCreated = collection.pushSubscriptionCreated,
         pushSubscriptionExpires = collection.pushSubscriptionExpires,
@@ -121,6 +125,9 @@ fun CollectionScreen(
     description: String? = null,
     owner: String? = null,
     lastSynced: List<DavSyncStatsRepository.LastSynced> = emptyList(),
+    totalEntries: Int? = null,
+    modifiedEntries: Int? = null,
+    deletedEntries: Int? = null,
     supportsWebPush: Boolean = false,
     pushSubscriptionCreated: Long? = null,
     pushSubscriptionExpires: Long? = null,
@@ -267,6 +274,20 @@ fun CollectionScreen(
                             text = text
                         )
                     }
+
+                    CollectionScreen_Entry(
+                        icon = FolderMatch,
+                        title = stringResource(R.string.collection_synced_items, totalEntries?.toString() ?: "-"),
+                        text = StringBuilder().apply {
+                            modifiedEntries?.let {
+                                append(stringResource(R.string.collection_unsynced_modifications, it))
+                                append("\n")
+                            }
+                            deletedEntries?.let {
+                                append(stringResource(R.string.collection_unsynced_deletions, it))
+                            }
+                        }.toString().takeIf { it.isNotEmpty() }
+                    )
 
                     Column(Modifier.padding(start = 44.dp)) {
                         if (sync && lastSynced.isNotEmpty()) {

@@ -4,6 +4,9 @@
 
 package at.bitfire.davdroid.ui.account
 
+import android.content.Context
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,15 +16,19 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.ical4android.TaskProvider
+import at.techbee.jtx.JtxContract
 import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
@@ -30,14 +37,21 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.dmfs.tasks.contract.TaskContract
+import kotlin.use
+import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
+import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
+import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 
 @HiltViewModel(assistedFactory = CollectionScreenModel.Factory::class)
 class CollectionScreenModel @AssistedInject constructor(
+    @ApplicationContext val context: Context,
     private val accountRepository: AccountRepository,
     @Assisted val collectionId: Long,
     db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
     private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
+    private val serviceRepository: DavServiceRepository,
     settings: SettingsManager,
     syncStatsRepository: DavSyncStatsRepository
 ): ViewModel() {
@@ -100,6 +114,61 @@ class CollectionScreenModel @AssistedInject constructor(
     }
 
     val lastSynced = syncStatsRepository.getLastSyncedFlow(collectionId)
+
+    private val providerUris = collection.map { collection ->
+        collection ?: return@map null
+        val type = collection.type
+        val service = serviceRepository.get(collection.serviceId) ?: return@map null
+        val account = accountRepository.fromName(service.accountName)
+        when (type) {
+            Collection.TYPE_CALENDAR -> mapOf(
+                CalendarContract.AUTHORITY to CalendarContract.Events.CONTENT_URI.asCalendarSyncAdapter(account),
+                TaskProvider.ProviderName.JtxBoard.authority to JtxContract.JtxICalObject.CONTENT_URI.asJtxSyncAdapter(account),
+                TaskProvider.ProviderName.OpenTasks.authority to TaskContract.Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority).asCalendarSyncAdapter(account),
+                TaskProvider.ProviderName.TasksOrg.authority to TaskContract.Tasks.getContentUri(TaskProvider.ProviderName.TasksOrg.authority).asCalendarSyncAdapter(account)
+            )
+            Collection.TYPE_ADDRESSBOOK -> mapOf(
+                TaskProvider.ProviderName.TasksOrg.authority to ContactsContract.RawContacts.CONTENT_URI.asContactsSyncAdapter(account)
+            )
+            else -> return@map null
+        }
+    }
+
+    val totalEntries: Flow<Int?> = providerUris.map { providerUris ->
+        providerUris ?: return@map null
+
+        providerUris.toList().sumOf { (authority, uri) ->
+            context.contentResolver.acquireContentProviderClient(authority)?.use { client ->
+                client.query(uri, null, null, null, null)?.use { cursor ->
+                    cursor.count
+                }
+            } ?: 0
+        }
+    }
+
+    val deletedEntries: Flow<Int?> = providerUris.map { providerUris ->
+        providerUris ?: return@map null
+
+        providerUris.toList().sumOf { (authority, uri) ->
+            context.contentResolver.acquireContentProviderClient(authority)?.use { client ->
+                client.query(uri, null, "${CalendarContract.CalendarEntity.DELETED}=1", null, null)?.use { cursor ->
+                    cursor.count
+                }
+            } ?: 0
+        }
+    }
+
+    val dirtyEntries: Flow<Int?> = providerUris.map { providerUris ->
+        providerUris ?: return@map null
+
+        providerUris.toList().sumOf { (authority, uri) ->
+            context.contentResolver.acquireContentProviderClient(authority)?.use { client ->
+                client.query(uri, null, "${CalendarContract.CalendarEntity.DIRTY}=1", null, null)?.use { cursor ->
+                    cursor.count
+                }
+            } ?: 0
+        }
+    }
 
 
     /** Scope for operations that must not be cancelled. */
