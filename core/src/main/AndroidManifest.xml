@@ -205,16 +205,6 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_tasks_org"/>
         </service>
-        <provider
-            android:authorities="@string/webdav_authority"
-            android:name=".webdav.DavDocumentsProvider"
-            android:exported="true"
-            android:grantUriPermissions="true"
-            android:permission="android.permission.MANAGE_DOCUMENTS">
-            <intent-filter>
-                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
-            </intent-filter>
-        </provider>
 
         <!-- account type "DAVx⁵ Address book" -->
         <service
@@ -244,17 +234,6 @@
                 android:name="android.provider.CONTACTS_STRUCTURE"
                 android:resource="@xml/contacts"/>
         </service>
-
-        <!-- provider to share debug info/logs -->
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/authority_debug_provider"
-            android:grantUriPermissions="true"
-            android:exported="false">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/debug_paths" />
-        </provider>
 
         <!-- UnifiedPush -->
         <service android:exported="false" android:name=".push.UnifiedPushService">
