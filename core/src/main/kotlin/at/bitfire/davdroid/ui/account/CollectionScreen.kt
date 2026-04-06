@@ -4,6 +4,8 @@
 
 package at.bitfire.davdroid.ui.account
 
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,7 +59,7 @@ import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import at.bitfire.davdroid.ui.icon.FolderMatch
+import at.bitfire.ical4android.TaskProvider
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -125,9 +127,9 @@ fun CollectionScreen(
     description: String? = null,
     owner: String? = null,
     lastSynced: List<DavSyncStatsRepository.LastSynced> = emptyList(),
-    totalEntries: Int? = null,
-    modifiedEntries: Int? = null,
-    deletedEntries: Int? = null,
+    totalEntries: Map<String, Int>? = null,
+    modifiedEntries: Map<String, Int>? = null,
+    deletedEntries: Map<String, Int>? = null,
     supportsWebPush: Boolean = false,
     pushSubscriptionCreated: Long? = null,
     pushSubscriptionExpires: Long? = null,
@@ -275,30 +277,44 @@ fun CollectionScreen(
                         )
                     }
 
-                    CollectionScreen_Entry(
-                        icon = FolderMatch,
-                        title = stringResource(R.string.collection_synced_items, totalEntries?.toString() ?: "-"),
-                        text = StringBuilder().apply {
-                            modifiedEntries?.let {
-                                append(stringResource(R.string.collection_unsynced_modifications, it))
-                                append("\n")
-                            }
-                            deletedEntries?.let {
-                                append(stringResource(R.string.collection_unsynced_deletions, it))
-                            }
-                        }.toString().takeIf { it.isNotEmpty() }
-                    )
-
                     Column(Modifier.padding(start = 44.dp)) {
                         if (sync && lastSynced.isNotEmpty()) {
                             val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
 
                             for (lastSync in lastSynced) {
-                                val dataType = when (lastSync.dataType) {
-                                    SyncDataType.EVENTS.name -> stringResource(R.string.collection_datatype_events)
-                                    SyncDataType.TASKS.name -> stringResource(R.string.collection_datatype_tasks)
-                                    SyncDataType.CONTACTS.name -> stringResource(R.string.collection_datatype_contacts)
-                                    else -> lastSync.dataType
+                                val authorities = when (lastSync.dataType) {
+                                    SyncDataType.EVENTS.name -> listOf(
+                                        CalendarContract.AUTHORITY
+                                    )
+                                    SyncDataType.TASKS.name -> listOf(
+                                        TaskProvider.ProviderName.JtxBoard.authority,
+                                        TaskProvider.ProviderName.OpenTasks.authority,
+                                        TaskProvider.ProviderName.TasksOrg.authority
+                                    )
+                                    SyncDataType.CONTACTS.name -> listOf(
+                                        ContactsContract.AUTHORITY
+                                    )
+                                    else -> null
+                                }
+                                val entriesCount = totalEntries
+                                    .orEmpty()
+                                    .filter { (authority) -> authorities?.contains(authority) == true }
+                                    .values
+                                    .sum()
+                                val dataType = if (entriesCount >= 0) {
+                                    when (lastSync.dataType) {
+                                        SyncDataType.EVENTS.name -> stringResource(R.string.collection_datatype_events_count, entriesCount)
+                                        SyncDataType.TASKS.name -> stringResource(R.string.collection_datatype_tasks_count, entriesCount)
+                                        SyncDataType.CONTACTS.name -> stringResource(R.string.collection_datatype_contacts_count, entriesCount)
+                                        else -> "${lastSync.dataType} ($entriesCount)"
+                                    }
+                                } else {
+                                    when (lastSync.dataType) {
+                                        SyncDataType.EVENTS.name -> stringResource(R.string.collection_datatype_events)
+                                        SyncDataType.TASKS.name -> stringResource(R.string.collection_datatype_tasks)
+                                        SyncDataType.CONTACTS.name -> stringResource(R.string.collection_datatype_contacts)
+                                        else -> lastSync.dataType
+                                    }
                                 }
                                 Text(
                                     text = stringResource(R.string.collection_last_sync, dataType),
@@ -310,6 +326,29 @@ fun CollectionScreen(
                                     text = formatter.format(time),
                                     style = MaterialTheme.typography.bodyLarge
                                 )
+
+                                modifiedEntries
+                                    .orEmpty()
+                                    .filter { (authority) -> authorities?.contains(authority) == true }
+                                    .values
+                                    .sum()
+                                    .let {
+                                        Text(
+                                            text = stringResource(R.string.collection_unsynced_modifications, it),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                deletedEntries
+                                    .orEmpty()
+                                    .filter { (authority) -> authorities?.contains(authority) == true }
+                                    .values
+                                    .sum()
+                                    .let {
+                                        Text(
+                                            text = stringResource(R.string.collection_unsynced_deletions, it),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
 
                                 Spacer(Modifier.height(16.dp))
                             }

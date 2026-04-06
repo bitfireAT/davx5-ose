@@ -34,6 +34,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -115,8 +116,7 @@ class CollectionScreenModel @AssistedInject constructor(
 
     val lastSynced = syncStatsRepository.getLastSyncedFlow(collectionId)
 
-    private val providerUris = collection.map { collection ->
-        collection ?: return@map null
+    private val providerUris = collection.filterNotNull().map { collection ->
         val type = collection.type
         val service = serviceRepository.get(collection.serviceId) ?: return@map null
         val account = accountRepository.fromName(service.accountName)
@@ -128,45 +128,46 @@ class CollectionScreenModel @AssistedInject constructor(
                 TaskProvider.ProviderName.TasksOrg.authority to TaskContract.Tasks.getContentUri(TaskProvider.ProviderName.TasksOrg.authority).asCalendarSyncAdapter(account)
             )
             Collection.TYPE_ADDRESSBOOK -> mapOf(
-                TaskProvider.ProviderName.TasksOrg.authority to ContactsContract.RawContacts.CONTENT_URI.asContactsSyncAdapter(account)
+                ContactsContract.AUTHORITY to ContactsContract.RawContacts.CONTENT_URI.asContactsSyncAdapter(account)
             )
             else -> return@map null
         }
     }
 
-    val totalEntries: Flow<Int?> = providerUris.map { providerUris ->
-        providerUris ?: return@map null
-
-        providerUris.toList().sumOf { (authority, uri) ->
-            context.contentResolver.acquireContentProviderClient(authority)?.use { client ->
+    val totalEntries = providerUris.filterNotNull().map { providerUris ->
+        providerUris.toList().associate { (authority, uri) ->
+            val count = context.contentResolver.acquireContentProviderClient(authority)?.use { client ->
                 client.query(uri, null, null, null, null)?.use { cursor ->
                     cursor.count
                 }
             } ?: 0
+            authority to count
         }
     }
 
-    val deletedEntries: Flow<Int?> = providerUris.map { providerUris ->
+    val deletedEntries = providerUris.map { providerUris ->
         providerUris ?: return@map null
 
-        providerUris.toList().sumOf { (authority, uri) ->
-            context.contentResolver.acquireContentProviderClient(authority)?.use { client ->
+        providerUris.toList().associate { (authority, uri) ->
+            val count = context.contentResolver.acquireContentProviderClient(authority)?.use { client ->
                 client.query(uri, null, "${CalendarContract.CalendarEntity.DELETED}=1", null, null)?.use { cursor ->
                     cursor.count
                 }
             } ?: 0
+            authority to count
         }
     }
 
-    val dirtyEntries: Flow<Int?> = providerUris.map { providerUris ->
+    val dirtyEntries = providerUris.map { providerUris ->
         providerUris ?: return@map null
 
-        providerUris.toList().sumOf { (authority, uri) ->
-            context.contentResolver.acquireContentProviderClient(authority)?.use { client ->
+        providerUris.toList().associate { (authority, uri) ->
+            val count = context.contentResolver.acquireContentProviderClient(authority)?.use { client ->
                 client.query(uri, null, "${CalendarContract.CalendarEntity.DIRTY}=1", null, null)?.use { cursor ->
                     cursor.count
                 }
             } ?: 0
+            authority to count
         }
     }
 
