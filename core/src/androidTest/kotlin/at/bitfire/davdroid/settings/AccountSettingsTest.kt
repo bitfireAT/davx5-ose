@@ -8,15 +8,12 @@ import android.accounts.AccountManager
 import android.content.Context
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.sync.account.TestAccount
-import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import net.openid.appauth.AuthState
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
