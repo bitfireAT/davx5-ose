@@ -4,40 +4,62 @@
 
 package at.bitfire.davdroid.ui.account
 
+import android.accounts.Account
+import android.content.Context
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
+import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.ical4android.TaskProvider
+import at.techbee.jtx.JtxContract
 import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.dmfs.tasks.contract.TaskContract
+import kotlin.io.println
+import kotlin.use
+import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
+import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
+import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 
 @HiltViewModel(assistedFactory = CollectionScreenModel.Factory::class)
 class CollectionScreenModel @AssistedInject constructor(
+    @ApplicationContext val context: Context,
     private val accountRepository: AccountRepository,
     @Assisted val collectionId: Long,
     db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
     private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
+    private val serviceRepository: DavServiceRepository,
+    private val localAddressBookStore: LocalAddressBookStore,
     settings: SettingsManager,
     syncStatsRepository: DavSyncStatsRepository
 ): ViewModel() {
@@ -100,6 +122,66 @@ class CollectionScreenModel @AssistedInject constructor(
     }
 
     val lastSynced = syncStatsRepository.getLastSyncedFlow(collectionId)
+
+    private val providerUris = collection.filterNotNull().map { collection ->
+        when (collection.type) {
+            Collection.TYPE_CALENDAR -> {
+                val accountName = serviceRepository.get(collection.serviceId)?.accountName ?: return@map null
+                val account = accountRepository.fromName(accountName)
+                mapOf(
+                    CalendarContract.AUTHORITY to CalendarContract.Events.CONTENT_URI.asCalendarSyncAdapter(account),
+                    TaskProvider.ProviderName.JtxBoard.authority to JtxContract.JtxICalObject.CONTENT_URI.asJtxSyncAdapter(account),
+                    TaskProvider.ProviderName.OpenTasks.authority to TaskContract.Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority).asCalendarSyncAdapter(account),
+                    TaskProvider.ProviderName.TasksOrg.authority to TaskContract.Tasks.getContentUri(TaskProvider.ProviderName.TasksOrg.authority).asCalendarSyncAdapter(account)
+                )
+            }
+            Collection.TYPE_ADDRESSBOOK -> {
+                val accountName = withContext(Dispatchers.IO) {
+                    // accountName cannot be called from the main thread
+                    localAddressBookStore.accountName(collection)
+                }
+                val account = Account(accountName, context.getString(R.string.account_type_address_book))
+                mapOf(
+                    ContactsContract.AUTHORITY to ContactsContract.RawContacts.CONTENT_URI.asContactsSyncAdapter(account)
+                )
+            }
+            else -> null
+        }
+    }
+
+    val totalEntries = providerUris.filterNotNull().map { providerUris ->
+        providerUris.toList().associate { (authority, uri) ->
+            println("Querying $authority for total entries with URI $uri")
+            val count = context.contentResolver.acquireContentProviderClient(authority)?.use { client ->
+                client.query(uri, null, null, null, null)?.use { cursor ->
+                    cursor.count
+                }
+            } ?: 0
+            authority to count
+        }
+    }
+
+    val deletedEntries = providerUris.filterNotNull().map { providerUris ->
+        providerUris.toList().associate { (authority, uri) ->
+            val count = context.contentResolver.acquireContentProviderClient(authority)?.use { client ->
+                client.query(uri, null, "${CalendarContract.CalendarEntity.DELETED}=1", null, null)?.use { cursor ->
+                    cursor.count
+                }
+            } ?: 0
+            authority to count
+        }
+    }
+
+    val dirtyEntries = providerUris.filterNotNull().map { providerUris ->
+        providerUris.toList().associate { (authority, uri) ->
+            val count = context.contentResolver.acquireContentProviderClient(authority)?.use { client ->
+                client.query(uri, null, "${CalendarContract.CalendarEntity.DIRTY}=1", null, null)?.use { cursor ->
+                    cursor.count
+                }
+            } ?: 0
+            authority to count
+        }
+    }
 
 
     /** Scope for operations that must not be cancelled. */

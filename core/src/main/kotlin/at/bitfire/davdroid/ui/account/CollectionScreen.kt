@@ -4,6 +4,8 @@
 
 package at.bitfire.davdroid.ui.account
 
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,6 +59,7 @@ import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
 import at.bitfire.davdroid.ui.composable.ProgressBar
+import at.bitfire.ical4android.TaskProvider
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -96,6 +99,9 @@ fun CollectionScreen(
         description = collection.description,
         owner = model.owner.collectAsStateWithLifecycle(null).value,
         lastSynced = model.lastSynced.collectAsStateWithLifecycle(emptyList()).value,
+        totalEntries = model.totalEntries.collectAsStateWithLifecycle(null).value,
+        modifiedEntries = model.dirtyEntries.collectAsStateWithLifecycle(null).value,
+        deletedEntries = model.deletedEntries.collectAsStateWithLifecycle(null).value,
         supportsWebPush = collection.supportsWebPush,
         pushSubscriptionCreated = collection.pushSubscriptionCreated,
         pushSubscriptionExpires = collection.pushSubscriptionExpires,
@@ -121,6 +127,9 @@ fun CollectionScreen(
     description: String? = null,
     owner: String? = null,
     lastSynced: List<DavSyncStatsRepository.LastSynced> = emptyList(),
+    totalEntries: Map<String, Int>? = null,
+    modifiedEntries: Map<String, Int>? = null,
+    deletedEntries: Map<String, Int>? = null,
     supportsWebPush: Boolean = false,
     pushSubscriptionCreated: Long? = null,
     pushSubscriptionExpires: Long? = null,
@@ -289,6 +298,67 @@ fun CollectionScreen(
                                     text = formatter.format(time),
                                     style = MaterialTheme.typography.bodyLarge
                                 )
+
+                                Text(
+                                    text = stringResource(R.string.collection_synced_items),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+
+                                val authorities = when (lastSync.dataType) {
+                                    SyncDataType.EVENTS.name -> listOf(
+                                        CalendarContract.AUTHORITY
+                                    )
+                                    SyncDataType.TASKS.name -> listOf(
+                                        TaskProvider.ProviderName.JtxBoard.authority,
+                                        TaskProvider.ProviderName.OpenTasks.authority,
+                                        TaskProvider.ProviderName.TasksOrg.authority
+                                    )
+                                    SyncDataType.CONTACTS.name -> listOf(
+                                        ContactsContract.AUTHORITY
+                                    )
+                                    else -> null
+                                }
+                                val entriesCount = totalEntries
+                                    .orEmpty()
+                                    .filter { (authority) -> authorities?.contains(authority) == true }
+                                    .values
+                                    .sum()
+                                val dataTypeCount = when (lastSync.dataType) {
+                                    SyncDataType.EVENTS.name -> stringResource(R.string.collection_datatype_events_count, entriesCount)
+                                    SyncDataType.TASKS.name -> stringResource(R.string.collection_datatype_tasks_count, entriesCount)
+                                    SyncDataType.CONTACTS.name -> stringResource(R.string.collection_datatype_contacts_count, entriesCount)
+                                    else -> "${lastSync.dataType} ($entriesCount)"
+                                }
+                                Text(
+                                    text = stringResource(R.string.collection_synced_items_count, dataTypeCount),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+
+                                modifiedEntries
+                                    .orEmpty()
+                                    .filter { (authority) -> authorities?.contains(authority) == true }
+                                    .values
+                                    .sum()
+                                    .let {
+                                        Text(
+                                            text = stringResource(R.string.collection_unsynced_modifications, it),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            modifier = Modifier.padding(start = 8.dp)
+                                        )
+                                    }
+                                deletedEntries
+                                    .orEmpty()
+                                    .filter { (authority) -> authorities?.contains(authority) == true }
+                                    .values
+                                    .sum()
+                                    .let {
+                                        Text(
+                                            text = stringResource(R.string.collection_unsynced_deletions, it),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            modifier = Modifier.padding(start = 8.dp)
+                                        )
+                                    }
 
                                 Spacer(Modifier.height(16.dp))
                             }
