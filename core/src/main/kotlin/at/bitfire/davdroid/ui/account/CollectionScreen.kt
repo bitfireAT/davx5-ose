@@ -282,6 +282,29 @@ fun CollectionScreen(
                             val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
 
                             for (lastSync in lastSynced) {
+                                val dataType = when (lastSync.dataType) {
+                                    SyncDataType.EVENTS.name -> stringResource(R.string.collection_datatype_events)
+                                    SyncDataType.TASKS.name -> stringResource(R.string.collection_datatype_tasks)
+                                    SyncDataType.CONTACTS.name -> stringResource(R.string.collection_datatype_contacts)
+                                    else -> lastSync.dataType
+                                }
+                                Text(
+                                    text = stringResource(R.string.collection_last_sync, dataType),
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+
+                                val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastSync.lastSynced), ZoneId.systemDefault())
+                                Text(
+                                    text = formatter.format(time),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+
+                                Text(
+                                    text = stringResource(R.string.collection_synced_items),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+
                                 val authorities = when (lastSync.dataType) {
                                     SyncDataType.EVENTS.name -> listOf(
                                         CalendarContract.AUTHORITY
@@ -301,30 +324,15 @@ fun CollectionScreen(
                                     .filter { (authority) -> authorities?.contains(authority) == true }
                                     .values
                                     .sum()
-                                val dataType = if (entriesCount >= 0) {
-                                    when (lastSync.dataType) {
-                                        SyncDataType.EVENTS.name -> stringResource(R.string.collection_datatype_events_count, entriesCount)
-                                        SyncDataType.TASKS.name -> stringResource(R.string.collection_datatype_tasks_count, entriesCount)
-                                        SyncDataType.CONTACTS.name -> stringResource(R.string.collection_datatype_contacts_count, entriesCount)
-                                        else -> "${lastSync.dataType} ($entriesCount)"
-                                    }
-                                } else {
-                                    when (lastSync.dataType) {
-                                        SyncDataType.EVENTS.name -> stringResource(R.string.collection_datatype_events)
-                                        SyncDataType.TASKS.name -> stringResource(R.string.collection_datatype_tasks)
-                                        SyncDataType.CONTACTS.name -> stringResource(R.string.collection_datatype_contacts)
-                                        else -> lastSync.dataType
-                                    }
+                                val dataTypeCount = when (lastSync.dataType) {
+                                    SyncDataType.EVENTS.name -> stringResource(R.string.collection_datatype_events_count, entriesCount)
+                                    SyncDataType.TASKS.name -> stringResource(R.string.collection_datatype_tasks_count, entriesCount)
+                                    SyncDataType.CONTACTS.name -> stringResource(R.string.collection_datatype_contacts_count, entriesCount)
+                                    else -> "${lastSync.dataType} ($entriesCount)"
                                 }
                                 Text(
-                                    text = stringResource(R.string.collection_last_sync, dataType),
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-
-                                val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastSync.lastSynced), ZoneId.systemDefault())
-                                Text(
-                                    text = formatter.format(time),
-                                    style = MaterialTheme.typography.bodyLarge
+                                    text = stringResource(R.string.collection_synced_items_count, dataTypeCount),
+                                    style = MaterialTheme.typography.bodySmall
                                 )
 
                                 modifiedEntries
@@ -335,7 +343,8 @@ fun CollectionScreen(
                                     .let {
                                         Text(
                                             text = stringResource(R.string.collection_unsynced_modifications, it),
-                                            style = MaterialTheme.typography.bodySmall
+                                            style = MaterialTheme.typography.bodySmall,
+                                            modifier = Modifier.padding(start = 8.dp)
                                         )
                                     }
                                 deletedEntries
@@ -346,7 +355,8 @@ fun CollectionScreen(
                                     .let {
                                         Text(
                                             text = stringResource(R.string.collection_unsynced_deletions, it),
-                                            style = MaterialTheme.typography.bodySmall
+                                            style = MaterialTheme.typography.bodySmall,
+                                            modifier = Modifier.padding(start = 8.dp)
                                         )
                                     }
 

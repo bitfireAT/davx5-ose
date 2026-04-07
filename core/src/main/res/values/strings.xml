@@ -459,7 +459,8 @@
     <string name="collection_push_web_push">Server advertises Push support</string>
     <string name="collection_push_subscribed_at">Subscribed at %1$s, expires at %2$s</string>
     <string name="collection_last_sync">Last sync (%s)</string>
-    <string name="collection_synced_items">Synced items: %1$s</string>
+    <string name="collection_synced_items">Current local items:</string>
+    <string name="collection_synced_items_count">%1$s, thereof</string>
     <string name="collection_unsynced_modifications">%1$d unsynced local modifications</string>
     <string name="collection_unsynced_deletions">%1$d unsynced local deletions</string>
     <string name="collection_url">Address (URL)</string>
