@@ -6,8 +6,6 @@ package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.content.Context
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.net.Uri
 import android.provider.CalendarContract
@@ -15,10 +13,8 @@ import android.provider.ContactsContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.core.content.PackageManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.impl.utils.PackageManagerHelper
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
@@ -212,7 +208,8 @@ class CollectionScreenModel @AssistedInject constructor(
                 authority
 
             object : ContentObserver(null) {
-                override fun onChange(selfChange: Boolean) {
+                private fun update() {
+                    logger.fine("Received content update notification for $itemCountUri")
                     // query provider for number of items
                     val totalItems: Int? =
                         try {
@@ -236,7 +233,19 @@ class CollectionScreenModel @AssistedInject constructor(
                         deleted = -1
                     )
 
-                    trySendBlocking(result)
+                    trySendBlocking(result.toMap())
+                }
+
+                override fun onChange(selfChange: Boolean) {
+                    update()
+                }
+
+                override fun onChange(selfChange: Boolean, uri: Uri?) {
+                    update()
+                }
+
+                override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
+                    update()
                 }
             }
         }

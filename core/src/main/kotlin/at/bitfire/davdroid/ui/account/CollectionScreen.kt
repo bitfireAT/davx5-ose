@@ -97,7 +97,7 @@ fun CollectionScreen(
         description = collection.description,
         owner = model.owner.collectAsStateWithLifecycle(null).value,
         lastSynced = model.lastSynced.collectAsStateWithLifecycle(emptyList()).value,
-        localItemCounts = model.localItemCounts.collectAsStateWithLifecycle(emptyMap()).value,
+        localItemCounts = model.localItemCounts.collectAsStateWithLifecycle(initialValue = emptyMap()).value,
         supportsWebPush = collection.supportsWebPush,
         pushSubscriptionCreated = collection.pushSubscriptionCreated,
         pushSubscriptionExpires = collection.pushSubscriptionExpires,
@@ -292,33 +292,33 @@ fun CollectionScreen(
                                     text = formatter.format(time),
                                     style = MaterialTheme.typography.bodyLarge
                                 )
+                            }
+                        }
 
-                                if (!localItemCounts.isNullOrEmpty()) {
-                                    for ((_, count) in localItemCounts) {
-                                        Text(
-                                            // TODO correct string
-                                            text = stringResource(R.string.collection_synced_items) + " $dataType",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            modifier = Modifier.padding(top = 8.dp)
-                                        )
+                        if (!localItemCounts.isNullOrEmpty()) {
+                            for ((_, count) in localItemCounts) {
+                                Text(
+                                    // TODO correct string
+                                    text = stringResource(R.string.collection_synced_items),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
 
-                                        Text(
-                                            // TODO correct string
-                                            text = "${count.localItems} local item(s) in ${count.contentProviderName}",
-                                            style = MaterialTheme.typography.bodyLarge,
-                                        )
-                                        Text(
-                                            // TODO correct string
-                                            text = "${count.modified} unsynced modification(s)",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                        Text(
-                                            // TODO correct string
-                                            text = "${count.deleted} unsynced deletion(s)",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                    }
-                                }
+                                Text(
+                                    // TODO correct string
+                                    text = "${count.localItems} local item(s) in ${count.contentProviderName}",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                                Text(
+                                    // TODO correct string
+                                    text = "${count.modified} unsynced modification(s)",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    // TODO correct string
+                                    text = "${count.deleted} unsynced deletion(s)",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
                             }
                         }
 
