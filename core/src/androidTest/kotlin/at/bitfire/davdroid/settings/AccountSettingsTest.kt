@@ -72,8 +72,10 @@ class AccountSettingsTest {
             // Preconfiguration URL
             assertNull(bundle.getString(AccountSettings.KEY_PRECONFIGURATION_URL))
         }
+    }
 
-        // Pass credentials
+    @Test
+    fun test_initialUserData_credentials() {
         val credentials = Credentials("username", null, "alias", AuthState())
         AccountSettings.initialUserData(credentials, null).let { bundle ->
             assertEquals(AccountSettings.CURRENT_VERSION.toString(), bundle.getString(AccountSettings.KEY_SETTINGS_VERSION))
@@ -86,8 +88,10 @@ class AccountSettingsTest {
             // Preconfiguration URL
             assertNull(bundle.getString(AccountSettings.KEY_PRECONFIGURATION_URL))
         }
+    }
 
-        // Pass preconfiguration URL
+    @Test
+    fun test_initialUserData_preconfigurationUrl() {
         AccountSettings.initialUserData(null, "https://example.com").let { bundle ->
             assertEquals(AccountSettings.CURRENT_VERSION.toString(), bundle.getString(AccountSettings.KEY_SETTINGS_VERSION))
 
