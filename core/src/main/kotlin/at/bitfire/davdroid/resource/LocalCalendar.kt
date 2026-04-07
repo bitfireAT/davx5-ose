@@ -18,7 +18,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import java.util.LinkedList
-import java.util.logging.Logger
 
 /**
  * Application-specific subclass of [AndroidCalendar] for local calendars.

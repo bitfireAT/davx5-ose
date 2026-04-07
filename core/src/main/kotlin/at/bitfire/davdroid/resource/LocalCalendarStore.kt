@@ -87,9 +87,18 @@ class LocalCalendarStore @Inject constructor(
             .findCalendars("${Calendars.SYNC_EVENTS}!=0", null)
             .map { localCalendarFactory.create(it) }
 
-    fun getBySyncId(account: Account, client: ContentProviderClient, syncId: String): LocalCalendar? =
+    /**
+     * Retrieves a [LocalCalendar] by its [Calendars._SYNC_ID], which corresponds to [Collection.id].
+     *
+     * @param account The account associated with the calendar.
+     * @param client The [ContentProviderClient] used to access the calendar provider.
+     * @param dbCollectionId The [Collection.id] which the requested local calendar corresponds to.
+     *
+     * @return The [LocalCalendar] with the specified DB collection ID, or `null` if not found.
+     */
+    fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalCalendar? =
         AndroidCalendarProvider(account, client)
-            .findCalendars("${Calendars._SYNC_ID}=?", arrayOf(syncId))
+            .findCalendars("${Calendars._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
             .firstOrNull()
             ?.let { localCalendarFactory.create(it) }
 

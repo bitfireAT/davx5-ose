@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
@@ -23,6 +22,7 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.Lazy
 import dagger.assisted.Assisted
@@ -46,7 +46,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.logging.Level
 import java.util.logging.Logger
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
 
 @HiltViewModel(assistedFactory = CollectionScreenModel.Factory::class)
 class CollectionScreenModel @AssistedInject constructor(
@@ -169,17 +168,6 @@ class CollectionScreenModel @AssistedInject constructor(
     }
 
 
-    private class ItemCountProvider(
-        val authority: String,
-        val contentProviderName: String,
-        val account: Account,
-        val itemsUri: Uri,
-        val collectionSelection: String,
-        val collectionSelectionArgs: Array<String>?,
-        val modifiedItemsSelection: String,
-        val deletedItemsSelection: String
-    )
-
     data class LocalItemsCount(
         /** display name of content provider where the items are stored */
         val contentProviderName: String,
@@ -193,145 +181,68 @@ class CollectionScreenModel @AssistedInject constructor(
     )
 
     private fun countLocalItemsFlow(collection: Collection): Flow<List<LocalItemsCount>> = callbackFlow {
-        val result = mutableMapOf<String, LocalItemsCount>()
+        val result = mutableMapOf<SyncDataType, LocalItemsCount>()
         val contentResolver = context.contentResolver
 
-        val itemCountProviders: List<ItemCountProvider> = getItemCountProviders(collection)
-        val observers: Map<ItemCountProvider, ContentObserver> = itemCountProviders.associateWith { itemCountProvider ->
-            val authority = itemCountProvider.authority
+        val service = serviceRepository.get(collection.serviceId) ?: return@callbackFlow
+        val account = accountRepository.fromName(service.accountName)
 
-            object : ContentObserver(null) {
-                private fun update() {
-                    logger.fine("Received content update notification for $itemCountProvider")
-                    // query provider for number of items
-                    val totalItems: Int? =
-                        try {
-                            val calendarStore = localCalendarStore.get()
-                            calendarStore.acquireContentProvider()?.let { client ->
-                                val calendar = calendarStore.getBySyncId(itemCountProvider.account, client, collectionId.toString())
-                                calendar?.countEvents()
-                            }
-                        } catch (e: Exception) {
-                            // for instance SecurityException in case of missing permissions
-                            logger.log(Level.WARNING, "Couldn't count local items of $authority", e)
-                            null
+        // TODO for now only calendars + events
+        // TODO permissions
+        val eventsUri = CalendarContract.Events.CONTENT_URI
+
+        val observer = object : ContentObserver(null) {
+            private fun update() {
+                logger.fine("Received content update notification for $eventsUri")
+                try {
+                    val calendarStore = localCalendarStore.get()
+                    val authority = calendarStore.authority
+                    calendarStore.acquireContentProvider()?.let { client ->
+                        calendarStore.getByDbCollectionId(account, client, collectionId)?.let { calendar ->
+                            result[SyncDataType.EVENTS] = LocalItemsCount(
+                                contentProviderName = getProviderAppName(authority),
+                                total = calendar.countEvents(),
+                                modified = calendar.countEvents("${CalendarContract.Events.DIRTY}=1 AND ${CalendarContract.Events.DELETED}=0"),
+                                deleted = calendar.countEvents("${CalendarContract.Events.DELETED}=1")
+                            )
                         }
-
-                    // TODO: modified/delete
-
-                    result[authority] = LocalItemsCount(
-                        contentProviderName = itemCountProvider.contentProviderName,
-                        total = totalItems,
-                        modified = -1,
-                        deleted = -1
-                    )
-
-                    // send a copy of the result – the flow wouldn't emit the same value again
-                    trySendBlocking(result.values.toList())
+                    }
+                } catch (e: Exception) {
+                    logger.log(Level.WARNING, "Couldn't query number of items in $eventsUri", e)
+                    result -= SyncDataType.EVENTS
                 }
 
-                override fun onChange(selfChange: Boolean) {
-                    update()
-                }
+                // TODO: modified/delete
 
-                override fun onChange(selfChange: Boolean, uri: Uri?) {
-                    update()
-                }
+                // send a copy of the result – the flow wouldn't emit the same value again
+                trySendBlocking(result.values.toList())
+            }
 
-                override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
-                    update()
-                }
+            override fun onChange(selfChange: Boolean) {
+                update()
+            }
+
+            override fun onChange(selfChange: Boolean, uri: Uri?) {
+                update()
+            }
+
+            override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
+                update()
             }
         }
 
-        // watch all supported content provider URIs
-        for ((provider, observer) in observers) {
-            logger.fine("Watching ${provider.itemsUri} for changed items")
-            contentResolver.registerContentObserver(provider.itemsUri, true, observer)
+        // TODO watch all supported content provider URIs
+        logger.fine("Watching $eventsUri for changed items")
+        contentResolver.registerContentObserver(eventsUri, true, observer)
 
-            // run first time
-            observer.onChange(true)
-        }
+        // run first time
+        observer.onChange(true)
 
         awaitClose {
             // unregister
-            for (observer in observers.values)
-                contentResolver.unregisterContentObserver(observer)
+            // TODO all supported URIs (calendars, events)
+            contentResolver.unregisterContentObserver(observer)
         }
-    }
-
-    /**
-     * Retrieves the URIs of collections in the content providers associated with the given collection,
-     * based on its type.
-     *
-     * These URIs are then ready to be used to count the local items for the respective provider
-     * (no further checks needed).
-     *
-     * @param collection The collection for which to retrieve the item count URIs.
-     * @return set of usable URIs that can be used to count items associated with the collection
-     */
-    private suspend fun getItemCountProviders(collection: Collection): List<ItemCountProvider> {
-        val possibleProviders = mutableListOf<ItemCountProvider>()
-
-        when (collection.type) {
-            Collection.TYPE_CALENDAR -> {
-                val accountName = serviceRepository.get(collection.serviceId)?.accountName ?: return emptyList()
-                val account = accountRepository.fromName(accountName)
-
-                // calendar provider
-                possibleProviders += ItemCountProvider(
-                    authority = CalendarContract.AUTHORITY,
-                    account = account,
-                    contentProviderName = getProviderAppName(CalendarContract.AUTHORITY),
-                    itemsUri = CalendarContract.Events.CONTENT_URI.asCalendarSyncAdapter(account),
-                    collectionSelection = "${CalendarContract.Events._SYNC_ID}=?",
-                    collectionSelectionArgs = arrayOf(collectionId.toString()),
-                    modifiedItemsSelection = "${CalendarContract.Events.DIRTY}=1 AND ${CalendarContract.Events.DELETED}=0",
-                    deletedItemsSelection = "${CalendarContract.Events.DELETED}=1",
-                )
-
-                // TODO: tasks, contacts
-            }
-        }
-
-        // only return provider which are actually usable
-        return possibleProviders.filter { provider ->
-            try {
-                context.contentResolver.acquireContentProviderClient(provider.authority)?.use {
-                    // access possible
-                    true
-                } ?: /* provider not available */ false
-            } catch (_: Exception) {
-                // access not possible (for instance due to missing permissions)
-                false
-            }
-        }
-
-        /*val possibleUris: List<Uri> = when (collection.type) {
-            Collection.TYPE_CALENDAR -> {
-                val accountName = serviceRepository.get(collection.serviceId)?.accountName ?: return emptyList()
-                val account = accountRepository.fromName(accountName)
-                listOf(
-                    CalendarContract.Events.CONTENT_URI.asCalendarSyncAdapter(account),
-                    JtxContract.JtxICalObject.CONTENT_URI.asJtxSyncAdapter(account),
-                    TaskContract.Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority).asCalendarSyncAdapter(account),
-                    TaskContract.Tasks.getContentUri(TaskProvider.ProviderName.TasksOrg.authority).asCalendarSyncAdapter(account)
-                )
-            }
-
-            Collection.TYPE_ADDRESSBOOK -> {
-                val accountName = withContext(Dispatchers.IO) {
-                    // accountName cannot be called from the main thread
-                    localAddressBookStore.accountName(collection)
-                }
-                val account = Account(accountName, context.getString(R.string.account_type_address_book))
-                listOf(
-                    ContactsContract.RawContacts.CONTENT_URI.asContactsSyncAdapter(account)
-                )
-            }
-
-            else -> emptyList()
-        }*/
     }
 
     private fun getProviderAppName(authority: String): String {
@@ -343,6 +254,5 @@ class CollectionScreenModel @AssistedInject constructor(
         else
             authority
     }
-
 
 }
