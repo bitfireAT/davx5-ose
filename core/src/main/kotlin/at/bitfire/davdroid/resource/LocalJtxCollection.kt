@@ -36,6 +36,9 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
         set(value) { syncstate = value.toString() }
 
 
+    override fun count(where: String?, whereArgs: Array<String>?) =
+        throw UnsupportedOperationException()
+
     override fun findDeleted(): List<LocalJtxICalObject> {
         val values = queryDeletedICalObjects()
         val localJtxICalObjects = mutableListOf<LocalJtxICalObject>()
@@ -75,8 +78,6 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
     override fun removeNotDirtyMarked(flags: Int) = deleteByFlags(flags)
 
     override fun forgetETags() = updateSetETag(null)
-
-    override fun count(where: String?, whereArgs: Array<String>?): Int = 0
 
 
     object Factory: JtxCollectionFactory<LocalJtxCollection> {

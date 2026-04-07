@@ -196,19 +196,15 @@ class CollectionScreenModel @AssistedInject constructor(
 
         val registeredObservers = mutableListOf<ContentObserver>()
 
-        // TODO For now only calendars/events.
         // TODO permissions
 
-        // Unified callback creator for both address books and calendars
-        val createOnUpdateCallback = { localDataStore: LocalDataStore<*> ->
-            { localItemsCount: LocalItemsCount? ->
-                if (localItemsCount != null)
-                    result[localDataStore.authority] = localItemsCount
-                else
-                    result -= localDataStore.authority
-                trySendBlocking(result.values.toList())
-                Unit
-            }
+        // Updates the shared result map and emits the new list downstream.
+        fun onLocalItemsUpdate(localDataStore: LocalDataStore<*>, count: LocalItemsCount?) {
+            if (count != null)
+                result[localDataStore.authority] = count
+            else
+                result -= localDataStore.authority
+            trySendBlocking(result.values.toList())
         }
 
         when (collection.type) {
@@ -222,7 +218,7 @@ class CollectionScreenModel @AssistedInject constructor(
                     ),
                     selectionModified = "${ContactsContract.RawContacts.DIRTY}=1 AND ${ContactsContract.RawContacts.DELETED}=0",
                     selectionDeleted = "${ContactsContract.RawContacts.DELETED}=1",
-                    onUpdate = createOnUpdateCallback(addressBookStore)
+                    onUpdate = { onLocalItemsUpdate(addressBookStore, it) }
                 )
                 registeredObservers.add(observer)
             }
@@ -238,7 +234,7 @@ class CollectionScreenModel @AssistedInject constructor(
                     ),
                     selectionModified = "${CalendarContract.Events.DIRTY}=1 AND ${CalendarContract.Events.DELETED}=0",
                     selectionDeleted = "${CalendarContract.Events.DELETED}=1",
-                    onUpdate = createOnUpdateCallback(calendarStore)
+                    onUpdate = { onLocalItemsUpdate(calendarStore, it) }
                 )
                 registeredObservers.add(eventsObserver)
 
@@ -251,7 +247,7 @@ class CollectionScreenModel @AssistedInject constructor(
                         ),
                         selectionModified = "${TaskContract.Tasks._DIRTY}=1 AND ${TaskContract.Tasks._DELETED}=0",
                         selectionDeleted = "${TaskContract.Tasks._DELETED}=1",
-                        onUpdate = createOnUpdateCallback(taskListStore)
+                        onUpdate = { onLocalItemsUpdate(taskListStore, it) }
                     )
                     registeredObservers.add(tasksObserver)
                 }

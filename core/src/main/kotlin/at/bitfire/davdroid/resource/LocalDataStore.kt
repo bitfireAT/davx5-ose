@@ -64,6 +64,7 @@ interface LocalDataStore<T: LocalCollection<*>> {
      * @param dbCollectionId The database collection ID which the requested local collection corresponds to.
      *
      * @return The local collection with the specified DB collection ID, or `null` if not found.
+     * @throws UnsupportedOperationException if the operation is not supported on this data store (jtx Board)
      */
     fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): T?
 

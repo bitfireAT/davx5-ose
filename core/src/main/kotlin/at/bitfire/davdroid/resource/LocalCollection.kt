@@ -84,6 +84,7 @@ interface LocalCollection<out T: LocalResource> {
      * @param where SQL WHERE clause (without the WHERE keyword), or null to count all resources
      * @param whereArgs arguments for the WHERE clause, or null if where is null
      * @return number of resources matching the criteria
+     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
      */
     fun count(where: String? = null, whereArgs: Array<String>? = null): Int
 
