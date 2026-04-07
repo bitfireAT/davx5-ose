@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.provider.CalendarContract
-import android.provider.ContactsContract
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,7 +57,6 @@ import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import at.bitfire.ical4android.TaskProvider
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -99,9 +96,7 @@ fun CollectionScreen(
         description = collection.description,
         owner = model.owner.collectAsStateWithLifecycle(null).value,
         lastSynced = model.lastSynced.collectAsStateWithLifecycle(emptyList()).value,
-        totalEntries = model.totalEntries.collectAsStateWithLifecycle(null).value,
-        modifiedEntries = model.dirtyEntries.collectAsStateWithLifecycle(null).value,
-        deletedEntries = model.deletedEntries.collectAsStateWithLifecycle(null).value,
+        localItemCounts = model.localItemCounts.collectAsStateWithLifecycle(emptyMap()).value,
         supportsWebPush = collection.supportsWebPush,
         pushSubscriptionCreated = collection.pushSubscriptionCreated,
         pushSubscriptionExpires = collection.pushSubscriptionExpires,
@@ -127,9 +122,7 @@ fun CollectionScreen(
     description: String? = null,
     owner: String? = null,
     lastSynced: List<DavSyncStatsRepository.LastSynced> = emptyList(),
-    totalEntries: Map<String, Int>? = null,
-    modifiedEntries: Map<String, Int>? = null,
-    deletedEntries: Map<String, Int>? = null,
+    localItemCounts: Map<SyncDataType, CollectionScreenModel.LocalItemsCount>? = null,
     supportsWebPush: Boolean = false,
     pushSubscriptionCreated: Long? = null,
     pushSubscriptionExpires: Long? = null,
@@ -299,13 +292,32 @@ fun CollectionScreen(
                                     style = MaterialTheme.typography.bodyLarge
                                 )
 
-                                Text(
-                                    text = stringResource(R.string.collection_synced_items),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(top = 8.dp)
-                                )
+                                for ((dataType, count) in localItemCounts.orEmpty()) {
+                                    Text(
+                                        // TODO correct string
+                                        text = stringResource(R.string.collection_synced_items) + " $dataType",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    )
 
-                                val authorities = when (lastSync.dataType) {
+                                    Text(
+                                        // TODO correct string
+                                        text = "${count.localItems} local item(s) in ${count.contentProviderName}",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                    )
+                                    Text(
+                                        // TODO correct string
+                                        text = "${count.modified} unsynced modification(s)",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    Text(
+                                        // TODO correct string
+                                        text = "${count.deleted} unsynced deletion(s)",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                /*val authorities = when (lastSync.dataType) {
                                     SyncDataType.EVENTS.name -> listOf(
                                         CalendarContract.AUTHORITY
                                     )
@@ -319,7 +331,7 @@ fun CollectionScreen(
                                     )
                                     else -> null
                                 }
-                                val entriesCount = totalEntries
+                                val entriesCount = localItemCounts
                                     .orEmpty()
                                     .filter { (authority) -> authorities?.contains(authority) == true }
                                     .values
@@ -358,7 +370,7 @@ fun CollectionScreen(
                                             style = MaterialTheme.typography.bodySmall,
                                             modifier = Modifier.padding(start = 8.dp)
                                         )
-                                    }
+                                    }*/
 
                                 Spacer(Modifier.height(16.dp))
                             }
@@ -440,6 +452,20 @@ fun CollectionScreen_Preview() {
             DavSyncStatsRepository.LastSynced(
                 dataType = "Some Sync Data Type",
                 lastSynced = 1234567890
+            )
+        ),
+        localItemCounts = mapOf(
+            SyncDataType.EVENTS to CollectionScreenModel.LocalItemsCount(
+                contentProviderName = "Calender Storage",
+                localItems = 150,
+                modified = 2,
+                deleted = 1
+            ),
+            SyncDataType.TASKS to CollectionScreenModel.LocalItemsCount(
+                contentProviderName = "Some Tasks App",
+                localItems = 10,
+                modified = 0,
+                deleted = 1
             )
         ),
         supportsWebPush = true,

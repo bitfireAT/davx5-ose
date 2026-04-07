@@ -23,6 +23,7 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract
@@ -34,11 +35,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -121,8 +127,20 @@ class CollectionScreenModel @AssistedInject constructor(
         }
     }
 
+
     val lastSynced = syncStatsRepository.getLastSyncedFlow(collectionId)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val localItemCounts: Flow<Map<SyncDataType, LocalItemsCount>> = collection.flatMapLatest {
+        callbackFlow {
+            // register
+            awaitClose {
+                // unregister
+            }
+        }
+    }
+
+    /** content provider URIs to fetch number of currently synced items from (for instance: events and tasks.org URI) */
     private val providerUris = collection.filterNotNull().map { collection ->
         when (collection.type) {
             Collection.TYPE_CALENDAR -> {
@@ -222,5 +240,18 @@ class CollectionScreenModel @AssistedInject constructor(
             collectionSelectedUseCase.get().handleWithDelay(collectionId)
         }
     }
+
+
+    data class LocalItemsCount(
+        /** display name of content provider where the items are stored */
+        val contentProviderName: String,
+
+        /** total number of items (including modified and deleted ones) */
+        val localItems: Int,
+        /** number of unsynced local modifications */
+        val modified: Int,
+        /** number of unsynced local deletions */
+        val deleted: Int
+    )
 
 }
