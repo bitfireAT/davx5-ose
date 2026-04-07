@@ -12,6 +12,7 @@ import android.content.Context
 import android.provider.ContactsContract
 import androidx.annotation.OpenForTesting
 import androidx.annotation.VisibleForTesting
+import androidx.annotation.WorkerThread
 import androidx.core.content.contentValuesOf
 import androidx.core.os.bundleOf
 import at.bitfire.davdroid.R
@@ -58,6 +59,7 @@ class LocalAddressBookStore @Inject constructor(
      *
      * @param info  Collection to take info from
      */
+    @WorkerThread
     fun accountName(info: Collection): String {
         // Name of address book is given collection display name, otherwise the last URL path segment
         var name = info.displayName.takeIf { !it.isNullOrEmpty() } ?: info.url.lastSegment
