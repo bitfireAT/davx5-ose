@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.provider.CalendarContract
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -97,7 +96,7 @@ fun CollectionScreen(
         description = collection.description,
         owner = model.owner.collectAsStateWithLifecycle(null).value,
         lastSynced = model.lastSynced.collectAsStateWithLifecycle(emptyList()).value,
-        localItemCounts = model.localItemCounts.collectAsStateWithLifecycle(initialValue = emptyMap()).value,
+        localItemCounts = model.localItemCounts.collectAsStateWithLifecycle(initialValue = emptyList()).value,
         supportsWebPush = collection.supportsWebPush,
         pushSubscriptionCreated = collection.pushSubscriptionCreated,
         pushSubscriptionExpires = collection.pushSubscriptionExpires,
@@ -123,7 +122,7 @@ fun CollectionScreen(
     description: String? = null,
     owner: String? = null,
     lastSynced: List<DavSyncStatsRepository.LastSynced> = emptyList(),
-    localItemCounts: Map<String, CollectionScreenModel.LocalItemsCount>? = null,
+    localItemCounts: List<CollectionScreenModel.LocalItemsCount>? = null,
     supportsWebPush: Boolean = false,
     pushSubscriptionCreated: Long? = null,
     pushSubscriptionExpires: Long? = null,
@@ -295,31 +294,29 @@ fun CollectionScreen(
                             }
                         }
 
-                        if (!localItemCounts.isNullOrEmpty()) {
-                            for ((_, count) in localItemCounts) {
-                                Text(
-                                    // TODO correct string
-                                    text = stringResource(R.string.collection_synced_items),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier.padding(top = 8.dp)
-                                )
+                        for (count in localItemCounts.orEmpty()) {
+                            Text(
+                                // TODO correct string
+                                text = stringResource(R.string.collection_synced_items),
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(top = 16.dp)
+                            )
 
-                                Text(
-                                    // TODO correct string
-                                    text = "${count.localItems} local item(s) in ${count.contentProviderName}",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                )
-                                Text(
-                                    // TODO correct string
-                                    text = "${count.modified} unsynced modification(s)",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    // TODO correct string
-                                    text = "${count.deleted} unsynced deletion(s)",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
+                            Text(
+                                // TODO correct string
+                                text = "${count.total} local item(s) in ${count.contentProviderName}",
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                            Text(
+                                // TODO correct string
+                                text = "${count.modified} unsynced modification(s)",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                // TODO correct string
+                                text = "${count.deleted} unsynced deletion(s)",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
 
                         Text(
@@ -401,16 +398,16 @@ fun CollectionScreen_Preview() {
                 lastSynced = 1234567890
             )
         ),
-        localItemCounts = mapOf(
-            CalendarContract.AUTHORITY to CollectionScreenModel.LocalItemsCount(
+        localItemCounts = listOf(
+            CollectionScreenModel.LocalItemsCount(
                 contentProviderName = "Calender Storage",
-                localItems = 150,
+                total = 150,
                 modified = 2,
                 deleted = 1
             ),
-            "Sample Tasks Authority" to CollectionScreenModel.LocalItemsCount(
+            CollectionScreenModel.LocalItemsCount(
                 contentProviderName = "Some Tasks App",
-                localItems = 10,
+                total = 10,
                 modified = 0,
                 deleted = 1
             )

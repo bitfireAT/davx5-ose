@@ -87,6 +87,12 @@ class LocalCalendarStore @Inject constructor(
             .findCalendars("${Calendars.SYNC_EVENTS}!=0", null)
             .map { localCalendarFactory.create(it) }
 
+    fun getBySyncId(account: Account, client: ContentProviderClient, syncId: String): LocalCalendar? =
+        AndroidCalendarProvider(account, client)
+            .findCalendars("${Calendars._SYNC_ID}=?", arrayOf(syncId))
+            .firstOrNull()
+            ?.let { localCalendarFactory.create(it) }
+
     override fun update(client: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
         val accountSettings = accountSettingsFactory.create(localCollection.androidCalendar.account)
         val values = valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors())
