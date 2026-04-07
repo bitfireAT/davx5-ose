@@ -439,6 +439,9 @@
     <string name="collection_datatype_contacts">contacts</string>
     <string name="collection_datatype_events">events</string>
     <string name="collection_datatype_tasks">tasks</string>
+    <string name="collection_datatype_contacts_count">%1$d contacts</string>
+    <string name="collection_datatype_events_count">%1$d events</string>
+    <string name="collection_datatype_tasks_count">%1$d tasks</string>
     <string name="collection_delete">Delete collection</string>
     <string name="collection_delete_warning">This collection (%s) and all its data will be removed permanently, both locally and on the server.</string>
     <string name="collection_synchronization">Synchronization</string>
@@ -456,6 +459,10 @@
     <string name="collection_push_web_push">Server advertises Push support</string>
     <string name="collection_push_subscribed_at">Subscribed at %1$s, expires at %2$s</string>
     <string name="collection_last_sync">Last sync (%s)</string>
+    <string name="collection_synced_items">Current local items:</string>
+    <string name="collection_synced_items_count">%1$s, thereof</string>
+    <string name="collection_unsynced_modifications">%1$d unsynced local modifications</string>
+    <string name="collection_unsynced_deletions">%1$d unsynced local deletions</string>
     <string name="collection_url">Address (URL)</string>
 
     <!-- debugging and DebugInfoActivity -->
