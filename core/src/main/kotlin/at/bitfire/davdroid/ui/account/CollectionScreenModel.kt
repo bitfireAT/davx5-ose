@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.account
 
+import android.accounts.Account
 import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
@@ -187,62 +188,64 @@ class CollectionScreenModel @AssistedInject constructor(
         val service = serviceRepository.get(collection.serviceId) ?: return@callbackFlow
         val account = accountRepository.fromName(service.accountName)
 
-        // TODO for now only calendars + events
-        // TODO permissions
-        val eventsUri = CalendarContract.Events.CONTENT_URI
+        var registeredObserver: ContentObserver? = null
 
-        val observer = object : ContentObserver(null) {
-            private fun update() {
-                logger.fine("Received content update notification for $eventsUri")
-                try {
-                    val calendarStore = localCalendarStore.get()
-                    val authority = calendarStore.authority
-                    calendarStore.acquireContentProvider()?.let { client ->
-                        calendarStore.getByDbCollectionId(account, client, collectionId)?.let { calendar ->
-                            result[SyncDataType.EVENTS] = LocalItemsCount(
-                                contentProviderName = getProviderAppName(authority),
-                                total = calendar.countEvents(),
-                                modified = calendar.countEvents("${CalendarContract.Events.DIRTY}=1 AND ${CalendarContract.Events.DELETED}=0"),
-                                deleted = calendar.countEvents("${CalendarContract.Events.DELETED}=1")
-                            )
-                        }
-                    }
-                } catch (e: Exception) {
-                    logger.log(Level.WARNING, "Couldn't query number of items in $eventsUri", e)
-                    result -= SyncDataType.EVENTS
-                }
+        when (collection.type) {
+            Collection.TYPE_CALENDAR -> {
+                // TODO For now only calendars/events.
+                // TODO permissions
 
-                // TODO: modified/delete
-
-                // send a copy of the result – the flow wouldn't emit the same value again
-                trySendBlocking(result.values.toList())
-            }
-
-            override fun onChange(selfChange: Boolean) {
-                update()
-            }
-
-            override fun onChange(selfChange: Boolean, uri: Uri?) {
-                update()
-            }
-
-            override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
-                update()
+                logger.fine("Watching calendar provider for changed items")
+                val calendarStore = localCalendarStore.get()
+                val eventsObserver = createLocalDataStoreObserver(account, calendarStore, result) { trySendBlocking(it) }
+                contentResolver.registerContentObserver(CalendarContract.Events.CONTENT_URI, true, eventsObserver)
+                contentResolver.registerContentObserver(CalendarContract.Calendars.CONTENT_URI, true, eventsObserver)
+                registeredObserver = eventsObserver
             }
         }
 
-        // TODO watch all supported content provider URIs
-        logger.fine("Watching $eventsUri for changed items")
-        contentResolver.registerContentObserver(eventsUri, true, observer)
+        // Run first time. Observers all do the same, so we call only the first one.
+        registeredObserver?.onChange(false)
 
-        // run first time
-        observer.onChange(true)
-
+        // Unregister observer when Flow is closed
         awaitClose {
-            // unregister
-            // TODO all supported URIs (calendars, events)
-            contentResolver.unregisterContentObserver(observer)
+            registeredObserver?.let {
+                contentResolver.unregisterContentObserver(it)
+            }
         }
+    }
+
+    private fun createLocalDataStoreObserver(
+        account: Account,
+        calendarStore: LocalCalendarStore, //LocalDataStore<*>,
+        result: MutableMap<SyncDataType, LocalItemsCount>,
+        onUpdate: (List<LocalItemsCount>) -> Unit
+    ): ContentObserver = object : ContentObserver(null) {
+        private fun update() {
+            try {
+                val authority = calendarStore.authority
+                calendarStore.acquireContentProvider()?.let { client ->
+                    calendarStore.getByDbCollectionId(account, client, collectionId)?.let { calendar ->
+                        result[SyncDataType.EVENTS] = LocalItemsCount(
+                            contentProviderName = getProviderAppName(authority),
+                            total = calendar.countEvents(),
+                            modified = calendar.countEvents("${CalendarContract.Events.DIRTY}=1 AND ${CalendarContract.Events.DELETED}=0"),
+                            deleted = calendar.countEvents("${CalendarContract.Events.DELETED}=1")
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Couldn't query local data store items", e)
+                result -= SyncDataType.EVENTS
+            }
+
+            // send a copy of the result – the flow wouldn't emit the same value again
+            onUpdate(result.values.toList())
+        }
+
+        override fun onChange(selfChange: Boolean) = update()
+        override fun onChange(selfChange: Boolean, uri: Uri?) = update()
+        override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) = update()
     }
 
     private fun getProviderAppName(authority: String): String {
