@@ -25,7 +25,7 @@ object TestAccount {
         val accountType = targetContext.getString(R.string.account_type)
         val account = Account(accountName, accountType)
 
-        val initialData = AccountSettings.initialUserData(null)
+        val initialData = AccountSettings.initialUserData(null, null)
         initialData.putString(AccountSettings.KEY_SETTINGS_VERSION, version.toString())
         assertTrue(SystemAccountUtils.createAccount(targetContext, account, initialData))
 
