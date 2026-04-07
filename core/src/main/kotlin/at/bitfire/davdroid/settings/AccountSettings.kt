@@ -380,6 +380,8 @@ class AccountSettings @AssistedInject constructor(
         /** OAuth [AuthState] (serialized as JSON) */
         const val KEY_AUTH_STATE = "auth_state"
 
+        const val KEY_PRECONFIGURATION_URL = "preconfiguration_url"
+
         const val KEY_WIFI_ONLY = "wifi_only"               // sync on WiFi only (default: false)
         const val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
         const val KEY_IGNORE_VPNS = "ignore_vpns"           // ignore vpns at connection detection
@@ -426,7 +428,7 @@ class AccountSettings @AssistedInject constructor(
         /** Static property to remember which AccountSettings updates/migrations are currently running */
         val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<Account>())
 
-        fun initialUserData(credentials: Credentials?): Bundle {
+        fun initialUserData(credentials: Credentials?, preconfigurationUrl: String?): Bundle {
             val bundle = bundleOf(KEY_SETTINGS_VERSION to CURRENT_VERSION.toString())
 
             if (credentials != null) {
@@ -438,6 +440,9 @@ class AccountSettings @AssistedInject constructor(
 
                 if (credentials.authState != null)
                     bundle.putString(KEY_AUTH_STATE, credentials.authState.jsonSerializeString())
+            }
+            if (preconfigurationUrl != null) {
+                bundle.putString(KEY_PRECONFIGURATION_URL, preconfigurationUrl)
             }
 
             return bundle
