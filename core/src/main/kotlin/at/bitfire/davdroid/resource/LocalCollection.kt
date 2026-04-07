@@ -79,13 +79,28 @@ interface LocalCollection<out T: LocalResource> {
     fun forgetETags()
 
     /**
-     * Counts the number of resources in this collection that match the given criteria.
+     * Counts all resources in this collection.
      *
-     * @param where SQL WHERE clause (without the WHERE keyword), or null to count all resources
-     * @param whereArgs arguments for the WHERE clause, or null if where is null
-     * @return number of resources matching the criteria
+     * @return total number of resources
      * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
      */
-    fun count(where: String? = null, whereArgs: Array<String>? = null): Int
+    fun countAll(): Int
+
+    /**
+     * Counts resources in this collection that are locally deleted (pending removal from server).
+     *
+     * @return number of deleted resources
+     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
+     */
+    fun countDeleted(): Int
+
+    /**
+     * Counts resources in this collection that are locally modified (pending upload to server),
+     * excluding resources already marked as deleted.
+     *
+     * @return number of modified resources
+     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
+     */
+    fun countModified(): Int
 
 }

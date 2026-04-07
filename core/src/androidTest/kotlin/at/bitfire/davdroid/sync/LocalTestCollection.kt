@@ -44,4 +44,8 @@ class LocalTestCollection(
     override fun forgetETags() {
     }
 
+    override fun countAll() = entries.size
+    override fun countDeleted() = entries.count { it.deleted }
+    override fun countModified() = entries.count { it.dirty && !it.deleted }
+
 }

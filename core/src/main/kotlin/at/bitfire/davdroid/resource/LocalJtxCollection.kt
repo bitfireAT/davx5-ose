@@ -36,8 +36,9 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
         set(value) { syncstate = value.toString() }
 
 
-    override fun count(where: String?, whereArgs: Array<String>?) =
-        throw UnsupportedOperationException()
+    override fun countAll() = throw UnsupportedOperationException()
+    override fun countDeleted() = throw UnsupportedOperationException()
+    override fun countModified() = throw UnsupportedOperationException()
 
     override fun findDeleted(): List<LocalJtxICalObject> {
         val values = queryDeletedICalObjects()

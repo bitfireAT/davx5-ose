@@ -64,9 +64,15 @@ class LocalCalendar @AssistedInject constructor(
         return recurringCalendar.addEventAndExceptions(event)
     }
 
-    override fun count(where: String?, whereArgs: Array<String>?): Int =
-        // TODO implement count() without having all entries in memory
-        androidCalendar.findEvents(where, whereArgs).size
+    override fun countAll(): Int =
+        // TODO implement without having all entries in memory
+        androidCalendar.findEvents(null, null).size
+
+    override fun countDeleted(): Int =
+        androidCalendar.findEvents("${Events.DELETED}=1", null).size
+
+    override fun countModified(): Int =
+        androidCalendar.findEvents("${Events.DIRTY}=1 AND ${Events.DELETED}=0", null).size
 
     override fun findDeleted(): List<LocalEvent> {
         val result = LinkedList<LocalEvent>()

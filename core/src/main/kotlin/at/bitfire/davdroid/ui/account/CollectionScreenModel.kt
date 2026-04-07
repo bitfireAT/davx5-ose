@@ -198,9 +198,7 @@ class CollectionScreenModel @AssistedInject constructor(
                 observeLocalDataStore(
                     account = account,
                     localDataStore = localAddressBookStore.get(),
-                    watchUris = listOf(ContactsContract.RawContacts.CONTENT_URI),
-                    selectionModified = "${ContactsContract.RawContacts.DIRTY}=1 AND ${ContactsContract.RawContacts.DELETED}=0",
-                    selectionDeleted = "${ContactsContract.RawContacts.DELETED}=1"
+                    watchUris = listOf(ContactsContract.RawContacts.CONTENT_URI)
                 )
             )
             Collection.TYPE_CALENDAR -> buildList {
@@ -210,17 +208,13 @@ class CollectionScreenModel @AssistedInject constructor(
                     watchUris = listOf(
                         CalendarContract.Calendars.CONTENT_URI,
                         CalendarContract.Events.CONTENT_URI
-                    ),
-                    selectionModified = "${CalendarContract.Events.DIRTY}=1 AND ${CalendarContract.Events.DELETED}=0",
-                    selectionDeleted = "${CalendarContract.Events.DELETED}=1"
+                    )
                 ))
                 tasksAppManager.get().getDataStore()?.let { taskListStore ->
                     add(observeLocalDataStore(
                         account = account,
                         localDataStore = taskListStore,
-                        watchUris = listOf(TaskContract.getContentUri(taskListStore.authority)),
-                        selectionModified = "${TaskContract.Tasks._DIRTY}=1 AND ${TaskContract.Tasks._DELETED}=0",
-                        selectionDeleted = "${TaskContract.Tasks._DELETED}=1"
+                        watchUris = listOf(TaskContract.getContentUri(taskListStore.authority))
                     ))
                 }
             }
@@ -236,9 +230,7 @@ class CollectionScreenModel @AssistedInject constructor(
     private fun observeLocalDataStore(
         account: Account,
         localDataStore: LocalDataStore<*>,
-        watchUris: List<Uri>,
-        selectionModified: String,
-        selectionDeleted: String
+        watchUris: List<Uri>
     ): Flow<LocalItemsCount?> = callbackFlow {
 
         fun queryAndSend() {
@@ -248,9 +240,9 @@ class CollectionScreenModel @AssistedInject constructor(
                     localDataStore.getByDbCollectionId(account, client, collectionId)?.let { store ->
                         count = LocalItemsCount(
                             contentProviderName = getProviderAppName(localDataStore.authority),
-                            total = store.count(),
-                            modified = store.count(selectionModified),
-                            deleted = store.count(selectionDeleted)
+                            total = store.countAll(),
+                            modified = store.countModified(),
+                            deleted = store.countDeleted()
                         )
                     }
                 }
