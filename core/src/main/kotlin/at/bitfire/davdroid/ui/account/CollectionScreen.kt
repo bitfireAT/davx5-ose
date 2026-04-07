@@ -272,30 +272,6 @@ fun CollectionScreen(
                         )
                     }
 
-                    if (sync && lastSynced.isNotEmpty())
-                        CollectionScreen_Entry {
-                            val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
-
-                            for (lastSync in lastSynced) {
-                                val dataType = when (lastSync.dataType) {
-                                    SyncDataType.EVENTS.name -> stringResource(R.string.collection_datatype_events)
-                                    SyncDataType.TASKS.name -> stringResource(R.string.collection_datatype_tasks)
-                                    SyncDataType.CONTACTS.name -> stringResource(R.string.collection_datatype_contacts)
-                                    else -> lastSync.dataType
-                                }
-                                Text(
-                                    text = stringResource(R.string.collection_last_sync, dataType),
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-
-                                val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastSync.lastSynced), ZoneId.systemDefault())
-                                Text(
-                                    text = formatter.format(time),
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            }
-                        }
-
                     if (!localItemCounts.isNullOrEmpty())
                         CollectionScreen_Entry(
                             icon = Icons.Default.BarChart,
@@ -317,6 +293,33 @@ fun CollectionScreen(
                                     // TODO correct string
                                     text = "└ ${count.deleted} unsynced deletion(s)",
                                     style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        }
+
+                    if (sync && lastSynced.isNotEmpty())
+                        CollectionScreen_Entry {
+                            val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+
+                            for ((idx, lastSync) in lastSynced.withIndex()) {
+                                if (idx != 0)
+                                    Spacer(Modifier.height(8.dp))
+
+                                val dataType = when (lastSync.dataType) {
+                                    SyncDataType.EVENTS.name -> stringResource(R.string.collection_datatype_events)
+                                    SyncDataType.TASKS.name -> stringResource(R.string.collection_datatype_tasks)
+                                    SyncDataType.CONTACTS.name -> stringResource(R.string.collection_datatype_contacts)
+                                    else -> lastSync.dataType
+                                }
+                                Text(
+                                    text = stringResource(R.string.collection_last_sync, dataType),
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+
+                                val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastSync.lastSynced), ZoneId.systemDefault())
+                                Text(
+                                    text = formatter.format(time),
+                                    style = MaterialTheme.typography.bodyLarge
                                 )
                             }
                         }
@@ -345,7 +348,7 @@ fun CollectionScreen_Entry(
     text: String? = null,
     isLast: Boolean = false,
     control: @Composable (() -> Unit)? = null,
-    content: (@Composable () -> Unit)? = null
+    content: @Composable (() -> Unit)? = null
 ) {
     Row(
         verticalAlignment = if (content != null) Alignment.Top else Alignment.CenterVertically
@@ -381,10 +384,10 @@ fun CollectionScreen_Entry(
             control()
     }
 
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(12.dp))
     if (!isLast) {
         HorizontalDivider(modifier = Modifier.padding(start = 44.dp))
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
     }
 }
 
