@@ -12,6 +12,7 @@ import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import net.openid.appauth.AuthState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -76,14 +77,14 @@ class AccountSettingsTest {
         }
 
         // Pass credentials
-        val credentials = Credentials("username", "password".toSensitiveString(), "alias")
+        val credentials = Credentials("username", null, "alias", AuthState())
         AccountSettings.initialUserData(credentials, null).let { bundle ->
             assertEquals(AccountSettings.CURRENT_VERSION.toString(), bundle.getString(AccountSettings.KEY_SETTINGS_VERSION))
 
             // Credentials
             assertEquals("username", bundle.getString(AccountSettings.KEY_USERNAME))
-            assertEquals("password", bundle.getString(AccountSettings.KEY_CERTIFICATE_ALIAS))
-            assertEquals("alias", bundle.getString(AccountSettings.KEY_AUTH_STATE))
+            assertEquals("alias", bundle.getString(AccountSettings.KEY_CERTIFICATE_ALIAS))
+            assertEquals("{}", bundle.getString(AccountSettings.KEY_AUTH_STATE))
 
             // Preconfiguration URL
             assertNull(bundle.getString(AccountSettings.KEY_PRECONFIGURATION_URL))
