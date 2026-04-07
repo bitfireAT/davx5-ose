@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -271,8 +272,8 @@ fun CollectionScreen(
                         )
                     }
 
-                    Column(Modifier.padding(start = 44.dp)) {
-                        if (sync && lastSynced.isNotEmpty()) {
+                    if (sync && lastSynced.isNotEmpty())
+                        CollectionScreen_Entry {
                             val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
 
                             for (lastSync in lastSynced) {
@@ -290,63 +291,44 @@ fun CollectionScreen(
                                 val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastSync.lastSynced), ZoneId.systemDefault())
                                 Text(
                                     text = formatter.format(time),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    modifier = Modifier.padding(bottom = 16.dp)
+                                    style = MaterialTheme.typography.bodyLarge
                                 )
                             }
                         }
-                    }
 
                     if (!localItemCounts.isNullOrEmpty())
-                        Row(modifier = Modifier.padding(top = 16.dp)) {
-                            Icon(
-                                imageVector = Icons.Default.BarChart,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = 12.dp)
-                                    .size(32.dp)
-                            )
-
-                            Column {
+                        CollectionScreen_Entry(
+                            icon = Icons.Default.BarChart,
+                            title = stringResource(R.string.collection_synced_items)
+                        ) {
+                            for (count in localItemCounts) {
                                 Text(
                                     // TODO correct string
-                                    text = stringResource(R.string.collection_synced_items),
-                                    style = MaterialTheme.typography.titleMedium
+                                    text = "${count.total} local item(s) in ${count.contentProviderName}",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.padding(top = 8.dp)
                                 )
-
-                                for (count in localItemCounts) {
-                                    Text(
-                                        // TODO correct string
-                                        text = "${count.total} local item(s) in ${count.contentProviderName}",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        modifier = Modifier.padding(top = 8.dp)
-                                    )
-                                    Text(
-                                        // TODO correct string
-                                        text = "├ ${count.modified} unsynced modification(s)",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                    Text(
-                                        // TODO correct string
-                                        text = "└ ${count.deleted} unsynced deletion(s)",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
+                                Text(
+                                    // TODO correct string
+                                    text = "├ ${count.modified} unsynced modification(s)",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    // TODO correct string
+                                    text = "└ ${count.deleted} unsynced deletion(s)",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
                             }
                         }
 
-                    // TODO provide CollectionScreen_Entry that takes Composable block to unify paddings
-                    Column(Modifier.padding(start = 44.dp)) {
-                        Text(
-                            text = stringResource(R.string.collection_url),
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
+                    CollectionScreen_Entry(
+                        title = stringResource(R.string.collection_url),
+                        isLast = true
+                    ) {
                         SelectionContainer {
                             Text(
                                 text = url,
-                                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                                modifier = Modifier
+                                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace)
                             )
                         }
                     }
@@ -361,11 +343,12 @@ fun CollectionScreen_Entry(
     icon: ImageVector? = null,
     title: String? = null,
     text: String? = null,
-    control: @Composable (() -> Unit)? = null
+    isLast: Boolean = false,
+    control: @Composable (() -> Unit)? = null,
+    content: (@Composable () -> Unit)? = null
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(bottom = 16.dp)
+        verticalAlignment = if (content != null) Alignment.Top else Alignment.CenterVertically
     ) {
         if (icon != null)
             Icon(
@@ -390,13 +373,19 @@ fun CollectionScreen_Entry(
                     text = text,
                     style = MaterialTheme.typography.bodyLarge
                 )
+
+            content?.invoke()
         }
 
         if (control != null)
             control()
     }
 
-    // HorizontalDivider()
+    Spacer(Modifier.height(8.dp))
+    if (!isLast) {
+        HorizontalDivider(modifier = Modifier.padding(start = 44.dp))
+        Spacer(Modifier.height(8.dp))
+    }
 }
 
 @Composable
