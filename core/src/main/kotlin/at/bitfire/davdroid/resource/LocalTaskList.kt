@@ -43,6 +43,11 @@ class LocalTaskList (
             dmfsTaskList.writeSyncState(state.toString())
         }
 
+
+    override fun count(where: String?, whereArgs: Array<String>?): Int =
+        // TODO implement count() without having all entries in memory
+        dmfsTaskList.findTasks(where, whereArgs).size
+
     override fun findDeleted() = dmfsTaskList.findTasks(Tasks._DELETED, null)
         .map { LocalTask(it) }
 

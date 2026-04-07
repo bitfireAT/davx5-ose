@@ -78,4 +78,13 @@ interface LocalCollection<out T: LocalResource> {
      */
     fun forgetETags()
 
+    /**
+     * Counts the number of resources in this collection that match the given criteria.
+     *
+     * @param where SQL WHERE clause (without the WHERE keyword), or null to count all resources
+     * @param whereArgs arguments for the WHERE clause, or null if where is null
+     * @return number of resources matching the criteria
+     */
+    fun count(where: String? = null, whereArgs: Array<String>? = null): Int
+
 }

@@ -76,6 +76,8 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
 
     override fun forgetETags() = updateSetETag(null)
 
+    override fun count(where: String?, whereArgs: Array<String>?): Int = 0
+
 
     object Factory: JtxCollectionFactory<LocalJtxCollection> {
         override fun newInstance(account: Account, client: ContentProviderClient, id: Long) = LocalJtxCollection(account, client, id)

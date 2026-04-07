@@ -9,6 +9,7 @@ import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
 import android.provider.CalendarContract
+import android.provider.ContactsContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -20,10 +21,12 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
+import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
+import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.Lazy
 import dagger.assisted.Assisted
@@ -45,6 +48,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -56,9 +60,11 @@ class CollectionScreenModel @AssistedInject constructor(
     db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
     private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
+    private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
+    private val tasksAppManager: Lazy<TasksAppManager>,
     settings: SettingsManager,
     syncStatsRepository: DavSyncStatsRepository
 ): ViewModel() {
@@ -182,70 +188,141 @@ class CollectionScreenModel @AssistedInject constructor(
     )
 
     private fun countLocalItemsFlow(collection: Collection): Flow<List<LocalItemsCount>> = callbackFlow {
-        val result = mutableMapOf<SyncDataType, LocalItemsCount>()
+        val result = mutableMapOf<String, LocalItemsCount>()
         val contentResolver = context.contentResolver
 
         val service = serviceRepository.get(collection.serviceId) ?: return@callbackFlow
         val account = accountRepository.fromName(service.accountName)
 
-        var registeredObserver: ContentObserver? = null
+        val registeredObservers = mutableListOf<ContentObserver>()
 
-        when (collection.type) {
-            Collection.TYPE_CALENDAR -> {
-                // TODO For now only calendars/events.
-                // TODO permissions
+        // TODO For now only calendars/events.
+        // TODO permissions
 
-                logger.fine("Watching calendar provider for changed items")
-                val calendarStore = localCalendarStore.get()
-                val eventsObserver = createLocalDataStoreObserver(account, calendarStore, result) { trySendBlocking(it) }
-                contentResolver.registerContentObserver(CalendarContract.Events.CONTENT_URI, true, eventsObserver)
-                contentResolver.registerContentObserver(CalendarContract.Calendars.CONTENT_URI, true, eventsObserver)
-                registeredObserver = eventsObserver
+        // Unified callback creator for both address books and calendars
+        val createOnUpdateCallback = { localDataStore: LocalDataStore<*> ->
+            { localItemsCount: LocalItemsCount? ->
+                if (localItemsCount != null)
+                    result[localDataStore.authority] = localItemsCount
+                else
+                    result -= localDataStore.authority
+                trySendBlocking(result.values.toList())
+                Unit
             }
         }
 
-        // Run first time. Observers all do the same, so we call only the first one.
-        registeredObserver?.onChange(false)
+        when (collection.type) {
+            Collection.TYPE_ADDRESSBOOK -> {
+                val addressBookStore = localAddressBookStore.get()
+                val observer = registerLocalDataStoreObserver(
+                    account = account,
+                    localDataStore = addressBookStore,
+                    watchUris = listOf(
+                        ContactsContract.RawContacts.CONTENT_URI
+                    ),
+                    selectionModified = "${ContactsContract.RawContacts.DIRTY}=1 AND ${ContactsContract.RawContacts.DELETED}=0",
+                    selectionDeleted = "${ContactsContract.RawContacts.DELETED}=1",
+                    onUpdate = createOnUpdateCallback(addressBookStore)
+                )
+                registeredObservers.add(observer)
+            }
 
-        // Unregister observer when Flow is closed
+            Collection.TYPE_CALENDAR -> {
+                val calendarStore = localCalendarStore.get()
+                val eventsObserver = registerLocalDataStoreObserver(
+                    account = account,
+                    localDataStore = calendarStore,
+                    watchUris = listOf(
+                        CalendarContract.Calendars.CONTENT_URI,
+                        CalendarContract.Events.CONTENT_URI
+                    ),
+                    selectionModified = "${CalendarContract.Events.DIRTY}=1 AND ${CalendarContract.Events.DELETED}=0",
+                    selectionDeleted = "${CalendarContract.Events.DELETED}=1",
+                    onUpdate = createOnUpdateCallback(calendarStore)
+                )
+                registeredObservers.add(eventsObserver)
+
+                tasksAppManager.get().getDataStore()?.let { taskListStore ->
+                    val tasksObserver = registerLocalDataStoreObserver(
+                        account = account,
+                        localDataStore = taskListStore,
+                        watchUris = listOf(
+                            TaskContract.getContentUri(taskListStore.authority)
+                        ),
+                        selectionModified = "${TaskContract.Tasks._DIRTY}=1 AND ${TaskContract.Tasks._DELETED}=0",
+                        selectionDeleted = "${TaskContract.Tasks._DELETED}=1",
+                        onUpdate = createOnUpdateCallback(taskListStore)
+                    )
+                    registeredObservers.add(tasksObserver)
+                }
+            }
+        }
+
+        // Run observers to initially count the items
+        for (observer in registeredObservers)
+            observer.onChange(false)
+
+        // Unregister all observers when Flow is closed
         awaitClose {
-            registeredObserver?.let {
+            registeredObservers.forEach {
                 contentResolver.unregisterContentObserver(it)
             }
         }
     }
 
+    private fun registerLocalDataStoreObserver(
+        account: Account,
+        localDataStore: LocalDataStore<*>,
+        watchUris: List<Uri>,
+        selectionModified: String,
+        selectionDeleted: String,
+        onUpdate: (LocalItemsCount?) -> Unit
+    ): ContentObserver {
+        val contentResolver = context.contentResolver
+        val observer = createLocalDataStoreObserver(account, localDataStore, selectionModified, selectionDeleted, onUpdate)
+        for (uri in watchUris)
+            contentResolver.registerContentObserver(uri, true, observer)
+        return observer
+    }
+
     private fun createLocalDataStoreObserver(
         account: Account,
-        calendarStore: LocalCalendarStore, //LocalDataStore<*>,
-        result: MutableMap<SyncDataType, LocalItemsCount>,
-        onUpdate: (List<LocalItemsCount>) -> Unit
+        localDataStore: LocalDataStore<*>,
+        selectionModified: String,
+        selectionDeleted: String,
+        onUpdate: (LocalItemsCount?) -> Unit
     ): ContentObserver = object : ContentObserver(null) {
+
+        /**
+         * Counts the items in [localDataStore] and submits the result as [LocalItemsCount] to [onUpdate].
+         */
         private fun update() {
+            var result: LocalItemsCount? = null
+
             try {
-                val authority = calendarStore.authority
-                calendarStore.acquireContentProvider()?.let { client ->
-                    calendarStore.getByDbCollectionId(account, client, collectionId)?.let { calendar ->
-                        result[SyncDataType.EVENTS] = LocalItemsCount(
+                val authority = localDataStore.authority
+                localDataStore.acquireContentProvider()?.use { client ->
+                    localDataStore.getByDbCollectionId(account, client, collectionId)?.let { calendar ->
+                        result = LocalItemsCount(
                             contentProviderName = getProviderAppName(authority),
-                            total = calendar.countEvents(),
-                            modified = calendar.countEvents("${CalendarContract.Events.DIRTY}=1 AND ${CalendarContract.Events.DELETED}=0"),
-                            deleted = calendar.countEvents("${CalendarContract.Events.DELETED}=1")
+                            total = calendar.count(),
+                            modified = calendar.count(selectionModified),
+                            deleted = calendar.count(selectionDeleted)
                         )
                     }
                 }
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't query local data store items", e)
-                result -= SyncDataType.EVENTS
             }
 
             // send a copy of the result – the flow wouldn't emit the same value again
-            onUpdate(result.values.toList())
+            onUpdate(result)
         }
 
         override fun onChange(selfChange: Boolean) = update()
         override fun onChange(selfChange: Boolean, uri: Uri?) = update()
         override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) = update()
+
     }
 
     private fun getProviderAppName(authority: String): String {

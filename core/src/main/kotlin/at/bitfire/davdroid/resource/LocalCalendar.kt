@@ -64,7 +64,7 @@ class LocalCalendar @AssistedInject constructor(
         return recurringCalendar.addEventAndExceptions(event)
     }
 
-    fun countEvents(where: String? = null, whereArgs: Array<String>? = null): Int =
+    override fun count(where: String?, whereArgs: Array<String>?): Int =
         // TODO implement count() without having all entries in memory
         androidCalendar.findEvents(where, whereArgs).size
 

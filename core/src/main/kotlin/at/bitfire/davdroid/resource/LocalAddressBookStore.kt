@@ -132,6 +132,9 @@ class LocalAddressBookStore @Inject constructor(
             localAddressBookFactory.create(account, addressBookAccount, client)
         }
 
+    override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalAddressBook? =
+        getAll(account, client).firstOrNull { it.dbCollectionId == dbCollectionId }
+
     override fun update(client: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
         var currentAccount = localCollection.addressBookAccount
         logger.log(Level.INFO, "Updating local address book $currentAccount from collection $fromCollection")

@@ -115,4 +115,6 @@ class LocalJtxCollectionStore @Inject constructor(
         localCollection.delete()
     }
 
+    override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalJtxCollection? = null
+
 }
