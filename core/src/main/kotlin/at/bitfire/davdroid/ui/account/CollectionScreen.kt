@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.DoNotDisturbOn
@@ -289,40 +290,57 @@ fun CollectionScreen(
                                 val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastSync.lastSynced), ZoneId.systemDefault())
                                 Text(
                                     text = formatter.format(time),
-                                    style = MaterialTheme.typography.bodyLarge
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.padding(bottom = 16.dp)
                                 )
                             }
                         }
+                    }
 
-                        for (count in localItemCounts.orEmpty()) {
-                            Text(
-                                // TODO correct string
-                                text = stringResource(R.string.collection_synced_items),
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(top = 16.dp)
+                    if (!localItemCounts.isNullOrEmpty())
+                        Row(modifier = Modifier.padding(top = 16.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.BarChart,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 12.dp)
+                                    .size(32.dp)
                             )
 
-                            Text(
-                                // TODO correct string
-                                text = "${count.total} local item(s) in ${count.contentProviderName}",
-                                style = MaterialTheme.typography.bodyLarge,
-                            )
-                            Text(
-                                // TODO correct string
-                                text = "${count.modified} unsynced modification(s)",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                // TODO correct string
-                                text = "${count.deleted} unsynced deletion(s)",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+                            Column {
+                                Text(
+                                    // TODO correct string
+                                    text = stringResource(R.string.collection_synced_items),
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+
+                                for (count in localItemCounts) {
+                                    Text(
+                                        // TODO correct string
+                                        text = "${count.total} local item(s) in ${count.contentProviderName}",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    )
+                                    Text(
+                                        // TODO correct string
+                                        text = "├ ${count.modified} unsynced modification(s)",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    Text(
+                                        // TODO correct string
+                                        text = "└ ${count.deleted} unsynced deletion(s)",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                            }
                         }
 
+                    // TODO provide CollectionScreen_Entry that takes Composable block to unify paddings
+                    Column(Modifier.padding(start = 44.dp)) {
                         Text(
                             text = stringResource(R.string.collection_url),
                             style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(top = 8.dp)
+                            modifier = Modifier.padding(top = 16.dp)
                         )
                         SelectionContainer {
                             Text(
@@ -377,6 +395,8 @@ fun CollectionScreen_Entry(
         if (control != null)
             control()
     }
+
+    // HorizontalDivider()
 }
 
 @Composable
