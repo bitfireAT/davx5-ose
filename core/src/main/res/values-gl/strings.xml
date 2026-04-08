@@ -488,4 +488,11 @@
     <string name="widget_sync_description">Toca para realizar manualmente a sincronización.</string>
     <string name="intro_autostart_text">O firmaware específico do fabricante podería bloquear a sincronización. Se che afecta, só podes solucionalo manualmente.</string>
     <string name="widget_icon_sync_label">Icona do Botón de sincr.</string>
+    <string name="collection_datatype_contacts_count">%1$d contactos</string>
+    <string name="collection_datatype_events_count">%1$d eventos</string>
+    <string name="collection_datatype_tasks_count">%1$d tarefas</string>
+    <string name="collection_synced_items">Elementos locais actuais:</string>
+    <string name="collection_synced_items_count">%1$s, de</string>
+    <string name="collection_unsynced_modifications">%1$d modificacións locais non sincronizadas</string>
+    <string name="collection_unsynced_deletions">%1$d eliminacións locais non sincronizadas</string>
 </resources>
