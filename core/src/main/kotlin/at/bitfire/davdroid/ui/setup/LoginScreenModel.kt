@@ -16,6 +16,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.SyncValidator
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -34,6 +35,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import java.util.Optional
 import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = LoginScreenModel.Factory::class)
@@ -47,7 +50,8 @@ class LoginScreenModel @AssistedInject constructor(
     private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
     private val resourceFinderFactory: DavResourceFinder.Factory,
-    settingsManager: SettingsManager
+    settingsManager: SettingsManager,
+    private val syncValidator: Optional<SyncValidator>
 ): ViewModel() {
 
     @AssistedFactory
@@ -181,6 +185,7 @@ class LoginScreenModel @AssistedInject constructor(
         val loading: Boolean = false,
         val foundNothing: Boolean = false,
         val encountered401: Boolean = false,
+        val loginValidationFailed: Boolean = false,
         val logs: String? = null
     )
 
@@ -193,6 +198,24 @@ class LoginScreenModel @AssistedInject constructor(
     private fun detectResources() {
         detectResourcesUiState = detectResourcesUiState.copy(loading = true)
         detectResourcesJob = viewModelScope.launch {
+            // First, if we have a validator, validate the server
+            val httpUrl = loginInfo.baseUri!!.toHttpUrlOrNull()
+            if (syncValidator.isPresent && httpUrl != null) {
+                val isValid = withContext(Dispatchers.IO) {
+                    runInterruptible {
+                        syncValidator.get().beforeLogin(httpUrl)
+                    }
+                }
+                if (!isValid) {
+                    detectResourcesUiState = detectResourcesUiState.copy(
+                        loading = false,
+                        loginValidationFailed = true
+                    )
+                    return@launch
+                }
+            }
+
+            // Then, find initial configuration
             val result = withContext(Dispatchers.IO) {
                  runInterruptible {
                      val finder = resourceFinderFactory.create(loginInfo.baseUri!!, loginInfo.credentials)
