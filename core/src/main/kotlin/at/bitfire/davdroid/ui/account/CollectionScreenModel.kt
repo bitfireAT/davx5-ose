@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.content.ContentProviderClient
 import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
@@ -40,6 +41,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -154,7 +156,10 @@ class CollectionScreenModel @AssistedInject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val localItemCounts: Flow<List<LocalItemsCount>> = combine(collection.filterNotNull(), account.filterNotNull()) { collection, account ->
+    val localItemCounts: Flow<List<LocalItemsCount>> = combine(
+        collection.filterNotNull(),
+        account.filterNotNull()
+    ) { collection, account ->
         countLocalItemsFlow(collection, account)
     }.flatMapLatest { it }
 
@@ -253,22 +258,29 @@ class CollectionScreenModel @AssistedInject constructor(
         localDataStore: LocalDataStore<*>,
         watchUris: List<Uri>
     ): Flow<LocalItemsCount?> = callbackFlow {
+        val client: ContentProviderClient = try {
+            localDataStore.acquireContentProvider()
+        } catch (e: SecurityException) {
+            logger.log(Level.WARNING, "No permission to access data store", e)
+            null
+        } ?: run {
+            // Emit null so that combine() can still emit values from other flows (e.g. calendar
+            // stats can still be shown even when tasks permissions are missing).
+            trySendBlocking(null)
+
+            // Properly close flow to avoid "missing awaitClose" exception at runtime.
+            close()
+            return@callbackFlow
+        }
+
         fun queryAndSend() {
-            var count: LocalItemsCount? = null
-            try {
-                // Note: acquireContentProvider may return null when the content provider is not available.
-                localDataStore.acquireContentProvider()?.use { client ->
-                    localDataStore.getByDbCollectionId(account, client, collectionId)?.let { store ->
-                        count = LocalItemsCount(
-                            contentProviderName = getProviderAppName(localDataStore.authority),
-                            total = store.countAll(),
-                            modified = store.countModified(),
-                            deleted = store.countDeleted()
-                        )
-                    }
-                }
-            } catch (e: SecurityException) {
-                logger.log(Level.WARNING, "No permissions to query local data store items", e)
+            val count = localDataStore.getByDbCollectionId(account, client, collectionId)?.let { store ->
+                LocalItemsCount(
+                    contentProviderName = getProviderAppName(localDataStore.authority),
+                    total = store.countAll(),
+                    modified = store.countModified(),
+                    deleted = store.countDeleted()
+                )
             }
             trySendBlocking(count)
         }
@@ -279,12 +291,15 @@ class CollectionScreenModel @AssistedInject constructor(
             override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) = queryAndSend()
         }
 
-        /* It seems to be OK to register the same observer object for multiple URIs and then
-        unregister it only once for all URIs. */
-        for (uri in watchUris)
-            context.contentResolver.registerContentObserver(uri, true, observer)
+        client.use {
+            logger.fine("Watching ${localDataStore.authority} for changes")
+            /* It seems to be OK to register the same observer object for multiple URIs and then
+                unregister it only once for all URIs. */
+            for (uri in watchUris)
+                context.contentResolver.registerContentObserver(uri, true, observer)
 
-        queryAndSend()  // initial count
+            queryAndSend()  // initial count
+        }
 
         awaitClose {
             context.contentResolver.unregisterContentObserver(observer)
