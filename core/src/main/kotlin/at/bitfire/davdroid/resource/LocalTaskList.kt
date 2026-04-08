@@ -48,10 +48,10 @@ class LocalTaskList (
         dmfsTaskList.countTasks(null, null)
 
     override fun countDeleted(): Int =
-        dmfsTaskList.countTasks("${Tasks._DELETED}=1", null)
+        dmfsTaskList.countTasks(Tasks._DELETED, null)
 
     override fun countModified(): Int =
-        dmfsTaskList.countTasks("${Tasks._DIRTY}=1 AND ${Tasks._DELETED}=0", null)
+        dmfsTaskList.countTasks("${Tasks._DIRTY} AND NOT ${Tasks._DELETED}", null)
 
     override fun findDeleted() = dmfsTaskList.findTasks(Tasks._DELETED, null)
         .map { LocalTask(it) }

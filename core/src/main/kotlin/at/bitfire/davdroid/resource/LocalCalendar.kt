@@ -68,10 +68,10 @@ class LocalCalendar @AssistedInject constructor(
         androidCalendar.countEvents(null, null)
 
     override fun countDeleted(): Int =
-        androidCalendar.countEvents("${Events.DELETED}=1", null)
+        androidCalendar.countEvents(Events.DELETED, null)
 
     override fun countModified(): Int =
-        androidCalendar.countEvents("${Events.DIRTY}=1 AND ${Events.DELETED}=0", null)
+        androidCalendar.countEvents("${Events.DIRTY} AND NOT ${Events.DELETED}", null)
 
     override fun findDeleted(): List<LocalEvent> {
         val result = LinkedList<LocalEvent>()

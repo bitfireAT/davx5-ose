@@ -41,7 +41,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -236,6 +235,7 @@ class CollectionScreenModel @AssistedInject constructor(
                         CalendarContract.Events.CONTENT_URI
                     )
                 ))
+
                 tasksAppManager.get().getDataStore()?.let { taskListStore ->
                     add(observeLocalDataStore(
                         account = account,

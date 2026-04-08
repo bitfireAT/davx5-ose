@@ -6,9 +6,12 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.content.ContentProviderClient
+import androidx.room.paging.util.queryItemCount
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxCollectionFactory
 import at.bitfire.ical4android.JtxICalObject
+import at.techbee.jtx.JtxContract
+import at.techbee.jtx.JtxContract.asSyncAdapter
 
 /**
  * Application-specific implementation for jtx collections.
@@ -36,9 +39,38 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
         set(value) { syncstate = value.toString() }
 
 
-    override fun countAll() = throw UnsupportedOperationException()
-    override fun countDeleted() = throw UnsupportedOperationException()
-    override fun countModified() = throw UnsupportedOperationException()
+    override fun countAll(): Int =
+        client.query(
+            JtxContract.JtxICalObject.CONTENT_URI.asSyncAdapter(account),
+            arrayOf(JtxContract.JtxICalObject.ID),
+            "${JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID}=?",
+            arrayOf(id.toString()),
+            null
+        )?.use { cursor ->
+            cursor.count
+        } ?: 0
+
+    override fun countDeleted() =
+        client.query(
+            JtxContract.JtxICalObject.CONTENT_URI.asSyncAdapter(account),
+            arrayOf(JtxContract.JtxICalObject.ID),
+            "${JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID}=? AND ${JtxContract.JtxICalObject.DELETED}",
+            arrayOf(id.toString()),
+            null
+        )?.use { cursor ->
+            cursor.count
+        } ?: 0
+
+    override fun countModified() =
+        client.query(
+            JtxContract.JtxICalObject.CONTENT_URI.asSyncAdapter(account),
+            arrayOf(JtxContract.JtxICalObject.ID),
+            "${JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID}=? AND ${JtxContract.JtxICalObject.DIRTY} AND NOT ${JtxContract.JtxICalObject.DELETED}",
+            arrayOf(id.toString()),
+            null
+        )?.use { cursor ->
+            cursor.count
+        } ?: 0
 
     override fun findDeleted(): List<LocalJtxICalObject> {
         val values = queryDeletedICalObjects()

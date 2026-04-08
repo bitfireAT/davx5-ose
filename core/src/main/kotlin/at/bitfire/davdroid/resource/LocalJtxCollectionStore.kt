@@ -98,7 +98,8 @@ class LocalJtxCollectionStore @Inject constructor(
         JtxCollection.find(account, client, context, LocalJtxCollection.Factory, null, null)
 
     override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalJtxCollection? =
-        throw UnsupportedOperationException()
+        JtxCollection.find(account, client, context, LocalJtxCollection.Factory,
+            "${JtxContract.JtxCollection.SYNC_ID}=?", arrayOf(dbCollectionId.toString())).firstOrNull()
 
     override fun update(client: ContentProviderClient, localCollection: LocalJtxCollection, fromCollection: Collection) {
         val accountSettings = accountSettingsFactory.create(localCollection.account)
