@@ -488,4 +488,7 @@
     <string name="about_translations_over_transifex">Über Transifex</string>
     <string name="about_translations_over_weblate">Über Weblate</string>
     <string name="about_translations_contribute">Beim Übersetzen helfen</string>
+    <string name="collection_datatype_contacts_count">%1$d Kontakte</string>
+    <string name="collection_datatype_events_count">%1$d Termine</string>
+    <string name="collection_datatype_tasks_count">%1$d Aufgaben</string>
 </resources>
