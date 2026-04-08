@@ -488,4 +488,11 @@
     <string name="about_translations_over_transifex">Kasutades Transifexi</string>
     <string name="about_translations_over_weblate">Kasutades Weblate\'i</string>
     <string name="about_translations_contribute">Aita tõlkida</string>
+    <string name="collection_datatype_contacts_count">%1$d kontakti</string>
+    <string name="collection_datatype_events_count">%1$d sündmust</string>
+    <string name="collection_datatype_tasks_count">%1$d ülesannet</string>
+    <string name="collection_synced_items_count">neist %1$s</string>
+    <string name="collection_synced_items">Praegused kohalikud kirjed:</string>
+    <string name="collection_unsynced_modifications">%1$d sünkroonimata kohalikku muudatust</string>
+    <string name="collection_unsynced_deletions">%1$d sünkroonimata kohalikku kustutamist</string>
 </resources>
