@@ -491,4 +491,10 @@
     <string name="about_translations_over_transifex">Pelo Transifex</string>
     <string name="about_translations_over_weblate">Pelo Weblate</string>
     <string name="about_translations_contribute">Ajude a traduzir</string>
+    <string name="collection_datatype_contacts_count">%1$d contatos</string>
+    <string name="collection_datatype_events_count">%1$d eventos</string>
+    <string name="collection_datatype_tasks_count">%1$d tarefas</string>
+    <string name="collection_synced_items">Itens locais atuais:</string>
+    <string name="collection_unsynced_modifications">%1$d modificações locais não sincronizadas</string>
+    <string name="collection_unsynced_deletions">%1$d apagamentos locais não sincronizados</string>
 </resources>
