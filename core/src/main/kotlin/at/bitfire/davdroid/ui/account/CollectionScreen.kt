@@ -46,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
@@ -97,8 +98,9 @@ fun CollectionScreen(
         displayName = collection.displayName,
         description = collection.description,
         owner = model.owner.collectAsStateWithLifecycle(null).value,
-        lastSynced = model.lastSynced.collectAsStateWithLifecycle(emptyList()).value,
         localItemCounts = model.localItemCounts.collectAsStateWithLifecycle(initialValue = emptyList()).value,
+        pastEventTimeLimit = model.pastEventTimeLimit.collectAsStateWithLifecycle(null).value,
+        lastSynced = model.lastSynced.collectAsStateWithLifecycle(emptyList()).value,
         supportsWebPush = collection.supportsWebPush,
         pushSubscriptionCreated = collection.pushSubscriptionCreated,
         pushSubscriptionExpires = collection.pushSubscriptionExpires,
@@ -124,7 +126,8 @@ fun CollectionScreen(
     description: String? = null,
     owner: String? = null,
     lastSynced: List<DavSyncStatsRepository.LastSynced> = emptyList(),
-    localItemCounts: List<CollectionScreenModel.LocalItemsCount>? = null,
+    localItemCounts: List<CollectionScreenModel.LocalItemsCount>?,
+    pastEventTimeLimit: Int?,
     supportsWebPush: Boolean = false,
     pushSubscriptionCreated: Long? = null,
     pushSubscriptionExpires: Long? = null,
@@ -254,47 +257,33 @@ fun CollectionScreen(
                             text = owner
                         )
 
-                    if (supportsWebPush) {
-                        val text =
-                            if (pushSubscriptionCreated != null && pushSubscriptionExpires != null) {
-                                val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault())
-                                stringResource(
-                                    R.string.collection_push_subscribed_at,
-                                    formatter.format(Instant.ofEpochSecond(pushSubscriptionCreated)),
-                                    formatter.format(Instant.ofEpochSecond(pushSubscriptionExpires))
-                                )
-                            } else
-                                stringResource(R.string.collection_push_web_push)
-                        CollectionScreen_Entry(
-                            icon = Icons.Default.CloudSync,
-                            title = stringResource(R.string.collection_push_support),
-                            text = text
-                        )
-                    }
-
                     if (!localItemCounts.isNullOrEmpty())
                         CollectionScreen_Entry(
                             icon = Icons.Default.BarChart,
-                            title = stringResource(R.string.collection_synced_items)
+                            title = stringResource(R.string.collection_synced_items_title)
                         ) {
                             for (count in localItemCounts) {
                                 Text(
-                                    // TODO correct string
-                                    text = "${count.total} local item(s) in ${count.contentProviderName}",
+                                    text = pluralStringResource(R.plurals.collection_synced_items_total, count.total, count.total, count.contentProviderName),
                                     style = MaterialTheme.typography.bodyLarge,
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
                                 Text(
-                                    // TODO correct string
-                                    text = "├ ${count.modified} unsynced modification(s)",
+                                    text = pluralStringResource( R.plurals.collection_synced_items_modified, count.modified, count.modified),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Text(
-                                    // TODO correct string
-                                    text = "└ ${count.deleted} unsynced deletion(s)",
+                                    text = pluralStringResource( R.plurals.collection_synced_items_deleted, count.deleted, count.deleted),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
+
+                            if (pastEventTimeLimit != null)
+                                Text(
+                                    text = pluralStringResource( R.plurals.collection_synced_items_past_event_time_limit, pastEventTimeLimit, pastEventTimeLimit),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
                         }
 
                     if (sync && lastSynced.isNotEmpty())
@@ -323,6 +312,24 @@ fun CollectionScreen(
                                 )
                             }
                         }
+
+                    if (supportsWebPush) {
+                        val text =
+                            if (pushSubscriptionCreated != null && pushSubscriptionExpires != null) {
+                                val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault())
+                                stringResource(
+                                    R.string.collection_push_subscribed_at,
+                                    formatter.format(Instant.ofEpochSecond(pushSubscriptionCreated)),
+                                    formatter.format(Instant.ofEpochSecond(pushSubscriptionExpires))
+                                )
+                            } else
+                                stringResource(R.string.collection_push_web_push)
+                        CollectionScreen_Entry(
+                            icon = Icons.Default.CloudSync,
+                            title = stringResource(R.string.collection_push_support),
+                            text = text
+                        )
+                    }
 
                     CollectionScreen_Entry(
                         title = stringResource(R.string.collection_url),
@@ -410,6 +417,7 @@ fun CollectionScreen_Preview() {
                 lastSynced = 1234567890
             )
         ),
+        pastEventTimeLimit = 90,
         localItemCounts = listOf(
             CollectionScreenModel.LocalItemsCount(
                 contentProviderName = "Calender Storage",

@@ -10,6 +10,7 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,6 +18,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -24,6 +26,7 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.resource.LocalDataStore
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -34,12 +37,15 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.utils.io.ioDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
@@ -49,6 +55,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -57,10 +64,12 @@ import java.util.logging.Logger
 class CollectionScreenModel @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val accountRepository: AccountRepository,
+    private val accountSettingsFactory: AccountSettings.Factory,
     @Assisted val collectionId: Long,
     private val collectionRepository: DavCollectionRepository,
     private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
     db: AppDatabase,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val logger: Logger,
@@ -130,10 +139,24 @@ class CollectionScreenModel @AssistedInject constructor(
 
     val lastSynced = syncStatsRepository.getLastSyncedFlow(collectionId)
 
+    /** The account's "past event time limit", or null if not set or not relevant for the collection. */
+    val pastEventTimeLimit = collection.filterNotNull().map { collection ->
+        if (collection.type == Collection.TYPE_CALENDAR) {
+            val service = serviceRepository.get(collection.serviceId) ?: return@map null
+            val account = accountRepository.fromName(service.accountName)
+            val accountSettings = withContext(ioDispatcher) {
+                accountSettingsFactory.create(account)
+            }
+            accountSettings.getTimeRangePastDays()
+        } else  // doesn't apply to address books
+            null
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val localItemCounts: Flow<List<LocalItemsCount>> = collection.filterNotNull().flatMapLatest { collection ->
         countLocalItemsFlow(collection)
     }
+
 
 
     /** Scope for operations that must not be cancelled. */
@@ -177,15 +200,15 @@ class CollectionScreenModel @AssistedInject constructor(
 
 
     data class LocalItemsCount(
-        /** display name of content provider where the items are stored */
+        /** Display name of content provider where the items are stored */
         val contentProviderName: String,
 
-        /** total number of items (including modified and deleted ones) */
-        val total: Int?,
-        /** number of unsynced local modifications */
-        val modified: Int?,
-        /** number of unsynced local deletions */
-        val deleted: Int?
+        /** Total number of items (including modified and deleted ones) */
+        val total: Int,
+        /** Number of unsynced local modifications */
+        val modified: Int,
+        /** Number of unsynced local deletions */
+        val deleted: Int
     )
 
     private suspend fun countLocalItemsFlow(collection: Collection): Flow<List<LocalItemsCount>> {
@@ -232,10 +255,10 @@ class CollectionScreenModel @AssistedInject constructor(
         localDataStore: LocalDataStore<*>,
         watchUris: List<Uri>
     ): Flow<LocalItemsCount?> = callbackFlow {
-
         fun queryAndSend() {
             var count: LocalItemsCount? = null
             try {
+                // Note: acquireContentProvider may return null when the content provider is not available.
                 localDataStore.acquireContentProvider()?.use { client ->
                     localDataStore.getByDbCollectionId(account, client, collectionId)?.let { store ->
                         count = LocalItemsCount(
@@ -246,8 +269,8 @@ class CollectionScreenModel @AssistedInject constructor(
                         )
                     }
                 }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't query local data store items", e)
+            } catch (e: SecurityException) {
+                logger.log(Level.WARNING, "No permissions to query local data store items", e)
             }
             trySendBlocking(count)
         }
@@ -258,6 +281,8 @@ class CollectionScreenModel @AssistedInject constructor(
             override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) = queryAndSend()
         }
 
+        /* It seems to be OK to register the same observer object for multiple URIs and then
+        unregister it only once for all URIs. */
         for (uri in watchUris)
             context.contentResolver.registerContentObserver(uri, true, observer)
 
