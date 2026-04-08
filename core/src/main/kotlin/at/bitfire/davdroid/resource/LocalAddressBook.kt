@@ -241,14 +241,13 @@ open class LocalAddressBook @AssistedInject constructor(
     /* operations on members (contacts/groups) */
 
     override fun countAll(): Int =
-        // TODO implement without having all entries in memory
-        queryContacts(null, null).size
+        countContacts(null, null)
 
     override fun countDeleted(): Int =
-        queryContacts("${RawContacts.DELETED}=1", null).size
+        countContacts("${RawContacts.DELETED}=1", null)
 
     override fun countModified(): Int =
-        queryContacts("${RawContacts.DIRTY}=1 AND ${RawContacts.DELETED}=0", null).size
+        countContacts("${RawContacts.DIRTY}=1 AND ${RawContacts.DELETED}=0", null)
 
     override fun findByName(name: String): LocalAddress? {
         val result = queryContacts("${AndroidContact.COLUMN_FILENAME}=?", arrayOf(name)).firstOrNull()

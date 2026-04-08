@@ -45,14 +45,13 @@ class LocalTaskList (
 
 
     override fun countAll(): Int =
-        // TODO implement without having all entries in memory
-        dmfsTaskList.findTasks(null, null).size
+        dmfsTaskList.countTasks(null, null)
 
     override fun countDeleted(): Int =
-        dmfsTaskList.findTasks("${Tasks._DELETED}=1", null).size
+        dmfsTaskList.countTasks("${Tasks._DELETED}=1", null)
 
     override fun countModified(): Int =
-        dmfsTaskList.findTasks("${Tasks._DIRTY}=1 AND ${Tasks._DELETED}=0", null).size
+        dmfsTaskList.countTasks("${Tasks._DIRTY}=1 AND ${Tasks._DELETED}=0", null)
 
     override fun findDeleted() = dmfsTaskList.findTasks(Tasks._DELETED, null)
         .map { LocalTask(it) }

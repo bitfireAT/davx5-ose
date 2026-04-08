@@ -126,7 +126,7 @@ fun CollectionScreen(
     description: String? = null,
     owner: String? = null,
     lastSynced: List<DavSyncStatsRepository.LastSynced> = emptyList(),
-    localItemCounts: List<CollectionScreenModel.LocalItemsCount>?,
+    localItemCounts: List<CollectionScreenModel.LocalItemsCount>,
     pastEventTimeLimit: Int?,
     supportsWebPush: Boolean = false,
     pushSubscriptionCreated: Long? = null,
@@ -257,7 +257,7 @@ fun CollectionScreen(
                             text = owner
                         )
 
-                    if (!localItemCounts.isNullOrEmpty())
+                    if (localItemCounts.isNotEmpty())
                         CollectionScreen_Entry(
                             icon = Icons.Default.BarChart,
                             title = stringResource(R.string.collection_synced_items_title)
