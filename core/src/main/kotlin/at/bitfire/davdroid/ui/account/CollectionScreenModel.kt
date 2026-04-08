@@ -10,7 +10,6 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -37,7 +36,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.ktor.utils.io.ioDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,7 +43,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
@@ -100,6 +97,12 @@ class CollectionScreenModel @AssistedInject constructor(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
+    /** Flow that provides the account associated with the current collection */
+    val account: Flow<Account?> = collection.filterNotNull().map { collection ->
+        val service = serviceRepository.get(collection.serviceId)
+        service?.let { accountRepository.fromName(it.accountName) }
+    }
+
 
     enum class ReadOnlyState {
         READ_ONLY_BY_SETTING,
@@ -140,10 +143,8 @@ class CollectionScreenModel @AssistedInject constructor(
     val lastSynced = syncStatsRepository.getLastSyncedFlow(collectionId)
 
     /** The account's "past event time limit", or null if not set or not relevant for the collection. */
-    val pastEventTimeLimit = collection.filterNotNull().map { collection ->
+    val pastEventTimeLimit = combine(collection.filterNotNull(), account.filterNotNull()) { collection, account ->
         if (collection.type == Collection.TYPE_CALENDAR) {
-            val service = serviceRepository.get(collection.serviceId) ?: return@map null
-            val account = accountRepository.fromName(service.accountName)
             val accountSettings = withContext(ioDispatcher) {
                 accountSettingsFactory.create(account)
             }
@@ -153,9 +154,9 @@ class CollectionScreenModel @AssistedInject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val localItemCounts: Flow<List<LocalItemsCount>> = collection.filterNotNull().flatMapLatest { collection ->
-        countLocalItemsFlow(collection)
-    }
+    val localItemCounts: Flow<List<LocalItemsCount>> = combine(collection.filterNotNull(), account.filterNotNull()) { collection, account ->
+        countLocalItemsFlow(collection, account)
+    }.flatMapLatest { it }
 
 
 
@@ -211,10 +212,7 @@ class CollectionScreenModel @AssistedInject constructor(
         val deleted: Int
     )
 
-    private suspend fun countLocalItemsFlow(collection: Collection): Flow<List<LocalItemsCount>> {
-        val service = serviceRepository.get(collection.serviceId) ?: return emptyFlow()
-        val account = accountRepository.fromName(service.accountName)
-
+    private fun countLocalItemsFlow(collection: Collection, account: Account): Flow<List<LocalItemsCount>> {
         // Build one flow per local data store relevant to this collection type (will later be combined).
         val storeFlows: List<Flow<LocalItemsCount?>> = when (collection.type) {
             Collection.TYPE_ADDRESSBOOK -> listOf(
