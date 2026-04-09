@@ -73,6 +73,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountProgress
+import at.bitfire.davdroid.ui.actioncards.ActionCardProvider
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ProgressBar
@@ -111,6 +112,7 @@ fun AccountsScreen(
     }
 
     AccountsScreen(
+        actionCardProvider = model.actionCardProvider,
         accountsDrawerHandler = accountsDrawerHandler,
         accounts = accounts,
         showSyncAll = showSyncAll,
@@ -131,6 +133,7 @@ fun AccountsScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AccountsScreen(
+    actionCardProvider: ActionCardProvider? = null,
     accountsDrawerHandler: AccountsDrawerHandler,
     accounts: List<AccountsModel.AccountInfo>,
     showSyncAll: Boolean = true,
@@ -144,7 +147,7 @@ fun AccountsScreen(
     dataSaverActive: Boolean = false,
     storageLow: Boolean = false,
     calendarStorageDisabled: Boolean = false,
-    contactsStorageDisabled: Boolean = false
+    contactsStorageDisabled: Boolean = false,
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -296,8 +299,11 @@ fun AccountsScreen(
                                     val intent = Intent(Settings.ACTION_APPLICATION_SETTINGS)
                                     if (intent.resolveActivity(context.packageManager) != null)
                                         context.startActivity(intent)
-                                },
+                                }
                             )
+
+                            // Additional action cards from the provider
+                            actionCardProvider?.ProvideActionCards(Modifier.padding(horizontal = 8.dp))
 
                             // account list
                             AccountList(
@@ -579,6 +585,7 @@ fun SyncWarnings(
                     Text(stringResource(R.string.sync_warning_contacts_storage_disabled_description))
                 }
             }
+
     }
 }
 

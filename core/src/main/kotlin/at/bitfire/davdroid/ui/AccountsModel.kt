@@ -33,6 +33,7 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.ui.account.AccountProgress
+import at.bitfire.davdroid.ui.actioncards.ActionCardProvider
 import at.bitfire.davdroid.ui.intro.IntroPage
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
 import at.bitfire.davdroid.util.broadcastReceiverFlow
@@ -58,6 +59,7 @@ import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountsModel.Factory::class)
 class AccountsModel @AssistedInject constructor(
+    val actionCardProvider: ActionCardProvider,
     @Assisted private val syncAccountsOnInit: Boolean,
     private val accountRepository: AccountRepository,
     @ApplicationContext private val context: Context,
@@ -67,7 +69,7 @@ class AccountsModel @AssistedInject constructor(
     private val settings: SettingsManager,
     private val syncWorkerManager: SyncWorkerManager,
     private val syncFrameWork: SyncFrameworkIntegration
-): ViewModel() {
+) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
