@@ -439,6 +439,9 @@
     <string name="collection_datatype_contacts">contacts</string>
     <string name="collection_datatype_events">events</string>
     <string name="collection_datatype_tasks">tasks</string>
+    <string name="collection_datatype_contacts_count">%1$d contacts</string>
+    <string name="collection_datatype_events_count">%1$d events</string>
+    <string name="collection_datatype_tasks_count">%1$d tasks</string>
     <string name="collection_delete">Delete collection</string>
     <string name="collection_delete_warning">This collection (%s) and all its data will be removed permanently, both locally and on the server.</string>
     <string name="collection_synchronization">Synchronization</string>
@@ -456,10 +459,15 @@
     <string name="collection_push_web_push">Server advertises Push support</string>
     <string name="collection_push_subscribed_at">Subscribed at %1$s, expires at %2$s</string>
     <string name="collection_last_sync">Last sync (%s)</string>
+    <string name="collection_synced_items">Current local items:</string>
+    <string name="collection_synced_items_count">%1$s, thereof</string>
+    <string name="collection_unsynced_modifications">%1$d unsynced local modifications</string>
+    <string name="collection_unsynced_deletions">%1$d unsynced local deletions</string>
     <string name="collection_url">Address (URL)</string>
 
     <!-- debugging and DebugInfoActivity -->
-    <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>
+    <!-- Test-only placeholder; always overridden by resValue in the app module (e.g. app-ose). -->
+    <string name="authority_debug_provider" translatable="false">core.test.provider.debug</string>
     <string name="debug_info_title">Debug info</string>
     <string name="debug_info_archive_caption">ZIP archive</string>
     <string name="debug_info_archive_subtitle">Contains debug info and logs</string>
@@ -497,7 +505,8 @@
     <string name="exception_show_details">Show details</string>
 
     <!-- WebDAV accounts -->
-    <string name="webdav_authority" translatable="false">at.bitfire.davdroid.webdav</string>
+    <!-- Test-only placeholder; always overridden by resValue in the app module (e.g. app-ose). -->
+    <string name="webdav_authority" translatable="false">core.test.provider.webdav</string>
     <string name="webdav_mounts_title">WebDAV mounts</string>
     <string name="webdav_mounts_quota_used_available">Quota used: %1$s / available: %2$s</string>
     <string name="webdav_mounts_share_content">Share content</string>

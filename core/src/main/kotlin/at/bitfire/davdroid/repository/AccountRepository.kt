@@ -74,11 +74,17 @@ class AccountRepository @Inject constructor(
      * @return account if account creation was successful; null otherwise (for instance because an account with this name already exists)
      */
     @WorkerThread
-    fun createBlocking(accountName: String, credentials: Credentials?, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): Account? {
+    fun createBlocking(
+        accountName: String,
+        credentials: Credentials?,
+        config: DavResourceFinder.Configuration,
+        groupMethod: GroupMethod,
+        preconfigurationUrl: String?,
+    ): Account? {
         val account = fromName(accountName)
 
         // create Android account
-        val userData = AccountSettings.initialUserData(credentials)
+        val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
         logger.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
 
         if (!SystemAccountUtils.createAccount(context, account, userData, credentials?.password))

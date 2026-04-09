@@ -10,7 +10,7 @@ updates:
     commit-message:
       prefix: "[CI] "
     labels:
-      - "github_actions"
+      - "ci-cd"
       - "dependencies"
     groups:
       ci-actions:

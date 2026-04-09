@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
   -->
 
@@ -22,6 +21,28 @@
                     android:name="androidx.work.WorkManagerInitializer"
                     android:value="androidx.startup"
                     tools:node="remove" />
+        </provider>
+
+        <provider
+                android:name="at.bitfire.davdroid.webdav.DavDocumentsProvider"
+                android:authorities="${webdavAuthority}"
+                android:exported="true"
+                android:grantUriPermissions="true"
+                android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+
+        <!-- provider to share debug info/logs -->
+        <provider
+                android:name="androidx.core.content.FileProvider"
+                android:authorities="${debugInfoAuthority}"
+                android:grantUriPermissions="true"
+                android:exported="false">
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/debug_paths" />
         </provider>
 
     </application>
