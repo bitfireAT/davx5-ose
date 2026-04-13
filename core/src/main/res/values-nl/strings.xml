@@ -491,4 +491,21 @@
     <string name="collection_datatype_contacts_count">%1$d contactpersonen</string>
     <string name="collection_datatype_events_count">%1$d gebeurtenissen</string>
     <string name="collection_datatype_tasks_count">%1$d taken</string>
+    <string name="collection_synced_items_title">Aantal lokale items</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="one">%1$d item in %2$s</item>
+        <item quantity="other">%1$d items in %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <item quantity="one">├ %d niet-gesynchroniseerde wijziging</item>
+        <item quantity="other">├ %d niet-gesynchroniseerde wijzigingen</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <item quantity="one">└ %d niet-gesynchroniseerde verwijdering</item>
+        <item quantity="other">└ %d niet-gesynchroniseerde verwijderingen</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Items ouder dan %d dag worden niet gesynchroniseerd (zie accountinstellingen).</item>
+        <item quantity="other">Items ouder dan %d dagen worden niet gesynchroniseerd (zie accountinstellingen).</item>
+    </plurals>
 </resources>
