@@ -494,4 +494,25 @@
     <string name="collection_datatype_contacts_count">%1$d contactes</string>
     <string name="collection_datatype_events_count">%1$d esdeveniments</string>
     <string name="collection_datatype_tasks_count">%1$d tasques</string>
+    <string name="collection_synced_items_title">Comptador d\'elements locals</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="one">%1$d element a %2$s</item>
+        <item quantity="many">%1$d d\'elements a %2$s</item>
+        <item quantity="other">%1$d elements a %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <item quantity="one">├ %d modificació no sincronitzada</item>
+        <item quantity="many">├ %d de modificacions no sincronitzades</item>
+        <item quantity="other">├ %d modificacions no sincronitzades</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <item quantity="one">├ %d supressió no sincronitzada</item>
+        <item quantity="many">├ %d de supressions no sincronitzades</item>
+        <item quantity="other">├ %d supressions no sincronitzades</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Els elements anteriors a %d dia no se sincronitzen (vegeu la configuració del compte).</item>
+        <item quantity="many">Els elements anteriors a %d de dies no se sincronitzen (vegeu la configuració del compte).</item>
+        <item quantity="other">Els elements anteriors a %d dies no se sincronitzen (vegeu la configuració del compte).</item>
+    </plurals>
 </resources>
