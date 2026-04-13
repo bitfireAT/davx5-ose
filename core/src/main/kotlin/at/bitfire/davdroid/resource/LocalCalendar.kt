@@ -18,7 +18,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import java.util.LinkedList
-import java.util.logging.Logger
 
 /**
  * Application-specific subclass of [AndroidCalendar] for local calendars.
@@ -26,8 +25,7 @@ import java.util.logging.Logger
  * [Calendars._SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
 class LocalCalendar @AssistedInject constructor(
-    @Assisted internal val androidCalendar: AndroidCalendar,
-    private val logger: Logger
+    @Assisted internal val androidCalendar: AndroidCalendar
 ) : LocalCollection<LocalEvent> {
 
     @AssistedFactory
@@ -65,6 +63,15 @@ class LocalCalendar @AssistedInject constructor(
     fun add(event: EventAndExceptions): Long {
         return recurringCalendar.addEventAndExceptions(event)
     }
+
+    override fun countAll(): Int =
+        androidCalendar.countEvents(null, null)
+
+    override fun countDeleted(): Int =
+        androidCalendar.countEvents(Events.DELETED, null)
+
+    override fun countModified(): Int =
+        androidCalendar.countEvents("${Events.DIRTY} AND NOT ${Events.DELETED}", null)
 
     override fun findDeleted(): List<LocalEvent> {
         val result = LinkedList<LocalEvent>()
