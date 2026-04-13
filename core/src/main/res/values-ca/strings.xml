@@ -494,8 +494,4 @@
     <string name="collection_datatype_contacts_count">%1$d contactes</string>
     <string name="collection_datatype_events_count">%1$d esdeveniments</string>
     <string name="collection_datatype_tasks_count">%1$d tasques</string>
-    <string name="collection_synced_items">Elements locals actuals:</string>
-    <string name="collection_synced_items_count">%1$s, de les quals</string>
-    <string name="collection_unsynced_modifications">%1$d modificacions locals sense sincronitzar</string>
-    <string name="collection_unsynced_deletions">%1$d supressions locals sense sincronitzar</string>
 </resources>

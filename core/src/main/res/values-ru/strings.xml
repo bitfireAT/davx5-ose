@@ -485,11 +485,6 @@
     <string name="widget_labeled_sync_label">Ярлык кнопки синхронизации</string>
     <string name="widget_icon_sync_label">Значок кнопки синхронизации</string>
     <string name="widget_sync_description">Нажмите для запуска синхронизации вручную.</string>
-    <!--cert4android-->
-<string name="collection_unsynced_deletions">несинхронизированных удалений</string>
-    <string name="collection_unsynced_modifications">%1$d несинхронизированных локальных изменений</string>
-    <string name="collection_synced_items_count">%1$s, из них</string>
-    <string name="collection_synced_items">Текущее количество локальных:</string>
     <string name="collection_datatype_tasks_count">%1$d задач</string>
     <string name="collection_datatype_events_count">%1$d событий</string>
     <string name="collection_datatype_contacts_count">%1$d контактов</string>

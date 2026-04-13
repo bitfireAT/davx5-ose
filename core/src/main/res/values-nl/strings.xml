@@ -491,8 +491,4 @@
     <string name="collection_datatype_contacts_count">%1$d contactpersonen</string>
     <string name="collection_datatype_events_count">%1$d gebeurtenissen</string>
     <string name="collection_datatype_tasks_count">%1$d taken</string>
-    <string name="collection_synced_items">Huidige lokale items:</string>
-    <string name="collection_synced_items_count">%1$s, daarvan</string>
-    <string name="collection_unsynced_modifications">%1$d niet-gesynchroniseerde lokale wijzigingen</string>
-    <string name="collection_unsynced_deletions">%1$d niet-gesynchroniseerde lokale verwijderingen</string>
 </resources>
