@@ -78,4 +78,29 @@ interface LocalCollection<out T: LocalResource> {
      */
     fun forgetETags()
 
+    /**
+     * Counts all resources in this collection.
+     *
+     * @return total number of resources
+     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
+     */
+    fun countAll(): Int
+
+    /**
+     * Counts resources in this collection that are locally deleted (pending removal from server).
+     *
+     * @return number of deleted resources
+     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
+     */
+    fun countDeleted(): Int
+
+    /**
+     * Counts resources in this collection that are locally modified (pending upload to server),
+     * excluding resources already marked as deleted.
+     *
+     * @return number of modified resources
+     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
+     */
+    fun countModified(): Int
+
 }
