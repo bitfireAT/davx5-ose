@@ -491,5 +491,21 @@
     <string name="collection_datatype_contacts_count">%1$d kontakti</string>
     <string name="collection_datatype_events_count">%1$d sündmust</string>
     <string name="collection_datatype_tasks_count">%1$d ülesannet</string>
-    <string name="collection_synced_items_title">Kohalike kirje arv</string>
+    <string name="collection_synced_items_title">Kohalike kirjete arv</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="one">%1$d kirje asukohas %2$s</item>
+        <item quantity="other">%1$d kirjet asukohas %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <item quantity="one">├ %d sünkroonimata muudatus</item>
+        <item quantity="other">├ %d sünkroonimata muudatust</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <item quantity="one">└ %d sünkroonimata kustutamine</item>
+        <item quantity="other">└ %d sünkroonimata kustutamist</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Kirjed, mis on vanemad, kui %d päev, jäävad sünkroonimata (vaata kasutajakonto seadistusi).</item>
+        <item quantity="other">Kirjed, mis on vanemad, kui %d päeva, jäävad sünkroonimata (vaata kasutajakonto seadistusi).</item>
+    </plurals>
 </resources>
