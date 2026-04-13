@@ -491,4 +491,5 @@
     <string name="collection_datatype_contacts_count">%1$d kontakti</string>
     <string name="collection_datatype_events_count">%1$d sündmust</string>
     <string name="collection_datatype_tasks_count">%1$d ülesannet</string>
+    <string name="collection_synced_items_title">Kohalike kirje arv</string>
 </resources>
