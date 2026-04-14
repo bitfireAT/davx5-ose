@@ -16,7 +16,6 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.SyncValidator
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -51,7 +50,7 @@ class LoginScreenModel @AssistedInject constructor(
     val loginTypesProvider: LoginTypesProvider,
     private val resourceFinderFactory: DavResourceFinder.Factory,
     settingsManager: SettingsManager,
-    private val syncValidator: Optional<SyncValidator>
+    private val loginValidator: Optional<LoginValidator>
 ): ViewModel() {
 
     @AssistedFactory
@@ -200,10 +199,10 @@ class LoginScreenModel @AssistedInject constructor(
         detectResourcesJob = viewModelScope.launch {
             // First, if we have a validator, validate the server
             val httpUrl = loginInfo.baseUri!!.toHttpUrlOrNull()
-            if (syncValidator.isPresent && httpUrl != null) {
+            if (loginValidator.isPresent && httpUrl != null) {
                 val isValid = withContext(Dispatchers.IO) {
                     runInterruptible {
-                        syncValidator.get().beforeLogin(httpUrl)
+                        loginValidator.get().beforeLogin(httpUrl)
                     }
                 }
                 if (!isValid) {
