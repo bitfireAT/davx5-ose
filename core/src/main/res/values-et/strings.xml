@@ -508,4 +508,8 @@
         <item quantity="one">Kirjed, mis on vanemad, kui %d päev, jäävad sünkroonimata (vaata kasutajakonto seadistusi).</item>
         <item quantity="other">Kirjed, mis on vanemad, kui %d päeva, jäävad sünkroonimata (vaata kasutajakonto seadistusi).</item>
     </plurals>
+    <string name="login_invalid_use_case">Vale kasutusjuhtum</string>
+    <string name="login_invalid_use_case_info"><![CDATA[Seda %s rakenduse varianti saab kasutada vaid valitud serveritega.]]></string>
+    <string name="login_download_regular_davx5"><![CDATA[Selle asemel võta kasutusele <a href="%s">DAVx⁵</a> - see toimib kõikide serveritega.]]></string>
+    <string name="login_download_button">Laadi DAVx⁵ alla</string>
 </resources>
