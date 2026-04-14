@@ -24,6 +24,8 @@ object ExternalUris {
         val baseUrl
             get() = "https://www.davx5.com".toUri()
 
+        /** info page about DAVx5 Select */
+        const val PATH_DAVX5_SELECT = "davx5-select"
         const val PATH_FAQ = "faq"
         const val PATH_FAQ_SYNC_NOT_RUN = "synchronization-is-not-run-as-expected"
         const val PATH_FAQ_LOCATION_PERMISSION = "wifi-ssid-restriction-location-permission"
