@@ -52,7 +52,7 @@ class NotificationRegistry @Inject constructor(
         const val NOTIFY_PERMISSIONS = 21
 
         /**
-         * Used in build variants when a [at.bitfire.davdroid.sync.SyncValidator]
+         * Used in build variants when a [at.bitfire.davdroid.validation.SyncValidator]
          * prevents sync, for instance due to invalid license or failed server validation.
          */
         @Suppress("unused")     // for build variants

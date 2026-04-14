@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.sync
+package at.bitfire.davdroid.validation
 
 import android.accounts.Account
 import dagger.BindsOptionalOf
@@ -16,15 +16,6 @@ import okhttp3.HttpUrl
  * Used to decide on whether login and sync are allowed to happen.
  */
 interface SyncValidator {
-
-    /**
-     * Called before login/setup to validate if the server is allowed for this app variant.
-     * Must be thread-safe.
-     *
-     * @param baseUrl The base URL of the server to validate
-     * @return whether login/setup shall proceed (false to abort)
-     */
-    fun beforeLogin(baseUrl: HttpUrl): Boolean
 
     /**
      * Called before synchronization when a sync adapter is started. Can be used for license checks etc. Must be thread-safe.
