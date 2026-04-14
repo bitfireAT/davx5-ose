@@ -147,7 +147,7 @@ fun AccountsScreen(
     dataSaverActive: Boolean = false,
     storageLow: Boolean = false,
     calendarStorageDisabled: Boolean = false,
-    contactsStorageDisabled: Boolean = false,
+    contactsStorageDisabled: Boolean = false
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)

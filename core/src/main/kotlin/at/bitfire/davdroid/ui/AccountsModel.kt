@@ -69,7 +69,7 @@ class AccountsModel @AssistedInject constructor(
     private val settings: SettingsManager,
     private val syncWorkerManager: SyncWorkerManager,
     private val syncFrameWork: SyncFrameworkIntegration
-) : ViewModel() {
+): ViewModel() {
 
     @AssistedFactory
     interface Factory {
