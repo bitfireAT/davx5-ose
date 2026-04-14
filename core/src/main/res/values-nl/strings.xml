@@ -508,4 +508,8 @@
         <item quantity="one">Items ouder dan %d dag worden niet gesynchroniseerd (zie accountinstellingen).</item>
         <item quantity="other">Items ouder dan %d dagen worden niet gesynchroniseerd (zie accountinstellingen).</item>
     </plurals>
+    <string name="login_invalid_use_case">Ongeldige toepassing</string>
+    <string name="login_invalid_use_case_info"><![CDATA[Deze variant %s van de app kan alleen worden gebruikt met geselecteerde services.]]></string>
+    <string name="login_download_regular_davx5"><![CDATA[Gebruik in plaats daarvan <a href="%s">DAVx⁵</a>, die bij alle services kan worden gebruikt.]]></string>
+    <string name="login_download_button">DAVx⁵ downloaden</string>
 </resources>
