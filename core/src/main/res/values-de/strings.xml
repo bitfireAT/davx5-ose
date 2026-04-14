@@ -491,4 +491,25 @@
     <string name="collection_datatype_contacts_count">%1$d Kontakte</string>
     <string name="collection_datatype_events_count">%1$d Termine</string>
     <string name="collection_datatype_tasks_count">%1$d Aufgaben</string>
+    <string name="login_invalid_use_case">Ungültiger Anwendungsfall</string>
+    <string name="login_invalid_use_case_info"><![CDATA[Diese Variante %s der App kann nur mit ausgewählten Diensten genutzt werden.]]></string>
+    <string name="login_download_button">DAVx⁵ herunterladen</string>
+    <string name="collection_synced_items_title">Anzahl lokaler Elemente</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="one">%1$d Element in %2$s</item>
+        <item quantity="other">%1$d Elemente in %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <item quantity="one">├ %d nicht synchronisierte Veränderung</item>
+        <item quantity="other">├ %d nicht synchronisierte Veränderungen</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <item quantity="one">├ %d nicht synchronisierte Löschung</item>
+        <item quantity="other">├ %d nicht synchronisierte Löschungen</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Elemente alter als %d Tag werden nicht synchronisiert (siehe Account Einstellung).</item>
+        <item quantity="other">Elemente alter als %d Tage werden nicht synchronisiert (siehe Account Einstellung).</item>
+    </plurals>
+    <string name="login_download_regular_davx5"><![CDATA[Stattdessen bitte <a href="%s">DAVx⁵</a>, nutzen, das mit allen Diensten genutzt werden kann.]]></string>
 </resources>
