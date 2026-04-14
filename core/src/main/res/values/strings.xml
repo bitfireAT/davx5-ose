@@ -336,6 +336,10 @@
     <string name="login_check_credentials">Please also double-check authentication (usually username and password).</string>
     <string name="login_logs_available">Further technical information is available in the logs.</string>
     <string name="login_view_logs">View logs</string>
+    <string name="login_invalid_use_case">Invalid use-case</string>
+    <string name="login_invalid_use_case_info"><![CDATA[This variant %s of the app can only be used with selected services.]]></string>
+    <string name="login_download_regular_davx5"><![CDATA[Instead, please use <a href="%s">DAVx⁵</a>, which can be used with all services.]]></string>
+    <string name="login_download_button">Download DAVx⁵</string>
 
     <!-- AccountSettingsActivity -->
     <string name="settings_sync">Synchronization</string>
@@ -439,6 +443,9 @@
     <string name="collection_datatype_contacts">contacts</string>
     <string name="collection_datatype_events">events</string>
     <string name="collection_datatype_tasks">tasks</string>
+    <string name="collection_datatype_contacts_count">%1$d contacts</string>
+    <string name="collection_datatype_events_count">%1$d events</string>
+    <string name="collection_datatype_tasks_count">%1$d tasks</string>
     <string name="collection_delete">Delete collection</string>
     <string name="collection_delete_warning">This collection (%s) and all its data will be removed permanently, both locally and on the server.</string>
     <string name="collection_synchronization">Synchronization</string>
@@ -452,14 +459,35 @@
     <string name="collection_title">Title</string>
     <string name="collection_description">Description</string>
     <string name="collection_owner">Owner</string>
+    <string name="collection_last_sync">Last sync (%s)</string>
+    <string name="collection_synced_items_title">Local item count</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="zero">No items in %2$s</item>
+        <item quantity="one">%1$d item in %2$s</item>
+        <item quantity="other">%1$d items in %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <!-- Note: Mirror box drawing for RTL -->
+        <item quantity="one">├ %d unsynced modification</item>
+        <item quantity="other">├ %d unsynced modifications</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <!-- Note: Mirror box drawing for RTL -->
+        <item quantity="one">└ %d unsynced deletion</item>
+        <item quantity="other">└ %d unsynced deletions</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Items older than %d day are not synchronized (see account settings).</item>
+        <item quantity="other">Items older than %d days are not synchronized (see account settings).</item>
+    </plurals>
     <string name="collection_push_support">Push support</string>
     <string name="collection_push_web_push">Server advertises Push support</string>
     <string name="collection_push_subscribed_at">Subscribed at %1$s, expires at %2$s</string>
-    <string name="collection_last_sync">Last sync (%s)</string>
     <string name="collection_url">Address (URL)</string>
 
     <!-- debugging and DebugInfoActivity -->
-    <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>
+    <!-- Test-only placeholder; always overridden by resValue in the app module (e.g. app-ose). -->
+    <string name="authority_debug_provider" translatable="false">core.test.provider.debug</string>
     <string name="debug_info_title">Debug info</string>
     <string name="debug_info_archive_caption">ZIP archive</string>
     <string name="debug_info_archive_subtitle">Contains debug info and logs</string>
@@ -497,7 +525,8 @@
     <string name="exception_show_details">Show details</string>
 
     <!-- WebDAV accounts -->
-    <string name="webdav_authority" translatable="false">at.bitfire.davdroid.webdav</string>
+    <!-- Test-only placeholder; always overridden by resValue in the app module (e.g. app-ose). -->
+    <string name="webdav_authority" translatable="false">core.test.provider.webdav</string>
     <string name="webdav_mounts_title">WebDAV mounts</string>
     <string name="webdav_mounts_quota_used_available">Quota used: %1$s / available: %2$s</string>
     <string name="webdav_mounts_share_content">Share content</string>

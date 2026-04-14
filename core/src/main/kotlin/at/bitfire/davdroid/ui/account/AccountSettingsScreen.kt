@@ -389,7 +389,7 @@ fun SyncSettings(
     onUpdateIgnoreVpns: (Boolean) -> Unit = {}
 ) {
     Column {
-        SettingsHeader(false) {
+        SettingsHeader(divider = false) {
             Text(stringResource(R.string.settings_sync))
         }
 
@@ -537,7 +537,7 @@ fun AuthenticationSettings(
 
     if (credentials.authState != null || credentials.username != null || credentials.password != null || credentials.certificateAlias != null)
         Column {
-            SettingsHeader(false) {
+            SettingsHeader(divider = true) {
                 Text(stringResource(R.string.settings_authentication))
             }
 
@@ -638,7 +638,7 @@ fun CalDavSettings(
     onUpdateEventColors: (Boolean) -> Unit = {}
 ) {
     Column {
-        SettingsHeader {
+        SettingsHeader(divider = true) {
             Text(stringResource(R.string.settings_caldav))
         }
 
@@ -726,7 +726,7 @@ fun CardDavSettings(
     onUpdateContactGroupMethod: (GroupMethod) -> Unit = {}
 ) {
     Column {
-        SettingsHeader {
+        SettingsHeader(divider = true) {
             Text(stringResource(R.string.settings_carddav))
         }
 

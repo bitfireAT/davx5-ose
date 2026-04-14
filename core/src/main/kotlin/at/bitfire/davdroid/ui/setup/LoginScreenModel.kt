@@ -34,6 +34,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import java.util.Optional
 import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = LoginScreenModel.Factory::class)
@@ -47,7 +49,8 @@ class LoginScreenModel @AssistedInject constructor(
     private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
     private val resourceFinderFactory: DavResourceFinder.Factory,
-    settingsManager: SettingsManager
+    settingsManager: SettingsManager,
+    private val loginValidator: Optional<LoginValidator>
 ): ViewModel() {
 
     @AssistedFactory
@@ -181,6 +184,7 @@ class LoginScreenModel @AssistedInject constructor(
         val loading: Boolean = false,
         val foundNothing: Boolean = false,
         val encountered401: Boolean = false,
+        val loginValidationFailed: Boolean = false,
         val logs: String? = null
     )
 
@@ -193,6 +197,24 @@ class LoginScreenModel @AssistedInject constructor(
     private fun detectResources() {
         detectResourcesUiState = detectResourcesUiState.copy(loading = true)
         detectResourcesJob = viewModelScope.launch {
+            // First, if we have a validator, validate the server
+            val httpUrl = loginInfo.baseUri!!.toHttpUrlOrNull()
+            if (loginValidator.isPresent && httpUrl != null) {
+                val isValid = withContext(Dispatchers.IO) {
+                    runInterruptible {
+                        loginValidator.get().beforeLogin(httpUrl)
+                    }
+                }
+                if (!isValid) {
+                    detectResourcesUiState = detectResourcesUiState.copy(
+                        loading = false,
+                        loginValidationFailed = true
+                    )
+                    return@launch
+                }
+            }
+
+            // Then, find initial configuration
             val result = withContext(Dispatchers.IO) {
                  runInterruptible {
                      val finder = resourceFinderFactory.create(loginInfo.baseUri!!, loginInfo.credentials)
@@ -306,7 +328,8 @@ class LoginScreenModel @AssistedInject constructor(
                     accountDetailsUiState.value.accountName,
                     loginInfo.credentials,
                     foundConfig!!,
-                    accountDetailsUiState.value.groupMethod
+                    accountDetailsUiState.value.groupMethod,
+                    loginInfo.preconfigurationUrl
                 )
             }
 

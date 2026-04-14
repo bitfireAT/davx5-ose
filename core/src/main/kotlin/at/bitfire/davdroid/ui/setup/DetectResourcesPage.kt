@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -24,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
@@ -42,6 +45,7 @@ fun DetectResourcesPage(
         loading = uiState.loading,
         foundNothing = uiState.foundNothing,
         encountered401 = uiState.encountered401,
+        loginValidationFailed = uiState.loginValidationFailed,
         logs = uiState.logs
     )
 }
@@ -51,6 +55,7 @@ fun DetectResourcesPageContent(
     loading: Boolean,
     foundNothing: Boolean,
     encountered401: Boolean,
+    loginValidationFailed: Boolean,
     logs: String?
 ) {
     Column(Modifier
@@ -59,6 +64,8 @@ fun DetectResourcesPageContent(
     ) {
         if (loading)
             DetectResourcesPageContent_InProgress()
+        else if (loginValidationFailed)
+            DetectResourcesPageContent_LoginValidationFailed()
         else if (foundNothing)
             DetectResourcesPageContent_NothingFound(
                 encountered401 = encountered401,
@@ -166,6 +173,56 @@ fun DetectResourcesPageContent_NothingFound(
 }
 
 @Composable
+fun DetectResourcesPageContent_LoginValidationFailed() {
+    Column(Modifier.padding(8.dp)) {
+        Text(
+            stringResource(R.string.login_configuration_detection),
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(8.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Block, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                    Text(
+                        stringResource(R.string.login_invalid_use_case),
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Text(
+                    stringResource(R.string.login_invalid_use_case_info, "(${stringResource(R.string.app_name)})"),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                )
+
+                val context = LocalContext.current
+                val urlDownload = ExternalUris.Homepage.baseUrl.buildUpon()
+                    .appendPath(ExternalUris.Homepage.PATH_DOWNLOAD)
+                    .withStatParams(context, "LoginValidationFailedPage")
+                    .build()
+                Text(
+                    text = HtmlCompat.fromHtml(
+                        stringResource(R.string.login_download_regular_davx5, urlDownload),
+                        HtmlCompat.FROM_HTML_MODE_COMPACT
+                    ).toAnnotatedString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+
+                Button(onClick = {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, urlDownload.toString().toUri()))
+                }) {
+                    Text(stringResource(R.string.login_download_button))
+                }
+            }
+        }
+    }
+}
+
+@Composable
 @Preview
 fun DetectResourcesPageContent_NothingFound() {
     DetectResourcesPageContent_NothingFound(
@@ -181,4 +238,10 @@ fun DetectResourcesPage_NothingFound_401() {
         encountered401 = true,
         logs = ""
     )
+}
+
+@Composable
+@Preview
+fun DetectResourcesPage_ValidationFailed() {
+    DetectResourcesPageContent_LoginValidationFailed()
 }

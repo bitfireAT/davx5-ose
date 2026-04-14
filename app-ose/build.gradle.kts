@@ -19,12 +19,25 @@ android {
 
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 405100003
-        versionName = "4.5.10"
+        versionCode = 405110001
+        versionName = "4.5.11-rc.1"
 
         base.archivesName = "davx5-$versionCode-$versionName"
 
-        // currently no instrumentation tests for app-ose, so no testInstrumentationRunner
+        /* Android prevents having two apps installed with the same provider authority name. In that case,
+        Google Play just shows a generic "Can't install DAVx5" message. So we derive the authority names
+        from the package ID, so that the build variants (and clones) have their own authority names and
+        can be installed beside DAVx5. */
+        val webdavAuthority = "${applicationId}.webdav"
+        val debugInfoAuthority = "${applicationId}.debug"
+        manifestPlaceholders["webdavAuthority"] = webdavAuthority
+        manifestPlaceholders["debugInfoAuthority"] = debugInfoAuthority
+        /* Override the default string values from the core library (core/src/main/res/values/strings.xml)
+        so that code using getString(R.string.webdav_authority) etc. gets the correct authority. */
+        resValue("string", "webdav_authority", webdavAuthority)
+        resValue("string", "authority_debug_provider", debugInfoAuthority)
+
+        // Currently no instrumentation tests for app-ose, so no testInstrumentationRunner
     }
 
     java {
@@ -39,6 +52,7 @@ android {
 
     buildFeatures {
         compose = true
+        resValues = true
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)

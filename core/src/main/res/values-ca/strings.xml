@@ -53,6 +53,7 @@
     <string name="intro_open_source_dont_show">No m\'ho recordis durant</string>
     <plurals name="intro_open_source_dont_show_months">
         <item quantity="one">%d mes</item>
+        <item quantity="many">%d de mesos</item>
         <item quantity="other">%d mesos</item>
     </plurals>
     <string name="intro_next">Següent</string>
@@ -227,7 +228,7 @@
     <string name="account_contacts">contactes</string>
     <string name="account_journal">diari</string>
     <string name="account_task_list">tasques</string>
-    <string name="account_only_personal">Mostra només les personals</string>
+    <string name="account_only_personal">Mostra només els personals</string>
     <string name="account_refresh_collections">Recarregar llista</string>
     <string name="account_webcal_external_app">Les subscripcions Webcal es poden sincronitzar amb aplicacions externes.</string>
     <string name="account_no_webcal_handler_found">No s\'ha trobat cap aplicació compatible amb Webcal</string>
@@ -274,7 +275,7 @@
     <string name="login_google_account">Compte de Google</string>
     <string name="login_google">Inicia la sessió amb Google</string>
     <string name="login_google_client_id">ID de Client (opcional)</string>
-    <string name="login_google_client_privacy_policy"><![CDATA[%1$s transfereix els vostres Contactes i les dades del Calendar de Google només per a la sincronització amb aquest dispositiu. Vegeu la <a href="%2$s"> política de privadesa </a> per als detalls.]]></string>
+    <string name="login_google_client_privacy_policy"><![CDATA[%1$s transfereix els vostres Contactes i les dades del Calendar de Google només per a la sincronització amb aquest dispositiu. Vegeu els detalls a la <a href="%2$s">política de privadesa</a>.]]></string>
     <string name="login_google_client_limited_use"><![CDATA[%1$s compleix amb la <a href="%2$s">Política de dades d\'usuari dels serveis de l\'API de Google</a>, incloent-hi els requisits d\'ús limitat.]]></string>
     <string name="login_oauth_couldnt_obtain_auth_code">No s\'ha pogut obtenir el codi d\'autorització</string>
     <string name="login_type_nextcloud">Nextcloud</string>
@@ -336,13 +337,15 @@
     <string name="settings_sync_time_range_past">Límit de temps dels esdeveniments passats</string>
     <string name="settings_sync_time_range_past_none">Tots els esdeveniments se sincronitzaran</string>
     <plurals name="settings_sync_time_range_past_days">
-        <item quantity="one">Els esdeveniments de més d\'un dia passat seran ignorats</item>
-        <item quantity="other">Els esdeveniments de més de %d dies passats seran ignorats</item>
+        <item quantity="one">Els esdeveniments de més d\'un dia passat s\'ignoraran</item>
+        <item quantity="many">Els esdeveniments de més de %d de dies passats s\'ignoraran</item>
+        <item quantity="other">Els esdeveniments de més de %d dies passats s\'ignoraran</item>
     </plurals>
-    <string name="settings_sync_time_range_past_message">Els esdeveniments que superin aquest nombre de dies en el passat seran ignorats (poden ser 0). Deixeu-ho en blanc per a sincronitzar tots els esdeveniments.</string>
+    <string name="settings_sync_time_range_past_message">Els esdeveniments que superin aquest nombre de dies en el passat s\'ignoraran (poden ser 0). Deixeu-ho en blanc per a sincronitzar tots els esdeveniments.</string>
     <string name="settings_default_alarm">Recordatori predeterminat</string>
     <plurals name="settings_default_alarm_on">
         <item quantity="one">Recordatori predeterminat d\'un minut abans de l\'esdeveniment</item>
+        <item quantity="many">Recordatori predeterminat de %d de minuts abans de l\'esdeveniment</item>
         <item quantity="other">Recordatori predeterminat de %d minuts abans de l\'esdeveniment</item>
     </plurals>
     <string name="settings_default_alarm_off">No es crearan recordatoris predeterminats</string>
@@ -408,7 +411,7 @@
     <string name="debug_info_server_error">Error del servidor</string>
     <string name="debug_info_webdav_error">Error del WebDAV</string>
     <string name="debug_info_io_error">Error d\'E/S</string>
-    <string name="debug_info_http_403_description">El servidor ha denegat la petició</string>
+    <string name="debug_info_http_403_description">El servidor ha denegat la petició.</string>
     <string name="debug_info_http_404_description">El recurs sol·licitat no existeix (mai mes).</string>
     <string name="debug_info_http_405_description">El servidor no permet el tipus d\'operació sol·licitat.</string>
     <string name="debug_info_http_5xx_description">S\'ha produït un problema a la banda del servidor. Poseu-vos en contacte amb l\'assistència del servidor.</string>
@@ -488,4 +491,28 @@
     <string name="about_translations_over_transifex">Per Transifex</string>
     <string name="about_translations_over_weblate">Per Weblate</string>
     <string name="about_translations_contribute">Ajuda Traduïnt</string>
+    <string name="collection_datatype_contacts_count">%1$d contactes</string>
+    <string name="collection_datatype_events_count">%1$d esdeveniments</string>
+    <string name="collection_datatype_tasks_count">%1$d tasques</string>
+    <string name="collection_synced_items_title">Comptador d\'elements locals</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="one">%1$d element a %2$s</item>
+        <item quantity="many">%1$d d\'elements a %2$s</item>
+        <item quantity="other">%1$d elements a %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <item quantity="one">├ %d modificació no sincronitzada</item>
+        <item quantity="many">├ %d de modificacions no sincronitzades</item>
+        <item quantity="other">├ %d modificacions no sincronitzades</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <item quantity="one">├ %d supressió no sincronitzada</item>
+        <item quantity="many">├ %d de supressions no sincronitzades</item>
+        <item quantity="other">├ %d supressions no sincronitzades</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Els elements anteriors a %d dia no se sincronitzen (vegeu la configuració del compte).</item>
+        <item quantity="many">Els elements anteriors a %d de dies no se sincronitzen (vegeu la configuració del compte).</item>
+        <item quantity="other">Els elements anteriors a %d dies no se sincronitzen (vegeu la configuració del compte).</item>
+    </plurals>
 </resources>

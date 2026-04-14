@@ -490,4 +490,8 @@
     <string name="about_translations_thanks">❤️ Obrigado para todos que contribuíram com traduções!</string>
     <string name="about_translations_over_transifex">Pelo Transifex</string>
     <string name="about_translations_over_weblate">Pelo Weblate</string>
+    <string name="about_translations_contribute">Ajude a traduzir</string>
+    <string name="collection_datatype_contacts_count">%1$d contatos</string>
+    <string name="collection_datatype_events_count">%1$d eventos</string>
+    <string name="collection_datatype_tasks_count">%1$d tarefas</string>
 </resources>

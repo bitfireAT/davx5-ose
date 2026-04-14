@@ -12,6 +12,7 @@ import android.content.Context
 import android.provider.ContactsContract
 import androidx.annotation.OpenForTesting
 import androidx.annotation.VisibleForTesting
+import androidx.annotation.WorkerThread
 import androidx.core.content.contentValuesOf
 import androidx.core.os.bundleOf
 import at.bitfire.davdroid.R
@@ -58,6 +59,7 @@ class LocalAddressBookStore @Inject constructor(
      *
      * @param info  Collection to take info from
      */
+    @WorkerThread
     fun accountName(info: Collection): String {
         // Name of address book is given collection display name, otherwise the last URL path segment
         var name = info.displayName.takeIf { !it.isNullOrEmpty() } ?: info.url.lastSegment
@@ -129,6 +131,9 @@ class LocalAddressBookStore @Inject constructor(
         getAddressBookAccounts(account).map { addressBookAccount ->
             localAddressBookFactory.create(account, addressBookAccount, client)
         }
+
+    override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalAddressBook? =
+        getAll(account, client).firstOrNull { it.dbCollectionId == dbCollectionId }
 
     override fun update(client: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
         var currentAccount = localCollection.addressBookAccount

@@ -9,7 +9,12 @@ import dagger.BindsOptionalOf
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.HttpUrl
 
+
+/**
+ * Used to decide on whether login and sync are allowed to happen.
+ */
 interface SyncValidator {
 
     /**
