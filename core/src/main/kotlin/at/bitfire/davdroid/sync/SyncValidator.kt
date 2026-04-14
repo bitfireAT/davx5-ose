@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.validation
+package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import dagger.BindsOptionalOf
