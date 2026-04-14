@@ -336,6 +336,10 @@
     <string name="login_check_credentials">Please also double-check authentication (usually username and password).</string>
     <string name="login_logs_available">Further technical information is available in the logs.</string>
     <string name="login_view_logs">View logs</string>
+    <string name="login_invalid_use_case">Invalid use-case</string>
+    <string name="login_invalid_use_case_info"><![CDATA[This variant %s of the app can only be used with selected services.]]></string>
+    <string name="login_download_regular_davx5"><![CDATA[Instead, please use <a href="%s">DAVx⁵</a>, which can be used with all services.]]></string>
+    <string name="login_download_button">Download DAVx⁵</string>
 
     <!-- AccountSettingsActivity -->
     <string name="settings_sync">Synchronization</string>
