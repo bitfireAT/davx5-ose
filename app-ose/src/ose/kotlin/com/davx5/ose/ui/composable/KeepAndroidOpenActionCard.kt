@@ -5,12 +5,11 @@
 package com.davx5.ose.ui.composable
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
@@ -36,7 +35,7 @@ class KeepAndroidOpenActionCard @Inject constructor(
         val dismissed by settings.getBooleanFlow(KEY_KEEP_ANDROID_OPEN_DISMISSED).collectAsStateWithLifecycle(false)
         if (dismissed != true) {
             ActionCard(
-                icon = Icons.Default.Info,
+                painterIcon = painterResource(R.drawable.ic_warning_notify),
                 actionText = stringResource(R.string.dismiss_forever),
                 onAction = { settings.putBoolean(KEY_KEEP_ANDROID_OPEN_DISMISSED, true) },
                 modifier = modifier.padding(vertical = 4.dp)

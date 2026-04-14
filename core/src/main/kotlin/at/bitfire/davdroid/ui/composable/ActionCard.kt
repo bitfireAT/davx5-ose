@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 fun ActionCard(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
+    painterIcon: Painter? = null,
     actionText: String? = null,
     onAction: () -> Unit = {},
     content: @Composable () -> Unit
@@ -40,15 +42,21 @@ fun ActionCard(
             .fillMaxWidth(),
         ) {
             ProvideTextStyle(MaterialTheme.typography.bodyLarge) {
-                if (icon != null)
+                if (icon != null || painterIcon != null)
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(icon, "", Modifier
-                            .align(Alignment.Top)
-                            .padding(8.dp))
+                        if (icon != null)
+                            Icon(icon, "", Modifier
+                                .align(Alignment.Top)
+                                .padding(8.dp))
+                        else if (painterIcon != null)
+                            Icon(painterIcon, "", Modifier
+                                .align(Alignment.Top)
+                                .padding(8.dp))
                         content()
+
                     }
                 else
                     content()
