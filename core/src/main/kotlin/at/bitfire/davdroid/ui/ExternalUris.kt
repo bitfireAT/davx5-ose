@@ -30,6 +30,7 @@ object ExternalUris {
         const val PATH_OPEN_SOURCE = "donate"
         const val PATH_PRIVACY = "privacy"
         const val PATH_TESTED_SERVICES = "tested-with"
+        const val PATH_DOWNLOAD = "download"
 
         const val PATH_ORGANIZATIONS = "organizations"
         const val PATH_ORGANIZATIONS_DAVX5_SELECT = "davx5-select"
