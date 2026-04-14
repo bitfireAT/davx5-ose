@@ -8,7 +8,6 @@ import at.bitfire.davdroid.ui.AccountsDrawerHandler
 import at.bitfire.davdroid.ui.OseAccountsDrawerHandler
 import at.bitfire.davdroid.ui.about.AboutActivity
 import at.bitfire.davdroid.ui.about.FakeAppLicenseInfoProvider
-import at.bitfire.davdroid.ui.actioncards.ActionCardProvider
 import at.bitfire.davdroid.ui.intro.FakeIntroPageFactory
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
 import at.bitfire.davdroid.ui.setup.LoginTypesProvider
@@ -41,8 +40,6 @@ interface OseModules {
         @Binds
         fun loginTypesProvider(impl: StandardLoginTypesProvider): LoginTypesProvider
 
-        @Binds
-        fun actionCardProvider(impl: ActionCardProvider.Empty): ActionCardProvider
     }
 
     @Module

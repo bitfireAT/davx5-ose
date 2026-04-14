@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package com.davx5.ose.actioncards
+package com.davx5.ose.ui.composable
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -18,16 +18,21 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
-import at.bitfire.davdroid.ui.actioncards.ActionCardProvider
 import at.bitfire.davdroid.ui.composable.ActionCard
+import at.bitfire.davdroid.ui.composable.FlavorComposable
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
 import javax.inject.Inject
 
-class OseActionCardProvider @Inject constructor(
+class KeepAndroidOpenActionCard @Inject constructor(
     private val settings: SettingsManager
-) : ActionCardProvider {
+) : FlavorComposable {
 
     @Composable
-    override fun ProvideActionCards(modifier: Modifier) {
+    override fun Render(modifier: Modifier) {
         val dismissed by settings.getBooleanFlow(KEY_KEEP_ANDROID_OPEN_DISMISSED).collectAsStateWithLifecycle(false)
         if (dismissed != true) {
             ActionCard(
@@ -47,10 +52,19 @@ class OseActionCardProvider @Inject constructor(
     companion object {
 
         /**
-         * OSE action card specific boolean setting. Tracks whether the keep-android-open
-         * action card has been dismissed already.
+         * Settings key to track whether the keep-android-open action card has been dismissed.
          */
         private const val KEY_KEEP_ANDROID_OPEN_DISMISSED = "keep_android_open_dismissed"
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    interface KeepAndroidOpenComposableModule {
+
+        @Binds
+        @IntoSet
+        @JvmSuppressWildcards
+        fun keepAndroidOpenActionCard(impl: KeepAndroidOpenActionCard): FlavorComposable
     }
 
 }
