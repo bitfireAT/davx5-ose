@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui.actioncards
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import javax.inject.Inject
 
 /**
  * Interface for providing action cards that should be shown in the accounts screen.
@@ -23,7 +24,7 @@ interface ActionCardProvider {
     /**
      * Empty default implementation that provides no action cards.
      */
-    class Empty : ActionCardProvider {
+    class Empty @Inject constructor() : ActionCardProvider {
         @Composable
         override fun ProvideActionCards(modifier: Modifier) {
             // No extra action cards by default
