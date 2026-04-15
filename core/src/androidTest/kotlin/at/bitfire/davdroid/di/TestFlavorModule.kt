@@ -39,7 +39,6 @@ interface OseModules {
 
         @Binds
         fun loginTypesProvider(impl: StandardLoginTypesProvider): LoginTypesProvider
-
     }
 
     @Module
