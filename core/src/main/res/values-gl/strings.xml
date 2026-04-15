@@ -491,4 +491,25 @@
     <string name="collection_datatype_contacts_count">%1$d contactos</string>
     <string name="collection_datatype_events_count">%1$d eventos</string>
     <string name="collection_datatype_tasks_count">%1$d tarefas</string>
+    <string name="login_invalid_use_case_info"><![CDATA[Esta variante da app %s só se pode usar cos servizos seleccionados.]]></string>
+    <string name="login_download_regular_davx5"><![CDATA[No seu lugar utiliza <a href="%s">DAVx⁵</a>, que se pode usar con todos os servizos.]]></string>
+    <string name="login_download_button">Descarga DAVx⁵</string>
+    <string name="collection_synced_items_title">Número de elementos locais</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="one">%1$d elemento en %2$s</item>
+        <item quantity="other">%1$d elementos en %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <item quantity="one">├ %d modificación non sincronizada</item>
+        <item quantity="other">├ %d modificacións non sincronizadas</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <item quantity="one">└ %d eliminación non sincronizada</item>
+        <item quantity="other">└ %d eliminacións non sincronizadas</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Elementos anteriores a %d día non están sincronizados (ver axustes da conta).</item>
+        <item quantity="other">Elementos anteriores a %d días non están sincronizados (ver axustes da conta).</item>
+    </plurals>
+    <string name="login_invalid_use_case">Tipo de uso non válido</string>
 </resources>
