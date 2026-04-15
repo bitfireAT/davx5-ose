@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.push.PushRegistrationManager
+import at.bitfire.davdroid.push.PushDistributorManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -44,7 +44,7 @@ class AppSettingsModel @Inject constructor(
     private val customCertStore: Optional<CustomCertStore>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
-    private val pushRegistrationManager: PushRegistrationManager,
+    private val pushDistributorManager: PushDistributorManager,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -141,10 +141,10 @@ class AppSettingsModel @Inject constructor(
      * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
      */
     private fun loadPushDistributors() {
-        val currentPushDistributor = pushRegistrationManager.getCurrentDistributor()
+        val currentPushDistributor = pushDistributorManager.getCurrentDistributor()
         _pushDistributor.value = currentPushDistributor
 
-        val pushDistributors = pushRegistrationManager.getDistributors()
+        val pushDistributors = pushDistributorManager.getDistributors()
             .map { pushDistributor ->
                 try {
                     val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
@@ -168,7 +168,7 @@ class AppSettingsModel @Inject constructor(
      */
     fun updatePushDistributor(pushDistributor: String?) {
         viewModelScope.launch(ioDispatcher) {
-            pushRegistrationManager.setPushDistributor(pushDistributor)
+            pushDistributorManager.setPushDistributor(pushDistributor)
 
             _pushDistributor.value = pushDistributor
         }
