@@ -13,7 +13,7 @@ plugins {
 
 // Android configuration
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 24        // Android 7.0

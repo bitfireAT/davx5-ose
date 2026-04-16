@@ -4,11 +4,14 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import android.Manifest
 import android.accounts.Account
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
@@ -35,6 +38,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import java.net.InetAddress
+import java.net.UnknownHostException
 import java.util.Optional
 import java.util.logging.Logger
 
@@ -185,6 +190,7 @@ class LoginScreenModel @AssistedInject constructor(
         val foundNothing: Boolean = false,
         val encountered401: Boolean = false,
         val loginValidationFailed: Boolean = false,
+        val missingLocalPermission: Boolean = false,
         val logs: String? = null
     )
 
@@ -194,11 +200,18 @@ class LoginScreenModel @AssistedInject constructor(
     private var foundConfig: DavResourceFinder.Configuration? = null
     private var detectResourcesJob: Job? = null
 
+    fun retryResourceDetection() {
+        if (page == Page.DetectResources) {
+            detectResources()
+        }
+    }
+
     private fun detectResources() {
         detectResourcesUiState = detectResourcesUiState.copy(loading = true)
         detectResourcesJob = viewModelScope.launch {
+            val baseUri = loginInfo.baseUri!!
             // First, if we have a validator, validate the server
-            val httpUrl = loginInfo.baseUri!!.toHttpUrlOrNull()
+            val httpUrl = baseUri.toHttpUrlOrNull()
             if (loginValidator.isPresent && httpUrl != null) {
                 val isValid = withContext(Dispatchers.IO) {
                     runInterruptible {
@@ -214,10 +227,29 @@ class LoginScreenModel @AssistedInject constructor(
                 }
             }
 
-            // Then, find initial configuration
+            // Then, check if the uri is local. If that's the case, we need to request ACCESS_LOCAL_NETWORK on Android 17+
+            val isLocal = withContext(Dispatchers.IO) {
+                try {
+                    val addresses = InetAddress.getAllByName(baseUri.host)
+                    addresses.any { it.isSiteLocalAddress || it.isLinkLocalAddress }
+                } catch (_: UnknownHostException) {
+                    // Treat unresolvable .local as local
+                    baseUri.host.endsWith(".local", ignoreCase = true)
+                }
+            }
+            if (isLocal && !hasLocalNetworkPermission()) {
+                foundConfig = null
+                detectResourcesUiState = detectResourcesUiState.copy(
+                    loading = false,
+                    missingLocalPermission = true,
+                )
+                return@launch
+            }
+
+            // Finally, find initial configuration
             val result = withContext(Dispatchers.IO) {
                  runInterruptible {
-                     val finder = resourceFinderFactory.create(loginInfo.baseUri!!, loginInfo.credentials)
+                     val finder = resourceFinderFactory.create(baseUri, loginInfo.credentials)
                      finder.findInitialConfiguration()
                  }
             }
@@ -240,6 +272,13 @@ class LoginScreenModel @AssistedInject constructor(
 
     private fun cancelResourceDetection() {
         detectResourcesJob?.cancel()
+    }
+
+    /**
+     * Checks whether the `ACCESS_LOCAL_NETWORK` permission is granted.
+     */
+    private fun hasLocalNetworkPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_LOCAL_NETWORK) == PackageManager.PERMISSION_GRANTED
     }
 
 

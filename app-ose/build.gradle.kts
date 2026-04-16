@@ -11,11 +11,11 @@ plugins {
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 24        // Android 7.0
-        targetSdk = 36     // Android 16
+        targetSdk = 37     // Android 17
 
         applicationId = "at.bitfire.davdroid"
 
