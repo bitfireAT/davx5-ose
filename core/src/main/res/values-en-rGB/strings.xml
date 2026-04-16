@@ -389,4 +389,17 @@
     <string name="sync_warning_no_internet">Automatic synchronisation not active (no verified Internet connection).</string>
     <string name="sync_warning_battery_saver_enabled">Battery saver enabled. Synchronisation may be restricted.</string>
     <string name="sync_warning_manage_battery_saver">Manage battery saver</string>
+    <string name="dismiss_forever">Dismiss forever</string>
+    <string name="keep_android_open"><![CDATA[Android’s openness is under threat. Learn how you can help at <a href="%s">keepandroidopen.org</a>.]]></string>
+    <string name="sync_warning_calendar_storage_disabled_title">Calendar provider missing</string>
+    <string name="sync_warning_calendar_storage_disabled_description">Did you disable the \"Calendar storage\" system app?</string>
+    <string name="sync_warning_contacts_storage_disabled_title">Contacts provider missing</string>
+    <string name="sync_warning_contacts_storage_disabled_description">Did you disable the \"Contacts storage\" system app?</string>
+    <string name="sync_warning_manage_apps">Manage apps</string>
+    <string name="app_settings_show_debug_info_details">View/share configuration details and logs</string>
+    <string name="app_settings_logging_on">Logging is active. You can view the logs as part of the debug info.</string>
+    <string name="app_settings_battery_optimization_exempted">App is exempted (recommended)</string>
+    <string name="app_settings_battery_optimization_optimized">Battery restrictions apply (not recommended)</string>
+    <string name="app_settings_distrust_system_certs_dialog_message">If this setting is active, system certificates are not considered trustworthy. This means that you will have to manually accept every certificate (also when the server renews its certificate), or account setup and sync will not work.</string>
+    <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
 </resources>
