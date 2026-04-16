@@ -21,6 +21,7 @@
     <string name="navigate_up">Navigate up</string>
     <string name="options_menu">Options menu</string>
     <string name="share">Share</string>
+    <string name="dismiss_forever">Dismiss forever</string>
     <string name="sync_started">Synchronization started/enqueued</string>
 
     <string name="database_destructive_migration_title">Database corrupted</string>
@@ -152,6 +153,7 @@
     <string name="account_list_welcome">Welcome to DAVx⁵!</string>
     <string name="account_list_empty">Connect to your server and keep your calendars and contacts synchronized.</string>
     <string name="accounts_sync_all">Sync all accounts</string>
+    <string name="keep_android_open"><![CDATA[Android’s openness is under threat. Learn how you can help at <a href="%s">keepandroidopen.org</a>.]]></string>
 
     <!-- Sync warnings -->
     <string name="sync_warning_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>

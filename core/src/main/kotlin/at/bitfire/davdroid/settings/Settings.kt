@@ -65,5 +65,5 @@ object Settings {
 
     /** max. number of accounts */
     const val MAX_ACCOUNTS = "max_accounts"
-    
+
 }

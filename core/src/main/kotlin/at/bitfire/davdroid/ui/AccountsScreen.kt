@@ -75,6 +75,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
+import at.bitfire.davdroid.ui.composable.FlavorComposable
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -111,6 +112,7 @@ fun AccountsScreen(
     }
 
     AccountsScreen(
+        flavorComposables = model.composableItems,
         accountsDrawerHandler = accountsDrawerHandler,
         accounts = accounts,
         showSyncAll = showSyncAll,
@@ -131,6 +133,7 @@ fun AccountsScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AccountsScreen(
+    flavorComposables: Set<FlavorComposable> = emptySet(),
     accountsDrawerHandler: AccountsDrawerHandler,
     accounts: List<AccountsModel.AccountInfo>,
     showSyncAll: Boolean = true,
@@ -296,8 +299,13 @@ fun AccountsScreen(
                                     val intent = Intent(Settings.ACTION_APPLICATION_SETTINGS)
                                     if (intent.resolveActivity(context.packageManager) != null)
                                         context.startActivity(intent)
-                                },
+                                }
                             )
+
+                            // Additional flavor specific composable items to show
+                            flavorComposables.forEach { composable ->
+                                composable.Render(Modifier.padding(horizontal = 8.dp))
+                            }
 
                             // account list
                             AccountList(
@@ -579,6 +587,7 @@ fun SyncWarnings(
                     Text(stringResource(R.string.sync_warning_contacts_storage_disabled_description))
                 }
             }
+
     }
 }
 
