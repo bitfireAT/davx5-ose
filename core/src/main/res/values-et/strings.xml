@@ -512,4 +512,6 @@
     <string name="login_invalid_use_case_info"><![CDATA[Seda %s rakenduse varianti saab kasutada vaid valitud serveritega.]]></string>
     <string name="login_download_regular_davx5"><![CDATA[Selle asemel võta kasutusele <a href="%s">DAVx⁵</a> - see toimib kõikide serveritega.]]></string>
     <string name="login_download_button">Laadi DAVx⁵ alla</string>
+    <string name="dismiss_forever">Loobu igaveseks</string>
+    <string name="keep_android_open"><![CDATA[Androidi avatus on ohus. Uuri siin saidis: <a href="%s">keepandroidopen.org</a> kuidas sina saad aidata.]]></string>
 </resources>
