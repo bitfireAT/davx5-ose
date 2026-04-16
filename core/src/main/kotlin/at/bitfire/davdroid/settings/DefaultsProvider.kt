@@ -5,12 +5,6 @@
 package at.bitfire.davdroid.settings
 
 import at.bitfire.davdroid.util.TextTable
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.IntKey
-import dagger.multibindings.IntoMap
 import java.io.Writer
 import javax.inject.Inject
 
