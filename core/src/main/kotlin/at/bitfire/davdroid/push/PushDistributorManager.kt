@@ -7,6 +7,8 @@ package at.bitfire.davdroid.push
 import android.content.Context
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.unifiedpush.android.connector.UnifiedPush
 import javax.inject.Inject
 
@@ -15,13 +17,15 @@ class PushDistributorManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
+    private val mutex = Mutex()
+
     /**
      * Get the distributor registered by the user.
      *
      * @return The distributor package name if any, else `null`. Will also return `null`
      * if the previously selected distributor isn't installed anymore.
      */
-    fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
+    suspend fun getCurrentDistributor() = mutex.withLock { UnifiedPush.getSavedDistributor(context) }
 
     /**
      * Get a list of available distributors installed on the system.
@@ -34,9 +38,11 @@ class PushDistributorManager @Inject constructor(
      *
      * Then invalidates all subscriptions to refresh them.
      *
+     * Does not re-register subscriptions. A call to [PushRegistrationManager.update] may be needed.
+     *
      * @param pushDistributor  new distributor or `null` to explicitly disable Push
      */
-    suspend fun setPushDistributor(pushDistributor: String?) {
+    suspend fun setPushDistributor(pushDistributor: String?): Unit = mutex.withLock {
         if (pushDistributor != null && getCurrentDistributor() == pushDistributor) {
             // Distributor hasn't changed
             return

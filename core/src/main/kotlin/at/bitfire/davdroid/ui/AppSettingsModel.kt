@@ -15,6 +15,7 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushDistributorManager
+import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -45,6 +46,7 @@ class AppSettingsModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
     private val pushDistributorManager: PushDistributorManager,
+    private val pushRegistrationManager: PushRegistrationManager,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -140,7 +142,7 @@ class AppSettingsModel @Inject constructor(
      * - If there's only one push distributor available, and none is selected, it's selected automatically.
      * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
      */
-    private fun loadPushDistributors() {
+    private suspend fun loadPushDistributors() {
         val currentPushDistributor = pushDistributorManager.getCurrentDistributor()
         _pushDistributor.value = currentPushDistributor
 
@@ -169,6 +171,7 @@ class AppSettingsModel @Inject constructor(
     fun updatePushDistributor(pushDistributor: String?) {
         viewModelScope.launch(ioDispatcher) {
             pushDistributorManager.setPushDistributor(pushDistributor)
+            pushRegistrationManager.update()
 
             _pushDistributor.value = pushDistributor
         }
