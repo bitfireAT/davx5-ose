@@ -264,8 +264,10 @@ fun CollectionScreen(
                             text = localDisplayName ?: stringResource(R.string.collection_local_rename_off),
                             onClick = { showRenameDialog = true },
                             control = {
+                                // Reflect "pending on" while the dialog is open so the switch state
+                                // matches the user's tap immediately (flips back if they cancel).
                                 Switch(
-                                    checked = localDisplayName != null,
+                                    checked = localDisplayName != null || showRenameDialog,
                                     onCheckedChange = { enabled ->
                                         if (enabled) showRenameDialog = true
                                         else onSetLocalDisplayName(null)
@@ -406,7 +408,9 @@ fun CollectionScreen_Entry(
 ) {
     Row(
         verticalAlignment = if (content != null) Alignment.Top else Alignment.CenterVertically,
-        modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
+        modifier = Modifier
+            .fillMaxWidth()
+            .let { if (onClick != null) it.clickable(onClick = onClick) else it }
     ) {
         if (icon != null)
             Icon(
