@@ -207,6 +207,14 @@ class SyncerTest {
             throw NotImplementedError()
         }
 
+        override fun getByDbCollectionId(
+            account: Account,
+            client: ContentProviderClient,
+            dbCollectionId: Long
+        ): LocalTestCollection? {
+            throw NotImplementedError()
+        }
+
         override fun update(
             client: ContentProviderClient,
             localCollection: LocalTestCollection,

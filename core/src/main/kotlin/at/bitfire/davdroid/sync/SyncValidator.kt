@@ -10,6 +10,10 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
+
+/**
+ * Used to decide on whether login and sync are allowed to happen.
+ */
 interface SyncValidator {
 
     /**

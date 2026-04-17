@@ -33,6 +33,7 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.ui.account.AccountProgress
+import at.bitfire.davdroid.ui.composable.FlavorComposable
 import at.bitfire.davdroid.ui.intro.IntroPage
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
 import at.bitfire.davdroid.util.broadcastReceiverFlow
@@ -60,6 +61,7 @@ import java.util.logging.Logger
 class AccountsModel @AssistedInject constructor(
     @Assisted private val syncAccountsOnInit: Boolean,
     private val accountRepository: AccountRepository,
+    val composableItems: Set<@JvmSuppressWildcards FlavorComposable>,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     introPageFactory: IntroPageFactory,

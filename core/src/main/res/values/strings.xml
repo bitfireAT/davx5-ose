@@ -21,6 +21,7 @@
     <string name="navigate_up">Navigate up</string>
     <string name="options_menu">Options menu</string>
     <string name="share">Share</string>
+    <string name="dismiss_forever">Dismiss forever</string>
     <string name="sync_started">Synchronization started/enqueued</string>
 
     <string name="database_destructive_migration_title">Database corrupted</string>
@@ -152,6 +153,7 @@
     <string name="account_list_welcome">Welcome to DAVx⁵!</string>
     <string name="account_list_empty">Connect to your server and keep your calendars and contacts synchronized.</string>
     <string name="accounts_sync_all">Sync all accounts</string>
+    <string name="keep_android_open"><![CDATA[Android’s openness is under threat. Learn how you can help at <a href="%s">keepandroidopen.org</a>.]]></string>
 
     <!-- Sync warnings -->
     <string name="sync_warning_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>
@@ -336,6 +338,10 @@
     <string name="login_check_credentials">Please also double-check authentication (usually username and password).</string>
     <string name="login_logs_available">Further technical information is available in the logs.</string>
     <string name="login_view_logs">View logs</string>
+    <string name="login_invalid_use_case">Invalid use-case</string>
+    <string name="login_invalid_use_case_info"><![CDATA[This variant %s of the app can only be used with selected services.]]></string>
+    <string name="login_download_regular_davx5"><![CDATA[Instead, please use <a href="%s">DAVx⁵</a>, which can be used with all services.]]></string>
+    <string name="login_download_button">Download DAVx⁵</string>
 
     <!-- AccountSettingsActivity -->
     <string name="settings_sync">Synchronization</string>
@@ -455,14 +461,30 @@
     <string name="collection_title">Title</string>
     <string name="collection_description">Description</string>
     <string name="collection_owner">Owner</string>
+    <string name="collection_last_sync">Last sync (%s)</string>
+    <string name="collection_synced_items_title">Local item count</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="zero">No items in %2$s</item>
+        <item quantity="one">%1$d item in %2$s</item>
+        <item quantity="other">%1$d items in %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <!-- Note: Mirror box drawing for RTL -->
+        <item quantity="one">├ %d unsynced modification</item>
+        <item quantity="other">├ %d unsynced modifications</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <!-- Note: Mirror box drawing for RTL -->
+        <item quantity="one">└ %d unsynced deletion</item>
+        <item quantity="other">└ %d unsynced deletions</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Items older than %d day are not synchronized (see account settings).</item>
+        <item quantity="other">Items older than %d days are not synchronized (see account settings).</item>
+    </plurals>
     <string name="collection_push_support">Push support</string>
     <string name="collection_push_web_push">Server advertises Push support</string>
     <string name="collection_push_subscribed_at">Subscribed at %1$s, expires at %2$s</string>
-    <string name="collection_last_sync">Last sync (%s)</string>
-    <string name="collection_synced_items">Current local items:</string>
-    <string name="collection_synced_items_count">%1$s, thereof</string>
-    <string name="collection_unsynced_modifications">%1$d unsynced local modifications</string>
-    <string name="collection_unsynced_deletions">%1$d unsynced local deletions</string>
     <string name="collection_url">Address (URL)</string>
 
     <!-- debugging and DebugInfoActivity -->

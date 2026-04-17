@@ -240,6 +240,15 @@ open class LocalAddressBook @AssistedInject constructor(
 
     /* operations on members (contacts/groups) */
 
+    override fun countAll(): Int =
+        countContacts(null, null)
+
+    override fun countDeleted(): Int =
+        countContacts(RawContacts.DELETED, null)
+
+    override fun countModified(): Int =
+        countContacts("${RawContacts.DIRTY} AND NOT ${RawContacts.DELETED}", null)
+
     override fun findByName(name: String): LocalAddress? {
         val result = queryContacts("${AndroidContact.COLUMN_FILENAME}=?", arrayOf(name)).firstOrNull()
         return if (includeGroups)

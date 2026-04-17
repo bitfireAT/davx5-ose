@@ -97,6 +97,10 @@ class LocalJtxCollectionStore @Inject constructor(
     override fun getAll(account: Account, client: ContentProviderClient): List<LocalJtxCollection> =
         JtxCollection.find(account, client, context, LocalJtxCollection.Factory, null, null)
 
+    override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalJtxCollection? =
+        JtxCollection.find(account, client, context, LocalJtxCollection.Factory,
+            "${JtxContract.JtxCollection.SYNC_ID}=?", arrayOf(dbCollectionId.toString())).firstOrNull()
+
     override fun update(client: ContentProviderClient, localCollection: LocalJtxCollection, fromCollection: Collection) {
         val accountSettings = accountSettingsFactory.create(localCollection.account)
         val values = valuesFromCollection(fromCollection, account = localCollection.account, withColor = accountSettings.getManageCalendarColors())

@@ -488,4 +488,7 @@
     <string name="widget_sync_description">Toca para realizar manualmente a sincronización.</string>
     <string name="intro_autostart_text">O firmaware específico do fabricante podería bloquear a sincronización. Se che afecta, só podes solucionalo manualmente.</string>
     <string name="widget_icon_sync_label">Icona do Botón de sincr.</string>
+    <string name="collection_datatype_contacts_count">%1$d contactos</string>
+    <string name="collection_datatype_events_count">%1$d eventos</string>
+    <string name="collection_datatype_tasks_count">%1$d tarefas</string>
 </resources>
