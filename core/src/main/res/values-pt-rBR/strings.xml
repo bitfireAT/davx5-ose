@@ -494,4 +494,5 @@
     <string name="collection_datatype_contacts_count">%1$d contatos</string>
     <string name="collection_datatype_events_count">%1$d eventos</string>
     <string name="collection_datatype_tasks_count">%1$d tarefas</string>
+    <string name="dismiss_forever">Ignorar para sempre</string>
 </resources>
