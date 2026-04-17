@@ -215,9 +215,10 @@ class DavCollectionRepository @Inject constructor(
     /**
      * Inserts or updates the collection.
      *
-     * On update, it will _not_ update the flags
-     *  - [Collection.sync] and
-     *  - [Collection.forceReadOnly],
+     * On update, it will _not_ update the user-controlled fields
+     *  - [Collection.sync],
+     *  - [Collection.forceReadOnly] and
+     *  - [Collection.localDisplayName],
      *  but use the values of the already existing collection.
      *
      * @param newCollection Collection to be inserted or updated
@@ -228,7 +229,11 @@ class DavCollectionRepository @Inject constructor(
             val oldCollection = dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())
             val newCollectionWithFlags =
                 if (oldCollection != null)
-                    newCollection.copy(sync = oldCollection.sync, forceReadOnly = oldCollection.forceReadOnly)
+                    newCollection.copy(
+                        sync = oldCollection.sync,
+                        forceReadOnly = oldCollection.forceReadOnly,
+                        localDisplayName = oldCollection.localDisplayName
+                    )
                 else
                     newCollection
 
