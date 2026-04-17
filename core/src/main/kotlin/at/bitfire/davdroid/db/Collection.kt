@@ -107,6 +107,12 @@ data class Collection(
      */
     val displayName: String? = null,
     /**
+     * User-defined local name that overrides [displayName] when shown in the app and to the
+     * Android system (e.g. CalendarProvider). The server-side name is never changed.
+     * `null` means no local override (use the server's [displayName]).
+     */
+    val localDisplayName: String? = null,
+    /**
      * Human-readable description of the collection
      */
     val description: String? = null,
@@ -262,7 +268,7 @@ data class Collection(
 
     // calculated properties
 
-    fun title() = displayName ?: url.lastSegment
+    fun title() = localDisplayName ?: displayName ?: url.lastSegment
     fun readOnly() = forceReadOnly || !privWriteContent
 
 }

@@ -262,6 +262,14 @@ class DavCollectionRepository @Inject constructor(
     }
 
     /**
+     * Sets the local display name override (or clears it when [localDisplayName] is null/blank).
+     * Does not change the collection on the server.
+     */
+    suspend fun setLocalDisplayName(id: Long, localDisplayName: String?) {
+        dao.updateLocalDisplayName(id, localDisplayName?.trim()?.ifEmpty { null })
+    }
+
+    /**
      * Whether or not the local collection should be synced with the server
      */
     suspend fun setSync(id: Long, forceReadOnly: Boolean) {

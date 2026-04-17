@@ -104,10 +104,10 @@ class LocalCalendarStore @Inject constructor(
     }
 
     private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
+        val serverDisplayName = if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName
         val values = contentValuesOf(
             Calendars._SYNC_ID to info.id,
-            Calendars.CALENDAR_DISPLAY_NAME to
-                    if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName,
+            Calendars.CALENDAR_DISPLAY_NAME to (info.localDisplayName ?: serverDisplayName),
 
             Calendars.ALLOWED_AVAILABILITY to arrayOf(
                 Events.AVAILABILITY_BUSY,
