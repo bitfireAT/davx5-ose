@@ -43,7 +43,7 @@
     <string name="intro_tasks_opentasks">OpenTasks</string>
     <string name="intro_tasks_opentasks_info">Semella que xa non está en desenvolvemento – non recomendado.</string>
     <string name="intro_tasks_tasks_org">Task.org</string>
-    <string name="intro_tasks_tasks_org_info"><![CDATA[Some features <a href="https://www.davx5.com/faq/tasks/advanced-task-features">Non hai compatibilidade</a> para algunhas características]]></string>
+    <string name="intro_tasks_tasks_org_info"><![CDATA[Algunhas características <a href="https://www.davx5.com/faq/tasks/advanced-task-features">non son compatibles</a>.]]></string>
     <string name="intro_tasks_no_app_store">Sen tenda de apps dispoñible</string>
     <string name="intro_tasks_dont_show">Non necesito soporte para tarefas.*</string>
     <string name="intro_open_source_title">Software de código aberto</string>
@@ -512,4 +512,6 @@
         <item quantity="other">Elementos anteriores a %d días non están sincronizados (ver axustes da conta).</item>
     </plurals>
     <string name="login_invalid_use_case">Tipo de uso non válido</string>
+    <string name="dismiss_forever">Desbotar para sempre</string>
+    <string name="keep_android_open"><![CDATA[Android pode deixar de ser un sistema aberto. Visita <a href="%s">keepandroidopen.org</a> para axudar a evitalo.]]></string>
 </resources>
