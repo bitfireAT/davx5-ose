@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.resource
 
+import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
@@ -11,9 +12,9 @@ import android.net.Uri
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Calendars
 import androidx.core.content.contentValuesOf
+import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
-import at.bitfire.synctools.test.InitCalendarProviderRule
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -24,17 +25,16 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
 import javax.inject.Inject
 
 @HiltAndroidTest
 class LocalCalendarStoreTest {
 
     @get:Rule
-    val hiltRule = HiltAndroidRule(this)
+    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
 
     @get:Rule
-    val initCalendarProviderRule: TestRule = InitCalendarProviderRule.initialize()
+    val hiltRule = HiltAndroidRule(this)
 
     @Inject @ApplicationContext
     lateinit var context: Context
