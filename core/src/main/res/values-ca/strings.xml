@@ -519,4 +519,6 @@
     <string name="login_invalid_use_case_info"><![CDATA[Aquesta variant %s de l'aplicació només es pot fer servir amb serveis seleccionats.]]></string>
     <string name="login_download_regular_davx5"><![CDATA[En el seu lloc, feu servir <a href="%s">DAVx⁵</a>, que es pot utilitzar amb tots els serveis.]]></string>
     <string name="login_download_button">Baixa DAVx⁵</string>
+    <string name="dismiss_forever">Descarta per sempre</string>
+    <string name="keep_android_open"><![CDATA[El caràcter obert d\'Android està amenaçat. Apreneu com podeu ajudar a <a href="%s">keepandroidopen.org</a>.]]></string>
 </resources>
