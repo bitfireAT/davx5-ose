@@ -107,8 +107,10 @@ data class Collection(
      */
     val displayName: String? = null,
     /**
-     * User-defined local name that overrides [displayName] when shown in the app and to the
-     * Android system (e.g. CalendarProvider). The server-side name is never changed.
+     * User-defined local name that overrides [displayName] when shown in the app and, for
+     * calendar collections, when synced to the Android CalendarProvider. The server-side
+     * name is never changed.
+     *
      * `null` means no local override (use the server's [displayName]).
      */
     val localDisplayName: String? = null,

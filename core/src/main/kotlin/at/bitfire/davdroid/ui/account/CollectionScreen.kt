@@ -109,6 +109,7 @@ fun CollectionScreen(
         displayName = collection.displayName,
         localDisplayName = collection.localDisplayName,
         onSetLocalDisplayName = model::setLocalDisplayName,
+        supportsLocalRename = collection.type == Collection.TYPE_CALENDAR || collection.type == Collection.TYPE_WEBCAL,
         description = collection.description,
         owner = model.owner.collectAsStateWithLifecycle(null).value,
         localItemCounts = model.localItemCounts.collectAsStateWithLifecycle(initialValue = emptyList()).value,
