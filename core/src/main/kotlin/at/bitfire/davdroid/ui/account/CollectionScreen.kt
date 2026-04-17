@@ -66,6 +66,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.ui.composable.AppTheme
@@ -139,6 +140,7 @@ fun CollectionScreen(
     displayName: String? = null,
     localDisplayName: String? = null,
     onSetLocalDisplayName: (String?) -> Unit = {},
+    supportsLocalRename: Boolean = false,
     description: String? = null,
     owner: String? = null,
     lastSynced: List<DavSyncStatsRepository.LastSynced> = emptyList(),
@@ -254,31 +256,33 @@ fun CollectionScreen(
                         }
                     )
 
-                    var showRenameDialog by remember { mutableStateOf(false) }
-                    CollectionScreen_Entry(
-                        icon = Icons.Default.DriveFileRenameOutline,
-                        title = stringResource(R.string.collection_local_rename),
-                        text = localDisplayName ?: stringResource(R.string.collection_local_rename_off),
-                        onClick = { showRenameDialog = true },
-                        control = {
-                            Switch(
-                                checked = localDisplayName != null,
-                                onCheckedChange = { enabled ->
-                                    if (enabled) showRenameDialog = true
-                                    else onSetLocalDisplayName(null)
-                                }
-                            )
-                        }
-                    )
-                    if (showRenameDialog)
-                        LocalRenameDialog(
-                            initialName = localDisplayName ?: displayName ?: title,
-                            onDismiss = { showRenameDialog = false },
-                            onConfirm = { newName ->
-                                onSetLocalDisplayName(newName)
-                                showRenameDialog = false
+                    if (supportsLocalRename) {
+                        var showRenameDialog by remember { mutableStateOf(false) }
+                        CollectionScreen_Entry(
+                            icon = Icons.Default.DriveFileRenameOutline,
+                            title = stringResource(R.string.collection_local_rename),
+                            text = localDisplayName ?: stringResource(R.string.collection_local_rename_off),
+                            onClick = { showRenameDialog = true },
+                            control = {
+                                Switch(
+                                    checked = localDisplayName != null,
+                                    onCheckedChange = { enabled ->
+                                        if (enabled) showRenameDialog = true
+                                        else onSetLocalDisplayName(null)
+                                    }
+                                )
                             }
                         )
+                        if (showRenameDialog)
+                            LocalRenameDialog(
+                                initialName = localDisplayName ?: displayName ?: title,
+                                onDismiss = { showRenameDialog = false },
+                                onConfirm = { newName ->
+                                    onSetLocalDisplayName(newName)
+                                    showRenameDialog = false
+                                }
+                            )
+                    }
 
                     if (displayName != null)
                         CollectionScreen_Entry(
@@ -454,6 +458,7 @@ fun CollectionScreen_Preview() {
         title = "Some Calendar, with some additional text to make it wrap around and stuff.",
         displayName = "Some Calendar, with some additional text to make it wrap around and stuff.",
         localDisplayName = "My Local Name",
+        supportsLocalRename = true,
         description = "This is some description of the calendar. It can be long and wrap around.",
         owner = "Some One",
         lastSynced = listOf(
