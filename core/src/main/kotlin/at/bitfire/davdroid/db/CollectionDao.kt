@@ -32,7 +32,7 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND homeSetId IS :homeSetId")
     fun getByServiceAndHomeset(serviceId: Long, homeSetId: Long?): List<Collection>
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY COALESCE(localDisplayName, displayName) COLLATE NOCASE, url COLLATE NOCASE")
     fun getByServiceAndType(serviceId: Long, @CollectionType type: String): List<Collection>
 
     @Query("SELECT * FROM collection WHERE pushTopic=:topic AND sync")
@@ -57,25 +57,25 @@ interface CollectionDao {
      *   - have supportsVEVENT = supportsVTODO = null (= address books)
      */
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type " +
-            "AND (supportsVTODO OR supportsVEVENT OR supportsVJOURNAL OR (supportsVEVENT IS NULL AND supportsVTODO IS NULL AND supportsVJOURNAL IS NULL)) ORDER BY displayName COLLATE NOCASE, URL COLLATE NOCASE")
+            "AND (supportsVTODO OR supportsVEVENT OR supportsVJOURNAL OR (supportsVEVENT IS NULL AND supportsVTODO IS NULL AND supportsVJOURNAL IS NULL)) ORDER BY COALESCE(localDisplayName, displayName) COLLATE NOCASE, URL COLLATE NOCASE")
     fun pageByServiceAndType(serviceId: Long, @CollectionType type: String): PagingSource<Int, Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync")
     fun getByServiceAndSync(serviceId: Long): List<Collection>
 
-    @Query("SELECT collection.* FROM collection, homeset WHERE collection.serviceId=:serviceId AND type=:type AND homeSetId=homeset.id AND homeset.personal ORDER BY collection.displayName COLLATE NOCASE, collection.url COLLATE NOCASE")
+    @Query("SELECT collection.* FROM collection, homeset WHERE collection.serviceId=:serviceId AND type=:type AND homeSetId=homeset.id AND homeset.personal ORDER BY COALESCE(collection.localDisplayName, collection.displayName) COLLATE NOCASE, collection.url COLLATE NOCASE")
     fun pagePersonalByServiceAndType(serviceId: Long, @CollectionType type: String): PagingSource<Int, Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND url=:url")
     fun getByServiceAndUrl(serviceId: Long, url: String): Collection?
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVEVENT AND sync ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVEVENT AND sync ORDER BY COALESCE(localDisplayName, displayName) COLLATE NOCASE, url COLLATE NOCASE")
     fun getSyncCalendars(serviceId: Long): List<Collection>
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND (supportsVTODO OR supportsVJOURNAL) AND sync ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND (supportsVTODO OR supportsVJOURNAL) AND sync ORDER BY COALESCE(localDisplayName, displayName) COLLATE NOCASE, url COLLATE NOCASE")
     fun getSyncJtxCollections(serviceId: Long): List<Collection>
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVTODO AND sync ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVTODO AND sync ORDER BY COALESCE(localDisplayName, displayName) COLLATE NOCASE, url COLLATE NOCASE")
     fun getSyncTaskLists(serviceId: Long): List<Collection>
 
     /**
