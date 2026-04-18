@@ -25,6 +25,7 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.trimToNull
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -271,7 +272,7 @@ class DavCollectionRepository @Inject constructor(
      * Does not change the collection on the server.
      */
     suspend fun setLocalDisplayName(id: Long, localDisplayName: String?) {
-        dao.updateLocalDisplayName(id, localDisplayName?.trim()?.ifEmpty { null })
+        dao.updateLocalDisplayName(id, localDisplayName.trimToNull())
     }
 
     /**
