@@ -96,7 +96,6 @@ class WelcomePage: IntroPage() {
                 maxLines = 2, // Important for TextAutoSize not to grow too big
                 color = { Color.White },
                 style = MaterialTheme.typography.labelLarge.copy(
-                    fontSize = 28.sp, // Minimum size, but TextAutoSize decreases below if missing space
                     lineHeight = 1.1.em,
                     textAlign = TextAlign.Center,
                 ),
