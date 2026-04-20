@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -87,12 +89,16 @@ class WelcomePage: IntroPage() {
                     .padding(horizontal = 16.dp)
             )
 
-            Text(
+            BasicText(
                 text = stringResource(R.string.intro_slogan2),
-                color = Color.White,
-                style = MaterialTheme.typography.labelLarge.copy(fontSize = 48.sp),
-                lineHeight = 52.sp,
-                textAlign = TextAlign.Center,
+                autoSize = TextAutoSize.StepBased(maxFontSize = 48.sp),
+                maxLines = 2, // Important for TextAutoSize not to grow too big
+                color = { Color.White },
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontSize = 28.sp, // Minimum size, but TextAutoSize decreases below if missing space
+                    lineHeight = 52.sp,
+                    textAlign = TextAlign.Center,
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
