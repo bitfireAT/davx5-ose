@@ -92,7 +92,7 @@ class WelcomePage: IntroPage() {
 
             BasicText(
                 text = stringResource(R.string.intro_slogan2),
-                autoSize = TextAutoSize.StepBased(maxFontSize = 48.sp),
+                autoSize = TextAutoSize.StepBased(maxFontSize = 48.sp), // Don't make short words too big
                 maxLines = 2, // Important for TextAutoSize not to grow too big
                 color = { Color.White },
                 style = MaterialTheme.typography.labelLarge.copy(
