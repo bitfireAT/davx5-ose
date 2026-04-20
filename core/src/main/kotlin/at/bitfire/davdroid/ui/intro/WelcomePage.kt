@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.AppTheme
@@ -96,7 +97,7 @@ class WelcomePage: IntroPage() {
                 color = { Color.White },
                 style = MaterialTheme.typography.labelLarge.copy(
                     fontSize = 28.sp, // Minimum size, but TextAutoSize decreases below if missing space
-                    lineHeight = 52.sp,
+                    lineHeight = 1.1.em,
                     textAlign = TextAlign.Center,
                 ),
                 modifier = Modifier
