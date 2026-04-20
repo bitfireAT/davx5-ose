@@ -14,8 +14,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.push.PushCoordinator
 import at.bitfire.davdroid.push.PushDistributorManager
-import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -46,7 +46,7 @@ class AppSettingsModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
     private val pushDistributorManager: PushDistributorManager,
-    private val pushRegistrationManager: PushRegistrationManager,
+    private val pushCoordinator: PushCoordinator,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -170,8 +170,7 @@ class AppSettingsModel @Inject constructor(
      */
     fun updatePushDistributor(pushDistributor: String?) {
         viewModelScope.launch(ioDispatcher) {
-            pushDistributorManager.setPushDistributor(pushDistributor)
-            pushRegistrationManager.update()
+            pushCoordinator.setPushDistributor(pushDistributor)
 
             _pushDistributor.value = pushDistributor
         }

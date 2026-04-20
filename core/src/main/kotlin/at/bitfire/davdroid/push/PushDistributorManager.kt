@@ -40,8 +40,14 @@ class PushDistributorManager @Inject constructor(
      *
      * Does not re-register subscriptions. A call to [PushRegistrationManager.update] may be needed.
      *
+     * **Intended to be used by [PushCoordinator], call [PushCoordinator.setPushDistributor] instead.**
+     *
      * @param pushDistributor  new distributor or `null` to explicitly disable Push
      */
+    @Deprecated(
+        "Intended to be used only by PushCoordinator",
+        replaceWith = ReplaceWith("pushCoordinator.setPushDistributor(pushDistributor)")
+    )
     suspend fun setPushDistributor(pushDistributor: String?): Unit = mutex.withLock {
         if (pushDistributor != null && getCurrentDistributor() == pushDistributor) {
             // Distributor hasn't changed
