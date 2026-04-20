@@ -494,4 +494,10 @@
     <string name="about_translations_over_transifex">Przy użyciu Transifex</string>
     <string name="about_translations_over_weblate">Przy użyciu Weblate</string>
     <string name="about_translations_contribute">Pomoc w tłumaczeniu</string>
+    <string name="keep_android_open"><![CDATA[Otwartość Androida jest zagrożona. Dowiedz się, jak możesz pomóc na stronie <a href="%s">keepandroidopen.org</a>.]]></string>
+    <string name="dismiss_forever">Odrzuć na zawsze</string>
+    <string name="login_download_button">Pobierz DAVx⁵</string>
+    <string name="login_download_regular_davx5"><![CDATA[Zamiast tego użyj <a href="%s">DAVx⁵</a>, który może być używany ze wszystkimi usługami.]]></string>
+    <string name="login_invalid_use_case_info"><![CDATA[Ten wariant %s aplikacji może być używany tylko z wybranymi usługami.]]></string>
+    <string name="login_invalid_use_case">Nieprawidłowy sposób użycia</string>
 </resources>
