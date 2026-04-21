@@ -21,7 +21,7 @@
     <string name="notification_channel_status">Weniger wichtige Statusmitteilungen</string>
     <string name="notification_channel_sync">Synchronisierung</string>
     <string name="notification_channel_sync_errors">Synchronisierungsfehler</string>
-    <string name="notification_channel_sync_errors_desc">Fehler, die zum Abbruch der Synchronisierung führen, wie z.B. unerwartete Serverantworten</string>
+    <string name="notification_channel_sync_errors_desc">Fehler, die zum Abbruch der Synchronisierung führen, wie z. B. unerwartete Serverantworten</string>
     <string name="notification_channel_sync_warnings">Synchronisierungswarnungen</string>
     <string name="notification_channel_sync_warnings_desc">Nicht fatale Synchronisierungsprobleme wie bestimmte ungültige Dateien</string>
     <string name="notification_channel_sync_io_errors">Netzwerk- und E/A-Fehler</string>
@@ -148,7 +148,7 @@
     <string name="refresh_collections_worker_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
     <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Läuft im Vordergrund</string>
-    <string name="foreground_service_notify_text">Auf manchen Geräten für die automatische Synchronisierung benötigt</string>
+    <string name="foreground_service_notify_text">Auf manchen Geräten wird dies für die automatische Synchronisierung benötigt.</string>
     <!--AppSettingsActivity-->
   <string name="app_settings">Einstellungen</string>
     <string name="app_settings_debug">Fehlersuche</string>
@@ -512,4 +512,6 @@
         <item quantity="other">Elemente alter als %d Tage werden nicht synchronisiert (siehe Account Einstellung).</item>
     </plurals>
     <string name="login_download_regular_davx5"><![CDATA[Stattdessen bitte <a href="%s">DAVx⁵</a>, nutzen, das mit allen Diensten genutzt werden kann.]]></string>
+    <string name="dismiss_forever">Dauerhaft verwerfen</string>
+    <string name="keep_android_open"><![CDATA[Androids Plattformoffenheit ist in Gefahr. Erfahre wie du helfen kannst auf <a href="%s">keepandroidopen.org</a>.]]></string>
 </resources>
