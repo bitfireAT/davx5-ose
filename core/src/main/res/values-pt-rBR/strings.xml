@@ -495,4 +495,30 @@
     <string name="collection_datatype_events_count">%1$d eventos</string>
     <string name="collection_datatype_tasks_count">%1$d tarefas</string>
     <string name="dismiss_forever">Ignorar para sempre</string>
+    <string name="login_invalid_use_case">Uso inválido</string>
+    <string name="login_invalid_use_case_info"><![CDATA[A variante %s do app só pode ser usado com serviços específicos.]]></string>
+    <string name="login_download_regular_davx5"><![CDATA[Em vez disso, use o <a href="%s">DAVx⁵</a>, que pode ser usado com todos os serviços.]]></string>
+    <string name="login_download_button">Baixar DAVx⁵</string>
+    <string name="collection_synced_items_title">Número de itens locais</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="one">%1$d item em %2$s</item>
+        <item quantity="many">%1$d de itens em %2$s</item>
+        <item quantity="other">%1$d itens em %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <item quantity="one">├ %d notificação não sincronizada</item>
+        <item quantity="many">├ %d de notificações não sincronizadas</item>
+        <item quantity="other">├ %d notificações não sincronizadas</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <item quantity="one">└ %d apagamento não sincronizado</item>
+        <item quantity="many">└ %d de apagamentos não sincronizados</item>
+        <item quantity="other">└ %d apagamentos não sincronizados</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Itens mais velhos que %d dia não são sincronizados (veja as configurações da conta).</item>
+        <item quantity="many">Itens mais velhos que %d de dias não são sincronizados (veja as configurações da conta).</item>
+        <item quantity="other">Itens mais velhos que %d dias não são sincronizados (veja as configurações da conta).</item>
+    </plurals>
+    <string name="keep_android_open"><![CDATA[A transparência e liberdade do Android está sob ameaça. Saiba como você pode ajudar em <a href="%s">keepandroidopen.org</a>.]]></string>
 </resources>
