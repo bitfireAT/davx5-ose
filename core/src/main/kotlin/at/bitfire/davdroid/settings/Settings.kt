@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.settings
 
 import androidx.appcompat.app.AppCompatDelegate
+import at.bitfire.davdroid.push.PushDistributorPreference
 import at.bitfire.davdroid.settings.Settings.PRESELECT_COLLECTIONS_EXCLUDED
 
 object Settings {
@@ -57,6 +58,9 @@ object Settings {
 
     /** regular expression to match URLs of collections to be excluded from pre-selection */
     const val PRESELECT_COLLECTIONS_EXCLUDED = "preselect_collections_excluded"
+
+    /** One of [PushDistributorPreference]. Sets which distributor to use. */
+    const val PUSH_DISTRIBUTOR = "push_distributor"
 
 
     /** whether all address books are forced to be read-only */

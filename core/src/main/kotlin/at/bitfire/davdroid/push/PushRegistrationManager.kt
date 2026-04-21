@@ -22,7 +22,6 @@ import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.property.push.WebDAVPush
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
@@ -36,7 +35,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.ByteReadChannel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.unifiedpush.android.connector.UnifiedPush
@@ -63,7 +61,6 @@ class PushRegistrationManager @Inject constructor(
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
 ) {
@@ -76,6 +73,7 @@ class PushRegistrationManager @Inject constructor(
      *
      * @param pushDistributor  new distributor or `null` to disable Push
      */
+    @Deprecated("Use PushDistributorManager")
     suspend fun setPushDistributor(pushDistributor: String?) {
         // Disable UnifiedPush and remove all subscriptions
         UnifiedPush.removeDistributor(context)
@@ -88,8 +86,10 @@ class PushRegistrationManager @Inject constructor(
         }
     }
 
+    @Deprecated("Use PushDistributorManager")
     fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
 
+    @Deprecated("We should not list distributors by ourselves, show UnifiedPush selector")
     fun getDistributors() = UnifiedPush.getDistributors(context)
 
 
