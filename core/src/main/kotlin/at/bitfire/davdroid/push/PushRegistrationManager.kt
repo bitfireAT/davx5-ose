@@ -62,7 +62,8 @@ class PushRegistrationManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
     private val logger: Logger,
-    private val serviceRepository: DavServiceRepository
+    private val serviceRepository: DavServiceRepository,
+    private val distributorManager: PushDistributorManager
 ) {
 
     /**
@@ -124,12 +125,14 @@ class PushRegistrationManager @Inject constructor(
      * Registers or unregisters subscriptions depending on whether there is a distributor available.
      */
     private suspend fun updateService(serviceId: Long) {
+        val distributorPreference = distributorManager.getPushDistributorPreference()
+        if (distributorPreference == PushDistributorPreference.Disabled) return
+
         val service = serviceRepository.get(serviceId) ?: return
 
         // use service ID from database as UnifiedPush instance name
         val instance = serviceId.toString()
-
-        val distributorAvailable = getCurrentDistributor() != null
+        val distributorAvailable = distributorManager.distributorAvailable()
         if (distributorAvailable)
             try {
                 val vapid = collectionRepository.getVapidKey(serviceId)
