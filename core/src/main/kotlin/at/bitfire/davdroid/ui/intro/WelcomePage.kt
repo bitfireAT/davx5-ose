@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.AppTheme
@@ -87,12 +90,17 @@ class WelcomePage: IntroPage() {
                     .padding(horizontal = 16.dp)
             )
 
-            Text(
+            // Note: We don't want words to break ever and get smaller instead,
+            // this current solution still breaks very long words however
+            BasicText(
                 text = stringResource(R.string.intro_slogan2),
-                color = Color.White,
-                style = MaterialTheme.typography.labelLarge.copy(fontSize = 48.sp),
-                lineHeight = 52.sp,
-                textAlign = TextAlign.Center,
+                autoSize = TextAutoSize.StepBased(maxFontSize = 48.sp), // Don't make short words too big
+                maxLines = 2, // Important for TextAutoSize not to grow too big
+                color = { Color.White },
+                style = MaterialTheme.typography.labelLarge.copy(
+                    lineHeight = 1.1.em,
+                    textAlign = TextAlign.Center,
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
