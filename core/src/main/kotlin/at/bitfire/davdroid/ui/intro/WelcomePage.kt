@@ -90,6 +90,8 @@ class WelcomePage: IntroPage() {
                     .padding(horizontal = 16.dp)
             )
 
+            // Note: We don't want words to break ever and get smaller instead,
+            // this current solution still breaks very long words however
             BasicText(
                 text = stringResource(R.string.intro_slogan2),
                 autoSize = TextAutoSize.StepBased(maxFontSize = 48.sp), // Don't make short words too big
