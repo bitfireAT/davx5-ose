@@ -104,7 +104,13 @@ interface CollectionDao {
     suspend fun updateForceReadOnly(id: Long, forceReadOnly: Boolean)
 
     @Query("UPDATE collection SET pushSubscription=:pushSubscription, pushRegisteredEndpoint=:pushRegisteredEndpoint, pushSubscriptionExpires=:pushSubscriptionExpires, pushSubscriptionCreated=:updatedAt WHERE id=:id")
-    suspend fun updatePushSubscription(id: Long, pushSubscription: String?, pushRegisteredEndpoint: String?, pushSubscriptionExpires: Long?, updatedAt: Long = System.currentTimeMillis()/1000)
+    suspend fun updatePushSubscription(
+        id: Long,
+        pushRegisteredEndpoint: String?,
+        pushSubscription: String?,
+        pushSubscriptionExpires: Long?,
+        updatedAt: Long = System.currentTimeMillis() / 1000
+    )
 
     @Query("UPDATE collection SET sync=:sync WHERE id=:id")
     suspend fun updateSync(id: Long, sync: Boolean)

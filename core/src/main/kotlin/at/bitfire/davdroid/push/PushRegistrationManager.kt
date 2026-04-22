@@ -189,13 +189,11 @@ class PushRegistrationManager @Inject constructor(
                     val expires = collection.pushSubscriptionExpires
                     // calculate next run time, but use the duplicate interval for safety (times are not exact)
                     val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
-                    if (expires != null && expires >= nextRun.epochSecond
-                            && collection.pushRegisteredEndpoint == endpoint.url)
+                    if (expires != null && expires >= nextRun.epochSecond && collection.pushRegisteredEndpoint == endpoint.url)
                         logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
                     else {
                         // endpoint changed: unsubscribe from old subscription first
-                        if (collection.pushRegisteredEndpoint != null
-                                && collection.pushRegisteredEndpoint != endpoint.url) {
+                        if (collection.pushRegisteredEndpoint != null && collection.pushRegisteredEndpoint != endpoint.url) {
                             logger.fine("Push endpoint changed for ${collection.url}, unsubscribing from old endpoint first")
                             collection.pushSubscription?.toUrlOrNull()?.let { oldUrl ->
                                 unsubscribe(httpClient, collection, oldUrl)

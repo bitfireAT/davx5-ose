@@ -268,11 +268,19 @@ class DavCollectionRepository @Inject constructor(
         dao.updateSync(id, forceReadOnly)
     }
 
+    /**
+     * Updates the push subscription details for a collection with the given ID.
+     *
+     * @param id ID of the collection to update.
+     * @param subscriptionUrl New push subscription URL (can be `null` to clear the value).
+     * @param registeredEndpoint New registered endpoint URL (can be `null` to clear the value).
+     * @param expires New expiration timestamp for the push subscription (can be `null` to clear the value).
+     */
     suspend fun updatePushSubscription(id: Long, subscriptionUrl: String?, registeredEndpoint: String?, expires: Long?) {
         dao.updatePushSubscription(
             id = id,
-            pushSubscription = subscriptionUrl,
             pushRegisteredEndpoint = registeredEndpoint,
+            pushSubscription = subscriptionUrl,
             pushSubscriptionExpires = expires
         )
     }
