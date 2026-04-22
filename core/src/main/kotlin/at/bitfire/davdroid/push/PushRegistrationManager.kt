@@ -76,13 +76,13 @@ class PushRegistrationManager @Inject constructor(
     suspend fun setPushDistributor(pushDistributor: String?) {
         // Disable UnifiedPush and remove all subscriptions
         UnifiedPush.removeDistributor(context)
-        update()
 
-        if (pushDistributor != null) {
-            // If a distributor was passed, store it and create/register subscriptions
+        // If a distributor was passed, store it
+        if (pushDistributor != null)
             UnifiedPush.saveDistributor(context, pushDistributor)
-            update()
-        }
+
+        // Update all subscriptions
+        update()
     }
 
     fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
