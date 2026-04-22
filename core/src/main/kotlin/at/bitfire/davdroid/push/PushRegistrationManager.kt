@@ -189,10 +189,19 @@ class PushRegistrationManager @Inject constructor(
                     val expires = collection.pushSubscriptionExpires
                     // calculate next run time, but use the duplicate interval for safety (times are not exact)
                     val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
-                    if (expires != null && expires >= nextRun.epochSecond)
+                    if (expires != null && expires >= nextRun.epochSecond
+                            && collection.pushRegisteredEndpoint == endpoint.url)
                         logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
                     else {
-                        // no existing subscription or expiring soon
+                        // endpoint changed: unsubscribe from old subscription first
+                        if (collection.pushRegisteredEndpoint != null
+                                && collection.pushRegisteredEndpoint != endpoint.url) {
+                            logger.fine("Push endpoint changed for ${collection.url}, unsubscribing from old endpoint first")
+                            collection.pushSubscription?.toUrlOrNull()?.let { oldUrl ->
+                                unsubscribe(httpClient, collection, oldUrl)
+                            }
+                        }
+                        // no existing subscription, expiring soon, or endpoint changed
                         logger.fine("Registering push subscription for ${collection.url}")
                         subscribe(httpClient, collection, endpoint)
                     }
@@ -276,6 +285,7 @@ class PushRegistrationManager @Inject constructor(
                 collectionRepository.updatePushSubscription(
                     id = collection.id,
                     subscriptionUrl = subscriptionUrl,
+                    registeredEndpoint = endpoint.url,
                     expires = expires?.epochSecond
                 )
             } else
@@ -316,6 +326,7 @@ class PushRegistrationManager @Inject constructor(
         collectionRepository.updatePushSubscription(
             id = collection.id,
             subscriptionUrl = null,
+            registeredEndpoint = null,
             expires = null
         )
     }

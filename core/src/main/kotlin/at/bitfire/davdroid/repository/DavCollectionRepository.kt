@@ -268,10 +268,11 @@ class DavCollectionRepository @Inject constructor(
         dao.updateSync(id, forceReadOnly)
     }
 
-    suspend fun updatePushSubscription(id: Long, subscriptionUrl: String?, expires: Long?) {
+    suspend fun updatePushSubscription(id: Long, subscriptionUrl: String?, registeredEndpoint: String?, expires: Long?) {
         dao.updatePushSubscription(
             id = id,
             pushSubscription = subscriptionUrl,
+            pushRegisteredEndpoint = registeredEndpoint,
             pushSubscriptionExpires = expires
         )
     }
