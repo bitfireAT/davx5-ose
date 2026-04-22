@@ -196,6 +196,13 @@ class CollectionScreenModel @AssistedInject constructor(
         }
     }
 
+    fun setLocalDisplayName(localDisplayName: String?) {
+        viewModelScope.launch {
+            collectionRepository.setLocalDisplayName(collectionId, localDisplayName)
+            collectionSelectedUseCase.get().handleWithDelay(collectionId)
+        }
+    }
+
     fun setSync(sync: Boolean) {
         viewModelScope.launch {
             collectionRepository.setSync(collectionId, sync)

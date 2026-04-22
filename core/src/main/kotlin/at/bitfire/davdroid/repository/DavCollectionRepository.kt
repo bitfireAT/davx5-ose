@@ -25,6 +25,7 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.trimToNull
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -215,9 +216,10 @@ class DavCollectionRepository @Inject constructor(
     /**
      * Inserts or updates the collection.
      *
-     * On update, it will _not_ update the flags
-     *  - [Collection.sync] and
-     *  - [Collection.forceReadOnly],
+     * On update, it will _not_ update the user-controlled fields
+     *  - [Collection.sync],
+     *  - [Collection.forceReadOnly] and
+     *  - [Collection.localDisplayName],
      *  but use the values of the already existing collection.
      *
      * @param newCollection Collection to be inserted or updated
@@ -228,7 +230,11 @@ class DavCollectionRepository @Inject constructor(
             val oldCollection = dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())
             val newCollectionWithFlags =
                 if (oldCollection != null)
-                    newCollection.copy(sync = oldCollection.sync, forceReadOnly = oldCollection.forceReadOnly)
+                    newCollection.copy(
+                        sync = oldCollection.sync,
+                        forceReadOnly = oldCollection.forceReadOnly,
+                        localDisplayName = oldCollection.localDisplayName
+                    )
                 else
                     newCollection
 
@@ -259,6 +265,14 @@ class DavCollectionRepository @Inject constructor(
      */
     suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
         dao.updateForceReadOnly(id, forceReadOnly)
+    }
+
+    /**
+     * Sets the local display name override (or clears it when [localDisplayName] is null/blank).
+     * Does not change the collection on the server.
+     */
+    suspend fun setLocalDisplayName(id: Long, localDisplayName: String?) {
+        dao.updateLocalDisplayName(id, localDisplayName.trimToNull())
     }
 
     /**

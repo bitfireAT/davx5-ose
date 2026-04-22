@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -24,6 +27,7 @@ import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.DoNotDisturbOn
+import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -37,24 +41,33 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.ui.composable.AppTheme
@@ -96,6 +109,9 @@ fun CollectionScreen(
         onSetForceReadOnly = model::setForceReadOnly,
         title = collection.title(),
         displayName = collection.displayName,
+        localDisplayName = collection.localDisplayName,
+        onSetLocalDisplayName = model::setLocalDisplayName,
+        supportsLocalRename = collection.type == Collection.TYPE_CALENDAR || collection.type == Collection.TYPE_WEBCAL,
         description = collection.description,
         owner = model.owner.collectAsStateWithLifecycle(null).value,
         localItemCounts = model.localItemCounts.collectAsStateWithLifecycle(initialValue = emptyList()).value,
@@ -123,6 +139,9 @@ fun CollectionScreen(
     onSetForceReadOnly: (Boolean) -> Unit = {},
     title: String,
     displayName: String? = null,
+    localDisplayName: String? = null,
+    onSetLocalDisplayName: (String?) -> Unit = {},
+    supportsLocalRename: Boolean = false,
     description: String? = null,
     owner: String? = null,
     lastSynced: List<DavSyncStatsRepository.LastSynced> = emptyList(),
@@ -238,10 +257,40 @@ fun CollectionScreen(
                         }
                     )
 
+                    if (supportsLocalRename) {
+                        var showRenameDialog by remember { mutableStateOf(false) }
+                        CollectionScreen_Entry(
+                            icon = Icons.Default.DriveFileRenameOutline,
+                            title = stringResource(R.string.collection_local_rename),
+                            text = localDisplayName ?: stringResource(R.string.collection_local_rename_off),
+                            onClick = { showRenameDialog = true },
+                            control = {
+                                // Reflect "pending on" while the dialog is open so the switch state
+                                // matches the user's tap immediately (flips back if they cancel).
+                                Switch(
+                                    checked = localDisplayName != null || showRenameDialog,
+                                    onCheckedChange = { enabled ->
+                                        if (enabled) showRenameDialog = true
+                                        else onSetLocalDisplayName(null)
+                                    }
+                                )
+                            }
+                        )
+                        if (showRenameDialog)
+                            LocalRenameDialog(
+                                initialName = localDisplayName ?: displayName ?: title,
+                                onDismiss = { showRenameDialog = false },
+                                onConfirm = { newName ->
+                                    onSetLocalDisplayName(newName)
+                                    showRenameDialog = false
+                                }
+                            )
+                    }
+
                     if (displayName != null)
                         CollectionScreen_Entry(
                             title = stringResource(R.string.collection_title),
-                            text = title
+                            text = displayName
                         )
 
                     if (description != null)
@@ -354,11 +403,15 @@ fun CollectionScreen_Entry(
     title: String? = null,
     text: String? = null,
     isLast: Boolean = false,
+    onClick: (() -> Unit)? = null,
     control: @Composable (() -> Unit)? = null,
     content: @Composable (() -> Unit)? = null
 ) {
     Row(
-        verticalAlignment = if (content != null) Alignment.Top else Alignment.CenterVertically
+        verticalAlignment = if (content != null) Alignment.Top else Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .let { if (onClick != null) it.clickable(role = Role.Button, onClick = onClick) else it }
     ) {
         if (icon != null)
             Icon(
@@ -409,6 +462,8 @@ fun CollectionScreen_Preview() {
         url = "https://example.com/calendar",
         title = "Some Calendar, with some additional text to make it wrap around and stuff.",
         displayName = "Some Calendar, with some additional text to make it wrap around and stuff.",
+        localDisplayName = "My Local Name",
+        supportsLocalRename = true,
         description = "This is some description of the calendar. It can be long and wrap around.",
         owner = "Some One",
         lastSynced = listOf(
@@ -475,4 +530,65 @@ fun DeleteCollectionDialog_Preview() {
     DeleteCollectionDialog(
         displayName = "Some Calendar"
     )
+}
+
+
+@Composable
+fun LocalRenameDialog(
+    initialName: String,
+    onDismiss: () -> Unit = {},
+    onConfirm: (newName: String) -> Unit = {}
+) {
+    var name by remember {
+        mutableStateOf(TextFieldValue(initialName, selection = TextRange(initialName.length)))
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = { Icon(Icons.Default.DriveFileRenameOutline, contentDescription = null) },
+        title = { Text(stringResource(R.string.collection_local_rename)) },
+        text = {
+            Column {
+                Text(
+                    stringResource(R.string.collection_local_rename_description),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                val focusRequester = remember { FocusRequester() }
+                TextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(stringResource(R.string.collection_local_rename_label)) },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = { if (name.text.isNotBlank()) onConfirm(name.text) }
+                    ),
+                    modifier = Modifier.focusRequester(focusRequester)
+                )
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onConfirm(name.text) },
+                enabled = name.text.isNotBlank()
+            ) {
+                Text(stringResource(R.string.dialog_save))
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text(stringResource(android.R.string.cancel))
+            }
+        }
+    )
+}
+
+@Composable
+@Preview
+fun LocalRenameDialog_Preview() {
+    LocalRenameDialog(initialName = "My Calendar")
 }
