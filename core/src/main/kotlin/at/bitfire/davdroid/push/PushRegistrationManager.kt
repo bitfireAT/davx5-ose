@@ -174,6 +174,12 @@ class PushRegistrationManager @Inject constructor(
         }
     }
 
+    /**
+     * (Re-)subscribes to push notifications for syncable collections of a given service using the provided endpoint.
+     *
+     * @param service The service for which to subscribe to push notifications. Must not be null.
+     * @param endpoint The push endpoint to use for subscription. Must not be null.
+     */
     private suspend fun subscribeSyncable(service: Service, endpoint: PushEndpoint) {
         val subscribeTo = collectionRepository.getPushCapableAndSyncable(service.id)
         if (subscribeTo.isEmpty())
@@ -184,28 +190,30 @@ class PushRegistrationManager @Inject constructor(
             .fromAccountAsync(account)
             .buildKtor()
             .use { httpClient ->
-            for (collection in subscribeTo)
+            for (collection in subscribeTo) {
+                // Updates push subscription for the given collection
                 try {
-                    val expires = collection.pushSubscriptionExpires
-                    // calculate next run time, but use the duplicate interval for safety (times are not exact)
-                    val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
-                    if (expires != null && expires >= nextRun.epochSecond && collection.pushRegisteredEndpoint == endpoint.url)
+                    // Calculate next worker run time, but use the duplicate interval for safety (times are not exact)
+                    val nextWorkerRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
+                    val subscriptionAboutToExpire = collection.pushSubscriptionExpires?.let { nextWorkerRun.epochSecond >= it } ?: true
+
+                    val endpointChanged = collection.pushRegisteredEndpoint != null && collection.pushRegisteredEndpoint != endpoint.url
+                    if (!endpointChanged && !subscriptionAboutToExpire)
                         logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
                     else {
-                        // endpoint changed: unsubscribe from old subscription first
-                        if (collection.pushRegisteredEndpoint != null && collection.pushRegisteredEndpoint != endpoint.url) {
+                        if (endpointChanged) {
                             logger.fine("Push endpoint changed for ${collection.url}, unsubscribing from old endpoint first")
                             collection.pushSubscription?.toUrlOrNull()?.let { oldUrl ->
                                 unsubscribe(httpClient, collection, oldUrl)
                             }
                         }
-                        // no existing subscription, expiring soon, or endpoint changed
                         logger.fine("Registering push subscription for ${collection.url}")
                         subscribe(httpClient, collection, endpoint)
                     }
                 } catch (e: Exception) {
                     logger.log(Level.WARNING, "Couldn't register subscription at CalDAV/CardDAV server", e)
                 }
+            }
         }
     }
 
