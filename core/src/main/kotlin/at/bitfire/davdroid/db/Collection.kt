@@ -149,7 +149,7 @@ data class Collection(
     val pushRegisteredEndpoint: String? = null,
 
     /** WebDAV-Push: when the [pushSubscription] expires for the given [pushRegisteredEndpoint] (timestamp
-    in milliseconds, used to determine whether we need to re-subscribe) */
+    in epoch seconds, used to determine whether we need to re-subscribe) */
     val pushSubscriptionExpires: Long? = null,
 
     /** WebDAV-Push: when the [pushSubscription] was created/updated (timestamp) */

@@ -185,6 +185,9 @@ class PushRegistrationManager @Inject constructor(
         if (subscribeTo.isEmpty())
             return
 
+        // calculate next worker run (later needed to check expiry); duplicate days for safety (times are not exact)
+        val nextWorkerRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
+
         val account = accountRepository.get().fromName(service.accountName)
         httpClientBuilder.get()
             .fromAccountAsync(account)
@@ -193,12 +196,10 @@ class PushRegistrationManager @Inject constructor(
             for (collection in subscribeTo) {
                 // update push subscription for the given collection
                 try {
-                    // determine whether the registered subscription is about to expire by comparing expiry with the next worker run time
-                    val nextWorkerRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)   // duplicate for safety (times are not exact)
+                    // determine whether the registered subscription will expire before the next worker run ...
                     val subscriptionAboutToExpire = collection.pushSubscriptionExpires?.let { nextWorkerRun.epochSecond >= it } ?: true
-
-                    // also check whether endpoint has changed
-                    val endpointChanged = collection.pushRegisteredEndpoint != null && collection.pushRegisteredEndpoint != endpoint.url
+                    // ... and also check whether endpoint has changed
+                    val endpointChanged = collection.pushRegisteredEndpoint == null || collection.pushRegisteredEndpoint != endpoint.url
                     if (!endpointChanged && !subscriptionAboutToExpire)
                         logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
                     else {
