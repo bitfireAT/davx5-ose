@@ -76,13 +76,13 @@ class PushRegistrationManager @Inject constructor(
     suspend fun setPushDistributor(pushDistributor: String?) {
         // Disable UnifiedPush and remove all subscriptions
         UnifiedPush.removeDistributor(context)
-        update()
 
-        if (pushDistributor != null) {
-            // If a distributor was passed, store it and create/register subscriptions
+        // If a distributor was passed, store it
+        if (pushDistributor != null)
             UnifiedPush.saveDistributor(context, pushDistributor)
-            update()
-        }
+
+        // Update all subscriptions
+        update()
     }
 
     fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
@@ -174,31 +174,48 @@ class PushRegistrationManager @Inject constructor(
         }
     }
 
+    /**
+     * (Re-)subscribes to push notifications for syncable collections of a given service using the provided endpoint.
+     *
+     * @param service The service for which to subscribe to push notifications. Must not be null.
+     * @param endpoint The push endpoint to use for subscription. Must not be null.
+     */
     private suspend fun subscribeSyncable(service: Service, endpoint: PushEndpoint) {
         val subscribeTo = collectionRepository.getPushCapableAndSyncable(service.id)
         if (subscribeTo.isEmpty())
             return
+
+        // calculate next worker run (later needed to check expiry); duplicate days for safety (times are not exact)
+        val nextWorkerRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
 
         val account = accountRepository.get().fromName(service.accountName)
         httpClientBuilder.get()
             .fromAccountAsync(account)
             .buildKtor()
             .use { httpClient ->
-            for (collection in subscribeTo)
+            for (collection in subscribeTo) {
+                // update push subscription for the given collection
                 try {
-                    val expires = collection.pushSubscriptionExpires
-                    // calculate next run time, but use the duplicate interval for safety (times are not exact)
-                    val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
-                    if (expires != null && expires >= nextRun.epochSecond)
+                    // determine whether the registered subscription will expire before the next worker run ...
+                    val subscriptionAboutToExpire = collection.pushSubscriptionExpires?.let { nextWorkerRun.epochSecond >= it } ?: true
+                    // ... and also check whether endpoint has changed
+                    val endpointChanged = collection.pushRegisteredEndpoint == null || collection.pushRegisteredEndpoint != endpoint.url
+                    if (!endpointChanged && !subscriptionAboutToExpire)
                         logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
                     else {
-                        // no existing subscription or expiring soon
+                        if (endpointChanged) {
+                            logger.fine("Push endpoint changed for ${collection.url}, unsubscribing from old endpoint first")
+                            collection.pushSubscription?.toUrlOrNull()?.let { oldUrl ->
+                                unsubscribe(httpClient, collection, oldUrl)
+                            }
+                        }
                         logger.fine("Registering push subscription for ${collection.url}")
                         subscribe(httpClient, collection, endpoint)
                     }
                 } catch (e: Exception) {
                     logger.log(Level.WARNING, "Couldn't register subscription at CalDAV/CardDAV server", e)
                 }
+            }
         }
     }
 
@@ -276,6 +293,7 @@ class PushRegistrationManager @Inject constructor(
                 collectionRepository.updatePushSubscription(
                     id = collection.id,
                     subscriptionUrl = subscriptionUrl,
+                    registeredEndpoint = endpoint.url,
                     expires = expires?.epochSecond
                 )
             } else
@@ -316,6 +334,7 @@ class PushRegistrationManager @Inject constructor(
         collectionRepository.updatePushSubscription(
             id = collection.id,
             subscriptionUrl = null,
+            registeredEndpoint = null,
             expires = null
         )
     }
