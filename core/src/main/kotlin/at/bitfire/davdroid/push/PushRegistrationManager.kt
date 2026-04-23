@@ -8,9 +8,7 @@ import android.content.Context
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import at.bitfire.dav4jvm.HttpUtils
@@ -319,28 +317,12 @@ class PushRegistrationManager @Inject constructor(
 
 
     /**
-     * Enqueues a one-time run of [PushRegistrationWorker], which will update the push subscriptions
-     * by calling [update].
-     */
-    internal fun enqueueRegistrationWorker() {
-        val workManager = WorkManager.getInstance(context)
-        workManager.enqueueUniqueWork(WORKER_UNIQUE_NAME, ExistingWorkPolicy.REPLACE,
-            OneTimeWorkRequest.Builder(PushRegistrationWorker::class)
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-                )
-                .build())
-    }
-
-    /**
-     * Determines whether there are any push-capable collections and updates the periodic worker accordingly.
+     * Determines whether there are any push-capable collections and updates the
+     * [PushRegistrationWorker] accordingly.
      *
-     * If there are push-capable collections, a unique periodic worker with an initial delay of 5 seconds is enqueued.
-     * A potentially existing worker is replaced, so that the first run should be soon.
+     * If there are push-capable collections, a unique periodic worker is enqueued.
      *
-     * Otherwise, a potentially existing worker is cancelled.
+     * If there are no push-capable collections, a potentially existing worker is canceled.
      */
     private suspend fun updatePeriodicWorker() {
         val workerNeeded = collectionRepository.anyPushCapable()
@@ -352,7 +334,6 @@ class PushRegistrationManager @Inject constructor(
                 WORKER_UNIQUE_NAME,
                 ExistingPeriodicWorkPolicy.UPDATE,
                 PeriodicWorkRequest.Builder(PushRegistrationWorker::class, WORKER_INTERVAL_DAYS, TimeUnit.DAYS)
-                    .setInitialDelay(5, TimeUnit.SECONDS)
                     .setConstraints(
                         Constraints.Builder()
                             .setRequiredNetworkType(NetworkType.CONNECTED)
