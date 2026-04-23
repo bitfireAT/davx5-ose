@@ -149,6 +149,7 @@
             android:name=".ui.webdav.AddWebdavMountActivity"
             android:parentActivityName=".ui.webdav.WebdavMountsActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".push.PushDistributorSelectionActivity" />
 
         <!-- account type "DAVx⁵" -->
         <service

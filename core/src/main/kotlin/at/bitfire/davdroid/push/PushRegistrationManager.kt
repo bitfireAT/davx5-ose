@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
+import android.content.Intent
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -20,6 +21,7 @@ import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.property.push.WebDAVPush
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -30,6 +32,7 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
@@ -37,8 +40,10 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.data.PushEndpoint
 import org.unifiedpush.android.connector.data.ResolvedDistributor
@@ -66,7 +71,9 @@ class PushRegistrationManager @Inject constructor(
     private val httpClientBuilder: Provider<HttpClientBuilder>,
     private val logger: Logger,
     private val settings: SettingsManager,
-    private val serviceRepository: DavServiceRepository
+    private val serviceRepository: DavServiceRepository,
+    private val notificationManager: PushNotificationManager,
+    private val notificationRegistry: NotificationRegistry
 ) {
 
     /**
@@ -126,23 +133,6 @@ class PushRegistrationManager @Inject constructor(
         }
     }
 
-    /**
-     * Same as [getDistributorToUse], but all exceptions result in `null`.
-     * @return The package name of the distributor to use, if one is available. `null` otherwise.
-     */
-    suspend fun getDistributorToUseOrNull(): String? = try {
-        getDistributorToUse()
-    } catch (_: IllegalStateException) {
-        // push is disabled
-        return null
-    } catch (_: RuntimeException) {
-        // multiple distributors available
-        return null
-    } catch (_: NoSuchElementException) {
-        // no distributors available
-        return null
-    }
-
     fun getDistributors() = UnifiedPush.getDistributors(context)
 
 
@@ -182,25 +172,41 @@ class PushRegistrationManager @Inject constructor(
         // use service ID from database as UnifiedPush instance name
         val instance = serviceId.toString()
 
-        val distributorAvailable = getDistributorToUseOrNull() != null
-        if (distributorAvailable) {
-            try {
-                val vapid = collectionRepository.getVapidKey(serviceId)
-                if (vapid != null) {    // only register when there's a VAPID key
-                    logger.fine("Registering UnifiedPush instance for service $instance / ${service.accountName}")
+        try {
+            getDistributorToUse() // try to resolve the distributor to use
 
-                    // message for distributor
-                    val message = "${service.accountName} (${service.type})"
+            val vapid = collectionRepository.getVapidKey(serviceId)
+            if (vapid != null) {    // only register when there's a VAPID key
+                logger.fine("Registering UnifiedPush instance for service $instance / ${service.accountName}")
 
-                    UnifiedPush.register(context, instance, message, vapid)
-                } else {
-                    logger.fine("No VAPID key for service $serviceId / ${service.accountName}")
-                    /* We don't call UnifiedPush.unregister(context, instance) here because it can
-                    remove the push distributor. May be improved in the future. */
-                }
-            } catch (e: UnifiedPush.VapidNotValidException) {
-                logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
+                // message for distributor
+                val message = "${service.accountName} (${service.type})"
+
+                UnifiedPush.register(context, instance, message, vapid)
+            } else {
+                logger.fine("No VAPID key for service $serviceId / ${service.accountName}")
+                /* We don't call UnifiedPush.unregister(context, instance) here because it can
+                remove the push distributor. May be improved in the future. */
             }
+        } catch (e: UnifiedPush.VapidNotValidException) {
+            logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
+        } catch (_: IllegalStateException) {
+            // push is disabled
+            logger.fine("Push is disabled. Cannot update service $serviceId")
+        } catch (_: RuntimeException) {
+            // multiple distributors available
+            withContext(Dispatchers.Main) {
+                notificationManager.notify(
+                    id = NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR,
+                    channelId = notificationRegistry.CHANNEL_SYNC_ERRORS,
+                    title = context.getString(R.string.push_multiple_distributor_title),
+                    text = context.getString(R.string.push_multiple_distributor_message),
+                    intent = Intent(context, PushDistributorSelectionActivity::class.java)
+                )
+            }
+        } catch (_: NoSuchElementException) {
+            // no distributors available
+            logger.log(Level.WARNING, "Tried to update service $serviceId, but no push distributors are available")
         }
 
         // UnifiedPush has now been called. It will do its work and then asynchronously call back to UnifiedPushService, which

@@ -50,6 +50,7 @@ class NotificationRegistry @Inject constructor(
         const val NOTIFY_SYNC_EXPEDITED = 14
         const val NOTIFY_TASKS_PROVIDER_TOO_OLD = 20
         const val NOTIFY_PERMISSIONS = 21
+        const val NOTIFY_SELECT_PUSH_DISTRIBUTOR = 22
 
         /**
          * Used in build variants when a [at.bitfire.davdroid.sync.SyncValidator]

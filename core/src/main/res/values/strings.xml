@@ -570,6 +570,8 @@
     <string name="sync_invalid_resources_ignoring">Ignoring one or more invalid resources</string>
     <string name="sync_notification_pending_push_title">Sync pending</string>
     <string name="sync_notification_pending_push_message">Remote data have changed</string>
+    <string name="push_multiple_distributor_title">Multiple distributors available</string>
+    <string name="push_multiple_distributor_message">There are multiple distributors available in your system. Tap to select one</string>
 
     <!-- widgets -->
     <string name="widget_sync_all">Sync all</string>
