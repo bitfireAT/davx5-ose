@@ -27,7 +27,7 @@ an existing/new issue or discussion and wait for a green light before investing 
 1. **Discussion**: Start or join a discussion or issue to propose your idea.
 2. **Acknowledgment**: Wait for the core team to acknowledge the issue or discussion.
 3. **Common understanding**: Reach a common understanding of the approach with the core team.
-4. **Pull request**: Submit your PR for review.
+4. **Pull request**: Create your PR on Github.
 5. **Self-review**: Review your own changes and ensure they meet the project's standards.
 Use tools like GitHub Copilot for additional review (if applicable).
 7. **Team review**: A core team member will review your PR.
