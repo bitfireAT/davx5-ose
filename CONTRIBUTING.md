@@ -1,5 +1,5 @@
 
-**Thank you for your interest in contributing to DAVx⁵!**
+**Thank you for your interest in contributing to DAVx⁵! ❤️**
 
 
 # Before you start
@@ -10,22 +10,18 @@
 > wait for feedback before making changes that you want to be merged.**
 
 The core team maintains an active roadmap and long-term plan for DAVx⁵.
-We truly value every contribution — and precisely *because* of that, we want to make sure
-your effort can actually be merged. An uncoordinated pull request may conflict with ongoing
-work, planned refactors, or design decisions, which would mean your work could
-be wasted (except that you can use it yourself/in your fork, of course).
+We truly value every contribution — and precisely *because* of that, we want to ensure
+your effort can be merged. An uncoordinated pull request may conflict with ongoing
+work, planned refactors, or design decisions, which could waste your effort (though you can still use it in your fork).
 
-By discussing your idea first, we can:
-- confirm whether the change fits into the project's direction,
-- agree on the approach (especially for architectural changes or UI), and
-- avoid duplicated or conflicting efforts.
+By discussing your idea first, we can ensure alignment with the project's direction, agree on the approach (especially for architectural or UI changes), and avoid duplication or conflicts.
 
 **Small, obvious bug-fixes** are generally fine to submit directly.
 For everything else — new features, UI changes, non-trivial refactors — please comment
 an existing/new issue or discussion and wait for a green light before investing significant time.
 
 
-# Licensing and copyright
+# License and copyright
 
 All work in this repository is [licensed under the GPLv3](LICENSE).
 
@@ -36,7 +32,7 @@ like [Managed DAVx⁵](https://www.davx5.com/organizations/managed-davx5).
 If you send us a pull request, our CLA bot will ask you to sign the
 Contributor's License Agreement so that we can use your contribution.
 
-Please sake sure that **every file that contains significant work (at least every code file)
+Please make sure that **every file that contains significant work (at least every code file)
 starts with the copyright header** (see existing files). Android Studio should do so
 automatically because the configuration is stored in the repository (`.idea/copyright`).
 
