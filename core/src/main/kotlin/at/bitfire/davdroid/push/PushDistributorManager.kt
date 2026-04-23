@@ -25,7 +25,10 @@ class PushDistributorManager @Inject constructor(
      * @return package name of the current distributor, or `null` if push support is disabled or no distributor is set
      */
     fun getCurrentDistributor() =
-        UnifiedPush.getSavedDistributor(context).takeIf { isPushEnabled() }
+        if (isPushEnabled())
+            UnifiedPush.getSavedDistributor(context)
+        else
+            null
 
     fun getDistributors() = UnifiedPush.getDistributors(context)
 

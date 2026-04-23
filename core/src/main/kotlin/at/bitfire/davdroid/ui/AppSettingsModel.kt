@@ -143,8 +143,6 @@ class AppSettingsModel @Inject constructor(
      *
      * - Loads the currently selected distributor into [pushDistributor].
      * - Loads all the available distributors into [pushDistributors].
-     * - If there's only one push distributor available, and none is selected, it's selected automatically.
-     * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
      */
     private fun loadPushDistributors() {
         val currentPushDistributor = pushDistributorManager.get().getCurrentDistributor()
@@ -173,17 +171,19 @@ class AppSettingsModel @Inject constructor(
      * @param pushDistributor The package name of the push distributor, _null_ to disable push.
      */
     fun updatePushDistributor(pushDistributor: String?) {
+        // Update UI
+        _pushDistributor.value = null
+
+        // Perform changes that may take longer (especially updating the subscriptions) asynchronously in global scope
         applicationScope.launch(ioDispatcher) {
             val manager = pushDistributorManager.get()
             if (pushDistributor == null) {
                 // Disable push
                 manager.setPushEnabled(false)
-                _pushDistributor.value = null
             } else {
                 // Make sure that push is enabled and set distributor
                 manager.setPushEnabled(true)
                 manager.setPushDistributor(pushDistributor)
-                _pushDistributor.value = pushDistributor
             }
 
             // Also update subscriptions

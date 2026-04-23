@@ -85,7 +85,8 @@ class PushDistributorManagerTest {
     fun testGetCurrentDistributor_PushEnabled_NoDistributor() {
         // Given push is enabled but no distributor is set
         settingsManager.putBoolean(Settings.PUSH_ENABLED, true)
-        
+        every { UnifiedPush.getSavedDistributor(any()) } returns null
+
         // When getting current distributor
         val result = pushDistributorManager.getCurrentDistributor()
         
