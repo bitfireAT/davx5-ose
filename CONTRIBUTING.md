@@ -2,7 +2,30 @@
 **Thank you for your interest in contributing to DAVx⁵!**
 
 
-# Licensing
+# Before you start
+
+> [!IMPORTANT]
+> **Please comment in an [issue](https://github.com/bitfireAT/davx5-ose/issues) (ideally an
+> existing one) or a [discussion](https://github.com/bitfireAT/davx5-ose/discussions) and
+> wait for feedback before making changes that you want to be merged.**
+
+The core team maintains an active roadmap and long-term plan for DAVx⁵.
+We truly value every contribution — and precisely *because* of that, we want to make sure
+your effort can actually be merged. An uncoordinated pull request may conflict with ongoing
+work, planned refactors, or design decisions, which would mean your work could
+be wasted (except that you can use it yourself/in your fork, of course).
+
+By discussing your idea first, we can:
+- confirm whether the change fits into the project's direction,
+- agree on the approach (especially for architectural changes or UI), and
+- avoid duplicated or conflicting efforts.
+
+**Small, obvious bug-fixes** are generally fine to submit directly.
+For everything else — new features, UI changes, non-trivial refactors — please comment
+an existing/new issue or discussion and wait for a green light before investing significant time.
+
+
+# Licensing and copyright
 
 All work in this repository is [licensed under the GPLv3](LICENSE).
 
@@ -13,87 +36,16 @@ like [Managed DAVx⁵](https://www.davx5.com/organizations/managed-davx5).
 If you send us a pull request, our CLA bot will ask you to sign the
 Contributor's License Agreement so that we can use your contribution.
 
-
-# Copyright notice
-
-Make sure that every file that contains significant work (at least every code file)
-starts with the copyright header. Android Studio should do so automatically because the
-configuration is stored in the repository (`.idea/copyright`).
+Please sake sure that **every file that contains significant work (at least every code file)
+starts with the copyright header** (see existing files). Android Studio should do so
+automatically because the configuration is stored in the repository (`.idea/copyright`).
 
 
 # Style guide
 
 Please adhere to the [Kotlin style guide](https://developer.android.com/kotlin/style-guide) and
-the following hints to make the source code uniform.
+the project style to make the source code uniform.
 
-**Have a look at similar files and copy their style if you're not certain.**
-
-Sample file (pay attention to blank lines and other formatting):
-
-```
-<Copyright header, see above>
-
-class MyClass(int arg1) : SuperClass() {
-
-    companion object {
-
-        const val CONSTANT_STRING = "Constant String";
-
-        fun staticMethod() {	// Use static methods when you don't need the object context.
-            // …
-        }
-
-    }
-
-    var someProperty: String = "12345"
-    var someRelatedProperty: Int = 12345
-
-    init {
-        // constructor
-    }
-
-
-    /**
-     * Use KDoc to document important methods. Don't use it dogmatically, but writing proper documentation
-     * (not just the method name with spaces) helps you to re-think what the method shall really do.
-     */
-    fun aFun1() {		// Group methods by some logic (for instance, the order in which they will be called)
-    }				// and alphabetically within a group.
-
-    fun anotherFun() {
-        // …
-    }
-
-
-    fun somethingCompletelyDifferent() {	// two blank lines to separate groups
-    }
-
-    fun helperForSomethingCompletelyDifferent() {
-        someCall(arg1, arg2, arg3, arg4)	// function calls: stick to one line unless it becomes confusing
-    }
-
-
-    class Model(				// two blank lines before inner classes
-        someArgument: SomeLongClass,		// arguments in multiple lines when they're too long for one line
-        anotherArgument: AnotherLongType,
-        thirdArgument: AnotherLongTypeName
-    ) : ViewModel() {
-
-        fun abc() {
-        }
-
-    }
-
-}
-```
-
-In general, use one blank line to separate things within one group of things, and two blank lines
-to separate groups. In rare cases, when methods are tightly coupled and are only helpers for another
-method, they may follow the calling method without separating blank lines.
-
-## Tests
-
-Test classes should be in the appropriate directory (see existing tests) and in the same package as the
-tested class. Tests are usually be named like `methodToBeTested_Condition()`, see
-[Test apps on Android](https://developer.android.com/training/testing/).
+> [!TIP]
+> Have a look at the other code files and copy their style.
 
