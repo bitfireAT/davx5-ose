@@ -570,8 +570,16 @@
     <string name="sync_invalid_resources_ignoring">Ignoring one or more invalid resources</string>
     <string name="sync_notification_pending_push_title">Sync pending</string>
     <string name="sync_notification_pending_push_message">Remote data have changed</string>
-    <string name="push_multiple_distributor_title">Multiple distributors available</string>
-    <string name="push_multiple_distributor_message">There are multiple distributors available in your system. Tap to select one</string>
+
+    <!-- push -->
+    <string name="push_no_distributor_title">No distributor available</string>
+    <string name="push_no_distributor_message">There are no UnifiedPush distributors installed in your device, and Google Play Services are not available. Instant updates are not possible on your system.</string>
+    <string name="push_no_distributor_more_info">More info</string>
+    <string name="push_no_distributor_disable">Disable Push</string>
+    <string name="push_distributor_selected">Push distributor updated</string>
+    <string name="push_distributor_selection_required_title">Distributor selection required</string>
+    <string name="push_distributor_selection_required_message">A default UnifiedPush distributor could not be resolved. Tap to select one</string>
+    <string name="push_disabled_message">Push disabled</string>
 
     <!-- widgets -->
     <string name="widget_sync_all">Sync all</string>

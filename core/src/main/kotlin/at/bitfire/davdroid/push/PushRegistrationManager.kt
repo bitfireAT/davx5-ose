@@ -195,22 +195,28 @@ class PushRegistrationManager @Inject constructor(
             logger.fine("Push is disabled. Cannot update service $serviceId")
         } catch (_: RuntimeException) {
             // multiple distributors available
-            withContext(Dispatchers.Main) {
-                notificationManager.notify(
-                    id = NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR,
-                    channelId = notificationRegistry.CHANNEL_SYNC_ERRORS,
-                    title = context.getString(R.string.push_multiple_distributor_title),
-                    text = context.getString(R.string.push_multiple_distributor_message),
-                    intent = Intent(context, PushDistributorSelectionActivity::class.java)
-                )
-            }
+            logger.log(Level.WARNING, "There are multiple push distributors available")
+            notifyDistributorSelection()
         } catch (_: NoSuchElementException) {
             // no distributors available
             logger.log(Level.WARNING, "Tried to update service $serviceId, but no push distributors are available")
+            notifyDistributorSelection()
         }
 
         // UnifiedPush has now been called. It will do its work and then asynchronously call back to UnifiedPushService, which
         // will then call processSubscription or removeSubscription.
+    }
+
+    private suspend fun notifyDistributorSelection() {
+        withContext(Dispatchers.Main) {
+            notificationManager.notify(
+                id = NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR,
+                channelId = notificationRegistry.CHANNEL_SYNC_ERRORS,
+                title = context.getString(R.string.push_distributor_selection_required_title),
+                text = context.getString(R.string.push_distributor_selection_required_message),
+                intent = Intent(context, PushDistributorSelectionActivity::class.java)
+            )
+        }
     }
 
     /**
