@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.push.PushDistributorManager
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
@@ -24,6 +25,7 @@ import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
+import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -44,7 +46,8 @@ class AppSettingsModel @Inject constructor(
     private val customCertStore: Optional<CustomCertStore>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
-    private val pushRegistrationManager: PushRegistrationManager,
+    private val pushDistributorManager: Lazy<PushDistributorManager>,
+    private val pushRegistrationManager: Lazy<PushRegistrationManager>,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -141,10 +144,10 @@ class AppSettingsModel @Inject constructor(
      * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
      */
     private fun loadPushDistributors() {
-        val currentPushDistributor = pushRegistrationManager.getCurrentDistributor()
+        val currentPushDistributor = pushDistributorManager.get().getCurrentDistributor()
         _pushDistributor.value = currentPushDistributor
 
-        val pushDistributors = pushRegistrationManager.getDistributors()
+        val pushDistributors = pushDistributorManager.get().getDistributors()
             .map { pushDistributor ->
                 try {
                     val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
@@ -168,9 +171,20 @@ class AppSettingsModel @Inject constructor(
      */
     fun updatePushDistributor(pushDistributor: String?) {
         viewModelScope.launch(ioDispatcher) {
-            pushRegistrationManager.setPushDistributor(pushDistributor)
+            val manager = pushDistributorManager.get()
+            if (pushDistributor == null) {
+                // Disable push
+                manager.setPushEnabled(false)
+                _pushDistributor.value = null
+            } else {
+                // Make sure that push is enabled and set distributor
+                manager.setPushEnabled(true)
+                manager.setPushDistributor(pushDistributor)
+                _pushDistributor.value = pushDistributor
+            }
 
-            _pushDistributor.value = pushDistributor
+            // Also update subscriptions
+            pushRegistrationManager.get().enqueueRegistrationWorker()
         }
     }
 
