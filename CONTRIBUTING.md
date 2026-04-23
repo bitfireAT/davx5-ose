@@ -2,7 +2,9 @@
 **Thank you for your interest in contributing to DAVx⁵! ❤️**
 
 
-# Before you start
+# Overview
+
+## Before you start
 
 > [!IMPORTANT]
 > **Please comment in an [issue](https://github.com/bitfireAT/davx5-ose/issues) (ideally an
@@ -19,6 +21,18 @@ By discussing your idea first, we can ensure alignment with the project's direct
 **Small, obvious bug-fixes** are generally fine to submit directly.
 For everything else — new features, UI changes, non-trivial refactors — please comment
 an existing/new issue or discussion and wait for a green light before investing significant time.
+
+## Preferred flow of a change
+
+1. **Discussion**: Start or join a discussion or issue to propose your idea.
+2. **Acknowledgment**: Wait for the core team to acknowledge the issue or discussion.
+3. **Common understanding**: Reach a common understanding of the approach with the core team.
+4. **Pull request**: Submit your PR for review.
+5. **Self-review**: Review your own changes and ensure they meet the project's standards.
+Use tools like GitHub Copilot for additional review (if applicable).
+7. **Team review**: A core team member will review your PR.
+8. **Merge**: Once approved, your contribution will be merged.
+9. If all goes well, your contribution will be shipped with the next release. 🚀
 
 
 # License and copyright
