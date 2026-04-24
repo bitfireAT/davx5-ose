@@ -102,7 +102,7 @@ import javax.inject.Provider
         // use service ID from database as UnifiedPush instance name
         val instance = serviceId.toString()
 
-        val distributor = distributorManager.getCurrentDistributor() != null
+        val distributor = distributorManager.getDistributorToUse() != null
         if (distributor)
             try {
                 val vapid = collectionRepository.getVapidKey(serviceId)

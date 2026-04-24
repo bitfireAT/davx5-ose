@@ -57,38 +57,38 @@ class PushDistributorManagerTest {
     }
     
     @Test
-    fun testGetCurrentDistributor_PushDisabled() {
+    fun testGetDistributor_ToUse_PushDisabled() {
         // Given push is disabled
         settingsManager.putBoolean(Settings.PUSH_ENABLED, false)
 
         // When getting current distributor
-        val result = pushDistributorManager.getCurrentDistributor()
+        val result = pushDistributorManager.getDistributorToUse()
 
         // Then result is null
         assertNull(result)
     }
     
     @Test
-    fun testGetCurrentDistributor_PushEnabled_DistributorSet() {
+    fun testGetDistributor_PushEnabled_DistributorToUseSet() {
         // Given push is enabled and distributor is set
         settingsManager.putBoolean(Settings.PUSH_ENABLED, true)
         every { UnifiedPush.getSavedDistributor(any()) } returns "com.example.distributor"
         
         // When getting current distributor
-        val result = pushDistributorManager.getCurrentDistributor()
+        val result = pushDistributorManager.getDistributorToUse()
         
         // Then result is the distributor
         assertEquals("com.example.distributor", result)
     }
     
     @Test
-    fun testGetCurrentDistributor_PushEnabled_NoDistributor() {
+    fun testGetDistributor_PushEnabled_NoDistributorToUse() {
         // Given push is enabled but no distributor is set
         settingsManager.putBoolean(Settings.PUSH_ENABLED, true)
         every { UnifiedPush.getSavedDistributor(any()) } returns null
 
         // When getting current distributor
-        val result = pushDistributorManager.getCurrentDistributor()
+        val result = pushDistributorManager.getDistributorToUse()
         
         // Then result is null
         assertNull(result)

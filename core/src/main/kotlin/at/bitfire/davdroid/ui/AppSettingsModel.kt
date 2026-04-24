@@ -145,7 +145,7 @@ class AppSettingsModel @Inject constructor(
      * - Loads all the available distributors into [pushDistributors].
      */
     private fun loadPushDistributors() {
-        val currentPushDistributor = pushDistributorManager.getCurrentDistributor()
+        val currentPushDistributor = pushDistributorManager.getDistributorToUse()
         _pushDistributor.value = currentPushDistributor
 
         val pushDistributors = pushDistributorManager.getDistributors()
