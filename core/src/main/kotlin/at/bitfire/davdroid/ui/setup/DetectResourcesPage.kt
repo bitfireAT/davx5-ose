@@ -4,7 +4,11 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -40,13 +45,25 @@ import at.bitfire.davdroid.ui.composable.ProgressBar
 fun DetectResourcesPage(
     model: LoginScreenModel = viewModel()
 ) {
+    val permissionRequestLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) model.retryResourceDetection()
+    }
+
     val uiState = model.detectResourcesUiState
     DetectResourcesPageContent(
         loading = uiState.loading,
         foundNothing = uiState.foundNothing,
         encountered401 = uiState.encountered401,
         loginValidationFailed = uiState.loginValidationFailed,
-        logs = uiState.logs
+        logs = uiState.logs,
+        missingLocalPermission = uiState.missingLocalPermission,
+        onRequestLocalPermissionRequest = {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                permissionRequestLauncher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)
+            }
+        }
     )
 }
 
@@ -56,6 +73,8 @@ fun DetectResourcesPageContent(
     foundNothing: Boolean,
     encountered401: Boolean,
     loginValidationFailed: Boolean,
+    missingLocalPermission: Boolean,
+    onRequestLocalPermissionRequest: () -> Unit,
     logs: String?
 ) {
     Column(Modifier
@@ -66,6 +85,8 @@ fun DetectResourcesPageContent(
             DetectResourcesPageContent_InProgress()
         else if (loginValidationFailed)
             DetectResourcesPageContent_LoginValidationFailed()
+        else if(missingLocalPermission)
+            DetectResourcesPageContent_MissingPermission(onRequestLocalPermissionRequest)
         else if (foundNothing)
             DetectResourcesPageContent_NothingFound(
                 encountered401 = encountered401,
@@ -223,6 +244,42 @@ fun DetectResourcesPageContent_LoginValidationFailed() {
 }
 
 @Composable
+fun DetectResourcesPageContent_MissingPermission(onRequestPermissionRequest: () -> Unit) {
+    Column(Modifier.padding(8.dp)) {
+        Text(
+            stringResource(R.string.login_configuration_detection),
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(8.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Security, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                    Text(
+                        stringResource(R.string.login_permission_required),
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Text(
+                    stringResource(R.string.login_local_permission),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                )
+
+                Button(
+                    onClick = onRequestPermissionRequest
+                ) {
+                    Text(stringResource(R.string.login_permission_grant))
+                }
+            }
+        }
+    }
+}
+
+@Composable
 @Preview
 fun DetectResourcesPageContent_NothingFound() {
     DetectResourcesPageContent_NothingFound(
@@ -244,4 +301,10 @@ fun DetectResourcesPage_NothingFound_401() {
 @Preview
 fun DetectResourcesPage_ValidationFailed() {
     DetectResourcesPageContent_LoginValidationFailed()
+}
+
+@Composable
+@Preview
+fun DetectResourcesPageContent_MissingPermission() {
+    DetectResourcesPageContent_MissingPermission(onRequestPermissionRequest = {})
 }
