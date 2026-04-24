@@ -49,7 +49,7 @@ class AppSettingsModel @Inject constructor(
     private val customCertStore: Optional<CustomCertStore>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
-    private val pushDistributorManager: Lazy<PushDistributorManager>,
+    private val pushDistributorManager: PushDistributorManager,
     private val pushRegistrationManager: Lazy<PushRegistrationManager>,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
@@ -145,10 +145,10 @@ class AppSettingsModel @Inject constructor(
      * - Loads all the available distributors into [pushDistributors].
      */
     private fun loadPushDistributors() {
-        val currentPushDistributor = pushDistributorManager.get().getCurrentDistributor()
+        val currentPushDistributor = pushDistributorManager.getCurrentDistributor()
         _pushDistributor.value = currentPushDistributor
 
-        val pushDistributors = pushDistributorManager.get().getDistributors()
+        val pushDistributors = pushDistributorManager.getDistributors()
             .map { pushDistributor ->
                 try {
                     val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
@@ -176,14 +176,13 @@ class AppSettingsModel @Inject constructor(
 
         // Perform changes that may take longer (especially updating the subscriptions) asynchronously in global scope
         applicationScope.launch(ioDispatcher) {
-            val manager = pushDistributorManager.get()
             if (pushDistributor == null) {
                 // Disable push
-                manager.setPushEnabled(false)
+                pushDistributorManager.setPushEnabled(false)
             } else {
                 // Make sure that push is enabled and set distributor
-                manager.setPushEnabled(true)
-                manager.setPushDistributor(pushDistributor)
+                pushDistributorManager.setPushEnabled(true)
+                pushDistributorManager.setPushDistributor(pushDistributor)
             }
 
             // Also update subscriptions
