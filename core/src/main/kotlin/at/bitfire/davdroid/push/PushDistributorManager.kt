@@ -9,6 +9,7 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.unifiedpush.android.connector.UnifiedPush
+import org.unifiedpush.android.connector.data.ResolvedDistributor
 import javax.inject.Inject
 
 /**
@@ -44,6 +45,26 @@ class PushDistributorManager @Inject constructor(
     // plain UnifiedPush access methods
 
     fun getDistributors() = UnifiedPush.getDistributors(context)
+
+    /**
+     * Returns the package name of the system-wide default distributor if there is one; `null` otherwise.
+     */
+    fun getDefaultDistributor(): String? {
+        return when (val result = UnifiedPush.resolveDefaultDistributor(context)) {
+            is ResolvedDistributor.Found -> result.packageName
+            else -> null
+        }
+    }
+
+    /**
+     * Returns the package name of the distributor currently selected.
+     *
+     * Only the settings UI should call this method. When deciding if and which distributor to use,
+     * call [getDistributorToUse] instead.
+     */
+    fun getSelectedDistributor(): String? {
+        return UnifiedPush.getSavedDistributor(context)
+    }
 
     /**
      * Sets the UnifiedPush distributor and enables push in app settings.
