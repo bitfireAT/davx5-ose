@@ -96,6 +96,7 @@ aboutLibraries {
 }
 
 dependencies {
+    implementation(libs.androidx.compose.foundation)
     // Kotlin / Android
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines)

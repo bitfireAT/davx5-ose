@@ -48,6 +48,7 @@ unifiedpush-fcm = "3.0.0"
 commons-codec = { strictly = "1.17.1" }
 #noinspection NewerVersionAvailable
 commons-lang = { strictly = "3.15.0" }
+foundation = "1.11.0"
 
 [libraries]
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs_nio", version.ref = "android-desugaring" }
@@ -116,6 +117,7 @@ openid-appauth = { module = "net.openid:appauth", version.ref = "openid-appauth"
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 unifiedpush = { module = "org.unifiedpush.android:connector", version.ref = "unifiedpush" }
 unifiedpush-fcm = { module = "org.unifiedpush.android:embedded-fcm-distributor", version.ref = "unifiedpush-fcm" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-agp" }

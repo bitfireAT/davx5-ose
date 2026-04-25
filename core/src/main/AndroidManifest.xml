@@ -149,6 +149,16 @@
             android:name=".ui.webdav.AddWebdavMountActivity"
             android:parentActivityName=".ui.webdav.WebdavMountsActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="at.bitfire.davdroid.ui.push.PushSettingsActivity"
+            android:parentActivityName=".ui.AppSettingsActivity"
+                android:exported="true"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
 
         <!-- account type "DAVx⁵" -->
         <service
