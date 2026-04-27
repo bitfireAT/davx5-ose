@@ -26,13 +26,13 @@ Use [Conventional Comments](https://conventionalcomments.org/) to format review 
 [optional discussion]
 ```
 
-The subject is usually not longer than one line. If more information is required to understand the comment, it belongs to the optional discussion part.
+The subject is usually not longer than one short line/sentence. If more information is required to understand the comment, it belongs to the optional discussion part.
 
 Use these labels:
 
 - `issue:` Issues highlight specific problems with the subject under review.
 - `suggestion:` Suggestions propose improvements to the current subject. It’s important to be explicit and clear on what is being suggested and why it is an improvement.
-- `todo:` TODO’s are small, trivial, but necessary changes.
+- `todo:` TODOs are small, trivial, but necessary changes.
 - `typo:` Typo comments are like todo comments, where the main issue is a misspelling.
 - `quibble:` Use that one instead of `nitpick` for trivial preference- or style-based requests. These should be non-blocking by nature.
 - `polish:` Polish comments are like a suggestion, where there is nothing necessarily wrong with the relevant content, there’s just some ways to immediately improve the quality.
