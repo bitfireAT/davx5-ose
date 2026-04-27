@@ -99,12 +99,19 @@ class PushDistributorManagerTest {
     fun testSetPushDistributor() {
         // Given mock behavior
         every { UnifiedPush.saveDistributor(any(), any()) } just runs
-        
+
+        // And regardless of whether push is enabled (set to false for testing here)
+        settingsManager.putBoolean(Settings.PUSH_ENABLED, false)
+
         // When setting distributor
         pushDistributorManager.setPushDistributor("com.example.newdistributor")
         
         // Then distributor is stored
         verify { UnifiedPush.saveDistributor(context, "com.example.newdistributor") }
+
+        // And push is enabled
+        val isEnabled = settingsManager.getBooleanOrNull(Settings.PUSH_ENABLED)
+        assertTrue(isEnabled!!)
     }
     
     @Test

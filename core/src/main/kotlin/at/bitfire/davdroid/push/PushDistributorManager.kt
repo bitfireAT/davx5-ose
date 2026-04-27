@@ -46,7 +46,7 @@ class PushDistributorManager @Inject constructor(
     fun getDistributors() = UnifiedPush.getDistributors(context)
 
     /**
-     * Sets the UnifiedPush distributor.
+     * Sets the UnifiedPush distributor and enables push in app settings.
      *
      * Note: This method does _not_ update the actual subscriptions. You
      * may want to call [PushRegistrationManager.update] after calling this method.
@@ -56,6 +56,9 @@ class PushDistributorManager @Inject constructor(
     fun setPushDistributor(pushDistributor: String) {
         // Store the new distributor
         UnifiedPush.saveDistributor(context, pushDistributor)
+
+        // Enable push
+        settingsManager.putBoolean(Settings.PUSH_ENABLED, true)
     }
 
 
