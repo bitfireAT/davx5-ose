@@ -181,8 +181,7 @@ class AppSettingsModel @Inject constructor(
                 pushDistributorManager.setPushEnabled(false)
             } else {
                 // Make sure that push is enabled and set distributor
-                pushDistributorManager.setPushEnabled(true)
-                pushDistributorManager.setPushDistributor(pushDistributor)
+                pushDistributorManager.setPushDistributorAndEnablePush(pushDistributor)
             }
 
             // Also update subscriptions

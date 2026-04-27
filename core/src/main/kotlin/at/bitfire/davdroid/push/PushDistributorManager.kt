@@ -53,7 +53,7 @@ class PushDistributorManager @Inject constructor(
      *
      * @param pushDistributor  package name of the new distributor
      */
-    fun setPushDistributor(pushDistributor: String) {
+    fun setPushDistributorAndEnablePush(pushDistributor: String) {
         // Store the new distributor
         UnifiedPush.saveDistributor(context, pushDistributor)
 

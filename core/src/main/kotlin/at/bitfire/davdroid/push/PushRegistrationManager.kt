@@ -56,7 +56,7 @@ import javax.inject.Provider
  * Public API calls are protected by [mutex] so that there won't be multiple subscribe/unsubscribe operations at the same time.
  * If you call other methods than [update], make sure that they don't interfere with other operations.
  */
-    class PushRegistrationManager @Inject constructor(
+class PushRegistrationManager @Inject constructor(
     private val accountRepository: Lazy<AccountRepository>,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,

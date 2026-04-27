@@ -96,7 +96,7 @@ class PushDistributorManagerTest {
 
 
     @Test
-    fun testSetPushDistributor() {
+    fun testSetPushDistributorAndEnablePush() {
         // Given mock behavior
         every { UnifiedPush.saveDistributor(any(), any()) } just runs
 
@@ -104,7 +104,7 @@ class PushDistributorManagerTest {
         settingsManager.putBoolean(Settings.PUSH_ENABLED, false)
 
         // When setting distributor
-        pushDistributorManager.setPushDistributor("com.example.newdistributor")
+        pushDistributorManager.setPushDistributorAndEnablePush("com.example.newdistributor")
         
         // Then distributor is stored
         verify { UnifiedPush.saveDistributor(context, "com.example.newdistributor") }
