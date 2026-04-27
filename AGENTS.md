@@ -1,4 +1,4 @@
-This file contains additioanl instructions for AI agents.
+This file contains instructions for AI agents.
 
 
 # Automated PR reviews
@@ -19,4 +19,14 @@ For automated reviews focus on:
 ## Conventional Comments
 
 Use [Conventional Comments](https://conventionalcomments.org/) to label review feedback. Especially make a difference between more critical labels like `issue` or `todo` and less critical ones like `suggestion`, `typo` or `polish`. Use `quibble` instead of `nitpick`. You may use the `(non-blocking)`, `(blocking)` and `(if-minor)` decorations after the label.
+
+
+# Auto-generating PR descriptions
+
+When asked to generate PR descriptions, follow the structure from `.github/pull_request_template.md`.
+
+- Write for reviewers and future maintainers, not for code navigation
+- Focus on *what changed and why*, not on specific file/line locations
+- Include helpful links (issues, specs, docs) but avoid code references
+- Keep descriptions clear and concise
 
