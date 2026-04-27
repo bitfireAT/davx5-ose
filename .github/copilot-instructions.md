@@ -18,7 +18,20 @@ For automated reviews focus on:
 
 ## Conventional Comments
 
-Use [Conventional Comments](https://conventionalcomments.org/) to label review feedback. Especially make a difference between more critical labels like `issue` or `todo` and less critical ones like `suggestion`, `typo` or `polish`. Use `quibble` instead of `nitpick`. You may use the `(non-blocking)`, `(blocking)` and `(if-minor)` decorations after the label.
+Use [Conventional Comments](https://conventionalcomments.org/) to label review feedback. Especially make a difference between more critical labels like `issue` or
+`todo` and less critical ones like `suggestion`, `typo` or `polish`. Use `quibble` instead of `nitpick`.
+
+You may use the `(non-blocking)`, `(blocking)` and `(if-minor)` decorations after the label, but only if it really improves the value.
+
+Keep the comments short and in this format:
+
+```
+<label> [decorations]: <subject>
+
+[optional discussion]
+```
+
+The subject is usually not longer than one or two sentences. If more information is required to understand the comment, it belongs to the optional disussion part.
 
 
 # Auto-generating PR descriptions

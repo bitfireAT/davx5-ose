@@ -19,18 +19,18 @@ android {
 
         applicationId = "at.bitfire.davdroid"
 
-        /**
+        /*
          * Version names use Semantic Versioning. Pre-release identifiers are "alpha" (closed alpha in
          * internal track), "beta" (public beta track) and "rc" (public beta track).
          *
          * Version codes are derived from the version name like this:
          *
-         * <M><mm><pp><IIII>   (example `405120000`)   where
+         * MmmppIIII   (example `405120000`)   where
          *
          * - M is the major version (`4` in the example)
          * - mm the minor version (two decimal digits, `05` in the example),
          * - pp the patch level (two decimal digits, `12` in the example), and
-         * - IIII an increasing number (four decimal digits) that starts with `0000` and is increased for every release, including pre-releases.
+         * - IIII an increasing number (four decimal digits) that starts with `0000` and is increased for every pre-release identifier (alpha, beta, rc, final).
          */
         versionCode = 405120000
         versionName = "4.5.12-beta.1"
