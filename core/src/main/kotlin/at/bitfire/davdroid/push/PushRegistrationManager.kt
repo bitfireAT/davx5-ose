@@ -60,35 +60,11 @@ class PushRegistrationManager @Inject constructor(
     private val accountRepository: Lazy<AccountRepository>,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
+    private val distributorManager: PushDistributorManager,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
 ) {
-
-    /**
-     * Sets or removes (disable push) the distributor and updates the subscriptions + worker.
-     *
-     * Uses [update] which is protected by [mutex] so creating/deleting subscriptions doesn't
-     * interfere with other operations.
-     *
-     * @param pushDistributor  new distributor or `null` to disable Push
-     */
-    suspend fun setPushDistributor(pushDistributor: String?) {
-        // Disable UnifiedPush and remove all subscriptions
-        UnifiedPush.removeDistributor(context)
-
-        // If a distributor was passed, store it
-        if (pushDistributor != null)
-            UnifiedPush.saveDistributor(context, pushDistributor)
-
-        // Update all subscriptions
-        update()
-    }
-
-    fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
-
-    fun getDistributors() = UnifiedPush.getDistributors(context)
-
 
     /**
      * Updates all push registrations and subscriptions so that if Push is available, it's up-to-date and
@@ -126,8 +102,8 @@ class PushRegistrationManager @Inject constructor(
         // use service ID from database as UnifiedPush instance name
         val instance = serviceId.toString()
 
-        val distributorAvailable = getCurrentDistributor() != null
-        if (distributorAvailable)
+        val isDistributorSelected = distributorManager.getDistributorToUse() != null
+        if (isDistributorSelected)
             try {
                 val vapid = collectionRepository.getVapidKey(serviceId)
                 if (vapid != null) {    // only register when there's a VAPID key
@@ -341,12 +317,12 @@ class PushRegistrationManager @Inject constructor(
 
 
     /**
-     * Determines whether there are any push-capable collections and updates the periodic worker accordingly.
+     * Determines whether there are any push-capable collections and updates the
+     * [PushRegistrationWorker] accordingly.
      *
-     * If there are push-capable collections, a unique periodic worker with an initial delay of 5 seconds is enqueued.
-     * A potentially existing worker is replaced, so that the first run should be soon.
+     * If there are push-capable collections, a unique periodic worker is enqueued.
      *
-     * Otherwise, a potentially existing worker is cancelled.
+     * If there are no push-capable collections, a potentially existing worker is canceled.
      */
     private suspend fun updatePeriodicWorker() {
         val workerNeeded = collectionRepository.anyPushCapable()
@@ -358,7 +334,6 @@ class PushRegistrationManager @Inject constructor(
                 WORKER_UNIQUE_NAME,
                 ExistingPeriodicWorkPolicy.UPDATE,
                 PeriodicWorkRequest.Builder(PushRegistrationWorker::class, WORKER_INTERVAL_DAYS, TimeUnit.DAYS)
-                    .setInitialDelay(5, TimeUnit.SECONDS)
                     .setConstraints(
                         Constraints.Builder()
                             .setRequiredNetworkType(NetworkType.CONNECTED)

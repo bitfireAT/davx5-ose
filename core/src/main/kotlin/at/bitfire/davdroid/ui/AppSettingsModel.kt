@@ -13,7 +13,9 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.push.PushDistributorManager
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
@@ -24,9 +26,11 @@ import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
+import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,11 +44,13 @@ import kotlin.jvm.optionals.getOrNull
 
 @HiltViewModel
 class AppSettingsModel @Inject constructor(
+    @ApplicationScope private val applicationScope: CoroutineScope,
     @ApplicationContext private val context: Context,
     private val customCertStore: Optional<CustomCertStore>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
-    private val pushRegistrationManager: PushRegistrationManager,
+    private val pushDistributorManager: PushDistributorManager,
+    private val pushRegistrationManager: Lazy<PushRegistrationManager>,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -137,14 +143,12 @@ class AppSettingsModel @Inject constructor(
      *
      * - Loads the currently selected distributor into [pushDistributor].
      * - Loads all the available distributors into [pushDistributors].
-     * - If there's only one push distributor available, and none is selected, it's selected automatically.
-     * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
      */
     private fun loadPushDistributors() {
-        val currentPushDistributor = pushRegistrationManager.getCurrentDistributor()
+        val currentPushDistributor = pushDistributorManager.getDistributorToUse()
         _pushDistributor.value = currentPushDistributor
 
-        val pushDistributors = pushRegistrationManager.getDistributors()
+        val pushDistributors = pushDistributorManager.getDistributors()
             .map { pushDistributor ->
                 try {
                     val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
@@ -167,10 +171,21 @@ class AppSettingsModel @Inject constructor(
      * @param pushDistributor The package name of the push distributor, _null_ to disable push.
      */
     fun updatePushDistributor(pushDistributor: String?) {
-        viewModelScope.launch(ioDispatcher) {
-            pushRegistrationManager.setPushDistributor(pushDistributor)
+        // Update UI
+        _pushDistributor.value = pushDistributor
 
-            _pushDistributor.value = pushDistributor
+        // Perform changes that may take longer (especially updating the subscriptions) asynchronously in global scope
+        applicationScope.launch(ioDispatcher) {
+            if (pushDistributor == null) {
+                // Disable push
+                pushDistributorManager.setPushEnabled(false)
+            } else {
+                // Make sure that push is enabled and set distributor
+                pushDistributorManager.setPushDistributorAndEnablePush(pushDistributor)
+            }
+
+            // Also update subscriptions
+            pushRegistrationManager.get().update()
         }
     }
 
