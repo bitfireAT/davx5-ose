@@ -58,10 +58,11 @@ object Settings {
     /** regular expression to match URLs of collections to be excluded from pre-selection */
     const val PRESELECT_COLLECTIONS_EXCLUDED = "preselect_collections_excluded"
 
+    /** whether push notifications are enabled */
+    const val PUSH_ENABLED = "push_enabled"
 
     /** whether all address books are forced to be read-only */
     const val FORCE_READ_ONLY_ADDRESSBOOKS = "force_read_only_addressbooks"
-
 
     /** max. number of accounts */
     const val MAX_ACCOUNTS = "max_accounts"

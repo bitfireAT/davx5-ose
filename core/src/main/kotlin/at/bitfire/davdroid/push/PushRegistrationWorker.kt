@@ -13,7 +13,7 @@ import dagger.assisted.AssistedInject
 import java.util.logging.Logger
 
 /**
- * Worker that runs regularly and initiates push registration updates for all collections.
+ * Worker that updates push subscriptions / registrations for all collections.
  *
  * Managed by [PushRegistrationManager].
  */
