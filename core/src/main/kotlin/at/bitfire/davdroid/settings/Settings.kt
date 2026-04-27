@@ -58,6 +58,9 @@ object Settings {
     /** regular expression to match URLs of collections to be excluded from pre-selection */
     const val PRESELECT_COLLECTIONS_EXCLUDED = "preselect_collections_excluded"
 
+    /** If `true`, the user has manually chosen to disable Push */
+    const val PUSH_DISABLED = "push_disabled"
+
 
     /** whether all address books are forced to be read-only */
     const val FORCE_READ_ONLY_ADDRESSBOOKS = "force_read_only_addressbooks"

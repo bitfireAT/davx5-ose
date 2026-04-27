@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
+import android.content.Intent
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -20,6 +21,7 @@ import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.property.push.WebDAVPush
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -27,7 +29,10 @@ import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
@@ -35,10 +40,13 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.data.PushEndpoint
+import org.unifiedpush.android.connector.data.ResolvedDistributor
 import java.io.StringWriter
 import java.time.Duration
 import java.time.Instant
@@ -62,7 +70,10 @@ class PushRegistrationManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
     private val logger: Logger,
-    private val serviceRepository: DavServiceRepository
+    private val settings: SettingsManager,
+    private val serviceRepository: DavServiceRepository,
+    private val notificationManager: PushNotificationManager,
+    private val notificationRegistry: NotificationRegistry
 ) {
 
     /**
@@ -85,7 +96,42 @@ class PushRegistrationManager @Inject constructor(
         update()
     }
 
+    @Deprecated("Use getDistributorToUse", ReplaceWith("getDistributorToUse"))
     fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
+
+    /**
+     * Tries to resolve a distributor to use automatically.
+     * @return The package name of the distributor to use.
+     * @throws IllegalStateException push has been disabled manually by the user
+     * @throws RuntimeException there are multiple distributors available, the user must choose one
+     * @throws NoSuchElementException there is no distributor available
+     */
+    suspend fun getDistributorToUse(): String {
+        val pushDisabled = settings.getBooleanOrNull(Settings.PUSH_DISABLED) ?: false
+        if (pushDisabled) {
+            logger.fine("Push is disabled. Unregistering all instance, and unsubscribing from all services")
+            unregisterAndUnsubscribeFromAll()
+            throw IllegalStateException("Push is disabled")
+        }
+
+        // get ACK distributor: saved distributor, which is correctly configured
+        val savedDistributor = UnifiedPush.getAckDistributor(context)
+        if (savedDistributor != null) return savedDistributor
+
+        // there's no distributor saved, try to resolve it with UP
+        when (val res = UnifiedPush.resolveDefaultDistributor(context)) {
+            // If Found is returned, the new distributor has been saved, and getAckDistributor will fetch it in the next call
+            is ResolvedDistributor.Found -> return res.packageName
+            // There are multiple distributors available, the user must choose one
+            ResolvedDistributor.ToSelect -> {
+                // Make sure to unsubscribe from all services. This is in case there was indeed a distributor selected, but it's no longer available
+                unregisterAndUnsubscribeFromAll()
+                throw RuntimeException("User interaction required")
+            }
+            // There's no custom distributor installed, and FCM is not available
+            ResolvedDistributor.NoneAvailable -> throw NoSuchElementException("There's no distributor in the system available")
+        }
+    }
 
     fun getDistributors() = UnifiedPush.getDistributors(context)
 
@@ -126,33 +172,62 @@ class PushRegistrationManager @Inject constructor(
         // use service ID from database as UnifiedPush instance name
         val instance = serviceId.toString()
 
-        val distributorAvailable = getCurrentDistributor() != null
-        if (distributorAvailable)
-            try {
-                val vapid = collectionRepository.getVapidKey(serviceId)
-                if (vapid != null) {    // only register when there's a VAPID key
-                    logger.fine("Registering UnifiedPush instance for service $instance / ${service.accountName}")
+        try {
+            getDistributorToUse() // try to resolve the distributor to use
 
-                    // message for distributor
-                    val message = "${service.accountName} (${service.type})"
+            val vapid = collectionRepository.getVapidKey(serviceId)
+            if (vapid != null) {    // only register when there's a VAPID key
+                logger.fine("Registering UnifiedPush instance for service $instance / ${service.accountName}")
 
-                    UnifiedPush.register(context, instance, message, vapid)
-                } else {
-                    logger.fine("No VAPID key for service $serviceId / ${service.accountName}")
-                    /* We don't call UnifiedPush.unregister(context, instance) here because it can
-                    remove the push distributor. May be improved in the future. */
-                }
-            } catch (e: UnifiedPush.VapidNotValidException) {
-                logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
+                // message for distributor
+                val message = "${service.accountName} (${service.type})"
+
+                UnifiedPush.register(context, instance, message, vapid)
+            } else {
+                logger.fine("No VAPID key for service $serviceId / ${service.accountName}")
+                /* We don't call UnifiedPush.unregister(context, instance) here because it can
+                remove the push distributor. May be improved in the future. */
             }
-        else {
-            logger.fine("No push distributor, unregistering UnifiedPush service $serviceId / ${service.accountName}")
-            UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
-            unsubscribeAll(service)
+        } catch (e: UnifiedPush.VapidNotValidException) {
+            logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
+        } catch (_: IllegalStateException) {
+            // push is disabled
+            logger.fine("Push is disabled. Cannot update service $serviceId")
+        } catch (_: RuntimeException) {
+            // multiple distributors available
+            logger.log(Level.WARNING, "There are multiple push distributors available")
+            notifyDistributorSelection()
+        } catch (_: NoSuchElementException) {
+            // no distributors available
+            logger.log(Level.WARNING, "Tried to update service $serviceId, but no push distributors are available")
+            notifyDistributorSelection()
         }
 
         // UnifiedPush has now been called. It will do its work and then asynchronously call back to UnifiedPushService, which
         // will then call processSubscription or removeSubscription.
+    }
+
+    private suspend fun notifyDistributorSelection() {
+        withContext(Dispatchers.Main) {
+            notificationManager.notify(
+                id = NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR,
+                channelId = notificationRegistry.CHANNEL_SYNC_ERRORS,
+                title = context.getString(R.string.push_distributor_selection_required_title),
+                text = context.getString(R.string.push_distributor_selection_required_message),
+                intent = Intent(context, PushDistributorSelectionActivity::class.java)
+            )
+        }
+    }
+
+    /**
+     * Unregisters instances and unsubscribes from all services.
+     */
+    private suspend fun unregisterAndUnsubscribeFromAll() {
+        for (service in serviceRepository.getAll()) {
+            val instance = service.id.toString()
+            UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
+            unsubscribeAll(service)
+        }
     }
 
     /**
