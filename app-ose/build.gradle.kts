@@ -30,7 +30,7 @@ android {
          * - M is the major version (`4` in the example)
          * - mm the minor version (two decimal digits, `05` in the example),
          * - pp the patch level (two decimal digits, `12` in the example), and
-         * - IIII an increasing number (four decimal digits) that starts with `0000` and is increased for every pre-release identifier (alpha, beta, rc, final).
+         * - IIII an increasing number (four decimal digits) that starts with `0000` and is increased for every pre-release (alpha-1, alpha-2, beta-1 etc.)
          */
         versionCode = 405120000
         versionName = "4.5.12-beta.1"
