@@ -172,7 +172,7 @@ class AppSettingsModel @Inject constructor(
      */
     fun updatePushDistributor(pushDistributor: String?) {
         // Update UI
-        _pushDistributor.value = null
+        _pushDistributor.value = pushDistributor
 
         // Perform changes that may take longer (especially updating the subscriptions) asynchronously in global scope
         applicationScope.launch(ioDispatcher) {
