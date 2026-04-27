@@ -26,7 +26,7 @@ Use [Conventional Comments](https://conventionalcomments.org/) to format review 
 [optional discussion]
 ```
 
-The subject should not be more than one short line/sentence. If more information is required to understand the comment, put in into the discussion part.
+The subject should not be more than one short line/sentence. If more information is required to understand the comment, put it into the discussion part.
 
 Use these labels:
 
