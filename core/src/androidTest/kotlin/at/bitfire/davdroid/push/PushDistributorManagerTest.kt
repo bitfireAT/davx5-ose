@@ -72,7 +72,7 @@ class PushDistributorManagerTest {
     fun testGetDistributor_PushEnabled_DistributorToUseSet() {
         // Given push is enabled and distributor is set
         settingsManager.putBoolean(Settings.PUSH_ENABLED, true)
-        every { UnifiedPush.getSavedDistributor(any()) } returns "com.example.distributor"
+        every { UnifiedPush.getAckDistributor(any()) } returns "com.example.distributor"
         
         // When getting current distributor
         val result = pushDistributorManager.getDistributorToUse()
@@ -85,7 +85,7 @@ class PushDistributorManagerTest {
     fun testGetDistributor_PushEnabled_NoDistributorToUse() {
         // Given push is enabled but no distributor is set
         settingsManager.putBoolean(Settings.PUSH_ENABLED, true)
-        every { UnifiedPush.getSavedDistributor(any()) } returns null
+        every { UnifiedPush.getAckDistributor(any()) } returns null
 
         // When getting current distributor
         val result = pushDistributorManager.getDistributorToUse()
