@@ -151,7 +151,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".push.PushDistributorSelectionActivity"
-            android:theme="@style/Theme.AppCompat.Dialog" />
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
 
         <!-- account type "DAVx⁵" -->
         <service
