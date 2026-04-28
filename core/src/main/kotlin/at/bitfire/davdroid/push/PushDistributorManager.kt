@@ -9,6 +9,8 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.unifiedpush.android.connector.UnifiedPush
+import org.unifiedpush.android.connector.data.ResolvedDistributor
+import java.util.logging.Logger
 import javax.inject.Inject
 
 /**
@@ -16,6 +18,7 @@ import javax.inject.Inject
  */
 class PushDistributorManager @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val logger: Logger,
     private val settingsManager: SettingsManager
 ) {
 
@@ -34,11 +37,35 @@ class PushDistributorManager @Inject constructor(
      *
      * @return package name of the current distributor, or `null` if push support is disabled or no distributor is set
      */
-    fun getDistributorToUse() =
-        if (isPushEnabled())
-            UnifiedPush.getSavedDistributor(context)
-        else
-            null
+    fun getDistributorToUse(): String? {
+        val pushEnabled = isPushEnabled()
+        if (!pushEnabled) {
+            logger.fine("Push is disabled. Unregistering all instance, and unsubscribing from all services")
+            return null
+        }
+
+        // get ACK distributor: saved distributor, which is correctly configured
+        val savedDistributor = UnifiedPush.getAckDistributor(context)
+        if (savedDistributor != null) return savedDistributor
+
+        // there's no distributor saved, try to resolve it with UP
+        when (val res = UnifiedPush.resolveDefaultDistributor(context)) {
+            // If Found is returned, the new distributor has been saved, and getAckDistributor will fetch it in the next call
+            is ResolvedDistributor.Found -> return res.packageName
+
+            // There are multiple distributors available, the user must choose one
+            ResolvedDistributor.ToSelect -> {
+                logger.warning("There's multiple distributors available, but no distributor is preferred.")
+                return null
+            }
+
+            // There's no custom distributor installed, and FCM is not available
+            ResolvedDistributor.NoneAvailable -> {
+                logger.warning("There's no distributor available, push is enabled, and there are servers advertising push support.")
+                return null
+            }
+        }
+    }
 
 
     // plain UnifiedPush access methods
