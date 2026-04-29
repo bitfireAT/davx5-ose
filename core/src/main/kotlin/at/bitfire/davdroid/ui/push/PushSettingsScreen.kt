@@ -134,7 +134,7 @@ private fun InfoHeader() {
 }
 
 @Composable
-fun PushEnabled(isPushEnabled: Boolean, onEvent: (Event) -> Unit) {
+private fun PushEnabled(isPushEnabled: Boolean, onEvent: (Event) -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
 
     Surface(
