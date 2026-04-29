@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -55,7 +56,10 @@ class PushSettingsViewModel @Inject constructor(
 
     private fun handlePushEnabled(enabled: Boolean) {
         updateState { state ->
-            state.copy(isPushEnabled = enabled)
+            state.copy(
+                isPushEnabled = enabled,
+                selectedPushDistributor = if (enabled) state.selectedPushDistributor else null
+            )
         }
 
         applicationScope.launch(ioDispatcher) {
