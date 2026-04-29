@@ -31,6 +31,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -42,6 +43,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -78,7 +80,6 @@ import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Loading
-import at.bitfire.davdroid.util.WithoutRipple
 import kotlinx.coroutines.time.delay
 import java.time.Duration
 
@@ -198,7 +199,7 @@ private fun PushEnabled(isPushEnabled: Boolean, onEvent: (Event) -> Unit) {
             )
 
             // The ripple effect is displayed on the Surface. Don't show a separate one on the Switch.
-            WithoutRipple {
+            CompositionLocalProvider(LocalRippleConfiguration provides null) {
                 Switch(
                     checked = isPushEnabled,
                     onCheckedChange = null,
