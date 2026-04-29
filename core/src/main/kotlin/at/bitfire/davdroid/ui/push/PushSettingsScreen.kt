@@ -87,7 +87,7 @@ private const val UNIFIED_PUSH_URL = "https://unifiedpush.org"
 
 @Composable
 fun PushSettingsScreen(onNavigateUp: () -> Unit) {
-    val viewModel = hiltViewModel<PushSettingsViewModel>()
+    val viewModel = hiltViewModel<PushSettingsModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     PushSettingsContent(
