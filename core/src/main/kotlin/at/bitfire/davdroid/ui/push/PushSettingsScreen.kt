@@ -144,7 +144,7 @@ private fun PushEnabled(isPushEnabled: Boolean, onEvent: (Event) -> Unit) {
             .clip(RoundedCornerShape(16.dp))
             .toggleable(
                 value = isPushEnabled,
-                onValueChange = { onEvent(PushEnabled(!isPushEnabled)) },
+                onValueChange = { value -> onEvent(PushEnabled(value)) },
                 interactionSource = interactionSource,
                 indication = ripple(),
                 role = Role.Switch
