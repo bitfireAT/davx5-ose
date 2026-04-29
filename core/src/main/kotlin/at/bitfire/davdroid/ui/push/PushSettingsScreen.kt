@@ -162,7 +162,7 @@ private fun Content(content: Content, onEvent: (Event) -> Unit) {
 @Composable
 private fun InfoHeader() {
     Text(
-        text = stringResource(R.string.app_settings_push_description),
+        text = stringResource(R.string.app_settings_push_description, stringResource(R.string.app_name)),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onBackground,
     )
