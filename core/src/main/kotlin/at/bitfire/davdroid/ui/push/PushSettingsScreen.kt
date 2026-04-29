@@ -68,6 +68,7 @@ import androidx.core.text.HtmlCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
@@ -82,7 +83,6 @@ import kotlinx.coroutines.time.delay
 import java.time.Duration
 
 private const val UNIFIED_PUSH_URL = "https://unifiedpush.org"
-private const val DAVX5_MANUAL_URL = "https://manual.davx5.com/webdav_push.html"
 
 @Composable
 fun PushSettingsScreen(onNavigateUp: () -> Unit) {
@@ -335,9 +335,16 @@ private fun InfoFooter() {
     Icon(imageVector = Icons.Outlined.Info, contentDescription = null)
     Spacer(modifier = Modifier.height(8.dp))
 
+    val url = remember {
+        ExternalUris.Manual.baseUrl.buildUpon()
+            .appendPath(ExternalUris.Manual.PATH_WEBDAV_PUSH)
+            .build()
+            .toString()
+    }
+
     Text(
         text = HtmlCompat.fromHtml(
-            stringResource(R.string.app_settings_push_info_text, DAVX5_MANUAL_URL),
+            stringResource(R.string.app_settings_push_info_text, url),
             HtmlCompat.FROM_HTML_MODE_COMPACT
         ).toAnnotatedString(),
         style = MaterialTheme.typography.bodyMedium,
