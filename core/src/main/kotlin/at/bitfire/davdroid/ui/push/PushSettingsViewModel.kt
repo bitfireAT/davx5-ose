@@ -132,6 +132,6 @@ class PushSettingsViewModel @Inject constructor(
     }
 
     private fun updateState(block: (State) -> State) {
-        _uiState.value = block(_uiState.value)
+        _uiState.update(block)
     }
 }
