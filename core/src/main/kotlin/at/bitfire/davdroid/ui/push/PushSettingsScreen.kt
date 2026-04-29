@@ -278,8 +278,9 @@ private fun PushServicesList(state: State, onEvent: (Event) -> Unit) {
                 )
 
                 pushDistributor.appIcon?.let { icon ->
+                    val appIconBitmap = remember(pushDistributor.appIcon) { icon.toBitmap().asImageBitmap() }
                     Image(
-                        bitmap = icon.toBitmap().asImageBitmap(),
+                        bitmap = appIconBitmap,
                         contentDescription = null,
                         alpha = if (isEnabled) DefaultAlpha else 0.5f,
                         modifier = Modifier.size(32.dp)
