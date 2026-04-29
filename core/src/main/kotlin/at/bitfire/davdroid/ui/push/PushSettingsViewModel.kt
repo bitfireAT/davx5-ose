@@ -32,7 +32,7 @@ class PushSettingsViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     @param:ApplicationScope private val applicationScope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val pushDistributorManager: PushDistributorManager,
+    private val pushDistributorManager: PushDistributorManager
 ) : ViewModel() {
     private val packageManager = context.packageManager
 

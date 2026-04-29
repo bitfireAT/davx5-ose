@@ -12,13 +12,13 @@ interface PushSettingsContract {
         val isPushEnabled: Boolean = true,
         val selectedPushDistributor: String? = null,
         val defaultPushDistributor: String? = null,
-        val pushDistributors: List<PushDistributorInfo> = emptyList(),
+        val pushDistributors: List<PushDistributorInfo> = emptyList()
     )
 
     data class PushDistributorInfo(
         val packageName: String,
         val appName: String,
-        val appIcon: Drawable?,
+        val appIcon: Drawable?
     )
 
     sealed interface Event {
