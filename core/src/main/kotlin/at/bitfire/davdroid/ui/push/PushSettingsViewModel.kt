@@ -18,6 +18,8 @@ import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSel
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
 import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State
+import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Loading
+import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -37,13 +39,12 @@ class PushSettingsViewModel @Inject constructor(
 ) : ViewModel() {
     private val packageManager = context.packageManager
 
-    private val _uiState = MutableStateFlow(State())
+    private val _uiState = MutableStateFlow<State>(Loading)
     val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch(ioDispatcher) {
-            loadPushSetting()
-            loadPushDistributors()
+            loadsSettings()
         }
     }
 
@@ -55,10 +56,10 @@ class PushSettingsViewModel @Inject constructor(
     }
 
     private fun handlePushEnabled(enabled: Boolean) {
-        updateState { state ->
-            state.copy(
+        updateContent { content ->
+            content.copy(
                 isPushEnabled = enabled,
-                selectedPushDistributor = if (enabled) state.selectedPushDistributor else null
+                selectedPushDistributor = if (enabled) content.selectedPushDistributor else null
             )
         }
 
@@ -68,8 +69,8 @@ class PushSettingsViewModel @Inject constructor(
     }
 
     private fun handlePushDistributorSelected(packageName: String) {
-        updateState { state ->
-            state.copy(selectedPushDistributor = packageName)
+        updateContent { content ->
+            content.copy(selectedPushDistributor = packageName)
         }
 
         applicationScope.launch(ioDispatcher) {
@@ -77,13 +78,8 @@ class PushSettingsViewModel @Inject constructor(
         }
     }
 
-    private fun loadPushSetting() {
-        updateState { state ->
-            state.copy(isPushEnabled = pushDistributorManager.isPushEnabled())
-        }
-    }
-
-    private fun loadPushDistributors() {
+    private fun loadsSettings() {
+        val isPushEnabled = pushDistributorManager.isPushEnabled()
         val defaultDistributor = pushDistributorManager.getDefaultDistributor()
         val selectedDistributor = pushDistributorManager.getSelectedDistributor() ?: defaultDistributor
         val pushDistributors = pushDistributorManager.getDistributors()
@@ -112,8 +108,9 @@ class PushSettingsViewModel @Inject constructor(
                 }
             }
 
-        updateState { state ->
-            state.copy(
+        updateContent { content ->
+            content.copy(
+                isPushEnabled = isPushEnabled,
                 selectedPushDistributor = selectedDistributor,
                 defaultPushDistributor = defaultDistributor,
                 pushDistributors = pushDistributors
@@ -131,7 +128,13 @@ class PushSettingsViewModel @Inject constructor(
         }
     }
 
-    private fun updateState(block: (State) -> State) {
-        _uiState.update(block)
+    private fun updateContent(block: (Content) -> Content) {
+        _uiState.update { state ->
+            if (state is Content) {
+                block(state)
+            } else {
+                block(Content())
+            }
+        }
     }
 }

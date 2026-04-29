@@ -8,12 +8,16 @@ import android.graphics.drawable.Drawable
 
 interface PushSettingsContract {
 
-    data class State(
-        val isPushEnabled: Boolean = true,
-        val selectedPushDistributor: String? = null,
-        val defaultPushDistributor: String? = null,
-        val pushDistributors: List<PushDistributorInfo> = emptyList()
-    )
+    sealed interface State {
+        data object Loading : State
+
+        data class Content(
+            val isPushEnabled: Boolean = true,
+            val selectedPushDistributor: String? = null,
+            val defaultPushDistributor: String? = null,
+            val pushDistributors: List<PushDistributorInfo> = emptyList()
+        ) : State
+    }
 
     data class PushDistributorInfo(
         val packageName: String,

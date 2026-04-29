@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui.push
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.visible
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -25,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,8 +42,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,7 +75,11 @@ import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSel
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
 import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State
+import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
+import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Loading
 import at.bitfire.davdroid.util.WithoutRipple
+import kotlinx.coroutines.time.delay
+import java.time.Duration
 
 private const val UNIFIED_PUSH_URL = "https://unifiedpush.org"
 private const val DAVX5_MANUAL_URL = "https://manual.davx5.com/webdav_push.html"
@@ -114,12 +124,39 @@ fun PushSettingsContent(
         ) {
             InfoHeader()
 
-            PushEnabled(state.isPushEnabled, onEvent)
-            PushServices(state, onEvent)
+            when (state) {
+                is Loading -> Loading()
+                is Content -> Content(state, onEvent)
+            }
 
             InfoFooter()
         }
     }
+}
+
+@Composable
+private fun Loading() {
+    var showProgressIndicator by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(Duration.ofMillis(500))
+        showProgressIndicator = true
+    }
+
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .visible(showProgressIndicator)
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+
+@Composable
+private fun Content(content: Content, onEvent: (Event) -> Unit) {
+    PushEnabled(content.isPushEnabled, onEvent)
+    PushServices(content, onEvent)
 }
 
 @Composable
@@ -174,11 +211,11 @@ private fun PushEnabled(isPushEnabled: Boolean, onEvent: (Event) -> Unit) {
 }
 
 @Composable
-private fun PushServices(state: State, onEvent: (Event) -> Unit) {
-    if (state.pushDistributors.isEmpty()) {
+private fun PushServices(content: Content, onEvent: (Event) -> Unit) {
+    if (content.pushDistributors.isEmpty()) {
         NoPushServices()
     } else {
-        PushServicesList(state, onEvent)
+        PushServicesList(content, onEvent)
     }
 }
 
@@ -214,7 +251,7 @@ private fun NoPushServices() {
 }
 
 @Composable
-private fun PushServicesList(state: State, onEvent: (Event) -> Unit) {
+private fun PushServicesList(content: Content, onEvent: (Event) -> Unit) {
     Spacer(modifier = Modifier.height(32.dp))
 
     Column(modifier = Modifier.selectableGroup()) {
@@ -224,9 +261,9 @@ private fun PushServicesList(state: State, onEvent: (Event) -> Unit) {
             fontWeight = FontWeight.Bold
         )
 
-        state.pushDistributors.forEach { pushDistributor ->
-            val isSelected = pushDistributor.packageName == state.selectedPushDistributor
-            val isEnabled = state.isPushEnabled
+        content.pushDistributors.forEach { pushDistributor ->
+            val isSelected = pushDistributor.packageName == content.selectedPushDistributor
+            val isEnabled = content.isPushEnabled
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -248,7 +285,7 @@ private fun PushServicesList(state: State, onEvent: (Event) -> Unit) {
                     onClick = null // null recommended for accessibility with screen readers
                 )
 
-                val title = if (state.defaultPushDistributor == pushDistributor.packageName) {
+                val title = if (content.defaultPushDistributor == pushDistributor.packageName) {
                     buildAnnotatedString {
                         append(pushDistributor.appName)
                         append(" ")
@@ -310,12 +347,24 @@ private fun InfoFooter() {
 
 @Preview
 @Composable
+private fun PushSettingsScreenPreview_Loading() {
+    AppTheme {
+        PushSettingsContent(
+            state = Loading,
+            onEvent = {},
+            onNavUp = {}
+        )
+    }
+}
+
+@Preview
+@Composable
 private fun PushSettingsScreenPreview_NoExternalPushDistributors() {
     AppTheme {
         val context = LocalContext.current
 
         PushSettingsContent(
-            state = State(
+            state = Content(
                 selectedPushDistributor = context.packageName,
                 pushDistributors = listOf(
                     PushDistributorInfo(
@@ -336,7 +385,7 @@ private fun PushSettingsScreenPreview_NoExternalPushDistributors() {
 private fun PushSettingsScreenPreview_AbsolutelyNoPushDistributors() {
     AppTheme {
         PushSettingsContent(
-            state = State(
+            state = Content(
                 pushDistributors = listOf(),
             ),
             onEvent = {},
@@ -352,7 +401,7 @@ private fun PushSettingsScreenPreview_MultiplePushDistributors() {
         val context = LocalContext.current
 
         PushSettingsContent(
-            state = State(
+            state = Content(
                 selectedPushDistributor = "sunup",
                 defaultPushDistributor = "ntfy",
                 pushDistributors = listOf(
