@@ -44,7 +44,7 @@ class PushSettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(ioDispatcher) {
-            loadsSettings()
+            loadSettings()
         }
     }
 
@@ -78,7 +78,7 @@ class PushSettingsViewModel @Inject constructor(
         }
     }
 
-    private fun loadsSettings() {
+    private fun loadSettings() {
         val isPushEnabled = pushDistributorManager.isPushEnabled()
         val defaultDistributor = pushDistributorManager.getDefaultDistributor()
         val selectedDistributor = pushDistributorManager.getSelectedDistributor() ?: defaultDistributor
