@@ -40,7 +40,7 @@ class PushDistributorManager @Inject constructor(
     fun getDistributorToUse(): String? {
         val pushEnabled = isPushEnabled()
         if (!pushEnabled) {
-            logger.fine("Push is disabled. Unregistering all instance, and unsubscribing from all services")
+            logger.fine("Push is disabled. No distributor will be used")
             return null
         }
 
