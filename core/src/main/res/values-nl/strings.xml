@@ -514,4 +514,11 @@
     <string name="login_download_button">DAVx⁵ downloaden</string>
     <string name="dismiss_forever">Definitief wissen</string>
     <string name="keep_android_open"><![CDATA[De openheid van Android wordt bedreigd. Ontdek hoe u kunt helpen bij <a href="%s">keepandroidopen.org</a>.]]></string>
+    <string name="app_settings_push_title">Push</string>
+    <string name="app_settings_push_description">Gebruik Push om %s onmiddellijk door CalDAV/CardDAV/WebDAV-servers op de hoogte te laten stellen van beschikbare wijzigingen in uw gegevens op de server.</string>
+    <string name="app_settings_push_use_push">Push gebruiken</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[Geen Push-services gevonden. Bezoek <a href="%1$s">%2$s</a> voor een lijst met distributeur-apps.]]></string>
+    <string name="app_settings_push_info_text"><![CDATA[Push-berichten zij altijd versleuteld. Meer informatie over WebDAV-Push is te lezen in <a href="%s">de handleiding</a>.]]></string>
+    <string name="app_settings_push_push_services">Push-service</string>
+    <string name="app_settings_push_default_distributor_text">(systeemstandaard)</string>
 </resources>
