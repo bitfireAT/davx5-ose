@@ -514,4 +514,11 @@
     <string name="login_invalid_use_case">Tipo de uso non válido</string>
     <string name="dismiss_forever">Desbotar para sempre</string>
     <string name="keep_android_open"><![CDATA[Android pode deixar de ser un sistema aberto. Visita <a href="%s">keepandroidopen.org</a> para axudar a evitalo.]]></string>
+    <string name="app_settings_push_title">Enviar</string>
+    <string name="app_settings_push_description">Usa Enviar para facer que os servidores CalDAV/CardDAV/WebDAV notifiquen instantaneamente a %s dos cambios nos teus datos dispoñibles no servidor.</string>
+    <string name="app_settings_push_use_push">Usar Enviar</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[Non se atopan servizos Push (Enviar). Visita <a href="%1$s">%2$s</a> para ver unha lista de Apps Distribuidoras.]]></string>
+    <string name="app_settings_push_info_text"><![CDATA[As mensaxes tipo push sempre se envían cifradas. Aprende máis sobre WebDAV-Push no <a href="%s">manual</a>.]]></string>
+    <string name="app_settings_push_push_services">Servizo Push</string>
+    <string name="app_settings_push_default_distributor_text">(predeterminado do sistema)</string>
 </resources>
