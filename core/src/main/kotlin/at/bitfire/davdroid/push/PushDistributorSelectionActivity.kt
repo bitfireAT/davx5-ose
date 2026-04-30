@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,6 +27,9 @@ class PushDistributorSelectionActivity : AppCompatActivity() {
 
     @Inject
     lateinit var registrationManager: PushRegistrationManager
+
+    @Inject
+    lateinit var distributorManager: PushDistributorManager
 
     @Inject
     lateinit var pushNotificationManager: PushNotificationManager
@@ -49,7 +51,7 @@ class PushDistributorSelectionActivity : AppCompatActivity() {
                     finish()
                 }
                 .setNegativeButton(R.string.push_no_distributor_ignore) { _, _ ->
-                    settings.putBoolean(Settings.PUSH_ENABLED, false)
+                    distributorManager.setPushEnabled(false)
                     pushNotificationManager.dismiss(
                         notificationId = NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR
                     )
