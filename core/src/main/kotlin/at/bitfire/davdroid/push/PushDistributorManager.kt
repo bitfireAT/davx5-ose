@@ -73,6 +73,26 @@ class PushDistributorManager @Inject constructor(
     fun getDistributors() = UnifiedPush.getDistributors(context)
 
     /**
+     * Returns the package name of the system-wide default distributor if there is one; `null` otherwise.
+     */
+    fun getDefaultDistributor(): String? {
+        return when (val result = UnifiedPush.resolveDefaultDistributor(context)) {
+            is ResolvedDistributor.Found -> result.packageName
+            else -> null
+        }
+    }
+
+    /**
+     * Returns the package name of the distributor currently selected.
+     *
+     * Only the settings UI should call this method. When deciding if and which distributor to use,
+     * call [getDistributorToUse] instead.
+     */
+    fun getSelectedDistributor(): String? {
+        return UnifiedPush.getSavedDistributor(context)
+    }
+
+    /**
      * Sets the UnifiedPush distributor and enables push in app settings.
      *
      * Note: This method does _not_ update the actual subscriptions. You

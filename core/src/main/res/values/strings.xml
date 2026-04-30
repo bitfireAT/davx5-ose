@@ -249,6 +249,15 @@
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
     <string name="app_settings_unifiedpush_encrypted">Push messages are always encrypted.</string>
 
+    <string name="app_settings_push_title">Push</string>
+    <string name="app_settings_push_description">Use Push to have CalDAV/CardDAV/WebDAV servers instantly notify %s of available changes to your data on the server.</string>
+    <string name="app_settings_push_use_push">Use Push</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[No Push Services found. Visit <a href=\"%1$s\">%2$s</a> for a list of Distributor Apps.]]></string>
+    <string name="app_settings_push_unified_push_url_text" translatable="false">UnifiedPush.org</string>
+    <string name="app_settings_push_info_text"><![CDATA[Push messages are always encrypted. Learn more about WebDAV-Push from <a href=\"%s\">the manual</a>.]]></string>
+    <string name="app_settings_push_push_services">Push Service</string>
+    <string name="app_settings_push_default_distributor_text">(system default)</string>
+
     <!-- AccountScreen -->
     <string name="account_invalid_account">Account has been removed</string>
     <string name="account_carddav">CardDAV</string>
