@@ -55,7 +55,7 @@ class PushDistributorManager @Inject constructor(
 
             // There are multiple distributors available, the user must choose one
             ResolvedDistributor.ToSelect -> {
-                logger.warning("There's multiple distributors available, but no distributor is preferred.")
+                logger.warning("There are multiple distributors available, but no distributor is preferred.")
                 return null
             }
 
