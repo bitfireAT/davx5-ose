@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,6 +28,9 @@ class PushDistributorSelectionActivity : AppCompatActivity() {
 
     @Inject
     lateinit var registrationManager: PushRegistrationManager
+
+    @Inject
+    lateinit var pushNotificationManager: PushNotificationManager
 
     @Inject
     lateinit var settings : SettingsManager
@@ -46,6 +50,9 @@ class PushDistributorSelectionActivity : AppCompatActivity() {
                 }
                 .setNegativeButton(R.string.push_no_distributor_ignore) { _, _ ->
                     settings.putBoolean(Settings.PUSH_ENABLED, false)
+                    pushNotificationManager.dismiss(
+                        notificationId = NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR
+                    )
                     Toast.makeText(this, R.string.push_disabled_message, Toast.LENGTH_SHORT).show()
                     finish()
                 }
@@ -61,6 +68,9 @@ class PushDistributorSelectionActivity : AppCompatActivity() {
                 registrationManager.update()
 
                 withContext(Dispatchers.Main) {
+                    pushNotificationManager.dismiss(
+                        notificationId = NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR
+                    )
                     Toast.makeText(this@PushDistributorSelectionActivity, R.string.push_distributor_selected, Toast.LENGTH_LONG).show()
                     finish()
                 }

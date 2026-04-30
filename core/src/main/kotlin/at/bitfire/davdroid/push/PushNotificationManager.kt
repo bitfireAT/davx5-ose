@@ -80,12 +80,17 @@ class PushNotificationManager @Inject constructor(
     }
 
     /**
+     * Dismisses the notification with the given [notificationId]. If no such notification is shown, nothing happens.
+     */
+    fun dismiss(notificationId: Int) {
+        NotificationManagerCompat.from(context)
+            .cancel(notificationId)
+    }
+
+    /**
      * Once the sync has been started, the notification is no longer needed and can be dismissed.
      * It's safe to call this method even if the notification has not been shown.
      */
-    fun dismiss(account: Account, dataType: SyncDataType) {
-        NotificationManagerCompat.from(context)
-            .cancel(notificationId(account, dataType))
-    }
+    fun dismiss(account: Account, dataType: SyncDataType) = dismiss(notificationId(account, dataType))
 
 }
