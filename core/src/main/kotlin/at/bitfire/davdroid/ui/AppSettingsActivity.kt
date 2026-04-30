@@ -12,6 +12,7 @@ import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import at.bitfire.davdroid.ui.push.PushSettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -50,6 +51,9 @@ class AppSettingsActivity: AppCompatActivity() {
                 },
                 onNavPermissionsScreen = {
                     startActivity(Intent(this, PermissionsActivity::class.java))
+                },
+                onNavPushSettings = {
+                    startActivity(Intent(this, PushSettingsActivity::class.java))
                 },
                 onNavUp = ::onSupportNavigateUp
             )

@@ -74,6 +74,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.push.PushSettingsActivity"
+            android:label="@string/app_settings_push_title"
+            android:parentActivityName=".ui.AppSettingsActivity" />
+        <activity
             android:name=".ui.DebugInfoActivity"
             android:parentActivityName=".ui.AppSettingsActivity"
             android:exported="false"
