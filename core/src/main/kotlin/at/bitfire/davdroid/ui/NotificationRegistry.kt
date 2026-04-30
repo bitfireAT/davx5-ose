@@ -105,7 +105,6 @@ class NotificationRegistry @Inject constructor(
 
     /**
      * For notifications that request user interaction, for instance to select a push distributor.
-     * Uses default priority and the notifications should use the category "call to action".
      */
     val CHANNEL_USER_INTERACTION = "userInteraction"
 
