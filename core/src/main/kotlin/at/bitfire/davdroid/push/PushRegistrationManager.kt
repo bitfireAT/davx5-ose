@@ -130,7 +130,7 @@ class PushRegistrationManager @Inject constructor(
                 logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
             }
         else if (distributorManager.isPushEnabled()) {
-            unregisterAndUnsubscribeFromAll()
+            unregisterAndUnsubscribeFromService(service)
             notifyDistributorSelection()
         }
 
@@ -153,14 +153,12 @@ class PushRegistrationManager @Inject constructor(
     }
 
     /**
-     * Unregisters instances and unsubscribes from all services.
+     * Unregisters instances and unsubscribes from the given [service].
      */
-    private suspend fun unregisterAndUnsubscribeFromAll() {
-        for (service in serviceRepository.getAll()) {
-            val instance = service.id.toString()
-            UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
-            unsubscribeAll(service)
-        }
+    private suspend fun unregisterAndUnsubscribeFromService(service: Service) {
+        val instance = service.id.toString()
+        UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
+        unsubscribeAll(service)
     }
 
     /**
