@@ -6,6 +6,7 @@ package at.bitfire.davdroid.push
 
 import android.content.Context
 import android.content.Intent
+import androidx.core.app.NotificationCompat
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -144,6 +145,8 @@ class PushRegistrationManager @Inject constructor(
                 channelId = notificationRegistry.CHANNEL_USER_INTERACTION,
                 title = context.getString(R.string.push_distributor_selection_required_title),
                 text = context.getString(R.string.push_distributor_selection_required_message),
+                priority = NotificationCompat.PRIORITY_DEFAULT,
+                category = NotificationCompat.CATEGORY_RECOMMENDATION,
                 intent = Intent(context, PushDistributorSelectionActivity::class.java)
             )
         }
