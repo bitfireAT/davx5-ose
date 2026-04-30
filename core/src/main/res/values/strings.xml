@@ -580,7 +580,7 @@
     <string name="push_no_distributor_ignore">Disable Push</string>
     <string name="push_distributor_selected">Push distributor updated</string>
     <string name="push_distributor_selection_required_title">Distributor selection required</string>
-    <string name="push_distributor_selection_required_message">A default UnifiedPush distributor could not be resolved. Tap to select one</string>
+    <string name="push_distributor_selection_required_message">A default UnifiedPush distributor could not be resolved. Tap to select one.</string>
     <string name="push_disabled_message">Push disabled</string>
 
     <!-- widgets -->
