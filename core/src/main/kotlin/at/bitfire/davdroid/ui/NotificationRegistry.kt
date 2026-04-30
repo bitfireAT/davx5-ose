@@ -105,7 +105,7 @@ class NotificationRegistry @Inject constructor(
 
     /**
      * For notifications that request user interaction, for instance to select a push distributor.
-     * Should be used with high priority and the category "call to action".
+     * Uses default priority and the notifications should use the category "call to action".
      */
     val CHANNEL_USER_INTERACTION = "userInteraction"
 
@@ -142,7 +142,7 @@ class NotificationRegistry @Inject constructor(
                     group = CHANNEL_SYNC
                 },
 
-                NotificationChannel(CHANNEL_USER_INTERACTION, context.getString(R.string.notification_channel_user_interaction), NotificationManager.IMPORTANCE_HIGH).apply {
+                NotificationChannel(CHANNEL_USER_INTERACTION, context.getString(R.string.notification_channel_user_interaction), NotificationManager.IMPORTANCE_DEFAULT).apply {
                     description = context.getString(R.string.notification_channel_user_interaction_desc)
                 }
             ))
