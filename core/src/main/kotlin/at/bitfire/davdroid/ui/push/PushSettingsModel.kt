@@ -18,8 +18,8 @@ import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSel
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
 import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State
-import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Loading
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
+import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Loading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -52,6 +52,7 @@ class PushSettingsModel @Inject constructor(
         when (event) {
             is PushEnabled -> handlePushEnabled(event.enabled)
             is PushDistributorSelected -> handlePushDistributorSelected(event.packageName)
+            is Event.DefaultPushDistributorSelected -> handleDefaultPushDistributorSelected()
         }
     }
 
@@ -75,6 +76,26 @@ class PushSettingsModel @Inject constructor(
 
         applicationScope.launch(ioDispatcher) {
             pushDistributorManager.setPushDistributorAndEnablePush(packageName)
+        }
+    }
+
+    private fun handleDefaultPushDistributorSelected() {
+        // If there was no selection made in DAVx5 yet, the newly selected default distributor is also picked as selected distributor in DAVx5.
+        val defaultDistributor = pushDistributorManager.getDefaultDistributor() ?: return
+        // Update view
+        updateContent { content ->
+            content.copy(
+                selectedPushDistributor = defaultDistributor,
+                defaultPushDistributor = defaultDistributor
+            )
+        }
+
+        // If there was no selection made in DAVx5 yet, the newly selected default distributor is also picked as selected distributor in DAVx5.
+        val selectedDistributor = pushDistributorManager.getSelectedDistributor()
+        if (selectedDistributor == null) {
+            applicationScope.launch(ioDispatcher) {
+                pushDistributorManager.setPushDistributorAndEnablePush(defaultDistributor)
+            }
         }
     }
 
