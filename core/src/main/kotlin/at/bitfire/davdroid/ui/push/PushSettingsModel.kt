@@ -80,23 +80,32 @@ class PushSettingsModel @Inject constructor(
     }
 
     private fun handleDefaultPushDistributorSelected() {
-        // If there was no selection made in DAVx5 yet, the newly selected default distributor is also picked as selected distributor in DAVx5.
-        val defaultDistributor = pushDistributorManager.getDefaultDistributor() ?: return
-        // Update view
-        updateContent { content ->
-            content.copy(
-                selectedPushDistributor = defaultDistributor,
-                defaultPushDistributor = defaultDistributor
-            )
-        }
-
-        // If there was no selection made in DAVx5 yet, the newly selected default distributor is also picked as selected distributor in DAVx5.
+        val defaultDistributor = pushDistributorManager.getDefaultDistributor()
         val selectedDistributor = pushDistributorManager.getSelectedDistributor()
+
+        // Return early if default distributor was not set for some reason (should not happen)
+        if (defaultDistributor == null)
+            return
+
+        // Our decision on UI behavior: If there was no selection made in DAVx5 yet, the newly
+        // selected default distributor is also picked as selected distributor in DAVx5.
+
+        // Update active distributor, if no selection made in DAVx5 yet
         if (selectedDistributor == null) {
             applicationScope.launch(ioDispatcher) {
                 pushDistributorManager.setPushDistributorAndEnablePush(defaultDistributor)
             }
         }
+
+        // Update view
+        updateContent { content ->
+            content.copy(
+                // Update active/selected distributor with default, if no selection made in DAVx5 yet (selectedDistributor is null)
+                selectedPushDistributor = selectedDistributor ?: defaultDistributor,
+                defaultPushDistributor = defaultDistributor
+            )
+        }
+
     }
 
     private fun loadSettings() {
