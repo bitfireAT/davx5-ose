@@ -10,8 +10,14 @@ plugins {
     alias(libs.plugins.mikepenz.aboutLibraries.android)
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 24        // Android 7.0
@@ -53,12 +59,6 @@ android {
         resValue("string", "authority_debug_provider", debugInfoAuthority)
 
         // Currently no instrumentation tests for app-ose, so no testInstrumentationRunner
-    }
-
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
-        }
     }
 
     compileOptions {
