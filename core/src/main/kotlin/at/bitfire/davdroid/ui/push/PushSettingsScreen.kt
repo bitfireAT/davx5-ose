@@ -270,7 +270,7 @@ private fun PushServicesList(content: Content, onEvent: (Event) -> Unit) {
                 onAction = {
                     if (activity != null) {
                         UnifiedPush.tryUseDefaultDistributor(activity) { success ->
-                            if (success) onEvent(DefaultPushDistributorSelected())
+                            if (success) onEvent(DefaultPushDistributorSelected)
                         }
                     }
                 },

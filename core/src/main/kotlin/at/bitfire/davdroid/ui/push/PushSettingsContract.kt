@@ -37,6 +37,6 @@ interface PushSettingsContract {
         data class PushEnabled(val enabled: Boolean) : Event
         data class PushDistributorSelected(val packageName: String) : Event
 
-        class DefaultPushDistributorSelected : Event
+        data object DefaultPushDistributorSelected : Event
     }
 }
