@@ -105,7 +105,6 @@ class PushSettingsModel @Inject constructor(
                 defaultPushDistributor = defaultDistributor
             )
         }
-
     }
 
     private fun loadSettings() {
