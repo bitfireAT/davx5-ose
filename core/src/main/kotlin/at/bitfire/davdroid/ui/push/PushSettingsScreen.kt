@@ -75,10 +75,12 @@ import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
+import at.bitfire.davdroid.ui.composable.IconCard
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.DefaultPushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
+import at.bitfire.davdroid.ui.push.PushSettingsContract.PushCollections
 import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
@@ -257,28 +259,11 @@ private fun NoPushServices() {
 
 @Composable
 private fun PushServicesList(content: Content, onEvent: (Event) -> Unit) {
-    val activity = LocalActivity.current
-    val context = LocalContext.current
-
     Spacer(modifier = Modifier.height(16.dp))
 
     Column(modifier = Modifier.selectableGroup()) {
-        if (content.couldSelectDefaultDistributor(context.packageName)) {
-            ActionCard(
-                icon = null,
-                actionText = stringResource(R.string.app_settings_push_select_default_distributor_action),
-                onAction = {
-                    if (activity != null) {
-                        UnifiedPush.tryUseDefaultDistributor(activity) { success ->
-                            if (success) onEvent(DefaultPushDistributorSelected)
-                        }
-                    }
-                },
-                modifier = Modifier.padding(bottom = 16.dp)
-            ) {
-                Text(stringResource(R.string.app_settings_push_select_default_distributor_description))
-            }
-        }
+
+        InfoCards(content, onEvent)
 
         Text(
             text = stringResource(R.string.app_settings_push_push_services),
@@ -349,6 +334,44 @@ private fun PushServicesList(content: Content, onEvent: (Event) -> Unit) {
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun InfoCards(content: Content, onEvent: (Event) -> Unit) {
+    val activity = LocalActivity.current
+    val context = LocalContext.current
+
+    // Info on push capability of collections
+    when (content.pushCollections) {
+        PushCollections.None -> stringResource(R.string.app_settings_push_capability_none)
+        PushCollections.Some -> stringResource(R.string.app_settings_push_capability_some)
+        PushCollections.All -> null
+    }?.let { stringResource ->
+        IconCard(
+            icon = Icons.Outlined.Info,
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) {
+            Text(stringResource)
+        }
+    }
+
+    // Select Default UnifiedPush Distributor card
+    if (content.couldSelectDefaultDistributor(context.packageName)) {
+        ActionCard(
+            icon = null,
+            actionText = stringResource(R.string.app_settings_push_select_default_distributor_action),
+            onAction = {
+                if (activity != null) {
+                    UnifiedPush.tryUseDefaultDistributor(activity) { success ->
+                        if (success) onEvent(DefaultPushDistributorSelected)
+                    }
+                }
+            },
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) {
+            Text(stringResource(R.string.app_settings_push_select_default_distributor_description))
         }
     }
 }

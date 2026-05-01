@@ -13,6 +13,7 @@ interface PushSettingsContract {
 
         data class Content(
             val isPushEnabled: Boolean = true,
+            val pushCollections: PushCollections = PushCollections.None,
             val selectedPushDistributor: String? = null,
             val defaultPushDistributor: String? = null,
             val pushDistributors: List<PushDistributorInfo> = emptyList()
@@ -38,5 +39,11 @@ interface PushSettingsContract {
         data class PushDistributorSelected(val packageName: String) : Event
 
         data object DefaultPushDistributorSelected : Event
+    }
+
+    enum class PushCollections {
+        All,     // All collections are push-capable
+        Some,    // Some collections are push-capable
+        None;    // Zero collections are push-capable
     }
 }
