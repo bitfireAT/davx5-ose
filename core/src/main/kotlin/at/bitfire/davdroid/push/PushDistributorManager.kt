@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
+import android.content.pm.PackageManager
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -61,6 +62,10 @@ class PushDistributorManager @Inject constructor(
 
             // There's no custom distributor installed, and FCM is not available
             ResolvedDistributor.NoneAvailable -> {
+                if (isFCMDistributorAvailable()) {
+                    logger.fine("There's no custom distributor available, but FCM is available. Using embedded FCM distributor.")
+                    return context.packageName
+                }
                 logger.warning("There's no distributor available, push is enabled, and there are servers advertising push support.")
                 return null
             }
@@ -138,6 +143,17 @@ class PushDistributorManager @Inject constructor(
 
         if (!enabled)
             UnifiedPush.removeDistributor(context)
+    }
+
+    // Copied from embedded-fcm-distributor
+    fun isFCMDistributorAvailable(): Boolean {
+        try {
+            val packageManager = context.packageManager
+            packageManager.getPackageInfo("com.google.android.gms", PackageManager.GET_ACTIVITIES)
+            return true
+        } catch (_: PackageManager.NameNotFoundException) {
+            return false
+        }
     }
 
 }
