@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.dp
 fun ActionCard(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
-    actionText: String? = null,
-    onAction: () -> Unit = {},
+    actionText: String,
+    onAction: () -> Unit,
     content: @Composable () -> Unit
 ) {
     ActionCard(
@@ -46,8 +46,8 @@ fun ActionCard(
 fun ActionCard(
     modifier: Modifier = Modifier,
     painterIcon: Painter? = null,
-    actionText: String? = null,
-    onAction: () -> Unit = {},
+    actionText: String,
+    onAction: () -> Unit,
     content: @Composable () -> Unit
 ) {
     ActionCard(
@@ -74,7 +74,7 @@ private fun ActionCard(
     ) {
         Column(
             Modifier
-                .padding(top = 8.dp, start = 8.dp, end = 8.dp)
+                .padding(8.dp)
                 .fillMaxWidth(),
         ) {
             ProvideTextStyle(MaterialTheme.typography.bodyLarge) {
@@ -94,7 +94,7 @@ private fun ActionCard(
             if (actionText != null)
                 OutlinedButton(
                     onClick = onAction,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(top = 8.dp)
                 ) {
                     Text(actionText)
                 }
@@ -134,7 +134,8 @@ private fun Painter.buildComposable(): @Composable (RowScope.() -> Unit) {
 fun ActionCard_Sample() {
     ActionCard(
         icon = Icons.Default.NotificationAdd,
-        actionText = "Some Action"
+        actionText = "Some Action",
+        onAction = {}
     ) {
         Column {
             Text("Some Content. Some Content. Some Content. Some Content. ")
