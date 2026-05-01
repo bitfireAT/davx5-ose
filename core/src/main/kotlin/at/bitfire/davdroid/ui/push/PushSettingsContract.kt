@@ -16,7 +16,15 @@ interface PushSettingsContract {
             val selectedPushDistributor: String? = null,
             val defaultPushDistributor: String? = null,
             val pushDistributors: List<PushDistributorInfo> = emptyList()
-        ) : State
+        ) : State {
+            fun couldSelectDefaultDistributor(packageName: String): Boolean {
+                val unifiedPushDistributors = pushDistributors.filter {
+                    // Filter out FCM (Play Services) distributor embedded in our own app DAVx5
+                    it.packageName != packageName
+                }
+                return defaultPushDistributor == null && unifiedPushDistributors.size > 1
+            }
+        }
     }
 
     data class PushDistributorInfo(
@@ -28,5 +36,7 @@ interface PushSettingsContract {
     sealed interface Event {
         data class PushEnabled(val enabled: Boolean) : Event
         data class PushDistributorSelected(val packageName: String) : Event
+
+        data object DefaultPushDistributorSelected : Event
     }
 }

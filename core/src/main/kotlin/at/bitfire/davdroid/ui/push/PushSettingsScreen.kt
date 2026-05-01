@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.push
 
+import androidx.activity.compose.LocalActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -72,8 +73,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
+import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
+import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.DefaultPushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
 import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
@@ -81,6 +84,7 @@ import at.bitfire.davdroid.ui.push.PushSettingsContract.State
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Loading
 import kotlinx.coroutines.time.delay
+import org.unifiedpush.android.connector.UnifiedPush
 import java.time.Duration
 
 private const val UNIFIED_PUSH_URL = "https://unifiedpush.org"
@@ -253,9 +257,29 @@ private fun NoPushServices() {
 
 @Composable
 private fun PushServicesList(content: Content, onEvent: (Event) -> Unit) {
-    Spacer(modifier = Modifier.height(32.dp))
+    val activity = LocalActivity.current
+    val context = LocalContext.current
+
+    Spacer(modifier = Modifier.height(16.dp))
 
     Column(modifier = Modifier.selectableGroup()) {
+        if (content.couldSelectDefaultDistributor(context.packageName)) {
+            ActionCard(
+                icon = null,
+                actionText = stringResource(R.string.app_settings_push_select_default_distributor_action),
+                onAction = {
+                    if (activity != null) {
+                        UnifiedPush.tryUseDefaultDistributor(activity) { success ->
+                            if (success) onEvent(DefaultPushDistributorSelected)
+                        }
+                    }
+                },
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
+                Text(stringResource(R.string.app_settings_push_select_default_distributor_description))
+            }
+        }
+
         Text(
             text = stringResource(R.string.app_settings_push_push_services),
             style = MaterialTheme.typography.bodyLarge,
@@ -412,6 +436,40 @@ private fun PushSettingsScreenPreview_MultiplePushDistributors() {
             state = Content(
                 selectedPushDistributor = "sunup",
                 defaultPushDistributor = "ntfy",
+                pushDistributors = listOf(
+                    PushDistributorInfo(
+                        packageName = "ntfy",
+                        appName = "ntfy",
+                        appIcon = null
+                    ),
+                    PushDistributorInfo(
+                        packageName = "sunup",
+                        appName = "Sunup",
+                        appIcon = null
+                    ),
+                    PushDistributorInfo(
+                        packageName = context.packageName,
+                        appName = "FCM (Google Play)",
+                        appIcon = AppCompatResources.getDrawable(context, R.drawable.product_logomark_cloud_messaging_full_color)
+                    )
+                ),
+            ),
+            onEvent = {},
+            onNavUp = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PushSettingsScreenPreview_MultiplePushDistributors_NoDefault() {
+    AppTheme {
+        val context = LocalContext.current
+
+        PushSettingsContent(
+            state = Content(
+                selectedPushDistributor = "sunup",
+                defaultPushDistributor = null,
                 pushDistributors = listOf(
                     PushDistributorInfo(
                         packageName = "ntfy",

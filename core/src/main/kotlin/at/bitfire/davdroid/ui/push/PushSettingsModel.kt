@@ -13,13 +13,14 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushDistributorManager
+import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
 import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State
-import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Loading
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
+import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Loading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -35,7 +36,8 @@ class PushSettingsModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     @param:ApplicationScope private val applicationScope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val pushDistributorManager: PushDistributorManager
+    private val pushDistributorManager: PushDistributorManager,
+    private val pushRegistrationManager: PushRegistrationManager
 ) : ViewModel() {
     private val packageManager = context.packageManager
 
@@ -52,6 +54,7 @@ class PushSettingsModel @Inject constructor(
         when (event) {
             is PushEnabled -> handlePushEnabled(event.enabled)
             is PushDistributorSelected -> handlePushDistributorSelected(event.packageName)
+            is Event.DefaultPushDistributorSelected -> handleDefaultPushDistributorSelected()
         }
     }
 
@@ -65,6 +68,7 @@ class PushSettingsModel @Inject constructor(
 
         applicationScope.launch(ioDispatcher) {
             pushDistributorManager.setPushEnabled(enabled)
+            pushRegistrationManager.update()
         }
     }
 
@@ -75,6 +79,36 @@ class PushSettingsModel @Inject constructor(
 
         applicationScope.launch(ioDispatcher) {
             pushDistributorManager.setPushDistributorAndEnablePush(packageName)
+            pushRegistrationManager.update()
+        }
+    }
+
+    private fun handleDefaultPushDistributorSelected() {
+        val defaultDistributor = pushDistributorManager.getDefaultDistributor()
+        val selectedDistributor = pushDistributorManager.getSelectedDistributor()
+
+        // Return early if default distributor was not set for some reason (should not happen)
+        if (defaultDistributor == null)
+            return
+
+        // Our decision on UI behavior: If there was no selection made in DAVx5 yet, the newly
+        // selected default distributor is also picked as selected distributor in DAVx5.
+
+        // Update active distributor, if no selection made in DAVx5 yet
+        if (selectedDistributor == null) {
+            applicationScope.launch(ioDispatcher) {
+                pushDistributorManager.setPushDistributorAndEnablePush(defaultDistributor)
+                pushRegistrationManager.update()
+            }
+        }
+
+        // Update view
+        updateContent { content ->
+            content.copy(
+                // Update active/selected distributor with default, if no selection made in DAVx5 yet (selectedDistributor is null)
+                selectedPushDistributor = selectedDistributor ?: defaultDistributor,
+                defaultPushDistributor = defaultDistributor
+            )
         }
     }
 
