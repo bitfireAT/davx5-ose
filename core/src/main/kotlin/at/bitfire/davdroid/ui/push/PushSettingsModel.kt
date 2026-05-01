@@ -13,6 +13,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushDistributorManager
+import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
@@ -35,7 +36,8 @@ class PushSettingsModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     @param:ApplicationScope private val applicationScope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val pushDistributorManager: PushDistributorManager
+    private val pushDistributorManager: PushDistributorManager,
+    private val pushRegistrationManager: PushRegistrationManager
 ) : ViewModel() {
     private val packageManager = context.packageManager
 
@@ -66,6 +68,7 @@ class PushSettingsModel @Inject constructor(
 
         applicationScope.launch(ioDispatcher) {
             pushDistributorManager.setPushEnabled(enabled)
+            pushRegistrationManager.update()
         }
     }
 
@@ -76,6 +79,7 @@ class PushSettingsModel @Inject constructor(
 
         applicationScope.launch(ioDispatcher) {
             pushDistributorManager.setPushDistributorAndEnablePush(packageName)
+            pushRegistrationManager.update()
         }
     }
 
@@ -94,6 +98,7 @@ class PushSettingsModel @Inject constructor(
         if (selectedDistributor == null) {
             applicationScope.launch(ioDispatcher) {
                 pushDistributorManager.setPushDistributorAndEnablePush(defaultDistributor)
+                pushRegistrationManager.update()
             }
         }
 
