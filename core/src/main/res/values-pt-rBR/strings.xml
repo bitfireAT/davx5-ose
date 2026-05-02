@@ -521,4 +521,13 @@
         <item quantity="other">Itens mais velhos que %d dias não são sincronizados (veja as configurações da conta).</item>
     </plurals>
     <string name="keep_android_open"><![CDATA[A transparência e liberdade do Android está sob ameaça. Saiba como você pode ajudar em <a href="%s">keepandroidopen.org</a>.]]></string>
+    <string name="app_settings_push_title">Push</string>
+    <string name="app_settings_push_description">Use o Push para que os servidores CalDAV/CardDAV/WebDAV notifiquem %s de alterações disponíveis nos seus dados.</string>
+    <string name="app_settings_push_use_push">Usar Push</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[Nenhum serviço de push encontrado. Visite <a href="%1$s">%2$s</a> para uma lista de apps distribuidores.]]></string>
+    <string name="app_settings_push_info_text"><![CDATA[As mensagens push sempre são criptografadas. Saiba mais sobre o WebDAV-Push pelo <a href="%s">manual</a>.]]></string>
+    <string name="app_settings_push_push_services">Serviço push</string>
+    <string name="app_settings_push_default_distributor_text">(padrão do sistema)</string>
+    <string name="app_settings_push_select_default_distributor_description">Há vários apps distribuidores do UnifiedPush instalados. Você pode configurar um para o sistema inteiro aqui, para que outros apps compatíveis com o UnifiedPush não precisem perguntar qual usar.</string>
+    <string name="app_settings_push_select_default_distributor_action">Configurar como padrão</string>
 </resources>
