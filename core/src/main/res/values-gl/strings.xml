@@ -521,4 +521,6 @@
     <string name="app_settings_push_info_text"><![CDATA[As mensaxes tipo push sempre se envían cifradas. Aprende máis sobre WebDAV-Push no <a href="%s">manual</a>.]]></string>
     <string name="app_settings_push_push_services">Servizo Push</string>
     <string name="app_settings_push_default_distributor_text">(predeterminado do sistema)</string>
+    <string name="app_settings_push_select_default_distributor_description">Hai varias aplicacións Distribuidoras UnifiedPush. Podes establecer aquí a predeterminada para o sistema, así outras aplicacións compatibles con UnifiedPush non terán que preguntar cal usar.</string>
+    <string name="app_settings_push_select_default_distributor_action">Predeterminar</string>
 </resources>
