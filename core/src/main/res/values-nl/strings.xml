@@ -521,4 +521,6 @@
     <string name="app_settings_push_info_text"><![CDATA[Push-berichten zij altijd versleuteld. Meer informatie over WebDAV-Push is te lezen in <a href="%s">de handleiding</a>.]]></string>
     <string name="app_settings_push_push_services">Push-service</string>
     <string name="app_settings_push_default_distributor_text">(systeemstandaard)</string>
+    <string name="app_settings_push_select_default_distributor_description">Er zijn meerdere UnifiedPush Distributor Apps geïnstalleerd. U kunt hier een systeembrede standaard instellen, zodat andere UnifiedPush-compatibele apps niet hoeven te vragen welke ze moeten gebruiken.</string>
+    <string name="app_settings_push_select_default_distributor_action">Standaard instellen</string>
 </resources>
