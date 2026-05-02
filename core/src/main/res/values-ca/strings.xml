@@ -528,4 +528,6 @@
     <string name="app_settings_push_info_text"><![CDATA[Els missatges «push» sempre estan encriptats. Apreneu més sobre el WebDAV-Push al <a href="%s">manual</a>.]]></string>
     <string name="app_settings_push_push_services">Servei «push»</string>
     <string name="app_settings_push_default_distributor_text">(predeterminat del sistema)</string>
+    <string name="app_settings_push_select_default_distributor_description">Hi ha diverses aplicacions de distribució UnifiedPush instal·lades. Aquí podeu establir un valor predeterminat gloval del sistema, de manera que altres aplicacions habilitades per a UnifiedPush no hagin de preguntar quina utilitzar.</string>
+    <string name="app_settings_push_select_default_distributor_action">Estableix com a predeterminada</string>
 </resources>
