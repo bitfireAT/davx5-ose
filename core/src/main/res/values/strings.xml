@@ -353,6 +353,9 @@
     <string name="login_invalid_use_case_info"><![CDATA[This variant %s of the app can only be used with selected services.]]></string>
     <string name="login_download_regular_davx5"><![CDATA[Instead, please use <a href="%s">DAVx⁵</a>, which can be used with all services.]]></string>
     <string name="login_download_button">Download DAVx⁵</string>
+    <string name="login_permission_required">Permission Required</string>
+    <string name="login_local_permission">You must grant access to your local network to access this server.</string>
+    <string name="login_permission_grant">Grant Permission</string>
 
     <!-- AccountSettingsActivity -->
     <string name="settings_sync">Synchronization</string>
