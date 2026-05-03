@@ -585,10 +585,6 @@
     <string name="sync_notification_pending_push_message">Remote data have changed</string>
 
     <!-- push -->
-    <string name="push_no_distributor_title">Enable Instant Updates</string>
-    <string name="push_no_distributor_message">Your server supports instant updates - great news! To enable near real-time sync, simply install a UnifiedPush distributor.</string>
-    <string name="push_no_distributor_learn_more">Learn More</string>
-    <string name="push_no_distributor_ignore">Disable Push</string>
     <string name="push_distributor_selected">Push distributor updated</string>
     <string name="push_distributor_selection_required_title">Distributor selection required</string>
     <string name="push_distributor_selection_required_message">A default UnifiedPush distributor could not be resolved. Tap to select one.</string>

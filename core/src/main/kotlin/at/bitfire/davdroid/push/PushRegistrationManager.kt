@@ -32,6 +32,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.ui.push.PushSettingsActivity
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
@@ -147,7 +148,7 @@ class PushRegistrationManager @Inject constructor(
                 text = context.getString(R.string.push_distributor_selection_required_message),
                 priority = NotificationCompat.PRIORITY_DEFAULT,
                 category = NotificationCompat.CATEGORY_RECOMMENDATION,
-                intent = Intent(context, PushDistributorSelectionActivity::class.java)
+                intent = Intent(context, PushSettingsActivity::class.java)
             )
         }
     }
