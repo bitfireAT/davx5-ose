@@ -119,7 +119,7 @@ class PushSettingsModel @Inject constructor(
         val pushDistributors = pushDistributorManager.getDistributors()
             .mapNotNull { pushDistributor ->
                 if (pushDistributor == context.packageName) {
-                    if (isPlayServicesAvailable()) {
+                    if (pushDistributorManager.isFCMDistributorAvailable()) {
                         PushDistributorInfo(
                             packageName = pushDistributor,
                             appName = context.getString(R.string.app_settings_unifiedpush_distributor_fcm),
@@ -149,16 +149,6 @@ class PushSettingsModel @Inject constructor(
                 defaultPushDistributor = defaultDistributor,
                 pushDistributors = pushDistributors
             )
-        }
-    }
-
-    // Copied from embedded-fcm-distributor
-    private fun isPlayServicesAvailable(): Boolean {
-        try {
-            packageManager.getPackageInfo("com.google.android.gms", PackageManager.GET_ACTIVITIES)
-            return true
-        } catch (_: PackageManager.NameNotFoundException) {
-            return false
         }
     }
 
