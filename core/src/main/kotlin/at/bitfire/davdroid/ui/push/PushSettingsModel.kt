@@ -13,7 +13,9 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushDistributorManager
+import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.push.PushRegistrationManager
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
@@ -37,7 +39,8 @@ class PushSettingsModel @Inject constructor(
     @param:ApplicationScope private val applicationScope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val pushDistributorManager: PushDistributorManager,
-    private val pushRegistrationManager: PushRegistrationManager
+    private val pushRegistrationManager: PushRegistrationManager,
+    private val pushNotificationManager: PushNotificationManager
 ) : ViewModel() {
     private val packageManager = context.packageManager
 
@@ -66,6 +69,11 @@ class PushSettingsModel @Inject constructor(
             )
         }
 
+        if (enabled) {
+            // If there's a pending notification for the user regarding the selection of a push distributor, dismiss it, as the user has now made a selection.
+            pushNotificationManager.dismiss(NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR)
+        }
+
         applicationScope.launch(ioDispatcher) {
             pushDistributorManager.setPushEnabled(enabled)
             pushRegistrationManager.update()
@@ -76,6 +84,9 @@ class PushSettingsModel @Inject constructor(
         updateContent { content ->
             content.copy(selectedPushDistributor = packageName)
         }
+
+        // If there's a pending notification for the user regarding the selection of a push distributor, dismiss it, as the user has now made a selection.
+        pushNotificationManager.dismiss(NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR)
 
         applicationScope.launch(ioDispatcher) {
             pushDistributorManager.setPushDistributorAndEnablePush(packageName)
@@ -101,6 +112,9 @@ class PushSettingsModel @Inject constructor(
                 pushRegistrationManager.update()
             }
         }
+
+        // If there's a pending notification for the user regarding the selection of a push distributor, dismiss it, as the user has now made a selection.
+        pushNotificationManager.dismiss(NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR)
 
         // Update view
         updateContent { content ->
