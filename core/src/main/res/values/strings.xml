@@ -37,6 +37,8 @@
     <string name="notification_channel_sync_warnings_desc">Non-fatal synchronization problems like certain invalid files</string>
     <string name="notification_channel_sync_io_errors">Network and I/O errors</string>
     <string name="notification_channel_sync_io_errors_desc">Timeouts, connection problems, etc. (often temporary)</string>
+    <string name="notification_channel_user_interaction">User Interaction</string>
+    <string name="notification_channel_user_interaction_desc">User interaction required. A problem or issue has to be addressed manually.</string>
 
     <!-- IntroActivity -->
     <string name="intro_slogan1">Your data. Your choice.</string>
@@ -581,6 +583,12 @@
     <string name="sync_invalid_resources_ignoring">Ignoring one or more invalid resources</string>
     <string name="sync_notification_pending_push_title">Sync pending</string>
     <string name="sync_notification_pending_push_message">Remote data have changed</string>
+
+    <!-- push -->
+    <string name="push_distributor_selected">Push distributor updated</string>
+    <string name="push_distributor_selection_required_title">Distributor selection required</string>
+    <string name="push_distributor_selection_required_message">A default UnifiedPush distributor could not be resolved. Tap to select one.</string>
+    <string name="push_disabled_message">Push disabled</string>
 
     <!-- widgets -->
     <string name="widget_sync_all">Sync all</string>

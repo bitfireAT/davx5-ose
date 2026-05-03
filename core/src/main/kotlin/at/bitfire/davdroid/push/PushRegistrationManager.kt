@@ -5,6 +5,8 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
+import android.content.Intent
+import androidx.core.app.NotificationCompat
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -20,6 +22,7 @@ import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.property.push.WebDAVPush
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -28,6 +31,8 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.ui.push.PushSettingsActivity
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
@@ -35,8 +40,10 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.data.PushEndpoint
 import java.io.StringWriter
@@ -61,6 +68,8 @@ class PushRegistrationManager @Inject constructor(
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
     private val distributorManager: PushDistributorManager,
+    private val notificationManager: PushNotificationManager,
+    private val notificationRegistry: NotificationRegistry,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
@@ -121,14 +130,36 @@ class PushRegistrationManager @Inject constructor(
             } catch (e: UnifiedPush.VapidNotValidException) {
                 logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
             }
-        else {
-            logger.fine("No push distributor, unregistering UnifiedPush service $serviceId / ${service.accountName}")
-            UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
-            unsubscribeAll(service)
+        else if (distributorManager.isPushEnabled()) {
+            unregisterAndUnsubscribeFromService(service)
+            notifyDistributorSelection()
         }
 
         // UnifiedPush has now been called. It will do its work and then asynchronously call back to UnifiedPushService, which
         // will then call processSubscription or removeSubscription.
+    }
+
+    private suspend fun notifyDistributorSelection() {
+        withContext(Dispatchers.Main) {
+            notificationManager.notify(
+                id = NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR,
+                channelId = notificationRegistry.CHANNEL_USER_INTERACTION,
+                title = context.getString(R.string.push_distributor_selection_required_title),
+                text = context.getString(R.string.push_distributor_selection_required_message),
+                priority = NotificationCompat.PRIORITY_DEFAULT,
+                category = NotificationCompat.CATEGORY_RECOMMENDATION,
+                intent = Intent(context, PushSettingsActivity::class.java)
+            )
+        }
+    }
+
+    /**
+     * Unregisters instances and unsubscribes from the given [service].
+     */
+    private suspend fun unregisterAndUnsubscribeFromService(service: Service) {
+        val instance = service.id.toString()
+        UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
+        unsubscribeAll(service)
     }
 
     /**

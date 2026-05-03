@@ -5,11 +5,13 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
+import android.content.pm.PackageManager
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.data.ResolvedDistributor
+import java.util.logging.Logger
 import javax.inject.Inject
 
 /**
@@ -17,6 +19,7 @@ import javax.inject.Inject
  */
 class PushDistributorManager @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val logger: Logger,
     private val settingsManager: SettingsManager
 ) {
 
@@ -35,11 +38,39 @@ class PushDistributorManager @Inject constructor(
      *
      * @return package name of the current distributor, or `null` if push support is disabled or no distributor is set
      */
-    fun getDistributorToUse() =
-        if (isPushEnabled())
-            UnifiedPush.getSavedDistributor(context)
-        else
-            null
+    fun getDistributorToUse(): String? {
+        val pushEnabled = isPushEnabled()
+        if (!pushEnabled) {
+            logger.fine("Push is disabled. No distributor will be used")
+            return null
+        }
+
+        // get ACK distributor: saved distributor, which is correctly configured
+        val savedDistributor = UnifiedPush.getAckDistributor(context)
+        if (savedDistributor != null) return savedDistributor
+
+        // there's no distributor saved, try to resolve it with UP
+        when (val res = UnifiedPush.resolveDefaultDistributor(context)) {
+            // If Found is returned, the new distributor has been saved, and getAckDistributor will fetch it in the next call
+            is ResolvedDistributor.Found -> return res.packageName
+
+            // There are multiple distributors available, the user must choose one
+            ResolvedDistributor.ToSelect -> {
+                logger.warning("There are multiple distributors available, but no distributor is preferred.")
+                return null
+            }
+
+            // There's no custom distributor installed, and FCM is not available
+            ResolvedDistributor.NoneAvailable -> {
+                if (isFCMDistributorAvailable()) {
+                    logger.fine("There's no custom distributor available, but FCM is available. Using embedded FCM distributor.")
+                    return context.packageName
+                }
+                logger.warning("There's no distributor available, push is enabled, and there are servers advertising push support.")
+                return null
+            }
+        }
+    }
 
 
     // plain UnifiedPush access methods
@@ -112,6 +143,17 @@ class PushDistributorManager @Inject constructor(
 
         if (!enabled)
             UnifiedPush.removeDistributor(context)
+    }
+
+    // Copied from embedded-fcm-distributor
+    fun isFCMDistributorAvailable(): Boolean {
+        try {
+            val packageManager = context.packageManager
+            packageManager.getPackageInfo("com.google.android.gms", PackageManager.GET_ACTIVITIES)
+            return true
+        } catch (_: PackageManager.NameNotFoundException) {
+            return false
+        }
     }
 
 }

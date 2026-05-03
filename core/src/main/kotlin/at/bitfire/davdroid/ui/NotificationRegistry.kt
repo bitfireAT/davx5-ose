@@ -50,6 +50,7 @@ class NotificationRegistry @Inject constructor(
         const val NOTIFY_SYNC_EXPEDITED = 14
         const val NOTIFY_TASKS_PROVIDER_TOO_OLD = 20
         const val NOTIFY_PERMISSIONS = 21
+        const val NOTIFY_SELECT_PUSH_DISTRIBUTOR = 22
 
         /**
          * Used in build variants when a [at.bitfire.davdroid.sync.SyncValidator]
@@ -102,6 +103,11 @@ class NotificationRegistry @Inject constructor(
      */
     val CHANNEL_SYNC_IO_ERRORS = "syncIoErrors"
 
+    /**
+     * For notifications that request user interaction, for instance to select a push distributor.
+     */
+    val CHANNEL_USER_INTERACTION = "userInteraction"
+
 
     init {
         createChannels()
@@ -133,6 +139,10 @@ class NotificationRegistry @Inject constructor(
                 NotificationChannel(CHANNEL_SYNC_IO_ERRORS, context.getString(R.string.notification_channel_sync_io_errors), NotificationManager.IMPORTANCE_MIN).apply {
                     description = context.getString(R.string.notification_channel_sync_io_errors_desc)
                     group = CHANNEL_SYNC
+                },
+
+                NotificationChannel(CHANNEL_USER_INTERACTION, context.getString(R.string.notification_channel_user_interaction), NotificationManager.IMPORTANCE_DEFAULT).apply {
+                    description = context.getString(R.string.notification_channel_user_interaction_desc)
                 }
             ))
         }
