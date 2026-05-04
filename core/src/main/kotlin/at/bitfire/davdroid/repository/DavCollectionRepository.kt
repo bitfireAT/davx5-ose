@@ -25,6 +25,7 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.synctools.icalendar.componentListOf
 import at.bitfire.synctools.icalendar.propertyListOf
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -382,9 +383,7 @@ class DavCollectionRepository @Inject constructor(
                                                 ImmutableVersion.VERSION_2_0,
                                                 ProdId(productIds.get().iCalProdId)
                                             ),
-                                            ComponentList(
-                                                listOf(vTimezone)
-                                            )
+                                            componentListOf(vTimezone)
                                         ).toString()
                                     )
                                 }
