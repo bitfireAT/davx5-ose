@@ -12,7 +12,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -20,7 +19,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -29,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -48,6 +45,7 @@ import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
 import at.bitfire.davdroid.ui.composable.Assistant
+import at.bitfire.davdroid.ui.composable.IconCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.launch
@@ -199,21 +197,14 @@ fun NextcloudLoginScreen(
                 }
 
                 if (error != null)
-                    Card(Modifier.fillMaxWidth()) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(8.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.Warning,
-                                contentDescription = null,
-                                modifier = Modifier.padding(end = 4.dp)
-                            )
-                            Text(
-                                error,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
+                    IconCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = Icons.Default.Warning
+                    ) {
+                        Text(
+                            error,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
                     }
             }
         }

@@ -61,9 +61,37 @@ class DavCollectionRepository @Inject constructor(
     private val dao = db.collectionDao()
 
     /**
-     * Whether there are any collections that are registered for push.
+     * Returns the number of collections that are push capable.
      */
-    suspend fun anyPushCapable() = dao.anyPushCapable()
+    suspend fun countSyncEnabledPushCapable() =  dao.countSyncEnabledPushCapable()
+
+    /**
+     * Returns the total number of collections in all accounts that are user enabled for synchronization.
+     */
+    suspend fun countSyncEnabled() = dao.countSyncEnabled()
+
+    /**
+     * Determines the amount of sync-enabled push capable collections in all accounts combined.
+     * @return
+     *  - [PushCollectionsAmount.All] if all the sync-enabled collections in all accounts are push-capable OR if zero sync-enabled collections exist
+     *  - [PushCollectionsAmount.Some] if some (but not all) sync-enabled collections are push-capable
+     *  - [PushCollectionsAmount.None] if no sync-enabled collections are push-capable
+     */
+    suspend fun getAmountPushCapable(): PushCollectionsAmount {
+        val syncEnabled = countSyncEnabled()
+        val syncEnabledPushCapable = countSyncEnabledPushCapable()
+
+        return when (syncEnabledPushCapable) {
+            syncEnabled -> PushCollectionsAmount.All // Also matches zero sync-enabled collections
+            0 -> PushCollectionsAmount.None
+            else -> PushCollectionsAmount.Some
+        }
+    }
+
+    /**
+     * Whether there are any collections that are push capable.
+     */
+    suspend fun anyPushCapable(): Boolean = dao.anyPushCapable()
 
     /**
      * Creates address book collection on server and locally
@@ -425,6 +453,12 @@ class DavCollectionRepository @Inject constructor(
     private fun getVTimeZone(tzId: String): VTimeZone? {
         val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
         return tzRegistry.getTimeZone(tzId)?.vTimeZone
+    }
+
+    enum class PushCollectionsAmount {
+        All,     // All collections are push-capable
+        Some,    // Some collections are push-capable
+        None;    // Zero collections are push-capable
     }
 
 }
