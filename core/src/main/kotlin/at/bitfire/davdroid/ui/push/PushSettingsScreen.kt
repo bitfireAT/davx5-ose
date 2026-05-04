@@ -27,7 +27,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -230,30 +229,24 @@ private fun PushServices(content: Content, onEvent: (Event) -> Unit) {
 private fun NoPushServices() {
     Spacer(modifier = Modifier.height(24.dp))
 
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.padding(16.dp)) {
-            Icon(
-                Icons.Outlined.Info,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
-            )
+    val infoText = HtmlCompat.fromHtml(
+        stringResource(
+            R.string.app_settings_push_no_push_services_found,
+            UNIFIED_PUSH_URL,
+            stringResource(R.string.app_settings_push_unified_push_url_text)
+        ),
+        HtmlCompat.FROM_HTML_MODE_COMPACT
+    ).toAnnotatedString()
 
-            val infoText = HtmlCompat.fromHtml(
-                stringResource(
-                    R.string.app_settings_push_no_push_services_found,
-                    UNIFIED_PUSH_URL,
-                    stringResource(R.string.app_settings_push_unified_push_url_text)
-                ),
-                HtmlCompat.FROM_HTML_MODE_COMPACT
-            ).toAnnotatedString()
-
-            Text(
-                text = infoText,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.weight(1f)
-            )
-        }
+    IconCard(
+        modifier = Modifier.fillMaxWidth(),
+        icon = Icons.Outlined.Info
+    ) {
+        Text(
+            text = infoText,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }
 
