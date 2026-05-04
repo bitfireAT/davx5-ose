@@ -83,11 +83,11 @@ class DavCollectionRepository @Inject constructor(
             return PushCollectionsAmount.None
         }
 
-        val pushCapableRatio = countPushCapable().toDouble() / totalCollections
+        val pushCapableCollections = countPushCapable()
 
-        return when (pushCapableRatio) {
-            0.0 -> PushCollectionsAmount.None
-            1.0 -> PushCollectionsAmount.All
+        return when (pushCapableCollections) {
+            0 -> PushCollectionsAmount.None
+            totalCollections -> PushCollectionsAmount.All
             else -> PushCollectionsAmount.Some
         }
     }
