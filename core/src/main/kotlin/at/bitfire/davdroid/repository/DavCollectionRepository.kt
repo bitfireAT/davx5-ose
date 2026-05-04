@@ -74,20 +74,17 @@ class DavCollectionRepository @Inject constructor(
      * Determines the amount of push capable collections in all accounts combined.
      * @return
      *  - [PushCollectionsAmount.All] if all collections in all accounts are push-capable
+     *  - [PushCollectionsAmount.All] if zero collections exist
      *  - [PushCollectionsAmount.Some] if some (but not all) collections are push-capable
      *  - [PushCollectionsAmount.None] if no collections are push-capable
      */
     suspend fun getAmountPushCapable(): PushCollectionsAmount {
         val totalCollections = countTotal()
-        if (totalCollections == 0) {
-            return PushCollectionsAmount.None
-        }
-
         val pushCapableCollections = countPushCapable()
 
         return when (pushCapableCollections) {
+            totalCollections -> PushCollectionsAmount.All // Also matches zero total collections
             0 -> PushCollectionsAmount.None
-            totalCollections -> PushCollectionsAmount.All
             else -> PushCollectionsAmount.Some
         }
     }
