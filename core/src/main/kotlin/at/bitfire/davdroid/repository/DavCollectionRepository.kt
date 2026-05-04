@@ -61,9 +61,41 @@ class DavCollectionRepository @Inject constructor(
     private val dao = db.collectionDao()
 
     /**
+     * Returns the number of collections that are registered for push.
+     */
+    suspend fun countPushCapable() =  dao.countPushCapable()
+
+    /**
+     * Returns the total number of collections across all accounts.
+     */
+    suspend fun countTotal() = dao.countTotal()
+
+    /**
+     * Determines the amount of push capable collections in all accounts combined.
+     * @return
+     *  - [PushCollectionsAmount.All] if all collections in all accounts are push-capable
+     *  - [PushCollectionsAmount.Some] if some (but not all) collections are push-capable
+     *  - [PushCollectionsAmount.None] if no collections are push-capable
+     */
+    suspend fun getAmountPushCapable(): PushCollectionsAmount {
+        val totalCollections = countTotal()
+        if (totalCollections == 0) {
+            return PushCollectionsAmount.None
+        }
+
+        val pushCapableRatio = countPushCapable().toDouble() / totalCollections
+
+        return when (pushCapableRatio) {
+            0.0 -> PushCollectionsAmount.None
+            1.0 -> PushCollectionsAmount.All
+            else -> PushCollectionsAmount.Some
+        }
+    }
+
+    /**
      * Whether there are any collections that are registered for push.
      */
-    suspend fun anyPushCapable() = dao.anyPushCapable()
+    suspend fun anyPushCapable(): Boolean = getAmountPushCapable() != PushCollectionsAmount.None
 
     /**
      * Creates address book collection on server and locally
@@ -425,6 +457,12 @@ class DavCollectionRepository @Inject constructor(
     private fun getVTimeZone(tzId: String): VTimeZone? {
         val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
         return tzRegistry.getTimeZone(tzId)?.vTimeZone
+    }
+
+    enum class PushCollectionsAmount {
+        All,     // All collections are push-capable
+        Some,    // Some collections are push-capable
+        None;    // Zero collections are push-capable
     }
 
 }

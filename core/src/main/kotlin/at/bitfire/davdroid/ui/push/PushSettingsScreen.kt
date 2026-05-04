@@ -71,6 +71,7 @@ import androidx.core.text.HtmlCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.repository.DavCollectionRepository.PushCollectionsAmount
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.ActionCard
@@ -80,7 +81,6 @@ import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.DefaultPushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
-import at.bitfire.davdroid.ui.push.PushSettingsContract.PushCollections
 import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
@@ -344,10 +344,10 @@ private fun InfoCards(content: Content, onEvent: (Event) -> Unit) {
     val context = LocalContext.current
 
     // Info on push capability of collections
-    when (content.pushCollections) {
-        PushCollections.None -> stringResource(R.string.app_settings_push_capability_none)
-        PushCollections.Some -> stringResource(R.string.app_settings_push_capability_some)
-        PushCollections.All -> null
+    when (content.pushCollectionsAmount) {
+        PushCollectionsAmount.All -> null // No need to tell the user
+        PushCollectionsAmount.Some -> stringResource(R.string.app_settings_push_capability_some)
+        PushCollectionsAmount.None -> stringResource(R.string.app_settings_push_capability_none)
     }?.let { stringResource ->
         IconCard(
             icon = Icons.Outlined.Info,
