@@ -55,6 +55,14 @@ object PermissionUtils {
                 arrayOf()
         }
 
+    val LAN_ACCESS_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+        arrayOf(
+            Manifest.permission.ACCESS_LOCAL_NETWORK
+        )
+    } else {
+        emptyArray()
+    }
+
     /**
      * Checks whether all conditions to access the current WiFi's SSID are met:
      *
@@ -78,6 +86,18 @@ object PermissionUtils {
 
         return  havePermissions(context, WIFI_SSID_PERMISSIONS) &&
                 locationAvailable
+    }
+
+    /**
+     * Checks whether the LAN access permission is granted (Android 17+).
+     *
+     * For versions lower than Android 17, this permission doesn't exist and LAN access is always granted, so this method returns `true`.
+     */
+    fun lanAccessPermissionGranted(context: Context): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN)
+            return true
+
+        return havePermissions(context, LAN_ACCESS_PERMISSIONS)
     }
 
     /**

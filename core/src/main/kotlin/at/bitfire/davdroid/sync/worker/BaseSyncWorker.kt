@@ -125,6 +125,12 @@ abstract class BaseSyncWorker(
                     logger.info("WiFi conditions not met. Won't run periodic sync.")
                     return Result.success()
                 }
+
+                // check LAN access permission
+                if (!syncConditions.accessToLan()) {
+                    logger.info("LAN access permission is not granted. Aborting sync.")
+                    return Result.success()
+                }
             }
 
             return doSyncWork(account, dataType)
