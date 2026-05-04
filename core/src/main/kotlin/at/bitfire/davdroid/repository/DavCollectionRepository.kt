@@ -95,7 +95,7 @@ class DavCollectionRepository @Inject constructor(
     /**
      * Whether there are any collections that are registered for push.
      */
-    suspend fun anyPushCapable(): Boolean = getAmountPushCapable() != PushCollectionsAmount.None
+    suspend fun anyPushCapable(): Boolean = dao.countPushCapable() > 0
 
     /**
      * Creates address book collection on server and locally
