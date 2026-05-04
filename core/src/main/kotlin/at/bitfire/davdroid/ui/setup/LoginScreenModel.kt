@@ -12,10 +12,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.network.NetworkUtils
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -185,6 +187,7 @@ class LoginScreenModel @AssistedInject constructor(
         val foundNothing: Boolean = false,
         val encountered401: Boolean = false,
         val loginValidationFailed: Boolean = false,
+        val localNetworkPermissionRequired: Boolean = false,
         val logs: String? = null
     )
 
@@ -199,18 +202,31 @@ class LoginScreenModel @AssistedInject constructor(
         detectResourcesJob = viewModelScope.launch {
             // First, if we have a validator, validate the server
             val httpUrl = loginInfo.baseUri!!.toHttpUrlOrNull()
-            if (loginValidator.isPresent && httpUrl != null) {
-                val isValid = withContext(Dispatchers.IO) {
-                    runInterruptible {
-                        loginValidator.get().beforeLogin(httpUrl)
+            if (httpUrl != null) {
+                if (NetworkUtils.requiresLocalNetworkPermission(httpUrl.toString(), context)) {
+                    if (!PermissionUtils.lanAccessPermissionGranted(context)) {
+                        // If local network permission is required but not granted, we cannot proceed with detection. Show an error and return.
+                        // TODO: Show permission request UI
+                        detectResourcesUiState = detectResourcesUiState.copy(
+                            loading = false,
+                            localNetworkPermissionRequired = true
+                        )
+                        return@launch
                     }
                 }
-                if (!isValid) {
-                    detectResourcesUiState = detectResourcesUiState.copy(
-                        loading = false,
-                        loginValidationFailed = true
-                    )
-                    return@launch
+                if (loginValidator.isPresent) {
+                    val isValid = withContext(Dispatchers.IO) {
+                        runInterruptible {
+                            loginValidator.get().beforeLogin(httpUrl)
+                        }
+                    }
+                    if (!isValid) {
+                        detectResourcesUiState = detectResourcesUiState.copy(
+                            loading = false,
+                            loginValidationFailed = true
+                        )
+                        return@launch
+                    }
                 }
             }
 
