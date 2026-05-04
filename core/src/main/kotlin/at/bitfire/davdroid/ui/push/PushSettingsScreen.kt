@@ -348,12 +348,12 @@ private fun InfoCards(content: Content, onEvent: (Event) -> Unit) {
         PushCollectionsAmount.All -> null // No need to tell the user
         PushCollectionsAmount.Some -> stringResource(R.string.app_settings_push_capability_some)
         PushCollectionsAmount.None -> stringResource(R.string.app_settings_push_capability_none)
-    }?.let { stringResource ->
+    }?.let { message ->
         IconCard(
             icon = Icons.Outlined.Info,
             modifier = Modifier.padding(bottom = 16.dp)
         ) {
-            Text(stringResource)
+            Text(message)
         }
     }
 
