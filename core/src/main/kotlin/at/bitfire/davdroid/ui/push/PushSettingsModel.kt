@@ -21,6 +21,7 @@ import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Loading
+import at.bitfire.davdroid.util.packageChangedFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -47,6 +48,9 @@ class PushSettingsModel @Inject constructor(
     init {
         viewModelScope.launch(ioDispatcher) {
             loadSettings()
+
+            // Reload when packages change (new distributor installed/removed)
+            packageChangedFlow(context).collect { loadSettings() }
         }
     }
 
