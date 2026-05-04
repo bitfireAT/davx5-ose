@@ -48,11 +48,14 @@ interface CollectionDao {
     @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND type=:type")
     suspend fun anyOfType(serviceId: Long, @CollectionType type: String): Boolean
 
-    @Query("SELECT COUNT(*) FROM collection")
-    suspend fun countTotal(): Int
-
     @Query("SELECT COUNT(*) FROM collection WHERE supportsWebPush AND pushTopic IS NOT NULL")
-    suspend fun countPushCapable(): Int
+    suspend fun anyPushCapable(): Boolean
+
+    @Query("SELECT COUNT(*) FROM collection WHERE sync")
+    suspend fun countSyncEnabled(): Int
+    
+    @Query("SELECT COUNT(*) FROM collection WHERE supportsWebPush AND pushTopic IS NOT NULL and sync")
+    suspend fun countSyncEnabledPushCapable(): Int
 
     /**
      * Returns collections which

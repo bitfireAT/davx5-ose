@@ -63,27 +63,26 @@ class DavCollectionRepository @Inject constructor(
     /**
      * Returns the number of collections that are push capable.
      */
-    suspend fun countPushCapable() =  dao.countPushCapable()
+    suspend fun countSyncEnabledPushCapable() =  dao.countSyncEnabledPushCapable()
 
     /**
-     * Returns the total number of collections across all accounts.
+     * Returns the total number of collections in all accounts that are user enabled for synchronization.
      */
-    suspend fun countTotal() = dao.countTotal()
+    suspend fun countSyncEnabled() = dao.countSyncEnabled()
 
     /**
-     * Determines the amount of push capable collections in all accounts combined.
+     * Determines the amount of sync-enabled push capable collections in all accounts combined.
      * @return
-     *  - [PushCollectionsAmount.All] if all collections in all accounts are push-capable
-     *  - [PushCollectionsAmount.All] if zero collections exist
-     *  - [PushCollectionsAmount.Some] if some (but not all) collections are push-capable
-     *  - [PushCollectionsAmount.None] if no collections are push-capable
+     *  - [PushCollectionsAmount.All] if all the sync-enabled collections in all accounts are push-capable OR if zero sync-enabled collections exist
+     *  - [PushCollectionsAmount.Some] if some (but not all) sync-enabled collections are push-capable
+     *  - [PushCollectionsAmount.None] if no sync-enabled collections are push-capable
      */
     suspend fun getAmountPushCapable(): PushCollectionsAmount {
-        val totalCollections = countTotal()
-        val pushCapableCollections = countPushCapable()
+        val syncEnabled = countSyncEnabled()
+        val syncEnabledPushCapable = countSyncEnabledPushCapable()
 
-        return when (pushCapableCollections) {
-            totalCollections -> PushCollectionsAmount.All // Also matches zero total collections
+        return when (syncEnabledPushCapable) {
+            syncEnabled -> PushCollectionsAmount.All // Also matches zero sync-enabled collections
             0 -> PushCollectionsAmount.None
             else -> PushCollectionsAmount.Some
         }
@@ -92,7 +91,7 @@ class DavCollectionRepository @Inject constructor(
     /**
      * Whether there are any collections that are push capable.
      */
-    suspend fun anyPushCapable(): Boolean = dao.countPushCapable() > 0
+    suspend fun anyPushCapable(): Boolean = dao.anyPushCapable()
 
     /**
      * Creates address book collection on server and locally
