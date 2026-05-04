@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.push
 
 import android.graphics.drawable.Drawable
-import at.bitfire.davdroid.repository.DavCollectionRepository.PushCollectionsAmount
 
 interface PushSettingsContract {
 
@@ -14,7 +13,7 @@ interface PushSettingsContract {
 
         data class Content(
             val isPushEnabled: Boolean = true,
-            val pushCollectionsAmount: PushCollectionsAmount = PushCollectionsAmount.Some,
+            val pushCapability: PushCapability = PushCapability.SomePushCapable,
             val selectedPushDistributor: String? = null,
             val defaultPushDistributor: String? = null,
             val pushDistributors: List<PushDistributorInfo> = emptyList()
@@ -27,6 +26,12 @@ interface PushSettingsContract {
                 return defaultPushDistributor == null && unifiedPushDistributors.size > 1
             }
         }
+    }
+
+    enum class PushCapability {
+        DoNotShow,
+        SomePushCapable,
+        NonePushCapable
     }
 
     data class PushDistributorInfo(

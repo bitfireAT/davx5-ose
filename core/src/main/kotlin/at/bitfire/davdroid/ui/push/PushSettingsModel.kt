@@ -15,9 +15,11 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushDistributorManager
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavCollectionRepository.PushCollectionsAmount
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
+import at.bitfire.davdroid.ui.push.PushSettingsContract.PushCapability
 import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
@@ -118,7 +120,7 @@ class PushSettingsModel @Inject constructor(
         val isPushEnabled = pushDistributorManager.isPushEnabled()
         val defaultDistributor = pushDistributorManager.getDefaultDistributor()
         val selectedDistributor = pushDistributorManager.getSelectedDistributor() ?: defaultDistributor
-        val pushCollectionsAmount = collectionRepository.getAmountPushCapable()
+        val pushCapability = getPushCapability()
         val pushDistributors = pushDistributorManager.getDistributors()
             .mapNotNull { pushDistributor ->
                 if (pushDistributor == context.packageName) {
@@ -148,11 +150,19 @@ class PushSettingsModel @Inject constructor(
         updateContent { content ->
             content.copy(
                 isPushEnabled = isPushEnabled,
-                pushCollectionsAmount = pushCollectionsAmount,
+                pushCapability = pushCapability,
                 selectedPushDistributor = selectedDistributor,
                 defaultPushDistributor = defaultDistributor,
                 pushDistributors = pushDistributors
             )
+        }
+    }
+
+    private suspend fun getPushCapability(): PushCapability {
+        return when (collectionRepository.getAmountPushCapable()) {
+            PushCollectionsAmount.All -> PushCapability.DoNotShow // No need to tell the user
+            PushCollectionsAmount.Some -> PushCapability.SomePushCapable
+            PushCollectionsAmount.None -> PushCapability.NonePushCapable
         }
     }
 
