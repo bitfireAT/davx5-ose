@@ -9,7 +9,11 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
+import android.os.Build
 import androidx.core.content.getSystemService
+import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.network.NetworkUtils
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
@@ -28,7 +32,8 @@ class SyncConditions @AssistedInject constructor(
     @Assisted private val accountSettings: AccountSettings,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
-    private val notificationRegistry: NotificationRegistry
+    private val notificationRegistry: NotificationRegistry,
+    private val serviceRepository: DavServiceRepository
 ) {
 
     @AssistedFactory
@@ -69,6 +74,30 @@ class SyncConditions @AssistedInject constructor(
             logger.fine("Connected to WiFi network ${info.ssid}")
         }
         return true
+    }
+
+    internal suspend fun accessToLan(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN)
+            return true
+
+        val isCalDavLan = serviceRepository.getByAccountAndType(accountSettings.account.name, Service.TYPE_CALDAV)
+            ?.principal
+            ?.let { principal ->
+                NetworkUtils.requiresLocalNetworkPermission(principal.toString(), context)
+            } ?: false
+        val isCardDavLan = serviceRepository.getByAccountAndType(accountSettings.account.name, Service.TYPE_CARDDAV)
+            ?.principal
+            ?.let { principal ->
+                NetworkUtils.requiresLocalNetworkPermission(principal.toString(), context)
+            } ?: false
+
+        if (isCalDavLan || isCardDavLan) {
+            logger.info("At least one service requires LAN access permission, checking...")
+            return PermissionUtils.lanAccessPermissionGranted(context)
+        } else {
+            logger.fine("No service requires LAN access permission, skipping check")
+            return true
+        }
     }
 
     /**
