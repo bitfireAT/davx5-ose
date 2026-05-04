@@ -255,6 +255,8 @@
     <string name="app_settings_push_info_text"><![CDATA[Push messages are always encrypted. Learn more about WebDAV-Push from <a href=\"%s\">the manual</a>.]]></string>
     <string name="app_settings_push_push_services">Push Service</string>
     <string name="app_settings_push_default_distributor_text">(system default)</string>
+    <string name="app_settings_push_capability_none">None of your sync enabled server collections currently support WebDAV-Push.</string>
+    <string name="app_settings_push_capability_some">Only some of your sync enabled server collections currently support WebDAV-Push.</string>
     <string name="app_settings_push_select_default_distributor_description">There are multiple UnifiedPush Distributor Apps installed. You can set a system-wide default here, so other UnifiedPush-enabled apps don\'t have to ask which one to use.</string>
     <string name="app_settings_push_select_default_distributor_action">Set default</string>
 

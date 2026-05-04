@@ -14,9 +14,12 @@ import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushDistributorManager
 import at.bitfire.davdroid.push.PushRegistrationManager
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavCollectionRepository.PushCollectionsAmount
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
+import at.bitfire.davdroid.ui.push.PushSettingsContract.PushCapability
 import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
@@ -36,6 +39,7 @@ class PushSettingsModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     @param:ApplicationScope private val applicationScope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val collectionRepository: DavCollectionRepository,
     private val pushDistributorManager: PushDistributorManager,
     private val pushRegistrationManager: PushRegistrationManager
 ) : ViewModel() {
@@ -112,10 +116,11 @@ class PushSettingsModel @Inject constructor(
         }
     }
 
-    private fun loadSettings() {
+    private suspend fun loadSettings() {
         val isPushEnabled = pushDistributorManager.isPushEnabled()
         val defaultDistributor = pushDistributorManager.getDefaultDistributor()
         val selectedDistributor = pushDistributorManager.getSelectedDistributor() ?: defaultDistributor
+        val pushCapability = getPushCapability()
         val pushDistributors = pushDistributorManager.getDistributors()
             .mapNotNull { pushDistributor ->
                 if (pushDistributor == context.packageName) {
@@ -145,10 +150,19 @@ class PushSettingsModel @Inject constructor(
         updateContent { content ->
             content.copy(
                 isPushEnabled = isPushEnabled,
+                pushCapability = pushCapability,
                 selectedPushDistributor = selectedDistributor,
                 defaultPushDistributor = defaultDistributor,
                 pushDistributors = pushDistributors
             )
+        }
+    }
+
+    private suspend fun getPushCapability(): PushCapability {
+        return when (collectionRepository.getAmountPushCapable()) {
+            PushCollectionsAmount.All -> PushCapability.DoNotShow // No need to tell the user
+            PushCollectionsAmount.Some -> PushCapability.SomePushCapable
+            PushCollectionsAmount.None -> PushCapability.NonePushCapable
         }
     }
 
