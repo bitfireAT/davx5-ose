@@ -61,7 +61,7 @@ class DavCollectionRepository @Inject constructor(
     private val dao = db.collectionDao()
 
     /**
-     * Returns the number of collections that are registered for push.
+     * Returns the number of collections that are push capable.
      */
     suspend fun countPushCapable() =  dao.countPushCapable()
 
@@ -93,7 +93,7 @@ class DavCollectionRepository @Inject constructor(
     }
 
     /**
-     * Whether there are any collections that are registered for push.
+     * Whether there are any collections that are push capable.
      */
     suspend fun anyPushCapable(): Boolean = dao.countPushCapable() > 0
 
