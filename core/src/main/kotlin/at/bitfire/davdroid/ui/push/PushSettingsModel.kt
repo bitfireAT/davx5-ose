@@ -51,10 +51,11 @@ class PushSettingsModel @Inject constructor(
 
     init {
         viewModelScope.launch(ioDispatcher) {
-            loadSettings()
-
-            // Reload when packages change (new distributor installed/removed)
-            packageChangedFlow(context).collect { loadSettings() }
+            // Reload once initially and then when packages change (new distributor installed/removed)
+            packageChangedFlow(
+                context = context,
+                immediate = true // Initial intent
+            ).collect { loadSettings() }
         }
     }
 
