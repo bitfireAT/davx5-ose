@@ -23,6 +23,11 @@ class AutoMigration16Test: DatabaseMigrationTest(toVersion = 16) {
                 PRODID:DAVx5
                 BEGIN:VTIMEZONE
                 TZID:America/New_York
+                BEGIN:STANDARD
+                TZOFFSETFROM:-0600
+                TZOFFSETTO:-0600
+                DTSTART:19700101T000000
+                END:STANDARD
                 END:VTIMEZONE
                 END:VCALENDAR
             """.trimIndent()

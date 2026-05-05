@@ -13,6 +13,7 @@ interface PushSettingsContract {
 
         data class Content(
             val isPushEnabled: Boolean = true,
+            val pushCapability: PushCapability = PushCapability.SomePushCapable,
             val selectedPushDistributor: String? = null,
             val defaultPushDistributor: String? = null,
             val pushDistributors: List<PushDistributorInfo> = emptyList()
@@ -27,6 +28,12 @@ interface PushSettingsContract {
         }
     }
 
+    enum class PushCapability {
+        DoNotShow,
+        SomePushCapable,
+        NonePushCapable
+    }
+
     data class PushDistributorInfo(
         val packageName: String,
         val appName: String,
@@ -39,4 +46,5 @@ interface PushSettingsContract {
 
         data object DefaultPushDistributorSelected : Event
     }
+
 }
