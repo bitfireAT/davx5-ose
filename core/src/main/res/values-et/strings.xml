@@ -523,4 +523,6 @@
     <string name="app_settings_push_default_distributor_text">(süsteemi vaikimisi teenus)</string>
     <string name="app_settings_push_select_default_distributor_description">Sellesse nutiseadmesse on paigaldatud mitu UnifiedPushi levitajat. Sa võid siinkohal määrata süsteemiülese vaikimisi seadistuse. Sel puhul ei pea muud UnifiedPush-i kasutavad rakendused sinult üle küsima mida neist sa tahaksid pruukida.</string>
     <string name="app_settings_push_select_default_distributor_action">Määra vaikimisi väärtuseka</string>
+    <string name="app_settings_push_capability_none">Ükski sinu sünkroonimissuutlik serverikogumik praegu ei toeta WebDAV-Push\'i.</string>
+    <string name="app_settings_push_capability_some">Vaid mõni sinu sünkroonimissuutlik serverikogumik toetab praegu WebDAV-Push\'i.</string>
 </resources>
