@@ -523,4 +523,6 @@
     <string name="app_settings_push_default_distributor_text">(systeemstandaard)</string>
     <string name="app_settings_push_select_default_distributor_description">Er zijn meerdere UnifiedPush Distributor Apps geïnstalleerd. U kunt hier een systeembrede standaard instellen, zodat andere UnifiedPush-compatibele apps niet hoeven te vragen welke ze moeten gebruiken.</string>
     <string name="app_settings_push_select_default_distributor_action">Standaard instellen</string>
+    <string name="app_settings_push_capability_none">Geen van uw servercollecties met synchronisatie ondersteunt momenteel WebDAV-Push.</string>
+    <string name="app_settings_push_capability_some">Slechts enkele van uw servercollecties met synchronisatie ondersteunen momenteel WebDAV-Push.</string>
 </resources>
