@@ -530,4 +530,6 @@
     <string name="app_settings_push_default_distributor_text">(padrão do sistema)</string>
     <string name="app_settings_push_select_default_distributor_description">Há vários apps distribuidores do UnifiedPush instalados. Você pode configurar um para o sistema inteiro aqui, para que outros apps compatíveis com o UnifiedPush não precisem perguntar qual usar.</string>
     <string name="app_settings_push_select_default_distributor_action">Configurar como padrão</string>
+    <string name="app_settings_push_capability_none">Nenhuma das suas coleções do servidor com a sincronização ativada suportam o WebDAV-Push.</string>
+    <string name="app_settings_push_capability_some">Apenas algumas das suas coleções do servidor suportam o WebDAV-Push.</string>
 </resources>
