@@ -530,4 +530,6 @@
     <string name="app_settings_push_default_distributor_text">(predeterminat del sistema)</string>
     <string name="app_settings_push_select_default_distributor_description">Hi ha diverses aplicacions de distribució UnifiedPush instal·lades. Aquí podeu establir un valor predeterminat gloval del sistema, de manera que altres aplicacions habilitades per a UnifiedPush no hagin de preguntar quina utilitzar.</string>
     <string name="app_settings_push_select_default_distributor_action">Estableix com a predeterminada</string>
+    <string name="app_settings_push_capability_none">Cap de les col·leccions habilitades de servidors de sincronització actualment admet WebDAV-Push.</string>
+    <string name="app_settings_push_capability_some">Només alguna de les col·leccions habilitades de servidors de sincronització actualment admet WebDAV-Push.</string>
 </resources>
