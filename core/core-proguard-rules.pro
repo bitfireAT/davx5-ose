@@ -7,6 +7,11 @@
 # [https://developer.android.com/build/releases/past-releases/agp-7-0-0-release-notes#r8-missing-class-warning]
 -dontwarn org.xmlpull.**
 
+# synctools / ical4j
+-dontwarn com.github.benmanes.caffeine.**
+-dontwarn java.time.zone.ZoneRulesProvider
+-dontwarn org.joda.convert.ToString
+
 # dnsjava
 -dontwarn com.sun.jna.**
 -dontwarn lombok.**
