@@ -27,7 +27,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -75,10 +74,14 @@ import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
+import at.bitfire.davdroid.ui.composable.IconCard
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.DefaultPushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
+import at.bitfire.davdroid.ui.push.PushSettingsContract.PushCapability.DoNotShow
+import at.bitfire.davdroid.ui.push.PushSettingsContract.PushCapability.NonePushCapable
+import at.bitfire.davdroid.ui.push.PushSettingsContract.PushCapability.SomePushCapable
 import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
@@ -228,57 +231,34 @@ private fun PushServices(content: Content, onEvent: (Event) -> Unit) {
 private fun NoPushServices() {
     Spacer(modifier = Modifier.height(24.dp))
 
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.padding(16.dp)) {
-            Icon(
-                Icons.Outlined.Info,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
-            )
+    val infoText = HtmlCompat.fromHtml(
+        stringResource(
+            R.string.app_settings_push_no_push_services_found,
+            UNIFIED_PUSH_URL,
+            stringResource(R.string.app_settings_push_unified_push_url_text)
+        ),
+        HtmlCompat.FROM_HTML_MODE_COMPACT
+    ).toAnnotatedString()
 
-            val infoText = HtmlCompat.fromHtml(
-                stringResource(
-                    R.string.app_settings_push_no_push_services_found,
-                    UNIFIED_PUSH_URL,
-                    stringResource(R.string.app_settings_push_unified_push_url_text)
-                ),
-                HtmlCompat.FROM_HTML_MODE_COMPACT
-            ).toAnnotatedString()
-
-            Text(
-                text = infoText,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.weight(1f)
-            )
-        }
+    IconCard(
+        modifier = Modifier.fillMaxWidth(),
+        icon = Icons.Outlined.Info
+    ) {
+        Text(
+            text = infoText,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }
 
 @Composable
 private fun PushServicesList(content: Content, onEvent: (Event) -> Unit) {
-    val activity = LocalActivity.current
-    val context = LocalContext.current
-
     Spacer(modifier = Modifier.height(16.dp))
 
     Column(modifier = Modifier.selectableGroup()) {
-        if (content.couldSelectDefaultDistributor(context.packageName)) {
-            ActionCard(
-                icon = null,
-                actionText = stringResource(R.string.app_settings_push_select_default_distributor_action),
-                onAction = {
-                    if (activity != null) {
-                        UnifiedPush.tryUseDefaultDistributor(activity) { success ->
-                            if (success) onEvent(DefaultPushDistributorSelected)
-                        }
-                    }
-                },
-                modifier = Modifier.padding(bottom = 16.dp)
-            ) {
-                Text(stringResource(R.string.app_settings_push_select_default_distributor_description))
-            }
-        }
+
+        InfoCards(content, onEvent)
 
         Text(
             text = stringResource(R.string.app_settings_push_push_services),
@@ -354,6 +334,37 @@ private fun PushServicesList(content: Content, onEvent: (Event) -> Unit) {
 }
 
 @Composable
+private fun InfoCards(content: Content, onEvent: (Event) -> Unit) {
+    val activity = LocalActivity.current
+    val context = LocalContext.current
+
+    // Info on push capability of collections
+    when (content.pushCapability) {
+        DoNotShow -> Unit
+        SomePushCapable -> PushCapabilityCard(stringResource(R.string.app_settings_push_capability_some))
+        NonePushCapable -> PushCapabilityCard(stringResource(R.string.app_settings_push_capability_none))
+    }
+
+    // Select Default UnifiedPush Distributor card
+    if (content.couldSelectDefaultDistributor(context.packageName)) {
+        ActionCard(
+            icon = null,
+            actionText = stringResource(R.string.app_settings_push_select_default_distributor_action),
+            onAction = {
+                if (activity != null) {
+                    UnifiedPush.tryUseDefaultDistributor(activity) { success ->
+                        if (success) onEvent(DefaultPushDistributorSelected)
+                    }
+                }
+            },
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) {
+            Text(stringResource(R.string.app_settings_push_select_default_distributor_description))
+        }
+    }
+}
+
+@Composable
 private fun InfoFooter() {
     Spacer(modifier = Modifier.height(32.dp))
 
@@ -376,6 +387,15 @@ private fun InfoFooter() {
     )
 }
 
+@Composable
+private fun PushCapabilityCard(message: String) {
+    IconCard(
+        icon = Icons.Outlined.Info,
+        modifier = Modifier.padding(bottom = 16.dp)
+    ) {
+        Text(message)
+    }
+}
 
 @Preview
 @Composable

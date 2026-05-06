@@ -15,14 +15,17 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushDistributorManager
 import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.push.PushRegistrationManager
-import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavCollectionRepository.PushCollectionsAmount
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
+import at.bitfire.davdroid.ui.push.PushSettingsContract.PushCapability
 import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
 import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Loading
+import at.bitfire.davdroid.util.packageChangedFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -38,6 +41,7 @@ class PushSettingsModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     @param:ApplicationScope private val applicationScope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val collectionRepository: DavCollectionRepository,
     private val pushDistributorManager: PushDistributorManager,
     private val pushRegistrationManager: PushRegistrationManager,
     private val pushNotificationManager: PushNotificationManager
@@ -49,7 +53,11 @@ class PushSettingsModel @Inject constructor(
 
     init {
         viewModelScope.launch(ioDispatcher) {
-            loadSettings()
+            // Reload once initially and then when packages change (new distributor installed/removed)
+            packageChangedFlow(
+                context = context,
+                immediate = true // Initial empty intent triggers first call to loadSettings()
+            ).collect { loadSettings() }
         }
     }
 
@@ -126,10 +134,11 @@ class PushSettingsModel @Inject constructor(
         }
     }
 
-    private fun loadSettings() {
+    private suspend fun loadSettings() {
         val isPushEnabled = pushDistributorManager.isPushEnabled()
         val defaultDistributor = pushDistributorManager.getDefaultDistributor()
         val selectedDistributor = pushDistributorManager.getSelectedDistributor() ?: defaultDistributor
+        val pushCapability = getPushCapability()
         val pushDistributors = pushDistributorManager.getDistributors()
             .mapNotNull { pushDistributor ->
                 if (pushDistributor == context.packageName) {
@@ -159,10 +168,19 @@ class PushSettingsModel @Inject constructor(
         updateContent { content ->
             content.copy(
                 isPushEnabled = isPushEnabled,
+                pushCapability = pushCapability,
                 selectedPushDistributor = selectedDistributor,
                 defaultPushDistributor = defaultDistributor,
                 pushDistributors = pushDistributors
             )
+        }
+    }
+
+    private suspend fun getPushCapability(): PushCapability {
+        return when (collectionRepository.getAmountPushCapable()) {
+            PushCollectionsAmount.All -> PushCapability.DoNotShow // No need to tell the user
+            PushCollectionsAmount.Some -> PushCapability.SomePushCapable
+            PushCollectionsAmount.None -> PushCapability.NonePushCapable
         }
     }
 
