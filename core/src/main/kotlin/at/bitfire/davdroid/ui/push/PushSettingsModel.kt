@@ -17,6 +17,7 @@ import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository.PushCollectionsAmount
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
