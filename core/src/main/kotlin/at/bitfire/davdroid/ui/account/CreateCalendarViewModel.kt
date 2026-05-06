@@ -29,8 +29,8 @@ import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Locale
 
-@HiltViewModel(assistedFactory = CreateCalendarModel.Factory::class)
-class CreateCalendarModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = CreateCalendarViewModel.Factory::class)
+class CreateCalendarViewModel @AssistedInject constructor(
     @Assisted val account: Account,
     private val collectionRepository: DavCollectionRepository,
     homeSetRepository: DavHomeSetRepository
@@ -38,7 +38,7 @@ class CreateCalendarModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account): CreateCalendarModel
+        fun create(account: Account): CreateCalendarViewModel
     }
 
     val calendarHomeSets = homeSetRepository.getCalendarHomeSetsFlow(account)

@@ -75,7 +75,7 @@ import okhttp3.HttpUrl
 fun WebdavMountsScreen(
     onAddWebdavMount: () -> Unit,
     onNavUp: () -> Unit,
-    model: WebdavMountsModel = viewModel()
+    model: WebdavMountsViewModel = viewModel()
 ) {
     val mountInfos by model.mountInfos.collectAsStateWithLifecycle(emptyList())
 

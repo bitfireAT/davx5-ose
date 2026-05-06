@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel.Companion.evilManufacturers
+import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageViewModel.Companion.evilManufacturers
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +26,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class BatteryOptimizationsPageModel @Inject constructor(
+class BatteryOptimizationsPageViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val settings: SettingsManager
 ): ViewModel() {

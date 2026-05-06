@@ -16,7 +16,7 @@ import javax.inject.Inject
 class LabeledSyncButtonWidgetReceiver : GlanceAppWidgetReceiver() {
 
     @Inject
-    lateinit var model: SyncWidgetModel
+    lateinit var model: SyncWidgetViewModel
 
     @Inject
     @LightColorScheme

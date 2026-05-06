@@ -10,7 +10,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 @HiltViewModel
-class IntroModel @Inject constructor(
+class IntroViewModel @Inject constructor(
     introPageFactory: IntroPageFactory,
     private val logger: Logger
 ): ViewModel() {

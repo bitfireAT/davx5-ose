@@ -38,7 +38,7 @@ import at.bitfire.davdroid.ui.composable.ProgressBar
 
 @Composable
 fun DetectResourcesPage(
-    model: LoginScreenModel = viewModel()
+    model: LoginScreenViewModel = viewModel()
 ) {
     val uiState = model.detectResourcesUiState
     DetectResourcesPageContent(

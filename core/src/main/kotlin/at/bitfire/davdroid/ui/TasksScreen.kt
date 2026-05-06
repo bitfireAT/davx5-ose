@@ -79,7 +79,7 @@ fun TasksScreen(onNavUp: () -> Unit) {
 
 @Composable
 fun TasksCard(
-    model: TasksModel = viewModel()
+    model: TasksViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()

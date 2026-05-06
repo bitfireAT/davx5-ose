@@ -53,8 +53,8 @@ object EmailLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model: EmailLoginModel = hiltViewModel(
-            creationCallback = { factory: EmailLoginModel.Factory ->
+        val model: EmailLoginViewModel = hiltViewModel(
+            creationCallback = { factory: EmailLoginViewModel.Factory ->
                 factory.create(loginInfo = initialLoginInfo)
             }
         )

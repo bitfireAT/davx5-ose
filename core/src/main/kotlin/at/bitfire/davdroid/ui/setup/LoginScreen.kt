@@ -41,7 +41,7 @@ fun LoginScreen(
     onNavUp: () -> Unit,
     onFinish: (Account?) -> Unit
 ) {
-    val model: LoginScreenModel = hiltViewModel { factory: LoginScreenModel.Factory ->
+    val model: LoginScreenViewModel = hiltViewModel { factory: LoginScreenViewModel.Factory ->
         factory.create(initialLoginType, skipLoginTypePage, initialLoginInfo)
     }
 
@@ -68,7 +68,7 @@ fun LoginScreen(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun LoginScreenContent(
-    page: LoginScreenModel.Page,
+    page: LoginScreenViewModel.Page,
     helpUri: Uri?,
     onNavUp: () -> Unit = {},
     onFinish: (newAccount: Account?) -> Unit = {}
@@ -113,16 +113,16 @@ fun LoginScreenContent(
             ) {
 
                 when (page) {
-                    LoginScreenModel.Page.LoginType ->
+                    LoginScreenViewModel.Page.LoginType ->
                         LoginTypePage(snackbarHostState = snackbarHostState)
 
-                    LoginScreenModel.Page.LoginDetails ->
+                    LoginScreenViewModel.Page.LoginDetails ->
                         LoginDetailsPage(snackbarHostState = snackbarHostState)
 
-                    LoginScreenModel.Page.DetectResources ->
+                    LoginScreenViewModel.Page.DetectResources ->
                         DetectResourcesPage()
 
-                    LoginScreenModel.Page.AccountDetails ->
+                    LoginScreenViewModel.Page.AccountDetails ->
                         AccountDetailsPage(
                             snackbarHostState = snackbarHostState,
                             onAccountCreated = { account ->

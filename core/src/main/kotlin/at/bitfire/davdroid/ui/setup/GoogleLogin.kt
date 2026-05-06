@@ -73,8 +73,8 @@ object GoogleLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model: GoogleLoginModel = hiltViewModel(
-            creationCallback = { factory: GoogleLoginModel.Factory ->
+        val model: GoogleLoginViewModel = hiltViewModel(
+            creationCallback = { factory: GoogleLoginViewModel.Factory ->
                 factory.create(loginInfo = initialLoginInfo)
             }
         )

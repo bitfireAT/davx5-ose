@@ -40,8 +40,8 @@ import net.openid.appauth.AuthorizationService
 import java.util.logging.Level
 import java.util.logging.Logger
 
-@HiltViewModel(assistedFactory = AccountSettingsModel.Factory::class)
-class AccountSettingsModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = AccountSettingsViewModel.Factory::class)
+class AccountSettingsViewModel @AssistedInject constructor(
     @Assisted val account: Account,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val authService: AuthorizationService,
@@ -57,7 +57,7 @@ class AccountSettingsModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account): AccountSettingsModel
+        fun create(account: Account): AccountSettingsViewModel
     }
 
     // settings

@@ -72,8 +72,8 @@ fun CreateCalendarScreen(
     onFinish: () -> Unit,
     onNavUp: () -> Unit
 ) {
-    val model: CreateCalendarModel = hiltViewModel(
-        creationCallback = { factory: CreateCalendarModel.Factory ->
+    val model: CreateCalendarViewModel = hiltViewModel(
+        creationCallback = { factory: CreateCalendarViewModel.Factory ->
             factory.create(account)
         }
     )
@@ -121,7 +121,7 @@ fun CreateCalendarScreen(
     onSetDisplayName: (String) -> Unit = {},
     description: String = "",
     onSetDescription: (String) -> Unit = {},
-    timeZones: List<CreateCalendarModel.TimeZoneInfo>,
+    timeZones: List<CreateCalendarViewModel.TimeZoneInfo>,
     timeZone: String? = null,
     onSelectTimeZone: (String?) -> Unit = {},
     supportVEVENT: Boolean = true,
@@ -364,7 +364,7 @@ fun CheckBoxRow(
 fun CreateCalendarScreenPreview() {
     CreateCalendarScreen(
         timeZones = listOf(
-            CreateCalendarModel.TimeZoneInfo(
+            CreateCalendarViewModel.TimeZoneInfo(
                 id = "Europe/Vienna",
                 displayName = "Vienna (Europe)"
             )
