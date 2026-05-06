@@ -1,5 +1,5 @@
 [versions]
-agp = "9.2.0"
+agp = "9.2.1"
 android-desugar = "2.1.5"
 androidx-annotation = "1.10.0"
 androidx-core = "1.18.0"
