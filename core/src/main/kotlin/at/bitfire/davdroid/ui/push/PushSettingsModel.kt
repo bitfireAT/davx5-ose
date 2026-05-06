@@ -54,7 +54,7 @@ class PushSettingsModel @Inject constructor(
             // Reload once initially and then when packages change (new distributor installed/removed)
             packageChangedFlow(
                 context = context,
-                immediate = true // Initial intent
+                immediate = true // Initial empty intent triggers first call to loadSettings()
             ).collect { loadSettings() }
         }
     }
