@@ -521,4 +521,15 @@
         <item quantity="few">Elementele mai vechi de %d zile nu sunt sincronizate (vezi setările contului).</item>
         <item quantity="other">Elementele mai vechi de %d de zile nu sunt sincronizate (vezi setările contului).</item>
     </plurals>
+    <string name="app_settings_push_title">Push</string>
+    <string name="app_settings_push_description">Utilizează Push pentru ca serverele CalDAV/CardDAV/WebDAV să notifice instant %s despre modificările disponibile ale datelor de pe server.</string>
+    <string name="app_settings_push_use_push">Folosește Push</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[Nu au fost găsite servicii Push. Vizitează <a href="%1$s">%2$s</a> pentru o listă de aplicații de distribuitori.]]></string>
+    <string name="app_settings_push_capability_some">Doar unele dintre colecțiile de servere activate pentru sincronizare acceptă în prezent WebDAV-Push.</string>
+    <string name="app_settings_push_select_default_distributor_description">Există mai multe aplicații UnifiedPush Distributor instalate. Poți seta aici o valoare prestabilită la nivel de sistem, astfel încât alte aplicații compatibile cu UnifiedPush să nu fie nevoite să întrebe pe care să o folosească.</string>
+    <string name="app_settings_push_select_default_distributor_action">Setează implicit</string>
+    <string name="app_settings_push_info_text"><![CDATA[Mesajele Push sunt mereu criptate. Află mai multe despre WebDAV-Push din <a href="%s">manual</a>.]]></string>
+    <string name="app_settings_push_push_services">Serviciu Push</string>
+    <string name="app_settings_push_default_distributor_text">(implicit sistem)</string>
+    <string name="app_settings_push_capability_none">Niciuna dintre colecțiile de server cu sincronizare nu acceptă în prezent WebDAV-Push.</string>
 </resources>
