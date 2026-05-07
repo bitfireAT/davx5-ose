@@ -6,6 +6,7 @@ package at.bitfire.davdroid.network
 
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.ktor.client.engine.okhttp.OkHttpEngine
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.test.runTest
@@ -15,6 +16,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -53,6 +55,15 @@ class HttpClientBuilderTest {
         val client2 = httpClientBuilder.get().build()
         assertEquals(client1.connectionPool, client2.connectionPool)
         assertEquals(client1.dispatcher, client2.dispatcher)
+    }
+
+    @Test
+    fun testBuildKtor_SharesConnectionPoolAndDispatcher() {
+        httpClientBuilder.get().buildKtor().use { client ->
+            val preconfigured = (client.engine as OkHttpEngine).config.preconfigured!!
+            assertSame(HttpClientBuilder.sharedOkHttpClient.connectionPool, preconfigured.connectionPool)
+            assertSame(HttpClientBuilder.sharedOkHttpClient.dispatcher, preconfigured.dispatcher)
+        }
     }
 
     @Test

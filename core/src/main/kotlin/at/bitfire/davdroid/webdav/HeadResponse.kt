@@ -6,8 +6,11 @@ package at.bitfire.davdroid.webdav
 
 import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.HttpUtils
+import at.bitfire.dav4jvm.ktor.DavResource as KtorDavResource
 import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.property.webdav.GetETag
+import io.ktor.client.HttpClient
+import io.ktor.http.Url
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.time.Instant
@@ -40,6 +43,35 @@ data class HeadResponse(
                         eTag = getETag.eTag
                 }
                 response.header("Last-Modified", null)?.let {
+                    lastModified = HttpUtils.parseDate(it)
+                }
+                response.headers["Content-Length"]?.let {
+                    size = it.toLong()
+                }
+                response.headers["Accept-Ranges"]?.let { acceptRangesStr ->
+                    val acceptRanges = acceptRangesStr.split(',').map { it.trim().lowercase() }
+                    when {
+                        acceptRanges.contains("none") -> supportsPartial = false
+                        acceptRanges.contains("bytes") -> supportsPartial = true
+                    }
+                }
+            }
+            return HeadResponse(size, eTag, lastModified, supportsPartial)
+        }
+
+        suspend fun fromUrl(client: HttpClient, url: Url): HeadResponse {
+            var size: Long? = null
+            var eTag: String? = null
+            var lastModified: Instant? = null
+            var supportsPartial: Boolean? = null
+
+            KtorDavResource(client, url).head { response ->
+                response.headers["ETag"]?.let {
+                    val getETag = GetETag(it)
+                    if (!getETag.weak)
+                        eTag = getETag.eTag
+                }
+                response.headers["Last-Modified"]?.let {
                     lastModified = HttpUtils.parseDate(it)
                 }
                 response.headers["Content-Length"]?.let {

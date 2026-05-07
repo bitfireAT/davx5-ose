@@ -355,15 +355,14 @@ class HttpClientBuilder @Inject constructor(
             }
 
             engine {
-                // okhttp engine configuration here
+                // Use sharedOkHttpClient as the base so that the connection pool and
+                // dispatcher are shared with all other OkHttp clients in the app.
+                preconfigured = sharedOkHttpClient
 
+                // Apply DAVdroid-specific configuration (interceptors, auth, …) on top.
+                // configureTimeouts() is not needed here because sharedOkHttpClient
+                // already carries the configured timeouts.
                 config {
-                    // OkHttpClient.Builder configuration here
-
-                    // we don't use the sharedOkHttpClient, so we have to apply timeouts again
-                    configureTimeouts(this)
-
-                    // build most config on okhttp level
                     configureOkHttp(this)
                 }
             }

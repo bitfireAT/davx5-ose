@@ -15,10 +15,9 @@ import android.system.OsConstants
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.HttpUtils
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.exception.DavException
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
-import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.dav4jvm.ktor.DavResource as KtorDavResource
+import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
@@ -26,25 +25,27 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.client.HttpClient
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.Url
+import io.ktor.utils.io.toByteArray
+import java.io.InterruptedIOException
+import java.util.logging.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.runInterruptible
-import okhttp3.Headers
-import okhttp3.HttpUrl
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import java.io.InterruptedIOException
-import java.util.logging.Logger
 
 @RequiresApi(26)
 class RandomAccessCallback @AssistedInject constructor(
-    @Assisted private val httpClient: OkHttpClient,
-    @Assisted private val url: HttpUrl,
-    @Assisted private val mimeType: MediaType?,
+    @Assisted private val httpClient: HttpClient,
+    @Assisted private val url: Url,
+    @Assisted private val mimeType: ContentType?,
     @Assisted headResponse: HeadResponse,
     @Assisted private val externalScope: CoroutineScope,
     @ApplicationContext private val context: Context,
@@ -62,15 +63,13 @@ class RandomAccessCallback @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(httpClient: OkHttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallback
+        fun create(httpClient: HttpClient, url: Url, mimeType: ContentType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallback
     }
 
     data class PageIdentifier(
         val offset: Long,
         val size: Int
     )
-
-    private val dav = DavResource(httpClient, url)
 
     private val fileSize = headResponse.size ?: throw IllegalArgumentException("Can only be used with given file size")
     private val documentState = headResponse.toDocumentState() ?: throw IllegalArgumentException("Can only be used with ETag/Last-Modified")
@@ -193,30 +192,25 @@ class RandomAccessCallback @AssistedInject constructor(
             val size = key.size
             logger.fine("Loading page $url $offset/$size")
 
-            val ifMatch: Headers =
-                documentState.eTag?.let { eTag ->
-                    Headers.headersOf("If-Match", "\"$eTag\"")
-                } ?: documentState.lastModified?.let { lastModified ->
-                    Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
-                } ?: throw DavException("ETag/Last-Modified required for random access")
-
-            return runInterruptible {   // network I/O that should be cancelled by Thread interruption
-                var result: ByteArray? = null
-                dav.getRange(
-                    DavUtils.acceptAnything(preferred = mimeType),
-                    offset,
-                    size,
-                    ifMatch
-                ) { response ->
-                    if (response.code == 200)       // server doesn't support ranged requests
-                        throw PartialContentNotSupportedException()
-                    else if (response.code != 206)
-                        throw HttpException(response)
-
-                    result = response.body.bytes()
+            val additionalHeaders = Headers.build {
+                append(HttpHeaders.Accept, mimeType?.let { "$it, */*;q=0.8" } ?: "*/*")
+                when {
+                    documentState.eTag != null ->
+                        append(HttpHeaders.IfMatch, "\"${documentState.eTag}\"")
+                    documentState.lastModified != null ->
+                        append(HttpHeaders.IfUnmodifiedSince, HttpUtils.formatDate(documentState.lastModified!!))
+                    else ->
+                        throw DavException("ETag/Last-Modified required for random access")
                 }
-                result ?: throw DavException("No response body")
             }
+
+            var result: ByteArray? = null
+            KtorDavResource(httpClient, url).getRange(offset, size, additionalHeaders) { response ->
+                if (response.status.value == 200)       // server doesn't support ranged requests
+                    throw PartialContentNotSupportedException()
+                result = response.bodyAsChannel().toByteArray()
+            }
+            return result ?: throw DavException("No response body")
         }
 
     }
