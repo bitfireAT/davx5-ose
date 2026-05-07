@@ -18,14 +18,15 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.content.OutgoingContent
 import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.copyTo
+import io.ktor.utils.io.jvm.javaio.copyTo
 import io.ktor.utils.io.jvm.javaio.toByteReadChannel
-import io.ktor.utils.io.jvm.javaio.toInputStream
-import java.io.FilterInputStream
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import okio.source
 
 /**
  * @param client    HTTP client to use
@@ -94,9 +95,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
     private suspend fun downloadNow(writeFd: ParcelFileDescriptor) {
         dav.get(DavUtils.acceptAnything(preferred = mimeType)) { response ->
             ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { destination ->
-                response.bodyAsChannel().toInputStream().use { source ->
-                    transferred += source.copyTo(destination)
-                }
+                transferred += response.bodyAsChannel().copyTo(destination)
                 logger.fine("Downloaded $transferred byte(s) from $url")
             }
         }
@@ -110,18 +109,11 @@ class StreamingFileDescriptor @AssistedInject constructor(
     private suspend fun uploadNow(readFd: ParcelFileDescriptor) {
         val body = object : OutgoingContent.ReadChannelContent() {
             override val contentType = mimeType
-            override fun readFrom(): ByteReadChannel {
-                val source = object : FilterInputStream(ParcelFileDescriptor.AutoCloseInputStream(readFd)) {
-                    override fun read(b: ByteArray, off: Int, len: Int): Int =
-                        super.read(b, off, len).also { if (it > 0) transferred += it }
-                    override fun read(): Int =
-                        super.read().also { if (it >= 0) transferred++ }
-                }
-                return source.toByteReadChannel()
-            }
+            override fun readFrom(): ByteReadChannel =
+                ParcelFileDescriptor.AutoCloseInputStream(readFd).toByteReadChannel()
         }
         dav.put(body) {
-            logger.fine("Uploaded $transferred byte(s) to $url")
+            logger.fine("Uploaded to $url")
         }
     }
 
