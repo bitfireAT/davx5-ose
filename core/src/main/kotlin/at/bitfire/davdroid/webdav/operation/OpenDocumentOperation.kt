@@ -63,7 +63,6 @@ class OpenDocumentOperation @Inject constructor(
         }.await()
         logger.fine("Received file info: $fileInfo")
 
-        // RandomAccessCallbackWrapper / StreamingFileDescriptor are responsible for closing httpClient
         return@runBlocking if (
             androidSupportsRandomAccess &&
             readOnlyMode &&                     // WebDAV doesn't support random write access (natively)

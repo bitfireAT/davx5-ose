@@ -14,6 +14,8 @@ import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
 import io.ktor.http.ContentType
 import io.ktor.http.Url
+import javax.annotation.WillClose
+import javax.annotation.WillCloseWhenClosed
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -28,11 +30,12 @@ import kotlinx.coroutines.CoroutineScope
  * **All fields of objects of this class must be set to `null` when [onRelease] is called!**
  * Otherwise they will leak memory.
  *
- * @param httpClient    HTTP client ([RandomAccessCallbackWrapper] is responsible to close it)
+ * @param httpClient    HTTP client; ownership is transferred to this class and it will be
+ *                      closed when [onRelease] is called
  */
 @RequiresApi(26)
 class RandomAccessCallbackWrapper @AssistedInject constructor(
-    @Assisted httpClient: HttpClient,
+    @WillClose @Assisted httpClient: HttpClient,
     @Assisted url: Url,
     @Assisted mimeType: ContentType?,
     @Assisted headResponse: HeadResponse,
@@ -54,6 +57,9 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
      */
     private var callbackRef: RandomAccessCallback? =
         callbackFactory.create(httpClient, url, mimeType, headResponse, externalScope)
+
+    @WillCloseWhenClosed
+    private var clientRef: HttpClient? = httpClient
 
     private fun requireCallback(functionName: String): RandomAccessCallback =
         callbackRef ?: throw ErrnoException(functionName, OsConstants.EBADF)
@@ -81,8 +87,10 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
     override fun onRelease() {
         requireCallback("onRelease").onRelease()
 
-        // remove reference to allow garbage collection
+        // remove references to allow garbage collection
         callbackRef = null
+        clientRef?.close()
+        clientRef = null
     }
 
 }

@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.webdav
 
 import android.os.ParcelFileDescriptor
-import at.bitfire.dav4jvm.ktor.DavResource as KtorDavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.util.DavUtils
 import dagger.assisted.Assisted
@@ -14,25 +13,25 @@ import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.content.OutgoingContent
 import io.ktor.utils.io.ByteReadChannel
-import io.ktor.utils.io.copyTo
 import io.ktor.utils.io.jvm.javaio.copyTo
 import io.ktor.utils.io.jvm.javaio.toByteReadChannel
+import javax.annotation.WillClose
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import okio.source
+import at.bitfire.dav4jvm.ktor.DavResource as KtorDavResource
 
 /**
- * @param client    HTTP client to use
+ * @param client    HTTP client to use; ownership is transferred to this class and it will be
+ *                  closed when the streaming transfer finishes
  */
 class StreamingFileDescriptor @AssistedInject constructor(
-    @Assisted private val client: HttpClient,
+    @WillClose @Assisted private val client: HttpClient,
     @Assisted private val url: Url,
     @Assisted private val mimeType: ContentType?,
     @Assisted private val externalScope: CoroutineScope,
@@ -78,6 +77,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
                 } catch (_: IOException) {}
 
                 finishedCallback.onFinished(transferred, success)
+                client.close()
             }
         }
 
