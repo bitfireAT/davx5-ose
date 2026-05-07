@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.resource
 
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.DmfsTask
+import at.bitfire.synctools.storage.tasks.DmfsTask
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
