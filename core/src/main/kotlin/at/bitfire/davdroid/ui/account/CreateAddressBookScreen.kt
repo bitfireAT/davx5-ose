@@ -48,8 +48,8 @@ fun CreateAddressBookScreen(
     onNavUp: () -> Unit = {},
     onFinish: () -> Unit = {}
 ) {
-    val model: CreateAddressBookModel = hiltViewModel(
-        creationCallback = { factory: CreateAddressBookModel.Factory ->
+    val model: CreateAddressBookViewModel = hiltViewModel(
+        creationCallback = { factory: CreateAddressBookViewModel.Factory ->
             factory.create(account)
         }
     )

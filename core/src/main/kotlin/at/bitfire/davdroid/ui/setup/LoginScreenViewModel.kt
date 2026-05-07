@@ -38,8 +38,8 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.Optional
 import java.util.logging.Logger
 
-@HiltViewModel(assistedFactory = LoginScreenModel.Factory::class)
-class LoginScreenModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = LoginScreenViewModel.Factory::class)
+class LoginScreenViewModel @AssistedInject constructor(
     @Assisted val initialLoginType: LoginType,
     @Assisted val skipLoginTypePage: Boolean,
     @Assisted val initialLoginInfo: LoginInfo,
@@ -59,7 +59,7 @@ class LoginScreenModel @AssistedInject constructor(
             initialLoginType: LoginType,
             skipLoginTypePage: Boolean,
             initialLoginInfo: LoginInfo
-        ): LoginScreenModel
+        ): LoginScreenViewModel
     }
 
     enum class Page {

@@ -78,7 +78,7 @@ fun AccountSettingsScreen(
     account: Account,
     onNavWifiPermissionsScreen: () -> Unit
 ) {
-    val model = hiltViewModel { factory: AccountSettingsModel.Factory ->
+    val model = hiltViewModel { factory: AccountSettingsViewModel.Factory ->
         factory.create(account)
     }
     val uiState by model.uiState.collectAsState()

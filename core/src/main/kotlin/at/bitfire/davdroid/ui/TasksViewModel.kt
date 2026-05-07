@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TasksModel @Inject constructor(
+class TasksViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val settings: SettingsManager,

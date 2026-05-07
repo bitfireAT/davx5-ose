@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.ui.TasksCard
-import at.bitfire.davdroid.ui.TasksModel
+import at.bitfire.davdroid.ui.TasksViewModel
 import javax.inject.Inject
 
 class TasksIntroPage @Inject constructor(
@@ -17,7 +17,7 @@ class TasksIntroPage @Inject constructor(
 ): IntroPage() {
 
     override fun getShowPolicy(): ShowPolicy {
-        return if (tasksAppManager.currentProvider() != null || settingsManager.getBooleanOrNull(TasksModel.HINT_OPENTASKS_NOT_INSTALLED) == false)
+        return if (tasksAppManager.currentProvider() != null || settingsManager.getBooleanOrNull(TasksViewModel.HINT_OPENTASKS_NOT_INSTALLED) == false)
                 ShowPolicy.DONT_SHOW
             else
                 ShowPolicy.SHOW_ALWAYS

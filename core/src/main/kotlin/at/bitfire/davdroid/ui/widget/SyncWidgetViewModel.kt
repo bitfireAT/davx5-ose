@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SyncWidgetModel @Inject constructor(
+class SyncWidgetViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     @ApplicationContext val context: Context,
     private val syncWorkerManager: SyncWorkerManager

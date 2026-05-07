@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WebdavMountsModel @Inject constructor(
+class WebdavMountsViewModel @Inject constructor(
     private val mountRepository: WebDavMountRepository
 ): ViewModel() {
 

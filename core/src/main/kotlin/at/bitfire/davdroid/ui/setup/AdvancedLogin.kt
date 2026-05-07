@@ -57,8 +57,8 @@ object AdvancedLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model: AdvancedLoginModel = hiltViewModel(
-            creationCallback = { factory: AdvancedLoginModel.Factory ->
+        val model: AdvancedLoginViewModel = hiltViewModel(
+            creationCallback = { factory: AdvancedLoginViewModel.Factory ->
                 factory.create(loginInfo = initialLoginInfo)
             }
         )

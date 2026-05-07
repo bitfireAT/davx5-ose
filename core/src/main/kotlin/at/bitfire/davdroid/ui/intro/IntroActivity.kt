@@ -25,7 +25,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class IntroActivity : AppCompatActivity() {
 
-    val model by viewModels<IntroModel>()
+    val model by viewModels<IntroViewModel>()
 
     @Inject
     @LightColorScheme

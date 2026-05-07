@@ -61,8 +61,8 @@ object FastmailLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model: FastmailLoginModel = hiltViewModel(
-            creationCallback = { factory: FastmailLoginModel.Factory ->
+        val model: FastmailLoginViewModel = hiltViewModel(
+            creationCallback = { factory: FastmailLoginViewModel.Factory ->
                 factory.create(loginInfo = initialLoginInfo)
             }
         )
