@@ -22,7 +22,7 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.ui.intro.BackupsPage
-import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel
+import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageViewModel
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
@@ -43,7 +43,7 @@ import javax.inject.Inject
 import kotlin.jvm.optionals.getOrNull
 
 @HiltViewModel
-class AppSettingsModel @Inject constructor(
+class AppSettingsViewModel @Inject constructor(
     @ApplicationScope private val applicationScope: CoroutineScope,
     @ApplicationContext private val context: Context,
     private val customCertStore: Optional<CustomCertStore>,
@@ -111,10 +111,10 @@ class AppSettingsModel @Inject constructor(
 
     fun resetHints() = runBlocking(ioDispatcher) {
         settings.remove(BackupsPage.Model.SETTING_BACKUPS_ACCEPTED)
-        settings.remove(BatteryOptimizationsPageModel.HINT_BATTERY_OPTIMIZATIONS)
-        settings.remove(BatteryOptimizationsPageModel.HINT_AUTOSTART_PERMISSION)
+        settings.remove(BatteryOptimizationsPageViewModel.HINT_BATTERY_OPTIMIZATIONS)
+        settings.remove(BatteryOptimizationsPageViewModel.HINT_AUTOSTART_PERMISSION)
         settings.remove(OpenSourcePage.Model.SETTING_NEXT_DONATION_POPUP)
-        settings.remove(TasksModel.HINT_OPENTASKS_NOT_INSTALLED)
+        settings.remove(TasksViewModel.HINT_OPENTASKS_NOT_INSTALLED)
     }
 
 

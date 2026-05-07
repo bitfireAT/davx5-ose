@@ -84,7 +84,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
-import at.bitfire.davdroid.ui.account.AccountScreenModel
+import at.bitfire.davdroid.ui.account.AccountScreenViewModel
 import at.bitfire.davdroid.ui.account.CollectionsList
 import at.bitfire.davdroid.ui.account.RenameAccountDialog
 import at.bitfire.davdroid.ui.composable.ActionCard
@@ -106,8 +106,8 @@ fun AccountScreen(
     onNavUp: () -> Unit,
     onFinish: () -> Unit
 ) {
-    val model: AccountScreenModel = hiltViewModel(
-        creationCallback = { factory: AccountScreenModel.Factory ->
+    val model: AccountScreenViewModel = hiltViewModel(
+        creationCallback = { factory: AccountScreenViewModel.Factory ->
             factory.create(account)
         }
     )

@@ -58,8 +58,8 @@ import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
 import java.util.logging.Logger
 
-@HiltViewModel(assistedFactory = CollectionScreenModel.Factory::class)
-class CollectionScreenModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = CollectionScreenViewModel.Factory::class)
+class CollectionScreenViewModel @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
@@ -79,7 +79,7 @@ class CollectionScreenModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(collectionId: Long): CollectionScreenModel
+        fun create(collectionId: Long): CollectionScreenViewModel
     }
 
     /** Whether an operation (like deleting the collection) is currently in progress */

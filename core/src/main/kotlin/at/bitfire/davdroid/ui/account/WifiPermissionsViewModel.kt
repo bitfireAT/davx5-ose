@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
-class WifiPermissionsModel @Inject constructor(
+class WifiPermissionsViewModel @Inject constructor(
     @ApplicationContext context: Context
 ): ViewModel() {
 

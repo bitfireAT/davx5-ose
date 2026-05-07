@@ -47,7 +47,7 @@ import at.bitfire.davdroid.util.PermissionUtils
 
 @Composable
 fun WifiPermissionsScreen(
-    model: WifiPermissionsModel = viewModel(),
+    model: WifiPermissionsViewModel = viewModel(),
     backgroundPermissionOptionLabel: String,
     onEnableLocationService: (Boolean) -> Unit,
     onNavUp: () -> Unit

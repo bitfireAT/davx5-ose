@@ -69,7 +69,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
-import at.bitfire.davdroid.ui.AppSettingsModel.PushDistributorInfo
+import at.bitfire.davdroid.ui.AppSettingsViewModel.PushDistributorInfo
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.EditTextInputDialog
 import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
@@ -87,7 +87,7 @@ fun AppSettingsScreen(
     onShowNotificationSettings: () -> Unit,
     onNavTasksScreen: () -> Unit,
     onNavUp: () -> Unit,
-    model: AppSettingsModel = viewModel()
+    model: AppSettingsViewModel = viewModel()
 ) {
     AppTheme {
         AppSettingsScreen(

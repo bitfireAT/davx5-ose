@@ -11,7 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun LoginDetailsPage(
     snackbarHostState: SnackbarHostState,
-    model: LoginScreenModel = viewModel()
+    model: LoginScreenViewModel = viewModel()
 ) {
     val uiState = model.loginDetailsUiState
     uiState.loginType.LoginScreen(

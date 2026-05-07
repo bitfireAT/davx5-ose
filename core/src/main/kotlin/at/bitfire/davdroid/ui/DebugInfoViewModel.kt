@@ -12,8 +12,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.log.LogFileHandler
-import at.bitfire.davdroid.ui.DebugInfoModel.Companion.FILE_DEBUG_INFO
-import at.bitfire.davdroid.ui.DebugInfoModel.Companion.FILE_LOGS
+import at.bitfire.davdroid.ui.DebugInfoViewModel.Companion.FILE_DEBUG_INFO
+import at.bitfire.davdroid.ui.DebugInfoViewModel.Companion.FILE_LOGS
 import com.google.common.io.ByteStreams
 import com.google.common.io.Files
 import dagger.assisted.Assisted
@@ -30,8 +30,8 @@ import java.util.logging.Logger
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-@HiltViewModel(assistedFactory = DebugInfoModel.Factory::class)
-class DebugInfoModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = DebugInfoViewModel.Factory::class)
+class DebugInfoViewModel @AssistedInject constructor(
     @Assisted private val details: DebugInfoDetails,
     @ApplicationContext val context: Context,
     private val debugInfoGenerator: DebugInfoGenerator,
@@ -50,7 +50,7 @@ class DebugInfoModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun createWithDetails(details: DebugInfoDetails): DebugInfoModel
+        fun createWithDetails(details: DebugInfoDetails): DebugInfoViewModel
     }
 
     data class UiState(

@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PushSettingsModel @Inject constructor(
+class PushSettingsViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     @param:ApplicationScope private val applicationScope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,

@@ -26,8 +26,8 @@ import java.util.Locale
 import java.util.logging.Level
 import java.util.logging.Logger
 
-@HiltViewModel(assistedFactory = FastmailLoginModel.Factory::class)
-class FastmailLoginModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = FastmailLoginViewModel.Factory::class)
+class FastmailLoginViewModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
@@ -38,7 +38,7 @@ class FastmailLoginModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(loginInfo: LoginInfo): FastmailLoginModel
+        fun create(loginInfo: LoginInfo): FastmailLoginViewModel
     }
 
     override fun onCleared() {

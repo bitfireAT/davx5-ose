@@ -52,7 +52,7 @@ import at.bitfire.vcard4android.GroupMethod
 fun AccountDetailsPage(
     snackbarHostState: SnackbarHostState,
     onAccountCreated: (Account) -> Unit,
-    model: LoginScreenModel = viewModel()
+    model: LoginScreenViewModel = viewModel()
 ) {
     val uiState by model.accountDetailsUiState.collectAsStateWithLifecycle()
     uiState.createdAccount?.let(onAccountCreated)

@@ -69,8 +69,8 @@ object NextcloudLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model: NextcloudLoginModel = hiltViewModel(
-            creationCallback = { factory: NextcloudLoginModel.Factory ->
+        val model: NextcloudLoginViewModel = hiltViewModel(
+            creationCallback = { factory: NextcloudLoginViewModel.Factory ->
                 factory.create(loginInfo = initialLoginInfo)
             }
         )

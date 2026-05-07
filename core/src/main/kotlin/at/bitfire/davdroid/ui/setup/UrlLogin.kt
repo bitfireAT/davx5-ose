@@ -53,8 +53,8 @@ object UrlLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model: UrlLoginModel = hiltViewModel(
-            creationCallback = { factory: UrlLoginModel.Factory ->
+        val model: UrlLoginViewModel = hiltViewModel(
+            creationCallback = { factory: UrlLoginViewModel.Factory ->
                 factory.create(loginInfo = initialLoginInfo)
             }
         )
