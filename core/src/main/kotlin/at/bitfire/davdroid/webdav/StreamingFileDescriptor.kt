@@ -27,8 +27,8 @@ import java.util.logging.Logger
 import at.bitfire.dav4jvm.ktor.DavResource as KtorDavResource
 
 /**
- * @param client    HTTP client to use; ownership is transferred to this class and it will be
- *                  closed when the streaming transfer finishes
+ * @param client    HTTP client to use; this class is responsible for closing it when the
+ *                  streaming transfer finishes
  */
 class StreamingFileDescriptor @AssistedInject constructor(
     @WillClose @Assisted private val client: HttpClient,

@@ -30,8 +30,8 @@ import kotlinx.coroutines.CoroutineScope
  * **All fields of objects of this class must be set to `null` when [onRelease] is called!**
  * Otherwise they will leak memory.
  *
- * @param httpClient    HTTP client; ownership is transferred to this class and it will be
- *                      closed when [onRelease] is called
+ * @param httpClient    HTTP client; this class is responsible for closing it when [onRelease]
+ *                      is called
  */
 @RequiresApi(26)
 class RandomAccessCallbackWrapper @AssistedInject constructor(
