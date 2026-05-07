@@ -7,6 +7,7 @@ package at.bitfire.davdroid.util
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.DavUtils.parent
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -15,8 +16,8 @@ class DavUtilsTest {
 
     @Test
     fun testAcceptAnything() {
-        assertEquals("*/*", DavUtils.acceptAnything(null))
-        assertEquals("some/thing;v=2.1, */*;q=0.8", DavUtils.acceptAnything(ContentType.parse("some/thing;v=2.1")))
+        assertEquals("*/*", DavUtils.acceptAnything(preferred = null)[HttpHeaders.Accept])
+        assertEquals("some/thing;v=2.1, */*;q=0.8", DavUtils.acceptAnything(preferred = ContentType.parse("some/thing;v=2.1"))[HttpHeaders.Accept])
     }
 
     @Test

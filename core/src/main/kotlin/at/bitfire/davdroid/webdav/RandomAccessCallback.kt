@@ -194,7 +194,7 @@ class RandomAccessCallback @AssistedInject constructor(
             logger.fine("Loading page $url $offset/$size")
 
             val additionalHeaders = Headers.build {
-                append(HttpHeaders.Accept, DavUtils.acceptAnything(mimeType))
+                appendAll(DavUtils.acceptAnything(preferred = mimeType))
                 when {
                     documentState.eTag != null ->
                         append(HttpHeaders.IfMatch, "\"${documentState.eTag}\"")

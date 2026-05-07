@@ -17,7 +17,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.content.OutgoingContent
-import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.jvm.javaio.toByteReadChannel
 import io.ktor.utils.io.jvm.javaio.toInputStream
@@ -91,8 +90,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
      * @param writeFd   destination file descriptor (could for instance represent a local file)
      */
     private suspend fun downloadNow(writeFd: ParcelFileDescriptor) {
-        val headers = headersOf(HttpHeaders.Accept, DavUtils.acceptAnything(mimeType))
-        KtorDavResource(client, url).get(headers) { response ->
+        KtorDavResource(client, url).get(DavUtils.acceptAnything(preferred = mimeType)) { response ->
             ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { destination ->
                 response.bodyAsChannel().toInputStream().use { source ->
                     transferred += source.copyTo(destination)
