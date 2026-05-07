@@ -196,14 +196,8 @@
     <string name="app_settings_integration">Integrazioa</string>
     <string name="app_settings_tasks_provider">Tasks aplikazioa</string>
     <string name="app_settings_tasks_provider_none">Ez da zeregin aplikazio bategarririk aurkitu</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (esperimentala)</string>
-    <string name="app_settings_unifiedpush_disable">Bat ere es (desgaitu push)</string>
-    <string name="app_settings_unifiedpush_choose_distributor">Aukeratu banatzaile bat</string>
-    <string name="app_settings_unifiedpush_no_distributor">Ez dago push banatzailerik instalatuta</string>
     <string name="app_settings_unifiedpush_no_endpoint">Ez da amaiera punturik konfiguratu</string>
-    <string name="app_settings_unifiedpush_ready">Push jakinarazpenak %s(r)en bidez jasotzeko prest</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-    <string name="app_settings_unifiedpush_encrypted">Bultzatutako mezuak beti zifratzen dira.</string>
     <!--AccountScreen-->
   <string name="account_invalid_account">Kontua ezabatu da</string>
     <string name="account_carddav">CardDAV</string>

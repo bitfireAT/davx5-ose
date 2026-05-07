@@ -196,14 +196,8 @@
     <string name="app_settings_integration">Integrare</string>
     <string name="app_settings_tasks_provider">Aplicația de sarcini</string>
     <string name="app_settings_tasks_provider_none">Nu a fost găsită nicio aplicație de sarcini compatibilă</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
-    <string name="app_settings_unifiedpush_disable">Nimic (dezactivare Push)</string>
-    <string name="app_settings_unifiedpush_choose_distributor">Alege un distribuitor</string>
-    <string name="app_settings_unifiedpush_no_distributor">Nu este instalat un distribuitor push</string>
     <string name="app_settings_unifiedpush_no_endpoint">Niciun punct final configurat</string>
-    <string name="app_settings_unifiedpush_ready">Gata să primească mesaje push peste %s</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-    <string name="app_settings_unifiedpush_encrypted">Mesajele push sunt întotdeauna criptate.</string>
     <!--AccountScreen-->
   <string name="account_invalid_account">Contul a fost eliminat</string>
     <string name="account_carddav">CardDAV</string>

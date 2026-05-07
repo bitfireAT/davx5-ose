@@ -195,14 +195,8 @@
     <string name="app_settings_integration">Integratie</string>
     <string name="app_settings_tasks_provider">Taken app</string>
     <string name="app_settings_tasks_provider_none">Geen compatibele taken app gevonden</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (experimenteel)</string>
-    <string name="app_settings_unifiedpush_disable">Geen (push uitschakelen)</string>
-    <string name="app_settings_unifiedpush_choose_distributor">Kies een distributeur</string>
-    <string name="app_settings_unifiedpush_no_distributor">Geen push distributeur geïnstalleerd</string>
     <string name="app_settings_unifiedpush_no_endpoint">Geen eindpunt geconfigureerd</string>
-    <string name="app_settings_unifiedpush_ready">Klaar om pushberichten te ontvangen via %s</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-    <string name="app_settings_unifiedpush_encrypted">Pushberichten zijn altijd versleuteld.</string>
     <!--AccountScreen-->
   <string name="account_invalid_account">Account is verwijderd</string>
     <string name="account_carddav">CardDAV</string>

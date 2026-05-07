@@ -401,5 +401,4 @@
     <string name="app_settings_battery_optimization_exempted">App is exempted (recommended)</string>
     <string name="app_settings_battery_optimization_optimized">Battery restrictions apply (not recommended)</string>
     <string name="app_settings_distrust_system_certs_dialog_message">If this setting is active, system certificates are not considered trustworthy. This means that you will have to manually accept every certificate (also when the server renews its certificate), or account setup and sync will not work.</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
 </resources>

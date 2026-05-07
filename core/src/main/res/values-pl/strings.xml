@@ -197,14 +197,8 @@
     <string name="app_settings_integration">Integracja</string>
     <string name="app_settings_tasks_provider">Aplikacja zadań</string>
     <string name="app_settings_tasks_provider_none">Nie znaleziono kompatybilnej aplikacji zadań</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (eksperymentalny)</string>
-    <string name="app_settings_unifiedpush_disable">Żaden (wyłącz Push)</string>
-    <string name="app_settings_unifiedpush_choose_distributor">Wybierz kolportera</string>
-    <string name="app_settings_unifiedpush_no_distributor">Nie zainstalowano kolportera wiadomości Push</string>
     <string name="app_settings_unifiedpush_no_endpoint">Brak konfiguracji punktu końcowego</string>
-    <string name="app_settings_unifiedpush_ready">Gotowy aby otrzymywać wiadomości Push poprzez %s</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-    <string name="app_settings_unifiedpush_encrypted">Wiadomości Push są zawsze szyfrowane.</string>
     <!--AccountScreen-->
   <string name="account_invalid_account">Konto zostało usunięte</string>
     <string name="account_carddav">CardDAV</string>

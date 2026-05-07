@@ -196,14 +196,8 @@
     <string name="app_settings_integration">Integração</string>
     <string name="app_settings_tasks_provider">App de tarefas</string>
     <string name="app_settings_tasks_provider_none">Nenhum app compatível de tarefas encontrado</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
-    <string name="app_settings_unifiedpush_disable">Nenhum (desativar push)</string>
-    <string name="app_settings_unifiedpush_choose_distributor">Escolha um distribuidor</string>
-    <string name="app_settings_unifiedpush_no_distributor">Nenhum distribuidor de push instalado</string>
     <string name="app_settings_unifiedpush_no_endpoint">Nenhum servidor configurado</string>
-    <string name="app_settings_unifiedpush_ready">Pronto para receber mensagens push pelo %s</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-    <string name="app_settings_unifiedpush_encrypted">As mensagens push são sempre criptografadas.</string>
     <!--AccountScreen-->
   <string name="account_invalid_account">A conta foi removida</string>
     <string name="account_carddav">CardDAV</string>

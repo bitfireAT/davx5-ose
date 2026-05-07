@@ -442,11 +442,6 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
     <string name="about_translations_over_weblate">Da Weblate</string>
     <string name="about_translations_contribute">Aiuta a tradurre</string>
     <string name="app_settings_distrust_system_certs_dialog_message">Se questa impostazione è attiva, i certificati di sistema non sono considerati affidabili. Ciò significa che dovrai accettare manualmente ogni certificato (anche quando il server rinnova il suo certificato) o la configurazione dell\'account e la sincronizzazione non funzionerà.</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (sperimentale)</string>
-    <string name="app_settings_unifiedpush_disable">Nessuna (disabilita push)</string>
-    <string name="app_settings_unifiedpush_choose_distributor">Scegli un distributore</string>
-    <string name="app_settings_unifiedpush_no_distributor">Nessun distributore push installato</string>
-    <string name="app_settings_unifiedpush_encrypted">I messaggi push sono sempre criptati.</string>
     <string name="account_invalid_account">L\'account è stato rimosso</string>
     <string name="login_privacy_hint"><![CDATA[Tutti i dati saranno trasferiti solo tra il server e il dispositivo. %1$s non li invierà altrove. Vedi la <a href="%2$s">polizza sulla privacy</a>.]]></string>
     <string name="login_password_optional">Password (opzionale)</string>
