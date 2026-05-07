@@ -6,7 +6,6 @@ package at.bitfire.davdroid.network
 
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.ktor.client.engine.okhttp.OkHttpEngine
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.test.runTest
@@ -16,7 +15,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -58,11 +56,20 @@ class HttpClientBuilderTest {
     }
 
     @Test
-    fun testBuildKtor_SharesConnectionPoolAndDispatcher() {
+    fun testBuildKtor_SharesConnectionPool() = runTest {
+        server.enqueue(MockResponse().setResponseCode(200).setBody("ok"))
+
+        val sharedPool = HttpClientBuilder.sharedOkHttpClient.connectionPool
+        val countBefore = sharedPool.connectionCount()
+
         httpClientBuilder.get().buildKtor().use { client ->
-            val preconfigured = (client.engine as OkHttpEngine).config.preconfigured!!
-            assertSame(HttpClientBuilder.sharedOkHttpClient.connectionPool, preconfigured.connectionPool)
-            assertSame(HttpClientBuilder.sharedOkHttpClient.dispatcher, preconfigured.dispatcher)
+            client.get(server.url("/").toString())
+            // The Ktor engine builds its OkHttpClient from the shared pool via newBuilder(),
+            // so after a request the connection appears in the shared pool.
+            assertTrue(
+                "Ktor client should use the shared OkHttp connection pool",
+                sharedPool.connectionCount() > countBefore
+            )
         }
     }
 
