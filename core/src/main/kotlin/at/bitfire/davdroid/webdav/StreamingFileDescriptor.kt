@@ -46,6 +46,8 @@ class StreamingFileDescriptor @AssistedInject constructor(
 
     var transferred: Long = 0
 
+    private val dav = KtorDavResource(client, url)
+
     fun download() = doStreaming(false)
     fun upload() = doStreaming(true)
 
@@ -90,7 +92,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
      * @param writeFd   destination file descriptor (could for instance represent a local file)
      */
     private suspend fun downloadNow(writeFd: ParcelFileDescriptor) {
-        KtorDavResource(client, url).get(DavUtils.acceptAnything(preferred = mimeType)) { response ->
+        dav.get(DavUtils.acceptAnything(preferred = mimeType)) { response ->
             ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { destination ->
                 response.bodyAsChannel().toInputStream().use { source ->
                     transferred += source.copyTo(destination)
@@ -118,7 +120,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
                 return source.toByteReadChannel()
             }
         }
-        KtorDavResource(client, url).put(body) {
+        dav.put(body) {
             logger.fine("Uploaded $transferred byte(s) to $url")
         }
     }
