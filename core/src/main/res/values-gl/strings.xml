@@ -519,4 +519,6 @@
     <string name="app_settings_push_select_default_distributor_action">Predeterminar</string>
     <string name="app_settings_push_capability_none">Ningunha das túas coleccións con sincronización activada é compatible con WebDAV-Push.</string>
     <string name="app_settings_push_capability_some">Só algunha das túas coleccións con sincronización activada é compatible con WebDAV-Push.</string>
+    <string name="app_settings_push_disabled_summary">Apagado</string>
+    <string name="app_settings_push_enabled_summary">Acendido, %s</string>
 </resources>
