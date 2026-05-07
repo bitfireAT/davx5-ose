@@ -3,11 +3,14 @@
 -keep class net.fortuna.ical4j.** { *; }
 
 # ical4j: don't warn when these are missing
+-dontwarn com.github.benmanes.caffeine.**
 -dontwarn com.github.erosb.jsonsKema.**
 -dontwarn groovy.**
 -dontwarn java.beans.Transient
+-dontwarn java.time.zone.ZoneRulesProvider
 -dontwarn javax.cache.**
 -dontwarn org.codehaus.groovy.**
+-dontwarn org.joda.convert.ToString
 -dontwarn org.jparsec.**
 
 # keep all vCard properties/parameters (used via reflection)
