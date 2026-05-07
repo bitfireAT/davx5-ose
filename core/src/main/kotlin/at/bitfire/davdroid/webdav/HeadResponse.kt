@@ -29,36 +29,6 @@ data class HeadResponse(
 
     companion object {
 
-        @WorkerThread
-        fun fromUrl(client: OkHttpClient, url: HttpUrl): HeadResponse {
-            var size: Long? = null
-            var eTag: String? = null
-            var lastModified: Instant? = null
-            var supportsPartial: Boolean? = null
-
-            DavResource(client, url).head { response ->
-                response.header("ETag", null)?.let {
-                    val getETag = GetETag(it)
-                    if (!getETag.weak)
-                        eTag = getETag.eTag
-                }
-                response.header("Last-Modified", null)?.let {
-                    lastModified = HttpUtils.parseDate(it)
-                }
-                response.headers["Content-Length"]?.let {
-                    size = it.toLong()
-                }
-                response.headers["Accept-Ranges"]?.let { acceptRangesStr ->
-                    val acceptRanges = acceptRangesStr.split(',').map { it.trim().lowercase() }
-                    when {
-                        acceptRanges.contains("none") -> supportsPartial = false
-                        acceptRanges.contains("bytes") -> supportsPartial = true
-                    }
-                }
-            }
-            return HeadResponse(size, eTag, lastModified, supportsPartial)
-        }
-
         suspend fun fromUrl(client: HttpClient, url: Url): HeadResponse {
             var size: Long? = null
             var eTag: String? = null

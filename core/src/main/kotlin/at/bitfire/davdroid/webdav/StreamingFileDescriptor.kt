@@ -7,6 +7,7 @@ package at.bitfire.davdroid.webdav
 import android.os.ParcelFileDescriptor
 import at.bitfire.dav4jvm.ktor.DavResource as KtorDavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.davdroid.util.DavUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -90,8 +91,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
      * @param writeFd   destination file descriptor (could for instance represent a local file)
      */
     private suspend fun downloadNow(writeFd: ParcelFileDescriptor) {
-        val acceptStr = mimeType?.let { "$it, */*;q=0.8" } ?: "*/*"
-        val headers = headersOf(HttpHeaders.Accept, acceptStr)
+        val headers = headersOf(HttpHeaders.Accept, DavUtils.acceptAnything(mimeType))
         KtorDavResource(client, url).get(headers) { response ->
             ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { destination ->
                 response.bodyAsChannel().toInputStream().use { source ->

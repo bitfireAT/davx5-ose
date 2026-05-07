@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.util
 
 import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
+import io.ktor.http.ContentType
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -24,14 +25,14 @@ object DavUtils {
     val MEDIA_TYPE_VCARD = "text/vcard".toMediaType()
 
     /**
-     * Builds an HTTP `Accept` header that accepts anything (&#42;/&#42;), but optionally
+     * Builds an HTTP `Accept` header value that accepts anything (&#42;/&#42;), but optionally
      * specifies a preference.
      *
      * @param preferred  preferred MIME type (optional)
      *
      * @return `media-range` for `Accept` header that accepts anything, but prefers [preferred] (if it was specified)
      */
-    fun acceptAnything(preferred: MediaType?): String =
+    fun acceptAnything(preferred: ContentType?): String =
         if (preferred != null)
             "$preferred, $MIME_TYPE_ACCEPT_ALL;q=0.8"
         else

@@ -43,7 +43,7 @@ class OpenDocumentOperation @Inject constructor(
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
         val url = doc.toKtorUrl(db)
-        val mimeType = doc.mimeType?.toString()?.let { runCatching { ContentType.parse(it) }.getOrNull() }
+        val mimeType = doc.mimeType?.toString()?.let { ContentType.parse(it) }
         val client = httpClientBuilder.buildKtor(doc.mountId, logBody = false)
 
         val readOnlyMode = when (mode) {

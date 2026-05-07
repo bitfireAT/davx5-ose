@@ -18,6 +18,7 @@ import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.ktor.DavResource as KtorDavResource
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.davdroid.util.DavUtils
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
@@ -193,7 +194,7 @@ class RandomAccessCallback @AssistedInject constructor(
             logger.fine("Loading page $url $offset/$size")
 
             val additionalHeaders = Headers.build {
-                append(HttpHeaders.Accept, mimeType?.let { "$it, */*;q=0.8" } ?: "*/*")
+                append(HttpHeaders.Accept, DavUtils.acceptAnything(mimeType))
                 when {
                     documentState.eTag != null ->
                         append(HttpHeaders.IfMatch, "\"${documentState.eTag}\"")
