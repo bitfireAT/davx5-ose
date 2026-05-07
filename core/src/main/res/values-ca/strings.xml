@@ -526,4 +526,6 @@
     <string name="app_settings_push_select_default_distributor_action">Estableix com a predeterminada</string>
     <string name="app_settings_push_capability_none">Cap de les col·leccions habilitades de servidors de sincronització actualment admet WebDAV-Push.</string>
     <string name="app_settings_push_capability_some">Només alguna de les col·leccions habilitades de servidors de sincronització actualment admet WebDAV-Push.</string>
+    <string name="app_settings_push_enabled_summary">Actiu, %s</string>
+    <string name="app_settings_push_disabled_summary">Inactiu</string>
 </resources>
