@@ -2,8 +2,25 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-import info.git.versionHelper.getGitCommitCount
-import info.git.versionHelper.getVersionText
+// Configuration-cache-safe git providers for versioning metadata.
+val gitCommitCount = providers.exec {
+    commandLine("git", "rev-list", "HEAD", "--count")
+}.standardOutput.asText.map { it.trim().toInt() + 405120000 }
+
+val gitDescribe = providers.environmentVariable("tag")
+    .orElse(
+        providers.exec {
+            commandLine("git", "describe", "--tags")
+        }.standardOutput.asText.map { it.trim() }
+    )
+
+val gitDirty = providers.exec {
+    commandLine("git", "diff-index", "--name-only", "HEAD", "--")
+}.standardOutput.asText.map { it.trim().isNotEmpty() }
+
+val buildVersionName = gitDescribe.zip(gitDirty) { describe, dirty ->
+    if (dirty) "$describe-DIRTY" else describe
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -28,8 +45,8 @@ android {
 
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = getGitCommitCount(405120000)
-        versionName = getVersionText()
+        versionCode = gitCommitCount.get()
+        versionName = buildVersionName.get()
         println("Build version ${versionName} (${versionCode})")
 
         base.archivesName = "davx5-$versionCode-$versionName"
