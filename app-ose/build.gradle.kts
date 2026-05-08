@@ -49,8 +49,8 @@ android {
         Google Play just shows a generic "Can't install DAVx5" message. So we derive the authority names
         from the package ID, so that the build variants (and clones) have their own authority names and
         can be installed beside DAVx5. */
-        val webdavAuthority = "${applicationId}.webdav"
-        val debugInfoAuthority = "${applicationId}.debug"
+        val webdavAuthority = "${applicationId}.provider.webdav"
+        val debugInfoAuthority = "${applicationId}.provider.debuginfo"
         manifestPlaceholders["webdavAuthority"] = webdavAuthority
         manifestPlaceholders["debugInfoAuthority"] = debugInfoAuthority
         /* Override the default string values from the core library (core/src/main/res/values/strings.xml)
