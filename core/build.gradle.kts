@@ -17,6 +17,17 @@ java {
     }
 }
 
+kotlin {
+    compilerOptions {
+        // use new defaulting rule for qualifiers to avoid `@param:` prefix for DI annotations
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
+    }
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 android {
     compileSdk = 37
 
@@ -81,10 +92,6 @@ android {
             }
         }
     }
-}
-
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 aboutLibraries {
