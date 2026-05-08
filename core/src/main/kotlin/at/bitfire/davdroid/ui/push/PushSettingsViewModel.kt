@@ -78,10 +78,8 @@ class PushSettingsViewModel @Inject constructor(
             )
         }
 
-        if (enabled) {
-            // If there's a pending notification for the user regarding the selection of a push distributor, dismiss it, as the user has now made a selection.
-            pushNotificationManager.dismiss(NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR)
-        }
+        // If there's a pending notification for the user regarding the selection of a push distributor, dismiss it, as the user has now made a selection.
+        pushNotificationManager.dismiss(NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR)
 
         applicationScope.launch(ioDispatcher) {
             pushDistributorManager.setPushEnabled(enabled)
