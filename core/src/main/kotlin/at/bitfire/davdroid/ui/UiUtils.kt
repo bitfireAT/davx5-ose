@@ -42,6 +42,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.logging.Level
@@ -96,6 +97,9 @@ object UiUtils {
                         shortcutManager.dynamicShortcuts = shortcuts
                     }
                 } catch(e: Exception) {
+                    // Do not intercept CancellationException
+                    if (e is CancellationException) throw e
+
                     val logger = EntryPointAccessors.fromApplication(context, UiUtilsEntryPoint::class.java).logger()
                     logger.log(Level.WARNING, "Couldn't update dynamic shortcut(s)", e)
                 }
