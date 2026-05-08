@@ -42,6 +42,8 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -78,17 +80,21 @@ object UiUtils {
         AppCompatDelegate.setDefaultNightMode(mode)
     }
 
-    fun updateShortcuts(context: Context) {
+    suspend fun updateShortcuts(context: Context) {
         if (Build.VERSION.SDK_INT >= 25)
             context.getSystemService<ShortcutManager>()?.let { shortcutManager ->
                 try {
-                    shortcutManager.dynamicShortcuts = listOf(
+                    val shortcuts = listOf(
                         ShortcutInfo.Builder(context, SHORTCUT_SYNC_ALL)
                             .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
                             .setShortLabel(context.getString(R.string.accounts_sync_all))
                             .setIntent(Intent(Intent.ACTION_SYNC, null, context, AccountsActivity::class.java))
                             .build()
                     )
+
+                    withContext(Dispatchers.IO) {
+                        shortcutManager.dynamicShortcuts = shortcuts
+                    }
                 } catch(e: Exception) {
                     val logger = EntryPointAccessors.fromApplication(context, UiUtilsEntryPoint::class.java).logger()
                     logger.log(Level.WARNING, "Couldn't update dynamic shortcut(s)", e)
