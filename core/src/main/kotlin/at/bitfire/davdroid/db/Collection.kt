@@ -79,7 +79,7 @@ data class Collection(
     /**
      * Type of service. CalDAV or CardDAV
      */
-    @CollectionType
+    @param:CollectionType
     val type: String,
 
     /**
