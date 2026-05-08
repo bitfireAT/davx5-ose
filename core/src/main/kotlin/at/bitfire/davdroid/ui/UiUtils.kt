@@ -42,7 +42,6 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.logging.Level
@@ -84,24 +83,19 @@ object UiUtils {
     suspend fun updateShortcuts(context: Context) {
         if (Build.VERSION.SDK_INT >= 25)
             context.getSystemService<ShortcutManager>()?.let { shortcutManager ->
-                try {
-                    val shortcuts = listOf(
-                        ShortcutInfo.Builder(context, SHORTCUT_SYNC_ALL)
-                            .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
-                            .setShortLabel(context.getString(R.string.accounts_sync_all))
-                            .setIntent(Intent(Intent.ACTION_SYNC, null, context, AccountsActivity::class.java))
-                            .build()
-                    )
-
-                    withContext(Dispatchers.IO) {
-                        shortcutManager.dynamicShortcuts = shortcuts
+                withContext(Dispatchers.IO) {
+                    try {
+                        shortcutManager.dynamicShortcuts = listOf(
+                            ShortcutInfo.Builder(context, SHORTCUT_SYNC_ALL)
+                                .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
+                                .setShortLabel(context.getString(R.string.accounts_sync_all))
+                                .setIntent(Intent(Intent.ACTION_SYNC, null, context, AccountsActivity::class.java))
+                                .build()
+                        )
+                    } catch(e: Exception) {
+                        val logger = EntryPointAccessors.fromApplication(context, UiUtilsEntryPoint::class.java).logger()
+                        logger.log(Level.WARNING, "Couldn't update dynamic shortcut(s)", e)
                     }
-                } catch(e: Exception) {
-                    // Do not intercept CancellationException
-                    if (e is CancellationException) throw e
-
-                    val logger = EntryPointAccessors.fromApplication(context, UiUtilsEntryPoint::class.java).logger()
-                    logger.log(Level.WARNING, "Couldn't update dynamic shortcut(s)", e)
                 }
             }
     }
