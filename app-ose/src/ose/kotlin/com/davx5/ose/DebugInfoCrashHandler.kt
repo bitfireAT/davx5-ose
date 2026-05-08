@@ -34,7 +34,8 @@ class DebugInfoCrashHandler @Inject constructor(
 
 
     override fun uncaughtException(t: Thread, e: Throwable) {
-        logger.log(Level.SEVERE, "Unhandled exception in thread ${t.threadId}!", e)
+        @Suppress("DEPRECATION")
+        logger.log(Level.SEVERE, "Unhandled exception in thread ${t.id}!", e)
 
         // start debug info activity with exception (will be started in a new process)
         val intent = DebugInfoActivity.IntentBuilder(context)

@@ -8,7 +8,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.provider.DocumentsContract.Document
 import android.webkit.MimeTypeMap
-
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index

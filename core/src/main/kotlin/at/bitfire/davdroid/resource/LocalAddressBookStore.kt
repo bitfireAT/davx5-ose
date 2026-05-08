@@ -9,12 +9,12 @@ import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.ContentProviderClient
 import android.content.Context
+import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.annotation.OpenForTesting
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import androidx.core.content.contentValuesOf
-
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavServiceRepository

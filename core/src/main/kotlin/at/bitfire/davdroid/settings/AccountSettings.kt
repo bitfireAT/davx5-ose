@@ -9,7 +9,6 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Looper
 import androidx.annotation.WorkerThread
-
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
