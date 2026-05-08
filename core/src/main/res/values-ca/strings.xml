@@ -510,7 +510,7 @@
         <item quantity="other">Els elements anteriors a %d dies no se sincronitzen (vegeu la configuració del compte).</item>
     </plurals>
     <string name="login_invalid_use_case">Cas d\'ús no vàlid</string>
-    <string name="login_invalid_use_case_info"><![CDATA[Aquesta variant %s de l'aplicació només es pot fer servir amb serveis seleccionats.]]></string>
+    <string name="login_invalid_use_case_info"><![CDATA[]]></string>
     <string name="login_download_regular_davx5"><![CDATA[En el seu lloc, feu servir <a href="%s">DAVx⁵</a>, que es pot utilitzar amb tots els serveis.]]></string>
     <string name="login_download_button">Baixa DAVx⁵</string>
     <string name="dismiss_forever">Descarta per sempre</string>
