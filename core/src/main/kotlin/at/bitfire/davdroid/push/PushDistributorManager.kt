@@ -45,7 +45,6 @@ class PushDistributorManager @Inject constructor(
             return null
         }
 
-        // get ACK distributor: saved distributor, which is correctly configured
         val savedDistributor = UnifiedPush.getSavedDistributor(context)
         if (savedDistributor != null) return savedDistributor
 
