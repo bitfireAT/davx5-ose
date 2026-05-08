@@ -62,6 +62,9 @@ class PushDistributorManager @Inject constructor(
 
             // There's no custom distributor installed, and FCM is not available
             ResolvedDistributor.NoneAvailable -> {
+                // The embedded FCM push distributor is not returned currently with resolveDefaultDistributor
+                // See: https://codeberg.org/UnifiedPush/android-embedded_fcm_distributor/issues/1
+                // In theory, this won't be needed on the next UnifiedPush release, but for now, we have to manually check availability and save it.
                 if (isFCMDistributorAvailable()) {
                     logger.fine("There's no custom distributor available, but FCM is available. Using embedded FCM distributor.")
                     return context.packageName.also { distributor -> UnifiedPush.saveDistributor(context, distributor) }
