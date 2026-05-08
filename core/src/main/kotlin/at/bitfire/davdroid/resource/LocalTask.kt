@@ -9,9 +9,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.tasks.DmfsTask
 import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
