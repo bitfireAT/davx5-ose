@@ -8,12 +8,12 @@ import android.accounts.Account
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.core.content.IntentCompat
 import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.TaskStackBuilder
+import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.R
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -7,10 +7,10 @@ package at.bitfire.davdroid.ui.account
 import android.accounts.Account
 import android.content.Intent
 import android.os.Bundle
-import androidx.core.content.IntentCompat
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
+import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.ui.composable.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
