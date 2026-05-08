@@ -117,10 +117,10 @@ class DmfsTaskTest(
         assertNotNull("Couldn't add task", uri)
 
         // read and parse event from calendar provider
-        val testTask = taskList!!.getTask(ContentUris.parseId(uri))
+        val testTask = taskList!!.getLegacyTask(ContentUris.parseId(uri))
         try {
             assertNotNull("Inserted task is not here", testTask)
-            val task2 = testTask.task
+            val task2 = testTask?.task
             assertNotNull("Inserted task is empty", task2)
 
             // compare with original event
@@ -134,7 +134,7 @@ class DmfsTaskTest(
             assertEquals(task.relatedTo, task2.relatedTo)
             assertEquals(task.unknownProperties, task2.unknownProperties)
         } finally {
-            testTask.delete()
+            testTask?.delete()
         }
     }
 
@@ -161,7 +161,7 @@ class DmfsTaskTest(
 
         val uri = DmfsTask(taskList!!, task, "9468a4cf-0d5b-4379-a704-12f1f84100ba", null, 0).add()
         val task2 = taskList!!.getTask(ContentUris.parseId(uri))
-        assertEquals(1050, task2.task?.alarms?.size)
+        assertEquals(1050, task2?.task?.alarms?.size)
     }
 
     @Test
@@ -184,20 +184,20 @@ class DmfsTaskTest(
         val testTask = taskList!!.getTask(ContentUris.parseId(uri))
         try {
             // update test event in calendar
-            val task2 = testTask.task!!
+            val task2 = testTask?.task!!
             task2.summary = "Updated event"                     // change value
             task.location = null                                // remove value
             task2.duration = Duration(java.time.Duration.ofMinutes(10))     // add value
             testTask.update(task2)
 
             // read again and verify result
-            val updatedTask = taskList!!.getTask(ContentUris.parseId(uri)).task!!
+            val updatedTask = taskList!!.getTask(ContentUris.parseId(uri))?.task!!
             assertEquals(task2.summary, updatedTask.summary)
             assertEquals(task2.location, updatedTask.location)
             assertEquals(task2.dtStart, updatedTask.dtStart)
             assertEquals(task2.duration!!.value, updatedTask.duration!!.value)
         } finally {
-            testTask.delete()
+            testTask?.delete()
         }
     }
 

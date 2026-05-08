@@ -4,72 +4,82 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-package at.bitfire.ical4android
+package at.bitfire.synctools.storage.tasks
 
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Entity
 import android.net.Uri
-import android.os.RemoteException
+import at.bitfire.ical4android.Task
 import at.bitfire.synctools.mapping.tasks.DmfsTaskBuilder
 import at.bitfire.synctools.mapping.tasks.DmfsTaskProcessor
-import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
+import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
-import at.bitfire.synctools.storage.tasks.DmfsTaskList
-import at.bitfire.synctools.storage.tasks.TasksBatchOperation
 import at.bitfire.synctools.storage.toContentValues
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.parameter.RelType
 import net.fortuna.ical4j.model.property.RelatedTo
-import org.dmfs.tasks.contract.TaskContract.Properties
-import org.dmfs.tasks.contract.TaskContract.Tasks
+import org.dmfs.tasks.contract.TaskContract
 import java.io.FileNotFoundException
 import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
- * Stores and retrieves VTODO iCalendar objects (represented as [Task]s) to/from the
- * tasks.org-content provider (currently tasks.org and OpenTasks).
+ * Stores and retrieves tasks to/from the tasks.org-content provider (currently tasks.org and
+ * OpenTasks).
  *
- * Extend this class to process specific fields of the task.
+ * A task in the context of this class is one row in the [org.dmfs.tasks.contract.TaskContract.Tasks] table,
+ * plus associated data rows (like alarms and reminders).
  *
- * The SEQUENCE field is stored in [Tasks.SYNC_VERSION], so don't use [Tasks.SYNC_VERSION]
- * for anything else.
+ * The SEQUENCE field is stored in [org.dmfs.tasks.contract.TaskContract.CommonSyncColumns.SYNC_VERSION], so
+ * don't use it for anything else.
+ *
+ * @param taskList  task list where the task is stored
+ * @param values    entity with all columns, as returned by the task provider; [org.dmfs.tasks.contract.TaskContract.Tasks._ID]
+ *                  must be set to a non-null value for existing tasks, and may be absent for new (unsaved) tasks
  */
-@Deprecated("Use storage.tasks.DmfsTask instead")
 class DmfsTask(
-    val taskList: DmfsTaskList
+    val taskList: DmfsTaskList,
+    val values: Entity
 ) {
+
+    /**
+     * Secondary constructor for creating a new (not yet saved) task.
+     *
+     * @param taskList  task list where the task will be stored
+     * @param task      task data
+     * @param syncId    remote file name (e.g. `mytask.ics`)
+     * @param eTag      remote ETag
+     * @param flags     local flags (e.g. [at.bitfire.davdroid.resource.LocalResource.FLAG_REMOTELY_PRESENT])
+     */
+    constructor(taskList: DmfsTaskList, task: Task, syncId: String?, eTag: String?, flags: Int) : this(
+        taskList = taskList,
+        values = Entity(ContentValues().apply {
+            if (syncId != null) put(TaskContract.Tasks._SYNC_ID, syncId)
+            put(COLUMN_ETAG, eTag)
+            put(COLUMN_FLAGS, flags)
+        })
+    ) {
+        this.task = task
+    }
 
     private val logger = Logger.getLogger(javaClass.name)
 
-    var id: Long? = null
-    var syncId: String? = null
-    var eTag: String? = null
-    var flags: Int = 0
+    private val mainValues
+        get() = values.entityValues
 
-
-    constructor(taskList: DmfsTaskList, values: ContentValues): this(taskList) {
-        id = values.getAsLong(Tasks._ID)
-        syncId = values.getAsString(Tasks._SYNC_ID)
-        eTag = values.getAsString(COLUMN_ETAG)
-        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
-    }
-
-    constructor(taskList: DmfsTaskList, task: Task, syncId: String?, eTag: String?, flags: Int): this(taskList) {
-        this.task = task
-        this.syncId = syncId
-        this.eTag = eTag
-        this.flags = flags
-    }
-
+    var id: Long? = mainValues.getAsLong(TaskContract.Tasks._ID)
+    var syncId: String? = mainValues.getAsString(TaskContract.Tasks._SYNC_ID)
+    var eTag: String? = mainValues.getAsString(COLUMN_ETAG)
+    var flags: Int = mainValues.getAsInteger(COLUMN_FLAGS) ?: 0
 
     var task: Task? = null
         /**
          * This getter returns the full task data, either from [task] or, if [task] is null, by reading task
          * number [id] from the task provider
          * @throws IllegalArgumentException if task has not been saved yet
-         * @throws FileNotFoundException if there's no task with [id] in the task provider
-         * @throws RemoteException on task provider errors
+         * @throws java.io.FileNotFoundException if there's no task with [id] in the task provider
+         * @throws android.os.RemoteException on task provider errors
          */
         get() {
             if (field != null)
@@ -89,7 +99,7 @@ class DmfsTask(
                         val processor = DmfsTaskProcessor(taskList)
                         processor.populateTask(values, newTask)
 
-                        if (values.containsKey(Properties.PROPERTY_ID)) {
+                        if (values.containsKey(TaskContract.Properties.PROPERTY_ID)) {
                             // process the first property, which is combined with the task row
                             processor.populateProperty(values, newTask)
 
@@ -101,7 +111,7 @@ class DmfsTask(
 
                         // Special case: parent_id set, but no matching parent Relation row (like given by aCalendar+)
                         val relatedToList = newTask.relatedTo
-                        values.getAsLong(Tasks.PARENT_ID)?.let { parentId ->
+                        values.getAsLong(TaskContract.Tasks.PARENT_ID)?.let { parentId ->
                             val hasParentRelation = relatedToList.any { relatedTo ->
                                 val relatedType = relatedTo.getParameter<RelType>(Parameter.RELTYPE)
                                 relatedType == RelType.PARENT || relatedType == null /* RelType.PARENT is the default value */
@@ -109,7 +119,7 @@ class DmfsTask(
                             if (!hasParentRelation) {
                                 // get UID of parent task
                                 val parentContentUri = ContentUris.withAppendedId(taskList.tasksUri(), parentId)
-                                client.query(parentContentUri, arrayOf(Tasks._UID), null, null, null)?.use { cursor ->
+                                client.query(parentContentUri, arrayOf(TaskContract.Tasks._UID), null, null, null)?.use { cursor ->
                                     if (cursor.moveToNext()) {
                                         // add RelatedTo for parent task
                                         relatedToList += RelatedTo(cursor.getString(0))
@@ -137,8 +147,8 @@ class DmfsTask(
      *
      * @return content URI of the created task
      *
-     * @throws LocalStorageException when the tasks provider doesn't return a result row
-     * @throws RemoteException on tasks provider errors
+     * @throws at.bitfire.synctools.storage.LocalStorageException when the tasks provider doesn't return a result row
+     * @throws android.os.RemoteException on tasks provider errors
      */
     fun add(): Uri {
         val batch = TasksBatchOperation(taskList.provider.client)
@@ -163,7 +173,7 @@ class DmfsTask(
      * @return content URI of the updated task
      *
      * @throws LocalStorageException when the tasks provider doesn't return a result row
-     * @throws RemoteException on tasks provider errors
+     * @throws android.os.RemoteException on tasks provider errors
      */
     fun update(task: Task): Uri {
         this.task = task
@@ -172,9 +182,9 @@ class DmfsTask(
         val batch = TasksBatchOperation(taskList.provider.client)
 
         // remove associated rows which are added later again
-        batch += CpoBuilder
+        batch += BatchOperation.CpoBuilder
             .newDelete(taskList.tasksPropertiesUri())
-            .withSelection("${Properties.TASK_ID}=?", arrayOf(existingId.toString()))
+            .withSelection("${TaskContract.Properties.TASK_ID}=?", arrayOf(existingId.toString()))
 
         // update task
         val builder = DmfsTaskBuilder(taskList, task, id, syncId, eTag, flags)
@@ -184,7 +194,7 @@ class DmfsTask(
         builder.insertProperties(batch, null)
 
         batch.commit()
-        return ContentUris.withAppendedId(Tasks.getContentUri(taskList.providerName.authority), existingId)
+        return ContentUris.withAppendedId(TaskContract.Tasks.getContentUri(taskList.providerName.authority), existingId)
     }
 
     fun update(values: ContentValues) {
@@ -196,7 +206,7 @@ class DmfsTask(
      *
      * @return number of affected rows
      *
-     * @throws RemoteException on tasks provider errors
+     * @throws android.os.RemoteException on tasks provider errors
      */
     fun delete(): Int {
         return taskList.provider.client.delete(taskSyncURI(), null, null)
@@ -208,11 +218,11 @@ class DmfsTask(
     }
 
     companion object {
-        const val UNKNOWN_PROPERTY_DATA = Properties.DATA0
+        const val UNKNOWN_PROPERTY_DATA = TaskContract.Properties.DATA0
 
-        const val COLUMN_ETAG = Tasks.SYNC1
+        const val COLUMN_ETAG = TaskContract.Tasks.SYNC1
 
-        const val COLUMN_FLAGS = Tasks.SYNC2
+        const val COLUMN_FLAGS = TaskContract.Tasks.SYNC2
     }
 
 }

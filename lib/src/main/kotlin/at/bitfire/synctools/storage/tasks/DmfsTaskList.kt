@@ -8,9 +8,9 @@ package at.bitfire.synctools.storage.tasks
 
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Entity
 import android.net.Uri
 import android.os.RemoteException
-import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
@@ -19,9 +19,10 @@ import at.bitfire.synctools.storage.toContentValues
 import org.dmfs.tasks.contract.TaskContract
 import java.util.LinkedList
 import java.util.logging.Logger
+import at.bitfire.ical4android.DmfsTask as LegacyDmfsTask
 
 /**
- * Represents a locally stored task list, containing [at.bitfire.ical4android.DmfsTask]s (tasks).
+ * Represents a locally stored task list, containing [DmfsTask]s (tasks).
  * Communicates with tasks.org-compatible content providers (currently tasks.org and OpenTasks) to store the tasks.
  */
 class DmfsTaskList(
@@ -81,15 +82,19 @@ class DmfsTaskList(
      * @param where selection
      * @param whereArgs arguments for selection
      *
-     * @return events from this task list which match the selection
+     * @return tasks from this task list which match the selection
      */
     fun findTasks(where: String? = null, whereArgs: Array<String>? = null): List<DmfsTask> {
         val tasks = LinkedList<DmfsTask>()
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
-            client.query(tasksUri(), null, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                while (cursor.moveToNext())
-                    tasks += DmfsTask(this, cursor.toContentValues())
+            client.query(tasksUri(), arrayOf(TaskContract.Tasks._ID), protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+                while (cursor.moveToNext()) {
+                    val taskId = cursor.getLong(0)
+                    val entity = getTaskEntity(taskId)
+                    if (entity != null)
+                        tasks += DmfsTask(this, entity)
+                }
             }
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't query ${providerName.authority} tasks", e)
@@ -97,9 +102,56 @@ class DmfsTaskList(
         return tasks
     }
 
-    fun getTask(id: Long) = findTasks("${TaskContract.Tasks._ID}=?", arrayOf(id.toString())).firstOrNull()
-        ?: throw LocalStorageException("Couldn't query ${providerName.authority} tasks")
-    
+    /**
+     * Gets a task from this task list by given id.
+     *
+     * @return task from this task list which matches the selection
+     */
+    fun getTask(id: Long): DmfsTask? {
+        val values = getTaskEntity(id) ?: return null
+        return DmfsTask(this, values)
+    }
+
+    /**
+     * Retrieves a task as entity from this task list by given id and selection.
+     *
+     * @param where selection
+     * @param whereArgs arguments for selection
+     *
+     * @return task from this task list which matches the selection
+     */
+    fun getTaskEntity(id: Long, where: String? = null, whereArgs: Array<String>? = null): Entity? {
+        try {
+            client.query(taskUri(id, true), null, where, whereArgs, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    // first row holds entity main values
+                    val entity = Entity(cursor.toContentValues())
+                    // remaining rows hold entity subvalues (extended properties)
+                    while (cursor.moveToNext()) {
+                        val cv = cursor.toContentValues()
+                        val mimetype = cv.getAsString(TaskContract.PropertyColumns.MIMETYPE) // CONTENT_ITEM_TYPE of extended property
+                        entity.addSubValue(tasksPropertyUri(mimetype), cv)
+                    }
+                    return entity
+                }
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query task entity", e)
+        }
+        return null
+    }
+
+    /**
+     * Gets a specific task, identified by its ID, from this task list.
+     *
+     * @param id    task ID
+     * @return task (or `null` if not found)
+     */
+    fun getLegacyTask(id: Long): LegacyDmfsTask? {
+        val entity = getTaskEntity(id, null) ?: return null
+        return LegacyDmfsTask(this, entity.entityValues)
+    }
+
     /**
      * Updates tasks in this task list.
      *
@@ -176,6 +228,9 @@ class DmfsTaskList(
 
     fun tasksPropertiesUri() =
         TaskContract.Properties.getContentUri(providerName.authority).asSyncAdapter(account)
+
+    fun tasksPropertyUri(mimetype: String): Uri =
+        tasksPropertiesUri().buildUpon().appendPath(mimetype).build()!!
 
     /**
      * Restricts a given selection/where clause to this task list ID.
