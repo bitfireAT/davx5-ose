@@ -197,14 +197,8 @@
     <string name="app_settings_integration">Интеграция</string>
     <string name="app_settings_tasks_provider">Приложение Tasks</string>
     <string name="app_settings_tasks_provider_none">Не найдено совместимое приложение для задач</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (экспериментально)</string>
-    <string name="app_settings_unifiedpush_disable">Нет (отключить push)</string>
-    <string name="app_settings_unifiedpush_choose_distributor">Выберите дистрибьютора</string>
-    <string name="app_settings_unifiedpush_no_distributor">Push-дистрибьютор не установлен</string>
     <string name="app_settings_unifiedpush_no_endpoint">Конечная точка не сконфигурирована</string>
-    <string name="app_settings_unifiedpush_ready">Готов получать push-сообщения %s</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-    <string name="app_settings_unifiedpush_encrypted">Push-сообщения всегда зашифрованы.</string>
     <!--AccountScreen-->
   <string name="account_invalid_account">Аккаунт удален</string>
     <string name="account_carddav">CardDAV</string>

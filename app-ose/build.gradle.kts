@@ -40,8 +40,8 @@ android {
          *   every release with the same major/minor/patch version (alpha-1, alpha-2, beta-1, ..., final).
          *   So usually the first pre-release has `0000` and the final version has the greatest number.
          */
-        versionCode = 405120000
-        versionName = "4.5.12-beta.1"
+        versionCode = 405120001
+        versionName = "4.5.12-beta.2"
 
         base.archivesName = "davx5-$versionCode-$versionName"
 
@@ -49,8 +49,8 @@ android {
         Google Play just shows a generic "Can't install DAVx5" message. So we derive the authority names
         from the package ID, so that the build variants (and clones) have their own authority names and
         can be installed beside DAVx5. */
-        val webdavAuthority = "${applicationId}.webdav"
-        val debugInfoAuthority = "${applicationId}.debug"
+        val webdavAuthority = "${applicationId}.provider.webdav"
+        val debugInfoAuthority = "${applicationId}.provider.debuginfo"
         manifestPlaceholders["webdavAuthority"] = webdavAuthority
         manifestPlaceholders["debugInfoAuthority"] = debugInfoAuthority
         /* Override the default string values from the core library (core/src/main/res/values/strings.xml)

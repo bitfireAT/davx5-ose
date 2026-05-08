@@ -13,9 +13,11 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushDistributorManager
+import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository.PushCollectionsAmount
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
 import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
@@ -42,7 +44,8 @@ class PushSettingsViewModel @Inject constructor(
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val collectionRepository: DavCollectionRepository,
     private val pushDistributorManager: PushDistributorManager,
-    private val pushRegistrationManager: PushRegistrationManager
+    private val pushRegistrationManager: PushRegistrationManager,
+    private val pushNotificationManager: PushNotificationManager
 ) : ViewModel() {
     private val packageManager = context.packageManager
 
@@ -75,6 +78,9 @@ class PushSettingsViewModel @Inject constructor(
             )
         }
 
+        // If there's a pending notification for the user regarding the selection of a push distributor, dismiss it, as the user has now made a selection.
+        pushNotificationManager.dismiss(NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR)
+
         applicationScope.launch(ioDispatcher) {
             pushDistributorManager.setPushEnabled(enabled)
             pushRegistrationManager.update()
@@ -85,6 +91,9 @@ class PushSettingsViewModel @Inject constructor(
         updateContent { content ->
             content.copy(selectedPushDistributor = packageName)
         }
+
+        // If there's a pending notification for the user regarding the selection of a push distributor, dismiss it, as the user has now made a selection.
+        pushNotificationManager.dismiss(NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR)
 
         applicationScope.launch(ioDispatcher) {
             pushDistributorManager.setPushDistributorAndEnablePush(packageName)
@@ -111,6 +120,9 @@ class PushSettingsViewModel @Inject constructor(
             }
         }
 
+        // If there's a pending notification for the user regarding the selection of a push distributor, dismiss it, as the user has now made a selection.
+        pushNotificationManager.dismiss(NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR)
+
         // Update view
         updateContent { content ->
             content.copy(
@@ -129,7 +141,7 @@ class PushSettingsViewModel @Inject constructor(
         val pushDistributors = pushDistributorManager.getDistributors()
             .mapNotNull { pushDistributor ->
                 if (pushDistributor == context.packageName) {
-                    if (isPlayServicesAvailable()) {
+                    if (pushDistributorManager.isFCMDistributorAvailable()) {
                         PushDistributorInfo(
                             packageName = pushDistributor,
                             appName = context.getString(R.string.app_settings_unifiedpush_distributor_fcm),
@@ -168,16 +180,6 @@ class PushSettingsViewModel @Inject constructor(
             PushCollectionsAmount.All -> PushCapability.DoNotShow // No need to tell the user
             PushCollectionsAmount.Some -> PushCapability.SomePushCapable
             PushCollectionsAmount.None -> PushCapability.NonePushCapable
-        }
-    }
-
-    // Copied from embedded-fcm-distributor
-    private fun isPlayServicesAvailable(): Boolean {
-        try {
-            packageManager.getPackageInfo("com.google.android.gms", PackageManager.GET_ACTIVITIES)
-            return true
-        } catch (_: PackageManager.NameNotFoundException) {
-            return false
         }
     }
 

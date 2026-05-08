@@ -25,11 +25,11 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskReader
 import at.bitfire.ical4android.TaskWriter
 import at.bitfire.synctools.exception.InvalidICalendarException
+import at.bitfire.synctools.storage.tasks.DmfsTask
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
