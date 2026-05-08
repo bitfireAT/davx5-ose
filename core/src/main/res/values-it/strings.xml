@@ -433,4 +433,51 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
     <string name="app_settings_logging_on">Il logging è attivo. Puoi vedere i log come parte delle informazioni di debug.</string>
     <string name="app_settings_battery_optimization_exempted">Nessuna restrizione (consigliato)</string>
     <string name="app_settings_battery_optimization_optimized">Restrizioni all\'uso della batteria attivate (non consigliato)</string>
+    <string name="intro_backups_title">Promemoria backup</string>
+    <string name="intro_backups_important">È importante eseguire regolarmente il backup dei dati (compresi contatti e calendari) per prevenire potenziali perdite di dati.</string>
+    <string name="intro_backups_something_wrong">Qualcosa può sempre andare storto, sia sul server, in %s o in altre app, ad esempio potrebbero eliminare accidentalmente tutte le voci del calendario. (Le eliminazioni verrebbero quindi sincronizzate con il server.)</string>
+    <string name="intro_backups_accept">Ho già una strategia di backup funzionante o non ne ho bisogno.</string>
+    <string name="about_translations_thanks">❤️ Grazie a tutti quelli che hanno contribuito alle traduzioni!</string>
+    <string name="about_translations_over_transifex">Da Transifex</string>
+    <string name="about_translations_over_weblate">Da Weblate</string>
+    <string name="about_translations_contribute">Aiuta a tradurre</string>
+    <string name="app_settings_distrust_system_certs_dialog_message">Se questa impostazione è attiva, i certificati di sistema non sono considerati affidabili. Ciò significa che dovrai accettare manualmente ogni certificato (anche quando il server rinnova il suo certificato) o la configurazione dell\'account e la sincronizzazione non funzionerà.</string>
+    <string name="account_invalid_account">L\'account è stato rimosso</string>
+    <string name="login_privacy_hint"><![CDATA[Tutti i dati saranno trasferiti solo tra il server e il dispositivo. %1$s non li invierà altrove. Vedi la <a href="%2$s">polizza sulla privacy</a>.]]></string>
+    <string name="login_password_optional">Password (opzionale)</string>
+    <string name="login_user_name_optional">Nome utente (opzionale)</string>
+    <string name="login_finish">Fatto</string>
+    <string name="create_collection_description_optional">Descrizione (opzionale)</string>
+    <string name="collection_datatype_events">eventi</string>
+    <string name="collection_datatype_contacts_count">%1$d contatti</string>
+    <string name="collection_datatype_events_count">%1$d eventi</string>
+    <string name="collection_datatype_tasks_count">%1$d attività</string>
+    <string name="app_settings_push_default_distributor_text">(predefinito di sistema)</string>
+    <string name="login_no_client_certificate_optional">»</string>
+    <string name="settings_password">Password o app password</string>
+    <string name="settings_reauthorize_oauth">Autorizza di nuovo (OAuth)</string>
+    <string name="settings_reauthorize_oauth_summary">Usa quando l\'accesso è stato revocato</string>
+    <string name="settings_reauthorize_oauth_success">Autorizzazione riuscita</string>
+    <string name="create_calendar_time_zone_optional">Fuso orario predefinito (opzionale)</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="one">%1$d elemento in %2$s</item>
+        <item quantity="many">%1$d elementi in %2$s</item>
+        <item quantity="other">%1$d elementi in %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <item quantity="one">├ %d modifica non sincronizzata</item>
+        <item quantity="many">├ %d modifiche non sincronizzate</item>
+        <item quantity="other">├ %d modifiche non sincronizzate</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <item quantity="one">├ %d eliminazione non sincronizzata</item>
+        <item quantity="many">├ %d eliminazioni non sincronizzate</item>
+        <item quantity="other">├ %d eliminazioni non sincronizzate</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Gli elementi più vecchi di %d giorno non sono sincronizzati (vede impostazioni dell\'account).</item>
+        <item quantity="many">Gli elementi più vecchi di %d giorni non sono sincronizzati (vede impostazioni dell\'account).</item>
+        <item quantity="other">Gli elementi più vecchi di %d giorni non sono sincronizzati (vede impostazioni dell\'account).</item>
+    </plurals>
+    <string name="debug_info_http_403_description">La richiesta è stata respinta dal server.</string>
 </resources>

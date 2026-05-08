@@ -43,7 +43,7 @@
     <string name="intro_tasks_opentasks">OpenTasks</string>
     <string name="intro_tasks_opentasks_info">Semella que xa non está en desenvolvemento – non recomendado.</string>
     <string name="intro_tasks_tasks_org">Task.org</string>
-    <string name="intro_tasks_tasks_org_info"><![CDATA[Some features <a href="https://www.davx5.com/faq/tasks/advanced-task-features">Non hai compatibilidade</a> para algunhas características]]></string>
+    <string name="intro_tasks_tasks_org_info"><![CDATA[Algunhas características <a href="https://www.davx5.com/faq/tasks/advanced-task-features">non son compatibles</a>.]]></string>
     <string name="intro_tasks_no_app_store">Sen tenda de apps dispoñible</string>
     <string name="intro_tasks_dont_show">Non necesito soporte para tarefas.*</string>
     <string name="intro_open_source_title">Software de código aberto</string>
@@ -193,12 +193,7 @@
     <string name="app_settings_integration">Integración</string>
     <string name="app_settings_tasks_provider">App Tarefas</string>
     <string name="app_settings_tasks_provider_none">Non se atopan app de tarefas compatible</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
-    <string name="app_settings_unifiedpush_disable">Ningún (push desactivado)</string>
-    <string name="app_settings_unifiedpush_choose_distributor">Elixe un distribuidor</string>
-    <string name="app_settings_unifiedpush_no_distributor">Non hai un distribuidor instalado</string>
     <string name="app_settings_unifiedpush_no_endpoint">Sen punto de acceso configurado</string>
-    <string name="app_settings_unifiedpush_ready">Preparado para recibir mensaxes push desde %s</string>
     <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
     <string name="account_caldav">CalDAV</string>
@@ -456,7 +451,6 @@
     <string name="about_translations_contribute">Axuda a traducir</string>
     <string name="navigation_drawer_managed">Para organizacións</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-    <string name="app_settings_unifiedpush_encrypted">As mensaxes push sempre están cifradas.</string>
     <string name="account_invalid_account">Eliminouse a conta</string>
     <string name="login_password_optional">Contrasinal (optativo)</string>
     <string name="login_user_name_optional">Identificador (optativo)</string>
@@ -491,4 +485,40 @@
     <string name="collection_datatype_contacts_count">%1$d contactos</string>
     <string name="collection_datatype_events_count">%1$d eventos</string>
     <string name="collection_datatype_tasks_count">%1$d tarefas</string>
+    <string name="login_invalid_use_case_info"><![CDATA[Esta variante da app %s só se pode usar cos servizos seleccionados.]]></string>
+    <string name="login_download_regular_davx5"><![CDATA[No seu lugar utiliza <a href="%s">DAVx⁵</a>, que se pode usar con todos os servizos.]]></string>
+    <string name="login_download_button">Descarga DAVx⁵</string>
+    <string name="collection_synced_items_title">Número de elementos locais</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="one">%1$d elemento en %2$s</item>
+        <item quantity="other">%1$d elementos en %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <item quantity="one">├ %d modificación non sincronizada</item>
+        <item quantity="other">├ %d modificacións non sincronizadas</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <item quantity="one">└ %d eliminación non sincronizada</item>
+        <item quantity="other">└ %d eliminacións non sincronizadas</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Elementos anteriores a %d día non están sincronizados (ver axustes da conta).</item>
+        <item quantity="other">Elementos anteriores a %d días non están sincronizados (ver axustes da conta).</item>
+    </plurals>
+    <string name="login_invalid_use_case">Tipo de uso non válido</string>
+    <string name="dismiss_forever">Desbotar para sempre</string>
+    <string name="keep_android_open"><![CDATA[Android pode deixar de ser un sistema aberto. Visita <a href="%s">keepandroidopen.org</a> para axudar a evitalo.]]></string>
+    <string name="app_settings_push_title">Enviar</string>
+    <string name="app_settings_push_description">Usa Enviar para facer que os servidores CalDAV/CardDAV/WebDAV notifiquen instantaneamente a %s dos cambios nos teus datos dispoñibles no servidor.</string>
+    <string name="app_settings_push_use_push">Usar Enviar</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[Non se atopan servizos Push (Enviar). Visita <a href="%1$s">%2$s</a> para ver unha lista de Apps Distribuidoras.]]></string>
+    <string name="app_settings_push_info_text"><![CDATA[As mensaxes tipo push sempre se envían cifradas. Aprende máis sobre WebDAV-Push no <a href="%s">manual</a>.]]></string>
+    <string name="app_settings_push_push_services">Servizo Push</string>
+    <string name="app_settings_push_default_distributor_text">(predeterminado do sistema)</string>
+    <string name="app_settings_push_select_default_distributor_description">Hai varias aplicacións Distribuidoras UnifiedPush. Podes establecer aquí a predeterminada para o sistema, así outras aplicacións compatibles con UnifiedPush non terán que preguntar cal usar.</string>
+    <string name="app_settings_push_select_default_distributor_action">Predeterminar</string>
+    <string name="app_settings_push_capability_none">Ningunha das túas coleccións con sincronización activada é compatible con WebDAV-Push.</string>
+    <string name="app_settings_push_capability_some">Só algunha das túas coleccións con sincronización activada é compatible con WebDAV-Push.</string>
+    <string name="app_settings_push_disabled_summary">Apagado</string>
+    <string name="app_settings_push_enabled_summary">Acendido, %s</string>
 </resources>
