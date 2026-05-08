@@ -64,7 +64,7 @@ class PushDistributorManager @Inject constructor(
             ResolvedDistributor.NoneAvailable -> {
                 if (isFCMDistributorAvailable()) {
                     logger.fine("There's no custom distributor available, but FCM is available. Using embedded FCM distributor.")
-                    return context.packageName
+                    return context.packageName.also { distributor -> UnifiedPush.saveDistributor(context, distributor) }
                 }
                 logger.warning("There's no distributor available, push is enabled, and there are servers advertising push support.")
                 return null
