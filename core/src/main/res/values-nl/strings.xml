@@ -519,4 +519,6 @@
     <string name="app_settings_push_select_default_distributor_action">Standaard instellen</string>
     <string name="app_settings_push_capability_none">Geen van uw servercollecties met synchronisatie ondersteunt momenteel WebDAV-Push.</string>
     <string name="app_settings_push_capability_some">Slechts enkele van uw servercollecties met synchronisatie ondersteunen momenteel WebDAV-Push.</string>
+    <string name="app_settings_push_enabled_summary">aan, %s</string>
+    <string name="app_settings_push_disabled_summary">Uit</string>
 </resources>
