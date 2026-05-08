@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui.account
 import android.accounts.Account
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.content.IntentCompat
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
@@ -20,7 +21,7 @@ class CollectionActivity: AppCompatActivity() {
         const val EXTRA_COLLECTION_ID = "collection_id"
     }
 
-    val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT)!! }
+    val account by lazy { IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java)!! }
     val collectionId by lazy { intent.getLongExtra(EXTRA_COLLECTION_ID, -1) }
 
 

@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui.account
 import android.accounts.Account
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.content.IntentCompat
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
@@ -20,7 +21,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
     }
 
     val account by lazy {
-        intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
+        IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
     }
 
     

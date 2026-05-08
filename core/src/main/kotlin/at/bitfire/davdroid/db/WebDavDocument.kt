@@ -8,7 +8,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.provider.DocumentsContract.Document
 import android.webkit.MimeTypeMap
-import androidx.core.os.bundleOf
+
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -76,10 +76,10 @@ data class WebDavDocument(
         if (parent?.isDirectory == false)
             throw IllegalArgumentException("Parent must be a directory")
 
-        val bundle = bundleOf(
-            Document.COLUMN_DOCUMENT_ID to id.toString(),
-            Document.COLUMN_DISPLAY_NAME to name
-        )
+        val bundle = Bundle().apply {
+            putString(Document.COLUMN_DOCUMENT_ID, id.toString())
+            putString(Document.COLUMN_DISPLAY_NAME, name)
+        }
 
         displayName?.let { bundle.putString(Document.COLUMN_SUMMARY, it) }
         size?.let { bundle.putLong(Document.COLUMN_SIZE, it) }

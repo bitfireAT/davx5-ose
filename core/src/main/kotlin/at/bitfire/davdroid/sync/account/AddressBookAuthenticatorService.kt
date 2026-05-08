@@ -11,7 +11,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.core.os.bundleOf
+
 import at.bitfire.davdroid.R
 
 class AddressBookAuthenticatorService: Service() {
@@ -30,11 +30,12 @@ class AddressBookAuthenticatorService: Service() {
         val context: Context
     ): AbstractAccountAuthenticator(context) {
 
-        override fun addAccount(response: AccountAuthenticatorResponse?, accountType: String?, authTokenType: String?, requiredFeatures: Array<String>?, options: Bundle?) = bundleOf(
-            AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE to response,
-            AccountManager.KEY_ERROR_CODE to AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION,
-            AccountManager.KEY_ERROR_MESSAGE to context.getString(R.string.account_prefs_use_app)
-        )
+        override fun addAccount(response: AccountAuthenticatorResponse?, accountType: String?, authTokenType: String?, requiredFeatures: Array<String>?, options: Bundle?) =
+            Bundle().apply {
+                putParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
+                putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION)
+                putString(AccountManager.KEY_ERROR_MESSAGE, context.getString(R.string.account_prefs_use_app))
+            }
 
         override fun editProperties(response: AccountAuthenticatorResponse?, accountType: String?) = null
         override fun getAuthTokenLabel(p0: String?) = null

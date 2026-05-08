@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import androidx.core.content.IntentCompat
 import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -23,7 +24,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    private val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
+    private val account by lazy { IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

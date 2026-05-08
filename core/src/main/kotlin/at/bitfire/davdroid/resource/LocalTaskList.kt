@@ -24,9 +24,9 @@ class LocalTaskList (
     private val logger = Logger.getGlobal()
 
     override val readOnly
-        get() = dmfsTaskList.accessLevel?.let {
+        get() = dmfsTaskList.accessLevel.let {
             it != TaskListColumns.ACCESS_LEVEL_UNDEFINED && it <= TaskListColumns.ACCESS_LEVEL_READ
-        } ?: false
+        }
 
     override val dbCollectionId: Long?
         get() = dmfsTaskList.syncId?.toLongOrNull()

@@ -9,7 +9,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Looper
 import androidx.annotation.WorkerThread
-import androidx.core.os.bundleOf
+
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
@@ -429,7 +429,9 @@ class AccountSettings @AssistedInject constructor(
         val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<Account>())
 
         fun initialUserData(credentials: Credentials?, preconfigurationUrl: String?): Bundle {
-            val bundle = bundleOf(KEY_SETTINGS_VERSION to CURRENT_VERSION.toString())
+            val bundle = Bundle().apply {
+                putString(KEY_SETTINGS_VERSION, CURRENT_VERSION.toString())
+            }
 
             if (credentials != null) {
                 if (credentials.username != null)

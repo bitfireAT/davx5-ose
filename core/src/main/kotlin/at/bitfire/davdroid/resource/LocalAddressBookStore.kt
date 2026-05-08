@@ -14,7 +14,7 @@ import androidx.annotation.OpenForTesting
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import androidx.core.content.contentValuesOf
-import androidx.core.os.bundleOf
+
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -114,11 +114,11 @@ class LocalAddressBookStore @Inject constructor(
     internal fun createAddressBookAccount(account: Account, name: String, id: Long): Account? {
         // create address book account with reference to account, collection ID and URL
         val addressBookAccount = Account(name, context.getString(R.string.account_type_address_book))
-        val userData = bundleOf(
-            LocalAddressBook.USER_DATA_ACCOUNT_NAME to account.name,
-            LocalAddressBook.USER_DATA_ACCOUNT_TYPE to account.type,
-            LocalAddressBook.USER_DATA_COLLECTION_ID to id.toString()
-        )
+        val userData = Bundle().apply {
+            putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
+            putString(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
+            putString(LocalAddressBook.USER_DATA_COLLECTION_ID, id.toString())
+        }
         if (!SystemAccountUtils.createAccount(context, addressBookAccount, userData)) {
             logger.warning("Couldn't create address book account: $addressBookAccount")
             return null
