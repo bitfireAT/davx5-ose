@@ -132,7 +132,11 @@ class PushRegistrationManager @Inject constructor(
             }
         else if (distributorManager.isPushEnabled()) {
             unregisterAndUnsubscribeFromService(service)
-            notifyDistributorSelection()
+
+            // Only show distributor selection notification if there's at least one push-capable collection, otherwise, the user is not interested
+            if (collectionRepository.anyPushCapable()) {
+                notifyDistributorSelection()
+            }
         }
 
         // UnifiedPush has now been called. It will do its work and then asynchronously call back to UnifiedPushService, which
