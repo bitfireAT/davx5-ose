@@ -7,15 +7,9 @@ package at.bitfire.davdroid.ui
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Build
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -25,16 +19,12 @@ import androidx.compose.material.icons.filled.Adb
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.InvertColors
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.RadioButtonChecked
-import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.SyncProblem
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -50,18 +40,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
@@ -69,7 +53,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
-import at.bitfire.davdroid.ui.AppSettingsModel.PushDistributorInfo
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.EditTextInputDialog
 import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
@@ -77,6 +60,10 @@ import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import kotlinx.coroutines.launch
+import androidx.core.content.ContextCompat
+import at.bitfire.davdroid.ui.PushSummary.PushDisabled
+import at.bitfire.davdroid.ui.PushSummary.PushEnabled
+import at.bitfire.davdroid.ui.PushSummary.PushLoading
 
 @Composable
 fun AppSettingsScreen(
@@ -86,8 +73,9 @@ fun AppSettingsScreen(
     onNavPermissionsScreen: () -> Unit,
     onShowNotificationSettings: () -> Unit,
     onNavTasksScreen: () -> Unit,
+    onNavPushSettings:() -> Unit,
     onNavUp: () -> Unit,
-    model: AppSettingsModel = viewModel()
+    model: AppSettingsViewModel = viewModel()
 ) {
     AppTheme {
         AppSettingsScreen(
@@ -123,10 +111,9 @@ fun AppSettingsScreen(
             // Integration (Tasks and Push)
             tasksAppName = model.tasksAppName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
             tasksAppIcon = model.tasksAppIcon.collectAsStateWithLifecycle(null).value,
-            pushDistributors = model.pushDistributors.collectAsState().value,
-            pushDistributor = model.pushDistributor.collectAsState().value,
-            onPushDistributorChange = model::updatePushDistributor,
-            onNavTasksScreen = onNavTasksScreen
+            onNavTasksScreen = onNavTasksScreen,
+            pushSummary = model.pushSummary.collectAsState().value,
+            onNavPushSettings = onNavPushSettings
         )
     }
 }
@@ -165,10 +152,9 @@ fun AppSettingsScreen(
     // AppSettings Integration
     tasksAppName: String,
     tasksAppIcon: Drawable?,
-    pushDistributors: List<PushDistributorInfo>?,
-    pushDistributor: String?,
-    onPushDistributorChange: (String?) -> Unit,
     onNavTasksScreen: () -> Unit,
+    pushSummary: PushSummary,
+    onNavPushSettings:() -> Unit,
 
     onShowNotificationSettings: () -> Unit,
     onNavUp: () -> Unit
@@ -255,10 +241,9 @@ fun AppSettingsScreen(
                 AppSettings_Integration(
                     tasksAppName = tasksAppName,
                     tasksAppIcon = tasksAppIcon,
-                    pushDistributors = pushDistributors,
-                    pushDistributor = pushDistributor,
-                    onPushDistributorChange = onPushDistributorChange,
-                    onNavTasksScreen = onNavTasksScreen
+                    onNavTasksScreen = onNavTasksScreen,
+                    pushSummary = pushSummary,
+                    onNavPushSettings = onNavPushSettings
                 )
             }
         }
@@ -294,10 +279,12 @@ fun AppSettingsScreen_Preview() {
             onResetHints = {},
             tasksAppName = "No tasks app",
             tasksAppIcon = null,
-            pushDistributors = null,
-            pushDistributor = null,
-            onPushDistributorChange = {},
-            onNavTasksScreen = {}
+            pushSummary = PushEnabled(
+                appName = "FCM (Google Play)",
+                appIcon = ContextCompat.getDrawable(LocalContext.current, R.drawable.product_logomark_cloud_messaging_full_color)
+            ),
+            onNavTasksScreen = {},
+            onNavPushSettings = {}
         )
     }
 }
@@ -555,175 +542,12 @@ fun AppSettings_UserInterface(
 }
 
 @Composable
-private fun PushDistributorSelectionDialog(
-    pushDistributor: String?,
-    onPushDistributorChange: (String?) -> Unit,
-    pushDistributors: List<PushDistributorInfo>?,
-    onDismissRequested: () -> Unit
-) {
-    var selectedDistributor by remember { mutableStateOf(pushDistributor) }
-    val context = LocalContext.current
-
-    AlertDialog(
-        onDismissRequest = onDismissRequested,
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onPushDistributorChange(selectedDistributor)
-                    onDismissRequested()
-                }
-            ) { Text(stringResource(android.R.string.ok)) }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismissRequested
-            ) { Text(stringResource(android.R.string.cancel)) }
-        },
-        title = {
-            Text(stringResource(R.string.app_settings_unifiedpush_choose_distributor))
-        },
-        text = {
-            LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                if (pushDistributors.isNullOrEmpty()) item {
-                    Text(stringResource(R.string.app_settings_unifiedpush_no_distributor))
-                } else item {
-                    ListItem(
-                        leadingContent = {
-                            Icon(
-                                imageVector = if (selectedDistributor == null) {
-                                    Icons.Default.RadioButtonChecked
-                                } else {
-                                    Icons.Default.RadioButtonUnchecked
-                                },
-                                contentDescription = null
-                            )
-                        },
-                        headlineContent = {
-                            Text(stringResource(R.string.app_settings_unifiedpush_disable))
-                        },
-                        modifier = Modifier.clickable {
-                            selectedDistributor = null
-                        },
-                        colors = ListItemDefaults.colors(
-                            containerColor = Color.Transparent
-                        )
-                    )
-                }
-
-                items(pushDistributors.orEmpty()) { (distributor, name, icon) ->
-                    val isSelf = distributor == context.packageName
-                    val headline = if (isSelf) stringResource(R.string.app_settings_unifiedpush_distributor_fcm) else name ?: distributor
-                    ListItem(
-                        leadingContent = {
-                            Icon(
-                                imageVector = if (selectedDistributor == distributor) {
-                                    Icons.Default.RadioButtonChecked
-                                } else {
-                                    Icons.Default.RadioButtonUnchecked
-                                },
-                                contentDescription = null
-                            )
-                        },
-                        trailingContent = {
-                            if (isSelf)
-                                Image(
-                                    painter = painterResource(R.drawable.product_logomark_cloud_messaging_full_color),
-                                    contentDescription = headline,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                            else
-                                icon?.let {
-                                    Image(
-                                        bitmap = icon.toBitmap().asImageBitmap(),
-                                        contentDescription = headline,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
-                        },
-                        headlineContent = {
-                            Text(headline)
-                        },
-                        modifier = Modifier.clickable {
-                            selectedDistributor = distributor
-                        },
-                        colors = ListItemDefaults.colors(
-                            containerColor = Color.Transparent
-                        )
-                    )
-                }
-
-                item {
-                    Text(
-                        text = buildAnnotatedString {
-                            pushStyle(
-                                SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline)
-                            )
-                            pushLink(
-                                LinkAnnotation.Url(
-                                    ExternalUris.Manual.baseUrl.buildUpon()
-                                        .appendPath(ExternalUris.Manual.PATH_WEBDAV_PUSH)
-                                        .build().toString()
-                                )
-                            )
-                            append(stringResource(R.string.app_settings_unifiedpush_encrypted))
-                        },
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-            }
-        }
-    )
-}
-
-@Composable
-@Preview("No distributors installed", "PushDistributorSelectionDialog")
-fun PushDistributorSelectionDialog_Preview_NoDistributors() {
-    PushDistributorSelectionDialog(null, {}, null) { }
-}
-
-@Composable
-@Preview("Push disabled", "PushDistributorSelectionDialog")
-fun PushDistributorSelectionDialog_Preview_PushDisabled() {
-    val ctx = LocalContext.current
-    PushDistributorSelectionDialog(
-        null,
-        {},
-        listOf(
-            PushDistributorInfo(
-                "com.example.distributor1",
-                "Distributor 1",
-                AppCompatResources.getDrawable(ctx, R.drawable.ic_launcher_foreground)
-            )
-        )
-    ) { }
-}
-
-@Composable
-@Preview("Distributor Selected", "PushDistributorSelectionDialog")
-fun PushDistributorSelectionDialog_Preview_DistributorSelected() {
-    val ctx = LocalContext.current
-    PushDistributorSelectionDialog(
-        "com.example.distributor1",
-        {},
-        listOf(
-            PushDistributorInfo(
-                "com.example.distributor1",
-                "Distributor 1",
-                AppCompatResources.getDrawable(ctx, R.drawable.ic_launcher_foreground)
-            ),
-            PushDistributorInfo("com.example.distributor2")
-        )
-    ) { }
-}
-
-@Composable
 fun AppSettings_Integration(
     tasksAppName: String,
     tasksAppIcon: Drawable? = null,
-    pushDistributors: List<PushDistributorInfo>?,
-    pushDistributor: String?,
-    onPushDistributorChange: (String?) -> Unit,
-    onNavTasksScreen: () -> Unit = {}
+    onNavTasksScreen: () -> Unit = {},
+    pushSummary: PushSummary,
+    onNavPushSettings: () -> Unit
 ) {
     SettingsHeader(divider = true) {
         Text(stringResource(R.string.app_settings_integration))
@@ -741,27 +565,40 @@ fun AppSettings_Integration(
         onClick = onNavTasksScreen
     )
 
-    var showingDistributorDialog by remember { mutableStateOf(false) }
-    if (showingDistributorDialog) {
-        PushDistributorSelectionDialog(
-            pushDistributor = pushDistributor,
-            onPushDistributorChange = onPushDistributorChange,
-            pushDistributors = pushDistributors
-        ) { showingDistributorDialog = false }
+    PushSetting(pushSummary, onNavPushSettings)
+}
+
+@Composable
+private fun PushSetting(
+    pushSummary: PushSummary,
+    onNavPushSettings: () -> Unit
+) {
+    val appIconBitmap = remember(pushSummary) {
+        (pushSummary as? PushEnabled)?.appIcon?.toBitmap()?.asImageBitmap()
     }
 
-    val context = LocalContext.current
-    val pushAppName = if (pushDistributor == context.packageName) {
-        stringResource(R.string.app_settings_unifiedpush_distributor_fcm)
-    } else {
-        pushDistributors?.find { it.packageName == pushDistributor }?.appName
-    }
     Setting(
-        name = stringResource(R.string.app_settings_unifiedpush),
-        summary = if (pushDistributor != null)
-            stringResource(R.string.app_settings_unifiedpush_ready, pushAppName ?: pushDistributor)
-        else
-            stringResource(R.string.app_settings_unifiedpush_no_endpoint),
-        onClick = { showingDistributorDialog = true }
+        name = {
+            Text(
+                text = stringResource(R.string.app_settings_push_title),
+                style = MaterialTheme.typography.bodyLarge
+            )
+        },
+        icon = {
+            if (appIconBitmap != null) {
+                Image(bitmap = appIconBitmap, contentDescription = null)
+            }
+        },
+        summary = buildPushSummary(pushSummary),
+        onClick = onNavPushSettings
     )
+}
+
+@Composable
+private fun buildPushSummary(pushSummary: PushSummary): String {
+    return when (pushSummary) {
+        PushLoading -> ""
+        PushDisabled -> stringResource(R.string.app_settings_push_disabled_summary)
+        is PushEnabled -> stringResource(R.string.app_settings_push_enabled_summary, pushSummary.appName)
+    }
 }

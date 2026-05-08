@@ -57,8 +57,8 @@ import kotlinx.coroutines.flow.map
 import java.text.Collator
 import java.util.logging.Logger
 
-@HiltViewModel(assistedFactory = AccountsModel.Factory::class)
-class AccountsModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = AccountsViewModel.Factory::class)
+class AccountsViewModel @AssistedInject constructor(
     @Assisted private val syncAccountsOnInit: Boolean,
     private val accountRepository: AccountRepository,
     val composableItems: Set<@JvmSuppressWildcards FlavorComposable>,
@@ -73,7 +73,7 @@ class AccountsModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(syncAccountsOnInit: Boolean): AccountsModel
+        fun create(syncAccountsOnInit: Boolean): AccountsViewModel
     }
 
     // Accounts UI state

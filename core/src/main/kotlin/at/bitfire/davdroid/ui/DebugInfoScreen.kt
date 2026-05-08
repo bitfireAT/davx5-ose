@@ -69,9 +69,9 @@ fun DebugInfoScreen(
     onViewLocalResource: () -> Unit,
     onNavUp: () -> Unit
 ) {
-    val model: DebugInfoModel = hiltViewModel(
-        creationCallback = { factory: DebugInfoModel.Factory ->
-            factory.createWithDetails(DebugInfoModel.DebugInfoDetails(
+    val model: DebugInfoViewModel = hiltViewModel(
+        creationCallback = { factory: DebugInfoViewModel.Factory ->
+            factory.createWithDetails(DebugInfoViewModel.DebugInfoDetails(
                 account = account,
                 syncDataType = syncDataType,
                 cause = cause,

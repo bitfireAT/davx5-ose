@@ -42,8 +42,8 @@ import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
 
-@HiltViewModel(assistedFactory = AccountScreenModel.Factory::class)
-class AccountScreenModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = AccountScreenViewModel.Factory::class)
+class AccountScreenViewModel @AssistedInject constructor(
     @Assisted val account: Account,
     private val accountRepository: AccountRepository,
     accountProgressUseCase: AccountProgressUseCase,
@@ -62,7 +62,7 @@ class AccountScreenModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account): AccountScreenModel
+        fun create(account: Account): AccountScreenViewModel
     }
 
     /**

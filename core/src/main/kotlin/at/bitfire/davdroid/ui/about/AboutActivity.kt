@@ -58,7 +58,7 @@ import kotlin.jvm.optionals.getOrNull
 @AndroidEntryPoint
 class AboutActivity: AppCompatActivity() {
 
-    val model by viewModels<AboutModel>()
+    val model by viewModels<AboutViewModel>()
 
     @Inject
     lateinit var licenseInfoProvider: Optional<AppLicenseInfoProvider>

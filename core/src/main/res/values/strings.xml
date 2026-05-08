@@ -240,14 +240,10 @@
     <string name="app_settings_integration">Integration</string>
     <string name="app_settings_tasks_provider">Tasks app</string>
     <string name="app_settings_tasks_provider_none">No compatible tasks app found</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
-    <string name="app_settings_unifiedpush_disable">None (disable push)</string>
-    <string name="app_settings_unifiedpush_choose_distributor">Choose a distributor</string>
-    <string name="app_settings_unifiedpush_no_distributor">No push distributor installed</string>
     <string name="app_settings_unifiedpush_no_endpoint">No endpoint configured</string>
-    <string name="app_settings_unifiedpush_ready">Ready to receive push messages over %s</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-    <string name="app_settings_unifiedpush_encrypted">Push messages are always encrypted.</string>
+    <string name="app_settings_push_enabled_summary">On, %s</string>
+    <string name="app_settings_push_disabled_summary">Off</string>
 
     <string name="app_settings_push_title">Push</string>
     <string name="app_settings_push_description">Use Push to have CalDAV/CardDAV/WebDAV servers instantly notify %s of available changes to your data on the server.</string>

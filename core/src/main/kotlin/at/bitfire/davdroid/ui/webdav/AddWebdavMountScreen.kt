@@ -50,7 +50,7 @@ import at.bitfire.davdroid.ui.composable.SelectClientCertificateCard
 fun AddWebdavMountScreen(
     onNavUp: () -> Unit = {},
     onFinish: () -> Unit = {},
-    model: AddWebdavMountModel = viewModel()
+    model: AddWebdavMountViewModel = viewModel()
 ) {
     val uiState = model.uiState
 

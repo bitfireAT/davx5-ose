@@ -91,15 +91,15 @@ fun AccountsScreen(
     onAddAccount: () -> Unit,
     onShowAccount: (Account) -> Unit,
     onManagePermissions: () -> Unit,
-    model: AccountsModel = hiltViewModel(
-        creationCallback = { factory: AccountsModel.Factory ->
+    model: AccountsViewModel = hiltViewModel(
+        creationCallback = { factory: AccountsViewModel.Factory ->
             factory.create(initialSyncAccounts)
         }
     )
 ) {
     val accounts by model.accountInfos.collectAsStateWithLifecycle(emptyList())
     val showSyncAll by model.showSyncAll.collectAsStateWithLifecycle(true)
-    val showAddAccount by model.showAddAccount.collectAsStateWithLifecycle(AccountsModel.FABStyle.Standard)
+    val showAddAccount by model.showAddAccount.collectAsStateWithLifecycle(AccountsViewModel.FABStyle.Standard)
 
     // Remember shown state, so the intro does not restart on rotation or theme-change
     var shown by rememberSaveable { mutableStateOf(false) }
@@ -135,10 +135,10 @@ fun AccountsScreen(
 fun AccountsScreen(
     flavorComposables: Set<FlavorComposable> = emptySet(),
     accountsDrawerHandler: AccountsDrawerHandler,
-    accounts: List<AccountsModel.AccountInfo>,
+    accounts: List<AccountsViewModel.AccountInfo>,
     showSyncAll: Boolean = true,
     onSyncAll: () -> Unit = {},
-    showAddAccount: AccountsModel.FABStyle = AccountsModel.FABStyle.Standard,
+    showAddAccount: AccountsViewModel.FABStyle = AccountsViewModel.FABStyle.Standard,
     onAddAccount: () -> Unit = {},
     onShowAccount: (Account) -> Unit = {},
     onManagePermissions: () -> Unit = {},
@@ -202,7 +202,7 @@ fun AccountsScreen(
                 },
                 floatingActionButton = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        if (showAddAccount == AccountsModel.FABStyle.WithText)
+                        if (showAddAccount == AccountsViewModel.FABStyle.WithText)
                             ExtendedFloatingActionButton(
                                 text = { Text(stringResource(R.string.login_add_account)) },
                                 icon = { Icon(Icons.Filled.Add, stringResource(R.string.login_add_account)) },
@@ -210,7 +210,7 @@ fun AccountsScreen(
                                 contentColor = MaterialTheme.colorScheme.onPrimary,
                                 onClick = onAddAccount
                             )
-                        else if (showAddAccount == AccountsModel.FABStyle.Standard)
+                        else if (showAddAccount == AccountsViewModel.FABStyle.Standard)
                             FloatingActionButton(
                                 onClick = onAddAccount,
                                 containerColor = MaterialTheme.colorScheme.secondary,
@@ -336,7 +336,7 @@ fun AccountsScreen_Preview_Empty() {
             }
         },
         accounts = emptyList(),
-        showAddAccount = AccountsModel.FABStyle.WithText,
+        showAddAccount = AccountsViewModel.FABStyle.WithText,
         showSyncAll = false
     )
 }
@@ -352,7 +352,7 @@ fun AccountsScreen_Preview_OneAccount() {
             }
         },
         accounts = listOf(
-            AccountsModel.AccountInfo(
+            AccountsViewModel.AccountInfo(
                 Account("Account Name", "test"),
                 AccountProgress.Idle
             )
@@ -362,7 +362,7 @@ fun AccountsScreen_Preview_OneAccount() {
 
 @Composable
 fun AccountList(
-    accounts: List<AccountsModel.AccountInfo>,
+    accounts: List<AccountsViewModel.AccountInfo>,
     modifier: Modifier = Modifier,
     onClickAccount: (Account) -> Unit = {}
 ) {
@@ -449,7 +449,7 @@ fun AccountList_Preview_Idle() {
     AppTheme {
         AccountList(
             listOf(
-                AccountsModel.AccountInfo(
+                AccountsViewModel.AccountInfo(
                     Account("Account Name", "test"),
                     AccountProgress.Idle
                 )
@@ -464,7 +464,7 @@ fun AccountList_Preview_SyncPending() {
     AppTheme {
         AccountList(
             listOf(
-                AccountsModel.AccountInfo(
+                AccountsViewModel.AccountInfo(
                     Account("Account Name", "test"),
                     AccountProgress.Pending
                 )
@@ -479,7 +479,7 @@ fun AccountList_Preview_Syncing() {
     AppTheme {
         AccountList(
             listOf(
-                AccountsModel.AccountInfo(
+                AccountsViewModel.AccountInfo(
                     Account("Account Name", "test"),
                     AccountProgress.Active
                 )

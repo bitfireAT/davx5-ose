@@ -20,8 +20,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-@HiltViewModel(assistedFactory = CreateAddressBookModel.Factory::class)
-class CreateAddressBookModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = CreateAddressBookViewModel.Factory::class)
+class CreateAddressBookViewModel @AssistedInject constructor(
     @Assisted val account: Account,
     private val collectionRepository: DavCollectionRepository,
     homeSetRepository: DavHomeSetRepository
@@ -29,7 +29,7 @@ class CreateAddressBookModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account): CreateAddressBookModel
+        fun create(account: Account): CreateAddressBookViewModel
     }
 
     val addressBookHomeSets = homeSetRepository.getAddressBookHomeSetsFlow(account)

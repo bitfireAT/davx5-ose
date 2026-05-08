@@ -36,7 +36,7 @@ import at.bitfire.davdroid.R
  * A widget with a "Sync all" button displaying an icon and a label.
  */
 class LabeledSyncButtonWidget(
-    private val model: SyncWidgetModel,
+    private val model: SyncWidgetViewModel,
     private val lightColorScheme: ColorScheme,
     private val darkColorScheme: ColorScheme
 ) : GlanceAppWidget() {
@@ -56,7 +56,7 @@ class LabeledSyncButtonWidget(
     }
 
     @Composable
-    private fun WidgetContent(model: SyncWidgetModel) {
+    private fun WidgetContent(model: SyncWidgetViewModel) {
         val context = LocalContext.current
 
         Row(

@@ -28,8 +28,8 @@ import java.util.Locale
 import java.util.logging.Level
 import java.util.logging.Logger
 
-@HiltViewModel(assistedFactory = GoogleLoginModel.Factory::class)
-class GoogleLoginModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = GoogleLoginViewModel.Factory::class)
+class GoogleLoginViewModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
@@ -40,7 +40,7 @@ class GoogleLoginModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(loginInfo: LoginInfo): GoogleLoginModel
+        fun create(loginInfo: LoginInfo): GoogleLoginViewModel
     }
 
     override fun onCleared() {
