@@ -24,9 +24,9 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 class WebDavMountRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val db: AppDatabase,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val httpClientBuilder: Provider<HttpClientBuilder>
 ) {
 

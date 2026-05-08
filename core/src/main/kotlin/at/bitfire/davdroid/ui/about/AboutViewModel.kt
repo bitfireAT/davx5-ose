@@ -28,8 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 @OptIn(ExperimentalSerializationApi::class)
 class AboutViewModel @Inject constructor(
-    @ApplicationContext val context: Context,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:ApplicationContext val context: Context,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ): ViewModel() {
 

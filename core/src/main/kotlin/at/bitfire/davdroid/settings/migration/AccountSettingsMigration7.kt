@@ -21,7 +21,7 @@ import dagger.multibindings.IntoMap
 import javax.inject.Inject
 
 class AccountSettingsMigration7 @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ): AccountSettingsMigration {
 
     override fun migrate(account: Account) {

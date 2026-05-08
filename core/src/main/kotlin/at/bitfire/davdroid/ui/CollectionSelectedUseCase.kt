@@ -28,9 +28,9 @@ import javax.inject.Inject
  */
 class CollectionSelectedUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
-    @ApplicationScope private val applicationScope: CoroutineScope,
+    @param:ApplicationScope private val applicationScope: CoroutineScope,
     private val collectionRepository: DavCollectionRepository,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: SyncWorkerManager

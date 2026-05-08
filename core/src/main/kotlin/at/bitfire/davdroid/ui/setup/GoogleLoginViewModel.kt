@@ -32,7 +32,7 @@ import java.util.logging.Logger
 class GoogleLoginViewModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     private val authService: AuthorizationService,
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     private val logger: Logger,
     private val oAuthGoogle: OAuthGoogle,
     private val oAuthIntegration: OAuthIntegration

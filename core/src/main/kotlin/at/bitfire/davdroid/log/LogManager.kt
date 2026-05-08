@@ -46,7 +46,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class LogManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val logFileHandler: Provider<LogFileHandler>,
     private val logger: Logger,
     private val prefs: PreferenceRepository

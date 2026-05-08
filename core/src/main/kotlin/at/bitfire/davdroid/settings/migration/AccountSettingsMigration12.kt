@@ -36,7 +36,7 @@ import kotlin.use
  * convert legacy unknown properties to the current format.
  */
 class AccountSettingsMigration12 @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val logger: Logger
 ): AccountSettingsMigration {
 

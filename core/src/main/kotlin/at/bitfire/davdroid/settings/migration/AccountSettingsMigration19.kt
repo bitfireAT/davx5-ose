@@ -26,7 +26,7 @@ import javax.inject.Inject
  * 2. re-enqueue periodic sync workers (now with "data type" input data), if applicable.
  */
 class AccountSettingsMigration19 @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val automaticSyncManager: AutomaticSyncManager
 ): AccountSettingsMigration {
 

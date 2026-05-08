@@ -28,7 +28,7 @@ import kotlin.random.Random
  * Allows to resolve SRV/TXT records. Chooses the correct resolver, DNS servers etc.
  */
 class DnsRecordResolver @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     private val logger: Logger
 ) {
 

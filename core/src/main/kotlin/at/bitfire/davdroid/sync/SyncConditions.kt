@@ -26,7 +26,7 @@ import java.util.logging.Logger
  */
 class SyncConditions @AssistedInject constructor(
     @Assisted private val accountSettings: AccountSettings,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry
 ) {

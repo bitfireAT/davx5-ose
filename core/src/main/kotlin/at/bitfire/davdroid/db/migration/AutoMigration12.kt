@@ -22,7 +22,7 @@ import javax.inject.Inject
 @ProvidedAutoMigrationSpec
 @DeleteColumn(tableName = "collection", columnName = "owner")
 class AutoMigration12 @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     val logger: Logger
 ): AutoMigrationSpec {
 

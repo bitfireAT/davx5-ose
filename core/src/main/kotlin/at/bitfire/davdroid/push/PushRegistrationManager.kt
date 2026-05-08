@@ -59,7 +59,7 @@ import javax.inject.Provider
 class PushRegistrationManager @Inject constructor(
     private val accountRepository: Lazy<AccountRepository>,
     private val collectionRepository: DavCollectionRepository,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val distributorManager: PushDistributorManager,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
     private val logger: Logger,

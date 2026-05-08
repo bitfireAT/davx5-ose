@@ -33,7 +33,7 @@ import javax.inject.Inject
  * Sync requests from the Sync Adapter Framework are handled by [SyncAdapterService].
  */
 class SyncFrameworkIntegration @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger
 ) {

@@ -33,7 +33,7 @@ import javax.inject.Inject
  */
 class AccountSettingsMigration17 @Inject constructor(
     private val collectionRepository: DavCollectionRepository,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val localAddressBookStore: LocalAddressBookStore,
     private val logger: Logger,

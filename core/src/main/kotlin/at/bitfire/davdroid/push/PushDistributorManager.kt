@@ -16,7 +16,7 @@ import javax.inject.Inject
  * Allows to manage (get/set) the UnifiedPush distributor.
  */
 class PushDistributorManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val settingsManager: SettingsManager
 ) {
 

@@ -30,7 +30,7 @@ data class Service(
 
     val accountName: String,
 
-    @ServiceType
+    @param:ServiceType
     val type: String,
 
     val principal: HttpUrl? = null

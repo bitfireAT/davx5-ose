@@ -49,11 +49,11 @@ import javax.inject.Provider
  * Repository for managing collections.
  */
 class DavCollectionRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val productIds: Lazy<ProductIds>,
     private val serviceRepository: DavServiceRepository
 ) {

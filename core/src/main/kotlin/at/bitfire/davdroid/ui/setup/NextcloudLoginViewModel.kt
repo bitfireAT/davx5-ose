@@ -25,7 +25,7 @@ import java.util.logging.Logger
 @HiltViewModel(assistedFactory = NextcloudLoginViewModel.Factory::class)
 class NextcloudLoginViewModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     private val logger: Logger,
     private val loginFlow: NextcloudLoginFlow
 ): ViewModel() {

@@ -49,7 +49,7 @@ class HttpClientBuilder @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val connectionSecurityManager: ConnectionSecurityManager,
     defaultLogger: Logger,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthInterceptorFactory: OAuthInterceptor.Factory,
     private val settingsManager: SettingsManager,
     private val userAgentInterceptor: UserAgentInterceptor

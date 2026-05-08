@@ -47,9 +47,9 @@ import javax.inject.Inject
 class AccountRepository @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val collectionRepository: DavCollectionRepository,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val homeSetRepository: DavHomeSetRepository,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,

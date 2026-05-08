@@ -22,7 +22,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class SharedPreferencesProvider @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     private val logger: Logger
 ): SettingsProvider, SharedPreferences.OnSharedPreferenceChangeListener {
 

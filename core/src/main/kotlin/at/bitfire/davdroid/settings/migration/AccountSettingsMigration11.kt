@@ -26,7 +26,7 @@ import javax.inject.Inject
  * again when the tasks provider is switched.
  */
 class AccountSettingsMigration11 @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val tasksAppManager: TasksAppManager
 ): AccountSettingsMigration {
 

@@ -16,7 +16,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class QueryRootsOperation @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     db: AppDatabase,
     private val logger: Logger
 ) {

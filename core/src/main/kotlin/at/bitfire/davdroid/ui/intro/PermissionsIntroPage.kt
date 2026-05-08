@@ -16,7 +16,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class PermissionsIntroPage @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ): IntroPage() {
 
     var model: PermissionsViewModel? = null

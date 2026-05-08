@@ -33,7 +33,7 @@ import kotlin.use
  * Also update the allowed reminder types for calendars.
  */
 class AccountSettingsMigration10 @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ): AccountSettingsMigration {
 
     override fun migrate(account: Account) {

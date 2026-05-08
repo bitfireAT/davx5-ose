@@ -26,7 +26,7 @@ import javax.annotation.WillNotClose
 import javax.inject.Inject
 
 class LocalJtxCollectionStore @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     val accountSettingsFactory: AccountSettings.Factory,
     db: AppDatabase,
     val principalRepository: PrincipalRepository

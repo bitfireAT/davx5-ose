@@ -56,7 +56,7 @@ import java.util.logging.Logger
 class DavResourceFinder @AssistedInject constructor(
     @Assisted private val baseURI: URI,
     @Assisted private val credentials: Credentials? = null,
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     private val dnsRecordResolver: DnsRecordResolver,
     httpClientBuilder: HttpClientBuilder
 ) {

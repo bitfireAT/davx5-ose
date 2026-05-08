@@ -47,7 +47,7 @@ class AccountSettings @AssistedInject constructor(
     @Assisted val account: Account,
     @Assisted val abortOnMissingMigration: Boolean,
     private val automaticSyncManager: AutomaticSyncManager,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val logger: Logger,
     private val migrations: Map<Int, @JvmSuppressWildcards Provider<AccountSettingsMigration>>,
     private val settingsManager: SettingsManager

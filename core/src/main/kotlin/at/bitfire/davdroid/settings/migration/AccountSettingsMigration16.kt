@@ -27,7 +27,7 @@ import javax.inject.Inject
  */
 class AccountSettingsMigration16 @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val logger: Logger,
     private val syncWorkerManager: SyncWorkerManager
 ): AccountSettingsMigration {

@@ -105,7 +105,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     accountSettingsFactory: AccountSettings.Factory,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher

@@ -31,7 +31,7 @@ import javax.inject.Singleton
 class CollectionSelectedUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
     private val collectionRepository: DavCollectionRepository,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: SyncWorkerManager

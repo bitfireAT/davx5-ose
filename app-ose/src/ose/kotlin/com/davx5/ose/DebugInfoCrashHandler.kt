@@ -16,7 +16,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class DebugInfoCrashHandler @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val logger: Logger
 ): Thread.UncaughtExceptionHandler {
 

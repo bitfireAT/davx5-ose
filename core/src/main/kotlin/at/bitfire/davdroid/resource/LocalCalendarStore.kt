@@ -30,7 +30,7 @@ import javax.annotation.WillNotClose
 import javax.inject.Inject
 
 class LocalCalendarStore @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val localCalendarFactory: LocalCalendar.Factory,
     private val logger: Logger,

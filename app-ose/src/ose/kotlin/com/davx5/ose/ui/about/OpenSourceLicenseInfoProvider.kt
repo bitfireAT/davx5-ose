@@ -44,8 +44,8 @@ class OpenSourceLicenseInfoProvider @Inject constructor(): AboutActivity.AppLice
 
     @HiltViewModel
     class Model @Inject constructor(
-        @ApplicationContext private val context: Context,
-        @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+        @param:ApplicationContext private val context: Context,
+        @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
     ): ViewModel() {
 
         var gpl by mutableStateOf<Spanned?>(null)

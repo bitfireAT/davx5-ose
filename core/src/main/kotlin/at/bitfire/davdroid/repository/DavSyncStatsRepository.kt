@@ -15,7 +15,7 @@ import java.text.Collator
 import javax.inject.Inject
 
 class DavSyncStatsRepository @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     db: AppDatabase
 ) {
 

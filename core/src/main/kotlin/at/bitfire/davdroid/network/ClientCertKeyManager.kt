@@ -29,7 +29,7 @@ import javax.net.ssl.X509ExtendedKeyManager
  */
 class ClientCertKeyManager @AssistedInject constructor(
     @Assisted private val alias: String,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val logger: Logger
 ): X509ExtendedKeyManager() {
 

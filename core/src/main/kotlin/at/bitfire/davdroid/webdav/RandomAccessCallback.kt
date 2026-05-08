@@ -47,7 +47,7 @@ class RandomAccessCallback @AssistedInject constructor(
     @Assisted private val mimeType: MediaType?,
     @Assisted headResponse: HeadResponse,
     @Assisted private val externalScope: CoroutineScope,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val logger: Logger
 ): ProxyFileDescriptorCallback() {
 

@@ -60,14 +60,14 @@ import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = CollectionScreenViewModel.Factory::class)
 class CollectionScreenViewModel @AssistedInject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
     @Assisted val collectionId: Long,
     private val collectionRepository: DavCollectionRepository,
     private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
     db: AppDatabase,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val logger: Logger,

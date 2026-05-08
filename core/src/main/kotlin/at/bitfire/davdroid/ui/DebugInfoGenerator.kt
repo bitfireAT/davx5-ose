@@ -66,7 +66,7 @@ import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 class DebugInfoGenerator @Inject constructor(
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
     private val settings: SettingsManager,

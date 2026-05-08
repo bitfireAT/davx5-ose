@@ -21,10 +21,10 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class DeleteDocumentOperation @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val httpClientBuilder: DavHttpClientBuilder,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
 

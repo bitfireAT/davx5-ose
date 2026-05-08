@@ -17,7 +17,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class BatteryOptimizationsPage @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     val settingsManager: SettingsManager
 ): IntroPage() {
 

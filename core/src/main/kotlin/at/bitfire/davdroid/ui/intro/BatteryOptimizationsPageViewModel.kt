@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BatteryOptimizationsPageViewModel @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     private val settings: SettingsManager
 ): ViewModel() {
 

@@ -34,7 +34,7 @@ import javax.inject.Inject
  * So this migration again assigns address book accounts to accounts.
  */
 class AccountSettingsMigration18 @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val db: AppDatabase
 ): AccountSettingsMigration {
 

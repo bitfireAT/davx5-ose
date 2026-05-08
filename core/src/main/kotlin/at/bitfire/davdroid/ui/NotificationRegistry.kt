@@ -35,7 +35,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class NotificationRegistry @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     private val logger: Logger
 ) {
 

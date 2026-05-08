@@ -25,8 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TasksViewModel @Inject constructor(
-    @ApplicationContext val context: Context,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @param:ApplicationContext val context: Context,
+    @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val settings: SettingsManager,
     private val tasksAppManager: TasksAppManager
 ) : ViewModel() {

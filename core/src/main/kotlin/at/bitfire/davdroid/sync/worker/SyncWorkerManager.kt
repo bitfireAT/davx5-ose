@@ -49,7 +49,7 @@ import javax.inject.Inject
  * One-time sync workers can be enqueued. Periodic sync workers can be enabled and disabled.
  */
 class SyncWorkerManager @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     val logger: Logger,
     val pushNotificationManager: Lazy<PushNotificationManager>,
     val tasksAppManager: Lazy<TasksAppManager>

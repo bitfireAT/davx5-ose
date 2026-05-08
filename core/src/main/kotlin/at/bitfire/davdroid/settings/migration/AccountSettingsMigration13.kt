@@ -25,7 +25,7 @@ import javax.inject.Inject
  * Updates proxy settings from override_proxy_* to proxy_type, proxy_host, proxy_port.
  */
 class AccountSettingsMigration13 @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ): AccountSettingsMigration {
 
     override fun migrate(account: Account) {

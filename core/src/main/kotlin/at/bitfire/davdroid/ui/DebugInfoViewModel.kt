@@ -33,7 +33,7 @@ import java.util.zip.ZipOutputStream
 @HiltViewModel(assistedFactory = DebugInfoViewModel.Factory::class)
 class DebugInfoViewModel @AssistedInject constructor(
     @Assisted private val details: DebugInfoDetails,
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     private val debugInfoGenerator: DebugInfoGenerator,
     private val logger: Logger
 ) : ViewModel() {

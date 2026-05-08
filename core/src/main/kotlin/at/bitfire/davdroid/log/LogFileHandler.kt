@@ -36,7 +36,7 @@ import javax.inject.Inject
  * Only one [LogFileHandler] should be active at once, because the notification is shared.
  */
 class LogFileHandler @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry
 ): Handler(), Closeable {

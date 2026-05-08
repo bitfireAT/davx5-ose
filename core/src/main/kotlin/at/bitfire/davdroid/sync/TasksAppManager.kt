@@ -35,7 +35,7 @@ import javax.inject.Inject
  * Responsible for setting/getting the currently used tasks app, and for communicating with it.
  */
 class TasksAppManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val accountRepository: Lazy<AccountRepository>,
     private val automaticSyncManager: AutomaticSyncManager,
     private val logger: Logger,

@@ -59,7 +59,7 @@ open class LocalAddressBook @AssistedInject constructor(
     @Assisted provider: ContentProviderClient,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     internal val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,

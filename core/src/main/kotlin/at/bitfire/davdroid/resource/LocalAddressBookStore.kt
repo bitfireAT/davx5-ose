@@ -33,7 +33,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class LocalAddressBookStore @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,

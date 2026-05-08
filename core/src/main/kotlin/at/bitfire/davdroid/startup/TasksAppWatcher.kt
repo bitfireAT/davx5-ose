@@ -24,7 +24,7 @@ import javax.inject.Provider
  * the selected tasks app and task sync settings accordingly.
  */
 class TasksAppWatcher @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val logger: Logger,
     private val tasksAppManager: Provider<TasksAppManager>
 ): StartupPlugin {

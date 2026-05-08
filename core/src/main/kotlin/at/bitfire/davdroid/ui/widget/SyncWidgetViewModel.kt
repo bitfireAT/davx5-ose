@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 class SyncWidgetViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     private val syncWorkerManager: SyncWorkerManager
 ): ViewModel() {
 

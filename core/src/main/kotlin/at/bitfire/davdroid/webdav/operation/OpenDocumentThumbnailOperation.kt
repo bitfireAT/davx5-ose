@@ -39,10 +39,10 @@ import javax.inject.Inject
 import kotlin.use
 
 class OpenDocumentThumbnailOperation @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val httpClientBuilder: DavHttpClientBuilder,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val thumbnailCache: ThumbnailCache
 ) {

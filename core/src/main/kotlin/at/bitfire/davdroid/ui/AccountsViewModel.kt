@@ -62,7 +62,7 @@ class AccountsViewModel @AssistedInject constructor(
     @Assisted private val syncAccountsOnInit: Boolean,
     private val accountRepository: AccountRepository,
     val composableItems: Set<@JvmSuppressWildcards FlavorComposable>,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val db: AppDatabase,
     introPageFactory: IntroPageFactory,
     private val logger: Logger,

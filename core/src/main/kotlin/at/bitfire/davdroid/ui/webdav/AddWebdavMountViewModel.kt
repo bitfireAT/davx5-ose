@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddWebdavMountViewModel @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     val db: AppDatabase,
     private val mountRepository: WebDavMountRepository
 ): ViewModel() {

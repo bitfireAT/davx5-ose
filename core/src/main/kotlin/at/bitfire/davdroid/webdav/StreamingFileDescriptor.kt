@@ -34,7 +34,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
     @Assisted private val mimeType: MediaType?,
     @Assisted private val externalScope: CoroutineScope,
     @Assisted private val finishedCallback: OnSuccessCallback,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
 

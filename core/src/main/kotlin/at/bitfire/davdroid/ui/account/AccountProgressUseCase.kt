@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 class AccountProgressUseCase @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     private val syncFramework: SyncFrameworkIntegration,
     private val syncWorkerManager: SyncWorkerManager
 ) {

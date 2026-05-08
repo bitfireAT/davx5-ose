@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PermissionsViewModel @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
 ): ViewModel() {
 
     var needKeepPermissions by mutableStateOf<Boolean?>(null)

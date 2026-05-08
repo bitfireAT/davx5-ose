@@ -32,7 +32,7 @@ import javax.annotation.WillNotClose
 class LocalTaskListStore @AssistedInject constructor(
     @Assisted private val providerName: TaskProvider.ProviderName,
     val accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     val db: AppDatabase,
     val logger: Logger
 ): LocalDataStore<LocalTaskList> {
