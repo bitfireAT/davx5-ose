@@ -51,7 +51,7 @@ class PushDistributorManager @Inject constructor(
 
         // there's no distributor saved, try to resolve it with UP
         when (val res = UnifiedPush.resolveDefaultDistributor(context)) {
-            // If Found is returned, the new distributor has been saved, and getAckDistributor will fetch it in the next call
+            // If Found is returned, the new distributor has been saved, and getSavedDistributor will fetch it in the next call
             is ResolvedDistributor.Found -> return res.packageName
 
             // There are multiple distributors available, the user must choose one
