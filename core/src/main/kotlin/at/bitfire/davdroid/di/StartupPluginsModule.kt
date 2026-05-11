@@ -8,7 +8,6 @@ import at.bitfire.davdroid.startup.CrashHandlerSetup
 import at.bitfire.davdroid.startup.StartupPlugin
 import at.bitfire.davdroid.startup.TasksAppWatcher
 import dagger.Binds
-import dagger.BindsOptionalOf
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent

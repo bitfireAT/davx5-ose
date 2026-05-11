@@ -171,7 +171,7 @@ class PushRegistrationManager @Inject constructor(
      *
      * Uses the subscription to subscribe to syncable collections, and then unsubscribes from non-syncable collections.
      */
-    suspend fun processSubscription(serviceId: Long, endpoint: PushEndpoint) = mutex.withLock {
+    suspend fun processSubscription(serviceId: Long, endpoint: PushEndpoint): Unit = mutex.withLock {
         val service = serviceRepository.get(serviceId) ?: return
 
         try {
@@ -235,7 +235,7 @@ class PushRegistrationManager @Inject constructor(
      *
      * Unsubscribes from all subscribed collections.
      */
-    suspend fun removeSubscription(serviceId: Long) = mutex.withLock {
+    suspend fun removeSubscription(serviceId: Long): Unit = mutex.withLock {
         val service = serviceRepository.get(serviceId) ?: return
         unsubscribeAll(service)
     }

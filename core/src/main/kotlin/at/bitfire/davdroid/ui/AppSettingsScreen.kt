@@ -48,11 +48,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.ui.PushSummary.PushDisabled
+import at.bitfire.davdroid.ui.PushSummary.PushEnabled
+import at.bitfire.davdroid.ui.PushSummary.PushLoading
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.EditTextInputDialog
 import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
@@ -60,10 +64,6 @@ import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import kotlinx.coroutines.launch
-import androidx.core.content.ContextCompat
-import at.bitfire.davdroid.ui.PushSummary.PushDisabled
-import at.bitfire.davdroid.ui.PushSummary.PushEnabled
-import at.bitfire.davdroid.ui.PushSummary.PushLoading
 
 @Composable
 fun AppSettingsScreen(

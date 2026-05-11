@@ -22,9 +22,9 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -45,11 +45,7 @@ import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.util.withContext
-import dagger.BindsOptionalOf
-import dagger.Module
-import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.launch
 import java.util.Optional
 import javax.inject.Inject
@@ -108,7 +104,7 @@ class AboutActivity: AppCompatActivity() {
                         val scope = rememberCoroutineScope()
                         val state = rememberPagerState(pageCount = { 3 })
 
-                        TabRow(state.currentPage) {
+                        PrimaryTabRow(state.currentPage) {
                             Tab(state.currentPage == 0, onClick = {
                                 scope.launch { state.scrollToPage(0) }
                             }) {

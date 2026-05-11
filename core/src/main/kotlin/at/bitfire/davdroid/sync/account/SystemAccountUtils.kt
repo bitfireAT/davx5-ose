@@ -29,7 +29,8 @@ object SystemAccountUtils {
     fun createAccount(context: Context, account: Account, userData: Bundle, password: SensitiveString? = null): Boolean {
         // validate user data
         for (key in userData.keySet()) {
-            userData.get(key)?.let { entry ->
+            @Suppress("DEPRECATION")
+            userData[key]?.let { entry ->
                 if (entry !is String)
                     throw IllegalArgumentException("userData[$key] is ${entry::class.java} (expected: String)")
             }
