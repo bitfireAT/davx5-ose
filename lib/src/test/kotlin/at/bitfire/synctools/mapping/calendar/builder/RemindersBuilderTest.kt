@@ -30,6 +30,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.time.Duration
+import java.time.Instant
 import java.time.Period
 
 @RunWith(RobolectricTestRunner::class)
@@ -46,6 +47,7 @@ class RemindersBuilderTest {
         val result = Entity(ContentValues())
         builder.build(
             from = VEvent().apply {
+                this += DtStart(Instant.now())
                 this += VAlarm()
             },
             main = VEvent(),
@@ -62,6 +64,7 @@ class RemindersBuilderTest {
         val result = Entity(ContentValues())
         builder.build(
             from = VEvent().apply {
+                this += DtStart(Instant.now())
                 this += VAlarm(Duration.ofMinutes(-10)).apply {
                     this += ImmutableAction.AUDIO
                 }
@@ -80,6 +83,7 @@ class RemindersBuilderTest {
         val result = Entity(ContentValues())
         builder.build(
             from = VEvent().apply {
+                this += DtStart(Instant.now())
                 this += VAlarm(Duration.ofMinutes(-10)).apply {
                     this += ImmutableAction.DISPLAY
                 }
@@ -98,6 +102,7 @@ class RemindersBuilderTest {
         val result = Entity(ContentValues())
         builder.build(
             from = VEvent().apply {
+                this += DtStart(Instant.now())
                 this += VAlarm(Duration.ofSeconds(-120)).apply {
                     this += ImmutableAction.EMAIL
                 }
@@ -116,6 +121,7 @@ class RemindersBuilderTest {
         val result = Entity(ContentValues())
         builder.build(
             from = VEvent().apply {
+                this += DtStart(Instant.now())
                 this += VAlarm(Duration.ofSeconds(-120)).apply {
                     this += Action("X-CUSTOM")
                 }
@@ -134,6 +140,7 @@ class RemindersBuilderTest {
         val result = Entity(ContentValues())
         builder.build(
             from = VEvent().apply {
+                this += DtStart(dateTimeValue("20260508T120000Z"))
                 this += VAlarm(Period.ofDays(-1))
             },
             main = VEvent(),
@@ -147,6 +154,7 @@ class RemindersBuilderTest {
         val result = Entity(ContentValues())
         builder.build(
             from = VEvent().apply {
+                this += DtStart(Instant.now())
                 this += VAlarm(Duration.ofSeconds(-10))
             },
             main = VEvent(),
@@ -160,6 +168,7 @@ class RemindersBuilderTest {
         val result = Entity(ContentValues())
         builder.build(
             from = VEvent().apply {
+                this += DtStart(Instant.now())
                 this += VAlarm(Duration.ofMinutes(10))
             },
             main = VEvent(),

@@ -8,7 +8,6 @@ package at.bitfire.synctools.mapping.tasks
 
 import android.content.ContentValues
 import android.content.Entity
-import at.bitfire.ical4android.ICalendar
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
@@ -20,6 +19,7 @@ import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.COLUMN_FLAGS
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.TasksBatchOperation
+import at.bitfire.synctools.util.AlarmTriggerCalculator
 import at.bitfire.synctools.util.AndroidTimeUtils
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import net.fortuna.ical4j.model.Parameter
@@ -93,7 +93,7 @@ class DmfsTaskBuilder(
             builder .withValue(Tasks.LIST_ID, taskList.id)
 
         // new builders
-        
+
         val entity = Entity(ContentValues())
         for (fieldBuilder in fieldBuilders)
             fieldBuilder.build(task, entity)
@@ -224,11 +224,10 @@ class DmfsTaskBuilder(
 
     private fun insertAlarms(batch: TasksBatchOperation, idxTask: Int?) {
         for (alarm in task.alarms) {
-            val (alarmRef, minutes) = ICalendar.vAlarmToMin(
+            val (alarmRef, minutes) = AlarmTriggerCalculator.alarmTriggerToMinutes(
                 alarm = alarm,
                 refStart = task.dtStart,
-                refEnd = task.due,
-                refDuration = task.duration,
+                refEnd = task.end,
                 allowRelEnd = true
             ) ?: continue
             val ref = when (alarmRef) {
