@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui.setup
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.provider.Browser
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,8 +39,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.core.os.bundleOf
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
@@ -93,7 +93,9 @@ object NextcloudLogin : LoginType {
                     browser.intent.data = loginUri
                     browser.intent.putExtra(
                         Browser.EXTRA_HEADERS,
-                        bundleOf(HttpHeaders.AcceptLanguage to Locale.current.toLanguageTag())
+                        Bundle().apply {
+                            putString(HttpHeaders.AcceptLanguage, Locale.current.toLanguageTag())
+                        }
                     )
                     checkResultCallback.launch(browser.intent)
                 } else {

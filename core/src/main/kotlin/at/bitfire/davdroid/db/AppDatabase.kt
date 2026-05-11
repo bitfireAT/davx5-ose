@@ -83,7 +83,7 @@ abstract class AppDatabase: RoomDatabase() {
                 for (spec in autoMigrations)
                     addAutoMigrationSpec(spec)
             }
-            .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
+            .fallbackToDestructiveMigration(dropAllTables = true)   // as a last fallback, recreate database instead of crashing
             .addCallback(object: Callback() {
                 override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
                     notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_DATABASE_CORRUPTED) {

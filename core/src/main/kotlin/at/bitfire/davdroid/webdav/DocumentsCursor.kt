@@ -31,7 +31,8 @@ class DocumentsCursor(columns: Array<out String>): MatrixCursor(columns) {
     fun addRow(bundle: Bundle) {
         newRow().also { row ->
             for (entry in bundle.keySet()) {
-                val value = bundle.get(entry)
+                @Suppress("DEPRECATION")
+                val value = bundle[entry]
                 row.add(entry, value)
             }
         }
