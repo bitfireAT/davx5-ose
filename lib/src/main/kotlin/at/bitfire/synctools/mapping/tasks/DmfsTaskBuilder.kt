@@ -6,10 +6,14 @@
 
 package at.bitfire.synctools.mapping.tasks
 
+import android.content.ContentValues
+import android.content.Entity
 import at.bitfire.ical4android.ICalendar
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
+import at.bitfire.synctools.mapping.tasks.builder.DmfsTaskFieldBuilder
+import at.bitfire.synctools.mapping.tasks.builder.TitleBuilder
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.COLUMN_ETAG
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.COLUMN_FLAGS
@@ -60,6 +64,10 @@ class DmfsTaskBuilder(
     private val flags: Int,
 ) {
 
+    private val fieldBuilders: Array<DmfsTaskFieldBuilder> = arrayOf(
+        TitleBuilder()
+    )
+
     private val logger
         get() = Logger.getLogger(javaClass.name)
 
@@ -84,10 +92,18 @@ class DmfsTaskBuilder(
         if (!update)
             builder .withValue(Tasks.LIST_ID, taskList.id)
 
+        // new builders
+        
+        val entity = Entity(ContentValues())
+        for (fieldBuilder in fieldBuilders)
+            fieldBuilder.build(task, entity)
+        builder.withValues(entity.entityValues)
+
+        // old builders
+
         builder .withValue(Tasks._UID, task.uid)
             .withValue(Tasks._DIRTY, 0)
             .withValue(Tasks.SYNC_VERSION, task.sequence)
-            .withValue(Tasks.TITLE, task.summary)
             .withValue(Tasks.LOCATION, task.location)
             .withValue(Tasks.GEO, task.geoPosition?.let { "${it.longitude},${it.latitude}" })
             .withValue(Tasks.DESCRIPTION, task.description)
