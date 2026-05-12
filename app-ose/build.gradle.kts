@@ -16,6 +16,13 @@ java {
     }
 }
 
+kotlin {
+    compilerOptions {
+        // use new defaulting rule for qualifiers to avoid `@param:` prefix for DI annotations
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
+    }
+}
+
 android {
     compileSdk = 37
 
