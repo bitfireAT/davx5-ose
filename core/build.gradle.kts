@@ -20,7 +20,7 @@ java {
 kotlin {
     compilerOptions {
         // use new defaulting rule for qualifiers to avoid `@param:` prefix for DI annotations
-        freeCompilerArgs.add("-Xannotation-default-target=first-only")
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
 }
 
