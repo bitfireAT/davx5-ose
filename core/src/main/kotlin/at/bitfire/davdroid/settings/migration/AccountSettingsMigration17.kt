@@ -12,6 +12,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
@@ -32,6 +33,7 @@ import javax.inject.Inject
  * identifier. We need to update the address book account names.
  */
 class AccountSettingsMigration17 @Inject constructor(
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
@@ -63,7 +65,8 @@ class AccountSettingsMigration17 @Inject constructor(
                 for (oldAddressBookAccount in oldAddressBookAccounts) {
                     // Old address books only have a URL, so use it to determine the collection ID
                     logger.info("Migrating address book ${oldAddressBookAccount.name}")
-                    val oldAddressBook = localAddressBookFactory.create(account, oldAddressBookAccount, provider)
+                    val accountSettings = accountSettingsFactory.create(account)
+                    val oldAddressBook = localAddressBookFactory.create(account, oldAddressBookAccount, provider, accountSettings.getGroupMethod())
                     val url = accountManager.getUserData(oldAddressBookAccount, LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL)
                     collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
                         // Set collection ID and rename the account

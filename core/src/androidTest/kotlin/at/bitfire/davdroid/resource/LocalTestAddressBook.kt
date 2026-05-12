@@ -7,8 +7,6 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
-import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.vcard4android.GroupMethod
@@ -28,21 +26,18 @@ class LocalTestAddressBook @AssistedInject constructor(
     @Assisted provider: ContentProviderClient,
     @Assisted override val groupMethod: GroupMethod,
     accountSettingsFactory: AccountSettings.Factory,
-    collectionRepository: DavCollectionRepository,
     @ApplicationContext context: Context,
     logger: Logger,
-    serviceRepository: DavServiceRepository,
     syncFramework: SyncFrameworkIntegration
 ): LocalAddressBook(
     account = account,
     _addressBookAccount = addressBookAccount,
     provider = provider,
+    groupMethod = groupMethod,
     accountSettingsFactory = accountSettingsFactory,
-    collectionRepository = collectionRepository,
     context = context,
     dirtyVerifier = Optional.empty(),
     logger = logger,
-    serviceRepository = serviceRepository,
     syncFramework = syncFramework
 ) {
 
