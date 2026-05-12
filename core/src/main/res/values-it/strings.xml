@@ -480,7 +480,6 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
         <item quantity="other">Gli elementi più vecchi di %d giorni non sono sincronizzati (vede impostazioni dell\'account).</item>
     </plurals>
     <string name="debug_info_http_403_description">La richiesta è stata respinta dal server.</string>
-    <string name="dismiss_forever"> </string>
     <string name="notification_channel_user_interaction">Interazione Utente</string>
     <string name="notification_channel_user_interaction_desc">È richiesta l\'interazione dell\'utente. Un problema deve essere risolto manualmente.</string>
     <string name="app_settings_push_use_push">Usa Push</string>
