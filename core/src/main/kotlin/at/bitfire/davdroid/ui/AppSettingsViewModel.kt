@@ -46,9 +46,9 @@ import kotlin.jvm.optionals.getOrNull
 
 @HiltViewModel
 class AppSettingsViewModel @Inject constructor(
-    @param:ApplicationContext private val context: Context,
+    @ApplicationContext private val context: Context,
     private val customCertStore: Optional<CustomCertStore>,
-    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
     private val pushDistributorManager: PushDistributorManager,
     private val settings: SettingsManager,

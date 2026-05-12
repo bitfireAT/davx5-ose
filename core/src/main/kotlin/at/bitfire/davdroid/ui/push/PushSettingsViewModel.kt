@@ -39,9 +39,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PushSettingsViewModel @Inject constructor(
-    @param:ApplicationContext private val context: Context,
-    @param:ApplicationScope private val applicationScope: CoroutineScope,
-    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @ApplicationContext private val context: Context,
+    @ApplicationScope private val applicationScope: CoroutineScope,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val collectionRepository: DavCollectionRepository,
     private val pushDistributorManager: PushDistributorManager,
     private val pushRegistrationManager: PushRegistrationManager,
