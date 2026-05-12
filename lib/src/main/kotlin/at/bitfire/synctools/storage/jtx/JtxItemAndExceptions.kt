@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-package at.bitfire.synctools.storage.calendar
+package at.bitfire.synctools.storage.jtx
 
 import at.bitfire.synctools.storage.MainItemAndExceptions
 
-typealias EventAndExceptions = MainItemAndExceptions
+typealias JtxItemAndExceptions = MainItemAndExceptions
