@@ -24,7 +24,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import javax.inject.Inject
 
 @HiltViewModel
-class AddWebdavMountModel @Inject constructor(
+class AddWebdavMountViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     val db: AppDatabase,
     private val mountRepository: WebDavMountRepository

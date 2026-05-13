@@ -50,7 +50,8 @@ import javax.inject.Singleton
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 18, autoMigrations = [
+], exportSchema = true, version = 19, autoMigrations = [
+    AutoMigration(from = 18, to = 19),      // collection: add pushRegisteredEndpoint
     AutoMigration(from = 17, to = 18, spec = AutoMigration18::class),
     AutoMigration(from = 16, to = 17),      // collection: add VAPID key
     AutoMigration(from = 15, to = 16, spec = AutoMigration16::class),
@@ -82,7 +83,7 @@ abstract class AppDatabase: RoomDatabase() {
                 for (spec in autoMigrations)
                     addAutoMigrationSpec(spec)
             }
-            .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
+            .fallbackToDestructiveMigration(dropAllTables = true)   // as a last fallback, recreate database instead of crashing
             .addCallback(object: Callback() {
                 override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
                     notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_DATABASE_CORRUPTED) {

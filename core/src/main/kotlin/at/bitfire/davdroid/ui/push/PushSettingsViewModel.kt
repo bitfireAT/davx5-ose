@@ -1,0 +1,195 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.ui.push
+
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.push.PushDistributorManager
+import at.bitfire.davdroid.push.PushNotificationManager
+import at.bitfire.davdroid.push.PushRegistrationManager
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavCollectionRepository.PushCollectionsAmount
+import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.ui.push.PushSettingsContract.Event
+import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushDistributorSelected
+import at.bitfire.davdroid.ui.push.PushSettingsContract.Event.PushEnabled
+import at.bitfire.davdroid.ui.push.PushSettingsContract.PushCapability
+import at.bitfire.davdroid.ui.push.PushSettingsContract.PushDistributorInfo
+import at.bitfire.davdroid.ui.push.PushSettingsContract.State
+import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Content
+import at.bitfire.davdroid.ui.push.PushSettingsContract.State.Loading
+import at.bitfire.davdroid.util.packageChangedFlow
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class PushSettingsViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
+    @ApplicationScope private val applicationScope: CoroutineScope,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val collectionRepository: DavCollectionRepository,
+    private val pushDistributorManager: PushDistributorManager,
+    private val pushRegistrationManager: PushRegistrationManager,
+    private val pushNotificationManager: PushNotificationManager
+) : ViewModel() {
+    private val packageManager = context.packageManager
+
+    private val _uiState = MutableStateFlow<State>(Loading)
+    val uiState = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch(ioDispatcher) {
+            // Reload once initially and then when packages change (new distributor installed/removed)
+            packageChangedFlow(
+                context = context,
+                immediate = true // Initial empty intent triggers first call to loadSettings()
+            ).collect { loadSettings() }
+        }
+    }
+
+    fun onEvent(event: Event) {
+        when (event) {
+            is PushEnabled -> handlePushEnabled(event.enabled)
+            is PushDistributorSelected -> handlePushDistributorSelected(event.packageName)
+            is Event.DefaultPushDistributorSelected -> handleDefaultPushDistributorSelected()
+        }
+    }
+
+    private fun handlePushEnabled(enabled: Boolean) {
+        updateContent { content ->
+            content.copy(
+                isPushEnabled = enabled,
+                selectedPushDistributor = if (enabled) content.selectedPushDistributor else null
+            )
+        }
+
+        // If there's a pending notification for the user regarding the selection of a push distributor, dismiss it, as the user has now made a selection.
+        pushNotificationManager.dismiss(NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR)
+
+        applicationScope.launch(ioDispatcher) {
+            pushDistributorManager.setPushEnabled(enabled)
+            pushRegistrationManager.update()
+        }
+    }
+
+    private fun handlePushDistributorSelected(packageName: String) {
+        updateContent { content ->
+            content.copy(selectedPushDistributor = packageName)
+        }
+
+        // If there's a pending notification for the user regarding the selection of a push distributor, dismiss it, as the user has now made a selection.
+        pushNotificationManager.dismiss(NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR)
+
+        applicationScope.launch(ioDispatcher) {
+            pushDistributorManager.setPushDistributorAndEnablePush(packageName)
+            pushRegistrationManager.update()
+        }
+    }
+
+    private fun handleDefaultPushDistributorSelected() {
+        val defaultDistributor = pushDistributorManager.getDefaultDistributor()
+        val selectedDistributor = pushDistributorManager.getSelectedDistributor()
+
+        // Return early if default distributor was not set for some reason (should not happen)
+        if (defaultDistributor == null)
+            return
+
+        // Our decision on UI behavior: If there was no selection made in DAVx5 yet, the newly
+        // selected default distributor is also picked as selected distributor in DAVx5.
+
+        // Update active distributor, if no selection made in DAVx5 yet
+        if (selectedDistributor == null) {
+            applicationScope.launch(ioDispatcher) {
+                pushDistributorManager.setPushDistributorAndEnablePush(defaultDistributor)
+                pushRegistrationManager.update()
+            }
+        }
+
+        // If there's a pending notification for the user regarding the selection of a push distributor, dismiss it, as the user has now made a selection.
+        pushNotificationManager.dismiss(NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR)
+
+        // Update view
+        updateContent { content ->
+            content.copy(
+                // Update active/selected distributor with default, if no selection made in DAVx5 yet (selectedDistributor is null)
+                selectedPushDistributor = selectedDistributor ?: defaultDistributor,
+                defaultPushDistributor = defaultDistributor
+            )
+        }
+    }
+
+    private suspend fun loadSettings() {
+        val isPushEnabled = pushDistributorManager.isPushEnabled()
+        val defaultDistributor = pushDistributorManager.getDefaultDistributor()
+        val selectedDistributor = pushDistributorManager.getSelectedDistributor() ?: defaultDistributor
+        val pushCapability = getPushCapability()
+        val pushDistributors = pushDistributorManager.getDistributors()
+            .mapNotNull { pushDistributor ->
+                if (pushDistributor == context.packageName) {
+                    if (pushDistributorManager.isFCMDistributorAvailable()) {
+                        PushDistributorInfo(
+                            packageName = pushDistributor,
+                            appName = context.getString(R.string.app_settings_unifiedpush_distributor_fcm),
+                            appIcon = AppCompatResources.getDrawable(context, R.drawable.product_logomark_cloud_messaging_full_color)
+                        )
+                    } else {
+                        null
+                    }
+                } else {
+                    try {
+                        val applicationInfo = packageManager.getApplicationInfo(pushDistributor, 0)
+                        val label = packageManager.getApplicationLabel(applicationInfo).toString()
+                        val icon = packageManager.getApplicationIcon(applicationInfo)
+
+                        PushDistributorInfo(pushDistributor, label, icon)
+                    } catch (_: PackageManager.NameNotFoundException) {
+                        // The app is not available for some reason, do not include the app data.
+                        null
+                    }
+                }
+            }
+
+        updateContent { content ->
+            content.copy(
+                isPushEnabled = isPushEnabled,
+                pushCapability = pushCapability,
+                selectedPushDistributor = selectedDistributor,
+                defaultPushDistributor = defaultDistributor,
+                pushDistributors = pushDistributors
+            )
+        }
+    }
+
+    private suspend fun getPushCapability(): PushCapability {
+        return when (collectionRepository.getAmountPushCapable()) {
+            PushCollectionsAmount.All -> PushCapability.DoNotShow // No need to tell the user
+            PushCollectionsAmount.Some -> PushCapability.SomePushCapable
+            PushCollectionsAmount.None -> PushCapability.NonePushCapable
+        }
+    }
+
+    private fun updateContent(block: (Content) -> Content) {
+        _uiState.update { state ->
+            if (state is Content) {
+                block(state)
+            } else {
+                block(Content())
+            }
+        }
+    }
+}

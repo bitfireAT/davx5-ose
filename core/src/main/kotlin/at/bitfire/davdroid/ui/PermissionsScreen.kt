@@ -80,7 +80,7 @@ fun PermissionsScreen(
 @Composable
 fun PermissionsScreen(
     modifier: Modifier = Modifier,
-    model: PermissionsModel = viewModel()
+    model: PermissionsViewModel = viewModel()
 ) {
     // check permissions when the lifecycle owner (for instance Activity) is resumed
     val lifecycle = LocalLifecycleOwner.current.lifecycle

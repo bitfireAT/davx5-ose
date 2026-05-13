@@ -32,7 +32,7 @@ import at.bitfire.davdroid.R
  * A widget with a "Sync all" button displaying just an icon to indicate the action.
  */
 class IconSyncButtonWidget(
-    private val model: SyncWidgetModel,
+    private val model: SyncWidgetViewModel,
     private val lightColorScheme: ColorScheme,
     private val darkColorScheme: ColorScheme
 ) : GlanceAppWidget() {
@@ -52,7 +52,7 @@ class IconSyncButtonWidget(
     }
 
     @Composable
-    private fun WidgetContent(model: SyncWidgetModel) {
+    private fun WidgetContent(model: SyncWidgetViewModel) {
         val context = LocalContext.current
 
         Box(

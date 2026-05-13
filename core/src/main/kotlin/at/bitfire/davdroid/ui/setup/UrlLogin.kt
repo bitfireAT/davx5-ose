@@ -32,7 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
@@ -53,8 +53,8 @@ object UrlLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model: UrlLoginModel = hiltViewModel(
-            creationCallback = { factory: UrlLoginModel.Factory ->
+        val model: UrlLoginViewModel = hiltViewModel(
+            creationCallback = { factory: UrlLoginViewModel.Factory ->
                 factory.create(loginInfo = initialLoginInfo)
             }
         )

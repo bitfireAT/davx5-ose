@@ -9,12 +9,7 @@ import at.bitfire.davdroid.startup.StartupPlugin.Companion.PRIORITY_DEFAULT
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.IntoSet
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider

@@ -52,7 +52,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
@@ -72,8 +72,8 @@ fun CollectionScreen(
     onFinish: () -> Unit,
     onNavUp: () -> Unit
 ) {
-    val model: CollectionScreenModel = hiltViewModel(
-        creationCallback = { factory: CollectionScreenModel.Factory ->
+    val model: CollectionScreenViewModel = hiltViewModel(
+        creationCallback = { factory: CollectionScreenViewModel.Factory ->
             factory.create(collectionId)
         }
     )
@@ -92,7 +92,7 @@ fun CollectionScreen(
         color = collection.color,
         sync = collection.sync,
         onSetSync = model::setSync,
-        readOnly = model.readOnly.collectAsStateWithLifecycle(CollectionScreenModel.ReadOnlyState.READ_WRITE).value,
+        readOnly = model.readOnly.collectAsStateWithLifecycle(CollectionScreenViewModel.ReadOnlyState.READ_WRITE).value,
         onSetForceReadOnly = model::setForceReadOnly,
         title = collection.title(),
         displayName = collection.displayName,
@@ -119,14 +119,14 @@ fun CollectionScreen(
     color: Int?,
     sync: Boolean,
     onSetSync: (Boolean) -> Unit = {},
-    readOnly: CollectionScreenModel.ReadOnlyState,
+    readOnly: CollectionScreenViewModel.ReadOnlyState,
     onSetForceReadOnly: (Boolean) -> Unit = {},
     title: String,
     displayName: String? = null,
     description: String? = null,
     owner: String? = null,
     lastSynced: List<DavSyncStatsRepository.LastSynced> = emptyList(),
-    localItemCounts: List<CollectionScreenModel.LocalItemsCount>,
+    localItemCounts: List<CollectionScreenViewModel.LocalItemsCount>,
     pastEventTimeLimit: Int?,
     supportsWebPush: Boolean = false,
     pushSubscriptionCreated: Long? = null,
@@ -221,11 +221,11 @@ fun CollectionScreen(
                         icon = Icons.Default.DoNotDisturbOn,
                         title = stringResource(R.string.collection_read_only),
                         text = when (readOnly) {
-                            CollectionScreenModel.ReadOnlyState.READ_ONLY_BY_SERVER ->
+                            CollectionScreenViewModel.ReadOnlyState.READ_ONLY_BY_SERVER ->
                                 stringResource(R.string.collection_read_only_by_server)
-                            CollectionScreenModel.ReadOnlyState.READ_ONLY_BY_SETTING ->
+                            CollectionScreenViewModel.ReadOnlyState.READ_ONLY_BY_SETTING ->
                                 stringResource(R.string.collection_read_only_by_setting)
-                            CollectionScreenModel.ReadOnlyState.READ_ONLY_BY_USER ->
+                            CollectionScreenViewModel.ReadOnlyState.READ_ONLY_BY_USER ->
                                 stringResource(R.string.collection_read_only_forced)
                             else -> stringResource(R.string.collection_read_write)
                         },
@@ -405,7 +405,7 @@ fun CollectionScreen_Preview() {
         inProgress = true,
         color = 0xff14c0c4.toInt(),
         sync = true,
-        readOnly = CollectionScreenModel.ReadOnlyState.READ_ONLY_BY_USER,
+        readOnly = CollectionScreenViewModel.ReadOnlyState.READ_ONLY_BY_USER,
         url = "https://example.com/calendar",
         title = "Some Calendar, with some additional text to make it wrap around and stuff.",
         displayName = "Some Calendar, with some additional text to make it wrap around and stuff.",
@@ -419,13 +419,13 @@ fun CollectionScreen_Preview() {
         ),
         pastEventTimeLimit = 90,
         localItemCounts = listOf(
-            CollectionScreenModel.LocalItemsCount(
+            CollectionScreenViewModel.LocalItemsCount(
                 contentProviderName = "Calender Storage",
                 total = 150,
                 modified = 2,
                 deleted = 1
             ),
-            CollectionScreenModel.LocalItemsCount(
+            CollectionScreenViewModel.LocalItemsCount(
                 contentProviderName = "Some Tasks App",
                 total = 10,
                 modified = 0,

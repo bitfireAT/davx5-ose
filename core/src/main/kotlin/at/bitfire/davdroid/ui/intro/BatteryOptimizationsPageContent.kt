@@ -41,7 +41,7 @@ import java.util.Locale
 
 @Composable
 fun BatteryOptimizationsPageContent(
-    model: BatteryOptimizationsPageModel = viewModel()
+    model: BatteryOptimizationsPageViewModel = viewModel()
 ) {
     val ignoreBatteryOptimizationsResultLauncher = rememberLauncherForActivityResult(
         BatteryOptimizationsPage.IgnoreBatteryOptimizationsContract
@@ -66,7 +66,7 @@ fun BatteryOptimizationsPageContent(
         onChangeShouldBeExempted = model::updateShouldBeExempted,
         dontShowAutostart = hintAutostartPermission == false,
         onChangeDontShowAutostart = model::updateHintAutostartPermission,
-        manufacturerWarning = BatteryOptimizationsPageModel.manufacturerWarning
+        manufacturerWarning = BatteryOptimizationsPageViewModel.manufacturerWarning
     )
 }
 

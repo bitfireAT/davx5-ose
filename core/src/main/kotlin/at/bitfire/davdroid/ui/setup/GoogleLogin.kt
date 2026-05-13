@@ -40,7 +40,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
@@ -73,8 +73,8 @@ object GoogleLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model: GoogleLoginModel = hiltViewModel(
-            creationCallback = { factory: GoogleLoginModel.Factory ->
+        val model: GoogleLoginViewModel = hiltViewModel(
+            creationCallback = { factory: GoogleLoginViewModel.Factory ->
                 factory.create(loginInfo = initialLoginInfo)
             }
         )

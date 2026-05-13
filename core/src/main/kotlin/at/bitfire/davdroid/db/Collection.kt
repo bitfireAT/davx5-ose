@@ -29,7 +29,7 @@ import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.trimToNull
-import at.bitfire.ical4android.util.DateUtils
+import at.bitfire.ical4android.ICalendar
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
@@ -142,13 +142,17 @@ data class Collection(
     /** WebDAV-Push: VAPID public key */
     val pushVapidKey: String? = null,
 
-    /** WebDAV-Push subscription URL */
+    /** WebDAV-Push: subscription URL */
     val pushSubscription: String? = null,
 
-    /** when the [pushSubscription] expires (timestamp, used to determine whether we need to re-subscribe) */
+    /** WebDAV-Push: push resource (= UP endpoint) that has been used to create/update [pushSubscription] */
+    val pushRegisteredEndpoint: String? = null,
+
+    /** WebDAV-Push: when the [pushSubscription] expires for the given [pushRegisteredEndpoint] (timestamp
+    in epoch seconds, used to determine whether we need to re-subscribe) */
     val pushSubscriptionExpires: Long? = null,
 
-    /** when the [pushSubscription] was created/updated (timestamp) */
+    /** WebDAV-Push: when the [pushSubscription] was created/updated (timestamp) */
     val pushSubscriptionCreated: Long? = null
 
 ) {
@@ -201,7 +205,7 @@ data class Collection(
                     dav[CalendarTimezoneId::class.java]?.let { timezoneId = it.identifier }
                     if (timezoneId == null)
                         dav[CalendarTimezone::class.java]?.vTimeZone?.let {
-                            timezoneId = DateUtils.parseVTimeZone(it)?.timeZoneId?.value
+                            timezoneId = ICalendar.timezoneDefToTzId(it)
                         }
 
                     if (type == TYPE_CALENDAR) {

@@ -22,8 +22,8 @@ import kotlinx.coroutines.launch
 import java.util.logging.Level
 import java.util.logging.Logger
 
-@HiltViewModel(assistedFactory = NextcloudLoginModel.Factory::class)
-class NextcloudLoginModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = NextcloudLoginViewModel.Factory::class)
+class NextcloudLoginViewModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     @ApplicationContext val context: Context,
     private val logger: Logger,
@@ -32,7 +32,7 @@ class NextcloudLoginModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(loginInfo: LoginInfo): NextcloudLoginModel
+        fun create(loginInfo: LoginInfo): NextcloudLoginViewModel
     }
 
     /*companion object {

@@ -11,9 +11,25 @@ plugins {
     alias(libs.plugins.mikepenz.aboutLibraries.android)
 }
 
-// Android configuration
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+kotlin {
+    compilerOptions {
+        // use new defaulting rule for qualifiers to avoid `@param:` prefix for DI annotations
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
+    }
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 24        // Android 7.0
@@ -22,12 +38,6 @@ android {
 
         // include these rules in the app that uses the core library
         consumerProguardFile("core-proguard-rules.pro")
-    }
-
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
-        }
     }
 
     compileOptions {
@@ -82,10 +92,6 @@ android {
             }
         }
     }
-}
-
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 aboutLibraries {

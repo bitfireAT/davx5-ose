@@ -26,12 +26,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -55,7 +55,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
@@ -72,8 +72,8 @@ fun CreateCalendarScreen(
     onFinish: () -> Unit,
     onNavUp: () -> Unit
 ) {
-    val model: CreateCalendarModel = hiltViewModel(
-        creationCallback = { factory: CreateCalendarModel.Factory ->
+    val model: CreateCalendarViewModel = hiltViewModel(
+        creationCallback = { factory: CreateCalendarViewModel.Factory ->
             factory.create(account)
         }
     )
@@ -121,7 +121,7 @@ fun CreateCalendarScreen(
     onSetDisplayName: (String) -> Unit = {},
     description: String = "",
     onSetDescription: (String) -> Unit = {},
-    timeZones: List<CreateCalendarModel.TimeZoneInfo>,
+    timeZones: List<CreateCalendarViewModel.TimeZoneInfo>,
     timeZone: String? = null,
     onSelectTimeZone: (String?) -> Unit = {},
     supportVEVENT: Boolean = true,
@@ -256,7 +256,7 @@ fun CreateCalendarScreen(
                             readOnly = true,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                         )
 
                         ExposedDropdownMenu(
@@ -364,7 +364,7 @@ fun CheckBoxRow(
 fun CreateCalendarScreenPreview() {
     CreateCalendarScreen(
         timeZones = listOf(
-            CreateCalendarModel.TimeZoneInfo(
+            CreateCalendarViewModel.TimeZoneInfo(
                 id = "Europe/Vienna",
                 displayName = "Vienna (Europe)"
             )

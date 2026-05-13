@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.resource
 
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.DmfsTask
+import at.bitfire.synctools.storage.tasks.DmfsTask
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -24,9 +24,9 @@ class LocalTaskList (
     private val logger = Logger.getGlobal()
 
     override val readOnly
-        get() = dmfsTaskList.accessLevel?.let {
+        get() = dmfsTaskList.accessLevel.let {
             it != TaskListColumns.ACCESS_LEVEL_UNDEFINED && it <= TaskListColumns.ACCESS_LEVEL_READ
-        } ?: false
+        }
 
     override val dbCollectionId: Long?
         get() = dmfsTaskList.syncId?.toLongOrNull()

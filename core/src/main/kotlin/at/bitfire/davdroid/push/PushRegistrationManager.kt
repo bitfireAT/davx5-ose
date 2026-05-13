@@ -5,6 +5,8 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
+import android.content.Intent
+import androidx.core.app.NotificationCompat
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -20,6 +22,7 @@ import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.property.push.WebDAVPush
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -28,6 +31,8 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.ui.push.PushSettingsActivity
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
@@ -35,8 +40,10 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.data.PushEndpoint
 import java.io.StringWriter
@@ -60,35 +67,13 @@ class PushRegistrationManager @Inject constructor(
     private val accountRepository: Lazy<AccountRepository>,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
+    private val distributorManager: PushDistributorManager,
+    private val notificationManager: PushNotificationManager,
+    private val notificationRegistry: NotificationRegistry,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
 ) {
-
-    /**
-     * Sets or removes (disable push) the distributor and updates the subscriptions + worker.
-     *
-     * Uses [update] which is protected by [mutex] so creating/deleting subscriptions doesn't
-     * interfere with other operations.
-     *
-     * @param pushDistributor  new distributor or `null` to disable Push
-     */
-    suspend fun setPushDistributor(pushDistributor: String?) {
-        // Disable UnifiedPush and remove all subscriptions
-        UnifiedPush.removeDistributor(context)
-        update()
-
-        if (pushDistributor != null) {
-            // If a distributor was passed, store it and create/register subscriptions
-            UnifiedPush.saveDistributor(context, pushDistributor)
-            update()
-        }
-    }
-
-    fun getCurrentDistributor() = UnifiedPush.getSavedDistributor(context)
-
-    fun getDistributors() = UnifiedPush.getDistributors(context)
-
 
     /**
      * Updates all push registrations and subscriptions so that if Push is available, it's up-to-date and
@@ -126,8 +111,8 @@ class PushRegistrationManager @Inject constructor(
         // use service ID from database as UnifiedPush instance name
         val instance = serviceId.toString()
 
-        val distributorAvailable = getCurrentDistributor() != null
-        if (distributorAvailable)
+        val isDistributorSelected = distributorManager.getDistributorToUse() != null
+        if (isDistributorSelected)
             try {
                 val vapid = collectionRepository.getVapidKey(serviceId)
                 if (vapid != null) {    // only register when there's a VAPID key
@@ -145,14 +130,40 @@ class PushRegistrationManager @Inject constructor(
             } catch (e: UnifiedPush.VapidNotValidException) {
                 logger.log(Level.WARNING, "Couldn't register invalid VAPID key for service $serviceId", e)
             }
-        else {
-            logger.fine("No push distributor, unregistering UnifiedPush service $serviceId / ${service.accountName}")
-            UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
-            unsubscribeAll(service)
+        else if (distributorManager.isPushEnabled()) {
+            unregisterAndUnsubscribeFromService(service)
+
+            // Only show distributor selection notification if there's at least one push-capable collection, otherwise, the user is not interested
+            if (collectionRepository.anyPushCapable()) {
+                notifyDistributorSelection()
+            }
         }
 
         // UnifiedPush has now been called. It will do its work and then asynchronously call back to UnifiedPushService, which
         // will then call processSubscription or removeSubscription.
+    }
+
+    private suspend fun notifyDistributorSelection() {
+        withContext(Dispatchers.Main) {
+            notificationManager.notify(
+                id = NotificationRegistry.NOTIFY_SELECT_PUSH_DISTRIBUTOR,
+                channelId = notificationRegistry.CHANNEL_USER_INTERACTION,
+                title = context.getString(R.string.push_distributor_selection_required_title),
+                text = context.getString(R.string.push_distributor_selection_required_message),
+                priority = NotificationCompat.PRIORITY_DEFAULT,
+                category = NotificationCompat.CATEGORY_RECOMMENDATION,
+                intent = Intent(context, PushSettingsActivity::class.java)
+            )
+        }
+    }
+
+    /**
+     * Unregisters instances and unsubscribes from the given [service].
+     */
+    private suspend fun unregisterAndUnsubscribeFromService(service: Service) {
+        val instance = service.id.toString()
+        UnifiedPush.unregister(context, instance)   // doesn't call UnifiedPushService.onUnregistered
+        unsubscribeAll(service)
     }
 
     /**
@@ -160,7 +171,7 @@ class PushRegistrationManager @Inject constructor(
      *
      * Uses the subscription to subscribe to syncable collections, and then unsubscribes from non-syncable collections.
      */
-    suspend fun processSubscription(serviceId: Long, endpoint: PushEndpoint) = mutex.withLock {
+    suspend fun processSubscription(serviceId: Long, endpoint: PushEndpoint): Unit = mutex.withLock {
         val service = serviceRepository.get(serviceId) ?: return
 
         try {
@@ -174,31 +185,48 @@ class PushRegistrationManager @Inject constructor(
         }
     }
 
+    /**
+     * (Re-)subscribes to push notifications for syncable collections of a given service using the provided endpoint.
+     *
+     * @param service The service for which to subscribe to push notifications. Must not be null.
+     * @param endpoint The push endpoint to use for subscription. Must not be null.
+     */
     private suspend fun subscribeSyncable(service: Service, endpoint: PushEndpoint) {
         val subscribeTo = collectionRepository.getPushCapableAndSyncable(service.id)
         if (subscribeTo.isEmpty())
             return
+
+        // calculate next worker run (later needed to check expiry); duplicate days for safety (times are not exact)
+        val nextWorkerRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
 
         val account = accountRepository.get().fromName(service.accountName)
         httpClientBuilder.get()
             .fromAccountAsync(account)
             .buildKtor()
             .use { httpClient ->
-            for (collection in subscribeTo)
+            for (collection in subscribeTo) {
+                // update push subscription for the given collection
                 try {
-                    val expires = collection.pushSubscriptionExpires
-                    // calculate next run time, but use the duplicate interval for safety (times are not exact)
-                    val nextRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
-                    if (expires != null && expires >= nextRun.epochSecond)
+                    // determine whether the registered subscription will expire before the next worker run ...
+                    val subscriptionAboutToExpire = collection.pushSubscriptionExpires?.let { nextWorkerRun.epochSecond >= it } ?: true
+                    // ... and also check whether endpoint has changed
+                    val endpointChanged = collection.pushRegisteredEndpoint == null || collection.pushRegisteredEndpoint != endpoint.url
+                    if (!endpointChanged && !subscriptionAboutToExpire)
                         logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
                     else {
-                        // no existing subscription or expiring soon
+                        if (endpointChanged) {
+                            logger.fine("Push endpoint changed for ${collection.url}, unsubscribing from old endpoint first")
+                            collection.pushSubscription?.toUrlOrNull()?.let { oldUrl ->
+                                unsubscribe(httpClient, collection, oldUrl)
+                            }
+                        }
                         logger.fine("Registering push subscription for ${collection.url}")
                         subscribe(httpClient, collection, endpoint)
                     }
                 } catch (e: Exception) {
                     logger.log(Level.WARNING, "Couldn't register subscription at CalDAV/CardDAV server", e)
                 }
+            }
         }
     }
 
@@ -207,7 +235,7 @@ class PushRegistrationManager @Inject constructor(
      *
      * Unsubscribes from all subscribed collections.
      */
-    suspend fun removeSubscription(serviceId: Long) = mutex.withLock {
+    suspend fun removeSubscription(serviceId: Long): Unit = mutex.withLock {
         val service = serviceRepository.get(serviceId) ?: return
         unsubscribeAll(service)
     }
@@ -276,6 +304,7 @@ class PushRegistrationManager @Inject constructor(
                 collectionRepository.updatePushSubscription(
                     id = collection.id,
                     subscriptionUrl = subscriptionUrl,
+                    registeredEndpoint = endpoint.url,
                     expires = expires?.epochSecond
                 )
             } else
@@ -316,18 +345,19 @@ class PushRegistrationManager @Inject constructor(
         collectionRepository.updatePushSubscription(
             id = collection.id,
             subscriptionUrl = null,
+            registeredEndpoint = null,
             expires = null
         )
     }
 
 
     /**
-     * Determines whether there are any push-capable collections and updates the periodic worker accordingly.
+     * Determines whether there are any push-capable collections and updates the
+     * [PushRegistrationWorker] accordingly.
      *
-     * If there are push-capable collections, a unique periodic worker with an initial delay of 5 seconds is enqueued.
-     * A potentially existing worker is replaced, so that the first run should be soon.
+     * If there are push-capable collections, a unique periodic worker is enqueued.
      *
-     * Otherwise, a potentially existing worker is cancelled.
+     * If there are no push-capable collections, a potentially existing worker is canceled.
      */
     private suspend fun updatePeriodicWorker() {
         val workerNeeded = collectionRepository.anyPushCapable()
@@ -339,7 +369,6 @@ class PushRegistrationManager @Inject constructor(
                 WORKER_UNIQUE_NAME,
                 ExistingPeriodicWorkPolicy.UPDATE,
                 PeriodicWorkRequest.Builder(PushRegistrationWorker::class, WORKER_INTERVAL_DAYS, TimeUnit.DAYS)
-                    .setInitialDelay(5, TimeUnit.SECONDS)
                     .setConstraints(
                         Constraints.Builder()
                             .setRequiredNetworkType(NetworkType.CONNECTED)

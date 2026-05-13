@@ -16,9 +16,6 @@ import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import androidx.annotation.OpenForTesting
 import androidx.core.content.contentValuesOf
-import at.bitfire.davdroid.R
-import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_READ_ONLY
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
@@ -57,12 +54,11 @@ open class LocalAddressBook @AssistedInject constructor(
     @Assisted("account") val account: Account,
     @Assisted("addressBookAccount") _addressBookAccount: Account,
     @Assisted provider: ContentProviderClient,
+    @Assisted open val groupMethod: GroupMethod,
     private val accountSettingsFactory: AccountSettings.Factory,
-    private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
     internal val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,
-    private val serviceRepository: DavServiceRepository,
     private val syncFramework: SyncFrameworkIntegration
 ): AndroidAddressBook<LocalContact, LocalGroup>(_addressBookAccount, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
 
@@ -71,7 +67,8 @@ open class LocalAddressBook @AssistedInject constructor(
         fun create(
             @Assisted("account") account: Account,
             @Assisted("addressBookAccount") addressBookAccount: Account,
-            provider: ContentProviderClient
+            provider: ContentProviderClient,
+            groupMethod: GroupMethod
         ): LocalAddressBook
     }
 
@@ -83,26 +80,6 @@ open class LocalAddressBook @AssistedInject constructor(
 
     private val accountManager by lazy { AccountManager.get(context) }
 
-    /**
-     * Whether contact groups ([LocalGroup]) are included in query results
-     * and are affected by updates/deletes on generic members.
-     *
-     * For instance, if groupMethod is GROUP_VCARDS, [findDirty] will find only dirty [LocalContact]s,
-     * but if it is enabled, [findDirty] will find dirty [LocalContact]s and [LocalGroup]s.
-     */
-    open val groupMethod: GroupMethod by lazy {
-        val account = accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
-            collectionRepository.get(collectionId)?.let { collection ->
-                serviceRepository.getBlocking(collection.serviceId)?.let { service ->
-                    Account(service.accountName, context.getString(R.string.account_type))
-                }
-            }
-        }
-        if (account == null)
-            throw IllegalArgumentException("Collection of address book account $addressBookAccount does not have an account")
-        val accountSettings = accountSettingsFactory.create(account)
-        accountSettings.getGroupMethod()
-    }
     val includeGroups
         get() = groupMethod == GroupMethod.GROUP_VCARDS
 

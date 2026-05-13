@@ -35,7 +35,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
@@ -61,8 +61,8 @@ object FastmailLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model: FastmailLoginModel = hiltViewModel(
-            creationCallback = { factory: FastmailLoginModel.Factory ->
+        val model: FastmailLoginViewModel = hiltViewModel(
+            creationCallback = { factory: FastmailLoginViewModel.Factory ->
                 factory.create(loginInfo = initialLoginInfo)
             }
         )

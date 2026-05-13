@@ -7,20 +7,26 @@ package at.bitfire.davdroid.ui
 import android.content.Context
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.content.pm.PackageManager.NameNotFoundException
 import android.graphics.drawable.Drawable
 import android.os.PowerManager
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.push.PushRegistrationManager
+import at.bitfire.davdroid.push.PushDistributorManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.bitfire.davdroid.ui.PushSummary.PushDisabled
+import at.bitfire.davdroid.ui.PushSummary.PushEnabled
+import at.bitfire.davdroid.ui.PushSummary.PushLoading
 import at.bitfire.davdroid.ui.intro.BackupsPage
-import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel
+import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageViewModel
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
@@ -39,12 +45,12 @@ import javax.inject.Inject
 import kotlin.jvm.optionals.getOrNull
 
 @HiltViewModel
-class AppSettingsModel @Inject constructor(
+class AppSettingsViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val customCertStore: Optional<CustomCertStore>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val preferences: PreferenceRepository,
-    private val pushRegistrationManager: PushRegistrationManager,
+    private val pushDistributorManager: PushDistributorManager,
     private val settings: SettingsManager,
     tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -105,10 +111,10 @@ class AppSettingsModel @Inject constructor(
 
     fun resetHints() = runBlocking(ioDispatcher) {
         settings.remove(BackupsPage.Model.SETTING_BACKUPS_ACCEPTED)
-        settings.remove(BatteryOptimizationsPageModel.HINT_BATTERY_OPTIMIZATIONS)
-        settings.remove(BatteryOptimizationsPageModel.HINT_AUTOSTART_PERMISSION)
+        settings.remove(BatteryOptimizationsPageViewModel.HINT_BATTERY_OPTIMIZATIONS)
+        settings.remove(BatteryOptimizationsPageViewModel.HINT_AUTOSTART_PERMISSION)
         settings.remove(OpenSourcePage.Model.SETTING_NEXT_DONATION_POPUP)
-        settings.remove(TasksModel.HINT_OPENTASKS_NOT_INSTALLED)
+        settings.remove(TasksViewModel.HINT_OPENTASKS_NOT_INSTALLED)
     }
 
 
@@ -126,66 +132,52 @@ class AppSettingsModel @Inject constructor(
 
     // push
 
-    private val _pushDistributor = MutableStateFlow<String?>(null)
-    val pushDistributor = _pushDistributor.asStateFlow()
+    //TODO: Listen to changes and update this when Push settings are changed
+    private val _pushSummary = MutableStateFlow<PushSummary>(PushLoading)
+    val pushSummary = _pushSummary.asStateFlow()
 
-    private val _pushDistributors = MutableStateFlow<List<PushDistributorInfo>?>(null)
-    val pushDistributors = _pushDistributors.asStateFlow()
-
-    /**
-     * Loads the push distributors configuration:
-     *
-     * - Loads the currently selected distributor into [pushDistributor].
-     * - Loads all the available distributors into [pushDistributors].
-     * - If there's only one push distributor available, and none is selected, it's selected automatically.
-     * - Makes sure the app is registered with UnifiedPush if there's already a distributor selected.
-     */
-    private fun loadPushDistributors() {
-        val currentPushDistributor = pushRegistrationManager.getCurrentDistributor()
-        _pushDistributor.value = currentPushDistributor
-
-        val pushDistributors = pushRegistrationManager.getDistributors()
-            .map { pushDistributor ->
-                try {
-                    val applicationInfo = pm.getApplicationInfo(pushDistributor, 0)
-                    val label = pm.getApplicationLabel(applicationInfo).toString()
-                    val icon = pm.getApplicationIcon(applicationInfo)
-                    PushDistributorInfo(pushDistributor, label, icon)
-                } catch (_: PackageManager.NameNotFoundException) {
-                    // The app is not available for some reason, do not include the app data.
-                    PushDistributorInfo(pushDistributor)
-                }
-            }
-        _pushDistributors.value = pushDistributors
-    }
-
-    /**
-     * Updates the current push distributor selection.
-     *
-     * Saves the preference in UnifiedPush, (un)registers the app, and writes the selection to [pushDistributor].
-     *
-     * @param pushDistributor The package name of the push distributor, _null_ to disable push.
-     */
-    fun updatePushDistributor(pushDistributor: String?) {
-        viewModelScope.launch(ioDispatcher) {
-            pushRegistrationManager.setPushDistributor(pushDistributor)
-
-            _pushDistributor.value = pushDistributor
+    private fun loadPushConfiguration() {
+        _pushSummary.value = if (pushDistributorManager.isPushEnabled()) {
+            val (appName, appIcon) = getPushDistributorInfo()
+            PushEnabled(appName = appName, appIcon = appIcon)
+        } else {
+            PushDisabled
         }
     }
 
+    private fun getPushDistributorInfo(): Pair<String, Drawable?> {
+        return when (val packageName = pushDistributorManager.getSelectedDistributor()) {
+            null -> {
+                context.getString(R.string.app_settings_unifiedpush_no_endpoint) to null
+            }
+            context.packageName -> {
+                val appName = context.getString(R.string.app_settings_unifiedpush_distributor_fcm)
+                val appIcon = ContextCompat.getDrawable(context, R.drawable.product_logomark_cloud_messaging_full_color)
+                appName to appIcon
+            }
+            else -> {
+                try {
+                    val applicationInfo = pm.getApplicationInfo(packageName, 0)
+                    val appName = pm.getApplicationLabel(applicationInfo).toString()
+                    val appIcon = pm.getApplicationIcon(applicationInfo)
+                    appName to appIcon
+                } catch (_: NameNotFoundException) {
+                    // Failed to load the app name, use package name instead
+                    packageName to null
+                }
+            }
+        }
+    }
 
     init {
         viewModelScope.launch(ioDispatcher) {
-            loadPushDistributors()
+            loadPushConfiguration()
         }
     }
+}
 
-
-    data class PushDistributorInfo(
-        val packageName: String,
-        val appName: String? = null,
-        val appIcon: Drawable? = null
-    )
-
+sealed interface PushSummary {
+    object PushLoading : PushSummary
+    object PushDisabled : PushSummary
+    data class PushEnabled(val appName: String, val appIcon: Drawable?) : PushSummary
 }

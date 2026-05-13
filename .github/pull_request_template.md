@@ -1,14 +1,20 @@
 
-Please delete this paragraph and other repeating text (like the examples) after reading and before submitting the PR.
+> [!IMPORTANT]
+> Please make sure an issue or discussion for this change **exists and was acknowledged** by the
+> core team before submitting. Uncoordinated pull requests may conflict with the project roadmap
+> and could be closed without merging — which would be a pity.
+> See [CONTRIBUTING.md](../CONTRIBUTING.md) for details.
 
-The PR should be in _Draft_ state during development. As soon as it's finished, it should be marked as _Ready for review_ and a reviewer should be chosen.
+Delete this section and other repeating text (like the examples) after reading and before submitting the PR.
+
+The PR should be in _Draft_ state during development. Once finished, mark it as _Ready for review_ and assign a reviewer.
 
 See also: [Writing A Great Pull Request Description](https://www.pullrequest.com/blog/writing-a-great-pull-request-description/)
 
 
 ### Purpose
 
-What this PR is intended to do and why this is desirable.
+Describe the purpose of this PR and its benefits.
 
 Example: 
 
@@ -17,7 +23,7 @@ Example:
 
 ### Short description
 
-A short description of the chosen approach to achieve the purpose.
+Briefly describe the approach taken to achieve the purpose.
 
 Example:
 

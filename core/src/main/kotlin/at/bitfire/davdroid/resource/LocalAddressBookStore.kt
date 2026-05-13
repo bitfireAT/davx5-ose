@@ -9,15 +9,16 @@ import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.ContentProviderClient
 import android.content.Context
+import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.annotation.OpenForTesting
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import androidx.core.content.contentValuesOf
-import androidx.core.os.bundleOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
@@ -33,6 +34,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class LocalAddressBookStore @Inject constructor(
+    private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
@@ -100,7 +102,8 @@ class LocalAddressBookStore @Inject constructor(
             id = fromCollection.id
         ) ?: return null
 
-        val addressBook = localAddressBookFactory.create(account, addressBookAccount, client)
+        val accountSettings = accountSettingsFactory.create(account)
+        val addressBook = localAddressBookFactory.create(account, addressBookAccount, client, accountSettings.getGroupMethod())
 
         // update settings
         addressBook.updateSyncFrameworkSettings()
@@ -114,11 +117,11 @@ class LocalAddressBookStore @Inject constructor(
     internal fun createAddressBookAccount(account: Account, name: String, id: Long): Account? {
         // create address book account with reference to account, collection ID and URL
         val addressBookAccount = Account(name, context.getString(R.string.account_type_address_book))
-        val userData = bundleOf(
-            LocalAddressBook.USER_DATA_ACCOUNT_NAME to account.name,
-            LocalAddressBook.USER_DATA_ACCOUNT_TYPE to account.type,
-            LocalAddressBook.USER_DATA_COLLECTION_ID to id.toString()
-        )
+        val userData = Bundle().apply {
+            putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
+            putString(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
+            putString(LocalAddressBook.USER_DATA_COLLECTION_ID, id.toString())
+        }
         if (!SystemAccountUtils.createAccount(context, addressBookAccount, userData)) {
             logger.warning("Couldn't create address book account: $addressBookAccount")
             return null
@@ -127,10 +130,13 @@ class LocalAddressBookStore @Inject constructor(
         return addressBookAccount
     }
 
-    override fun getAll(account: Account, client: ContentProviderClient): List<LocalAddressBook> =
-        getAddressBookAccounts(account).map { addressBookAccount ->
-            localAddressBookFactory.create(account, addressBookAccount, client)
+    override fun getAll(account: Account, client: ContentProviderClient): List<LocalAddressBook> {
+        val accountSettings = accountSettingsFactory.create(account)
+        val groupMethod = accountSettings.getGroupMethod()
+        return getAddressBookAccounts(account).map { addressBookAccount ->
+            localAddressBookFactory.create(account, addressBookAccount, client, groupMethod)
         }
+    }
 
     override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalAddressBook? =
         getAll(account, client).firstOrNull { it.dbCollectionId == dbCollectionId }

@@ -196,14 +196,8 @@
     <string name="app_settings_integration">Integração</string>
     <string name="app_settings_tasks_provider">App de tarefas</string>
     <string name="app_settings_tasks_provider_none">Nenhum app compatível de tarefas encontrado</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
-    <string name="app_settings_unifiedpush_disable">Nenhum (desativar push)</string>
-    <string name="app_settings_unifiedpush_choose_distributor">Escolha um distribuidor</string>
-    <string name="app_settings_unifiedpush_no_distributor">Nenhum distribuidor de push instalado</string>
     <string name="app_settings_unifiedpush_no_endpoint">Nenhum servidor configurado</string>
-    <string name="app_settings_unifiedpush_ready">Pronto para receber mensagens push pelo %s</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-    <string name="app_settings_unifiedpush_encrypted">As mensagens push são sempre criptografadas.</string>
     <!--AccountScreen-->
   <string name="account_invalid_account">A conta foi removida</string>
     <string name="account_carddav">CardDAV</string>
@@ -494,4 +488,42 @@
     <string name="collection_datatype_contacts_count">%1$d contatos</string>
     <string name="collection_datatype_events_count">%1$d eventos</string>
     <string name="collection_datatype_tasks_count">%1$d tarefas</string>
+    <string name="dismiss_forever">Ignorar para sempre</string>
+    <string name="login_invalid_use_case">Uso inválido</string>
+    <string name="login_invalid_use_case_info"><![CDATA[A variante %s do app só pode ser usado com serviços específicos.]]></string>
+    <string name="login_download_regular_davx5"><![CDATA[Em vez disso, use o <a href="%s">DAVx⁵</a>, que pode ser usado com todos os serviços.]]></string>
+    <string name="login_download_button">Baixar DAVx⁵</string>
+    <string name="collection_synced_items_title">Número de itens locais</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="one">%1$d item em %2$s</item>
+        <item quantity="many">%1$d de itens em %2$s</item>
+        <item quantity="other">%1$d itens em %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <item quantity="one">├ %d notificação não sincronizada</item>
+        <item quantity="many">├ %d de notificações não sincronizadas</item>
+        <item quantity="other">├ %d notificações não sincronizadas</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <item quantity="one">└ %d apagamento não sincronizado</item>
+        <item quantity="many">└ %d de apagamentos não sincronizados</item>
+        <item quantity="other">└ %d apagamentos não sincronizados</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Itens mais velhos que %d dia não são sincronizados (veja as configurações da conta).</item>
+        <item quantity="many">Itens mais velhos que %d de dias não são sincronizados (veja as configurações da conta).</item>
+        <item quantity="other">Itens mais velhos que %d dias não são sincronizados (veja as configurações da conta).</item>
+    </plurals>
+    <string name="keep_android_open"><![CDATA[A transparência e liberdade do Android está sob ameaça. Saiba como você pode ajudar em <a href="%s">keepandroidopen.org</a>.]]></string>
+    <string name="app_settings_push_title">Push</string>
+    <string name="app_settings_push_description">Use o Push para que os servidores CalDAV/CardDAV/WebDAV notifiquem %s de alterações disponíveis nos seus dados.</string>
+    <string name="app_settings_push_use_push">Usar Push</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[Nenhum serviço de push encontrado. Visite <a href="%1$s">%2$s</a> para uma lista de apps distribuidores.]]></string>
+    <string name="app_settings_push_info_text"><![CDATA[As mensagens push sempre são criptografadas. Saiba mais sobre o WebDAV-Push pelo <a href="%s">manual</a>.]]></string>
+    <string name="app_settings_push_push_services">Serviço push</string>
+    <string name="app_settings_push_default_distributor_text">(padrão do sistema)</string>
+    <string name="app_settings_push_select_default_distributor_description">Há vários apps distribuidores do UnifiedPush instalados. Você pode configurar um para o sistema inteiro aqui, para que outros apps compatíveis com o UnifiedPush não precisem perguntar qual usar.</string>
+    <string name="app_settings_push_select_default_distributor_action">Configurar como padrão</string>
+    <string name="app_settings_push_capability_none">Nenhuma das suas coleções do servidor com a sincronização ativada suportam o WebDAV-Push.</string>
+    <string name="app_settings_push_capability_some">Apenas algumas das suas coleções do servidor suportam o WebDAV-Push.</string>
 </resources>

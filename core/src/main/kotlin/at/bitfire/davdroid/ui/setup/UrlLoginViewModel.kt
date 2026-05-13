@@ -18,21 +18,20 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 
-@HiltViewModel(assistedFactory = AdvancedLoginModel.Factory::class)
-class AdvancedLoginModel @AssistedInject constructor(
-    @Assisted val initialLoginInfo: LoginInfo,
+@HiltViewModel(assistedFactory = UrlLoginViewModel.Factory::class)
+class UrlLoginViewModel @AssistedInject constructor(
+    @Assisted val initialLoginInfo: LoginInfo
 ): ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun create(loginInfo: LoginInfo): AdvancedLoginModel
+        fun create(loginInfo: LoginInfo): UrlLoginViewModel
     }
 
     data class UiState(
         val url: String = "",
         val username: String = "",
-        val password: TextFieldState = TextFieldState(),
-        val certAlias: String = ""
+        val password: TextFieldState = TextFieldState()
     ) {
 
         val urlWithPrefix =
@@ -40,18 +39,19 @@ class AdvancedLoginModel @AssistedInject constructor(
                 url
             else
                 "https://$url"
-        val uri = urlWithPrefix.toURIorNull()
+        val uri = urlWithPrefix.trim().toURIorNull()
 
-        val canContinue = uri != null
+        val canContinue     // we have to use get() because password is not immutable
+            get() = uri != null && username.isNotEmpty() && password.text.toString().isNotEmpty()
 
-        fun asLoginInfo() = LoginInfo(
-            baseUri = uri,
-            credentials = Credentials(
-                username = username.trimToNull(),
-                password = password.text.trimToNull()?.toSensitiveString(),
-                certificateAlias = certAlias.trimToNull()
+        fun asLoginInfo(): LoginInfo =
+            LoginInfo(
+                baseUri = uri,
+                credentials = Credentials(
+                    username = username.trimToNull(),
+                    password = password.text.toString().trimToNull()?.toSensitiveString()
+                )
             )
-        )
 
     }
 
@@ -59,11 +59,10 @@ class AdvancedLoginModel @AssistedInject constructor(
         private set
 
     init {
-        uiState = uiState.copy(
+        uiState = UiState(
             url = initialLoginInfo.baseUri?.toString()?.removePrefix("https://") ?: "",
             username = initialLoginInfo.credentials?.username ?: "",
-            password = TextFieldState(initialLoginInfo.credentials?.password?.asString() ?: ""),
-            certAlias = initialLoginInfo.credentials?.certificateAlias ?: ""
+            password = TextFieldState(initialLoginInfo.credentials?.password?.asString() ?: "")
         )
     }
 
@@ -73,10 +72,6 @@ class AdvancedLoginModel @AssistedInject constructor(
 
     fun setUsername(username: String) {
         uiState = uiState.copy(username = username)
-    }
-
-    fun setCertAlias(certAlias: String) {
-        uiState = uiState.copy(certAlias = certAlias)
     }
 
 }

@@ -6,7 +6,7 @@ package at.bitfire.davdroid.ui
 
 import android.content.Context
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.ui.about.AboutModel
+import at.bitfire.davdroid.ui.about.AboutViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @HiltAndroidTest
-class AboutModelTest {
+class AboutViewModelTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -38,14 +38,14 @@ class AboutModelTest {
     lateinit var logger: Logger
 
     // Model instance created once and reused across tests
-    private lateinit var model: AboutModel
+    private lateinit var model: AboutViewModel
 
     @Before
     fun setup() {
         hiltRule.inject()
 
         // Create the model using injected dependencies
-        model = AboutModel(context, ioDispatcher, logger)
+        model = AboutViewModel(context, ioDispatcher, logger)
     }
 
     @Test

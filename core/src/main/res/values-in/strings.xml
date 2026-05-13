@@ -180,14 +180,8 @@
     <string name="app_settings_integration">Integrasi</string>
     <string name="app_settings_tasks_provider">Aplikasi tugas</string>
     <string name="app_settings_tasks_provider_none">Tidak ditemukan aplikasi tugas yang kompatibel</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (eksperimental)</string>
-    <string name="app_settings_unifiedpush_disable">Tidak ada (nonaktifkan push)</string>
-    <string name="app_settings_unifiedpush_choose_distributor">Pilih distributor</string>
-    <string name="app_settings_unifiedpush_no_distributor">Tidak ada distributor push yang terpasang</string>
     <string name="app_settings_unifiedpush_no_endpoint">Tidak ada endpoint yang dikonfigurasi</string>
-    <string name="app_settings_unifiedpush_ready">Siap menerima pesan push melalui %s</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-    <string name="app_settings_unifiedpush_encrypted">Pesan push selalu dienkripsi.</string>
     <string name="account_invalid_account">Akun telah dihapus</string>
     <string name="account_carddav">CardDAV</string>
     <string name="account_caldav">CalDAV</string>

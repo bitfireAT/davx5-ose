@@ -76,7 +76,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -84,7 +84,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
-import at.bitfire.davdroid.ui.account.AccountScreenModel
+import at.bitfire.davdroid.ui.account.AccountScreenViewModel
 import at.bitfire.davdroid.ui.account.CollectionsList
 import at.bitfire.davdroid.ui.account.RenameAccountDialog
 import at.bitfire.davdroid.ui.composable.ActionCard
@@ -106,8 +106,8 @@ fun AccountScreen(
     onNavUp: () -> Unit,
     onFinish: () -> Unit
 ) {
-    val model: AccountScreenModel = hiltViewModel(
-        creationCallback = { factory: AccountScreenModel.Factory ->
+    val model: AccountScreenViewModel = hiltViewModel(
+        creationCallback = { factory: AccountScreenViewModel.Factory ->
             factory.create(account)
         }
     )

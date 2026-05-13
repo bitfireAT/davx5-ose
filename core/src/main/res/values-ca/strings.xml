@@ -196,14 +196,8 @@
     <string name="app_settings_integration">Integració</string>
     <string name="app_settings_tasks_provider">Aplicació de tasques</string>
     <string name="app_settings_tasks_provider_none">No s\'ha trobat cap aplicació de tasques compatible</string>
-    <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
-    <string name="app_settings_unifiedpush_disable">Sense (desactiva «push»)</string>
-    <string name="app_settings_unifiedpush_choose_distributor">Trieu un distribuïdor</string>
-    <string name="app_settings_unifiedpush_no_distributor">No s\'ha instal·lat cap distribuïdor de «push» </string>
     <string name="app_settings_unifiedpush_no_endpoint">No s\'ha configurat cap punt final</string>
-    <string name="app_settings_unifiedpush_ready">Preparat per a rebre missatges «push» sobre %s</string>
     <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
-    <string name="app_settings_unifiedpush_encrypted">Els missatges «push» sempre són xifrats.</string>
     <!--AccountScreen-->
   <string name="account_invalid_account">S\'ha eliminat el compte</string>
     <string name="account_carddav">CardDAV</string>
@@ -515,4 +509,22 @@
         <item quantity="many">Els elements anteriors a %d de dies no se sincronitzen (vegeu la configuració del compte).</item>
         <item quantity="other">Els elements anteriors a %d dies no se sincronitzen (vegeu la configuració del compte).</item>
     </plurals>
+    <string name="login_invalid_use_case">Cas d\'ús no vàlid</string>
+    <string name="login_download_regular_davx5"><![CDATA[En el seu lloc, feu servir <a href="%s">DAVx⁵</a>, que es pot utilitzar amb tots els serveis.]]></string>
+    <string name="login_download_button">Baixa DAVx⁵</string>
+    <string name="dismiss_forever">Descarta per sempre</string>
+    <string name="keep_android_open"><![CDATA[El caràcter obert d\'Android està amenaçat. Apreneu com podeu ajudar a <a href="%s">keepandroidopen.org</a>.]]></string>
+    <string name="app_settings_push_title">«Push»</string>
+    <string name="app_settings_push_description">Feu servir «push» per a que els servidors CalDAV/CardDAV/WebDAV notifiquin instantàniament %s dels canvis disponibles de les vostres dades al servidor.</string>
+    <string name="app_settings_push_use_push">Utilitza «push»</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[No s\'ha trobat cap servei «push». Visiteu <a href="%1$s">%2$s</a> per a una llista d\'aplicacions de distribució.]]></string>
+    <string name="app_settings_push_info_text"><![CDATA[Els missatges «push» sempre estan encriptats. Apreneu més sobre el WebDAV-Push al <a href="%s">manual</a>.]]></string>
+    <string name="app_settings_push_push_services">Servei «push»</string>
+    <string name="app_settings_push_default_distributor_text">(predeterminat del sistema)</string>
+    <string name="app_settings_push_select_default_distributor_description">Hi ha diverses aplicacions de distribució UnifiedPush instal·lades. Aquí podeu establir un valor predeterminat gloval del sistema, de manera que altres aplicacions habilitades per a UnifiedPush no hagin de preguntar quina utilitzar.</string>
+    <string name="app_settings_push_select_default_distributor_action">Estableix com a predeterminada</string>
+    <string name="app_settings_push_capability_none">Cap de les col·leccions habilitades de servidors de sincronització actualment admet WebDAV-Push.</string>
+    <string name="app_settings_push_capability_some">Només alguna de les col·leccions habilitades de servidors de sincronització actualment admet WebDAV-Push.</string>
+    <string name="app_settings_push_enabled_summary">Actiu, %s</string>
+    <string name="app_settings_push_disabled_summary">Inactiu</string>
 </resources>

@@ -7,7 +7,6 @@ package at.bitfire.davdroid.settings
 import android.util.NoSuchPropertyException
 import androidx.annotation.AnyThread
 import androidx.annotation.VisibleForTesting
-import at.bitfire.davdroid.settings.SettingsManager.OnChangeListener
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

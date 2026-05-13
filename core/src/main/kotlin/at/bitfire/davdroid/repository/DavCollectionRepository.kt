@@ -25,19 +25,18 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.synctools.icalendar.componentListOf
+import at.bitfire.synctools.icalendar.propertyListOf
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
-import net.fortuna.ical4j.model.ComponentList
-import net.fortuna.ical4j.model.Property
-import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.property.ProdId
-import net.fortuna.ical4j.model.property.Version
+import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
 import okhttp3.HttpUrl
 import java.io.StringWriter
 import java.util.UUID
@@ -61,9 +60,37 @@ class DavCollectionRepository @Inject constructor(
     private val dao = db.collectionDao()
 
     /**
-     * Whether there are any collections that are registered for push.
+     * Returns the number of collections that are push capable.
      */
-    suspend fun anyPushCapable() = dao.anyPushCapable()
+    suspend fun countSyncEnabledPushCapable() =  dao.countSyncEnabledPushCapable()
+
+    /**
+     * Returns the total number of collections in all accounts that are user enabled for synchronization.
+     */
+    suspend fun countSyncEnabled() = dao.countSyncEnabled()
+
+    /**
+     * Determines the amount of sync-enabled push capable collections in all accounts combined.
+     * @return
+     *  - [PushCollectionsAmount.All] if all the sync-enabled collections in all accounts are push-capable OR if zero sync-enabled collections exist
+     *  - [PushCollectionsAmount.Some] if some (but not all) sync-enabled collections are push-capable
+     *  - [PushCollectionsAmount.None] if no sync-enabled collections are push-capable
+     */
+    suspend fun getAmountPushCapable(): PushCollectionsAmount {
+        val syncEnabled = countSyncEnabled()
+        val syncEnabledPushCapable = countSyncEnabledPushCapable()
+
+        return when (syncEnabledPushCapable) {
+            syncEnabled -> PushCollectionsAmount.All // Also matches zero sync-enabled collections
+            0 -> PushCollectionsAmount.None
+            else -> PushCollectionsAmount.Some
+        }
+    }
+
+    /**
+     * Whether there are any collections that are push capable.
+     */
+    suspend fun anyPushCapable(): Boolean = dao.anyPushCapable()
 
     /**
      * Creates address book collection on server and locally
@@ -268,9 +295,18 @@ class DavCollectionRepository @Inject constructor(
         dao.updateSync(id, forceReadOnly)
     }
 
-    suspend fun updatePushSubscription(id: Long, subscriptionUrl: String?, expires: Long?) {
+    /**
+     * Updates the push subscription details for a collection with the given ID.
+     *
+     * @param id ID of the collection to update.
+     * @param subscriptionUrl New push subscription URL (can be `null` to clear the value).
+     * @param registeredEndpoint New registered endpoint URL (can be `null` to clear the value).
+     * @param expires New expiration timestamp for the push subscription (can be `null` to clear the value).
+     */
+    suspend fun updatePushSubscription(id: Long, subscriptionUrl: String?, registeredEndpoint: String?, expires: Long?) {
         dao.updatePushSubscription(
             id = id,
+            pushRegisteredEndpoint = registeredEndpoint,
             pushSubscription = subscriptionUrl,
             pushSubscriptionExpires = expires
         )
@@ -370,13 +406,11 @@ class DavCollectionRepository @Inject constructor(
                                     text(
                                         // spec requires "an iCalendar object with exactly one VTIMEZONE component"
                                         Calendar(
-                                            PropertyList<Property>().apply {
-                                                add(Version.VERSION_2_0)
-                                                add(ProdId(productIds.get().iCalProdId))
-                                            },
-                                            ComponentList(
-                                                listOf(vTimezone)
-                                            )
+                                            propertyListOf(
+                                                ImmutableVersion.VERSION_2_0,
+                                                ProdId(productIds.get().iCalProdId)
+                                            ),
+                                            componentListOf(vTimezone)
                                         ).toString()
                                     )
                                 }
@@ -416,6 +450,12 @@ class DavCollectionRepository @Inject constructor(
     private fun getVTimeZone(tzId: String): VTimeZone? {
         val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
         return tzRegistry.getTimeZone(tzId)?.vTimeZone
+    }
+
+    enum class PushCollectionsAmount {
+        All,     // All collections are push-capable
+        Some,    // Some collections are push-capable
+        None;    // Zero collections are push-capable
     }
 
 }
