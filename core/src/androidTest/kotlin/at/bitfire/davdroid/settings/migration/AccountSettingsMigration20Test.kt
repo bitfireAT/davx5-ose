@@ -19,6 +19,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.resource.LocalTestAddressBookProvider
+import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.vcard4android.GroupMethod
@@ -28,6 +29,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -64,18 +66,25 @@ class AccountSettingsMigration20Test {
         Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR
     )
 
-    val accountManager by lazy { AccountManager.get(context) }
+    private val accountManager by lazy { AccountManager.get(context) }
+    private lateinit var account: Account
 
     @Before
     fun setUp() {
         hiltRule.inject()
+
+        account = TestAccount.create(version = 19)
+    }
+
+    @After
+    fun cleanUp() {
+        TestAccount.remove(account)
     }
 
 
     @Test
     fun testMigrateAddressBooks_UrlMatchesCollection() {
         // set up legacy address-book with URL, but without collection ID
-        val account = Account("test", "test")
         val url = "https://example.com/"
 
         db.serviceDao().insertOrReplace(Service(id = 1, accountName = account.name, type = Service.TYPE_CARDDAV, principal = null))
@@ -105,7 +114,6 @@ class AccountSettingsMigration20Test {
     @Test
     fun testMigrateCalendars_UrlMatchesCollection() {
         // set up legacy calendar with URL, but without collection ID
-        val account = Account("test", CalendarContract.ACCOUNT_TYPE_LOCAL)
         val url = "https://example.com/"
 
         db.serviceDao().insertOrReplace(Service(id = 1, accountName = account.name, type = Service.TYPE_CALDAV, principal = null))

@@ -18,6 +18,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.account.SystemAccountUtils
@@ -33,6 +34,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class LocalAddressBookStore @Inject constructor(
+    private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
@@ -100,7 +102,8 @@ class LocalAddressBookStore @Inject constructor(
             id = fromCollection.id
         ) ?: return null
 
-        val addressBook = localAddressBookFactory.create(account, addressBookAccount, client)
+        val accountSettings = accountSettingsFactory.create(account)
+        val addressBook = localAddressBookFactory.create(account, addressBookAccount, client, accountSettings.getGroupMethod())
 
         // update settings
         addressBook.updateSyncFrameworkSettings()
@@ -127,10 +130,13 @@ class LocalAddressBookStore @Inject constructor(
         return addressBookAccount
     }
 
-    override fun getAll(account: Account, client: ContentProviderClient): List<LocalAddressBook> =
-        getAddressBookAccounts(account).map { addressBookAccount ->
-            localAddressBookFactory.create(account, addressBookAccount, client)
+    override fun getAll(account: Account, client: ContentProviderClient): List<LocalAddressBook> {
+        val accountSettings = accountSettingsFactory.create(account)
+        val groupMethod = accountSettings.getGroupMethod()
+        return getAddressBookAccounts(account).map { addressBookAccount ->
+            localAddressBookFactory.create(account, addressBookAccount, client, groupMethod)
         }
+    }
 
     override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalAddressBook? =
         getAll(account, client).firstOrNull { it.dbCollectionId == dbCollectionId }
