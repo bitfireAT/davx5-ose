@@ -47,14 +47,9 @@ class PushDistributorManagerTest {
     @Inject
     lateinit var pushDistributorManager: PushDistributorManager
 
-    private lateinit var spiedManager: PushDistributorManager
-
     @Before
     fun setUp() {
         hiltRule.inject()
-
-        // Create spy for instance method mocking
-        spiedManager = spyk(pushDistributorManager)
 
         // Mock UnifiedPush static methods
         mockkStatic(UnifiedPush::class)
@@ -92,6 +87,8 @@ class PushDistributorManagerTest {
     fun testGetDistributor_PushEnabled_NoDistributorToUse() {
         // Given push is enabled but no distributor is set
         settingsManager.putBoolean(Settings.PUSH_ENABLED, true)
+        
+        val spiedManager = spyk(pushDistributorManager)
         every { UnifiedPush.getSavedDistributor(any()) } returns null
         every { UnifiedPush.resolveDefaultDistributor(any()) } returns ResolvedDistributor.NoneAvailable
         every { spiedManager.isFCMDistributorAvailable() } returns false
