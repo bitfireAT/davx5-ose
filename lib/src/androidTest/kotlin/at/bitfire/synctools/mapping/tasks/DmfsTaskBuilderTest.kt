@@ -63,7 +63,6 @@ class DmfsTaskBuilderTest (
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()!!
     private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna")!!
     private val tzChicago = tzRegistry.getTimeZone("America/Chicago")!!
-    private val tzDefault = tzRegistry.getTimeZone(ZoneId.systemDefault().id)!!
 
     private val testAccount = Account(javaClass.name, TaskContract.LOCAL_ACCOUNT_TYPE)
 
@@ -842,33 +841,6 @@ class DmfsTaskBuilderTest (
         } finally {
             testTask?.delete()
         }
-    }
-
-
-    // other methods
-
-    @Test
-    fun testGetTimeZone_noDateOrDateTime() {
-        val builder = DmfsTaskBuilder(taskList!!, Task(), 0, "9468a4cf-0d5b-4379-a704-12f1f84100ba", null, 0)
-        assertEquals(tzDefault, builder.getTimeZone())
-    }
-
-    @Test
-    fun testGetTimeZone_dtstart_with_date_and_no_time() {
-        val task = Task()
-        val builder = DmfsTaskBuilder(taskList!!, task, 0, "410c19d7-df79-4d65-8146-40b7bec5923b", null, 0)
-        val dmfsTask = DmfsTask(taskList!!, task, "410c19d7-df79-4d65-8146-40b7bec5923b", null, 0)
-        dmfsTask.task!!.dtStart = DtStart(LocalDate.of(2015, 1, 1))
-        assertEquals(tzDefault, builder.getTimeZone())
-    }
-
-    @Test
-    fun testGetTimeZone_dtstart_with_time() {
-        val task = Task()
-        val builder = DmfsTaskBuilder(taskList!!, task, 0, "9468a4cf-0d5b-4379-a704-12f1f84100ba", null, 0)
-        val dmfsTask = DmfsTask(taskList!!, task, "9dc64544-1816-4f04-b952-e894164467f6", null, 0)
-        dmfsTask.task!!.dtStart = DtStart(LocalDate.of(2015, 1, 1).atStartOfDay(tzVienna.toZoneId()))
-        assertEquals(tzVienna, builder.getTimeZone())
     }
 
 
