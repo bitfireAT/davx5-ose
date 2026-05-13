@@ -50,6 +50,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -304,7 +305,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
         awaitClose {
             context.contentResolver.unregisterContentObserver(observer)
         }
-    }
+    }.flowOn(ioDispatcher)      // localDataStore access should not be done on main thread
 
     private fun getProviderAppName(authority: String): String {
         val packageManager = context.packageManager

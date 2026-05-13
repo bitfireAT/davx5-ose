@@ -6,6 +6,7 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.content.ContentProviderClient
+import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.db.Collection
 import javax.annotation.WillNotClose
 
@@ -66,6 +67,7 @@ interface LocalDataStore<T: LocalCollection<*>> {
      * @return The local collection with the specified DB collection ID, or `null` if not found.
      * @throws UnsupportedOperationException if the operation is not supported on this data store (jtx Board)
      */
+    @WorkerThread
     fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): T?
 
     /**
