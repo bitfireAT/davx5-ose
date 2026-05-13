@@ -69,7 +69,13 @@ class AccountSettingsMigration17 @Inject constructor(
                     // Old address books only have a URL, so use it to determine the collection ID
                     logger.info("Migrating address book ${oldAddressBookAccount.name}")
                     val oldAddressBook = localAddressBookFactory.create(account, oldAddressBookAccount, provider, groupMethod)
-                    val url = accountManager.getUserData(oldAddressBookAccount, LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL)
+
+                    val url: String? = accountManager.getUserData(oldAddressBookAccount, LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL)
+                    if (url == null) {
+                        logger.warning("Address book ${oldAddressBookAccount.name} doesn't have an assigned URL, can't migrate")
+                        continue
+                    }
+
                     collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
                         // Set collection ID and rename the account
                         localAddressBookStore.update(provider, oldAddressBook, collection)
