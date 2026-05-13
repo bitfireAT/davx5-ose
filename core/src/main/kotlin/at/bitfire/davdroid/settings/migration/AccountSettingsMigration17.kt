@@ -14,6 +14,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import dagger.Binds
 import dagger.Module
@@ -32,6 +33,7 @@ import javax.inject.Inject
  * identifier. We need to update the address book account names.
  */
 class AccountSettingsMigration17 @Inject constructor(
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
@@ -60,11 +62,20 @@ class AccountSettingsMigration17 @Inject constructor(
                         account.name == accountManager.getUserData(addressBookAccount, "real_account_name")
                     }
 
+                val accountSettings = accountSettingsFactory.create(account)
+                val groupMethod = accountSettings.getGroupMethod()
+
                 for (oldAddressBookAccount in oldAddressBookAccounts) {
                     // Old address books only have a URL, so use it to determine the collection ID
                     logger.info("Migrating address book ${oldAddressBookAccount.name}")
-                    val oldAddressBook = localAddressBookFactory.create(account, oldAddressBookAccount, provider)
-                    val url = accountManager.getUserData(oldAddressBookAccount, LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL)
+                    val oldAddressBook = localAddressBookFactory.create(account, oldAddressBookAccount, provider, groupMethod)
+
+                    val url: String? = accountManager.getUserData(oldAddressBookAccount, LOCAL_ADDRESS_BOOK_ACCOUNT_USER_DATA_URL)
+                    if (url == null) {
+                        logger.warning("Address book ${oldAddressBookAccount.name} doesn't have an assigned URL, can't migrate")
+                        continue
+                    }
+
                     collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
                         // Set collection ID and rename the account
                         localAddressBookStore.update(provider, oldAddressBook, collection)
