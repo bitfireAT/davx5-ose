@@ -15,6 +15,7 @@ import io.mockk.junit4.MockKRule
 import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.runs
+import io.mockk.spyk
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
@@ -24,6 +25,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.unifiedpush.android.connector.UnifiedPush
+import org.unifiedpush.android.connector.data.ResolvedDistributor
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -45,10 +47,15 @@ class PushDistributorManagerTest {
     @Inject
     lateinit var pushDistributorManager: PushDistributorManager
 
+    private lateinit var spiedManager: PushDistributorManager
+
     @Before
     fun setUp() {
         hiltRule.inject()
-        
+
+        // Create spy for instance method mocking
+        spiedManager = spyk(pushDistributorManager)
+
         // Mock UnifiedPush static methods
         mockkStatic(UnifiedPush::class)
         
@@ -86,9 +93,11 @@ class PushDistributorManagerTest {
         // Given push is enabled but no distributor is set
         settingsManager.putBoolean(Settings.PUSH_ENABLED, true)
         every { UnifiedPush.getSavedDistributor(any()) } returns null
+        every { UnifiedPush.resolveDefaultDistributor(any()) } returns ResolvedDistributor.NoneAvailable
+        every { spiedManager.isFCMDistributorAvailable() } returns false
 
         // When getting current distributor
-        val result = pushDistributorManager.getDistributorToUse()
+        val result = spiedManager.getDistributorToUse()
         
         // Then result is null
         assertNull(result)
