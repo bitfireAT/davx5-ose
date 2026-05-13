@@ -11,10 +11,10 @@ guava = "33.6.0-android"
 ical4j = "4.2.5"
 junit = "4.13.2"
 kotlin = "2.3.21"
-kotlinx-coroutines-test = "1.10.2"
+kotlinx-coroutines-test = "1.11.0"
 mockk = "1.14.9"
 roboelectric = "4.16.1"
-slf4j = "2.0.17"
+slf4j = "2.0.18"
 spotbugs = "4.9.8"
 
 [libraries]
