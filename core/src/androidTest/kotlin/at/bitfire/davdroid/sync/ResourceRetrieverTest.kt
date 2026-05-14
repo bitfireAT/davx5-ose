@@ -8,7 +8,7 @@ import android.accounts.Account
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.account.TestAccount
-import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
+import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.http.HttpHeaders

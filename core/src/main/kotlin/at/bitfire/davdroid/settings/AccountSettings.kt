@@ -6,7 +6,6 @@ package at.bitfire.davdroid.settings
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
-import android.os.Bundle
 import android.os.Looper
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
@@ -16,9 +15,9 @@ import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.synctools.util.setAndVerifyUserData
-import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
+import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.davdroid.util.trimToNull
+import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -421,28 +420,37 @@ class AccountSettings @AssistedInject constructor(
         internal const val SYNC_INTERVAL_MANUALLY = -1L
 
         /** Static property to remember which AccountSettings updates/migrations are currently running */
-        val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<Account>())
+        private val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<Account>())
 
-        fun initialUserData(credentials: Credentials?, preconfigurationUrl: String?): Bundle {
-            val bundle = Bundle().apply {
-                putString(KEY_SETTINGS_VERSION, CURRENT_VERSION.toString())
-            }
+        /**
+         * Returns the initial user data (as in [AccountManager.setUserData]) for creating a new account.
+         * Processed user data:
+         *
+         * - account settings scheme version
+         * - authentication details
+         * - client certificate alias
+         * - preconfiguration URL
+         */
+        fun initialUserData(credentials: Credentials?, preconfigurationUrl: String?): Map<String, String> {
+            val userData = mutableMapOf<String, String>()
+
+            userData[KEY_SETTINGS_VERSION] = CURRENT_VERSION.toString()
 
             if (credentials != null) {
                 if (credentials.username != null)
-                    bundle.putString(KEY_USERNAME, credentials.username)
+                    userData[KEY_USERNAME] = credentials.username
 
                 if (credentials.certificateAlias != null)
-                    bundle.putString(KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
+                    userData[KEY_CERTIFICATE_ALIAS] = credentials.certificateAlias
 
                 if (credentials.authState != null)
-                    bundle.putString(KEY_AUTH_STATE, credentials.authState.jsonSerializeString())
-            }
-            if (preconfigurationUrl != null) {
-                bundle.putString(KEY_PRECONFIGURATION_URL, preconfigurationUrl)
+                    userData[KEY_AUTH_STATE] = credentials.authState.jsonSerializeString()
             }
 
-            return bundle
+            if (preconfigurationUrl != null)
+                userData[KEY_PRECONFIGURATION_URL] = preconfigurationUrl
+
+            return userData
         }
 
     }

@@ -7,8 +7,8 @@ package at.bitfire.davdroid.sync.account
 import android.accounts.Account
 import android.content.Context
 import android.os.Bundle
-import at.bitfire.davdroid.util.SensitiveString
 import at.bitfire.synctools.util.AndroidAccountUtils
+import at.bitfire.synctools.util.SensitiveString
 
 object SystemAccountUtils {
 
@@ -37,7 +37,7 @@ object SystemAccountUtils {
                     put(key, value)
             }
         }
-        return AndroidAccountUtils.createAccount(context, account, data, password?.toString())
+        return AndroidAccountUtils.createAccount(context, account, data, password)
     }
 
 }

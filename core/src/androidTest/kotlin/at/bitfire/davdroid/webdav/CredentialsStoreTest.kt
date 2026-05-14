@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.webdav
 
 import at.bitfire.davdroid.settings.Credentials
-import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
+import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals

@@ -9,7 +9,6 @@ import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.ContentProviderClient
 import android.content.Context
-import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.annotation.OpenForTesting
 import androidx.annotation.VisibleForTesting
@@ -21,8 +20,8 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.synctools.util.AndroidAccountUtils
 import at.bitfire.synctools.util.setAndVerifyUserData
 import com.google.common.base.CharMatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -117,12 +116,12 @@ class LocalAddressBookStore @Inject constructor(
     internal fun createAddressBookAccount(account: Account, name: String, id: Long): Account? {
         // create address book account with reference to account, collection ID and URL
         val addressBookAccount = Account(name, context.getString(R.string.account_type_address_book))
-        val userData = Bundle().apply {
-            putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
-            putString(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
-            putString(LocalAddressBook.USER_DATA_COLLECTION_ID, id.toString())
+        val userData: Map<String, String> = buildMap {
+            put(LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
+            put(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
+            put(LocalAddressBook.USER_DATA_COLLECTION_ID, id.toString())
         }
-        if (!SystemAccountUtils.createAccount(context, addressBookAccount, userData)) {
+        if (!AndroidAccountUtils.createAccount(context, addressBookAccount, userData)) {
             logger.warning("Couldn't create address book account: $addressBookAccount")
             return null
         }
