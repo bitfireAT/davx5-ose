@@ -62,15 +62,15 @@ class AccountSettingsTest {
     @Test
     fun test_initialUserData() {
         AccountSettings.initialUserData(null, null).let { bundle ->
-            assertEquals(AccountSettings.CURRENT_VERSION.toString(), bundle.getString(AccountSettings.KEY_SETTINGS_VERSION))
+            assertEquals(AccountSettings.CURRENT_VERSION.toString(), bundle[AccountSettings.KEY_SETTINGS_VERSION])
 
             // Credentials
-            assertNull(bundle.getString(AccountSettings.KEY_USERNAME))
-            assertNull(bundle.getString(AccountSettings.KEY_CERTIFICATE_ALIAS))
-            assertNull(bundle.getString(AccountSettings.KEY_AUTH_STATE))
+            assertNull(bundle[AccountSettings.KEY_USERNAME])
+            assertNull(bundle[AccountSettings.KEY_CERTIFICATE_ALIAS])
+            assertNull(bundle[AccountSettings.KEY_AUTH_STATE])
 
             // Preconfiguration URL
-            assertNull(bundle.getString(AccountSettings.KEY_PRECONFIGURATION_URL))
+            assertNull(bundle[AccountSettings.KEY_PRECONFIGURATION_URL])
         }
     }
 
@@ -78,30 +78,30 @@ class AccountSettingsTest {
     fun test_initialUserData_credentials() {
         val credentials = Credentials("username", null, "alias", AuthState())
         AccountSettings.initialUserData(credentials, null).let { bundle ->
-            assertEquals(AccountSettings.CURRENT_VERSION.toString(), bundle.getString(AccountSettings.KEY_SETTINGS_VERSION))
+            assertEquals(AccountSettings.CURRENT_VERSION.toString(), bundle[AccountSettings.KEY_SETTINGS_VERSION])
 
             // Credentials
-            assertEquals("username", bundle.getString(AccountSettings.KEY_USERNAME))
-            assertEquals("alias", bundle.getString(AccountSettings.KEY_CERTIFICATE_ALIAS))
-            assertEquals("{}", bundle.getString(AccountSettings.KEY_AUTH_STATE))
+            assertEquals("username", bundle[AccountSettings.KEY_USERNAME])
+            assertEquals("alias", bundle[AccountSettings.KEY_CERTIFICATE_ALIAS])
+            assertEquals("{}", bundle[AccountSettings.KEY_AUTH_STATE])
 
             // Preconfiguration URL
-            assertNull(bundle.getString(AccountSettings.KEY_PRECONFIGURATION_URL))
+            assertNull(bundle[AccountSettings.KEY_PRECONFIGURATION_URL])
         }
     }
 
     @Test
     fun test_initialUserData_preconfigurationUrl() {
         AccountSettings.initialUserData(null, "https://example.com").let { bundle ->
-            assertEquals(AccountSettings.CURRENT_VERSION.toString(), bundle.getString(AccountSettings.KEY_SETTINGS_VERSION))
+            assertEquals(AccountSettings.CURRENT_VERSION.toString(), bundle[AccountSettings.KEY_SETTINGS_VERSION])
 
             // Credentials
-            assertNull(bundle.getString(AccountSettings.KEY_USERNAME))
-            assertNull(bundle.getString(AccountSettings.KEY_CERTIFICATE_ALIAS))
-            assertNull(bundle.getString(AccountSettings.KEY_AUTH_STATE))
+            assertNull(bundle[AccountSettings.KEY_USERNAME])
+            assertNull(bundle[AccountSettings.KEY_CERTIFICATE_ALIAS])
+            assertNull(bundle[AccountSettings.KEY_AUTH_STATE])
 
             // Preconfiguration URL
-            assertEquals("https://example.com", bundle.getString(AccountSettings.KEY_PRECONFIGURATION_URL))
+            assertEquals("https://example.com", bundle[AccountSettings.KEY_PRECONFIGURATION_URL])
         }
     }
 
