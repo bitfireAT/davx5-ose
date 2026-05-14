@@ -15,8 +15,8 @@ import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.davdroid.util.trimToNull
+import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
@@ -431,26 +431,22 @@ class AccountSettings @AssistedInject constructor(
          * - client certificate alias
          * - preconfiguration URL
          */
-        fun initialUserData(credentials: Credentials?, preconfigurationUrl: String?): Map<String, String> {
-            val userData = mutableMapOf<String, String>()
-
-            userData[KEY_SETTINGS_VERSION] = CURRENT_VERSION.toString()
+        fun initialUserData(credentials: Credentials?, preconfigurationUrl: String?) = buildMap<String, String> {
+            put(KEY_SETTINGS_VERSION, CURRENT_VERSION.toString())
 
             if (credentials != null) {
                 if (credentials.username != null)
-                    userData[KEY_USERNAME] = credentials.username
+                    put(KEY_USERNAME, credentials.username)
 
                 if (credentials.certificateAlias != null)
-                    userData[KEY_CERTIFICATE_ALIAS] = credentials.certificateAlias
+                    put(KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
 
                 if (credentials.authState != null)
-                    userData[KEY_AUTH_STATE] = credentials.authState.jsonSerializeString()
+                    put(KEY_AUTH_STATE, credentials.authState.jsonSerializeString())
             }
 
             if (preconfigurationUrl != null)
-                userData[KEY_PRECONFIGURATION_URL] = preconfigurationUrl
-
-            return userData
+                put(KEY_PRECONFIGURATION_URL, preconfigurationUrl)
         }
 
     }

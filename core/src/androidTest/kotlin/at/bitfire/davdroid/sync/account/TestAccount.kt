@@ -9,6 +9,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.TestAccount.remove
+import at.bitfire.synctools.util.AndroidAccountUtils
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 
@@ -25,10 +26,11 @@ object TestAccount {
         val accountType = targetContext.getString(R.string.account_type)
         val account = Account(accountName, accountType)
 
-        val initialData = AccountSettings.initialUserData(null, null)
-        initialData.putString(AccountSettings.KEY_SETTINGS_VERSION, version.toString())
-        assertTrue(SystemAccountUtils.createAccount(targetContext, account, initialData))
+        val initialData = AccountSettings.initialUserData(null, null).toMutableMap()
+        // overwrite settings version
+        initialData[AccountSettings.KEY_SETTINGS_VERSION] = version.toString()
 
+        assertTrue(AndroidAccountUtils.createAccount(targetContext, account, initialData))
         return account
     }
 
