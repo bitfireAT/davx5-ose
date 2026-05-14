@@ -16,7 +16,7 @@ import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.davdroid.sync.account.setAndVerifyUserData
+import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.vcard4android.GroupMethod
