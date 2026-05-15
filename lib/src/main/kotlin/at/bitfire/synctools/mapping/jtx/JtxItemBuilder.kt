@@ -9,8 +9,10 @@ package at.bitfire.synctools.mapping.jtx
 import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.synctools.icalendar.AssociatedComponents
-import at.bitfire.synctools.mapping.jtx.builder.JtxEntityBuilder
+import at.bitfire.synctools.mapping.jtx.builder.CollectionIdBuilder
 import at.bitfire.synctools.mapping.jtx.builder.DescriptionBuilder
+import at.bitfire.synctools.mapping.jtx.builder.JtxEntityBuilder
+import at.bitfire.synctools.mapping.jtx.builder.SyncPropertiesBuilder
 import at.bitfire.synctools.storage.jtx.JtxItemAndExceptions
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VJournal
@@ -19,9 +21,18 @@ import net.fortuna.ical4j.model.component.VToDo
 /**
  * Mapper from an [AssociatedComponents] data object to jtx Board content provider data rows.
  */
-class JtxItemBuilder {
+class JtxItemBuilder(
+    collectionId: Long,
+    fileName: String?,
+    eTag: String?,
+    scheduleTag: String?,
+    flags: Int
+) {
 
     private val fieldBuilders: Array<JtxEntityBuilder> = arrayOf(
+        CollectionIdBuilder(collectionId),
+        SyncPropertiesBuilder(fileName, eTag, scheduleTag, flags),
+
         DescriptionBuilder()
     )
 
