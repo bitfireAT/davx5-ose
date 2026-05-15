@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.settings
 
-import at.bitfire.davdroid.util.SensitiveString
+import at.bitfire.synctools.util.SensitiveString
 import net.openid.appauth.AuthState
 
 /**

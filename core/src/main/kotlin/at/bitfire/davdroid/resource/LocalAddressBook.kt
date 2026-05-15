@@ -8,7 +8,6 @@ import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.Context
-import android.os.Bundle
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
@@ -20,11 +19,11 @@ import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_READ_ON
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.account.SystemAccountUtils
-import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.ContactsBatchOperation
+import at.bitfire.synctools.util.AndroidAccountUtils
+import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidGroup
@@ -172,7 +171,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
         // create new account
         val newAccount = Account(newName, oldAccount.type)
-        if (!SystemAccountUtils.createAccount(context, newAccount, Bundle()))
+        if (!AndroidAccountUtils.createAccount(context, newAccount, emptyMap()))
             return false
 
         // move contacts and groups to new account
