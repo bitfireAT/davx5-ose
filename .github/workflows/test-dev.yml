@@ -2,14 +2,15 @@ name: Development tests
 on:
   push:
     branches:
-      - 'main'
+      - main
+      - release
   pull_request:
 
 concurrency:
   group: test-dev-${{ github.ref }}
   cancel-in-progress: true
 
-# We provide a remote gradle build cache. Take the settings from the secrets and enable
+# We provide a remote Gradle build cache. Take the settings from the secrets and enable
 # configuration and build cache for all gradle jobs.
 #
 # Note: The secrets are not available for forks and Dependabot PRs.
@@ -78,21 +79,14 @@ jobs:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           cache-read-only: true
 
-      # gradle and Android SDK often take more space than what is available on the default runner.
+      # Gradle and Android SDK often take more space than what is available on the default runner.
       # We try to free a few GB here to make gradle-managed devices more reliable.
       - name: Free some disk space
         uses: jlumbroso/free-disk-space@main
         with:
           android: false          # we need the Android SDK
           large-packages: false   # apt takes too long
-          swap-storage: false     # gradle needs much memory
-
-      - name: Restore AVD
-        id: restore-avd
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/.config/.android/avd                          # where AVD is stored
-          key: avd-${{ hashFiles('app-ose/build.gradle.kts') }} # gradle-managed devices are defined there
+          swap-storage: false     # Gradle needs much memory
 
       # Enable virtualization for Android emulator
       - name: Enable KVM group perms
@@ -104,10 +98,3 @@ jobs:
       - name: Instrumented tests
         # currently no instrumented tests for app-ose
         run: ./gradlew core:virtualDebugAndroidTest
-
-      - name: Cache AVD
-        uses: actions/cache/save@v5
-        if: steps.restore-avd.outputs.cache-hit != 'true'
-        with:
-          path: ~/.config/.android/avd                          # where AVD is stored
-          key: avd-${{ hashFiles('app-ose/build.gradle.kts') }} # gradle-managed devices are defined there
