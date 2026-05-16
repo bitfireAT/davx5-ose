@@ -8,10 +8,12 @@ import android.accounts.Account
 import android.content.Context
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.exception.GoneException
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
-import at.bitfire.dav4jvm.okhttp.exception.NotFoundException
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.exception.GoneException
+import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.exception.NotFoundException
+import io.ktor.client.HttpClient
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -30,14 +32,13 @@ import at.bitfire.synctools.icalendar.propertyListOf
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
-import okhttp3.HttpUrl
+
 import java.io.StringWriter
 import java.util.UUID
 import java.util.logging.Logger
@@ -194,22 +195,24 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.getBlocking(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        val httpClient = httpClientBuilder.get().fromAccount(account).build()
-        runInterruptible(ioDispatcher) {
-            try {
-                DavResource(httpClient, collection.url).delete {
-                    // success, otherwise an exception would have been thrown → delete locally, too
-                    delete(collection)
+        httpClientBuilder.get()
+            .fromAccountAsync(account)
+            .buildKtor()
+            .use { httpClient ->
+                try {
+                    DavResource(httpClient, collection.url.toKtorUrl()).delete {
+                        // success, otherwise an exception would have been thrown → delete locally, too
+                        delete(collection)
+                    }
+                } catch (e: HttpException) {
+                    if (e is NotFoundException || e is GoneException) {
+                        // HTTP 404 Not Found or 410 Gone (collection is not there anymore) -> delete locally, too
+                        logger.info("Collection ${collection.url} not found on server, deleting locally")
+                        delete(collection)
+                    } else
+                        throw e
                 }
-            } catch (e: HttpException) {
-                if (e is NotFoundException || e is GoneException) {
-                    // HTTP 404 Not Found or 410 Gone (collection is not there anymore) -> delete locally, too
-                    logger.info("Collection ${collection.url} not found on server, deleting locally")
-                    delete(collection)
-                } else
-                    throw e
             }
-        }
     }
 
     suspend fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
@@ -322,18 +325,18 @@ class DavCollectionRepository @Inject constructor(
 
     // helpers
 
-    private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
-        val httpClient = httpClientBuilder.get()
-            .fromAccount(account)
-            .build()
-        runInterruptible(ioDispatcher) {
-            DavResource(httpClient, url).mkCol(
-                xmlBody = xmlBody,
-                method = method
-            ) {
-                // success, otherwise an exception would have been thrown
+    private suspend fun createOnServer(account: Account, url: okhttp3.HttpUrl, method: String, xmlBody: String) {
+        httpClientBuilder.get()
+            .fromAccountAsync(account)
+            .buildKtor()
+            .use { httpClient ->
+                DavResource(httpClient, url.toKtorUrl()).mkCol(
+                    xmlBody = xmlBody,
+                    methodName = method
+                ) {
+                    // success, otherwise an exception would have been thrown
+                }
             }
-        }
     }
 
     private fun generateMkColXml(
