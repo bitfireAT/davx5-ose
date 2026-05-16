@@ -6,14 +6,13 @@ package at.bitfire.davdroid.repository
 
 import android.accounts.Account
 import android.content.Context
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.GoneException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.NotFoundException
-import io.ktor.client.HttpClient
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -31,6 +30,7 @@ import at.bitfire.synctools.icalendar.componentListOf
 import at.bitfire.synctools.icalendar.propertyListOf
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineDispatcher
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
@@ -38,7 +38,6 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
-
 import java.io.StringWriter
 import java.util.UUID
 import java.util.logging.Logger
@@ -111,7 +110,7 @@ class DavCollectionRepository @Inject constructor(
         // create collection on server
         createOnServer(
             account = account,
-            url = url,
+            url = url.toKtorUrl(),
             method = "MKCOL",
             xmlBody = generateMkColXml(
                 addressBook = true,
@@ -155,7 +154,7 @@ class DavCollectionRepository @Inject constructor(
         // create collection on server
         createOnServer(
             account = account,
-            url = url,
+            url = url.toKtorUrl(),
             method = "MKCALENDAR",
             xmlBody = generateMkColXml(
                 addressBook = false,
@@ -325,12 +324,22 @@ class DavCollectionRepository @Inject constructor(
 
     // helpers
 
-    private suspend fun createOnServer(account: Account, url: okhttp3.HttpUrl, method: String, xmlBody: String) {
+    /**
+     * Creates a new collection on the server using the specified account and URL.
+     *
+     * Uses the provided HTTP method and XML body to perform a MKCOL request (collection creation).
+     *
+     * @param account Account to use for authentication and server connection.
+     * @param url Target URL where the collection should be created.
+     * @param method HTTP method to use for the MKCOL request (should be `MKCALENDAR` or `MKCOL`).
+     * @param xmlBody XML body containing collection metadata (e.g., display name, properties).
+     */
+    private suspend fun createOnServer(account: Account, url: Url, method: String, xmlBody: String) {
         httpClientBuilder.get()
             .fromAccountAsync(account)
             .buildKtor()
             .use { httpClient ->
-                DavResource(httpClient, url.toKtorUrl()).mkCol(
+                DavResource(httpClient, url).mkCol(
                     xmlBody = xmlBody,
                     methodName = method
                 ) {
