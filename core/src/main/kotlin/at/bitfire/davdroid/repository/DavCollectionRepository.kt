@@ -22,7 +22,6 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.CollectionType
 import at.bitfire.davdroid.db.HomeSet
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.util.DavUtils
@@ -31,7 +30,6 @@ import at.bitfire.synctools.icalendar.propertyListOf
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.Url
-import kotlinx.coroutines.CoroutineDispatcher
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
@@ -52,7 +50,6 @@ class DavCollectionRepository @Inject constructor(
     private val db: AppDatabase,
     private val logger: Logger,
     private val httpClientBuilder: Provider<HttpClientBuilder>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val productIds: Lazy<ProductIds>,
     private val serviceRepository: DavServiceRepository
 ) {
