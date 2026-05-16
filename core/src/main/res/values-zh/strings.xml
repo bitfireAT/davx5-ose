@@ -478,4 +478,12 @@
     <string name="about_translations_thanks">❤️ 感谢所有贡献翻译的人！</string>
     <string name="about_translations_over_transifex">在Transifex 上</string>
     <string name="about_translations_over_weblate">在 Weblate 上</string>
+    <string name="dismiss_forever">永久关闭</string>
+    <string name="notification_channel_user_interaction">用户操作</string>
+    <string name="notification_channel_user_interaction_desc">需要用户操作。必须手动处理该问题。</string>
+    <string name="about_translations_contribute">协助翻译</string>
+    <string name="keep_android_open"><![CDATA[Android 的开放性正面临威胁。请访问 <a href="%s">keepandroidopen.org</a>，了解您可以如何提供帮助。]]></string>
+    <string name="app_settings_push_enabled_summary">开， %s</string>
+    <string name="app_settings_push_disabled_summary">关</string>
+    <string name="app_settings_push_title">推送</string>
 </resources>
