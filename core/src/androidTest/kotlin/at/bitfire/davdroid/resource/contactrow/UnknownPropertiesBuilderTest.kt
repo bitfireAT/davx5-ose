@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.resource.contactrow
 
 import android.net.Uri
-import at.bitfire.vcard4android.Contact
+import at.bitfire.synctools.mapping.contacts.Contact
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
