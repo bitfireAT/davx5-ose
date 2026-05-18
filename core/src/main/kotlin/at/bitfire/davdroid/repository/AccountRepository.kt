@@ -27,7 +27,7 @@ import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.synctools.util.AndroidAccountUtils
-import at.bitfire.vcard4android.GroupMethod
+import at.bitfire.synctools.vcard.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher

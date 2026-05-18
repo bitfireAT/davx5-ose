@@ -5,9 +5,9 @@
 package at.bitfire.davdroid.resource.contactrow
 
 import android.net.Uri
+import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.builder.DataRowBuilder
 import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.vcard4android.Contact
-import at.bitfire.vcard4android.contactrow.DataRowBuilder
 import java.util.LinkedList
 
 class UnknownPropertiesBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact, readOnly: Boolean)

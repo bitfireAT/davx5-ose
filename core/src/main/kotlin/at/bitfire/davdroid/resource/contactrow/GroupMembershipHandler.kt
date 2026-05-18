@@ -8,9 +8,9 @@ import android.content.ContentValues
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.util.trimToNull
-import at.bitfire.vcard4android.Contact
-import at.bitfire.vcard4android.GroupMethod
-import at.bitfire.vcard4android.contactrow.DataRowHandler
+import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.handler.DataRowHandler
+import at.bitfire.synctools.vcard.GroupMethod
 import java.io.FileNotFoundException
 
 class GroupMembershipHandler(val localContact: LocalContact): DataRowHandler() {
