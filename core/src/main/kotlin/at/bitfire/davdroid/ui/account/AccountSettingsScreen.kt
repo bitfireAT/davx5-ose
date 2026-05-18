@@ -69,7 +69,7 @@ import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
-import at.bitfire.vcard4android.GroupMethod
+import at.bitfire.synctools.vcard.GroupMethod
 import kotlinx.coroutines.launch
 
 @Composable

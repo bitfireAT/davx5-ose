@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import at.bitfire.davdroid.settings.Credentials
-import at.bitfire.vcard4android.GroupMethod
+import at.bitfire.synctools.vcard.GroupMethod
 import java.net.URI
 
 data class LoginInfo(

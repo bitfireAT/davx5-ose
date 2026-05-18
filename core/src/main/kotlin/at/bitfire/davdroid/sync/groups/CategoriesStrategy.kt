@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.sync.groups
 
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.vcard4android.Contact
+import at.bitfire.synctools.mapping.contacts.Contact
 import java.util.Optional
 import java.util.logging.Logger
 

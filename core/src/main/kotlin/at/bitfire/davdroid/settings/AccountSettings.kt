@@ -18,7 +18,7 @@ import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.synctools.util.setAndVerifyUserData
-import at.bitfire.vcard4android.GroupMethod
+import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

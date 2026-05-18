@@ -7,10 +7,10 @@ package at.bitfire.davdroid.resource.contactrow
 import android.net.Uri
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.builder.DataRowBuilder
 import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.vcard4android.Contact
-import at.bitfire.vcard4android.GroupMethod
-import at.bitfire.vcard4android.contactrow.DataRowBuilder
+import at.bitfire.synctools.vcard.GroupMethod
 import java.util.LinkedList
 
 class GroupMembershipBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact, val addressBook: LocalAddressBook, readOnly: Boolean)
