@@ -11,12 +11,18 @@ import android.content.Entity
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.mapping.tasks.builder.AllDayBuilder
+import at.bitfire.synctools.mapping.tasks.builder.ColorBuilder
+import at.bitfire.synctools.mapping.tasks.builder.DescriptionBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DmfsTaskFieldBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DueBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DurationBuilder
+import at.bitfire.synctools.mapping.tasks.builder.GeoBuilder
+import at.bitfire.synctools.mapping.tasks.builder.LocationBuilder
+import at.bitfire.synctools.mapping.tasks.builder.OrganizerBuilder
 import at.bitfire.synctools.mapping.tasks.builder.RecurrenceFieldsBuilder
 import at.bitfire.synctools.mapping.tasks.builder.StartTimeBuilder
 import at.bitfire.synctools.mapping.tasks.builder.TitleBuilder
+import at.bitfire.synctools.mapping.tasks.builder.UrlBuilder
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.COLUMN_ETAG
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.COLUMN_FLAGS
@@ -26,7 +32,6 @@ import at.bitfire.synctools.storage.tasks.TasksBatchOperation
 import at.bitfire.synctools.util.AlarmTriggerCalculator
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.Property
-import net.fortuna.ical4j.model.parameter.Email
 import net.fortuna.ical4j.model.parameter.RelType
 import net.fortuna.ical4j.model.parameter.Related
 import net.fortuna.ical4j.model.property.Action
@@ -60,6 +65,15 @@ class DmfsTaskBuilder(
 ) {
 
     private val fieldBuilders: Array<DmfsTaskFieldBuilder> = arrayOf(
+        // content fields
+        TitleBuilder(),
+        DescriptionBuilder(),
+        LocationBuilder(),
+        GeoBuilder(),
+        ColorBuilder(),
+        UrlBuilder(),
+        OrganizerBuilder(),
+        // status fields (still inline below)
         // time fields and recurrence
         TitleBuilder(),
         AllDayBuilder(),
@@ -104,33 +118,12 @@ class DmfsTaskBuilder(
         builder .withValue(Tasks._UID, task.uid)
             .withValue(Tasks._DIRTY, 0)
             .withValue(Tasks.SYNC_VERSION, task.sequence)
-            .withValue(Tasks.LOCATION, task.location)
-            .withValue(Tasks.GEO, task.geoPosition?.let { "${it.longitude},${it.latitude}" })
-            .withValue(Tasks.DESCRIPTION, task.description)
-            .withValue(Tasks.TASK_COLOR, task.color)
-            .withValue(Tasks.URL, task.url)
-
             .withValue(Tasks._SYNC_ID, syncId)
             .withValue(COLUMN_FLAGS, flags)
             .withValue(COLUMN_ETAG, eTag)
 
             // parent_id will be re-calculated when the relation row is inserted (if there is any)
             .withValue(Tasks.PARENT_ID, null)
-
-        // organizer
-        // Note: big method – maybe split? Depends on how we want to proceed with refactoring.
-
-        task.organizer?.let { organizer ->
-            val uri = organizer.calAddress
-            val email = if (uri.scheme.equals("mailto", true))
-                uri.schemeSpecificPart
-            else
-                organizer.getParameter<Email>(Parameter.EMAIL).getOrNull()?.value
-            if (email != null)
-                builder.withValue(Tasks.ORGANIZER, email)
-            else
-                logger.warning("Ignoring ORGANIZER without email address (not supported by Android)")
-        }
 
         // Priority, classification
         builder
