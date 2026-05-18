@@ -13,19 +13,23 @@ import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.mapping.tasks.builder.AllDayBuilder
 import at.bitfire.synctools.mapping.tasks.builder.ColorBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DescriptionBuilder
+import at.bitfire.synctools.mapping.tasks.builder.DirtyBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DmfsTaskFieldBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DueBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DurationBuilder
+import at.bitfire.synctools.mapping.tasks.builder.ETagBuilder
 import at.bitfire.synctools.mapping.tasks.builder.GeoBuilder
 import at.bitfire.synctools.mapping.tasks.builder.LocationBuilder
 import at.bitfire.synctools.mapping.tasks.builder.OrganizerBuilder
 import at.bitfire.synctools.mapping.tasks.builder.RecurrenceFieldsBuilder
+import at.bitfire.synctools.mapping.tasks.builder.SequenceBuilder
 import at.bitfire.synctools.mapping.tasks.builder.StartTimeBuilder
+import at.bitfire.synctools.mapping.tasks.builder.SyncFlagsBuilder
+import at.bitfire.synctools.mapping.tasks.builder.SyncIdBuilder
 import at.bitfire.synctools.mapping.tasks.builder.TitleBuilder
+import at.bitfire.synctools.mapping.tasks.builder.UidBuilder
 import at.bitfire.synctools.mapping.tasks.builder.UrlBuilder
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
-import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.COLUMN_ETAG
-import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.COLUMN_FLAGS
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.TasksBatchOperation
@@ -65,6 +69,13 @@ class DmfsTaskBuilder(
 ) {
 
     private val fieldBuilders: Array<DmfsTaskFieldBuilder> = arrayOf(
+        // main task row fields
+        UidBuilder(),
+        SyncIdBuilder(syncId),
+        ETagBuilder(eTag),
+        SyncFlagsBuilder(flags),
+        SequenceBuilder(),
+        DirtyBuilder(),
         // content fields
         TitleBuilder(),
         DescriptionBuilder(),
@@ -73,14 +84,13 @@ class DmfsTaskBuilder(
         ColorBuilder(),
         UrlBuilder(),
         OrganizerBuilder(),
-        // status fields (still inline below)
         // time fields and recurrence
-        TitleBuilder(),
         AllDayBuilder(),
         StartTimeBuilder(),
         DueBuilder(),
         DurationBuilder(),
         RecurrenceFieldsBuilder(),
+        // status (still inline below)
         // property sub-rows (still inline below via insertProperties)
     )
 
@@ -114,13 +124,6 @@ class DmfsTaskBuilder(
         builder.withValues(entity.entityValues)
 
         // old builders
-
-        builder .withValue(Tasks._UID, task.uid)
-            .withValue(Tasks._DIRTY, 0)
-            .withValue(Tasks.SYNC_VERSION, task.sequence)
-            .withValue(Tasks._SYNC_ID, syncId)
-            .withValue(COLUMN_FLAGS, flags)
-            .withValue(COLUMN_ETAG, eTag)
 
             // parent_id will be re-calculated when the relation row is inserted (if there is any)
             .withValue(Tasks.PARENT_ID, null)
