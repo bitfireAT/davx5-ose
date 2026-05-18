@@ -9,9 +9,9 @@ import android.provider.ContactsContract
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.sync.ContactsSyncManager.Companion.disjunct
+import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.synctools.storage.ContactsBatchOperation
-import at.bitfire.vcard4android.Contact
+import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 

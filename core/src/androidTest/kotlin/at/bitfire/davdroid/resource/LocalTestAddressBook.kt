@@ -9,7 +9,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
-import at.bitfire.vcard4android.GroupMethod
+import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

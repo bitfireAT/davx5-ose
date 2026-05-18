@@ -5,8 +5,8 @@
 package at.bitfire.davdroid.resource.contactrow
 
 import android.content.ContentValues
-import at.bitfire.vcard4android.Contact
-import at.bitfire.vcard4android.contactrow.DataRowHandler
+import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.handler.DataRowHandler
 
 object UnknownPropertiesHandler: DataRowHandler() {
 

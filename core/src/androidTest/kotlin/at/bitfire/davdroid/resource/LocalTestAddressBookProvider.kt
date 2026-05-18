@@ -9,7 +9,7 @@ import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.Context
 import at.bitfire.davdroid.R
-import at.bitfire.vcard4android.GroupMethod
+import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.junit.Assert.assertTrue
 import java.util.concurrent.atomic.AtomicInteger

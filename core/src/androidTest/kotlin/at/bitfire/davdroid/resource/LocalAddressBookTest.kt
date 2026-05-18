@@ -12,8 +12,8 @@ import android.content.Context
 import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.vcard4android.Contact
-import at.bitfire.vcard4android.LabeledProperty
+import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.LabeledProperty
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

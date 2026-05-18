@@ -6,10 +6,10 @@ package at.bitfire.davdroid.resource.contactrow
 
 import android.content.ContentValues
 import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.vcard4android.CachedGroupMembership
-import at.bitfire.vcard4android.Contact
-import at.bitfire.vcard4android.GroupMethod
-import at.bitfire.vcard4android.contactrow.DataRowHandler
+import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.handler.DataRowHandler
+import at.bitfire.synctools.storage.contacts.CachedGroupMembership
+import at.bitfire.synctools.vcard.GroupMethod
 import java.util.logging.Logger
 
 class CachedGroupMembershipHandler(val localContact: LocalContact): DataRowHandler() {
