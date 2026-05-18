@@ -7,10 +7,10 @@
 package at.bitfire.synctools.mapping.jtx.builder
 
 import android.content.Entity
+import at.bitfire.synctools.exception.InvalidICalendarException
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
-import at.bitfire.synctools.exception.InvalidICalendarException
 
 interface JtxEntityBuilder {
 

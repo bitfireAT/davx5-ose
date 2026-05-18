@@ -15,7 +15,6 @@ import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.test.assertContentValuesEqual
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.DateList
-import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Period
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VToDo

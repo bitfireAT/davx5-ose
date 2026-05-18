@@ -10,7 +10,7 @@ import android.content.ContentValues
 import android.content.Entity
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.VJournal
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

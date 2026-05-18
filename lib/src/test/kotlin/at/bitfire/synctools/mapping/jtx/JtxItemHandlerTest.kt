@@ -8,20 +8,18 @@ package at.bitfire.synctools.mapping.jtx
 
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import net.fortuna.ical4j.model.property.ProdId
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-
 import at.bitfire.synctools.storage.jtx.JtxItemAndExceptions
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.ProdId
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
-import kotlin.jvm.optionals.getOrNull
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class JtxItemHandlerTest {
