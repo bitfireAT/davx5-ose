@@ -20,10 +20,11 @@ class DavUtilsTest {
     }
 
     @Test
-    fun testARGBtoCalDAVColor() {
-        assertEquals("#00000000", DavUtils.ARGBtoCalDAVColor(0))
-        assertEquals("#123456FF", DavUtils.ARGBtoCalDAVColor(0xFF123456.toInt()))
-        assertEquals("#000000FF", DavUtils.ARGBtoCalDAVColor(0xFF000000.toInt()))
+    fun testArgbToHexColor() {
+        assertEquals("#000000", DavUtils.argbToHexColor(0))
+        assertEquals("#123456", DavUtils.argbToHexColor(0xFF123456.toInt()))
+        assertEquals("#123456", DavUtils.argbToHexColor(0x00123456))
+        assertEquals("#000000", DavUtils.argbToHexColor(0xFF000000.toInt()))
     }
 
     @Test

@@ -37,11 +37,17 @@ object DavUtils {
         else
             MIME_TYPE_ACCEPT_ALL
 
-    @Suppress("FunctionName")
-    fun ARGBtoCalDAVColor(colorWithAlpha: Int): String {
-        val alpha = (colorWithAlpha shr 24) and 0xFF
+    /**
+     * Converts an Android (A)RGB color to a standard hex code color like it's used by CalDAV
+     * `calendar-color`.
+     *
+     * @param colorWithAlpha    color code, with or without alpha value (ARGB)
+     *
+     * @return hex color with prefix, like `#FAC308` (RGB)
+     */
+    fun argbToHexColor(colorWithAlpha: Int): String {
         val color = colorWithAlpha and 0xFFFFFF
-        return String.format(Locale.ROOT, "#%06X%02X", color, alpha)
+        return String.format(Locale.ROOT, "#%06X", color)
     }
 
     /**
