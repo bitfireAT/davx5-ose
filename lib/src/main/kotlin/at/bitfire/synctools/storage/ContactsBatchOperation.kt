@@ -6,24 +6,5 @@
 
 package at.bitfire.synctools.storage
 
-import android.content.ContentProviderClient
-
-/**
- * [BatchOperation] for the Android contacts provider
- */
-class ContactsBatchOperation(
-    providerClient: ContentProviderClient
-): BatchOperation(providerClient, maxOperationsPerYieldPoint = OPERATIONS_PER_YIELD_POINT) {
-
-    companion object {
-
-        /**
-         * Maximum number of operations per yield point in contacts provider.
-         *
-         * See https://android.googlesource.com/platform/packages/providers/ContactsProvider.git/+/refs/heads/android11-release/src/com/android/providers/contacts/AbstractContactsProvider.java#70
-         */
-        const val OPERATIONS_PER_YIELD_POINT = 499
-
-    }
-
-}
+@Deprecated("Moved to at.bitfire.synctools.storage.contacts")
+typealias ContactsBatchOperation = at.bitfire.synctools.storage.contacts.ContactsBatchOperation
