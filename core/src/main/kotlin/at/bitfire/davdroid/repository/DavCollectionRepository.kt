@@ -394,7 +394,7 @@ class DavCollectionRepository @Inject constructor(
                         }
                         color?.let {
                             insertTag(CalDAV.CalendarColor) {
-                                text(DavUtils.ARGBtoCalDAVColor(it))
+                                text(DavUtils.argbToHexColor(it))
                             }
                         }
                         timezoneId?.let { id ->
