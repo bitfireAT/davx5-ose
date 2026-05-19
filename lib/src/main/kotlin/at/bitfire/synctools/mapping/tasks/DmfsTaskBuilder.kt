@@ -9,11 +9,14 @@ package at.bitfire.synctools.mapping.tasks
 import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.ical4android.Task
-import at.bitfire.ical4android.UnknownProperty
+import at.bitfire.synctools.mapping.tasks.builder.AlarmsBuilder
 import at.bitfire.synctools.mapping.tasks.builder.AllDayBuilder
+import at.bitfire.synctools.mapping.tasks.builder.CategoriesBuilder
 import at.bitfire.synctools.mapping.tasks.builder.ClassificationBuilder
 import at.bitfire.synctools.mapping.tasks.builder.ColorBuilder
+import at.bitfire.synctools.mapping.tasks.builder.CommentsBuilder
 import at.bitfire.synctools.mapping.tasks.builder.CompletedBuilder
+import at.bitfire.synctools.mapping.tasks.builder.CreatedBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DescriptionBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DirtyBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DmfsTaskFieldBuilder
@@ -21,11 +24,14 @@ import at.bitfire.synctools.mapping.tasks.builder.DueBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DurationBuilder
 import at.bitfire.synctools.mapping.tasks.builder.ETagBuilder
 import at.bitfire.synctools.mapping.tasks.builder.GeoBuilder
+import at.bitfire.synctools.mapping.tasks.builder.LastModifiedBuilder
+import at.bitfire.synctools.mapping.tasks.builder.ListIdBuilder
 import at.bitfire.synctools.mapping.tasks.builder.LocationBuilder
 import at.bitfire.synctools.mapping.tasks.builder.OrganizerBuilder
 import at.bitfire.synctools.mapping.tasks.builder.PercentCompleteBuilder
 import at.bitfire.synctools.mapping.tasks.builder.PriorityBuilder
 import at.bitfire.synctools.mapping.tasks.builder.RecurrenceFieldsBuilder
+import at.bitfire.synctools.mapping.tasks.builder.RelationsBuilder
 import at.bitfire.synctools.mapping.tasks.builder.SequenceBuilder
 import at.bitfire.synctools.mapping.tasks.builder.StartTimeBuilder
 import at.bitfire.synctools.mapping.tasks.builder.StatusBuilder
@@ -33,32 +39,18 @@ import at.bitfire.synctools.mapping.tasks.builder.SyncFlagsBuilder
 import at.bitfire.synctools.mapping.tasks.builder.SyncIdBuilder
 import at.bitfire.synctools.mapping.tasks.builder.TitleBuilder
 import at.bitfire.synctools.mapping.tasks.builder.UidBuilder
+import at.bitfire.synctools.mapping.tasks.builder.UnknownPropertiesBuilder
 import at.bitfire.synctools.mapping.tasks.builder.UrlBuilder
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
-import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.TasksBatchOperation
-import at.bitfire.synctools.util.AlarmTriggerCalculator
-import net.fortuna.ical4j.model.Parameter
-import net.fortuna.ical4j.model.Property
-import net.fortuna.ical4j.model.parameter.RelType
-import net.fortuna.ical4j.model.parameter.Related
-import net.fortuna.ical4j.model.property.Action
-import net.fortuna.ical4j.model.property.immutable.ImmutableAction
 import org.dmfs.tasks.contract.TaskContract.Properties
-import org.dmfs.tasks.contract.TaskContract.Property.Alarm
-import org.dmfs.tasks.contract.TaskContract.Property.Category
-import org.dmfs.tasks.contract.TaskContract.Property.Comment
-import org.dmfs.tasks.contract.TaskContract.Property.Relation
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.Locale
 import java.util.logging.Level
 import java.util.logging.Logger
-import kotlin.jvm.optionals.getOrNull
 
 /**
- * Writes [at.bitfire.ical4android.Task] to dmfs task provider data rows
- * (former DmfsTask "build..." methods).
+ * Writes [at.bitfire.ical4android.Task] to dmfs task provider data rows.
  */
 class DmfsTaskBuilder(
     private val taskList: DmfsTaskList,
@@ -71,6 +63,9 @@ class DmfsTaskBuilder(
     private val flags: Int,
 ) {
 
+    private val logger
+        get() = Logger.getLogger(javaClass.name)
+
     private val fieldBuilders: Array<DmfsTaskFieldBuilder> = arrayOf(
         // main task row fields
         UidBuilder(),
@@ -78,13 +73,10 @@ class DmfsTaskBuilder(
         ETagBuilder(eTag),
         SyncFlagsBuilder(flags),
         SequenceBuilder(),
+        ListIdBuilder(taskList.id),
         DirtyBuilder(),
-        // status fields
-        PriorityBuilder(),
-        ClassificationBuilder(),
-        StatusBuilder(),
-        CompletedBuilder(),
-        PercentCompleteBuilder(),
+        CreatedBuilder(),
+        LastModifiedBuilder(),
         // content fields
         TitleBuilder(),
         DescriptionBuilder(),
@@ -93,162 +85,73 @@ class DmfsTaskBuilder(
         ColorBuilder(),
         UrlBuilder(),
         OrganizerBuilder(),
-        // time fields and recurrence
+        // status fields
+        PriorityBuilder(),
+        ClassificationBuilder(),
+        StatusBuilder(),
+        CompletedBuilder(),
+        PercentCompleteBuilder(),
+        // time fields
         AllDayBuilder(),
         StartTimeBuilder(),
         DueBuilder(),
         DurationBuilder(),
+        // recurrence
         RecurrenceFieldsBuilder(),
-        // property sub-rows (still inline below via insertProperties)
+        // property sub-rows
+        AlarmsBuilder(taskList),
+        CategoriesBuilder(taskList),
+        CommentsBuilder(taskList),
+        RelationsBuilder(taskList),
+        UnknownPropertiesBuilder(taskList),
     )
 
-    private val logger
-        get() = Logger.getLogger(javaClass.name)
 
-    fun addRows(batch: TasksBatchOperation): Int {
-        val builder = CpoBuilder.newInsert(taskList.tasksUri())
-        buildTask(builder, false)
+    fun addRows(batch: TasksBatchOperation) {
+        val entity = buildTask()
+
+        val mainBuilder = CpoBuilder.newInsert(taskList.tasksUri())
+            .withValues(entity.entityValues)
         val idxTask = batch.nextBackrefIdx() // Get nextBackrefIdx BEFORE adding builder to batch
-        batch += builder
-        return idxTask
+        batch += mainBuilder
+
+        for (subValue in entity.subValues)
+            batch += CpoBuilder.newInsert(subValue.uri)
+                .withValues(subValue.values)
+                .withValueBackReference(Properties.TASK_ID, idxTask)
+
+        logger.log(Level.FINE, "Added task", mainBuilder.build())
     }
 
     fun updateRows(batch: TasksBatchOperation) {
-        val id = requireNotNull(id)
-        val builder = CpoBuilder.newUpdate(taskList.taskUri(id))
-        buildTask(builder, true)
-        batch += builder
+        val existingId = requireNotNull(id)
+        val entity = buildTask()
+
+        val mainValues = ContentValues(entity.entityValues).apply {
+            // LIST_ID must not be updated (it doesn't change for updates, and setting it would cause issues)
+            remove(Tasks.LIST_ID)
+        }
+        val mainBuilder = CpoBuilder.newUpdate(taskList.taskUri(existingId))
+            .withValues(mainValues)
+        batch += mainBuilder
+
+        for (subValue in entity.subValues)
+            batch += CpoBuilder.newInsert(subValue.uri)
+                .withValues(ContentValues(subValue.values).apply {
+                    put(Properties.TASK_ID, existingId)
+                })
+
+        logger.log(Level.FINE, "Updated task", mainBuilder.build())
     }
 
-    private fun buildTask(builder: CpoBuilder, update: Boolean) {
-        if (!update)
-            builder .withValue(Tasks.LIST_ID, taskList.id)
-
-        // new builders
-
+    private fun buildTask(): Entity {
         val entity = Entity(ContentValues())
+
         for (fieldBuilder in fieldBuilders)
             fieldBuilder.build(task, entity)
-        builder.withValues(entity.entityValues)
 
-        // old builders
-
-            // parent_id will be re-calculated when the relation row is inserted (if there is any)
-            .withValue(Tasks.PARENT_ID, null)
-
-        builder
-            .withValue(Tasks.CREATED, task.createdAt)
-            .withValue(Tasks.LAST_MODIFIED, task.lastModified)
-
-        logger.log(Level.FINE, "Built task object", builder.build())
-    }
-
-    fun insertProperties(batch: TasksBatchOperation, idxTask: Int?) {
-        insertAlarms(batch, idxTask)
-        insertCategories(batch, idxTask)
-        insertComment(batch, idxTask)
-        insertRelatedTo(batch, idxTask)
-        insertUnknownProperties(batch, idxTask)
-    }
-
-    private fun insertAlarms(batch: TasksBatchOperation, idxTask: Int?) {
-        for (alarm in task.alarms) {
-            val (alarmRef, minutes) = AlarmTriggerCalculator.alarmTriggerToMinutes(
-                alarm = alarm,
-                refStart = task.dtStart,
-                refEnd = task.end,
-                allowRelEnd = true
-            ) ?: continue
-            val ref = when (alarmRef) {
-                Related.END ->
-                    Alarm.ALARM_REFERENCE_DUE_DATE
-                else /* Related.START is the default value */ ->
-                    Alarm.ALARM_REFERENCE_START_DATE
-            }
-
-            val alarmType = when (
-                alarm.getProperty<Action>(Property.ACTION).getOrNull()?.value?.uppercase(Locale.ROOT)
-            ) {
-                ImmutableAction.VALUE_AUDIO   -> Alarm.ALARM_TYPE_SOUND
-                ImmutableAction.VALUE_DISPLAY -> Alarm.ALARM_TYPE_MESSAGE
-                ImmutableAction.VALUE_EMAIL   -> Alarm.ALARM_TYPE_EMAIL
-                else                          -> Alarm.ALARM_TYPE_NOTHING
-            }
-
-            val builder = CpoBuilder
-                .newInsert(taskList.tasksPropertiesUri())
-                .withTaskId(Alarm.TASK_ID, idxTask)
-                .withValue(Alarm.MIMETYPE, Alarm.CONTENT_ITEM_TYPE)
-                .withValue(Alarm.MINUTES_BEFORE, minutes)
-                .withValue(Alarm.REFERENCE, ref)
-                .withValue(Alarm.MESSAGE, alarm.description?.value ?: alarm.summary)
-                .withValue(Alarm.ALARM_TYPE, alarmType)
-
-            logger.log(Level.FINE, "Inserting alarm", builder.build())
-            batch += builder
-        }
-    }
-
-    private fun insertCategories(batch: TasksBatchOperation, idxTask: Int?) {
-        for (category in task.categories) {
-            val builder = CpoBuilder.newInsert(taskList.tasksPropertiesUri())
-                .withTaskId(Category.TASK_ID, idxTask)
-                .withValue(Category.MIMETYPE, Category.CONTENT_ITEM_TYPE)
-                .withValue(Category.CATEGORY_NAME, category)
-            logger.log(Level.FINE, "Inserting category", builder.build())
-            batch += builder
-        }
-    }
-
-    private fun insertComment(batch: TasksBatchOperation, idxTask: Int?) {
-        val comment = task.comment ?: return
-        val builder = CpoBuilder.newInsert(taskList.tasksPropertiesUri())
-            .withTaskId(Comment.TASK_ID, idxTask)
-            .withValue(Comment.MIMETYPE, Comment.CONTENT_ITEM_TYPE)
-            .withValue(Comment.COMMENT, comment)
-        logger.log(Level.FINE, "Inserting comment", builder.build())
-        batch += builder
-    }
-
-    private fun insertRelatedTo(batch: TasksBatchOperation, idxTask: Int?) {
-        for (relatedTo in task.relatedTo) {
-            val relType = when ((relatedTo.getParameter<RelType>(Parameter.RELTYPE)).getOrNull()) {
-                RelType.CHILD                            -> Relation.RELTYPE_CHILD
-                RelType.SIBLING                          -> Relation.RELTYPE_SIBLING
-                else /* RelType.PARENT, default value */ -> Relation.RELTYPE_PARENT
-            }
-            val builder = CpoBuilder.newInsert(taskList.tasksPropertiesUri())
-                .withTaskId(Relation.TASK_ID, idxTask)
-                .withValue(Relation.MIMETYPE, Relation.CONTENT_ITEM_TYPE)
-                .withValue(Relation.RELATED_UID, relatedTo.value)
-                .withValue(Relation.RELATED_TYPE, relType)
-            logger.log(Level.FINE, "Inserting relation", builder.build())
-            batch += builder
-        }
-    }
-
-    private fun insertUnknownProperties(batch: TasksBatchOperation, idxTask: Int?) {
-        for (property in task.unknownProperties) {
-            if (property.value.length > UnknownProperty.MAX_UNKNOWN_PROPERTY_SIZE) {
-                logger.warning("Ignoring unknown property with ${property.value.length} octets (too long)")
-                return
-            }
-
-            val builder = CpoBuilder.newInsert(taskList.tasksPropertiesUri())
-                .withTaskId(Properties.TASK_ID, idxTask)
-                .withValue(Properties.MIMETYPE, UnknownProperty.CONTENT_ITEM_TYPE)
-                .withValue(UNKNOWN_PROPERTY_DATA, UnknownProperty.toJsonString(property))
-            logger.log(Level.FINE, "Inserting unknown property", builder.build())
-            batch += builder
-        }
-    }
-
-    private fun CpoBuilder.withTaskId(column: String, idxTask: Int?): CpoBuilder {
-        if (idxTask != null)
-            withValueBackReference(column, idxTask)
-        else
-            withValue(column, requireNotNull(id))
-        return this
+        logger.log(Level.FINE, "Built task", entity.entityValues)
+        return entity
     }
 
 }

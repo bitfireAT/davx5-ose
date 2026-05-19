@@ -155,8 +155,7 @@ class DmfsTask(
 
         val requiredTask = requireNotNull(task)
         val builder = DmfsTaskBuilder(taskList, requiredTask, id, syncId, eTag, flags)
-        val idxTask = builder.addRows(batch)
-        builder.insertProperties(batch, idxTask)
+        builder.addRows(batch)
 
         batch.commit()
 
@@ -189,9 +188,6 @@ class DmfsTask(
         // update task
         val builder = DmfsTaskBuilder(taskList, task, id, syncId, eTag, flags)
         builder.updateRows(batch)
-
-        // insert task properties again
-        builder.insertProperties(batch, null)
 
         batch.commit()
         return ContentUris.withAppendedId(TaskContract.Tasks.getContentUri(taskList.providerName.authority), existingId)
