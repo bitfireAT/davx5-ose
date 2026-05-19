@@ -14,6 +14,7 @@ import at.bitfire.synctools.mapping.jtx.builder.DescriptionBuilder
 import at.bitfire.synctools.mapping.jtx.builder.JtxEntityBuilder
 import at.bitfire.synctools.mapping.jtx.builder.RecurrenceFieldsBuilder
 import at.bitfire.synctools.mapping.jtx.builder.SyncPropertiesBuilder
+import at.bitfire.synctools.mapping.jtx.builder.TimeFieldsBuilder
 import at.bitfire.synctools.storage.jtx.JtxItemAndExceptions
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VJournal
@@ -35,7 +36,8 @@ class JtxItemBuilder(
         SyncPropertiesBuilder(fileName, eTag, scheduleTag, flags),
 
         DescriptionBuilder(),
-        RecurrenceFieldsBuilder()
+        RecurrenceFieldsBuilder(),
+        TimeFieldsBuilder()
     )
 
     fun build(component: AssociatedComponents<CalendarComponent>): JtxItemAndExceptions {

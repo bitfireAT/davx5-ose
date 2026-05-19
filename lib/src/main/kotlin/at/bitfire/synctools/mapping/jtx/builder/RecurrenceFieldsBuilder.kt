@@ -10,24 +10,15 @@ import android.content.Entity
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDates
 import at.bitfire.synctools.icalendar.recurrenceId
+import at.bitfire.synctools.mapping.jtx.builder.TimeZoneIdMapper.toTimeZoneId
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.property.DateListProperty
 import net.fortuna.ical4j.model.property.RRule
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
-import java.time.temporal.Temporal
-import java.util.logging.Logger
 
 class RecurrenceFieldsBuilder : JtxEntityBuilder {
-
-    private val logger
-        get() = Logger.getLogger(javaClass.name)
 
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
         if (from === main) {
@@ -109,28 +100,7 @@ class RecurrenceFieldsBuilder : JtxEntityBuilder {
         }
 
         to.entityValues.put(JtxContract.JtxICalObject.RECURID, recurrenceId.value)
-        val timeZoneId = recurrenceId.normalizedDate().getTimeZoneId()
+        val timeZoneId = recurrenceId.normalizedDate().toTimeZoneId()
         to.entityValues.put(JtxContract.JtxICalObject.RECURID_TIMEZONE, timeZoneId)
-    }
-
-    private fun Temporal.getTimeZoneId(): String? = when (this) {
-        is ZonedDateTime -> {
-            this.zone.id
-        }
-        is Instant -> {
-            ZoneOffset.UTC.id
-        }
-        is LocalDateTime -> {
-            // Timezone unknown => floating time
-            null
-        }
-        is LocalDate -> {
-            // Without time, it is considered all-day
-            JtxContract.JtxICalObject.TZ_ALLDAY
-        }
-        else -> {
-            logger.warning("Ignoring unsupported temporal type: ${this::class}")
-            null
-        }
     }
 }

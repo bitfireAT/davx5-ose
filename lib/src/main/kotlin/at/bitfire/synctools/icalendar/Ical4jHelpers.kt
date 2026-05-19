@@ -19,6 +19,7 @@ import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.DtEnd
 import net.fortuna.ical4j.model.property.DtStart
+import net.fortuna.ical4j.model.property.Due
 import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Sequence
 import net.fortuna.ical4j.model.property.Uid
@@ -55,6 +56,10 @@ fun <T: Temporal> CalendarComponent.dtStart(): DtStart<T>? {
 
 fun <T: Temporal> CalendarComponent.dtEnd(): DtEnd<T>? {
     return getProperty<DtEnd<T>>(Property.DTEND).getOrNull()
+}
+
+fun <T: Temporal> CalendarComponent.due(): Due<T>? {
+    return getProperty<Due<T>>(Property.DUE).getOrNull()
 }
 
 fun <T: Temporal> VEvent.requireDtStart(): DtStart<T> =
