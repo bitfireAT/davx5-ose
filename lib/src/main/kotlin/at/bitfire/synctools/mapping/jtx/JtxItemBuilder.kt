@@ -13,6 +13,7 @@ import at.bitfire.synctools.mapping.jtx.builder.CollectionIdBuilder
 import at.bitfire.synctools.mapping.jtx.builder.DescriptionBuilder
 import at.bitfire.synctools.mapping.jtx.builder.JtxEntityBuilder
 import at.bitfire.synctools.mapping.jtx.builder.RecurrenceFieldsBuilder
+import at.bitfire.synctools.mapping.jtx.builder.RemindersBuilder
 import at.bitfire.synctools.mapping.jtx.builder.SyncPropertiesBuilder
 import at.bitfire.synctools.mapping.jtx.builder.TimeFieldsBuilder
 import at.bitfire.synctools.storage.jtx.JtxItemAndExceptions
@@ -37,7 +38,8 @@ class JtxItemBuilder(
 
         DescriptionBuilder(),
         RecurrenceFieldsBuilder(),
-        TimeFieldsBuilder()
+        TimeFieldsBuilder(),
+        RemindersBuilder()
     )
 
     fun build(component: AssociatedComponents<CalendarComponent>): JtxItemAndExceptions {
