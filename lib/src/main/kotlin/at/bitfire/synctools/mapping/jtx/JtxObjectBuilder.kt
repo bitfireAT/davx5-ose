@@ -16,7 +16,7 @@ import at.bitfire.synctools.mapping.jtx.builder.RecurrenceFieldsBuilder
 import at.bitfire.synctools.mapping.jtx.builder.RemindersBuilder
 import at.bitfire.synctools.mapping.jtx.builder.SyncPropertiesBuilder
 import at.bitfire.synctools.mapping.jtx.builder.TimeFieldsBuilder
-import at.bitfire.synctools.storage.jtx.JtxItemAndExceptions
+import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
@@ -24,7 +24,7 @@ import net.fortuna.ical4j.model.component.VToDo
 /**
  * Mapper from an [AssociatedComponents] data object to jtx Board content provider data rows.
  */
-class JtxItemBuilder(
+class JtxObjectBuilder(
     collectionId: Long,
     fileName: String?,
     eTag: String?,
@@ -42,11 +42,11 @@ class JtxItemBuilder(
         RemindersBuilder()
     )
 
-    fun build(component: AssociatedComponents<CalendarComponent>): JtxItemAndExceptions {
+    fun build(component: AssociatedComponents<CalendarComponent>): JtxObjectAndExceptions {
         requireJtxComponents(component)
 
-        val main = component.main ?: error("Main item required")
-        return JtxItemAndExceptions(
+        val main = component.main ?: error("Main component required")
+        return JtxObjectAndExceptions(
             main = buildComponent(from = main, main = main),
             exceptions = component.exceptions.map { exception ->
                 buildComponent(from = exception, main = main)

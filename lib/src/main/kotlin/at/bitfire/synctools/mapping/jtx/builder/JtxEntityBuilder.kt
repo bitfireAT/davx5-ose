@@ -15,20 +15,20 @@ import net.fortuna.ical4j.model.component.VToDo
 interface JtxEntityBuilder {
 
     /**
-     * Maps a specific part of the given item ([VToDo] or [VJournal]) into the provided [Entity].
+     * Maps a specific part of the given component ([VToDo] or [VJournal]) into the provided [Entity].
      *
-     * If [from] references the same object as [main], this method is called for a main item (not an
-     * exception). If [from] references another object as [main], this method is called for an
-     * exception (not a main item).
+     * If [from] references the same object as [main], this method is called for a main component
+     * (not an exception). If [from] references another object as [main], this method is called for
+     * an exception (not a main component).
      *
-     * Note: The result of the mapping is used to either create or update the item row in the
+     * Note: The result of the mapping is used to either create or update the jtx object row in the
      * jtx Board content provider.
      * For updates, explicit `null` values are required for fields that should be `null` (otherwise
-     * the value wouldn't be updated to `null` in case of an item update). Sub-rows of the [Entity]
-     * will always be created anew, so there's no need to use `null` values in sub-rows.
+     * the value wouldn't be updated to `null` in case of a jtx object update). Sub-rows of the
+     * [Entity] will always be created anew, so there's no need to use `null` values in sub-rows.
      *
-     * @param from item to map (will always be [VToDo] or [VJournal])
-     * @param main main item (will always be [VToDo] or [VJournal])
+     * @param from component to map (will always be [VToDo] or [VJournal])
+     * @param main main component (will always be [VToDo] or [VJournal])
      * @param to destination object where built values are stored (set `null` values, see note)
      *
      * @throws InvalidICalendarException on missing or invalid required properties

@@ -10,7 +10,7 @@ import android.content.Entity
 import at.bitfire.synctools.icalendar.AssociatedComponents
 import at.bitfire.synctools.mapping.jtx.handler.DescriptionHandler
 import at.bitfire.synctools.mapping.jtx.handler.JtxFieldHandler
-import at.bitfire.synctools.storage.jtx.JtxItemAndExceptions
+import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.CalendarComponent
@@ -20,14 +20,12 @@ import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.RRule
 import java.util.UUID
 
-typealias AssociatedItems = AssociatedComponents<CalendarComponent>
-
 /**
- * Mapper from jtx Board item main + data rows to [VJournal] or [VToDo].
+ * Mapper from jtx Board object main + data rows to [VJournal] or [VToDo].
  *
  * @param prodId the `PRODID` to use
  */
-class JtxItemHandler(
+class JtxObjectHandler(
     private val prodId: ProdId
 ) {
     private val fieldHandlers: Array<JtxFieldHandler> = arrayOf(
@@ -35,33 +33,33 @@ class JtxItemHandler(
     )
 
     /**
-     * Maps a jtx Board item with its exceptions to [VJournal] or [VToDo].
+     * Maps a jtx Board object with its exceptions to [VJournal] or [VToDo].
      *
      * VJOURNAL and VTODO must have a valid `UID`. So this method generates an UID, if necessary.
      * If an `UID` was generated, it is noted in the result.
      */
-    fun mapToCalendarComponents(itemAndExceptions: JtxItemAndExceptions): MappingResult {
-        // make sure that main item has a UID
+    fun mapToCalendarComponents(jtxObjectAndExceptions: JtxObjectAndExceptions): MappingResult {
+        // make sure that main jtx object has a UID
         var generatedUid = false
-        val mainValues = itemAndExceptions.main.entityValues
+        val mainValues = jtxObjectAndExceptions.main.entityValues
         val uid = mainValues.getAsString(JtxContract.JtxICalObject.UID) ?: run {
             generatedUid = true
             UUID.randomUUID().toString()
         }
 
-        // map main item
-        val main = mapItem(
-            entity = itemAndExceptions.main,
-            main = itemAndExceptions.main
+        // map main jtx object
+        val main = mapJtxObject(
+            entity = jtxObjectAndExceptions.main,
+            main = jtxObjectAndExceptions.main
         )
 
         val rRules = main.getProperties<RRule<*>>(Property.RRULE)
         val exceptions: List<CalendarComponent> = if (rRules.isNotEmpty()) {
-            // add exceptions to recurring main item
-            itemAndExceptions.exceptions.map { exception ->
-                mapItem(
+            // add exceptions to recurring main jtx object
+            jtxObjectAndExceptions.exceptions.map { exception ->
+                mapJtxObject(
                     entity = exception,
-                    main = itemAndExceptions.main
+                    main = jtxObjectAndExceptions.main
                 )
             }
         } else {
@@ -69,7 +67,7 @@ class JtxItemHandler(
         }
 
         return MappingResult(
-            associatedItems = AssociatedItems(
+            associatedComponents = AssociatedComponents(
                 main = main,
                 exceptions = exceptions,
                 prodId = prodId
@@ -80,14 +78,14 @@ class JtxItemHandler(
     }
 
     /**
-     * Maps data of an item from the jtx Board content provider to [VJournal] or [VToDo].
+     * Maps data of a jtx object from the content provider to [VJournal] or [VToDo].
      *
-     * @param entity item row as returned by the jtx Board content provider
-     * @param main main item row as returned by the jtx Board content provider
+     * @param entity jtx object row as returned by the jtx Board content provider
+     * @param main main jtx object row as returned by the jtx Board content provider
      *
      * @return generated data object
      */
-    private fun mapItem(entity: Entity, main: Entity): CalendarComponent {
+    private fun mapJtxObject(entity: Entity, main: Entity): CalendarComponent {
         val entityComponent = entity.getComponent()
         val mainComponent = main.getComponent()
 
@@ -95,16 +93,16 @@ class JtxItemHandler(
             "'main' and 'entity' need to be of same jtx Board component type"
         }
 
-        val item = when (entityComponent) {
+        val calendarComponent = when (entityComponent) {
             JtxContract.JtxICalObject.Component.VJOURNAL -> VJournal()
             JtxContract.JtxICalObject.Component.VTODO -> VToDo()
         }
 
         for (handler in fieldHandlers) {
-            handler.process(from = entity, main = main, to = item)
+            handler.process(from = entity, main = main, to = calendarComponent)
         }
 
-        return item
+        return calendarComponent
     }
 
     private fun Entity.getComponent(): JtxContract.JtxICalObject.Component {
@@ -115,13 +113,13 @@ class JtxItemHandler(
     /**
      * Result of the [mapToCalendarComponents] operation.
      *
-     * @param associatedItems mapped items
-     * @param uid UID of the mapped items
+     * @param associatedComponents mapped jtx objects
+     * @param uid UID of the mapped jtx objects
      * @param generatedUid whether [uid] was generated by [mapToCalendarComponents]
      *   (*false*: `UID` was already present before mapping)
      */
     class MappingResult(
-        val associatedItems: AssociatedItems,
+        val associatedComponents: AssociatedComponents<CalendarComponent>,
         val uid: String,
         val generatedUid: Boolean
     )

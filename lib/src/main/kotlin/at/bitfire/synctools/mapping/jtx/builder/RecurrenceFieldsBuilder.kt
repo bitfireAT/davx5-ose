@@ -22,13 +22,13 @@ class RecurrenceFieldsBuilder : JtxEntityBuilder {
 
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
         if (from === main) {
-            buildMainItem(main, to)
+            buildMain(main, to)
         } else {
-            buildExceptionItem(from, to)
+            buildException(from, to)
         }
     }
 
-    private fun buildMainItem(main: CalendarComponent, to: Entity) {
+    private fun buildMain(main: CalendarComponent, to: Entity) {
         to.entityValues.putNull(JtxContract.JtxICalObject.RECURID)
         to.entityValues.putNull(JtxContract.JtxICalObject.RECURID_TIMEZONE)
 
@@ -83,7 +83,7 @@ class RecurrenceFieldsBuilder : JtxEntityBuilder {
         }
     }
 
-    private fun buildExceptionItem(exception: CalendarComponent, to: Entity) {
+    private fun buildException(exception: CalendarComponent, to: Entity) {
         buildRecurrenceId(exception, to)
 
         to.entityValues.putNull(JtxContract.JtxICalObject.RRULE)

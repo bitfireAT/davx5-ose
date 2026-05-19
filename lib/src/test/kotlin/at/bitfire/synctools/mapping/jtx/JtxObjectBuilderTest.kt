@@ -23,9 +23,9 @@ import org.robolectric.RobolectricTestRunner
 import java.time.Instant
 
 @RunWith(RobolectricTestRunner::class)
-class JtxItemBuilderTest {
+class JtxObjectBuilderTest {
 
-    private val builder = JtxItemBuilder(
+    private val builder = JtxObjectBuilder(
         collectionId = 1,
         fileName = null,
         eTag = null,

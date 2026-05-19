@@ -8,4 +8,4 @@ package at.bitfire.synctools.storage.jtx
 
 import at.bitfire.synctools.storage.MainItemAndExceptions
 
-typealias JtxItemAndExceptions = MainItemAndExceptions
+typealias JtxObjectAndExceptions = MainItemAndExceptions
