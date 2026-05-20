@@ -10,18 +10,18 @@ import android.content.ContentValues
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
-import at.bitfire.synctools.icalendar.propertyListOf
+import at.bitfire.synctools.mapping.tasks.handler.AlarmsHandler
+import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskFieldHandler
+import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskPropertyHandler
+import at.bitfire.synctools.mapping.tasks.handler.TitleHandler
+import at.bitfire.synctools.mapping.tasks.handler.UidHandler
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.util.AndroidTimeUtils
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
-import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.parameter.RelType
-import net.fortuna.ical4j.model.parameter.Related
-import net.fortuna.ical4j.model.property.Action
 import net.fortuna.ical4j.model.property.Clazz
 import net.fortuna.ical4j.model.property.Completed
-import net.fortuna.ical4j.model.property.Description
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Due
 import net.fortuna.ical4j.model.property.Duration
@@ -32,7 +32,6 @@ import net.fortuna.ical4j.model.property.RDate
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RelatedTo
 import net.fortuna.ical4j.model.property.Status
-import net.fortuna.ical4j.model.property.Trigger
 import org.dmfs.tasks.contract.TaskContract.Properties
 import org.dmfs.tasks.contract.TaskContract.Property.Alarm
 import org.dmfs.tasks.contract.TaskContract.Property.Category
@@ -53,13 +52,23 @@ class DmfsTaskProcessor(
     private val taskList: DmfsTaskList
 ) {
 
+    private val fieldHandlers: Array<DmfsTaskFieldHandler> = arrayOf(
+        UidHandler(),
+        TitleHandler(),
+    )
+
+    private val propertyHandlers: Map<String, DmfsTaskPropertyHandler> = mapOf(
+        Alarm.CONTENT_ITEM_TYPE to AlarmsHandler(),
+    )
+
     private val logger
         get() = Logger.getLogger(javaClass.name)
 
     fun populateTask(values: ContentValues, to: Task) {
-        to.uid = values.getAsString(Tasks._UID)
+        for (handler in fieldHandlers)
+            handler.process(values, to)
+
         to.sequence = values.getAsInteger(Tasks.SYNC_VERSION)
-        to.summary = values.getAsString(Tasks.TITLE)
         to.location = values.getAsString(Tasks.LOCATION)
         to.userAgents += taskList.providerName.packageName
 
@@ -160,9 +169,14 @@ class DmfsTaskProcessor(
     fun populateProperty(row: ContentValues, to: Task) {
         logger.log(Level.FINER, "Found property", row)
 
-        when (val type = row.getAsString(Properties.MIMETYPE)) {
-            Alarm.CONTENT_ITEM_TYPE ->
-                populateAlarm(row, to)
+        val type = row.getAsString(Properties.MIMETYPE)
+        val handler = propertyHandlers[type]
+        if (handler != null) {
+            handler.process(row, to)
+            return
+        }
+
+        when (type) {
             Category.CONTENT_ITEM_TYPE ->
                 to.categories += row.getAsString(Category.CATEGORY_NAME)
             Comment.CONTENT_ITEM_TYPE ->
@@ -174,29 +188,6 @@ class DmfsTaskProcessor(
             else ->
                 logger.warning("Found unknown property of type $type")
         }
-    }
-
-    private fun populateAlarm(row: ContentValues, to: Task) {
-        val props = propertyListOf(
-            Trigger(java.time.Duration.ofMinutes(-row.getAsLong(Alarm.MINUTES_BEFORE))).let {
-                when (row.getAsInteger(Alarm.REFERENCE)) {
-                    Alarm.ALARM_REFERENCE_START_DATE -> it.add(Related.START)
-                    Alarm.ALARM_REFERENCE_DUE_DATE -> it.add(Related.END)
-                    else -> it
-                }
-            },
-            Action(
-                when (row.getAsInteger(Alarm.ALARM_TYPE)) {
-                    Alarm.ALARM_TYPE_EMAIL -> Action.VALUE_EMAIL
-                    Alarm.ALARM_TYPE_SOUND -> Action.VALUE_AUDIO
-                    // show alarm by default
-                    else -> Action.VALUE_DISPLAY
-                }
-            ),
-            Description(row.getAsString(Alarm.MESSAGE) ?: to.summary)
-        )
-
-        to.alarms += VAlarm(props)
     }
 
     private fun populateRelatedTo(row: ContentValues, to: Task) {
