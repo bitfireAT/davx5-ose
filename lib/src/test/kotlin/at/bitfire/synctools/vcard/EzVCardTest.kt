@@ -11,6 +11,7 @@ import ezvcard.VCard
 import ezvcard.VCardVersion
 import ezvcard.property.Address
 import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class EzVCardTest {
@@ -113,8 +114,8 @@ class EzVCardTest {
                 .version(VCardVersion.V4_0)
                 .caretEncoding(true)
                 .go().lines().filter { it.startsWith("ADR") }.first()
-        //assertEquals("ADR;LABEL=\"Li^^ne 1,1^n- ^' -\":;;Line 1;;;;Line 2", str)
-        Assert.assertEquals("ADR;LABEL=\"Li^^ne 1,1\\n- ^' -\":;;Line 1;;;;Line 2", str)
+        // Note: newline is intentionally encoded to \n, not ^n – see https://github.com/mangstadt/ez-vcard/issues/115
+        assertEquals("ADR;LABEL=\"Li^^ne 1,1\\n- ^' -\":;;Line 1;;;;Line 2", str)
     }
 
 }

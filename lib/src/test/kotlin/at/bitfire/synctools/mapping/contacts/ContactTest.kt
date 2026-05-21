@@ -23,9 +23,9 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
+import java.io.StringReader
+import java.io.StringWriter
 import java.nio.charset.Charset
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -40,9 +40,11 @@ class ContactTest {
         }
 
     private suspend fun regenerate(c: Contact, vCardVersion: VCardVersion): Contact {
-        val os = ByteArrayOutputStream()
-        c.writeVCard(vCardVersion, os, testProductId)
-        return Contact.fromReader(InputStreamReader(ByteArrayInputStream(os.toByteArray()), Charsets.UTF_8), null).first()
+        val writer = StringWriter()
+        c.writeVCard(vCardVersion, writer, testProductId)
+        val vCard = writer.toString()
+
+        return Contact.fromReader(StringReader(vCard), null).first()
     }
 
 

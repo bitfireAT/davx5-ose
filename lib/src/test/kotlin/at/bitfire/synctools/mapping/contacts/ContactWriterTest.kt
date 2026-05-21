@@ -15,7 +15,6 @@ import at.bitfire.synctools.vcard.property.XAddressBookServerMember
 import at.bitfire.synctools.vcard.property.XPhoneticFirstName
 import at.bitfire.synctools.vcard.property.XPhoneticLastName
 import at.bitfire.synctools.vcard.property.XPhoneticMiddleName
-import ezvcard.Ezvcard
 import ezvcard.VCard
 import ezvcard.VCardVersion
 import ezvcard.parameter.ImageType
@@ -30,7 +29,6 @@ import ezvcard.property.Nickname
 import ezvcard.property.Organization
 import ezvcard.property.Photo
 import ezvcard.property.Related
-import ezvcard.property.Revision
 import ezvcard.property.StructuredName
 import ezvcard.property.Telephone
 import ezvcard.property.Url
@@ -39,11 +37,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.ByteArrayOutputStream
 import java.net.URI
 import java.time.LocalDate
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 
 class ContactWriterTest {
 
@@ -573,37 +568,6 @@ class ContactWriterTest {
         assertNull(date.date)
         assertEquals(PartialDate.parse("--0730"), date.partialDate)
         assertEquals(0, date.parameters.size())
-    }
-
-
-    @Test
-    fun testWriteVCard() {
-        val generator = ContactWriter(Contact(), VCardVersion.V4_0, testProductId)
-        generator.vCard.revision = Revision(ZonedDateTime.of(2021, 7, 30, 1, 2, 3, 0, ZoneOffset.UTC))
-
-        val stream = ByteArrayOutputStream()
-        generator.writeVCard(stream)
-        assertEquals("BEGIN:VCARD\r\n" +
-                "VERSION:4.0\r\n" +
-                "PRODID:$testProductId (ez-vcard/${Ezvcard.VERSION})\r\n" +
-                "FN:\r\n" +
-                "REV:20210730T010203+0000\r\n" +
-                "END:VCARD\r\n", stream.toString())
-    }
-
-    @Test
-    fun testWriteVCard_CaretEncoding() {
-        val stream = ByteArrayOutputStream()
-        val contact = Contact().apply {
-            addresses += LabeledProperty(Address().apply {
-                label = "Li^ne 1,1 - \" -"
-                streetAddress = "Line1"
-                country = "Line2"
-            })
-        }
-        ContactWriter(contact, VCardVersion.V4_0, testProductId)
-            .writeVCard(stream)
-        assertTrue(stream.toString().contains("ADR;LABEL=\"Li^^ne 1,1 - ^' -\":;;Line1;;;;Line2"))
     }
 
 

@@ -6,12 +6,11 @@
 
 package at.bitfire.synctools.mapping.contacts
 
-import at.bitfire.synctools.vcard.property.CustomScribes.registerCustomScribes
+import at.bitfire.synctools.vcard.VCardParser
 import at.bitfire.synctools.vcard.property.XAbDate
 import com.google.common.base.Ascii
 import com.google.common.base.MoreObjects
 import ezvcard.VCardVersion
-import ezvcard.io.text.VCardReader
 import ezvcard.property.Address
 import ezvcard.property.Anniversary
 import ezvcard.property.Birthday
@@ -23,8 +22,8 @@ import ezvcard.property.Related
 import ezvcard.property.Telephone
 import ezvcard.property.Url
 import java.io.IOException
-import java.io.OutputStream
 import java.io.Reader
+import java.io.Writer
 import java.util.LinkedList
 
 /**
@@ -101,25 +100,19 @@ data class Contact(
          * @throws IOException on I/O errors when reading the stream
          * @throws ezvcard.io.CannotParseException when the vCard can't be parsed
          */
-        suspend fun fromReader(reader: Reader, downloader: Downloader?): List<Contact>  {
-            // create new reader and add custom scribes
-            val vCards = VCardReader(reader, VCardVersion.V3_0)        // CardDAV requires vCard 3 or newer
-                .registerCustomScribes()
-                .readAll()
-
-            return vCards.map { vCard ->
+        suspend fun fromReader(reader: Reader, downloader: Downloader?): List<Contact> =
+            VCardParser().parse(reader).map { vCard ->
                 // convert every vCard to a Contact data object
                 ContactReader.fromVCard(vCard, downloader)
             }
-        }
 
     }
 
 
     @Throws(IOException::class)
-    fun writeVCard(vCardVersion: VCardVersion, os: OutputStream, productId: String) {
+    fun writeVCard(vCardVersion: VCardVersion, writer: Writer, productId: String) {
         val generator = ContactWriter(this, vCardVersion, productId)
-        generator.writeVCard(os)
+        generator.writeVCard(writer)
     }
 
 

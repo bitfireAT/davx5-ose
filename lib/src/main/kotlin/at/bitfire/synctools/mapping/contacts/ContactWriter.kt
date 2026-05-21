@@ -9,7 +9,7 @@ package at.bitfire.synctools.mapping.contacts
 import at.bitfire.synctools.util.Utils.capitalize
 import at.bitfire.synctools.util.Utils.isEmpty
 import at.bitfire.synctools.util.Utils.trimToNull
-import at.bitfire.synctools.vcard.property.CustomScribes.registerCustomScribes
+import at.bitfire.synctools.vcard.VCardGenerator
 import at.bitfire.synctools.vcard.property.CustomType
 import at.bitfire.synctools.vcard.property.XAbDate
 import at.bitfire.synctools.vcard.property.XAbLabel
@@ -22,7 +22,6 @@ import at.bitfire.synctools.vcard.property.XPhoneticMiddleName
 import ezvcard.Ezvcard
 import ezvcard.VCard
 import ezvcard.VCardVersion
-import ezvcard.io.text.VCardWriter
 import ezvcard.parameter.ImageType
 import ezvcard.parameter.RelatedType
 import ezvcard.property.Categories
@@ -36,7 +35,7 @@ import ezvcard.property.Revision
 import ezvcard.property.StructuredName
 import ezvcard.property.Uid
 import ezvcard.property.VCardProperty
-import java.io.OutputStream
+import java.io.Writer
 import java.time.LocalDate
 import java.util.LinkedList
 import java.util.logging.Level
@@ -345,30 +344,20 @@ class ContactWriter(
 
 
     /**
-     * Validates and writes the vCard to an output stream.
+     * Validates and writes the contact to a writer as vCard.
      *
-     * @param stream    target output stream
+     * @param writer    where vCard is written to
      */
-    fun writeVCard(stream: OutputStream) {
+    fun writeVCard(writer: Writer) {
         validate()
 
-        val writer = VCardWriter(stream, version).apply {
-            isAddProdId = false     // we handle PRODID ourselves
-            registerCustomScribes()
-
-            /* include trailing semicolons for maximum compatibility
-            Don't include trailing semicolons for groups because Apple then shows "N:Group;;;;" as "Group;;;;". */
-            isIncludeTrailingSemicolons = !contact.group
-
-            // use caret encoding for parameter values (RFC 6868)
-            isCaretEncodingEnabled = true
-
-            // allow properties that are not defined in this vCard version
-            isVersionStrict = false
-        }
-
-        writer.write(vCard)
-        writer.flush()
+        /* Normally include trailing semicolons for maximum compatibility, but don't include them
+        for groups because Apple then shows "N:Group;;;;" as "Group;;;;". */
+        val generator = VCardGenerator(
+            targetVersion = version,
+            includeTrailingSemicolons = !contact.group
+        )
+        generator.write(vCard, writer)
     }
 
     private fun validate() {

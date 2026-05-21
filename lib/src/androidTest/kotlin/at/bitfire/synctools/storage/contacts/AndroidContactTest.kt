@@ -31,8 +31,8 @@ import org.junit.Assert.assertTrue
 import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Test
-import java.io.ByteArrayOutputStream
 import java.io.StringReader
+import java.io.StringWriter
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -124,8 +124,8 @@ class AndroidContactTest {
         try {
             val contact2 = dbContact2.getContact()
             assertEquals("Test", contact2.displayName)
-            assertEquals("+12345", contact2.phoneNumbers.first.property.text)
-            assertEquals("test@example.com", contact2.emails.first.property.value)
+            assertEquals("+12345", contact2.phoneNumbers.first().property.text)
+            assertEquals("test@example.com", contact2.emails.first().property.value)
         } finally {
             dbContact2.delete()
         }
@@ -209,9 +209,9 @@ class AndroidContactTest {
          *
          * So, ADR value components may contain DQUOTE (0x22) and don't have to be encoded as defined in RFC 6868 */
 
-        val os = ByteArrayOutputStream()
-        contact.writeVCard(VCardVersion.V4_0, os, testProductId)
-        assertTrue(os.toString().contains("ADR;LABEL=My ^'Label^'\\nLine 2:;;Street \"Address\";;;;"))
+        val writer = StringWriter()
+        contact.writeVCard(VCardVersion.V4_0, writer, testProductId)
+        assertTrue(writer.toString().contains("ADR;LABEL=My ^'Label^'\\nLine 2:;;Street \"Address\";;;;"))
     }
 
 }
