@@ -50,9 +50,9 @@ import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
+import java.io.StringWriter
 import java.util.Optional
 import java.util.logging.Level
 import kotlin.jvm.optionals.getOrNull
@@ -283,22 +283,22 @@ class ContactsSyncManager @AssistedInject constructor(
         }
 
         // generate vCard and convert to request body
-        val os = ByteArrayOutputStream()
+        val writer = StringWriter()
         val mimeType: MediaType
         when {
             hasVCard4 -> {
                 mimeType = DavAddressBook.MIME_VCARD4
-                contact.writeVCard(VCardVersion.V4_0, os, productIds.vCardProdId)
+                contact.writeVCard(VCardVersion.V4_0, writer, productIds.vCardProdId)
             }
             else -> {
                 mimeType = DavAddressBook.MIME_VCARD3_UTF8
-                contact.writeVCard(VCardVersion.V3_0, os, productIds.vCardProdId)
+                contact.writeVCard(VCardVersion.V3_0, writer, productIds.vCardProdId)
             }
         }
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(uid, "vcf"),
-            requestBody = os.toByteArray().toRequestBody(mimeType)
+            requestBody = writer.toString().toRequestBody(mimeType)
         )
     }
 
