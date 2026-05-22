@@ -21,6 +21,8 @@ import at.bitfire.davdroid.resource.contactrow.GroupMembershipHandler
 import at.bitfire.davdroid.resource.contactrow.UnknownPropertiesBuilder
 import at.bitfire.davdroid.resource.contactrow.UnknownPropertiesHandler
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.RawContactBuilder
+import at.bitfire.synctools.mapping.contacts.RawContactHandler
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
@@ -50,6 +52,21 @@ class LocalContact: AndroidContact, LocalAddress {
 
     override var flags: Int = 0
 
+    override val rawContactHandler: RawContactHandler by lazy {
+        RawContactHandler(addressBook.provider!!).apply {
+            registerHandler(CachedGroupMembershipHandler(this@LocalContact))
+            registerHandler(GroupMembershipHandler(this@LocalContact))
+            registerHandler(UnknownPropertiesHandler)
+        }
+    }
+
+    override val rawContactBuilder: RawContactBuilder by lazy {
+        RawContactBuilder().apply {
+            registerBuilderFactory(GroupMembershipBuilder.Factory(addressBook))
+            registerBuilderFactory(UnknownPropertiesBuilder.Factory)
+        }
+    }
+
 
     constructor(addressBook: LocalAddressBook, values: ContentValues): super(addressBook, values) {
         flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
@@ -59,20 +76,12 @@ class LocalContact: AndroidContact, LocalAddress {
         flags = _flags
     }
 
-    init {
-        processor.registerHandler(CachedGroupMembershipHandler(this))
-        processor.registerHandler(GroupMembershipHandler(this))
-        processor.registerHandler(UnknownPropertiesHandler)
-        processor.registerBuilderFactory(GroupMembershipBuilder.Factory(addressBook))
-        processor.registerBuilderFactory(UnknownPropertiesBuilder.Factory)
-    }
-
-
     /**
-     * Clears cached [contact] so that the next read of [contact] will query the content provider again.
+     * Clears cached contact (that is used by [getContact]) so that the next call of [getContact]
+     * will query the content provider again.
      */
     fun clearCachedContact() {
-        _contact = null
+        setContact(null)
     }
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
