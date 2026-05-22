@@ -77,7 +77,8 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
     /**
-     * Clears cached contact so that the next read of contact will query the content provider again.
+     * Clears cached contact (that is used by [getContact]) so that the next call of [getContact]
+     * will query the content provider again.
      */
     fun clearCachedContact() {
         setContact(null)
