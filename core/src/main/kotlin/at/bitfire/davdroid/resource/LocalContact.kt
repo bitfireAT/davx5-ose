@@ -13,13 +13,6 @@ import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.getContactLookupUri
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
-import at.bitfire.synctools.mapping.contacts.RawContactBuilder
-import at.bitfire.synctools.mapping.contacts.RawContactHandler
-import at.bitfire.synctools.mapping.contacts.builder.GroupMembershipBuilder
-import at.bitfire.synctools.mapping.contacts.builder.UnknownPropertiesBuilder
-import at.bitfire.synctools.mapping.contacts.handler.CachedGroupMembershipHandler
-import at.bitfire.synctools.mapping.contacts.handler.GroupMembershipHandler
-import at.bitfire.synctools.mapping.contacts.handler.UnknownPropertiesHandler
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
@@ -42,21 +35,6 @@ class LocalContact: AndroidContact, LocalAddress {
         get() = null
 
     override var flags: Int = 0
-
-    override val rawContactHandler: RawContactHandler by lazy {
-        RawContactHandler(addressBook.provider!!).apply {
-            registerHandler(CachedGroupMembershipHandler(this@LocalContact, addressBook.groupMethod))
-            registerHandler(GroupMembershipHandler(this@LocalContact, addressBook.groupMethod))
-            registerHandler(UnknownPropertiesHandler)
-        }
-    }
-
-    override val rawContactBuilder: RawContactBuilder by lazy {
-        RawContactBuilder().apply {
-            registerBuilderFactory(GroupMembershipBuilder.Factory(addressBook, addressBook.groupMethod))
-            registerBuilderFactory(UnknownPropertiesBuilder.Factory)
-        }
-    }
 
 
     constructor(addressBook: LocalAddressBook, values: ContentValues): super(addressBook, values) {
