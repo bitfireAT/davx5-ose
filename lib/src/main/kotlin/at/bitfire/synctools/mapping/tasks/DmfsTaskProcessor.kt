@@ -13,6 +13,7 @@ import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
 import at.bitfire.synctools.mapping.tasks.handler.AlarmsHandler
 import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskFieldHandler
 import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskPropertyHandler
+import at.bitfire.synctools.mapping.tasks.handler.SequenceHandler
 import at.bitfire.synctools.mapping.tasks.handler.TitleHandler
 import at.bitfire.synctools.mapping.tasks.handler.UidHandler
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
@@ -55,6 +56,7 @@ class DmfsTaskProcessor(
     private val fieldHandlers: Array<DmfsTaskFieldHandler> = arrayOf(
         UidHandler(),
         TitleHandler(),
+        SequenceHandler(),
     )
 
     private val propertyHandlers: Map<String, DmfsTaskPropertyHandler> = mapOf(
@@ -68,7 +70,6 @@ class DmfsTaskProcessor(
         for (handler in fieldHandlers)
             handler.process(values, to)
 
-        to.sequence = values.getAsInteger(Tasks.SYNC_VERSION)
         to.location = values.getAsString(Tasks.LOCATION)
         to.userAgents += taskList.providerName.packageName
 
