@@ -37,7 +37,10 @@ import at.bitfire.davdroid.sync.groups.VCard4Strategy
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.ContactReader
+import at.bitfire.synctools.mapping.contacts.ContactWriter
 import at.bitfire.synctools.vcard.GroupMethod
+import at.bitfire.synctools.vcard.VCardParser
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -285,16 +288,18 @@ class ContactsSyncManager @AssistedInject constructor(
         // generate vCard and convert to request body
         val writer = StringWriter()
         val mimeType: MediaType
+        val vCardVersion: VCardVersion
         when {
             hasVCard4 -> {
                 mimeType = DavAddressBook.MIME_VCARD4
-                contact.writeVCard(VCardVersion.V4_0, writer, productIds.vCardProdId)
+                vCardVersion = VCardVersion.V4_0
             }
             else -> {
                 mimeType = DavAddressBook.MIME_VCARD3_UTF8
-                contact.writeVCard(VCardVersion.V3_0, writer, productIds.vCardProdId)
+                vCardVersion = VCardVersion.V3_0
             }
         }
+        ContactWriter(contact, vCardVersion, productIds.vCardProdId).writeVCard(writer)
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(uid, "vcf"),
@@ -370,9 +375,17 @@ class ContactsSyncManager @AssistedInject constructor(
     private fun processCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
         logger.info("Processing CardDAV resource $fileName")
 
-        val contacts = try {
+        val newData = try {
+            // parse vCard
+            val vCard = VCardParser().parse(reader).firstOrNull()
+            if (vCard == null) {
+                logger.warning("Received vCard without data, ignoring")
+                return
+            }
+
+            // map to Contact
             runBlocking(ioDispatcher) {
-                Contact.fromReader(reader, downloader)
+                ContactReader.fromVCard(vCard, downloader)
             }
         } catch (e: CannotParseException) {
             logger.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
@@ -380,13 +393,6 @@ class ContactsSyncManager @AssistedInject constructor(
             return
         }
 
-        if (contacts.isEmpty()) {
-            logger.warning("Received vCard without data, ignoring")
-            return
-        } else if (contacts.size > 1)
-            logger.warning("Received multiple vCards, using first one")
-
-        val newData = contacts.first()
         groupStrategy.verifyContactBeforeSaving(newData)
 
         var updated: LocalAddress? = null
