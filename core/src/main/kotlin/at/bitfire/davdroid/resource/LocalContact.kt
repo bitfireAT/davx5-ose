@@ -52,6 +52,21 @@ class LocalContact: AndroidContact, LocalAddress {
 
     override var flags: Int = 0
 
+    override val rawContactHandler: RawContactHandler by lazy {
+        RawContactHandler(addressBook.provider!!).apply {
+            registerHandler(CachedGroupMembershipHandler(this@LocalContact))
+            registerHandler(GroupMembershipHandler(this@LocalContact))
+            registerHandler(UnknownPropertiesHandler)
+        }
+    }
+
+    override val rawContactBuilder: RawContactBuilder by lazy {
+        RawContactBuilder().apply {
+            registerBuilderFactory(GroupMembershipBuilder.Factory(addressBook))
+            registerBuilderFactory(UnknownPropertiesBuilder.Factory)
+        }
+    }
+
 
     constructor(addressBook: LocalAddressBook, values: ContentValues): super(addressBook, values) {
         flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
@@ -60,20 +75,6 @@ class LocalContact: AndroidContact, LocalAddress {
     constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, _flags: Int): super(addressBook, contact, fileName, eTag) {
         flags = _flags
     }
-
-    override val rawContactHandler: RawContactHandler
-        get() = RawContactHandler(addressBook.provider!!).apply {
-            registerHandler(CachedGroupMembershipHandler(this@LocalContact))
-            registerHandler(GroupMembershipHandler(this@LocalContact))
-            registerHandler(UnknownPropertiesHandler)
-        }
-
-    override val rawContactBuilder: RawContactBuilder
-        get() = RawContactBuilder().apply {
-            registerBuilderFactory(GroupMembershipBuilder.Factory(addressBook))
-            registerBuilderFactory(UnknownPropertiesBuilder.Factory)
-        }
-
 
     /**
      * Clears cached contact so that the next read of contact will query the content provider again.
