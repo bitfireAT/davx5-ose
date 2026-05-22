@@ -15,14 +15,18 @@ import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.ContactReader
+import at.bitfire.synctools.mapping.contacts.ContactWriter
 import at.bitfire.synctools.mapping.contacts.LabeledProperty
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.vcard.VCardParser
 import at.bitfire.synctools.vcard.property.XAbDate
 import ezvcard.VCardVersion
 import ezvcard.property.Address
 import ezvcard.property.Birthday
 import ezvcard.property.Email
 import ezvcard.util.PartialDate
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -115,7 +119,7 @@ class AndroidContactTest {
                 "TEL;CELL=;PREF=:+12345\r\n" +
                 "EMAIL;PREF=invalid:test@example.com\r\n" +
                 "END:VCARD\r\n"
-        val contacts = Contact.fromReader(StringReader(vCard), null)
+        val contacts = parseVCards(vCard)
 
         val dbContact = AndroidContact(addressBook, contacts.first(), null, null)
         dbContact.add()
@@ -139,7 +143,7 @@ class AndroidContactTest {
             "FN:John Doe\n\n" +
             "BDAY:20010415T000000+0200\n\n" +
             "END:VCARD\n\n"
-        val contacts = Contact.fromReader(StringReader(vCard), null)
+        val contacts = parseVCards(vCard)
 
         assertEquals(1, contacts.size)
         contacts.first().birthDay.let { birthday ->
@@ -210,8 +214,16 @@ class AndroidContactTest {
          * So, ADR value components may contain DQUOTE (0x22) and don't have to be encoded as defined in RFC 6868 */
 
         val writer = StringWriter()
-        contact.writeVCard(VCardVersion.V4_0, writer, testProductId)
+        ContactWriter(contact, VCardVersion.V4_0, testProductId).writeVCard(writer)
         assertTrue(writer.toString().contains("ADR;LABEL=My ^'Label^'\\nLine 2:;;Street \"Address\";;;;"))
     }
+
+
+    private fun parseVCards(vCardStr: String): List<Contact> =
+        VCardParser().parse(StringReader(vCardStr)).map { vCard ->
+            runBlocking {
+                ContactReader(vCard).toContact()
+            }
+        }
 
 }

@@ -6,11 +6,9 @@
 
 package at.bitfire.synctools.mapping.contacts
 
-import at.bitfire.synctools.vcard.VCardParser
 import at.bitfire.synctools.vcard.property.XAbDate
 import com.google.common.base.Ascii
 import com.google.common.base.MoreObjects
-import ezvcard.VCardVersion
 import ezvcard.property.Address
 import ezvcard.property.Anniversary
 import ezvcard.property.Birthday
@@ -21,9 +19,6 @@ import ezvcard.property.Organization
 import ezvcard.property.Related
 import ezvcard.property.Telephone
 import ezvcard.property.Url
-import java.io.IOException
-import java.io.Reader
-import java.io.Writer
 import java.util.LinkedList
 
 /**
@@ -89,30 +84,6 @@ data class Contact(
 
         const val TO_STRING_MAX_VALUE_SIZE = 2000
 
-        /**
-         * Parses a Reader that contains a vCard.
-         *
-         * @param reader     reader for the input stream containing the vCard (pay attention to the charset)
-         * @param downloader will be used to download external resources like contact photos (may be null)
-         *
-         * @return list of filled Contact data objects (may have size 0) – doesn't return null
-         *
-         * @throws IOException on I/O errors when reading the stream
-         * @throws ezvcard.io.CannotParseException when the vCard can't be parsed
-         */
-        suspend fun fromReader(reader: Reader, downloader: Downloader?): List<Contact> =
-            VCardParser().parse(reader).map { vCard ->
-                // convert every vCard to a Contact data object
-                ContactReader.fromVCard(vCard, downloader)
-            }
-
-    }
-
-
-    @Throws(IOException::class)
-    fun writeVCard(vCardVersion: VCardVersion, writer: Writer, productId: String) {
-        val generator = ContactWriter(this, vCardVersion, productId)
-        generator.writeVCard(writer)
     }
 
 

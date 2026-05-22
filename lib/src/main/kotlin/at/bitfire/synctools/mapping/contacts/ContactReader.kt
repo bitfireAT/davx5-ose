@@ -154,7 +154,7 @@ class ContactReader internal constructor(val vCard: VCard, val downloader: Conta
     /**
      * Converts the vCard to a [Contact].
      */
-    private suspend fun toContact(): Contact {
+    suspend fun toContact(): Contact {
         val c = Contact()
 
         // process standard properties; after processing, only unknown properties will remain

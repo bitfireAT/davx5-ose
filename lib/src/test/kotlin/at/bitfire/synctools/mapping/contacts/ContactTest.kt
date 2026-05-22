@@ -6,6 +6,7 @@
 
 package at.bitfire.synctools.mapping.contacts
 
+import at.bitfire.synctools.vcard.VCardParser
 import ezvcard.VCardVersion
 import ezvcard.parameter.AddressType
 import ezvcard.parameter.EmailType
@@ -24,9 +25,9 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.InputStreamReader
+import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
-import java.nio.charset.Charset
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -34,17 +35,22 @@ import java.util.LinkedList
 
 class ContactTest {
 
-    private suspend fun parseContact(fname: String, charset: Charset = Charsets.UTF_8): Contact =
+    private suspend fun parseVCard(reader: Reader): Contact {
+        val vCard = VCardParser().parse(reader).first()
+        return ContactReader.fromVCard(vCard)
+    }
+
+    private suspend fun parseContact(fname: String): Contact =
         javaClass.classLoader!!.getResourceAsStream(fname).use { stream ->
-            Contact.fromReader(InputStreamReader(stream, charset), null).first()
+            parseVCard(InputStreamReader(stream, Charsets.UTF_8))
         }
 
     private suspend fun regenerate(c: Contact, vCardVersion: VCardVersion): Contact {
         val writer = StringWriter()
-        c.writeVCard(vCardVersion, writer, testProductId)
+        ContactWriter(c, vCardVersion, testProductId).writeVCard(writer)
         val vCard = writer.toString()
 
-        return Contact.fromReader(StringReader(vCard), null).first()
+        return parseVCard(StringReader(vCard))
     }
 
 
