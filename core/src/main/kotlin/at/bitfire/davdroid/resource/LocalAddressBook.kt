@@ -6,7 +6,6 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.content.ContentUris
 import android.content.Context
 import android.os.RemoteException
 import android.provider.ContactsContract
@@ -291,25 +290,6 @@ open class LocalAddressBook @AssistedInject constructor(
 
 
     /* special group operations */
-
-    /**
-     * Finds the first group with the given title. If there is no group with this
-     * title, a new group is created.
-     * @param title title of the group to look for
-     * @return id of the group with given title
-     * @throws RemoteException on content provider errors
-     */
-    fun findOrCreateGroup(title: String): Long {
-        provider!!.query(syncAdapterURI(Groups.CONTENT_URI), arrayOf(Groups._ID),
-                "${Groups.TITLE}=?", arrayOf(title), null)?.use { cursor ->
-            if (cursor.moveToNext())
-                return cursor.getLong(0)
-        }
-
-        val values = contentValuesOf(Groups.TITLE to title)
-        val uri = provider!!.insert(syncAdapterURI(Groups.CONTENT_URI), values) ?: throw RemoteException("Couldn't create contact group")
-        return ContentUris.parseId(uri)
-    }
 
     fun removeEmptyGroups() {
         // find groups without members
