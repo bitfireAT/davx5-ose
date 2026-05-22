@@ -37,6 +37,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.StringWriter
 import java.net.URI
 import java.time.LocalDate
 
@@ -54,6 +55,33 @@ class ContactWriterTest {
             addresses.add(LabeledProperty(address))
         }
         assertEquals(address, vCard.addresses.first())
+    }
+
+    @Test
+    fun testAddressCaretEncoding() {
+        val address = Address()
+        address.label = "My \"Label\"\nLine 2"
+        address.streetAddress = "Street \"Address\""
+        val contact = Contact()
+        contact.addresses += LabeledProperty(address)
+
+        /* label-param = "LABEL=" param-value
+         * param-values must not contain DQUOTE and should be encoded as defined in RFC 6868
+         *
+         * ADR-value = ADR-component-pobox ";" ADR-component-ext ";"
+         *             ADR-component-street ";" ADR-component-locality ";"
+         *             ADR-component-region ";" ADR-component-code ";"
+         *             ADR-component-country
+         * ADR-component-pobox    = list-component
+         *
+         * list-component = component *("," component)
+         * component = "\\" / "\," / "\;" / "\n" / WSP / NON-ASCII / %x21-2B / %x2D-3A / %x3C-5B / %x5D-7E
+         *
+         * So, ADR value components may contain DQUOTE (0x22) and don't have to be encoded as defined in RFC 6868 */
+
+        val writer = StringWriter()
+        ContactWriter(contact, VCardVersion.V4_0, testProductId).writeVCard(writer)
+        assertTrue(writer.toString().contains("ADR;LABEL=My ^'Label^'\\nLine 2:;;Street \"Address\";;;;"))
     }
 
 

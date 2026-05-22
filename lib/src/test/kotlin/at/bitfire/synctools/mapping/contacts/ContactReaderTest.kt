@@ -7,6 +7,7 @@
 package at.bitfire.synctools.mapping.contacts
 
 import at.bitfire.synctools.mapping.contacts.Contact.Downloader
+import at.bitfire.synctools.vcard.VCardParser
 import at.bitfire.synctools.vcard.property.CustomType
 import at.bitfire.synctools.vcard.property.XAbDate
 import at.bitfire.synctools.vcard.property.XAbLabel
@@ -50,11 +51,15 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.StringReader
 import java.net.URI
 import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 class ContactReaderTest {
 
@@ -119,6 +124,29 @@ class ContactReaderTest {
             birthday = b
         })
         assertEquals(b, c.birthDay)
+    }
+
+    @Test
+    fun testBirthday_vCard3_WithOffset() = runTest {
+        val vCard = "BEGIN:VCARD\r\n" +
+            "VERSION:3.0\n\n" +
+            "N:Doe;John;;;\n\n" +
+            "FN:John Doe\n\n" +
+            "BDAY:20010415T000000+0200\n\n" +
+            "END:VCARD\n\n"
+        val contacts = VCardParser().parse(StringReader(vCard)).map { ContactReader.fromVCard(it) }
+
+        assertEquals(1, contacts.size)
+        contacts.first().birthDay.let { birthday ->
+            assertNotNull(birthday)
+
+            val date = birthday?.date
+            assertNotNull(date)
+
+            assertEquals(
+                OffsetDateTime.of(2001, 4, 15, 0, 0, 0, 0, ZoneOffset.ofHours(2)), date
+            )
+        }
     }
 
 

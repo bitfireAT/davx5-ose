@@ -50,7 +50,7 @@ open class AndroidGroup(
 	}
 
     constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, contact: Contact, fileName: String?  = null, eTag: String? = null): this(addressBook) {
-		_contact = contact
+		cachedContact = contact
         this.fileName = fileName
         this.eTag = eTag
 	}
@@ -60,7 +60,7 @@ open class AndroidGroup(
      * Cached copy of the [Contact]. If this is null, [getContact] must generate the [Contact]
      * from the database and then set this property.
      */
-    protected var _contact: Contact? = null
+    private var cachedContact: Contact? = null
 
     /**
      * Fetches group data from the content provider.
@@ -70,7 +70,7 @@ open class AndroidGroup(
      * @throws RemoteException on contact provider errors
      */
      fun getContact(): Contact {
-        _contact?.let { return it }
+        cachedContact?.let { return it }
 
         val id = requireNotNull(id)
         val contact = Contact()
@@ -110,7 +110,7 @@ open class AndroidGroup(
             }
         }
 
-        _contact = contact
+        cachedContact = contact
         return contact
     }
 
@@ -157,7 +157,7 @@ open class AndroidGroup(
      * @throws RemoteException on contact provider errors
      */
     fun update(data: Contact): Uri {
-        _contact = data
+        cachedContact = data
         return update(contentValues())
     }
 
@@ -178,6 +178,6 @@ open class AndroidGroup(
     }
 
     override fun toString() =
-        "AndroidGroup(id=$id, fileName=$fileName, eTag=$eTag, _contact=$_contact)"
+        "AndroidGroup(id=$id, fileName=$fileName, eTag=$eTag, cachedContact=$cachedContact)"
 
 }

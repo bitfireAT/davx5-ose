@@ -9,6 +9,7 @@ package at.bitfire.synctools.storage.contacts
 import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
+import android.content.ContentValues
 import android.provider.ContactsContract
 import android.util.Base64
 import androidx.test.filters.MediumTest
@@ -16,13 +17,10 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.ContactReader
-import at.bitfire.synctools.mapping.contacts.ContactWriter
 import at.bitfire.synctools.mapping.contacts.LabeledProperty
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.vcard.VCardParser
 import at.bitfire.synctools.vcard.property.XAbDate
-import ezvcard.VCardVersion
-import ezvcard.property.Address
 import ezvcard.property.Birthday
 import ezvcard.property.Email
 import ezvcard.util.PartialDate
@@ -31,15 +29,12 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
 import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Test
+import java.io.FileNotFoundException
 import java.io.StringReader
-import java.io.StringWriter
 import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
 
 class AndroidContactTest {
 
@@ -136,29 +131,6 @@ class AndroidContactTest {
     }
 
     @Test
-    fun testBirthdayWithOffset() = runTest {
-        val vCard = "BEGIN:VCARD\r\n" +
-            "VERSION:3.0\n\n" +
-            "N:Doe;John;;;\n\n" +
-            "FN:John Doe\n\n" +
-            "BDAY:20010415T000000+0200\n\n" +
-            "END:VCARD\n\n"
-        val contacts = parseVCards(vCard)
-
-        assertEquals(1, contacts.size)
-        contacts.first().birthDay.let { birthday ->
-            assertNotNull(birthday)
-
-            val date = birthday?.date
-            assertNotNull(date)
-
-            assertEquals(
-                OffsetDateTime.of(2001, 4, 15, 0, 0, 0, 0, ZoneOffset.ofHours(2)), date
-            )
-        }
-    }
-
-    @Test
     @MediumTest
     fun testLargeTransactionManyRows() {
         val vcard = Contact()
@@ -191,31 +163,13 @@ class AndroidContactTest {
         contact.add()
     }
 
-    @Test
-    fun testAddressCaretEncoding() {
-        val address = Address()
-        address.label = "My \"Label\"\nLine 2"
-        address.streetAddress = "Street \"Address\""
-        val contact = Contact()
-        contact.addresses += LabeledProperty(address)
-
-        /* label-param = "LABEL=" param-value
-         * param-values must not contain DQUOTE and should be encoded as defined in RFC 6868
-         *
-         * ADR-value = ADR-component-pobox ";" ADR-component-ext ";"
-         *             ADR-component-street ";" ADR-component-locality ";"
-         *             ADR-component-region ";" ADR-component-code ";"
-         *             ADR-component-country
-         * ADR-component-pobox    = list-component
-         *
-         * list-component = component *("," component)
-         * component = "\\" / "\," / "\;" / "\n" / WSP / NON-ASCII / %x21-2B / %x2D-3A / %x3C-5B / %x5D-7E
-         *
-         * So, ADR value components may contain DQUOTE (0x22) and don't have to be encoded as defined in RFC 6868 */
-
-        val writer = StringWriter()
-        ContactWriter(contact, VCardVersion.V4_0, testProductId).writeVCard(writer)
-        assertTrue(writer.toString().contains("ADR;LABEL=My ^'Label^'\\nLine 2:;;Street \"Address\";;;;"))
+    @Test(expected = FileNotFoundException::class)
+    fun testGetContactNotFound() {
+        val values = ContentValues()
+        values.put(ContactsContract.RawContacts._ID, Long.MAX_VALUE)
+        values.put(AndroidContact.COLUMN_FILENAME, "nonexistent.vcf")
+        values.put(AndroidContact.COLUMN_ETAG, "etag")
+        AndroidContact(addressBook, values).getContact()
     }
 
 

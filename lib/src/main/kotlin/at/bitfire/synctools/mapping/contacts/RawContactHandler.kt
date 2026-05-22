@@ -8,22 +8,7 @@ package at.bitfire.synctools.mapping.contacts
 
 import android.content.ContentProviderClient
 import android.content.ContentValues
-import android.net.Uri
 import android.provider.ContactsContract.RawContacts
-import at.bitfire.synctools.mapping.contacts.builder.DataRowBuilder
-import at.bitfire.synctools.mapping.contacts.builder.EmailBuilder
-import at.bitfire.synctools.mapping.contacts.builder.EventBuilder
-import at.bitfire.synctools.mapping.contacts.builder.ImBuilder
-import at.bitfire.synctools.mapping.contacts.builder.NicknameBuilder
-import at.bitfire.synctools.mapping.contacts.builder.NoteBuilder
-import at.bitfire.synctools.mapping.contacts.builder.OrganizationBuilder
-import at.bitfire.synctools.mapping.contacts.builder.PhoneBuilder
-import at.bitfire.synctools.mapping.contacts.builder.PhotoBuilder
-import at.bitfire.synctools.mapping.contacts.builder.RelationBuilder
-import at.bitfire.synctools.mapping.contacts.builder.SipAddressBuilder
-import at.bitfire.synctools.mapping.contacts.builder.StructuredNameBuilder
-import at.bitfire.synctools.mapping.contacts.builder.StructuredPostalBuilder
-import at.bitfire.synctools.mapping.contacts.builder.WebsiteBuilder
 import at.bitfire.synctools.mapping.contacts.handler.DataRowHandler
 import at.bitfire.synctools.mapping.contacts.handler.EmailHandler
 import at.bitfire.synctools.mapping.contacts.handler.EventHandler
@@ -38,12 +23,12 @@ import at.bitfire.synctools.mapping.contacts.handler.SipAddressHandler
 import at.bitfire.synctools.mapping.contacts.handler.StructuredNameHandler
 import at.bitfire.synctools.mapping.contacts.handler.StructuredPostalHandler
 import at.bitfire.synctools.mapping.contacts.handler.WebsiteHandler
-import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
+import at.bitfire.synctools.storage.contacts.AndroidContact
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class ContactProcessor(
-    val provider: ContentProviderClient?
+class RawContactHandler(
+    provider: ContentProviderClient
 ) {
 
     private val dataRowHandlers = mutableMapOf<String, MutableList<DataRowHandler>>()
@@ -63,28 +48,10 @@ class ContactProcessor(
         WebsiteHandler
     )
 
-    private val dataRowBuilderFactories = mutableListOf<DataRowBuilder.Factory<*>>(
-        EmailBuilder.Factory,
-        EventBuilder.Factory,
-        ImBuilder.Factory,
-        NicknameBuilder.Factory,
-        NoteBuilder.Factory,
-        OrganizationBuilder.Factory,
-        PhoneBuilder.Factory,
-        PhotoBuilder.Factory,
-        RelationBuilder.Factory,
-        SipAddressBuilder.Factory,
-        StructuredNameBuilder.Factory,
-        StructuredPostalBuilder.Factory,
-        WebsiteBuilder.Factory
-    )
-
-
     init {
         for (handler in defaultDataRowHandlers)
             registerHandler(handler)
     }
-
 
     fun registerHandler(handler: DataRowHandler) {
         val mimeType = handler.forMimeType()
@@ -97,13 +64,8 @@ class ContactProcessor(
         handlers += handler
     }
 
-    fun registerBuilderFactory(factory: DataRowBuilder.Factory<*>) {
-        dataRowBuilderFactories += factory
-    }
-
-
     fun handleRawContact(values: ContentValues, contact: Contact) {
-        contact.uid = values.getAsString(at.bitfire.synctools.storage.contacts.AndroidContact.COLUMN_UID)
+        contact.uid = values.getAsString(AndroidContact.COLUMN_UID)
     }
 
     fun handleDataRow(values: ContentValues, contact: Contact) {
@@ -117,22 +79,6 @@ class ContactProcessor(
             val logger = Logger.getLogger(javaClass.name)
             logger.log(Level.WARNING, "No registered handler for $mimeType", values)
         }
-    }
-
-
-    fun insertDataRows(dataRowUri: Uri, rawContactId: Long?, contact: Contact, batch: ContactsBatchOperation, readOnly: Boolean) {
-        for (factory in dataRowBuilderFactories) {
-            val builder = factory.newInstance(dataRowUri, rawContactId, contact, readOnly)
-            batch += builder.build()
-        }
-    }
-
-
-    fun builderMimeTypes(): Set<String> {
-        val mimeTypes = mutableSetOf<String>()
-        for (factory in dataRowBuilderFactories)
-            mimeTypes += factory.mimeType()
-        return mimeTypes
     }
 
 }

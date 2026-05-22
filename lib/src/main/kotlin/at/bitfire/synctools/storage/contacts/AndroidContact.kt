@@ -17,14 +17,17 @@ import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
 import androidx.annotation.CallSuper
 import at.bitfire.synctools.mapping.contacts.Contact
-import at.bitfire.synctools.mapping.contacts.ContactProcessor
+import at.bitfire.synctools.mapping.contacts.RawContactBuilder
+import at.bitfire.synctools.mapping.contacts.RawContactHandler
 import at.bitfire.synctools.mapping.contacts.builder.PhotoBuilder
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import java.io.FileNotFoundException
 
 open class AndroidContact(
-    open val addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>
+    open val addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>,
+    protected open val rawContactBuilder: RawContactBuilder = RawContactBuilder(),
+    protected open val rawContactHandler: RawContactHandler = RawContactHandler(addressBook.provider!!)
 ) {
 
     companion object {
@@ -42,8 +45,6 @@ open class AndroidContact(
         protected set
 
     var eTag: String? = null
-
-    val processor = ContactProcessor(addressBook.provider)
 
 
     /**
@@ -69,7 +70,7 @@ open class AndroidContact(
      * Cached copy of the [Contact]. If this is null, [getContact] must generate the [Contact]
      * from the database and then set this property.
      */
-    protected var _contact: Contact? = null
+    private var cachedContact: Contact? = null
 
     /**
      * Fetches contact data from the contacts provider.
@@ -79,7 +80,8 @@ open class AndroidContact(
      * @throws RemoteException on contact provider errors
      */
     fun getContact(): Contact {
-        _contact?.let { return it }
+        // use cached version if available
+        cachedContact?.let { return it }
 
         val id = requireNotNull(id)
         var iter: EntityIterator? = null
@@ -90,16 +92,16 @@ open class AndroidContact(
 
             if (iter.hasNext()) {
                 val contact = Contact()
-                _contact = contact
 
                 // process raw contact itself
                 val e = iter.next()
-                processor.handleRawContact(e.entityValues, contact)
+                rawContactHandler.handleRawContact(e.entityValues, contact)
 
                 // process data rows of raw contact
                 for (subValue in e.subValues)
-                    processor.handleDataRow(subValue.values, contact)
+                    rawContactHandler.handleDataRow(subValue.values, contact)
 
+                cachedContact = contact
                 return contact
 
             } else
@@ -111,8 +113,8 @@ open class AndroidContact(
         }
     }
 
-    fun setContact(newContact: Contact) {
-        _contact = newContact
+    fun setContact(newContact: Contact?) {
+        cachedContact = newContact
     }
 
 
@@ -152,7 +154,7 @@ open class AndroidContact(
         // - We don't delete group memberships because they're managed separately.
         // - We'll only delete rows we have inserted so that unknown rows like
         //   vnd.android.cursor.item/important_people (= contact is in Samsung "edge panel") remain untouched.
-        val typesToRemove = processor.builderMimeTypes()
+        val typesToRemove = rawContactBuilder.builderMimeTypes()
         val sqlTypesToRemove = typesToRemove.joinToString(",") { mimeType ->
             DatabaseUtils.sqlEscapeString(mimeType)
         }
@@ -206,7 +208,7 @@ open class AndroidContact(
      */
     protected fun insertDataRows(batch: ContactsBatchOperation) {
         val contact = getContact()
-        processor.insertDataRows(dataSyncURI(), id, contact, batch, addressBook.readOnly)
+        rawContactBuilder.insertDataRows(dataSyncURI(), id, contact, batch, addressBook.readOnly)
     }
 
 
@@ -220,6 +222,6 @@ open class AndroidContact(
     fun dataSyncURI() = addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI)
 
     override fun toString() =
-        "AndroidContact(id=$id, fileName=$fileName, eTag=$eTag, _contact=$_contact)"
+        "AndroidContact(id=$id, fileName=$fileName, eTag=$eTag, cachedContact=$cachedContact)"
 
 }
