@@ -16,7 +16,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.ContactsBatchOperation
-import at.bitfire.synctools.storage.contacts.CachedGroupMembership
+import at.bitfire.synctools.storage.contacts.CachedGroupMembershipContract
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -99,8 +99,8 @@ class LocalGroupTest {
             }
             // check cached group membership
             ab.provider!!.query(
-                ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI), arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
-                "${CachedGroupMembership.MIMETYPE}=?", arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
+                ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI), arrayOf(CachedGroupMembershipContract.GROUP_ID, CachedGroupMembershipContract.RAW_CONTACT_ID),
+                "${CachedGroupMembershipContract.MIMETYPE}=?", arrayOf(CachedGroupMembershipContract.CONTENT_ITEM_TYPE),
                 null
             )!!.use { cursor ->
                 assertTrue(cursor.moveToNext())
@@ -144,9 +144,9 @@ class LocalGroupTest {
             // check cached group membership
             ab.provider!!.query(
                 ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI),
-                arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
-                "${CachedGroupMembership.MIMETYPE}=?",
-                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
+                arrayOf(CachedGroupMembershipContract.GROUP_ID, CachedGroupMembershipContract.RAW_CONTACT_ID),
+                "${CachedGroupMembershipContract.MIMETYPE}=?",
+                arrayOf(CachedGroupMembershipContract.CONTENT_ITEM_TYPE),
                 null
             )!!.use { cursor ->
                 assertFalse(cursor.moveToNext())
@@ -177,9 +177,9 @@ class LocalGroupTest {
             // check cached group membership
             ab.provider!!.query(
                 ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI),
-                arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
-                "${CachedGroupMembership.MIMETYPE}=?",
-                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
+                arrayOf(CachedGroupMembershipContract.GROUP_ID, CachedGroupMembershipContract.RAW_CONTACT_ID),
+                "${CachedGroupMembershipContract.MIMETYPE}=?",
+                arrayOf(CachedGroupMembershipContract.CONTENT_ITEM_TYPE),
                 null
             )!!.use { cursor ->
                 assertTrue(cursor.moveToNext())
@@ -202,9 +202,9 @@ class LocalGroupTest {
             // insert cached group membership, but no group membership
             ab.provider!!.insert(
                 ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI), ContentValues().apply {
-                    put(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                    put(CachedGroupMembership.RAW_CONTACT_ID, contact1.id)
-                    put(CachedGroupMembership.GROUP_ID, group.id)
+                    put(CachedGroupMembershipContract.MIMETYPE, CachedGroupMembershipContract.CONTENT_ITEM_TYPE)
+                    put(CachedGroupMembershipContract.RAW_CONTACT_ID, contact1.id)
+                    put(CachedGroupMembershipContract.GROUP_ID, group.id)
                 }
             )
 
@@ -212,8 +212,8 @@ class LocalGroupTest {
 
             // cached group membership should be gone
             ab.provider!!.query(
-                ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI), arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
-                "${CachedGroupMembership.MIMETYPE}=?", arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
+                ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI), arrayOf(CachedGroupMembershipContract.GROUP_ID, CachedGroupMembershipContract.RAW_CONTACT_ID),
+                "${CachedGroupMembershipContract.MIMETYPE}=?", arrayOf(CachedGroupMembershipContract.CONTENT_ITEM_TYPE),
                 null
             )!!.use { cursor ->
                 assertFalse(cursor.moveToNext())
