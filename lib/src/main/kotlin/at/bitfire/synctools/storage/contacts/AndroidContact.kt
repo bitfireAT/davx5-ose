@@ -13,6 +13,7 @@ import android.database.DatabaseUtils
 import android.net.Uri
 import android.os.RemoteException
 import android.provider.ContactsContract
+import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
 import androidx.annotation.CallSuper
@@ -25,9 +26,7 @@ import at.bitfire.synctools.storage.LocalStorageException
 import java.io.FileNotFoundException
 
 open class AndroidContact(
-    open val addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>,
-    protected open val rawContactBuilder: RawContactBuilder = RawContactBuilder(),
-    protected open val rawContactHandler: RawContactHandler = RawContactHandler(addressBook.provider!!)
+    open val addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>
 ) {
 
     companion object {
@@ -45,6 +44,29 @@ open class AndroidContact(
         protected set
 
     var eTag: String? = null
+
+    /**
+     * IDs of groups this contact's cached group membership rows belong to.
+     * Only filled after [getContact] has been called.
+     *
+     * Used to detect which groups have become dirty when a contact's memberships change.
+     * See [CachedGroupMembershipContract] for details.
+     */
+    val cachedGroupMemberships = HashSet<Long>()
+
+    /**
+     * IDs of groups this contact is currently a member of.
+     * Only filled after [getContact] has been called.
+     */
+    val groupMemberships = HashSet<Long>()
+
+    private val rawContactHandler: RawContactHandler by lazy {
+        RawContactHandler(this)
+    }
+
+    private val rawContactBuilder: RawContactBuilder by lazy {
+        RawContactBuilder(addressBook)
+    }
 
 
     /**
@@ -209,6 +231,60 @@ open class AndroidContact(
     protected fun insertDataRows(batch: ContactsBatchOperation) {
         val contact = getContact()
         rawContactBuilder.insertDataRows(dataSyncURI(), id, contact, batch, addressBook.readOnly)
+    }
+
+
+    // group membership management
+
+    fun addToGroup(batch: ContactsBatchOperation, groupID: Long) {
+        batch += BatchOperation.CpoBuilder
+            .newInsert(dataSyncURI())
+            .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
+            .withValue(GroupMembership.RAW_CONTACT_ID, id!!)
+            .withValue(GroupMembership.GROUP_ROW_ID, groupID)
+        groupMemberships += groupID
+
+        batch += BatchOperation.CpoBuilder
+            .newInsert(dataSyncURI())
+            .withValue(CachedGroupMembershipContract.MIMETYPE, CachedGroupMembershipContract.CONTENT_ITEM_TYPE)
+            .withValue(CachedGroupMembershipContract.RAW_CONTACT_ID, id)
+            .withValue(CachedGroupMembershipContract.GROUP_ID, groupID)
+        cachedGroupMemberships += groupID
+    }
+
+    fun removeGroupMemberships(batch: BatchOperation) {
+        batch += BatchOperation.CpoBuilder
+            .newDelete(dataSyncURI())
+            .withSelection(
+                "${Data.RAW_CONTACT_ID}=? AND ${Data.MIMETYPE} IN (?,?)",
+                arrayOf(id!!.toString(), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembershipContract.CONTENT_ITEM_TYPE)
+            )
+        groupMemberships.clear()
+        cachedGroupMemberships.clear()
+    }
+
+    /**
+     * Returns the IDs of all groups the contact was member of (cached memberships).
+     * Cached memberships are kept in sync with memberships by DAVx5 and are used to determine
+     * whether a membership has been deleted/added when a raw contact is dirty.
+     * @return set of [GroupMembership.GROUP_ROW_ID] (may be empty)
+     * @throws FileNotFoundException if the current contact can't be found
+     * @throws RemoteException on contacts provider errors
+     */
+    fun getCachedGroupMemberships(): Set<Long> {
+        getContact()
+        return cachedGroupMemberships
+    }
+
+    /**
+     * Returns the IDs of all groups the contact is member of.
+     * @return set of [GroupMembership.GROUP_ROW_ID]s (may be empty)
+     * @throws FileNotFoundException if the current contact can't be found
+     * @throws RemoteException on contacts provider errors
+     */
+    fun getGroupMemberships(): Set<Long> {
+        getContact()
+        return groupMemberships
     }
 
 

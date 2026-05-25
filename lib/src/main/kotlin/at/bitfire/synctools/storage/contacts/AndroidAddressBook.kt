@@ -8,12 +8,16 @@ package at.bitfire.synctools.storage.contacts
 
 import android.accounts.Account
 import android.content.ContentProviderClient
+import android.content.ContentUris
 import android.content.ContentValues
 import android.net.Uri
+import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
+import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.toContentValues
+import at.bitfire.synctools.vcard.GroupMethod
 import java.io.FileNotFoundException
 import java.util.LinkedList
 
@@ -25,6 +29,7 @@ open class AndroidAddressBook<T1: AndroidContact, T2: AndroidGroup>(
 ) {
 
     open var readOnly: Boolean = false
+    open val groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS
 
     var settings: ContentValues
         /**
@@ -117,6 +122,21 @@ open class AndroidAddressBook<T1: AndroidContact, T2: AndroidGroup>(
     @Throws(FileNotFoundException::class)
     fun findGroupById(id: Long) =
         queryGroups("${Groups._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
+
+    fun findOrCreateGroup(title: String): Long {
+        provider!!.query(
+            syncAdapterURI(Groups.CONTENT_URI), arrayOf(Groups._ID),
+            "${Groups.TITLE}=?", arrayOf(title), null
+        )?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.getLong(0)
+        }
+
+        val values = contentValuesOf(Groups.TITLE to title)
+        val uri = provider!!.insert(syncAdapterURI(Groups.CONTENT_URI), values)
+            ?: throw RemoteException("Couldn't create contact group")
+        return ContentUris.parseId(uri)
+    }
 
 
     // helpers

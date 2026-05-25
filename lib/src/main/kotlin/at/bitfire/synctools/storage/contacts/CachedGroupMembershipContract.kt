@@ -7,6 +7,7 @@
 package at.bitfire.synctools.storage.contacts
 
 import android.provider.ContactsContract.RawContacts.Data
+import at.bitfire.synctools.storage.contacts.CachedGroupMembershipContract.MIMETYPE
 
 /**
  * Represents a "cached group membership" row. Cached group memberships exist only
@@ -22,12 +23,18 @@ import android.provider.ContactsContract.RawContacts.Data
  *
  * Cached group memberships must not be used for anything else that detecting dirty groups.
  */
-object CachedGroupMembership {
+object CachedGroupMembershipContract {
 
+    /** Column name for the MIME type of the data row. Type: [String] */
+    const val MIMETYPE = Data.MIMETYPE
+
+    /** MIME type of cached group membership data rows. Stored in [MIMETYPE]. */
     const val CONTENT_ITEM_TYPE = "x.davdroid/cached-group-membership"
 
-    const val MIMETYPE = Data.MIMETYPE
+    /** Column name for the ID of the raw contact this cached membership belongs to. Type: [Long] */
     const val RAW_CONTACT_ID = Data.RAW_CONTACT_ID
+
+    /** Column name for the ID of the group this cached membership refers to. Type: [Long] */
     const val GROUP_ID = Data.DATA1
 
 }
