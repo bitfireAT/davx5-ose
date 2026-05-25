@@ -22,7 +22,7 @@ import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.AndroidGroup
 import at.bitfire.synctools.storage.contacts.AndroidGroupFactory
-import at.bitfire.synctools.storage.contacts.CachedGroupMembership
+import at.bitfire.synctools.storage.contacts.CachedGroupMembershipContract
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import com.google.common.base.MoreObjects
 import java.util.LinkedList
@@ -163,17 +163,17 @@ class LocalGroup: AndroidGroup, LocalAddress {
         batch += BatchOperation.CpoBuilder
             .newDelete(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
             .withSelection(
-                CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?",
-                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, id.toString())
+                CachedGroupMembershipContract.MIMETYPE + "=? AND " + CachedGroupMembershipContract.GROUP_ID + "=?",
+                arrayOf(CachedGroupMembershipContract.CONTENT_ITEM_TYPE, id.toString())
             )
 
         // insert updated cached group memberships
         for (member in getMembers())
             batch += BatchOperation.CpoBuilder
                 .newInsert(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
-                .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
-                .withValue(CachedGroupMembership.GROUP_ID, id)
+                .withValue(CachedGroupMembershipContract.MIMETYPE, CachedGroupMembershipContract.CONTENT_ITEM_TYPE)
+                .withValue(CachedGroupMembershipContract.RAW_CONTACT_ID, member)
+                .withValue(CachedGroupMembershipContract.GROUP_ID, id)
 
         batch.commit()
     }
