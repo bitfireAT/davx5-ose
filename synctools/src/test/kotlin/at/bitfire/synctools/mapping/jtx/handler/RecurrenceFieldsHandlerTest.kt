@@ -81,6 +81,26 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
+    fun rdateWithDtstartTimezoneUTC_shouldSerializeSameAsZ() {
+        // 1779451200000 ms = 2026-05-22T12:00:00Z
+        val from = Entity(contentValuesOf(
+            JtxContract.JtxICalObject.DTSTART_TIMEZONE to "UTC",
+            JtxContract.JtxICalObject.RRULE to "FREQ=DAILY;COUNT=5",
+            JtxContract.JtxICalObject.RDATE to "1779451200000"
+        ))
+        val output = VToDo()
+
+        handler.process(from = from, main = from, to = output)
+
+        val rdate = output.getProperty<RDate<*>>(Property.RDATE).getOrNull()
+        assertNotNull(rdate)
+        assertEquals(1, rdate?.dates?.size)
+        // Should serialize with trailing Z (no TZID parameter), same as ZoneOffset.UTC.id
+        assertEquals("20260522T120000Z", rdate?.value)
+        assertNull(rdate?.getParameter<TzId>(Parameter.TZID)?.getOrNull())
+    }
+
+    @Test
     fun `RDATE with all-day timestamps`() {
         // 1779408000000 ms = 2026-05-22T00:00:00Z → all-day LocalDate 2026-05-22
         val from = Entity(contentValuesOf(
@@ -182,6 +202,26 @@ class RecurrenceFieldsHandlerTest {
         assertNotNull(exdate)
         assertEquals(1, exdate?.dates?.size)
         assertEquals("20260522T120000Z", exdate?.value)
+    }
+
+    @Test
+    fun exdateWithDtstartTimezoneUTC_shouldSerializeSameAsZ() {
+        // 1779451200000 ms = 2026-05-22T12:00:00Z
+        val from = Entity(contentValuesOf(
+            JtxContract.JtxICalObject.DTSTART_TIMEZONE to "UTC",
+            JtxContract.JtxICalObject.RRULE to "FREQ=DAILY;COUNT=5",
+            JtxContract.JtxICalObject.EXDATE to "1779451200000"
+        ))
+        val output = VToDo()
+
+        handler.process(from = from, main = from, to = output)
+
+        val exdate = output.getProperty<ExDate<*>>(Property.EXDATE).getOrNull()
+        assertNotNull(exdate)
+        assertEquals(1, exdate?.dates?.size)
+        // Should serialize with trailing Z (no TZID parameter), same as ZoneOffset.UTC.id
+        assertEquals("20260522T120000Z", exdate?.value)
+        assertNull(exdate?.getParameter<TzId>(Parameter.TZID)?.getOrNull())
     }
 
     @Test
@@ -321,6 +361,23 @@ class RecurrenceFieldsHandlerTest {
         val exception = Entity(contentValuesOf(
             JtxContract.JtxICalObject.RECURID to "20260516T120000Z",
             JtxContract.JtxICalObject.RECURID_TIMEZONE to ZoneOffset.UTC.id
+        ))
+        val output = VToDo()
+
+        handler.process(from = exception, main = main, to = output)
+
+        val recurId = output.getProperty<RecurrenceId<*>>(Property.RECURRENCE_ID).getOrNull()
+        assertNotNull(recurId)
+        assertEquals("20260516T120000Z", recurId?.value)
+        assertNull(recurId?.getParameter<TzId>(Parameter.TZID)?.getOrNull())
+    }
+
+    @Test
+    fun exceptionWithRecuridTimezoneUTC_hasNoTZIDParameter() {
+        val main = Entity(contentValuesOf(JtxContract.JtxICalObject.RRULE to "FREQ=DAILY;COUNT=5"))
+        val exception = Entity(contentValuesOf(
+            JtxContract.JtxICalObject.RECURID to "20260516T120000Z",
+            JtxContract.JtxICalObject.RECURID_TIMEZONE to "UTC"
         ))
         val output = VToDo()
 

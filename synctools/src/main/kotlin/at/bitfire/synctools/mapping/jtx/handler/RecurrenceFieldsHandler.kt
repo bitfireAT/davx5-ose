@@ -85,7 +85,7 @@ class RecurrenceFieldsHandler : JtxFieldHandler {
         val recuridTimezone = values.getAsString(JtxContract.JtxICalObject.RECURID_TIMEZONE)
 
         try {
-            to += if (recuridTimezone == TZ_ALLDAY || recuridTimezone.isNullOrEmpty() || recuridTimezone == ZoneOffset.UTC.id) {
+            to += if (recuridTimezone == TZ_ALLDAY || recuridTimezone.isNullOrEmpty() || isUtcTimezone(recuridTimezone)) {
                 RecurrenceId<Temporal>(recurid)
             } else {
                 RecurrenceId<Temporal>(ParameterList(listOf(TzId(recuridTimezone))), recurid)
@@ -103,11 +103,36 @@ class RecurrenceFieldsHandler : JtxFieldHandler {
         val dateList = timestampsToDateList(timestamps, dtstartTimezone)
         val property = factory(dateList)
         when (val first = dateList.dates.firstOrNull()) {
-            is ZonedDateTime -> property.add<T>(TzId(first.zone.id))
+            is ZonedDateTime -> {
+                // Only add TZID if the zone is not UTC (zero offset)
+                val normalizedZone = first.zone.normalized()
+                val offset = normalizedZone.rules.getOffset(Instant.now())
+                if (offset.totalSeconds != 0) {
+                    property.add<T>(TzId(first.zone.id))
+                }
+            }
             is LocalDate -> property.add<T>(Value.DATE)
         }
         return property
     }
+
+    /**
+     * Checks if a timezone ID represents UTC (zero offset).
+     * Handles various UTC representations like "UTC", "Z", "Etc/UTC", "GMT", "+00:00", etc.
+     */
+    private fun isUtcTimezone(tzId: String?): Boolean =
+        when (tzId) {
+            null -> false
+            TZ_ALLDAY -> false
+            ZoneOffset.UTC.id -> true
+            else -> try {
+                val zone = ZoneId.of(tzId)
+                val normalized = zone.normalized()
+                normalized.rules.getOffset(Instant.now()).totalSeconds == 0
+            } catch (_: Exception) {
+                false
+            }
+        }
 
     private fun timestampsToDateList(timestamps: List<Long>, dtstartTimezone: String?): DateList<*> =
         when {
@@ -115,7 +140,7 @@ class RecurrenceFieldsHandler : JtxFieldHandler {
                 DateList(timestamps.map {
                     LocalDate.ofInstant(Instant.ofEpochMilli(it), ZoneOffset.UTC)
                 })
-            dtstartTimezone == ZoneOffset.UTC.id ->
+            isUtcTimezone(dtstartTimezone) ->
                 DateList(timestamps.map {
                     Instant.ofEpochMilli(it)
                 })
