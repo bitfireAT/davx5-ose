@@ -6,10 +6,11 @@ package at.bitfire.synctools.mapping.jtx
 
 import android.content.Entity
 import at.bitfire.synctools.icalendar.AssociatedComponents
-import at.bitfire.synctools.mapping.jtx.handler.CommentsHandler
 import at.bitfire.synctools.mapping.jtx.handler.CategoriesHandler
+import at.bitfire.synctools.mapping.jtx.handler.CommentsHandler
 import at.bitfire.synctools.mapping.jtx.handler.DescriptionHandler
 import at.bitfire.synctools.mapping.jtx.handler.JtxFieldHandler
+import at.bitfire.synctools.mapping.jtx.handler.RecurrenceFieldsHandler
 import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
@@ -17,6 +18,7 @@ import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.ProdId
+import net.fortuna.ical4j.model.property.RDate
 import net.fortuna.ical4j.model.property.RRule
 import java.util.UUID
 
@@ -31,7 +33,8 @@ class JtxObjectHandler(
     private val fieldHandlers: Array<JtxFieldHandler> = arrayOf(
         CategoriesHandler(),
         CommentsHandler(),
-        DescriptionHandler()
+        DescriptionHandler(),
+        RecurrenceFieldsHandler(),
     )
 
     /**
@@ -55,8 +58,8 @@ class JtxObjectHandler(
             main = jtxObjectAndExceptions.main
         )
 
-        val rRules = main.getProperties<RRule<*>>(Property.RRULE)
-        val exceptions: List<CalendarComponent> = if (rRules.isNotEmpty()) {
+        val isRecurring = main.containsProperty<RRule<*>>(Property.RRULE) || main.containsProperty<RDate<*>>(Property.RDATE)
+        val exceptions: List<CalendarComponent> = if (isRecurring) {
             // add exceptions to recurring main jtx object
             jtxObjectAndExceptions.exceptions.map { exception ->
                 mapJtxObject(
@@ -110,6 +113,10 @@ class JtxObjectHandler(
     private fun Entity.getComponent(): JtxContract.JtxICalObject.Component {
         val componentValue = entityValues.getAsString(JtxContract.JtxICalObject.COMPONENT)
         return JtxContract.JtxICalObject.Component.valueOf(componentValue)
+    }
+
+    private fun <T: Property> CalendarComponent.containsProperty(name: String): Boolean {
+        return getProperties<T>(name).isNotEmpty()
     }
 
     /**

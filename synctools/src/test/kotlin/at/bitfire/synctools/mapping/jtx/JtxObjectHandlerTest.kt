@@ -18,6 +18,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.time.ZoneOffset
 
 @RunWith(RobolectricTestRunner::class)
 class JtxObjectHandlerTest {
@@ -94,5 +95,71 @@ class JtxObjectHandlerTest {
 
         assertTrue(result.generatedUid)
         assertNotNull(result.uid)
+    }
+
+    @Test
+    fun `exceptions are mapped for recurring task with RRULE`() {
+        val exception = Entity(contentValuesOf(
+            JtxContract.JtxICalObject.COMPONENT to "VTODO",
+            JtxContract.JtxICalObject.RECURID to "20260516T120000Z",
+            JtxContract.JtxICalObject.RECURID_TIMEZONE to ZoneOffset.UTC.id
+        ))
+        val jtxObjectAndExceptions = JtxObjectAndExceptions(
+            main = Entity(contentValuesOf(
+                JtxContract.JtxICalObject.COMPONENT to "VTODO",
+                JtxContract.JtxICalObject.UID to "uid",
+                JtxContract.JtxICalObject.RRULE to "FREQ=DAILY;COUNT=5"
+            )),
+            exceptions = listOf(exception)
+        )
+
+        val result = handler.mapToCalendarComponents(jtxObjectAndExceptions)
+
+        assertEquals(1, result.associatedComponents.exceptions.size)
+    }
+
+    @Test
+    fun `exceptions are mapped for recurring task with RDATE only`() {
+        // Regression test: exceptions must be included even when recurrence is expressed
+        // via RDATE alone (no RRULE). Previously only RRULE was checked.
+        val exception = Entity(contentValuesOf(
+            JtxContract.JtxICalObject.COMPONENT to "VTODO",
+            JtxContract.JtxICalObject.RECURID to "20260516T120000Z",
+            JtxContract.JtxICalObject.RECURID_TIMEZONE to ZoneOffset.UTC.id
+        ))
+        val jtxObjectAndExceptions = JtxObjectAndExceptions(
+            main = Entity(contentValuesOf(
+                JtxContract.JtxICalObject.COMPONENT to "VTODO",
+                JtxContract.JtxICalObject.UID to "uid",
+                JtxContract.JtxICalObject.DTSTART_TIMEZONE to ZoneOffset.UTC.id,
+                JtxContract.JtxICalObject.RDATE to "1779451200000"   // 2026-05-22T12:00:00Z
+            )),
+            exceptions = listOf(exception)
+        )
+
+        val result = handler.mapToCalendarComponents(jtxObjectAndExceptions)
+
+        assertEquals(1, result.associatedComponents.exceptions.size)
+    }
+
+    @Test
+    fun `exceptions are dropped for non-recurring task`() {
+        val exception = Entity(contentValuesOf(
+            JtxContract.JtxICalObject.COMPONENT to "VTODO",
+            JtxContract.JtxICalObject.RECURID to "20260516T120000Z",
+            JtxContract.JtxICalObject.RECURID_TIMEZONE to ZoneOffset.UTC.id
+        ))
+        val jtxObjectAndExceptions = JtxObjectAndExceptions(
+            main = Entity(contentValuesOf(
+                JtxContract.JtxICalObject.COMPONENT to "VTODO",
+                JtxContract.JtxICalObject.UID to "uid"
+                // no RRULE, no RDATE
+            )),
+            exceptions = listOf(exception)
+        )
+
+        val result = handler.mapToCalendarComponents(jtxObjectAndExceptions)
+
+        assertEquals(0, result.associatedComponents.exceptions.size)
     }
 }
