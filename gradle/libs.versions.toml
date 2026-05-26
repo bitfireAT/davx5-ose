@@ -24,7 +24,6 @@ bitfire-dav4jvm = "f6162bdf13"
 compose-accompanist = "0.37.3"
 compose-bom = "2026.05.01"
 conscrypt = "2.5.3"
-dokka = "2.2.0"
 dnsjava = "3.6.5"
 ezvcard = "0.12.2"
 ical4j = "4.2.5"
@@ -132,7 +131,6 @@ unifiedpush-fcm = { module = "org.unifiedpush.android:embedded-fcm-distributor",
 android-application = { id = "com.android.application", version.ref = "android-agp" }
 android-library = { id = "com.android.library", version.ref = "android-agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
