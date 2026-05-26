@@ -10,6 +10,8 @@ import android.content.ContentValues
 import android.content.Entity
 import android.provider.CalendarContract.Events
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
+import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
+import at.techbee.jtx.JtxContract
 import org.junit.Assert.assertEquals
 
 fun assertContentValuesEqual(expected: ContentValues, actual: ContentValues, onlyFieldsInExpected: Boolean = false, message: String? = null) {
@@ -53,6 +55,19 @@ fun assertEventAndExceptionsEqual(expected: EventAndExceptions, actual: EventAnd
     }
 }
 
+fun assertJtxObjectAndExceptionsEqual(expected: JtxObjectAndExceptions, actual: JtxObjectAndExceptions, onlyFieldsInExpected: Boolean = false) {
+    assertEntitiesEqual(expected.main, actual.main, onlyFieldsInExpected)
+
+    assertEquals(expected.exceptions.size, actual.exceptions.size)
+    for (expectedException in expected.exceptions) {
+        val expectedRecurId = expectedException.entityValues.getAsString(JtxContract.JtxICalObject.RECURID)
+        val actualException = actual.exceptions.first {
+            it.entityValues.getAsString(JtxContract.JtxICalObject.RECURID) == expectedRecurId
+        }
+        assertEntitiesEqual(expectedException, actualException, onlyFieldsInExpected)
+    }
+}
+
 fun Entity.withIntField(name: String, value: Long?) =
     Entity(ContentValues(this.entityValues)).also { newEntity ->
         newEntity.entityValues.put(name, value)
@@ -68,4 +83,10 @@ fun EventAndExceptions.withId(mainEventId: Long) =
         exceptions = exceptions.map { exception ->
             exception.withIntField(Events.ORIGINAL_ID, mainEventId)
         }
+    )
+
+fun JtxObjectAndExceptions.withJtxId(mainId: Long) =
+    JtxObjectAndExceptions(
+        main = main.withIntField(JtxContract.JtxICalObject.ID, mainId),
+        exceptions = exceptions
     )
