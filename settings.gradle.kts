@@ -38,6 +38,7 @@ if (!buildCacheUrl.isNullOrEmpty()) {
 
 include(":app-ose")
 include(":core")
+include(":synctools")
 
 // Uncomment for debugging / working in the subprojects.
 // Make sure that you have checked out the desired branch in the respective subproject!

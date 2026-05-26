@@ -102,6 +102,9 @@ aboutLibraries {
 }
 
 dependencies {
+    // gradle project dependencies
+    implementation(project(":synctools"))
+
     // Kotlin / Android
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines)
@@ -152,10 +155,6 @@ dependencies {
     implementation(libs.bitfire.dav4jvm) {
         exclude(group="junit")
         exclude(group="org.ogce", module="xpp3")    // Android has its own XmlPullParser implementation
-    }
-    implementation(libs.bitfire.synctools) {
-        exclude(group="androidx.test")              // synctools declares test rules, but we don't want them in non-test code
-        exclude(group = "junit")
     }
 
     // third-party libs
