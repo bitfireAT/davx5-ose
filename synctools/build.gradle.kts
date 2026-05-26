@@ -1,7 +1,5 @@
 /*
- * This file is part of bitfireAT/synctools which is released under GPLv3.
- * Copyright © All Contributors. See the LICENSE and AUTHOR files in the root directory for details.
- * SPDX-License-Identifier: GPL-3.0-or-later
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
 plugins {
@@ -36,7 +34,7 @@ android {
 
     sourceSets {
         getByName("main") {
-            java.directories += "${rootDir}/opentasks-contract/src/main/java"
+            java.directories += "opentasks-contract/src/main/java"
         }
     }
 
@@ -107,7 +105,7 @@ publishing {
 
 dependencies {
     implementation(libs.kotlin.stdlib)
-    coreLibraryDesugaring(libs.android.desugar)
+    coreLibraryDesugaring(libs.android.desugaring)
 
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.core)
@@ -129,7 +127,7 @@ dependencies {
     // instrumented tests
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.kotlin.coroutines.test)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
@@ -145,9 +143,9 @@ dependencies {
 
     // unit tests
     testImplementation(libs.junit)
-    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
-    testImplementation(libs.roboelectric)
+    testImplementation(libs.robolectric)
 }
 
 tasks.withType<Test>().configureEach {
