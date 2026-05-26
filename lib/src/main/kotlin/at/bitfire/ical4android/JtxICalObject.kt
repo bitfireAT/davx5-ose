@@ -11,6 +11,7 @@ import android.content.ContentValues
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.util.Base64
+import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.ICalendar.Companion.withUserAgents
 import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
@@ -183,7 +184,8 @@ open class JtxICalObject(
     var alarms: MutableList<Alarm> = mutableListOf()
     var unknown: MutableList<Unknown> = mutableListOf()
 
-    private var recurInstances: MutableList<JtxICalObject> = mutableListOf()
+    @VisibleForTesting
+    internal var recurInstances: MutableList<JtxICalObject> = mutableListOf()
 
 
 
@@ -668,78 +670,88 @@ open class JtxICalObject(
         calComponent.propertyList = addProperties(calComponent.propertyList) // Need to re-set the immutable list
         ical += calComponent
 
+        // add alarm components
         alarms.forEach { alarm ->
+            val alarmProps = mutableListOf<Property>()
+            alarm.action?.let {
+                alarmProps += when (it) {
+                    JtxContract.JtxAlarm.AlarmAction.DISPLAY.name -> ImmutableAction.DISPLAY
+                    JtxContract.JtxAlarm.AlarmAction.AUDIO.name -> ImmutableAction.AUDIO
+                    JtxContract.JtxAlarm.AlarmAction.EMAIL.name -> ImmutableAction.EMAIL
+                    else -> return@let
+                }
+            }
 
-            val vAlarm = VAlarm()
-            vAlarm.propertyList.apply {
-                alarm.action?.let {
-                    when (it) {
-                        JtxContract.JtxAlarm.AlarmAction.DISPLAY.name -> add(ImmutableAction.DISPLAY)
-                        JtxContract.JtxAlarm.AlarmAction.AUDIO.name -> add(ImmutableAction.AUDIO)
-                        JtxContract.JtxAlarm.AlarmAction.EMAIL.name -> add(ImmutableAction.EMAIL)
-                        else -> return@let
+            if (alarm.triggerRelativeDuration != null) {
+                alarmProps += Trigger().apply {
+                    try {
+                        val dur = java.time.Duration.parse(alarm.triggerRelativeDuration)
+                        this.duration = dur
+
+                        // Add the RELATED parameter if present
+                        alarm.triggerRelativeTo?.let {
+                            if (it == JtxContract.JtxAlarm.AlarmRelativeTo.START.name)
+                                this += Related.START
+                            if (it == JtxContract.JtxAlarm.AlarmRelativeTo.END.name)
+                                this += Related.END
+                        }
+                    } catch (e: DateTimeParseException) {
+                        logger.log(Level.WARNING, "Could not parse Trigger duration as Duration.", e)
                     }
                 }
-                if(alarm.triggerRelativeDuration != null) {
-                    add(Trigger().apply {
-                        try {
-                            val dur = java.time.Duration.parse(alarm.triggerRelativeDuration)
-                            this.duration = dur
+            } else if (alarm.triggerTime != null) {
+                alarmProps += Trigger().apply {
+                    try {
+                        when {
+                            alarm.triggerTimezone == ZoneOffset.UTC.id ||
+                                    alarm.triggerTimezone.isNullOrEmpty() ->
+                                this.date = Instant.ofEpochMilli(alarm.triggerTime!!)
 
-                            // Add the RELATED parameter if present
-                            alarm.triggerRelativeTo?.let {
-                                if(it == JtxContract.JtxAlarm.AlarmRelativeTo.START.name)
-                                    this += Related.START
-                                if(it == JtxContract.JtxAlarm.AlarmRelativeTo.END.name)
-                                    this += Related.END
+                            else -> {
+                                this.date = ZonedDateTime.ofInstant(
+                                    Instant.ofEpochMilli(alarm.triggerTime!!),
+                                    ZoneId.of(alarm.triggerTimezone)
+                                ).toInstant()
                             }
-                        } catch (e: DateTimeParseException) {
-                            logger.log(Level.WARNING, "Could not parse Trigger duration as Duration.", e)
                         }
-                    })
-
-                } else if (alarm.triggerTime != null) {
-                    add(Trigger().apply {
-                        try {
-                            when {
-                                alarm.triggerTimezone == ZoneOffset.UTC.id ||
-                                alarm.triggerTimezone.isNullOrEmpty() ->
-                                    this.date = Instant.ofEpochMilli(alarm.triggerTime!!)
-                                else -> {
-                                    this.date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(alarm.triggerTime!!), ZoneId.of(alarm.triggerTimezone)).toInstant()
-                                }
-                            }
-                        } catch (e: ParseException) {
-                            logger.log(Level.WARNING, "TriggerTime could not be parsed.", e)
-                        }})
+                    } catch (e: ParseException) {
+                        logger.log(Level.WARNING, "TriggerTime could not be parsed.", e)
+                    }
                 }
-                alarm.summary?.let { add(Summary(it)) }
-                alarm.repeat?.let { add(Repeat().apply { value = it }) }
-                alarm.duration?.let { add(Duration().apply {
+            }
+
+            alarm.summary?.let { alarmProps += Summary(it) }
+            alarm.repeat?.let { alarmProps += Repeat().apply { value = it } }
+            alarm.duration?.let {
+                alarmProps += Duration().apply {
                     try {
                         val dur = java.time.Duration.parse(it)
                         this.duration = dur
                     } catch (e: DateTimeParseException) {
                         logger.log(Level.WARNING, "Could not parse duration as Duration.", e)
                     }
-                }) }
-                alarm.description?.let { add(Description(it)) }
-                alarm.attach?.let { add(Attach().apply { value = it }) }
-                alarm.other?.let { addAll(JtxContract.getXPropertyListFromJson(it).all) }
-
+                }
             }
-            calComponent.componentList.add(vAlarm)
+            alarm.description?.let { alarmProps += Description(it) }
+            alarm.attach?.let { alarmProps += Attach().apply { value = it } }
+            alarm.other?.let { alarmProps += JtxContract.getXPropertyListFromJson(it).all }
+
+            // add VALARM to VTODO/VJOURNAL component
+            val vAlarm = VAlarm(PropertyList(alarmProps))
+            calComponent += vAlarm
         }
 
-
+        // add a iCalendar component for each exception
         recurInstances.forEach { recurInstance ->
+            // create a fresh component of the correct type and add to iCalendar
             val recurCalComponent = when (recurInstance.component) {
                 JtxContract.JtxICalObject.Component.VTODO.name -> VToDo(true /* generates DTSTAMP */)
                 JtxContract.JtxICalObject.Component.VJOURNAL.name -> VJournal(true /* generates DTSTAMP */)
                 else -> return null
             }
             ical += recurCalComponent
-            recurInstance.addProperties(recurCalComponent.propertyList)
+            // assign properties (UID, RECURRENCE-ID, modified SUMMARY etc.) from the exception
+            recurCalComponent.propertyList = recurInstance.addProperties(recurCalComponent.propertyList)
         }
 
         ICalendar.softValidate(ical)

@@ -16,6 +16,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.ical4android.impl.TestJtxCollection
 import at.bitfire.ical4android.impl.testProdId
 import at.bitfire.synctools.icalendar.ICalendarParser
+import at.bitfire.synctools.icalendar.recurrenceId
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject
@@ -27,6 +28,12 @@ import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Property
+import net.fortuna.ical4j.model.component.VAlarm
+import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.Action
+import net.fortuna.ical4j.model.property.RecurrenceId
+import net.fortuna.ical4j.model.property.Trigger
+import net.fortuna.ical4j.model.property.immutable.ImmutableAction
 import org.junit.After
 import org.junit.Assert
 import org.junit.Assume
@@ -850,6 +857,72 @@ class JtxICalObjectTest {
         assertEquals(1, iCalObjects.size)
         assertEquals("20250228T130000", iCalObjects.first().recurid)
         assertEquals("America/New_York", iCalObjects.first().recuridTimezone)
+    }
+
+
+    @Test
+    fun getICalendarFormat_recurringVToDo_exceptionsMustHaveUidAndRecurrenceId() {
+        // Prepare data object with recurring VTODO + exception
+        val uid = "recurring-vtodo-uid@test"
+        val mainObject = JtxICalObject(collection!!).apply {
+            component = Component.VTODO.name
+            this.uid = uid
+            summary = "Recurring task"
+            dtstart = 1744970400000L  // 2025-04-18T12:00:00Z
+            rrule = "FREQ=MONTHLY;UNTIL=20270417T110000Z"
+        }
+
+        val recurId = "20250518T120000Z"
+        val exceptionObject = JtxICalObject(collection!!).apply {
+            component = Component.VTODO.name
+            this.uid = uid
+            summary = "Recurring task (exception)"
+            this.recurid = recurId
+        }
+        mainObject.recurInstances += exceptionObject
+
+        // Generate iCalendar VTODO from data object
+        val ical = mainObject.getICalendarFormat(testProdId)
+        assertNotNull(ical)
+
+        // Verify VTODOs
+        val vtodos = ical!!.getComponents<VToDo>(Component.VTODO.name)
+        assertEquals(2, vtodos.size)
+        assertTrue("VTODOs must have same UID", vtodos.all { it.uid.get().value == uid })
+
+        // Verify RECURRENCE-ID of exception
+        val exceptions = vtodos.filter { it.getProperty<RecurrenceId<*>>(Property.RECURRENCE_ID).isPresent }
+        assertEquals(1, exceptions.size)
+        val exception = exceptions.first()
+        assertEquals(recurId, exception.recurrenceId?.value)
+    }
+
+    @Test
+    fun getICalendarFormat_VToDo_AlarmHasProperties() {
+        val obj = JtxICalObject(collection!!).apply {
+            component = Component.VTODO.name
+            uid = "vtodo-alarm-test@test"
+            summary = "Task with alarm"
+            alarms += at.bitfire.ical4android.JtxICalObject.Alarm(
+                action = JtxContract.JtxAlarm.AlarmAction.DISPLAY.name,
+                triggerRelativeDuration = "-PT15M"
+            )
+        }
+
+        // Generate iCalendar VTODO from data object
+        val ical = obj.getICalendarFormat(testProdId)
+        assertNotNull(ical)
+
+        // Extract VALARM
+        val vtodos = ical!!.getComponents<VToDo>(Component.VTODO.name)
+        assertEquals(1, vtodos.size)
+        val valarms = vtodos[0].getComponents<VAlarm>(net.fortuna.ical4j.model.Component.VALARM)
+        assertEquals(1, valarms.size)
+
+        // Verify VALARM properties
+        val valarm = valarms.first()
+        assertEquals(ImmutableAction.DISPLAY, valarm.getProperty<Action>(Property.ACTION).get())
+        assertEquals("-PT15M", valarm.getProperty<Trigger>(Property.TRIGGER).get().value)
     }
 
 
