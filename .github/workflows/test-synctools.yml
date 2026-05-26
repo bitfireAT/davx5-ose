@@ -67,7 +67,7 @@ jobs:
           - 32  # Android 12L  # Android 12 is the first version where calendar provider matches millisecond occurrences of recurring events
           - 35  # Android 15   # use latest SDK that has an AOSP image here
     env:
-      apk-dir: lib/apk
+      apk-dir: synctools/apk
       fdroid-packages: "at.techbee.jtx org.dmfs.tasks org.tasks"
       API_LEVEL: ${{ matrix.api-level }}
     steps:
