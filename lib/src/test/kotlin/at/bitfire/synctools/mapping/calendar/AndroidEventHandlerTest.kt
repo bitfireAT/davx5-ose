@@ -11,13 +11,15 @@ import android.provider.CalendarContract.Events
 import android.provider.CalendarContract.ExtendedProperties
 import androidx.core.content.contentValuesOf
 import at.bitfire.dateTimeValue
+import at.bitfire.dateValue
 import at.bitfire.synctools.icalendar.dtStart
 import at.bitfire.synctools.icalendar.recurrenceId
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
 import at.bitfire.synctools.storage.calendar.EventsContract
-import at.bitfire.synctools.util.AndroidTimeUtils
+import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
+import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.ProdId
@@ -143,6 +145,43 @@ class AndroidEventHandlerTest {
         assertEquals("FREQ=DAILY;COUNT=10", main.getProperty<RRule<*>>(Property.RRULE).getOrNull()?.value)
         assertEquals(
             dateTimeValue("20200707T193000", tzVienna),
+            main.getProperty<ExDate<*>>(Property.EXDATE)?.getOrNull()?.dates?.first()
+        )
+        assertTrue(result.exceptions.isEmpty())
+    }
+
+    @Test
+    fun `mapToVEvents rewrites cancelled all-day exception to EXDATE with VALUE=DATE`() {
+        val result = handler.mapToVEvents(
+            eventAndExceptions = EventAndExceptions(
+                main = Entity(contentValuesOf(
+                    Events.TITLE to "Recurring all-day event with cancelled all-day exception",
+                    Events.DTSTART to 1594056600000L,
+                    Events.EVENT_TIMEZONE to "UTC",
+                    Events.ALL_DAY to 1,    // main event is all-day
+                    Events.RRULE to "FREQ=DAILY;COUNT=10"
+                )),
+                exceptions = listOf(
+                    Entity(contentValuesOf(
+                        Events.ORIGINAL_INSTANCE_TIME to 1594143000000L,
+                        Events.ORIGINAL_ALL_DAY to 1,    // exception is all-day
+                        Events.DTSTART to 1594143000000L,
+                        Events.ALL_DAY to 1,
+                        Events.EVENT_TIMEZONE to "UTC",
+                        Events.STATUS to Events.STATUS_CANCELED
+                    ))
+                )
+            )
+        ).associatedEvents
+        val main = result.main!!
+        assertEquals("Recurring all-day event with cancelled all-day exception", main.summary.value)
+        assertEquals("FREQ=DAILY;COUNT=10", main.getProperty<RRule<*>>(Property.RRULE).get().value)
+
+        // Check that EXDATE has VALUE=DATE
+        val exDate = main.getProperty<ExDate<*>>(Property.EXDATE).get()
+        assertEquals(Value.DATE, exDate.getParameter<Value>(Parameter.VALUE).get())
+        assertEquals(
+            dateValue("20200707"),
             main.getProperty<ExDate<*>>(Property.EXDATE)?.getOrNull()?.dates?.first()
         )
         assertTrue(result.exceptions.isEmpty())

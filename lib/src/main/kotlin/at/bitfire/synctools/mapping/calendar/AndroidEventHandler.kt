@@ -42,6 +42,7 @@ import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.parameter.TzId
+import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.RDate
@@ -166,7 +167,7 @@ class AndroidEventHandler(
         // Return ExDate
         return if (originalAllDay) {
             // .. as date, without time
-            ExDate(DateList(LocalDate.from(date)))
+            ExDate(ParameterList(listOf(Value.DATE)), DateList(LocalDate.from(date)))
         } else if (date is Instant) {
             ExDate(DateList(date))
         } else {

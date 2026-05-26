@@ -15,6 +15,7 @@ import at.bitfire.dateValue
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import net.fortuna.ical4j.model.DateList
+import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.Recur
@@ -132,10 +133,10 @@ class RecurrenceFieldHandlerTest {
             "FREQ=WEEKLY;COUNT=1",
             result.getProperties<ExRule<Temporal>>(Property.EXRULE).joinToString { it.value }
         )
-        assertEquals(
-            "20260201",
-            result.getProperties<ExDate<Temporal>>(Property.EXDATE).joinToString { it.value }
-        )
+        // All-day EXDATE must have VALUE=DATE
+        val exDates = result.getProperties<ExDate<Temporal>>(Property.EXDATE)
+        assertEquals(Value.DATE, exDates.first().getParameter<Value>(Parameter.VALUE).get())
+        assertEquals("20260201", exDates.joinToString { it.value })
     }
 
     @Test
