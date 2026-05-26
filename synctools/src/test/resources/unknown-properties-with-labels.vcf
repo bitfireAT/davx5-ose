@@ -1,0 +1,6 @@
+BEGIN:VCARD
+VERSION:3.0
+FN:Unknown property with label
+item1.X-Unknown:TestValue
+item1.X-ABLabel:TestLabel
+END:VCARD

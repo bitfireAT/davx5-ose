@@ -1,0 +1,32 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- read/write Android calendars -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
+    <!-- read/write Android contacts -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+
+    <!-- read/write tasks (OpenTasks) -->
+    <uses-permission android:name="org.dmfs.permission.READ_TASKS" />
+    <uses-permission android:name="org.dmfs.permission.WRITE_TASKS" />
+
+    <!-- read/write tasks (tasks.org) -->
+    <uses-permission android:name="org.tasks.permission.READ_TASKS" />
+    <uses-permission android:name="org.tasks.permission.WRITE_TASKS" />
+
+    <!-- read/write tasks & journals (jtx Board) -->
+    <uses-permission android:name="at.techbee.jtx.permission.READ" />
+    <uses-permission android:name="at.techbee.jtx.permission.WRITE" />
+
+    <application />
+
+    <queries>
+        <!-- task providers -->
+        <package android:name="at.techbee.jtx" />
+        <package android:name="org.dmfs.tasks" />
+        <package android:name="org.tasks" />
+    </queries>
+
+</manifest>
