@@ -7,7 +7,7 @@ on:
   pull_request:
 
 concurrency:
-  group: test-dev-${{ github.ref }}
+  group: ${{github.workflow_ref}}-${{ github.ref }}
   cancel-in-progress: true
 
 # We provide a remote Gradle build cache. Take the settings from the secrets and enable

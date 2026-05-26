@@ -10,7 +10,7 @@ on:
     paths: *paths
 
 concurrency:
-  group: test-dev-${{ github.ref }}
+  group: ${{github.workflow_ref}}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
