@@ -9,23 +9,21 @@ package at.bitfire.synctools.mapping.tasks
 import android.content.ContentValues
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
-import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
 import at.bitfire.synctools.mapping.tasks.handler.AlarmsHandler
+import at.bitfire.synctools.mapping.tasks.handler.DueHandler
+import at.bitfire.synctools.mapping.tasks.handler.DurationHandler
 import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskFieldHandler
 import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskPropertyHandler
 import at.bitfire.synctools.mapping.tasks.handler.SequenceHandler
+import at.bitfire.synctools.mapping.tasks.handler.StartTimeHandler
 import at.bitfire.synctools.mapping.tasks.handler.TitleHandler
 import at.bitfire.synctools.mapping.tasks.handler.UidHandler
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.util.AndroidTimeUtils
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.parameter.RelType
 import net.fortuna.ical4j.model.property.Clazz
 import net.fortuna.ical4j.model.property.Completed
-import net.fortuna.ical4j.model.property.DtStart
-import net.fortuna.ical4j.model.property.Due
-import net.fortuna.ical4j.model.property.Duration
 import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.Geo
 import net.fortuna.ical4j.model.property.Organizer
@@ -57,6 +55,9 @@ class DmfsTaskProcessor(
         UidHandler(),
         TitleHandler(),
         SequenceHandler(),
+        StartTimeHandler(),
+        DueHandler(),
+        DurationHandler(),
     )
 
     private val propertyHandlers: Map<String, DmfsTaskPropertyHandler> = mapOf(
@@ -117,45 +118,8 @@ class DmfsTaskProcessor(
 
         val allDay = (values.getAsInteger(Tasks.IS_ALLDAY) ?: 0) != 0
 
-        val tzID = values.getAsString(Tasks.TZ)
-        val tz = tzID?.let {
-            val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-            tzRegistry.getTimeZone(it)
-        }
-
         values.getAsLong(Tasks.CREATED)?.let { to.createdAt = it }
         values.getAsLong(Tasks.LAST_MODIFIED)?.let { to.lastModified = it }
-
-        values.getAsLong(Tasks.DTSTART)?.let { dtStart ->
-            val instant = Instant.ofEpochMilli(dtStart)
-            to.dtStart =
-                if (allDay)
-                    DtStart(instant.toLocalDate())
-                else {
-                    if (tz == null)
-                        DtStart(instant)
-                    else
-                        DtStart(instant.atZone(tz.toZoneId()))
-                }
-        }
-
-        values.getAsLong(Tasks.DUE)?.let { due ->
-            val instant = Instant.ofEpochMilli(due)
-            to.due =
-                if (allDay)
-                    Due(instant.toLocalDate())
-                else {
-                    if (tz == null)
-                        Due(instant)
-                    else
-                        Due(instant.atZone(tz.toZoneId()))
-                }
-        }
-
-        values.getAsString(Tasks.DURATION)?.let { duration ->
-            val fixedDuration = AndroidTimeUtils.parseDuration(duration)
-            to.duration = Duration(fixedDuration)
-        }
 
         values.getAsString(Tasks.RDATE)?.let { rdateStr ->
             AndroidTimeUtils.androidStringToRecurrenceSet(rdateStr, allDay) { dates -> RDate(dates) }?.let { to.rDates += it }
