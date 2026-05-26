@@ -515,7 +515,7 @@ class DmfsTaskBuilderTest (
         }.let { result ->
             // Note: iCalendar does not allow COMPLETED to be all-day [RFC 5545 3.8.2.1]
             assertEquals(0, result.getAsInteger(TaskContract.Tasks.COMPLETED_IS_ALLDAY))
-            Assert.assertEquals(now.toEpochMilli(), result.getAsLong(TaskContract.Tasks.COMPLETED))
+            Assert.assertEquals(now.toTimestamp(), result.getAsLong(TaskContract.Tasks.COMPLETED))
         }
     }
 

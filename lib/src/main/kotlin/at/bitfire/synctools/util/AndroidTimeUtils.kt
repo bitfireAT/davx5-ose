@@ -75,6 +75,9 @@ object AndroidTimeUtils {
 
     /**
      * Same as [toInstant], but returns a UNIX timestamp (in milliseconds) instead of an [Instant].
+     * Aligned to full seconds, since Android <12 has a bug.
+     *
+     * See [at.bitfire.synctools.storage.calendar.AndroidCalendarProvider.matchesExceptionsWithMilliseconds].
      */
     fun Temporal.toTimestamp(): Long =
         toInstant().epochSecond * 1000
