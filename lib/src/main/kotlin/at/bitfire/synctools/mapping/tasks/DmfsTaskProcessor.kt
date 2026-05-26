@@ -10,7 +10,9 @@ import android.content.ContentValues
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.mapping.tasks.handler.AlarmsHandler
+import at.bitfire.synctools.mapping.tasks.handler.ClassificationHandler
 import at.bitfire.synctools.mapping.tasks.handler.ColorHandler
+import at.bitfire.synctools.mapping.tasks.handler.CompletedHandler
 import at.bitfire.synctools.mapping.tasks.handler.DescriptionHandler
 import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskFieldHandler
 import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskPropertyHandler
@@ -19,8 +21,11 @@ import at.bitfire.synctools.mapping.tasks.handler.DurationHandler
 import at.bitfire.synctools.mapping.tasks.handler.GeoHandler
 import at.bitfire.synctools.mapping.tasks.handler.LocationHandler
 import at.bitfire.synctools.mapping.tasks.handler.OrganizerHandler
+import at.bitfire.synctools.mapping.tasks.handler.PercentCompleteHandler
+import at.bitfire.synctools.mapping.tasks.handler.PriorityHandler
 import at.bitfire.synctools.mapping.tasks.handler.SequenceHandler
 import at.bitfire.synctools.mapping.tasks.handler.StartTimeHandler
+import at.bitfire.synctools.mapping.tasks.handler.StatusHandler
 import at.bitfire.synctools.mapping.tasks.handler.TitleHandler
 import at.bitfire.synctools.mapping.tasks.handler.UidHandler
 import at.bitfire.synctools.mapping.tasks.handler.UrlHandler
@@ -28,20 +33,16 @@ import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DA
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.util.AndroidTimeUtils
 import net.fortuna.ical4j.model.parameter.RelType
-import net.fortuna.ical4j.model.property.Clazz
-import net.fortuna.ical4j.model.property.Completed
 import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.RDate
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RelatedTo
-import net.fortuna.ical4j.model.property.Status
 import org.dmfs.tasks.contract.TaskContract.Properties
 import org.dmfs.tasks.contract.TaskContract.Property.Alarm
 import org.dmfs.tasks.contract.TaskContract.Property.Category
 import org.dmfs.tasks.contract.TaskContract.Property.Comment
 import org.dmfs.tasks.contract.TaskContract.Property.Relation
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.time.Instant
 import java.time.temporal.Temporal
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -67,6 +68,11 @@ class DmfsTaskProcessor(
         ColorHandler(),
         UrlHandler(),
         OrganizerHandler(),
+        PriorityHandler(),
+        ClassificationHandler(),
+        StatusHandler(),
+        CompletedHandler(),
+        PercentCompleteHandler(),
     )
 
     private val propertyHandlers: Map<String, DmfsTaskPropertyHandler> = mapOf(
@@ -82,26 +88,7 @@ class DmfsTaskProcessor(
 
         to.userAgents += taskList.providerName.packageName
 
-        values.getAsInteger(Tasks.PRIORITY)?.let { to.priority = it }
-
         // Note: big method – maybe split? Depends on how we want to proceed with refactoring.
-
-        to.classification = when (values.getAsInteger(Tasks.CLASSIFICATION)) {
-            Tasks.CLASSIFICATION_PUBLIC ->       Clazz(Clazz.VALUE_PUBLIC)
-            Tasks.CLASSIFICATION_PRIVATE ->      Clazz(Clazz.VALUE_PRIVATE)
-            Tasks.CLASSIFICATION_CONFIDENTIAL -> Clazz(Clazz.VALUE_CONFIDENTIAL)
-            else ->                              null
-        }
-
-        values.getAsLong(Tasks.COMPLETED)?.let { to.completedAt = Completed(Instant.ofEpochMilli(it)) }
-        values.getAsInteger(Tasks.PERCENT_COMPLETE)?.let { to.percentComplete = it }
-
-        to.status = when (values.getAsInteger(Tasks.STATUS)) {
-            Tasks.STATUS_IN_PROCESS -> Status(Status.VALUE_IN_PROCESS)
-            Tasks.STATUS_COMPLETED ->  Status(Status.VALUE_COMPLETED)
-            Tasks.STATUS_CANCELLED ->  Status(Status.VALUE_CANCELLED)
-            else ->                    Status(Status.VALUE_NEEDS_ACTION)
-        }
 
         val allDay = (values.getAsInteger(Tasks.IS_ALLDAY) ?: 0) != 0
 
