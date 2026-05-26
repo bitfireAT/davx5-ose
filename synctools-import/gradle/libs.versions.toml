@@ -1,0 +1,40 @@
+[versions]
+agp = "9.2.1"
+android-desugar = "2.1.5"
+androidx-annotation = "1.10.0"
+androidx-core = "1.18.0"
+androidx-test-rules = "1.7.0"
+androidx-test-runner = "1.7.0"
+dokka = "2.2.0"
+ezvcard = "0.12.2"
+guava = "33.6.0-android"
+ical4j = "4.2.5"
+junit = "4.13.2"
+kotlin = "2.3.21"
+kotlinx-coroutines-test = "1.11.0"
+mockk = "1.14.9"
+roboelectric = "4.16.1"
+slf4j = "2.0.18"
+spotbugs = "4.9.8"
+
+[libraries]
+android-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugar" }
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test-rules" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
+ezvcard = { module = "com.googlecode.ez-vcard:ez-vcard", version.ref = "ezvcard" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+ical4j = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4j" }
+junit = { module = "junit:junit", version.ref = "junit" }
+kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+roboelectric = { module = "org.robolectric:robolectric", version.ref = "roboelectric" }
+slf4j-jdk = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4j" }
+spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs" }
+
+[plugins]
+android-library = { id = "com.android.library", version.ref = "agp" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

@@ -1,0 +1,5 @@
+jdk:
+  - openjdk21   # keep in sync with gradle/gradle-daemon-jvm.properties
+before_install:
+  - sdk install java 21-open
+  - sdk use java 21-open

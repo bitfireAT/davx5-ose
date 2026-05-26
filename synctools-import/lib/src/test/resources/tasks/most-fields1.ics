@@ -1,0 +1,32 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ABC Corporation//NONSGML My Product//EN
+BEGIN:VTODO
+SEQUENCE:1
+UID:most-fields1@example.com
+LOCATION;ALTREP="http://xyzcorp.com/conf-rooms/f123.vcf":
+ Conference Room - F123\, Bldg. 002
+GEO:37.386013;-122.082932
+DESCRIPTION:Meeting to provide technical review for "Phoenix"
+  design.\nHappy Face Conference Room. Phoenix design team
+  MUST attend this meeting.\nRSVP to team leader.
+URL:http://example.com/pub/calendars/jsmith/mytime.ics
+ORGANIZER:http://example.com/principals/jsmith
+PRIORITY:1
+CLASS:CONFIDENTIAL
+STATUS:IN-PROCESS
+PERCENT-COMPLETE:25
+DTSTART;VALUE=DATE:20100101
+DUE;VALUE=DATE:20101001
+CATEGORIES:Test,Sample
+RRULE:FREQ=YEARLY;INTERVAL=2
+EXDATE;VALUE=DATE:20120101
+EXDATE;VALUE=DATE:20140101,20180101
+RDATE;VALUE=DATE:20100310,20100315
+RDATE;VALUE=DATE:20100810
+RELATED-TO;RELTYPE=SIBLING:most-fields2@example.com
+X-UNKNOWN-PROP;param1=xxx:Unknown Value
+CREATED:19960329T133000Z
+LAST-MODIFIED:19960817T133000Z
+END:VTODO
+END:VCALENDAR

@@ -1,0 +1,7 @@
+<manifest xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+    Since Mockk 1.14.7 it's required to use minSdk 26. We use 23, so override for tests.
+    -->
+    <uses-sdk tools:overrideLibrary="io.mockk.android,io.mockk.proxy.android" />
+</manifest>

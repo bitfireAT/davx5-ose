@@ -1,0 +1,5 @@
+# See https://docs.github.com/de/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# For combination with "Require review from code owners" for main branch.
+
+# Dependabot
+gradle/**   @bitfireAT/app-dev

@@ -1,0 +1,73 @@
+# Central Australia Time (ACT)
+ACT=Australia/Darwin
+# Eastern Australia Time (AET)
+AET=Australia/Hobart
+# Argentina Time (AGT)
+AGT=America/Argentina/Buenos_Aires
+# Eastern European Time (ART)
+ART=Europe/Athens
+# Alaska Time (AST)
+AST=America/Juneau
+# Brasilia Time (BET)
+BET=America/Sao_Paulo
+# Bangladesh Time (BST)
+BST=Asia/Dhaka
+# CAT (CAT)
+CAT=Africa/Maputo
+# CET (CET)
+CET=Europe/Brussels
+# China Time (CTT)
+CTT=Asia/Shanghai
+# Central Time (CST)
+CST=America/Winnipeg
+# Newfoundland Time (CNT)
+CNT=America/St_Johns
+# EAT (EAT)
+EAT=Africa/Nairobi
+# Central European Time (ECT)
+ECT=Europe/Paris
+# EET (EET)
+EET=Europe/Athens
+# Factory (Factory)
+Factory=Etc/GMT
+# Eastern Time (IET)
+IET=America/Indianapolis
+# IST (IST)
+IST=Asia/Calcutta
+# Japan Time (JST)
+JST=Asia/Tokyo
+# MET (MET)
+MET=Europe/Brussels
+# Apia Time (MIT)
+MIT=Pacific/Apia
+# Armenia Time (NET)
+NET=Asia/Yerevan
+# New Zealand Time (NST)
+NST=Pacific/Auckland
+# Pakistan Time (PLT)
+PLT=Asia/Karachi
+# Mountain Time (PNT)
+PNT=America/Phoenix
+# Atlantic Time (PRT)
+PRT=America/Puerto_Rico
+# Pacific Time (PST)
+PST=America/Los_Angeles
+# SST (SST)
+SST=Pacific/Guadalcanal
+# VST (VST)
+VST=Asia/Saigon
+# WET (WET)
+WET=Europe/London
+SystemV/AST4=Etc/GMT+4
+SystemV/AST4ADT=America/Glace_Bay
+SystemV/CST6=Etc/GMT+6
+SystemV/CST6CDT=Pacific/Easter
+SystemV/EST5=Etc/GMT+5
+SystemV/EST5EDT=America/Indianapolis
+SystemV/HST10=Pacific/Honolulu
+SystemV/MST7=Etc/GMT+7
+SystemV/MST7MDT=America/Chihuahua
+SystemV/PST8=Etc/GMT+8
+SystemV/PST8PDT=America/Los_Angeles
+SystemV/YST9=Etc/GMT+9
+SystemV/YST9YDT=America/Anchorage
