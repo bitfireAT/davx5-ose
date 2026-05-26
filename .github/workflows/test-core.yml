@@ -1,4 +1,4 @@
-name: Development tests
+name: core tests
 on:
   push:
     branches:

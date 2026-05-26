@@ -1,9 +1,13 @@
-name: Tests
+name: synctools tests
 on:
   push:
     branches:
       - 'main'
+    paths: &paths
+      - 'synctools/**'
+      - 'gradle/libs.versions.toml'
   pull_request:
+    paths: *paths
 
 concurrency:
   group: test-dev-${{ github.ref }}
@@ -25,9 +29,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6            # creates build cache when on main branch
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
-          dependency-graph: generate-and-submit         # submit Github Dependency Graph info
 
-      - run: ./gradlew --build-cache --configuration-cache compileDebugSources
+      - run: ./gradlew --build-cache --configuration-cache synctools:compileDebugSources
 
   test:
     needs: compile
@@ -46,9 +49,9 @@ jobs:
           cache-read-only: true
 
       - name: Run lint
-        run: ./gradlew --build-cache --configuration-cache lintDebug
+        run: ./gradlew --build-cache --configuration-cache synctools:lintDebug
       - name: Run unit tests
-        run: ./gradlew --build-cache --configuration-cache testDebugUnitTest
+        run: ./gradlew --build-cache --configuration-cache synctools:testDebugUnitTest
 
   test_on_emulator:
     needs: compile
@@ -127,4 +130,4 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Run device tests
-        run: ./gradlew virtualCheck
+        run: ./gradlew :synctools:virtualCheck
