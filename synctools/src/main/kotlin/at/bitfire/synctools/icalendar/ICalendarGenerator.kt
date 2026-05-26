@@ -5,6 +5,7 @@
 package at.bitfire.synctools.icalendar
 
 import androidx.annotation.VisibleForTesting
+import at.bitfire.synctools.util.AndroidTimeUtils.toInstant
 import at.bitfire.synctools.util.Utils.trimToNull
 import net.fortuna.ical4j.data.CalendarOutputter
 import net.fortuna.ical4j.model.Calendar
@@ -13,7 +14,6 @@ import net.fortuna.ical4j.model.ComponentList
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.PropertyContainer
 import net.fortuna.ical4j.model.PropertyList
-import net.fortuna.ical4j.model.TemporalAdapter
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.component.VTimeZone
@@ -66,7 +66,10 @@ class ICalendarGenerator {
             ical += exception
 
             exception.dtStart<Temporal>()?.date?.let { start ->
-                if (earliestStart == null || TemporalAdapter.isBefore(start, earliestStart))
+                // Convert both Temporals to Instants for comparison, because they may be in different time zones. If conversion fails, ignore the start date of this exception.
+                val startInstant = runCatching { start.toInstant() }.getOrNull() ?: return@let
+                val earliestInstant = earliestStart?.let { runCatching { it.toInstant() }.getOrNull() }
+                if (earliestInstant == null || startInstant < earliestInstant)
                     earliestStart = start
             }
             usedTimezoneIds += timeZonesOf(exception)

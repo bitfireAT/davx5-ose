@@ -246,4 +246,27 @@ class ICalendarGeneratorTest {
         assertTrue(result.isEmpty())
     }
 
+    @Test
+    fun `Write event with UTC Instant exception DTSTART does not throw`() {
+        val iCal = StringWriter()
+        writer.write(AssociatedEvents(
+            main = VEvent(propertyListOf(
+                Uid("UTCTEST"),
+                DtStart(ZonedDateTime.of(LocalDateTime.parse("2025-08-22T05:30:00"), tzBerlin)),
+                DtStamp("20250822T000000Z"),
+                RRule<Temporal>("FREQ=DAILY;COUNT=3")
+            )),
+            exceptions = listOf(
+                VEvent(propertyListOf(
+                    Uid("UTCTEST"),
+                    RecurrenceId(Instant.parse("2025-08-22T03:30:00Z")),
+                    DtStart(Instant.parse("2025-08-22T03:30:00Z")),
+                    DtStamp("20250822T000000Z")
+                ))
+            ),
+            prodId = userAgent
+        ), iCal)
+        assertTrue(iCal.toString().contains("BEGIN:VCALENDAR"))
+    }
+
 }
