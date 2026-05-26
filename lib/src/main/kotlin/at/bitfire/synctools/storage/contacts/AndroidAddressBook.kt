@@ -117,7 +117,7 @@ open class AndroidAddressBook<T1: AndroidContact, T2: AndroidGroup>(
             queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
 
     fun findContactByUid(uid: String) =
-            queryContacts("${at.bitfire.synctools.storage.contacts.AndroidContact.COLUMN_UID}=?", arrayOf(uid)).firstOrNull()
+            queryContacts("${AndroidContact.COLUMN_UID}=?", arrayOf(uid)).firstOrNull()
 
     @Throws(FileNotFoundException::class)
     fun findGroupById(id: Long) =
@@ -133,7 +133,7 @@ open class AndroidAddressBook<T1: AndroidContact, T2: AndroidGroup>(
         }
 
         val values = contentValuesOf(Groups.TITLE to title)
-        val uri = provider!!.insert(syncAdapterURI(Groups.CONTENT_URI), values)
+        val uri = provider.insert(syncAdapterURI(Groups.CONTENT_URI), values)
             ?: throw RemoteException("Couldn't create contact group")
         return ContentUris.parseId(uri)
     }

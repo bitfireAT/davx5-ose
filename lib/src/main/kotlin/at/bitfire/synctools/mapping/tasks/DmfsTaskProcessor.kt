@@ -10,14 +10,20 @@ import android.content.ContentValues
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.mapping.tasks.handler.AlarmsHandler
-import at.bitfire.synctools.mapping.tasks.handler.DueHandler
-import at.bitfire.synctools.mapping.tasks.handler.DurationHandler
+import at.bitfire.synctools.mapping.tasks.handler.ColorHandler
+import at.bitfire.synctools.mapping.tasks.handler.DescriptionHandler
 import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskFieldHandler
 import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskPropertyHandler
+import at.bitfire.synctools.mapping.tasks.handler.DueHandler
+import at.bitfire.synctools.mapping.tasks.handler.DurationHandler
+import at.bitfire.synctools.mapping.tasks.handler.GeoHandler
+import at.bitfire.synctools.mapping.tasks.handler.LocationHandler
+import at.bitfire.synctools.mapping.tasks.handler.OrganizerHandler
 import at.bitfire.synctools.mapping.tasks.handler.SequenceHandler
 import at.bitfire.synctools.mapping.tasks.handler.StartTimeHandler
 import at.bitfire.synctools.mapping.tasks.handler.TitleHandler
 import at.bitfire.synctools.mapping.tasks.handler.UidHandler
+import at.bitfire.synctools.mapping.tasks.handler.UrlHandler
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.util.AndroidTimeUtils
@@ -25,8 +31,6 @@ import net.fortuna.ical4j.model.parameter.RelType
 import net.fortuna.ical4j.model.property.Clazz
 import net.fortuna.ical4j.model.property.Completed
 import net.fortuna.ical4j.model.property.ExDate
-import net.fortuna.ical4j.model.property.Geo
-import net.fortuna.ical4j.model.property.Organizer
 import net.fortuna.ical4j.model.property.RDate
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RelatedTo
@@ -37,7 +41,6 @@ import org.dmfs.tasks.contract.TaskContract.Property.Category
 import org.dmfs.tasks.contract.TaskContract.Property.Comment
 import org.dmfs.tasks.contract.TaskContract.Property.Relation
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.net.URISyntaxException
 import java.time.Instant
 import java.time.temporal.Temporal
 import java.util.logging.Level
@@ -58,6 +61,12 @@ class DmfsTaskProcessor(
         StartTimeHandler(),
         DueHandler(),
         DurationHandler(),
+        DescriptionHandler(),
+        LocationHandler(),
+        GeoHandler(),
+        ColorHandler(),
+        UrlHandler(),
+        OrganizerHandler(),
     )
 
     private val propertyHandlers: Map<String, DmfsTaskPropertyHandler> = mapOf(
@@ -71,29 +80,7 @@ class DmfsTaskProcessor(
         for (handler in fieldHandlers)
             handler.process(values, to)
 
-        to.location = values.getAsString(Tasks.LOCATION)
         to.userAgents += taskList.providerName.packageName
-
-        values.getAsString(Tasks.GEO)?.takeIf { it.contains(",") }?.let { geo ->
-            val (lng, lat) = geo.split(',')
-            try {
-                to.geoPosition = Geo(lat.toBigDecimal(), lng.toBigDecimal())
-            } catch (e: NumberFormatException) {
-                logger.log(Level.WARNING, "Invalid GEO value: $geo", e)
-            }
-        }
-
-        to.description = values.getAsString(Tasks.DESCRIPTION)
-        to.color = values.getAsInteger(Tasks.TASK_COLOR)
-        to.url = values.getAsString(Tasks.URL)
-
-        values.getAsString(Tasks.ORGANIZER)?.let {
-            try {
-                to.organizer = Organizer("mailto:$it")
-            } catch(e: URISyntaxException) {
-                logger.log(Level.WARNING, "Invalid ORGANIZER email", e)
-            }
-        }
 
         values.getAsInteger(Tasks.PRIORITY)?.let { to.priority = it }
 
