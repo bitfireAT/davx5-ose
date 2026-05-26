@@ -117,6 +117,10 @@ dependencies {
     implementation(libs.slf4j.jdk)       // ical4j uses slf4j, this module uses java.util.Logger
     api(libs.ezvcard)
 
+    // force some versions for compatibility with our minSdk level (see version catalog for details)
+    implementation(libs.commons.codec)
+    implementation(libs.commons.lang)
+
     // synctools.test package also provide test rules
     implementation(libs.androidx.test.rules)
 
