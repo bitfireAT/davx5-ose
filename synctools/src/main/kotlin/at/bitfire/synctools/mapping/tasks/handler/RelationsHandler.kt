@@ -20,7 +20,7 @@ class RelationsHandler : DmfsTaskPropertyHandler {
 
         to.relatedTo.add(
             RelatedTo(uid)
-                // add relation type as reltypeparam
+                // add relation type as RELTYPE parameter
                 .add(
                     when (row.getAsInteger(Relation.RELATED_TYPE)) {
                         Relation.RELTYPE_CHILD ->
