@@ -9,6 +9,7 @@ import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
 import at.bitfire.synctools.util.AndroidTimeUtils
+import at.bitfire.synctools.util.AndroidTimeUtils.isUtcTzId
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.bitfire.synctools.util.AndroidTimeUtils.toZonedDateTime
 import net.fortuna.ical4j.model.Recur
@@ -29,6 +30,7 @@ class RecurrenceFieldsHandler : DmfsTaskFieldHandler {
 
     override fun process(from: ContentValues, to: Task) {
         val allDay = (from.getAsInteger(Tasks.IS_ALLDAY) ?: 0) != 0
+        val tzId = from.getAsString(Tasks.TZ)
 
         val tsStart = from.getAsLong(Tasks.DTSTART)
 
@@ -36,7 +38,7 @@ class RecurrenceFieldsHandler : DmfsTaskFieldHandler {
         val startTemporal: Temporal? by lazy {
             tsStart?.let { TaskTimeField(
                 timestamp = it,
-                tzId = from.getAsString(Tasks.TZ),
+                tzId = tzId,
                 allDay = allDay
             ).toTemporal() }
         }
@@ -67,7 +69,7 @@ class RecurrenceFieldsHandler : DmfsTaskFieldHandler {
         // process RDATE field
         from.getAsString(Tasks.RDATE)?.let { rDateStr ->
             try {
-                AndroidTimeUtils.androidStringToRecurrenceSet(rDateStr, allDay) { RDate(it) }
+                AndroidTimeUtils.androidStringToRecurrenceSet(withTzPrefix(rDateStr, tzId), allDay) { RDate(it) }
                     ?.let { to.rDates += it }
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't parse RDATE field, ignoring", e)
@@ -77,12 +79,30 @@ class RecurrenceFieldsHandler : DmfsTaskFieldHandler {
         // process EXDATE field
         from.getAsString(Tasks.EXDATE)?.let { exDateStr ->
             try {
-                AndroidTimeUtils.androidStringToRecurrenceSet(exDateStr, allDay) { ExDate(it) }
+                AndroidTimeUtils.androidStringToRecurrenceSet(withTzPrefix(exDateStr, tzId), allDay) { ExDate(it) }
                     ?.let { to.exDates += it }
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't parse EXDATE field, ignoring", e)
             }
         }
+    }
+
+    /**
+     * Prepends a `TZID;<tzId>` prefix to a recurrence set string if it contains floating DATE-TIMEs.
+     *
+     * OpenTasks stores RDATE/EXDATE as floating DATE-TIME strings (no trailing `Z`, no `TZID;` prefix)
+     * when the timezone is stored separately in [Tasks.TZ]. [AndroidTimeUtils.androidStringToRecurrenceSet]
+     * requires a `TZID;` prefix to parse such values. This method adds it when needed.
+     *
+     * @param recurrenceStr the RDATE/EXDATE value from the provider (e.g. `20251010T010203`)
+     * @param tzId          the timezone ID from [Tasks.TZ], or null if not set
+     * @return the string with `TZID;<tzId>;` prepended if the input is a floating DATE-TIME, otherwise unchanged
+     */
+    internal fun withTzPrefix(recurrenceStr: String, tzId: String?): String {
+        // Already has a TZID; prefix or is a UTC/date-only value — return as-is
+        if (recurrenceStr.contains(';') || tzId == null || isUtcTzId(tzId))
+            return recurrenceStr
+        return "$tzId;$recurrenceStr"
     }
 
     /**

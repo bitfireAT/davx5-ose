@@ -142,6 +142,60 @@ class RecurrenceFieldsHandlerTest {
     }
 
 
+    @Test
+    fun `RDATE floating datetime with Tasks_TZ uses timezone`() {
+        val task = Task()
+        handler.process(contentValuesOf(
+            Tasks.RDATE to "20251010T010203",
+            Tasks.TZ to "Europe/Vienna"
+        ), task)
+        assertEquals(1, task.rDates.size)
+    }
+
+    @Test
+    fun `EXDATE floating datetime with Tasks_TZ uses timezone`() {
+        val task = Task()
+        handler.process(contentValuesOf(
+            Tasks.EXDATE to "20251010T010203",
+            Tasks.TZ to "Europe/Vienna"
+        ), task)
+        assertEquals(1, task.exDates.size)
+    }
+
+    @Test
+    fun `RDATE with UTC value is not double-prefixed`() {
+        val task = Task()
+        handler.process(contentValuesOf(
+            Tasks.RDATE to "20251010T010203Z",
+            Tasks.TZ to "Europe/Vienna"
+        ), task)
+        assertEquals(1, task.rDates.size)
+    }
+
+
+    // withTzPrefix tests
+
+    @Test
+    fun `withTzPrefix adds prefix for floating datetime`() {
+        assertEquals("Europe/Vienna;20251010T010203", handler.withTzPrefix("20251010T010203", "Europe/Vienna"))
+    }
+
+    @Test
+    fun `withTzPrefix does not add prefix when tzId is null`() {
+        assertEquals("20251010T010203Z", handler.withTzPrefix("20251010T010203Z", null))
+    }
+
+    @Test
+    fun `withTzPrefix does not add prefix when tzId is UTC`() {
+        assertEquals("20251010T010203Z", handler.withTzPrefix("20251010T010203Z", "UTC"))
+    }
+
+    @Test
+    fun `withTzPrefix does not add prefix when prefix already present`() {
+        assertEquals("Europe/Vienna;20251010T010203", handler.withTzPrefix("Europe/Vienna;20251010T010203", "Europe/Vienna"))
+    }
+
+
     // alignUntil tests
 
     @Test
