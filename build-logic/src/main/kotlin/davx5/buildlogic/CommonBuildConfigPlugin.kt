@@ -17,6 +17,11 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
+/**
+ * This plugin can be applied to other modules (like core, synctools etc.) in order to
+ * provide common configuration, like the Java toolchain version and Android configuration
+ * as API levels and desugaring.
+ */
 class CommonBuildConfigPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
@@ -34,7 +39,7 @@ class CommonBuildConfigPlugin : Plugin<Project> {
             ) {
                 extensions.configure<ApplicationExtension> {
                     configureCommonAndroid()
-                    defaultConfig.targetSdk = 36
+                    defaultConfig.targetSdk = 36    // Android 16
                 }
             }
 
@@ -76,12 +81,13 @@ class CommonBuildConfigPlugin : Plugin<Project> {
 
     /** Common configuration for all Android modules */
     private fun CommonExtension.configureCommonAndroid() {
-        compileSdk = 37
+        compileSdk = 37     // Android 17
 
         defaultConfig.apply {
-            minSdk = 24
+            minSdk = 24     // Android 7
         }
 
+        // enable desugaring for Java 8 Time API etc.
         compileOptions.apply {
             isCoreLibraryDesugaringEnabled = true
         }

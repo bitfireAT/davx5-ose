@@ -3,7 +3,7 @@
  */
 
 pluginManagement {
-    includeBuild("build-logic")
+    includeBuild("build-logic")         // provide convention plugin for submodules
 
     repositories {              // used for resolving plugins
         google()                // Android plugins
@@ -52,10 +52,5 @@ include(":synctools")
 /*includeBuild("../dav4jvm") {
     dependencySubstitution {
         substitute(module("com.github.bitfireat:dav4jvm")).using(project(":"))
-    }
-}*/
-/*includeBuild("../synctools") {
-    dependencySubstitution {
-        substitute(module("com.github.bitfireAT:synctools")).using(project(":lib"))
     }
 }*/
