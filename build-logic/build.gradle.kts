@@ -2,14 +2,19 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
+import org.gradle.api.artifacts.VersionCatalogsExtension
+
 plugins {
     `kotlin-dsl`
     `java-gradle-plugin`
 }
 
+val libsCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
+val javaToolchainVersion = libsCatalog.findVersion("java-toolchain").get().requiredVersion.toInt()
+
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(javaToolchainVersion)
     }
 }
 
@@ -23,6 +28,6 @@ gradlePlugin {
 }
 
 dependencies {
-    compileOnly("com.android.tools.build:gradle:9.2.1")
-    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.21")
+    compileOnly(libs.android.agp)
+    compileOnly(libs.kotlin.gradle.plugin)
 }
