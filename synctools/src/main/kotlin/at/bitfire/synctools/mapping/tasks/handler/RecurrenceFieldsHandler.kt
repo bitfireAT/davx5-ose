@@ -114,7 +114,7 @@ class RecurrenceFieldsHandler : DmfsTaskFieldHandler {
     /**
      * Prepends a `{tzId};` prefix to a recurrence set string if it is a floating DATE-TIME.
      *
-     * OpenTasks stores RDATE/EXDATE as floating DATE-TIME strings (no trailing `Z`, no `{tzId};`
+     * For DmfsTasks RDATE/EXDATE are stored as floating DATE-TIME strings (no trailing `Z`, no `{tzId};`
      * prefix) when the timezone is stored separately in [Tasks.TZ].
      * [AndroidTimeUtils.androidStringToRecurrenceSet] requires a `{tzId};` prefix to parse such
      * values correctly. This method adds the prefix when [tzId] is non-null and non-UTC and the
