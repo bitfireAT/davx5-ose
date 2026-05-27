@@ -857,6 +857,31 @@ class JtxICalObjectTest {
         assertEquals("America/New_York", iCalObjects.first().recuridTimezone)
     }
 
+    @Test
+    fun testFromReader_parses_inline_attachment() {
+        val attachmentData = "test data".toByteArray()
+        val base64Data = android.util.Base64.encodeToString(attachmentData, android.util.Base64.DEFAULT)
+
+        val icalString = "BEGIN:VCALENDAR\r\n" +
+                "VERSION:2.0\r\n" +
+                "PRODID:-//Test//Test//EN\r\n" +
+                "BEGIN:VTODO\r\n" +
+                "UID:test-attachment\r\n" +
+                "ATTACH;ENCODING=BASE64;VALUE=BINARY:$base64Data\r\n" +
+                "END:VTODO\r\n" +
+                "END:VCALENDAR\r\n"
+
+        val objects = at.bitfire.ical4android.JtxICalObject.fromReader(StringReader(icalString), collection!!)
+
+        assertEquals(1, objects.size)
+        assertEquals(1, objects[0].attachments.size)
+
+        val attachment = objects[0].attachments[0]
+        assertNotNull(attachment.binary)
+        val decoded = android.util.Base64.decode(attachment.binary, android.util.Base64.DEFAULT)
+        assertEquals(attachmentData.size, decoded.size)
+    }
+
 
     @Test
     fun getICalendarFormat_recurringVToDo_exceptionsMustHaveUidAndRecurrenceId() {
@@ -997,4 +1022,5 @@ class JtxICalObjectTest {
 
         return iCalOut
     }
+
 }
