@@ -4,7 +4,6 @@
 
 plugins {
     alias(libs.plugins.android.library)
-    `maven-publish`
 }
 
 android {
@@ -83,21 +82,6 @@ android {
         // Configure publish variant
         singleVariant("release") {
             withSourcesJar()
-        }
-    }
-}
-
-publishing {
-    // Configure publishing data
-    publications {
-        register("release", MavenPublication::class.java) {
-            groupId = "com.github.bitfireat"
-            artifactId = "synctools"
-            version = System.getenv("GIT_COMMIT")
-
-            afterEvaluate {
-                from(components["release"])
-            }
         }
     }
 }
