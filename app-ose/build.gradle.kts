@@ -8,28 +8,11 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.mikepenz.aboutLibraries.android)
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-kotlin {
-    compilerOptions {
-        // use new defaulting rule for qualifiers to avoid `@param:` prefix for DI annotations
-        freeCompilerArgs.add("-Xannotation-default-target=param-property")
-    }
+    id("davx5.common-buildconfig")
 }
 
 android {
-    compileSdk = 37
-
     defaultConfig {
-        minSdk = 24        // Android 7.0
-        targetSdk = 36     // Android 16
-
         applicationId = "at.bitfire.davdroid"
 
         /*
@@ -66,10 +49,6 @@ android {
         resValue("string", "authority_debug_provider", debugInfoAuthority)
 
         // Currently no instrumentation tests for app-ose, so no testInstrumentationRunner
-    }
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {

@@ -3,6 +3,8 @@
  */
 
 pluginManagement {
+    includeBuild("build-logic")
+
     repositories {              // used for resolving plugins
         google()                // Android plugins
         gradlePluginPortal()    // most plugins, including AboutLibraries
