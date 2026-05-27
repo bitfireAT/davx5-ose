@@ -23,11 +23,35 @@ import java.time.temporal.Temporal
 import java.util.logging.Level
 import java.util.logging.Logger
 
+/**
+ * Reads recurrence fields from an DmfsTask [ContentValues] row and populates the given [Task].
+ *
+ * Handles [Tasks.RRULE], [Tasks.RDATE], and [Tasks.EXDATE]. Unlike the Calendar provider, tasks providers
+ * store at most one RRULE per task, so no RRULE separator logic is needed.
+ *
+ * **timezone format:** RDATE/EXDATE values are stored as floating DATE-TIME strings
+ * (e.g. `20251010T010203`) with the timezone stored separately in [Tasks.TZ]. Before passing
+ * these strings to [AndroidTimeUtils.androidStringToRecurrenceSet], [withTzPrefix] prepends the
+ * required `{tzId};` prefix so they can be parsed correctly.
+ *
+ * **UNTIL alignment:** RFC 5545 §3.3.10 requires the RRULE `UNTIL` value to be in UTC when
+ * DTSTART is a DATE-TIME, and to be a bare DATE when DTSTART is a DATE. [alignUntil] enforces
+ * this, and rules whose UNTIL falls on or before DTSTART are silently dropped.
+ *
+ * Parse errors in any individual field are caught and logged as warnings so that a single
+ * malformed value never prevents the rest of the task from being read.
+ */
 class RecurrenceFieldsHandler : DmfsTaskFieldHandler {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
 
+    /**
+     * Reads [Tasks.RRULE], [Tasks.RDATE], and [Tasks.EXDATE] from [from] and populates [to].
+     *
+     * @param from  provider row for a single task
+     * @param to    task object to populate
+     */
     override fun process(from: ContentValues, to: Task) {
         val allDay = (from.getAsInteger(Tasks.IS_ALLDAY) ?: 0) != 0
         val tzId = from.getAsString(Tasks.TZ)
@@ -88,15 +112,17 @@ class RecurrenceFieldsHandler : DmfsTaskFieldHandler {
     }
 
     /**
-     * Prepends a `TZID;<tzId>` prefix to a recurrence set string if it contains floating DATE-TIMEs.
+     * Prepends a `{tzId};` prefix to a recurrence set string if it is a floating DATE-TIME.
      *
-     * OpenTasks stores RDATE/EXDATE as floating DATE-TIME strings (no trailing `Z`, no `TZID;` prefix)
-     * when the timezone is stored separately in [Tasks.TZ]. [AndroidTimeUtils.androidStringToRecurrenceSet]
-     * requires a `TZID;` prefix to parse such values. This method adds it when needed.
+     * OpenTasks stores RDATE/EXDATE as floating DATE-TIME strings (no trailing `Z`, no `{tzId};`
+     * prefix) when the timezone is stored separately in [Tasks.TZ].
+     * [AndroidTimeUtils.androidStringToRecurrenceSet] requires a `{tzId};` prefix to parse such
+     * values correctly. This method adds the prefix when [tzId] is non-null and non-UTC and the
+     * string does not already carry one.
      *
      * @param recurrenceStr the RDATE/EXDATE value from the provider (e.g. `20251010T010203`)
-     * @param tzId          the timezone ID from [Tasks.TZ], or null if not set
-     * @return the string with `TZID;<tzId>;` prepended if the input is a floating DATE-TIME, otherwise unchanged
+     * @param tzId          the timezone ID from [Tasks.TZ], or `null` if not set
+     * @return [recurrenceStr] with `{tzId};` prepended for floating DATE-TIMEs; unchanged otherwise
      */
     internal fun withTzPrefix(recurrenceStr: String, tzId: String?): String {
         // Already has a TZID; prefix or is a UTC/date-only value — return as-is
