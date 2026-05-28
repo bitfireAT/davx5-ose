@@ -66,10 +66,10 @@ class ICalendarGenerator {
             ical += exception
 
             exception.dtStart<Temporal>()?.date?.let { start ->
-                // Convert both Temporals to Instants for comparison, because they may be in different time zones. If conversion fails, ignore the start date of this exception.
-                val startInstant = runCatching { start.toInstant() }.getOrNull() ?: return@let
-                val earliestInstant = earliestStart?.let { runCatching { it.toInstant() }.getOrNull() }
-                if (earliestInstant == null || startInstant < earliestInstant)
+                // Convert both Temporals to Instants for comparison because they may be in different time zones. If conversion fails, UnsupportedTemporalTypeException is thrown.
+                val startInstant = start.toInstant()
+                val earliestInstant = start.toInstant()
+                if (startInstant < earliestInstant)
                     earliestStart = start
             }
             usedTimezoneIds += timeZonesOf(exception)
