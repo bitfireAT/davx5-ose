@@ -14,6 +14,7 @@ import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
 import at.bitfire.synctools.storage.calendar.EventsContract
 import com.google.common.base.MoreObjects
+import org.apache.commons.lang3.StringUtils
 import java.util.Optional
 
 class LocalEvent(
@@ -95,12 +96,12 @@ class LocalEvent(
             .add("flags", flags)
             .add("event", try {
                 // only include truncated main event row (won't contain attachments, unknown properties etc.)
-                androidEvent.main.entityValues.toString().take(1000)
+                StringUtils.abbreviate(androidEvent.main.entityValues.toString(), 1000)
             } catch (e: Exception) {
                 e
             })
-            .add("exceptions", try {
-                androidEvent.exceptions.joinToString { exception ->
+            .add("exceptions [max 10]", try {
+                androidEvent.exceptions.take(10).joinToString { exception ->
                     // truncated exception row
                     exception.entityValues.toString().take(1000)
                 }
