@@ -13,7 +13,7 @@ import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.TemporalAmountAdapter
-import net.fortuna.ical4j.model.TimeZone
+import net.fortuna.ical4j.model.TemporalComparator
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.component.VTimeZone
@@ -123,6 +123,13 @@ class Ical4jTest {
         // https://github.com/ical4j/ical4j/issues/419
         // A year has 365 or 366 days, but never 52 weeks = 52*7 days = 364 days.
         assertNotEquals("P52W", TemporalAmountAdapter(Period.ofYears(1)).toString())
+    }
+
+    @Test
+    fun `TemporalComparator compares Instant and ZonedDateTime`() {
+        val zdt = ZonedDateTime.of(2026, 5, 28, 18, 4, 22, 0, ZoneOffset.UTC)
+        val instant = zdt.toInstant()
+        assertEquals(0, TemporalComparator().compare(instant, zdt))
     }
 
     @Test
