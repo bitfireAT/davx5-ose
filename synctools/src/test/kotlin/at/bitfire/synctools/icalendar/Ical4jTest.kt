@@ -26,9 +26,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 import java.io.StringReader
 import java.io.StringWriter
+import java.time.DateTimeException
 import java.time.Duration
 import java.time.Period
 import java.time.ZoneOffset
@@ -127,9 +129,16 @@ class Ical4jTest {
 
     @Test
     fun `TemporalComparator compares Instant and ZonedDateTime`() {
+        // https://github.com/ical4j/ical4j/issues/880
         val zdt = ZonedDateTime.of(2026, 5, 28, 18, 4, 22, 0, ZoneOffset.UTC)
         val instant = zdt.toInstant()
-        assertEquals(0, TemporalComparator().compare(instant, zdt))
+        assertEquals(0, TemporalComparator().compare(zdt, instant))
+        try {
+            assertEquals(0, TemporalComparator().compare(instant, zdt))
+            fail("Issue is fixed in upstream, TemporalAdapterCompat.isAfter/isBefore can be dropped")
+        } catch (e: DateTimeException) {
+            assertTrue(e.message!!.contains("Unable to obtain ZonedDateTime from TemporalAccessor"))
+        }
     }
 
     @Test
