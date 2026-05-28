@@ -11,21 +11,26 @@ import net.fortuna.ical4j.data.CalendarOutputter
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.Parameter
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.TemporalAmountAdapter
-import net.fortuna.ical4j.model.TimeZone
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.parameter.Email
+import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.property.Attendee
+import net.fortuna.ical4j.model.property.Completed
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.transform.compliance.DatePropertyRule
+import net.fortuna.ical4j.util.CompatibilityHints
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 import java.io.StringReader
 import java.io.StringWriter
@@ -33,6 +38,7 @@ import java.time.Duration
 import java.time.Period
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.time.temporal.UnsupportedTemporalTypeException
 
 class Ical4jTest {
 
@@ -55,6 +61,24 @@ class Ical4jTest {
         ).getComponent<VEvent>(Component.VEVENT).get()
         val attendee = event.getRequiredProperty<Attendee>(Property.ATTENDEE)
         assertEquals("attendee1@example.virtual", attendee.getRequiredParameter<Email>(Parameter.EMAIL).value)
+    }
+
+    @Test
+    fun `COMPLETED with date read value`() {
+        // Only works in relaxed mode: construct a COMPLETED with DATE value, like
+        // COMPLETED;TYPE=DATE:20250815
+        assumeTrue(CompatibilityHints.isHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING))
+        val completed = Completed(
+            ParameterList(listOf(Value.DATE)),
+            "20250815"
+        )
+        // Now accessing the value causes an exception:
+        try {
+            completed.value
+            fail("Has been fixed in ical4j, doesn't throw exception anymore")
+        } catch (e: UnsupportedTemporalTypeException) {
+            assertEquals("Unsupported field: HourOfDay", e.message)
+        }
     }
 
     @Test
