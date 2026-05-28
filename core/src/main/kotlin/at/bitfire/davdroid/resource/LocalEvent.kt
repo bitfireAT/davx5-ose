@@ -93,14 +93,21 @@ class LocalEvent(
             .add("eTag", eTag)
             .add("scheduleTag", scheduleTag)
             .add("flags", flags)
-            .add("event",
-                try {
-                    // only include truncated main event row (won't contain attachments, unknown properties etc.)
-                    androidEvent.main.entityValues.toString().take(1000)
-                } catch (e: Exception) {
-                    e
+            .add("event", try {
+                // only include truncated main event row (won't contain attachments, unknown properties etc.)
+                androidEvent.main.entityValues.toString().take(1000)
+            } catch (e: Exception) {
+                e
+            })
+            .add("exceptions", try {
+                androidEvent.exceptions.joinToString { exception ->
+                    // truncated exception row
+                    exception.entityValues.toString().take(1000)
                 }
-            ).toString()
+            } catch (e: Exception) {
+                e
+            })
+            .toString()
 
     override fun getViewUri(context: Context) =
         ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id)
