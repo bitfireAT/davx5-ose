@@ -108,7 +108,7 @@ class TasksSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalTask): GeneratedResource {
         val task = requireNotNull(resource.dmfsTask.task)
-        logger.log(Level.FINE, "Preparing upload of task ${resource.id}", task)
+        logger.log(Level.FINE, "Preparing upload of task ${resource.id}", runCatching { task.toString() }.getOrNull())
 
         // get/create UID
         val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(task.uid)
@@ -188,19 +188,16 @@ class TasksSyncManager @AssistedInject constructor(
         if (tasks.size == 1) {
             val newData = tasks.first()
 
-            // Note: Task.toString() can throw unwanted exceptions. Catch those for logging.
-            val newDataStr = runCatching { newData.toString() }.getOrNull()
-
             // update local task, if it exists
             val local = localCollection.findByName(fileName)
             SyncException.wrapWithLocalResource(local) {
                 if (local != null) {
-                    logger.log(Level.INFO, "Updating $fileName in local task list", newDataStr)
+                    logger.log(Level.INFO, "Updating $fileName in local task list", newData)
                     local.eTag = eTag
                     local.update(newData)
                 } else {
                     // Note: Task.toString() can throw unwanted exceptions
-                    logger.log(Level.INFO, "Adding $fileName to local task list", newDataStr)
+                    logger.log(Level.INFO, "Adding $fileName to local task list", newData)
                     val newLocal = LocalTask(DmfsTask(localCollection.dmfsTaskList, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT))
                     SyncException.wrapWithLocalResource(newLocal) {
                         newLocal.add()
