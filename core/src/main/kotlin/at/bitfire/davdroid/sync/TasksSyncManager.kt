@@ -188,15 +188,19 @@ class TasksSyncManager @AssistedInject constructor(
         if (tasks.size == 1) {
             val newData = tasks.first()
 
+            // Note: Task.toString() can throw unwanted exceptions. Catch those for logging.
+            val newDataStr = runCatching { newData.toString() }.getOrNull()
+
             // update local task, if it exists
             val local = localCollection.findByName(fileName)
             SyncException.wrapWithLocalResource(local) {
                 if (local != null) {
-                    logger.log(Level.INFO, "Updating $fileName in local task list", newData)
+                    logger.log(Level.INFO, "Updating $fileName in local task list", newDataStr)
                     local.eTag = eTag
                     local.update(newData)
                 } else {
-                    logger.log(Level.INFO, "Adding $fileName to local task list", newData)
+                    // Note: Task.toString() can throw unwanted exceptions
+                    logger.log(Level.INFO, "Adding $fileName to local task list", newDataStr)
                     val newLocal = LocalTask(DmfsTask(localCollection.dmfsTaskList, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT))
                     SyncException.wrapWithLocalResource(newLocal) {
                         newLocal.add()

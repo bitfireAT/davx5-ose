@@ -204,11 +204,11 @@ class JtxSyncManager @AssistedInject constructor(
                 val local = localCollection.findByName(fileName)
                 SyncException.wrapWithLocalResource(local) {
                     if (local != null) {
-                        logger.log(Level.INFO, "Updating $fileName in local list", jtxICalObject)
+                        logger.log(Level.INFO, "Updating $fileName in local list")
                         local.eTag = eTag
                         local.update(jtxICalObject)
                     } else {
-                        logger.log(Level.INFO, "Adding $fileName to local list", jtxICalObject)
+                        logger.log(Level.INFO, "Adding $fileName to local list")
 
                         val newLocal = LocalJtxICalObject(localCollection, fileName, eTag, null, LocalResource.FLAG_REMOTELY_PRESENT)
                         SyncException.wrapWithLocalResource(newLocal) {
