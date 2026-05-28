@@ -9,6 +9,7 @@ import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.database.DatabaseUtils
 import android.os.ParcelFileDescriptor
+import android.util.Base64
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.ical4android.impl.TestJtxCollection
@@ -860,8 +861,7 @@ class JtxICalObjectTest {
     @Test
     fun testFromReader_parses_inline_attachment() {
         val attachmentData = "test data".toByteArray()
-        val base64Data = android.util.Base64.encodeToString(attachmentData, android.util.Base64.DEFAULT)
-
+        val base64Data = Base64.encodeToString(attachmentData, Base64.NO_WRAP)
         val icalString = "BEGIN:VCALENDAR\r\n" +
                 "VERSION:2.0\r\n" +
                 "PRODID:-//Test//Test//EN\r\n" +
@@ -878,8 +878,8 @@ class JtxICalObjectTest {
 
         val attachment = objects[0].attachments[0]
         assertNotNull(attachment.binary)
-        val decoded = android.util.Base64.decode(attachment.binary, android.util.Base64.DEFAULT)
-        assertEquals(attachmentData.size, decoded.size)
+        val decoded = Base64.decode(attachment.binary, Base64.DEFAULT)
+        assertEquals(attachmentData.contentToString(), decoded.contentToString())
     }
 
 
