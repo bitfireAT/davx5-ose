@@ -65,6 +65,7 @@ class Ical4jTest {
 
     @Test
     fun `COMPLETED with date read value`() {
+        // See https://github.com/ical4j/ical4j/issues/879
         // Only works in relaxed mode: construct a COMPLETED with DATE value, like
         // COMPLETED;TYPE=DATE:20250815
         assumeTrue(CompatibilityHints.isHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING))
