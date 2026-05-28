@@ -501,7 +501,7 @@ open class JtxICalObject(
                     is Attach -> {
                         val attachment = Attachment()
                         prop.uri?.let { attachment.uri = it.toString() }
-                        prop.binary?.array()?.let {
+                        prop.getBinaryData()?.let {
                             attachment.binary = Base64.encodeToString(it, Base64.DEFAULT)
                         }
                         prop.getParameter<FmtType>(Parameter.FMTTYPE)?.getOrNull()?.let {
