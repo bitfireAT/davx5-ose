@@ -35,6 +35,7 @@ import net.fortuna.ical4j.model.property.Trigger
 import net.fortuna.ical4j.model.property.immutable.ImmutableAction
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
@@ -879,7 +880,7 @@ class JtxICalObjectTest {
         val attachment = objects[0].attachments[0]
         assertNotNull(attachment.binary)
         val decoded = Base64.decode(attachment.binary, Base64.DEFAULT)
-        assertEquals(attachmentData.contentToString(), decoded.contentToString())
+        assertArrayEquals(attachmentData, decoded)
     }
 
 
