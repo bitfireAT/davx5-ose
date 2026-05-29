@@ -8,6 +8,7 @@ import at.bitfire.dateTimeValue
 import at.bitfire.synctools.icalendar.validation.ICalPreprocessor
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.data.CalendarOutputter
+import net.fortuna.ical4j.data.ParserException
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.Parameter
@@ -16,6 +17,7 @@ import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.TemporalAmountAdapter
 import net.fortuna.ical4j.model.TemporalComparator
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
+import net.fortuna.ical4j.model.TimeZoneRegistryImpl
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.parameter.Email
@@ -356,6 +358,35 @@ class Ical4jTest {
         )
 
         assertTrue(calendar.getComponent<VTimeZone>(Component.VTIMEZONE).isPresent)
+    }
+
+    @Test
+    fun `VTIMEZONE without STANDARD and DAYLIGHT sub-components`() {
+        // https://github.com/ical4j/ical4j/issues/531
+        val defaultTimeZoneRegistry = TimeZoneRegistryImpl()
+        val reader = StringReader(
+            """
+            BEGIN:VCALENDAR
+            VERSION:2.0
+            PRODID:-//Example Corp.//CalDAV Client//EN
+            BEGIN:VTIMEZONE
+            TZID:UTC
+            END:VTIMEZONE
+            BEGIN:VEVENT
+            DTSTAMP:20260529T095200Z
+            UID:bc295665-5b3b-11f1-9a52-d843aea66ff2
+            DTSTART;TZID=UTC:20260528T120000
+            END:VEVENT
+            END:VCALENDAR
+            """.trimIndent()
+        )
+
+        try {
+            CalendarBuilder(defaultTimeZoneRegistry).build(reader)
+            fail("TimeZoneRegistryFactoryWorkaround can be removed")
+        } catch (e: ParserException) {
+            assertTrue(e.cause is NullPointerException)
+        }
     }
 
 }
