@@ -10,12 +10,12 @@ import android.content.ContentValues
 import android.database.DatabaseUtils
 import android.net.Uri
 import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
-import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.ICalendar
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.ical4android.impl.TestTaskList
+import at.bitfire.synctools.storage.tasks.DmfsTask
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import net.fortuna.ical4j.model.DateList

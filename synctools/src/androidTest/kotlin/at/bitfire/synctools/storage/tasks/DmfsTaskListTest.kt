@@ -9,7 +9,6 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.database.DatabaseUtils
 import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
-import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
 import net.fortuna.ical4j.model.property.RelatedTo
