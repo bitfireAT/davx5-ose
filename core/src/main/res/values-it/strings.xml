@@ -480,4 +480,19 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
         <item quantity="other">Gli elementi più vecchi di %d giorni non sono sincronizzati (vede impostazioni dell\'account).</item>
     </plurals>
     <string name="debug_info_http_403_description">La richiesta è stata respinta dal server.</string>
+    <string name="notification_channel_user_interaction">Interazione Utente</string>
+    <string name="notification_channel_user_interaction_desc">È richiesta l\'interazione dell\'utente. Un problema deve essere risolto manualmente.</string>
+    <string name="app_settings_push_use_push">Usa Push</string>
+    <string name="app_settings_push_description">Usa Push per permettere ai server CalDAV/CardDAV/WebDAV di notificare istantaneamente %s delle modifiche disponibili ai dati sul server.</string>
+    <string name="app_settings_push_disabled_summary">Spento</string>
+    <string name="app_settings_push_enabled_summary">Acceso, %s</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[Nessun servizio Push trovato. Vai su <a href="%1$s">%2$s</a> per un elenco di App di Distribuzione.]]></string>
+    <string name="app_settings_push_info_text"><![CDATA[I messaggi Push sono sempre criptati. Leggi di più su WebDAV-Push sul <a href="%s">manuale</a>.]]></string>
+    <string name="app_settings_push_push_services">Servizio Push</string>
+    <string name="app_settings_push_capability_none">Nessuna delle raccolte di server abilitate alla sincronizzazione supporta attualmente WebDAV-Push.</string>
+    <string name="app_settings_push_capability_some">Solo alcune delle raccolte di server abilitate alla sincronizzazione supportano attualmente WebDAV-Push.</string>
+    <string name="app_settings_push_select_default_distributor_description">Sono installate più app di Distribuzione UnifiedPush. È possibile impostare il predefinito di sistema qui, in modo che altre app abilitate a UnifiedPush non debbano chiedere quale usare.</string>
+    <string name="app_settings_push_select_default_distributor_action">Imposta predefinito</string>
+    <string name="login_fastmail_account">Account Fastmail</string>
+    <string name="widget_sync_description">Tocca per sincronizzare manualmente.</string>
 </resources>

@@ -526,4 +526,10 @@
     <string name="app_settings_push_select_default_distributor_action">Configurar como padrão</string>
     <string name="app_settings_push_capability_none">Nenhuma das suas coleções do servidor com a sincronização ativada suportam o WebDAV-Push.</string>
     <string name="app_settings_push_capability_some">Apenas algumas das suas coleções do servidor suportam o WebDAV-Push.</string>
+    <string name="notification_channel_user_interaction">Interação do usuário</string>
+    <string name="notification_channel_user_interaction_desc">Interação do usuário necessária. Um problema deve ser resolvido manualmente.</string>
+    <string name="app_settings_push_enabled_summary">Ativado, %s</string>
+    <string name="app_settings_push_disabled_summary">Desativado</string>
+    <string name="push_distributor_selection_required_title">Seleção de distribuidor necessária</string>
+    <string name="push_distributor_selection_required_message">O distribuidor padrão do UnifiedPush não pode ser descoberto. Toque para selecionar um.</string>
 </resources>

@@ -521,4 +521,8 @@
     <string name="app_settings_push_capability_some">Slechts enkele van uw servercollecties met synchronisatie ondersteunen momenteel WebDAV-Push.</string>
     <string name="app_settings_push_enabled_summary">aan, %s</string>
     <string name="app_settings_push_disabled_summary">Uit</string>
+    <string name="notification_channel_user_interaction">Gebruikersinteractie</string>
+    <string name="notification_channel_user_interaction_desc">Gebruikersinteractie vereist. Een probleem of probleem moet handmatig worden aangepakt.</string>
+    <string name="push_distributor_selection_required_title">Selectie van distributeur vereist</string>
+    <string name="push_distributor_selection_required_message">Een standaard UnifiedPush-distributeur kon niet worden opgelost. Tik om er een te selecteren.</string>
 </resources>

@@ -526,4 +526,10 @@
     <string name="app_settings_push_push_services">Serviciu Push</string>
     <string name="app_settings_push_default_distributor_text">(implicit sistem)</string>
     <string name="app_settings_push_capability_none">Niciuna dintre colecțiile de server cu sincronizare nu acceptă în prezent WebDAV-Push.</string>
+    <string name="notification_channel_user_interaction">Interacțiune utilizator</string>
+    <string name="notification_channel_user_interaction_desc">Este necesară interacțiunea utilizatorului. O problemă trebuie rezolvată manual.</string>
+    <string name="app_settings_push_enabled_summary">Activat, %s</string>
+    <string name="app_settings_push_disabled_summary">Dezactivat</string>
+    <string name="push_distributor_selection_required_title">Este necesară selectarea distribuitorului</string>
+    <string name="push_distributor_selection_required_message">Nu s-a putut rezolva un distribuitor UnifiedPush implicit. Atinge pentru a selecta unul.</string>
 </resources>

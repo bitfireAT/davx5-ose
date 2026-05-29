@@ -433,4 +433,43 @@
     <string name="widget_labeled_sync_label">Tombol Sinkronisasi Berlabel</string>
     <string name="widget_icon_sync_label">Tombol Ikon Sinkronisasi</string>
     <string name="widget_sync_description">Ketuk untuk menjalankan sinkronisasi secara manual.</string>
+    <string name="dismiss_forever">Tutup selamanya</string>
+    <string name="notification_channel_user_interaction">Interaksi Pengguna</string>
+    <string name="notification_channel_user_interaction_desc">Interaksi pengguna diperlukan. Masalah atau isu harus ditangani secara manual.</string>
+    <string name="keep_android_open"><![CDATA[Keterbukaan Android sedang terancam. Pelajari cara Anda dapat membantu di <a href="%s">keepandroidopen.org</a>.]]></string>
+    <string name="app_settings_push_enabled_summary">Aktif, %s</string>
+    <string name="app_settings_push_disabled_summary">Nonaktif</string>
+    <string name="app_settings_push_title">Push</string>
+    <string name="app_settings_push_description">Gunakan Push agar server CalDAV/CardDAV/WebDAV dapat segera memberi tahu %s tentang perubahan yang tersedia pada data Anda di server.</string>
+    <string name="app_settings_push_use_push">Gunakan Push</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[Tidak ditemukan Layanan Push. Kunjungi <a href="%1$s">%2$s</a> untuk daftar Aplikasi Distributor.]]></string>
+    <string name="app_settings_push_info_text"><![CDATA[Pesan Push selalu terenkripsi. Pelajari lebih lanjut tentang WebDAV-Push di <a href="%s">panduan</a>.]]></string>
+    <string name="app_settings_push_push_services">Layanan Push</string>
+    <string name="app_settings_push_default_distributor_text">(default sistem)</string>
+    <string name="app_settings_push_capability_none">Tidak ada koleksi server Anda yang saat ini diaktifkan untuk sinkronisasi yang mendukung WebDAV-Push.</string>
+    <string name="app_settings_push_capability_some">Hanya sebagian koleksi server Anda yang saat ini diaktifkan untuk sinkronisasi mendukung WebDAV-Push.</string>
+    <string name="app_settings_push_select_default_distributor_description">Ada beberapa Aplikasi Distributor UnifiedPush yang terpasang. Anda dapat menetapkan default sistem di sini, sehingga aplikasi lain yang mendukung UnifiedPush tidak perlu lagi menanyakan mana yang harus digunakan.</string>
+    <string name="app_settings_push_select_default_distributor_action">Tetapkan default</string>
+    <string name="login_invalid_use_case">Kasus penggunaan tidak valid</string>
+    <string name="login_invalid_use_case_info"><![CDATA[Varian aplikasi %s ini hanya dapat digunakan dengan layanan tertentu yang dipilih.]]></string>
+    <string name="login_download_regular_davx5"><![CDATA[Sebagai gantinya, gunakan <a href="%s">DAVx⁵</a>, yang dapat digunakan dengan semua layanan.]]></string>
+    <string name="login_download_button">Unduh DAVx⁵</string>
+    <string name="collection_datatype_contacts_count">%1$d kontak</string>
+    <string name="collection_datatype_events_count">%1$d acara</string>
+    <string name="collection_datatype_tasks_count">%1$d tugas</string>
+    <string name="collection_synced_items_title">Jumlah item lokal</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="other">%1$d item di %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <item quantity="other">├ %d modifikasi belum tersinkronisasi</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <item quantity="other">└ %d penghapusan belum tersinkronisasi</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="other">Item yang lebih lama dari %d hari tidak disinkronkan (lihat pengaturan akun).</item>
+    </plurals>
+    <string name="push_distributor_selection_required_title">Pemilihan distributor diperlukan</string>
+    <string name="push_distributor_selection_required_message">Distributor UnifiedPush default tidak dapat ditentukan. Ketuk untuk memilih satu.</string>
 </resources>
