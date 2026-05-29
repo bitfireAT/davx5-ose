@@ -8,11 +8,16 @@ import android.content.ContentValues
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
+import org.json.JSONException
 
 class UnknownPropertiesHandler : DmfsTaskPropertyHandler {
     override fun process(row: ContentValues, to: Task) {
         row.getAsString(UNKNOWN_PROPERTY_DATA)?.let { properties ->
-            to.unknownProperties += UnknownProperty.fromJsonString(properties)
+            try {
+                to.unknownProperties += UnknownProperty.fromJsonString(properties)
+            } catch (_: JSONException) {
+                // Ignore properties with invalid JSON
+            }
         }
     }
 }

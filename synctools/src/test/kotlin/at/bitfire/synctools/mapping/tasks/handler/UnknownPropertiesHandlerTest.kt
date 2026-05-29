@@ -77,4 +77,14 @@ class UnknownPropertiesHandlerTest {
         assertTrue(task.unknownProperties.isEmpty())
     }
 
+    @Test
+    fun `Unknown property with invalid JSON`() {
+        val task = Task()
+        handler.process(contentValuesOf(
+            UNKNOWN_PROPERTY_DATA to "[\"UID\", \"test-property\", {}]"
+        ), task)
+
+        assertTrue(task.unknownProperties.isEmpty())
+    }
+
 }
