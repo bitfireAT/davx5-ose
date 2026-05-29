@@ -2,12 +2,8 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.util
+package at.bitfire.synctools.util
 
 import com.google.common.base.Strings
 
-fun String.withTrailingSlash() =
-    if (this.endsWith('/'))
-        this
-    else
-        "$this/"
+fun CharSequence?.trimToNull() = Strings.emptyToNull(this?.trim()?.toString())

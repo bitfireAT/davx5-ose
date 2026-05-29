@@ -5,7 +5,7 @@
 package at.bitfire.synctools.icalendar
 
 import androidx.annotation.VisibleForTesting
-import at.bitfire.synctools.util.Utils.trimToNull
+import at.bitfire.synctools.util.trimToNull
 import net.fortuna.ical4j.data.CalendarOutputter
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component

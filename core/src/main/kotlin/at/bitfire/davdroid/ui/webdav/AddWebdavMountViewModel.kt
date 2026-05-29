@@ -15,7 +15,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
-import at.bitfire.davdroid.util.trimToNull
+import at.bitfire.synctools.util.trimToNull
 import at.bitfire.davdroid.webdav.WebDavMountRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
