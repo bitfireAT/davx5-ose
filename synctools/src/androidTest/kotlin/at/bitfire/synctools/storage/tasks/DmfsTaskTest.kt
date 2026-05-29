@@ -2,15 +2,17 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android
+package at.bitfire.synctools.storage.tasks
 
 import android.accounts.Account
 import android.content.ContentUris
-import android.net.Uri
+import android.content.Entity
 import androidx.core.content.contentValuesOf
+import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
+import at.bitfire.ical4android.Task
+import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.impl.TestTaskList
 import at.bitfire.synctools.storage.LocalStorageException
-import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.parameter.RelType
@@ -40,7 +42,7 @@ class DmfsTaskTest(
 
     private val testAccount = Account(javaClass.name, TaskContract.LOCAL_ACCOUNT_TYPE)
 
-    private lateinit var taskListUri: Uri
+    private lateinit var taskListUri: android.net.Uri
     private var taskList: DmfsTaskList? = null
 
     @Before
@@ -65,12 +67,12 @@ class DmfsTaskTest(
     @Test
     fun testConstructor_ContentValues() {
         val dmfsTask = DmfsTask(
-            taskList!!, contentValuesOf(
+            taskList!!, Entity(contentValuesOf(
                 Tasks._ID to 123,
                 Tasks._SYNC_ID to "some-ical.ics",
                 DmfsTask.COLUMN_ETAG to "some-etag",
                 DmfsTask.COLUMN_FLAGS to 45
-            )
+            ))
         )
         assertEquals(123L, dmfsTask.id)
         assertEquals("some-ical.ics", dmfsTask.syncId)
@@ -115,7 +117,7 @@ class DmfsTaskTest(
         assertNotNull("Couldn't add task", uri)
 
         // read and parse event from calendar provider
-        val testTask = taskList!!.getLegacyTask(ContentUris.parseId(uri))
+        val testTask = taskList!!.getTask(ContentUris.parseId(uri))
         try {
             assertNotNull("Inserted task is not here", testTask)
             val task2 = testTask?.task
