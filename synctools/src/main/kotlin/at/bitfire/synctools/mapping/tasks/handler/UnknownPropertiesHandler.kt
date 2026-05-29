@@ -22,7 +22,7 @@ class UnknownPropertiesHandler : DmfsTaskPropertyHandler {
                 to.unknownProperties += UnknownProperty.fromJsonString(properties)
             } catch (e: JSONException) {
                 // Ignore properties with invalid JSON
-                logger.fine("Got an unknown property with invalid JSON: $e")
+                logger.warning("Got an unknown property with invalid JSON: $e")
             }
         }
     }
