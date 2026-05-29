@@ -24,7 +24,8 @@ class TimeZoneRegistryWorkaround(
     private val timeZoneRegistry: TimeZoneRegistry = DefaultTimeZoneRegistryFactory().createRegistry()
 ) : TimeZoneRegistry by timeZoneRegistry {
 
-    private val logger = Logger.getLogger(javaClass.name)
+    private val logger: Logger
+        get() = Logger.getLogger(javaClass.name)
 
     override fun register(timeZone: TimeZone) {
         register(timeZone, update = false)
