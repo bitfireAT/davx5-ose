@@ -9,8 +9,8 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.provider.CalendarContract
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
+import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

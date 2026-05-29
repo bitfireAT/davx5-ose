@@ -6,8 +6,8 @@ package at.bitfire.synctools.mapping.jtx
 
 import android.content.Entity
 import at.bitfire.synctools.icalendar.AssociatedComponents
-import at.bitfire.synctools.mapping.jtx.handler.CommentsHandler
 import at.bitfire.synctools.mapping.jtx.handler.CategoriesHandler
+import at.bitfire.synctools.mapping.jtx.handler.CommentsHandler
 import at.bitfire.synctools.mapping.jtx.handler.DescriptionHandler
 import at.bitfire.synctools.mapping.jtx.handler.JtxFieldHandler
 import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
