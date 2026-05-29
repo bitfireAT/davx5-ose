@@ -9,14 +9,20 @@ import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
 import org.json.JSONException
+import java.util.logging.Logger
 
 class UnknownPropertiesHandler : DmfsTaskPropertyHandler {
+
+    private val logger
+        get() = Logger.getLogger(javaClass.name)
+
     override fun process(row: ContentValues, to: Task) {
         row.getAsString(UNKNOWN_PROPERTY_DATA)?.let { properties ->
             try {
                 to.unknownProperties += UnknownProperty.fromJsonString(properties)
-            } catch (_: JSONException) {
+            } catch (e: JSONException) {
                 // Ignore properties with invalid JSON
+                logger.fine("Got an unknown property with invalid JSON: $e")
             }
         }
     }
