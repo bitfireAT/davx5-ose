@@ -11,7 +11,7 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
-class TemporalAdapterCompatTest {
+class TemporalAdapterWorkaroundTest {
 
     @Test
     fun `Compare equal Instant and ZonedDateTime`() {
@@ -19,10 +19,10 @@ class TemporalAdapterCompatTest {
         val instant = zdt.toInstant()
         
         // Both are equal, so neither isBefore nor isAfter should be true
-        assertFalse(TemporalAdapterCompat.isBefore(zdt, instant))
-        assertFalse(TemporalAdapterCompat.isBefore(instant, zdt))
-        assertFalse(TemporalAdapterCompat.isAfter(zdt, instant))
-        assertFalse(TemporalAdapterCompat.isAfter(instant, zdt))
+        assertFalse(TemporalAdapterWorkaround.isBefore(zdt, instant))
+        assertFalse(TemporalAdapterWorkaround.isBefore(instant, zdt))
+        assertFalse(TemporalAdapterWorkaround.isAfter(zdt, instant))
+        assertFalse(TemporalAdapterWorkaround.isAfter(instant, zdt))
     }
 
     @Test
@@ -30,10 +30,10 @@ class TemporalAdapterCompatTest {
         val instant = Instant.parse("2026-05-28T18:00:00Z")
         val zdt = ZonedDateTime.of(2026, 5, 28, 18, 4, 22, 0, ZoneOffset.UTC)
         
-        assertTrue(TemporalAdapterCompat.isBefore(instant, zdt))
-        assertFalse(TemporalAdapterCompat.isAfter(instant, zdt))
-        assertTrue(TemporalAdapterCompat.isAfter(zdt, instant))
-        assertFalse(TemporalAdapterCompat.isBefore(zdt, instant))
+        assertTrue(TemporalAdapterWorkaround.isBefore(instant, zdt))
+        assertFalse(TemporalAdapterWorkaround.isAfter(instant, zdt))
+        assertTrue(TemporalAdapterWorkaround.isAfter(zdt, instant))
+        assertFalse(TemporalAdapterWorkaround.isBefore(zdt, instant))
     }
 
     @Test
@@ -41,10 +41,10 @@ class TemporalAdapterCompatTest {
         val zdt = ZonedDateTime.of(2026, 5, 28, 18, 0, 0, 0, ZoneOffset.UTC)
         val instant = Instant.parse("2026-05-28T18:04:22Z")
         
-        assertTrue(TemporalAdapterCompat.isBefore(zdt, instant))
-        assertFalse(TemporalAdapterCompat.isAfter(zdt, instant))
-        assertTrue(TemporalAdapterCompat.isAfter(instant, zdt))
-        assertFalse(TemporalAdapterCompat.isBefore(instant, zdt))
+        assertTrue(TemporalAdapterWorkaround.isBefore(zdt, instant))
+        assertFalse(TemporalAdapterWorkaround.isAfter(zdt, instant))
+        assertTrue(TemporalAdapterWorkaround.isAfter(instant, zdt))
+        assertFalse(TemporalAdapterWorkaround.isBefore(instant, zdt))
     }
 
 }
