@@ -99,4 +99,42 @@ data class Task(
 
             return null
         }
+
+    /**
+     * We can't use the default data class `toString()` because it can throw
+     * an exception when the underlying ical4j properties throw an exception on `toString()`. See:
+     *
+     * - https://github.com/bitfireAT/davx5-ose/issues/2277
+     * - https://github.com/ical4j/ical4j/issues/879
+     */
+    override fun toString(): String =
+        runCatching {
+            "Task(createdAt=$createdAt, " +
+            "lastModified=$lastModified, " +
+            "summary=$summary, " +
+            "location=$location, " +
+            "geoPosition=$geoPosition, " +
+            "description=$description, " +
+            "color=$color, " +
+            "url=$url, " +
+            "organizer=$organizer, " +
+            "priority=$priority, " +
+            "classification=$classification, " +
+            "status=$status, " +
+            "dtStart=$dtStart, " +
+            "due=$due, " +
+            "duration=$duration, " +
+            "completedAt=$completedAt, " +
+            "percentComplete=$percentComplete, " +
+            "rRule=$rRule, " +
+            "rDates=$rDates, " +
+            "exDates=$exDates, " +
+            "categories=$categories, " +
+            "comment=$comment, " +
+            "relatedTo=$relatedTo, " +
+            "unknownProperties=$unknownProperties, " +
+            "alarms=$alarms, " +
+            "end=$end)"
+        }.getOrElse { exception -> "Task.toString() failed: $exception" }
+
 }

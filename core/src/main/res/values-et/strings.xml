@@ -519,4 +519,10 @@
     <string name="app_settings_push_select_default_distributor_action">Määra vaikimisi väärtuseka</string>
     <string name="app_settings_push_capability_none">Ükski sinu sünkroonimissuutlik serverikogumik praegu ei toeta WebDAV-Push\'i.</string>
     <string name="app_settings_push_capability_some">Vaid mõni sinu sünkroonimissuutlik serverikogumik toetab praegu WebDAV-Push\'i.</string>
+    <string name="notification_channel_user_interaction">Kasutaja osalemine</string>
+    <string name="notification_channel_user_interaction_desc">On tekkinud viga või probleem, mille pead käsitsi lahendama.</string>
+    <string name="app_settings_push_enabled_summary">Sees - %s</string>
+    <string name="app_settings_push_disabled_summary">Väljas</string>
+    <string name="push_distributor_selection_required_title">Pead valima levitaja</string>
+    <string name="push_distributor_selection_required_message">Vaikimisi UnifiedPushi levitaja tuvastamine polnud võimalik. Palun klõpsa ja vali oma eelistus.</string>
 </resources>

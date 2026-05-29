@@ -527,4 +527,9 @@
     <string name="app_settings_push_capability_some">Només alguna de les col·leccions habilitades de servidors de sincronització actualment admet WebDAV-Push.</string>
     <string name="app_settings_push_enabled_summary">Actiu, %s</string>
     <string name="app_settings_push_disabled_summary">Inactiu</string>
+    <string name="notification_channel_user_interaction">Interacció de l\'usuari</string>
+    <string name="notification_channel_user_interaction_desc">Es requereix la interacció de l\'usuari. Cal corregir manualment un problema o una incidència.</string>
+    <string name="login_invalid_use_case_info"><![CDATA[Aquesta variant %s de l\'aplicació només es pot fer servir amb els serveis seleccionats.]]></string>
+    <string name="push_distributor_selection_required_title">Es requereix la selecció d\'un distribuïdor</string>
+    <string name="push_distributor_selection_required_message">No s\'ha pogut resoldre un distribuïdor UnifiedPush predeterminat. Toqueu per a seleccionar-ne un.</string>
 </resources>

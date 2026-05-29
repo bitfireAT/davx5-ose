@@ -8,31 +8,41 @@ import at.bitfire.dateTimeValue
 import at.bitfire.synctools.icalendar.validation.ICalPreprocessor
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.data.CalendarOutputter
+import net.fortuna.ical4j.data.ParserException
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.Parameter
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.TemporalAmountAdapter
-import net.fortuna.ical4j.model.TimeZone
+import net.fortuna.ical4j.model.TemporalComparator
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
+import net.fortuna.ical4j.model.TimeZoneRegistryImpl
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.parameter.Email
+import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.property.Attendee
+import net.fortuna.ical4j.model.property.Completed
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.transform.compliance.DatePropertyRule
+import net.fortuna.ical4j.util.CompatibilityHints
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 import java.io.StringReader
 import java.io.StringWriter
+import java.time.DateTimeException
 import java.time.Duration
 import java.time.Period
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.time.temporal.UnsupportedTemporalTypeException
 
 class Ical4jTest {
 
@@ -55,6 +65,25 @@ class Ical4jTest {
         ).getComponent<VEvent>(Component.VEVENT).get()
         val attendee = event.getRequiredProperty<Attendee>(Property.ATTENDEE)
         assertEquals("attendee1@example.virtual", attendee.getRequiredParameter<Email>(Parameter.EMAIL).value)
+    }
+
+    @Test
+    fun `COMPLETED with date read value`() {
+        // See https://github.com/ical4j/ical4j/issues/879
+        // Only works in relaxed mode: construct a COMPLETED with DATE value, like
+        // COMPLETED;TYPE=DATE:20250815
+        assumeTrue(CompatibilityHints.isHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING))
+        val completed = Completed(
+            ParameterList(listOf(Value.DATE)),
+            "20250815"
+        )
+        // Now accessing the value causes an exception:
+        try {
+            completed.value
+            fail("Has been fixed in ical4j, doesn't throw exception anymore")
+        } catch (e: UnsupportedTemporalTypeException) {
+            assertEquals("Unsupported field: HourOfDay", e.message)
+        }
     }
 
     @Test
@@ -123,6 +152,20 @@ class Ical4jTest {
         // https://github.com/ical4j/ical4j/issues/419
         // A year has 365 or 366 days, but never 52 weeks = 52*7 days = 364 days.
         assertNotEquals("P52W", TemporalAmountAdapter(Period.ofYears(1)).toString())
+    }
+
+    @Test
+    fun `TemporalComparator compares Instant and ZonedDateTime`() {
+        // https://github.com/ical4j/ical4j/issues/880
+        val zdt = ZonedDateTime.of(2026, 5, 28, 18, 4, 22, 0, ZoneOffset.UTC)
+        val instant = zdt.toInstant()
+        assertEquals(0, TemporalComparator().compare(zdt, instant))
+        try {
+            assertEquals(0, TemporalComparator().compare(instant, zdt))
+            fail("Issue is fixed in upstream, TemporalAdapterCompat.isAfter/isBefore can be dropped")
+        } catch (e: DateTimeException) {
+            assertTrue(e.message!!.contains("Unable to obtain ZonedDateTime from TemporalAccessor"))
+        }
     }
 
     @Test
@@ -315,6 +358,35 @@ class Ical4jTest {
         )
 
         assertTrue(calendar.getComponent<VTimeZone>(Component.VTIMEZONE).isPresent)
+    }
+
+    @Test
+    fun `VTIMEZONE without STANDARD and DAYLIGHT sub-components`() {
+        // https://github.com/ical4j/ical4j/issues/531
+        val defaultTimeZoneRegistry = TimeZoneRegistryImpl()
+        val reader = StringReader(
+            """
+            BEGIN:VCALENDAR
+            VERSION:2.0
+            PRODID:-//Example Corp.//CalDAV Client//EN
+            BEGIN:VTIMEZONE
+            TZID:UTC
+            END:VTIMEZONE
+            BEGIN:VEVENT
+            DTSTAMP:20260529T095200Z
+            UID:bc295665-5b3b-11f1-9a52-d843aea66ff2
+            DTSTART;TZID=UTC:20260528T120000
+            END:VEVENT
+            END:VCALENDAR
+            """.trimIndent()
+        )
+
+        try {
+            CalendarBuilder(defaultTimeZoneRegistry).build(reader)
+            fail("TimeZoneRegistryFactoryWorkaround can be removed")
+        } catch (e: ParserException) {
+            assertTrue(e.cause is NullPointerException)
+        }
     }
 
 }

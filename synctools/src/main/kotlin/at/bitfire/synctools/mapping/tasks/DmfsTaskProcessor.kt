@@ -24,6 +24,7 @@ import at.bitfire.synctools.mapping.tasks.handler.OrganizerHandler
 import at.bitfire.synctools.mapping.tasks.handler.PercentCompleteHandler
 import at.bitfire.synctools.mapping.tasks.handler.PriorityHandler
 import at.bitfire.synctools.mapping.tasks.handler.RelationsHandler
+import at.bitfire.synctools.mapping.tasks.handler.RecurrenceFieldsHandler
 import at.bitfire.synctools.mapping.tasks.handler.SequenceHandler
 import at.bitfire.synctools.mapping.tasks.handler.StartTimeHandler
 import at.bitfire.synctools.mapping.tasks.handler.StatusHandler
@@ -32,6 +33,8 @@ import at.bitfire.synctools.mapping.tasks.handler.UidHandler
 import at.bitfire.synctools.mapping.tasks.handler.UnknownPropertiesHandler
 import at.bitfire.synctools.mapping.tasks.handler.UrlHandler
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
+import net.fortuna.ical4j.model.parameter.RelType
+import net.fortuna.ical4j.model.property.RelatedTo
 import at.bitfire.synctools.util.AndroidTimeUtils
 import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.RDate
@@ -42,7 +45,6 @@ import org.dmfs.tasks.contract.TaskContract.Property.Category
 import org.dmfs.tasks.contract.TaskContract.Property.Comment
 import org.dmfs.tasks.contract.TaskContract.Property.Relation
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.time.temporal.Temporal
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -72,6 +74,7 @@ class DmfsTaskProcessor(
         StatusHandler(),
         CompletedHandler(),
         PercentCompleteHandler(),
+        RecurrenceFieldsHandler(),
     )
 
     private val propertyHandlers: Map<String, DmfsTaskPropertyHandler> = mapOf(
@@ -91,21 +94,8 @@ class DmfsTaskProcessor(
 
         to.userAgents += taskList.providerName.packageName
 
-        // Note: big method – maybe split? Depends on how we want to proceed with refactoring.
-
-        val allDay = (values.getAsInteger(Tasks.IS_ALLDAY) ?: 0) != 0
-
         values.getAsLong(Tasks.CREATED)?.let { to.createdAt = it }
         values.getAsLong(Tasks.LAST_MODIFIED)?.let { to.lastModified = it }
-
-        values.getAsString(Tasks.RDATE)?.let { rdateStr ->
-            AndroidTimeUtils.androidStringToRecurrenceSet(rdateStr, allDay) { dates -> RDate(dates) }?.let { to.rDates += it }
-        }
-        values.getAsString(Tasks.EXDATE)?.let { exdateStr ->
-            AndroidTimeUtils.androidStringToRecurrenceSet(exdateStr, allDay) { dates -> ExDate(dates) }?.let { to.exDates += it }
-        }
-
-        values.getAsString(Tasks.RRULE)?.let { to.rRule = RRule<Temporal>(it) }
     }
 
     fun populateProperty(row: ContentValues, to: Task) {
