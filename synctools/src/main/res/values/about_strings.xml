@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="define_vcard4android" translatable="false" />
+    <string name="library_vcard4android_author" translatable="false">Ricki Hirner</string>
+    <string name="library_vcard4android_authorWebsite" translatable="false">https://www.bitfire.at</string>
+    <string name="library_vcard4android_libraryName" translatable="false">vcard4android</string>
+    <string name="library_vcard4android_libraryDescription">Allows usage of vCard resources with the Android contacts provider</string>
+    <string name="library_vcard4android_libraryWebsite" translatable="false">https://github.com/bitfireAT/vcard4android</string>
+    <string name="library_vcard4android_licenseId" translatable="false">gpl_3_0</string>
+    <string name="library_vcard4android_isOpenSource" translatable="false">true</string>
+
+</resources>

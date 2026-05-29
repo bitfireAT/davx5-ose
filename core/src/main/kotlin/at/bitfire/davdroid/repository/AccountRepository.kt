@@ -25,9 +25,9 @@ import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.davdroid.sync.account.SystemAccountUtils
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.vcard4android.GroupMethod
+import at.bitfire.synctools.util.AndroidAccountUtils
+import at.bitfire.synctools.vcard.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -87,7 +87,7 @@ class AccountRepository @Inject constructor(
         val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
         logger.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
 
-        if (!SystemAccountUtils.createAccount(context, account, userData, credentials?.password))
+        if (!AndroidAccountUtils.createAccount(context, account, userData, credentials?.password))
             return null
 
         // add entries for account to database

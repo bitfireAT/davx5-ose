@@ -20,9 +20,9 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.resource.LocalTestAddressBookProvider
 import at.bitfire.davdroid.sync.account.TestAccount
-import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
-import at.bitfire.vcard4android.GroupMethod
+import at.bitfire.synctools.util.setAndVerifyUserData
+import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

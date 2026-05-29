@@ -1,0 +1,14 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+X-WR-CALNAME:Wieseclan
+PRODID:-//The Horde Project//Horde iCalendar Library//EN
+BEGIN:VTODO
+UID:1d58e8e0-4fac-4632-8d43-ec79757490d2.1519164997000
+SUMMARY:Alex Geschenkeliste
+DESCRIPTION:[ ] Tip Toi Rund um die Uhr\n[ ] Ravensburger Wort für Wort\n[
+  ] Hula Hoop Reifen\n[ ] Pfeil und Bogen mit Zielscheibe\n[ ] Tip Toi
+  Spielwelt Autorennen
+PRIORITY:
+STATUS:NEEDS-ACTION
+END:VTODO
+END:VCALENDAR

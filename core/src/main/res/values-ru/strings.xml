@@ -482,4 +482,19 @@
     <string name="collection_datatype_tasks_count">%1$d задач</string>
     <string name="collection_datatype_events_count">%1$d событий</string>
     <string name="collection_datatype_contacts_count">%1$d контактов</string>
+    <string name="notification_channel_user_interaction">Пользовательское взаимодействие</string>
+    <string name="notification_channel_user_interaction_desc">Требуется действие пользователя. Возникла проблема требующая решения вручную.</string>
+    <string name="intro_backups_title">Напоминание о резервном копировании</string>
+    <string name="intro_backups_important">Важно делать резервную копию ваших данных (включая контакты и календари) регулярно для избежания потенциальной потери данных.</string>
+    <string name="intro_backups_something_wrong">Всегда что-то может пойти не так, как на сервере, так и в %s, или в других приложениях, что могут случайно удалить все данные из календаря (и последующая синхронизация приведёт к удалению этих данных на сервере)</string>
+    <string name="intro_backups_accept">У меня уже есть рабочая стратегия резервного копирования или мне она не нужна.</string>
+    <string name="about_translations_thanks">❤️ Спасибо всем кто помог с переводом!</string>
+    <string name="about_translations_over_transifex">Через Transifex</string>
+    <string name="about_translations_over_weblate">Через Weblate</string>
+    <string name="about_translations_contribute">Помогите перевести</string>
+    <string name="keep_android_open"><![CDATA[Открытость Android находится под угрозой. Узнайте как вы можете помочь: <a href="%s">keepandroidopen.org</a>.]]></string>
+    <string name="app_settings_push_disabled_summary">Отключено</string>
+    <string name="app_settings_push_description">Используйте Push чтобы сервера CalDAV/CardDAV/WebDAV моментально оповещали %s о доступных изменениях ваших данных на сервере.</string>
+    <string name="app_settings_push_use_push">Использовать Push</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[Push сервисы не найдены. Посетите <a href="%1$s">%2$s</a> чтобы увидеть список приложений-распространителей]]></string>
 </resources>

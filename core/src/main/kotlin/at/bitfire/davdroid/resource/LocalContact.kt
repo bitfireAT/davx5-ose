@@ -8,27 +8,16 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import android.os.RemoteException
 import android.provider.ContactsContract
-import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts
-import android.provider.ContactsContract.RawContacts.Data
 import android.provider.ContactsContract.RawContacts.getContactLookupUri
 import androidx.core.content.contentValuesOf
-import at.bitfire.davdroid.resource.contactrow.CachedGroupMembershipHandler
-import at.bitfire.davdroid.resource.contactrow.GroupMembershipBuilder
-import at.bitfire.davdroid.resource.contactrow.GroupMembershipHandler
-import at.bitfire.davdroid.resource.contactrow.UnknownPropertiesBuilder
-import at.bitfire.davdroid.resource.contactrow.UnknownPropertiesHandler
+import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.synctools.storage.ContactsBatchOperation
-import at.bitfire.vcard4android.AndroidAddressBook
-import at.bitfire.vcard4android.AndroidContact
-import at.bitfire.vcard4android.AndroidContactFactory
-import at.bitfire.vcard4android.CachedGroupMembership
-import at.bitfire.vcard4android.Contact
+import at.bitfire.synctools.storage.contacts.AndroidAddressBook
+import at.bitfire.synctools.storage.contacts.AndroidContact
+import at.bitfire.synctools.storage.contacts.AndroidContactFactory
 import com.google.common.base.MoreObjects
-import java.io.FileNotFoundException
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
@@ -41,9 +30,6 @@ class LocalContact: AndroidContact, LocalAddress {
 
     override val addressBook: LocalAddressBook
         get() = super.addressBook as LocalAddressBook
-
-    internal val cachedGroupMemberships = HashSet<Long>()
-    internal val groupMemberships = HashSet<Long>()
 
     override val scheduleTag: String?
         get() = null
@@ -59,20 +45,12 @@ class LocalContact: AndroidContact, LocalAddress {
         flags = _flags
     }
 
-    init {
-        processor.registerHandler(CachedGroupMembershipHandler(this))
-        processor.registerHandler(GroupMembershipHandler(this))
-        processor.registerHandler(UnknownPropertiesHandler)
-        processor.registerBuilderFactory(GroupMembershipBuilder.Factory(addressBook))
-        processor.registerBuilderFactory(UnknownPropertiesBuilder.Factory)
-    }
-
-
     /**
-     * Clears cached [contact] so that the next read of [contact] will query the content provider again.
+     * Clears cached contact (that is used by [getContact]) so that the next call of [getContact]
+     * will query the content provider again.
      */
     fun clearCachedContact() {
-        _contact = null
+        setContact(null)
     }
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
@@ -155,58 +133,6 @@ class LocalContact: AndroidContact, LocalAddress {
                 ContentUris.withAppendedId(RawContacts.CONTENT_URI, idNotNull)
             )
         }
-
-
-    fun addToGroup(batch: ContactsBatchOperation, groupID: Long) {
-        batch += BatchOperation.CpoBuilder
-            .newInsert(dataSyncURI())
-            .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
-            .withValue(GroupMembership.RAW_CONTACT_ID, id)
-            .withValue(GroupMembership.GROUP_ROW_ID, groupID)
-        groupMemberships += groupID
-
-        batch += BatchOperation.CpoBuilder
-            .newInsert(dataSyncURI())
-            .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-            .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
-            .withValue(CachedGroupMembership.GROUP_ID, groupID)
-        cachedGroupMemberships += groupID
-    }
-
-    fun removeGroupMemberships(batch: BatchOperation) {
-        batch += BatchOperation.CpoBuilder
-            .newDelete(dataSyncURI())
-            .withSelection(
-                "${Data.RAW_CONTACT_ID}=? AND ${Data.MIMETYPE} IN (?,?)",
-                arrayOf(id.toString(), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-            )
-        groupMemberships.clear()
-        cachedGroupMemberships.clear()
-    }
-
-    /**
-     * Returns the IDs of all groups the contact was member of (cached memberships).
-     * Cached memberships are kept in sync with memberships by DAVx5 and are used to determine
-     * whether a membership has been deleted/added when a raw contact is dirty.
-     * @return set of {@link GroupMembership#GROUP_ROW_ID} (may be empty)
-     * @throws FileNotFoundException if the current contact can't be found
-     * @throws RemoteException on contacts provider errors
-     */
-    fun getCachedGroupMemberships(): Set<Long> {
-        getContact()
-        return cachedGroupMemberships
-    }
-
-    /**
-     * Returns the IDs of all groups the contact is member of.
-     * @return set of {@link GroupMembership#GROUP_ROW_ID}s (may be empty)
-     * @throws FileNotFoundException if the current contact can't be found
-     * @throws RemoteException on contacts provider errors
-     */
-    fun getGroupMemberships(): Set<Long> {
-        getContact()
-        return groupMemberships
-    }
 
 
     // data rows

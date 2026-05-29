@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.sync.groups
 
-import at.bitfire.vcard4android.Contact
+import at.bitfire.synctools.mapping.contacts.Contact
 
 interface ContactGroupStrategy {
 

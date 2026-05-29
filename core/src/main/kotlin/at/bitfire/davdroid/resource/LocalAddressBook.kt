@@ -6,9 +6,7 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.content.ContentUris
 import android.content.Context
-import android.os.Bundle
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
@@ -20,15 +18,15 @@ import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_READ_ON
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.account.SystemAccountUtils
-import at.bitfire.davdroid.sync.account.setAndVerifyUserData
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.synctools.storage.ContactsBatchOperation
-import at.bitfire.vcard4android.AndroidAddressBook
-import at.bitfire.vcard4android.AndroidContact
-import at.bitfire.vcard4android.AndroidGroup
-import at.bitfire.vcard4android.GroupMethod
+import at.bitfire.synctools.storage.contacts.AndroidAddressBook
+import at.bitfire.synctools.storage.contacts.AndroidContact
+import at.bitfire.synctools.storage.contacts.AndroidGroup
+import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
+import at.bitfire.synctools.util.AndroidAccountUtils
+import at.bitfire.synctools.util.setAndVerifyUserData
+import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -54,7 +52,7 @@ open class LocalAddressBook @AssistedInject constructor(
     @Assisted("account") val account: Account,
     @Assisted("addressBookAccount") _addressBookAccount: Account,
     @Assisted provider: ContentProviderClient,
-    @Assisted open val groupMethod: GroupMethod,
+    @Assisted open override val groupMethod: GroupMethod,
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     internal val dirtyVerifier: Optional<ContactDirtyVerifier>,
@@ -172,7 +170,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
         // create new account
         val newAccount = Account(newName, oldAccount.type)
-        if (!SystemAccountUtils.createAccount(context, newAccount, Bundle()))
+        if (!AndroidAccountUtils.createAccount(context, newAccount, emptyMap()))
             return false
 
         // move contacts and groups to new account
@@ -292,25 +290,6 @@ open class LocalAddressBook @AssistedInject constructor(
 
 
     /* special group operations */
-
-    /**
-     * Finds the first group with the given title. If there is no group with this
-     * title, a new group is created.
-     * @param title title of the group to look for
-     * @return id of the group with given title
-     * @throws RemoteException on content provider errors
-     */
-    fun findOrCreateGroup(title: String): Long {
-        provider!!.query(syncAdapterURI(Groups.CONTENT_URI), arrayOf(Groups._ID),
-                "${Groups.TITLE}=?", arrayOf(title), null)?.use { cursor ->
-            if (cursor.moveToNext())
-                return cursor.getLong(0)
-        }
-
-        val values = contentValuesOf(Groups.TITLE to title)
-        val uri = provider!!.insert(syncAdapterURI(Groups.CONTENT_URI), values) ?: throw RemoteException("Couldn't create contact group")
-        return ContentUris.parseId(uri)
-    }
 
     fun removeEmptyGroups() {
         // find groups without members

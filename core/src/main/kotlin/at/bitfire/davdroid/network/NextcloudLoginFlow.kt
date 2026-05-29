@@ -8,9 +8,9 @@ import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.ui.setup.LoginInfo
-import at.bitfire.davdroid.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.davdroid.util.withTrailingSlash
-import at.bitfire.vcard4android.GroupMethod
+import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
+import at.bitfire.synctools.vcard.GroupMethod
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post

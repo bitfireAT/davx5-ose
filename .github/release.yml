@@ -2,19 +2,21 @@ changelog:
   exclude:
     labels:
       - ignore-for-release
+    authors:
+      - dependabot[bot]
   categories:
-    - title: New features
+    - title: ✨ New features
       labels:
-        - enhancement
-    - title: Bug fixes
+        - pr-feature
+    - title: 🪲 Bug fixes
       labels:
-        - bug
-    - title: Refactoring
+        - pr-bugfix
+    - title: 🛠️ Refactoring
       labels:
         - refactoring
-    - title: Dependencies
+    - title: ⚙️ CI/CD
       labels:
-        - dependencies
-    - title: Other changes
+        - ci-cd
+    - title: ✏️ Other changes
       labels:
         - "*"

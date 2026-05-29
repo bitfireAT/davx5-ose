@@ -1,0 +1,11 @@
+BEGIN:VCARD
+VERSION:4.0
+PRODID:+//IDN bitfire.at//DAVdroid/1.3.4.1-ose vcard4android ez-vcard/0.10.
+ 0
+REV;VALUE=timestamp:2016-11-19T17:44:22.057Z
+UID:2e4f2d8d8a
+FN:Name Name
+N:Name;Name;;;
+TEL;TYPE=fax:+49000000
+TEL;TYPE=voice:+49000000
+END:VCARD

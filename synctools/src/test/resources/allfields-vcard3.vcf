@@ -1,0 +1,43 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:mostfields1@at.bitfire.vcard4android
+FN;CHARSET=UTF-8:Ämi Display
+N:Lastname;Firstname;Middlename1 Middlename2;DDDr.;MBA
+X-PHONETIC-FIRST-NAME;CHARSET=UTF-8:Förstnehm
+X-PHONETIC-MIDDLE-NAME:Mittelnehm
+X-PHONETIC-LAST-NAME;CHARSET=UTF-8:Laastnehm
+item1.TEL;TYPE=voice,home,pref,x-useless:+49 1234 56788
+item1.X-ABLabel:Useless
+TEL;TYPE=fax,x-aunt:+1-800-MYFAX
+EMAIL;TYPE=home,pref:private@example.com
+workEmail.EMAIL;TYPE=work:work@example.com
+workEmail.X-ABLabel:@work
+ORG:ABC\, Inc.;North American Division;Marketing
+TITLE:Director\, Research and Development
+ROLE:Programmer
+NICKNAME:Nick1,Nick2
+personalIM.IMPP;TYPE=personal,mobile,x-myIM,pref:myIM:anonymous@example.com
+personalIM.X-ABLabel:MyIM
+IMPP;TYPE=business,video,voice:skype:echo@example.com
+X-SIP:mysip@example.com
+ADR;TYPE=WORK,POSTAL,PARCEL,PREF:;;6544 Battleford Drive
+ ;Raleigh;NC;27613-3502;U.S.A.
+monkey.ADR;CHARSET=UTF-8;TYPE=WORK:Postfach 314;vorne hinten;Teststraße 22;Mönchspfaffingen;;
+ 4043;Klöster-Reich
+monkey.X-ABLabel:Monkey Tree
+NOTE:This fax number is operational 0800 to 1715
+  EST\, Mon-Fri.
+NOTE:Second note
+CATEGORIES:A,B\'C
+URL:https://www.davx5.com/
+blog.URL;TYPE=x-blog:http://www.swbyps.restaurant.french/~chezchic.html
+blog.X-ABLabel:blog
+BDAY:1996-04-15T201243+04:00
+ANNIVERSARY:2014-08-12
+RELATED;CHARSET=UTF-8;TYPE=co-worker,crush;VALUE=text:Ägidius
+RELATED;TYPE=parent;VALUE=uri:muuum@example.com
+PHOTO;ENCODING=b;TYPE=JPEG:/9j/4AAQSkZJRgABAQIAHAAcAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/wAALCAAKACABAREA/8QAFgABAQEAAAAAAAAAAAAAAAAAAAgE/8QAIBAAAQQCAwEBAQAAAAAAAAAABAECAwUABgcREggUFf/aAAgBAQAAPwC/huVQw/pq74hvt0qhP16fQ2mu0hBEERRhUhV0h0g7V6ln6hDFV6J6axrEd0305XS/xR9SbWRxtLudn9HibSOLT8SW2wWBf8VsGvl3F7KPehyOFHiZAxozGorZ/UsKKrvbV6cl1VNtVX9UHe0VmJY1tiPGWGYJM2aAmCRqOjljkaqtexzVRyORVRUVFTNeMYxn/9k=
+X-TEST;A=B:Value
+item2.X-ABDate:20210729
+item2.X-ABLabel:Custom Date
+END:VCARD
