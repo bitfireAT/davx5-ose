@@ -4,9 +4,9 @@
 
 package at.bitfire.synctools.icalendar
 
+import at.bitfire.synctools.util.TemporalAdapterWorkaround
 import net.fortuna.ical4j.model.ComponentList
 import net.fortuna.ical4j.model.Property
-import at.bitfire.synctools.util.TemporalAdapterWorkaround
 import net.fortuna.ical4j.model.component.Daylight
 import net.fortuna.ical4j.model.component.Observance
 import net.fortuna.ical4j.model.component.Standard

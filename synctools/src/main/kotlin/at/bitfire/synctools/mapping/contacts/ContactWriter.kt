@@ -6,7 +6,7 @@ package at.bitfire.synctools.mapping.contacts
 
 import at.bitfire.synctools.util.Utils.capitalize
 import at.bitfire.synctools.util.Utils.isEmpty
-import at.bitfire.synctools.util.Utils.trimToNull
+import at.bitfire.synctools.util.trimToNull
 import at.bitfire.synctools.vcard.VCardGenerator
 import at.bitfire.synctools.vcard.property.CustomType
 import at.bitfire.synctools.vcard.property.XAbDate

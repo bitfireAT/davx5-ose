@@ -11,27 +11,6 @@ import org.junit.Test
 class StringUtilsTest {
 
     @Test
-    fun trimToNull_Empty() {
-        assertNull("".trimToNull())
-    }
-
-    @Test
-    fun trimToNull_NoWhitespace() {
-        assertEquals("test", "test".trimToNull())
-    }
-
-    @Test
-    fun trimToNull_Null() {
-        assertNull(null.trimToNull())
-    }
-
-    @Test
-    fun trimToNull_PaddedWithWhitespace() {
-        assertEquals("test", "\r\n  test  ".trimToNull())
-    }
-
-
-    @Test
     fun withTrailingSlash_WithSlash() {
         assertEquals("test/", "test/".withTrailingSlash())
     }

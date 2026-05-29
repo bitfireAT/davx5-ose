@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
-import at.bitfire.davdroid.util.trimToNull
+import at.bitfire.synctools.util.trimToNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

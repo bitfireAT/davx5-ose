@@ -7,7 +7,7 @@ package at.bitfire.synctools.mapping.calendar.handler
 import android.content.Entity
 import android.provider.CalendarContract.Events
 import at.bitfire.synctools.icalendar.plusAssign
-import at.bitfire.synctools.util.Utils.trimToNull
+import at.bitfire.synctools.util.trimToNull
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Summary
 
