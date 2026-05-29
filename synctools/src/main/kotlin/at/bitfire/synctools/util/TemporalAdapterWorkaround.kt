@@ -5,6 +5,8 @@
 package at.bitfire.synctools.util
 
 import at.bitfire.synctools.util.AndroidTimeUtils.toInstant
+import net.fortuna.ical4j.model.TemporalAdapter
+import java.time.DateTimeException
 import java.time.temporal.Temporal
 
 /**
@@ -20,7 +22,12 @@ object TemporalAdapterWorkaround {
      * Safe to use with any Temporal type that is supported by [toInstant].
      */
     fun isBefore(a: Temporal, b: Temporal): Boolean =
-        a.toInstant() < b.toInstant()
+        try {
+            TemporalAdapter.isBefore(a, b)
+        } catch (_: DateTimeException) {
+            // fall back to Instant comparison (converts LocalDate to UTC)
+            a.toInstant() < b.toInstant()
+        }
 
     /**
      * Compatibility version of [net.fortuna.ical4j.model.TemporalAdapter.isAfter] that works around
@@ -29,6 +36,11 @@ object TemporalAdapterWorkaround {
      * Safe to use with any Temporal type that is supported by [toInstant].
      */
     fun isAfter(a: Temporal, b: Temporal): Boolean =
-        a.toInstant() > b.toInstant()
+        try {
+            TemporalAdapter.isAfter(a, b)
+        } catch (_: DateTimeException) {
+            // fall back to Instant comparison (converts LocalDate to UTC)
+            a.toInstant() > b.toInstant()
+        }
 
 }
