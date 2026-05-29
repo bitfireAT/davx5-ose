@@ -23,8 +23,8 @@ import at.bitfire.synctools.mapping.tasks.handler.LocationHandler
 import at.bitfire.synctools.mapping.tasks.handler.OrganizerHandler
 import at.bitfire.synctools.mapping.tasks.handler.PercentCompleteHandler
 import at.bitfire.synctools.mapping.tasks.handler.PriorityHandler
-import at.bitfire.synctools.mapping.tasks.handler.RelationsHandler
 import at.bitfire.synctools.mapping.tasks.handler.RecurrenceFieldsHandler
+import at.bitfire.synctools.mapping.tasks.handler.RelationsHandler
 import at.bitfire.synctools.mapping.tasks.handler.SequenceHandler
 import at.bitfire.synctools.mapping.tasks.handler.StartTimeHandler
 import at.bitfire.synctools.mapping.tasks.handler.StatusHandler
@@ -33,12 +33,6 @@ import at.bitfire.synctools.mapping.tasks.handler.UidHandler
 import at.bitfire.synctools.mapping.tasks.handler.UnknownPropertiesHandler
 import at.bitfire.synctools.mapping.tasks.handler.UrlHandler
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
-import net.fortuna.ical4j.model.parameter.RelType
-import net.fortuna.ical4j.model.property.RelatedTo
-import at.bitfire.synctools.util.AndroidTimeUtils
-import net.fortuna.ical4j.model.property.ExDate
-import net.fortuna.ical4j.model.property.RDate
-import net.fortuna.ical4j.model.property.RRule
 import org.dmfs.tasks.contract.TaskContract.Properties
 import org.dmfs.tasks.contract.TaskContract.Property.Alarm
 import org.dmfs.tasks.contract.TaskContract.Property.Category
