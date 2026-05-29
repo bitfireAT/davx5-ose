@@ -14,6 +14,7 @@ import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
 import at.bitfire.synctools.storage.calendar.EventsContract
 import com.google.common.base.MoreObjects
+import org.apache.commons.lang3.StringUtils
 import java.util.Optional
 
 class LocalEvent(
@@ -93,14 +94,21 @@ class LocalEvent(
             .add("eTag", eTag)
             .add("scheduleTag", scheduleTag)
             .add("flags", flags)
-            .add("event",
-                try {
-                    // only include truncated main event row (won't contain attachments, unknown properties etc.)
-                    androidEvent.main.entityValues.toString().take(1000)
-                } catch (e: Exception) {
-                    e
+            .add("event", try {
+                // only include truncated main event row (won't contain attachments, unknown properties etc.)
+                StringUtils.abbreviate(androidEvent.main.entityValues.toString(), 1000)
+            } catch (e: Exception) {
+                e
+            })
+            .add("exceptions [max 10]", try {
+                androidEvent.exceptions.take(10).joinToString { exception ->
+                    // truncated exception row
+                    exception.entityValues.toString().take(1000)
                 }
-            ).toString()
+            } catch (e: Exception) {
+                e
+            })
+            .toString()
 
     override fun getViewUri(context: Context) =
         ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id)

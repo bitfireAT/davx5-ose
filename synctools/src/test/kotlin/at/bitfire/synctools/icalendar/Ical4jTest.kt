@@ -13,7 +13,7 @@ import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.TemporalAmountAdapter
-import net.fortuna.ical4j.model.TimeZone
+import net.fortuna.ical4j.model.TemporalComparator
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.component.VTimeZone
@@ -26,9 +26,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 import java.io.StringReader
 import java.io.StringWriter
+import java.time.DateTimeException
 import java.time.Duration
 import java.time.Period
 import java.time.ZoneOffset
@@ -123,6 +125,20 @@ class Ical4jTest {
         // https://github.com/ical4j/ical4j/issues/419
         // A year has 365 or 366 days, but never 52 weeks = 52*7 days = 364 days.
         assertNotEquals("P52W", TemporalAmountAdapter(Period.ofYears(1)).toString())
+    }
+
+    @Test
+    fun `TemporalComparator compares Instant and ZonedDateTime`() {
+        // https://github.com/ical4j/ical4j/issues/880
+        val zdt = ZonedDateTime.of(2026, 5, 28, 18, 4, 22, 0, ZoneOffset.UTC)
+        val instant = zdt.toInstant()
+        assertEquals(0, TemporalComparator().compare(zdt, instant))
+        try {
+            assertEquals(0, TemporalComparator().compare(instant, zdt))
+            fail("Issue is fixed in upstream, TemporalAdapterCompat.isAfter/isBefore can be dropped")
+        } catch (e: DateTimeException) {
+            assertTrue(e.message!!.contains("Unable to obtain ZonedDateTime from TemporalAccessor"))
+        }
     }
 
     @Test
