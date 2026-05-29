@@ -4,14 +4,11 @@
 
 package at.bitfire.synctools.mapping.calendar.handler
 
-import at.bitfire.synctools.util.AndroidTimeUtils
 import at.bitfire.synctools.util.AndroidTimeUtils.isUtcTzId
-import net.fortuna.ical4j.util.TimeZones
 import java.time.DateTimeException
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
 import java.time.zone.ZoneRulesException

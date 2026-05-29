@@ -8,7 +8,6 @@ import androidx.annotation.VisibleForTesting
 import com.google.common.io.CharSource
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Property
-import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.transform.compliance.DateListPropertyRule
 import net.fortuna.ical4j.transform.compliance.DatePropertyRule
 import net.fortuna.ical4j.transform.compliance.Rfc5545PropertyRule

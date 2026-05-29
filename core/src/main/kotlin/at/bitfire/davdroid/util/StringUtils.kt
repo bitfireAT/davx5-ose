@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.util
 
-import com.google.common.base.Strings
-
 fun String.withTrailingSlash() =
     if (this.endsWith('/'))
         this
