@@ -4,22 +4,22 @@
 
 package at.bitfire.synctools.mapping.tasks.builder
 
-import android.content.Entity
 import at.bitfire.ical4android.Task
+import net.fortuna.ical4j.model.component.VToDo
 
-@Deprecated("DmfsTaskFieldBuilderVToDo should be used instead")
-interface DmfsTaskFieldBuilder {
+// TODO: Once all super-classes of DmfsTaskFieldBuilder are migrated to DmfsTaskFieldBuilderVToDo, we can remove the old DmfsTaskFieldBuilder and rename this interface to DmfsTaskFieldBuilder
+interface DmfsTaskFieldBuilderVToDo {
 
     /**
-     * Maps a specific part of the given task into the provided [Entity].
+     * Maps a specific part of the given task into the provided [VToDo].
      *
      * Note: The result of the mapping is used to either create or update the task row in the
      * content provider. For updates, explicit `null` values are required for fields that should
      * be `null` (otherwise the value wouldn't be updated to `null` in case of a task update).
      *
      * @param from  task to map
-     * @param to    destination [Entity] where built values are stored (set `null` values, see note)
+     * @param to    destination [VToDo] where built values are stored (set `null` values, see note)
      */
-    fun build(from: Task, to: Entity)
+    fun build(from: Task, to: VToDo)
 
 }

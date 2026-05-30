@@ -4,14 +4,15 @@
 
 package at.bitfire.synctools.mapping.tasks.builder
 
-import android.content.Entity
 import at.bitfire.ical4android.Task
-import org.dmfs.tasks.contract.TaskContract.Tasks
+import net.fortuna.ical4j.model.component.VToDo
 
-class GeoBuilder : DmfsTaskFieldBuilder {
+class GeoBuilder : DmfsTaskFieldBuilderVToDo {
 
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks.GEO, from.geoPosition?.let { "${it.longitude},${it.latitude}" })
+    override fun build(from: Task, to: VToDo) {
+        val position = from.geoPosition ?: return
+        to.geographicPos.latitude = position.latitude
+        to.geographicPos.longitude = position.longitude
     }
 
 }
