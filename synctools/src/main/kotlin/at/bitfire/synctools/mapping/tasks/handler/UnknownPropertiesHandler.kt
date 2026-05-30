@@ -11,13 +11,13 @@ import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DA
 import org.json.JSONException
 import java.util.logging.Logger
 
-class UnknownPropertiesHandler : DmfsTaskPropertyHandler {
+class UnknownPropertiesHandler : DmfsTaskFieldHandler {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
 
-    override fun process(row: ContentValues, to: Task) {
-        row.getAsString(UNKNOWN_PROPERTY_DATA)?.let { properties ->
+    override fun process(from: ContentValues, to: Task) {
+        from.getAsString(UNKNOWN_PROPERTY_DATA)?.let { properties ->
             try {
                 to.unknownProperties += UnknownProperty.fromJsonString(properties)
             } catch (e: JSONException) {
