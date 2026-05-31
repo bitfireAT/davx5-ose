@@ -4,10 +4,16 @@
 
 package at.bitfire.synctools.mapping.tasks.builder
 
+import android.content.Entity
 import at.bitfire.ical4android.Task
 import net.fortuna.ical4j.model.component.VToDo
+import org.dmfs.tasks.contract.TaskContract.Tasks
 
-class UrlBuilder : DmfsTaskFieldBuilderVToDo {
+class UrlBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
+
+    override fun build(from: Task, to: Entity) {
+        to.entityValues.put(Tasks.URL, from.url)
+    }
 
     override fun build(from: Task, to: VToDo) {
         to.url.value = from.url
