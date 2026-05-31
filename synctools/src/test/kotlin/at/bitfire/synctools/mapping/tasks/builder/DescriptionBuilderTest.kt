@@ -7,6 +7,8 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.ical4android.Task
+import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.Description
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -21,7 +23,7 @@ class DescriptionBuilderTest {
     private val builder = DescriptionBuilder()
 
     @Test
-    fun `No DESCRIPTION`() {
+    fun `old No DESCRIPTION`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(),
@@ -32,7 +34,7 @@ class DescriptionBuilderTest {
     }
 
     @Test
-    fun `DESCRIPTION is blank`() {
+    fun `old DESCRIPTION is blank`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(description = ""),
@@ -43,13 +45,47 @@ class DescriptionBuilderTest {
     }
 
     @Test
-    fun `DESCRIPTION is text`() {
+    fun `old DESCRIPTION is text`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(description = "Task Details"),
             to = result
         )
         assertEquals("Task Details", result.entityValues.getAsString(Tasks.DESCRIPTION))
+    }
+
+    @Test
+    fun `No DESCRIPTION`() {
+        val result = VToDo()
+        builder.build(
+            from = Task(),
+            to = result
+        )
+        val description = result.getProperty<Description>(Description.DESCRIPTION)
+        assertTrue(description.isPresent)
+        assertNull(description.get().value)
+    }
+
+    @Test
+    fun `DESCRIPTION is blank`() {
+        val result = VToDo()
+        builder.build(
+            from = Task(description = ""),
+            to = result
+        )
+        val description = result.getProperty<Description>(Description.DESCRIPTION)
+        assertTrue(description.isPresent)
+        assertNull(description.get().value)
+    }
+
+    @Test
+    fun `DESCRIPTION is text`() {
+        val result = VToDo()
+        builder.build(
+            from = Task(description = "Task Details"),
+            to = result
+        )
+        assertEquals("Task Details", result.description.value)
     }
 
 }

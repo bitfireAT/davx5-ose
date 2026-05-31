@@ -6,7 +6,9 @@ package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
 import at.bitfire.ical4android.Task
+import at.bitfire.synctools.icalendar.plusAssign
 import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.Geo
 import org.dmfs.tasks.contract.TaskContract.Tasks
 
 class GeoBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
@@ -16,9 +18,7 @@ class GeoBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
     }
 
     override fun build(from: Task, to: VToDo) {
-        val position = from.geoPosition ?: return
-        to.geographicPos.latitude = position.latitude
-        to.geographicPos.longitude = position.longitude
+        to += Geo(null, from.geoPosition?.latitude, from.geoPosition?.longitude)
     }
 
 }

@@ -7,6 +7,7 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.ical4android.Task
+import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Geo
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.Assert.assertEquals
@@ -22,7 +23,7 @@ class GeoBuilderTest {
     private val builder = GeoBuilder()
 
     @Test
-    fun `No GEO`() {
+    fun `old No GEO`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(),
@@ -33,13 +34,38 @@ class GeoBuilderTest {
     }
 
     @Test
-    fun `GEO is set`() {
+    fun `old GEO is set`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(geoPosition = Geo(48.2.toBigDecimal(), 16.3.toBigDecimal())),
             to = result
         )
         assertEquals("16.3,48.2", result.entityValues.getAsString(Tasks.GEO))
+    }
+
+
+    @Test
+    fun `No GEO`() {
+        val result = VToDo()
+        builder.build(
+            from = Task(),
+            to = result
+        )
+        val geo = result.getProperty<Geo>(Geo.LOCATION)
+        assertTrue(geo.isPresent)
+        assertNull(geo.get().latitude)
+        assertNull(geo.get().longitude)
+    }
+
+    @Test
+    fun `GEO is set`() {
+        val result = VToDo()
+        builder.build(
+            from = Task(geoPosition = Geo(48.2.toBigDecimal(), 16.3.toBigDecimal())),
+            to = result
+        )
+        assertEquals(48.2.toBigDecimal(), result.geographicPos.latitude)
+        assertEquals(16.3.toBigDecimal(), result.geographicPos.longitude)
     }
 
 }

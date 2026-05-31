@@ -7,8 +7,11 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.ical4android.Task
+import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.Summary
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -21,7 +24,7 @@ class TitleBuilderTest {
     private val builder = TitleBuilder()
 
     @Test
-    fun `No SUMMARY`() {
+    fun `old No SUMMARY`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(),
@@ -32,7 +35,7 @@ class TitleBuilderTest {
     }
 
     @Test
-    fun `SUMMARY is blank`() {
+    fun `old SUMMARY is blank`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(summary = ""),
@@ -43,13 +46,47 @@ class TitleBuilderTest {
     }
 
     @Test
-    fun `SUMMARY is text`() {
+    fun `old SUMMARY is text`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(summary = "Task Summary"),
             to = result
         )
         assertEquals("Task Summary", result.entityValues.getAsString(Tasks.TITLE))
+    }
+
+    @Test
+    fun `No SUMMARY`() {
+        val result = VToDo()
+        builder.build(
+            from = Task(),
+            to = result
+        )
+        val summary = result.getProperty<Summary>(Summary.SUMMARY)
+        assertFalse(summary.isEmpty)
+        assertNull(summary.get().value)
+    }
+
+    @Test
+    fun `SUMMARY is blank`() {
+        val result = VToDo()
+        builder.build(
+            from = Task(summary = ""),
+            to = result
+        )
+        val summary = result.getProperty<Summary>(Summary.SUMMARY)
+        assertFalse(summary.isEmpty)
+        assertNull(summary.get().value)
+    }
+
+    @Test
+    fun `SUMMARY is text`() {
+        val result = VToDo()
+        builder.build(
+            from = Task(summary = "Task Summary"),
+            to = result
+        )
+        assertEquals("Task Summary", result.summary.value)
     }
 
 }
