@@ -60,7 +60,7 @@ class ColorBuilderTest {
     }
 
     @Test
-    fun `COLOR is set`() {
+    fun `COLOR is set - css name`() {
         val result = Entity(ContentValues())
         builder.build(
             from = build(Color(null, Css3Color.nearestMatch(0xFF112233.toInt()).name)),
@@ -68,6 +68,18 @@ class ColorBuilderTest {
         )
         assertContentValuesEqual(contentValuesOf(
             Tasks.TASK_COLOR to Css3Color.nearestMatch(0xFF112233.toInt()).argb
+        ), result.entityValues)
+    }
+
+    @Test
+    fun `COLOR is set - hex`() {
+        val result = Entity(ContentValues())
+        builder.build(
+            from = build(Color(null, "#FF112233")),
+            to = result
+        )
+        assertContentValuesEqual(contentValuesOf(
+            Tasks.TASK_COLOR to 0xFF112233.toInt()
         ), result.entityValues)
     }
 
