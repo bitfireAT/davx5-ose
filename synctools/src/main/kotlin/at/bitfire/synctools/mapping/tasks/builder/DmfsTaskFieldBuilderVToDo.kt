@@ -11,14 +11,14 @@ import net.fortuna.ical4j.model.component.VToDo
 interface DmfsTaskFieldBuilderVToDo {
 
     /**
-     * Maps a specific part of the given task into the provided [VToDo].
+     * Maps a specific part of the given [VToDo] into the provided [Entity].
      *
      * Note: The result of the mapping is used to either create or update the task row in the
      * content provider. For updates, explicit `null` values are required for fields that should
      * be `null` (otherwise the value wouldn't be updated to `null` in case of a task update).
      *
      * @param from  task to map
-     * @param to    destination [VToDo] where built values are stored (set `null` values, see note)
+     * @param to    destination [Entity] where built values are stored (set `null` values, see note)
      */
     fun build(from: VToDo, to: Entity)
 
