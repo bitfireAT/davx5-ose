@@ -4,7 +4,7 @@
 
 package at.bitfire.synctools.mapping.tasks.builder
 
-import at.bitfire.ical4android.Task
+import android.content.Entity
 import net.fortuna.ical4j.model.component.VToDo
 
 // TODO: Once all super-classes of DmfsTaskFieldBuilder are migrated to DmfsTaskFieldBuilderVToDo, we can remove the old DmfsTaskFieldBuilder and rename this interface to DmfsTaskFieldBuilder
@@ -20,6 +20,6 @@ interface DmfsTaskFieldBuilderVToDo {
      * @param from  task to map
      * @param to    destination [VToDo] where built values are stored (set `null` values, see note)
      */
-    fun build(from: Task, to: VToDo)
+    fun build(from: VToDo, to: Entity)
 
 }

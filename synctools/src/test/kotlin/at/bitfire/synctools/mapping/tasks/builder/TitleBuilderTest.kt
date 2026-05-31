@@ -7,11 +7,11 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.ical4android.Task
+import at.bitfire.synctools.mapping.tasks.VToDoUtil
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Summary
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -57,36 +57,34 @@ class TitleBuilderTest {
 
     @Test
     fun `No SUMMARY`() {
-        val result = VToDo()
+        val result = Entity(ContentValues())
         builder.build(
-            from = Task(),
+            from = VToDo(),
             to = result
         )
-        val summary = result.getProperty<Summary>(Summary.SUMMARY)
-        assertFalse(summary.isEmpty)
-        assertNull(summary.get().value)
+        assertTrue(result.entityValues.containsKey(Tasks.TITLE))
+        assertNull(result.entityValues.get(Tasks.TITLE))
     }
 
     @Test
     fun `SUMMARY is blank`() {
-        val result = VToDo()
+        val result = Entity(ContentValues())
         builder.build(
-            from = Task(summary = ""),
+            from = VToDoUtil.build(Summary("")),
             to = result
         )
-        val summary = result.getProperty<Summary>(Summary.SUMMARY)
-        assertFalse(summary.isEmpty)
-        assertNull(summary.get().value)
+        assertTrue(result.entityValues.containsKey(Tasks.TITLE))
+        assertNull(result.entityValues.get(Tasks.TITLE))
     }
 
     @Test
     fun `SUMMARY is text`() {
-        val result = VToDo()
+        val result = Entity(ContentValues())
         builder.build(
-            from = Task(summary = "Task Summary"),
+            from = VToDoUtil.build(Summary("Task Summary")),
             to = result
         )
-        assertEquals("Task Summary", result.summary.value)
+        assertEquals("Task Summary", result.entityValues.getAsString(Tasks.TITLE))
     }
 
 }

@@ -7,6 +7,7 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.ical4android.Task
+import at.bitfire.synctools.mapping.tasks.VToDoUtil
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Location
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -56,36 +57,34 @@ class LocationBuilderTest {
 
     @Test
     fun `No LOCATION`() {
-        val result = VToDo()
+        val result = Entity(ContentValues())
         builder.build(
-            from = Task(),
+            from = VToDo(),
             to = result
         )
-        val location = result.getProperty<Location>(Location.LOCATION)
-        assertTrue(location.isPresent)
-        assertNull(location.get().value)
+        assertTrue(result.entityValues.containsKey(Tasks.LOCATION))
+        assertNull(result.entityValues.get(Tasks.LOCATION))
     }
 
     @Test
     fun `LOCATION is blank`() {
-        val result = VToDo()
+        val result = Entity(ContentValues())
         builder.build(
-            from = Task(location = ""),
+            from = VToDoUtil.build(Location("")),
             to = result
         )
-        val location = result.getProperty<Location>(Location.LOCATION)
-        assertTrue(location.isPresent)
-        assertNull(location.get().value)
+        assertTrue(result.entityValues.containsKey(Tasks.LOCATION))
+        assertNull(result.entityValues.get(Tasks.LOCATION))
     }
 
     @Test
     fun `LOCATION is text`() {
-        val result = VToDo()
+        val result = Entity(ContentValues())
         builder.build(
-            from = Task(location = "Task Location"),
+            from = VToDoUtil.build(Location("Task Location")),
             to = result
         )
-        assertEquals("Task Location", result.location.value)
+        assertEquals("Task Location", result.entityValues.getAsString(Tasks.LOCATION))
     }
 
 }

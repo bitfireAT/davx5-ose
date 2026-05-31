@@ -7,6 +7,7 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.ical4android.Task
+import at.bitfire.synctools.mapping.tasks.VToDoUtil.build
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Description
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -56,36 +57,34 @@ class DescriptionBuilderTest {
 
     @Test
     fun `No DESCRIPTION`() {
-        val result = VToDo()
+        val result = Entity(ContentValues())
         builder.build(
-            from = Task(),
+            from = VToDo(),
             to = result
         )
-        val description = result.getProperty<Description>(Description.DESCRIPTION)
-        assertTrue(description.isPresent)
-        assertNull(description.get().value)
+        assertTrue(result.entityValues.containsKey(Tasks.DESCRIPTION))
+        assertNull(result.entityValues.get(Tasks.DESCRIPTION))
     }
 
     @Test
     fun `DESCRIPTION is blank`() {
-        val result = VToDo()
+        val result = Entity(ContentValues())
         builder.build(
-            from = Task(description = ""),
+            from = build(Description("")),
             to = result
         )
-        val description = result.getProperty<Description>(Description.DESCRIPTION)
-        assertTrue(description.isPresent)
-        assertNull(description.get().value)
+        assertTrue(result.entityValues.containsKey(Tasks.DESCRIPTION))
+        assertNull(result.entityValues.get(Tasks.DESCRIPTION))
     }
 
     @Test
     fun `DESCRIPTION is text`() {
-        val result = VToDo()
+        val result = Entity(ContentValues())
         builder.build(
-            from = Task(description = "Task Details"),
+            from = build(Description("Task Details")),
             to = result
         )
-        assertEquals("Task Details", result.description.value)
+        assertEquals("Task Details", result.entityValues.getAsString(Tasks.DESCRIPTION))
     }
 
 }

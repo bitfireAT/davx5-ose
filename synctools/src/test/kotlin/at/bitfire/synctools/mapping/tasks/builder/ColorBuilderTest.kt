@@ -9,13 +9,11 @@ import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.icalendar.Css3Color
+import at.bitfire.synctools.mapping.tasks.VToDoUtil.build
 import at.bitfire.synctools.test.assertContentValuesEqual
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Color
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -51,27 +49,26 @@ class ColorBuilderTest {
 
     @Test
     fun `No COLOR`() {
-        val result = VToDo()
+        val result = Entity(ContentValues())
         builder.build(
-            from = Task(),
+            from = VToDo(),
             to = result
         )
-        val color = result.getProperty<Color>(Color.PROPERTY_NAME)
-        assertTrue(color.isPresent)
-        assertNull(color.get().value)
+        assertContentValuesEqual(contentValuesOf(
+            Tasks.TASK_COLOR to null
+        ), result.entityValues)
     }
 
     @Test
     fun `COLOR is set`() {
-        val result = VToDo()
+        val result = Entity(ContentValues())
         builder.build(
-            from = Task(color = 0xFF112233.toInt()),
+            from = build(Color(null, Css3Color.nearestMatch(0xFF112233.toInt()).name)),
             to = result
         )
-        assertEquals(
-            Css3Color.nearestMatch(0xFF112233.toInt()).name,
-            result.getRequiredProperty<Color>(Color.PROPERTY_NAME).value
-        )
+        assertContentValuesEqual(contentValuesOf(
+            Tasks.TASK_COLOR to Css3Color.nearestMatch(0xFF112233.toInt()).argb
+        ), result.entityValues)
     }
 
 }

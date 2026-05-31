@@ -6,7 +6,6 @@ package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
 import at.bitfire.ical4android.Task
-import at.bitfire.synctools.icalendar.plusAssign
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.parameter.Email
@@ -42,10 +41,10 @@ class OrganizerBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
         }
     }
 
-    override fun build(from: Task, to: VToDo) {
-        val organizer = from.organizer
+    override fun build(from: VToDo, to: Entity) {
+        val organizer = from.getProperty<Organizer>(Organizer.ORGANIZER).getOrNull()
         if (organizer == null) {
-            to += Organizer(null, "")
+            to.entityValues.putNull(Tasks.ORGANIZER)
             return
         }
 
@@ -56,10 +55,10 @@ class OrganizerBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
             organizer.getParameter<Email>(Parameter.EMAIL).getOrNull()?.value
 
         if (email != null)
-            to += Organizer(null, email)
+            to.entityValues.put(Tasks.ORGANIZER, email)
         else {
             logger.log(Level.WARNING, "Ignoring ORGANIZER without email address (not supported by Android)", organizer)
-            to += Organizer(null, "")
+            to.entityValues.putNull(Tasks.ORGANIZER)
         }
     }
 
