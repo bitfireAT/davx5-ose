@@ -130,10 +130,8 @@ class DmfsRecurringTaskList(
      *
      * @param id                   ID of the main task row
      * @param taskAndExceptions    new task (including exceptions)
-     *
-     * @return main task ID of the updated row (may be different than [id] when the task had to be re-created)
      */
-    fun updateTaskAndExceptions(id: Long, taskAndExceptions: TaskAndExceptions): Long {
+    fun updateTaskAndExceptions(id: Long, taskAndExceptions: TaskAndExceptions) {
         try {
             // validate / clean up input
             val cleaned = cleanUp(taskAndExceptions, mainId = id)
@@ -151,10 +149,6 @@ class DmfsRecurringTaskList(
                 taskList.addTask(exception, batch)
 
             batch.commit()
-
-            // For tasks, we don't have the same rebuild logic as calendars (no STATUS field issues)
-            // so we can just return the original ID
-            return id
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't update task/exceptions", e)
         }
@@ -189,7 +183,7 @@ class DmfsRecurringTaskList(
     /**
      * Prepares a task and exceptions so that it can be inserted into the task provider:
      *
-     * - If the main task is not recurring or doesn't have a [TaskContract.Tasks._SYNC_ID], exceptions are ignored.
+     * - If the main task is not recurring, exceptions are dropped.
      * - Cleans up the main task with [cleanMainTask].
      * - Cleans up exceptions with [cleanException].
      *
@@ -207,8 +201,7 @@ class DmfsRecurringTaskList(
 
         if (!recurring) {
             if (original.exceptions.isNotEmpty())
-                logger.log(Level.WARNING, "Dropping exceptions of task because task is not recurring or _SYNC_ID is not set", main)
-
+                logger.log(Level.WARNING, "Dropping exceptions of task because task is not recurring", main)
             return TaskAndExceptions(main = main, exceptions = emptyList())
         }
 
@@ -222,7 +215,7 @@ class DmfsRecurringTaskList(
 
     /**
      * Prepares a main task for insertion into the task provider by making sure it
-     * doesn't have fields that a main task shouldn't have (original_instance_...).
+     * doesn't have fields that a main task shouldn't have.
      *
      * @param original  original task to insert
      *
@@ -252,10 +245,11 @@ class DmfsRecurringTaskList(
      * Prepares an exception for insertion into the task provider:
      *
      * - Removes values that an exception shouldn't have (`RRULE`, `RDATE`, `EXDATE`).
-     * - Makes sure that neither [Tasks.ORIGINAL_INSTANCE_ID] nor [Tasks.ORIGINAL_INSTANCE_SYNC_ID]
-     *   is set, because these fields are set by the respective operation.
+     * - If [mainId] is provided, sets [Tasks.ORIGINAL_INSTANCE_ID] to it.
+     * - Always removes [Tasks.ORIGINAL_INSTANCE_SYNC_ID].
      *
      * @param original  original exception
+     * @param mainId    [Tasks._ID] of the main task, or null if not yet assigned
      *
      * @return cleaned exception that can actually be inserted
      */

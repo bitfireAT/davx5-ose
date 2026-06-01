@@ -199,8 +199,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         val updatedTaskAndExceptions = TaskAndExceptions(main = updatedTask, exceptions = updatedExceptions)
 
         // Update task
-        val updatedTaskId = recurringTaskList.updateTaskAndExceptions(addedTaskId, updatedTaskAndExceptions)
-        assertEquals(updatedTaskId, addedTaskId)
+        recurringTaskList.updateTaskAndExceptions(addedTaskId, updatedTaskAndExceptions)
 
         // Verify update
         val task2 = recurringTaskList.getById(addedTaskId)
