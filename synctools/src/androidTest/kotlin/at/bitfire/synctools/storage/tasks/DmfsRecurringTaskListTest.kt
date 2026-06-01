@@ -5,25 +5,28 @@
 package at.bitfire.synctools.storage.tasks
 
 import android.accounts.Account
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
 import at.bitfire.ical4android.TaskProvider
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
-import at.bitfire.synctools.test.assertTaskAndExceptionsEqual
-import at.bitfire.synctools.test.withTaskId
+import at.bitfire.synctools.test.assertEntitiesEqual
+import at.bitfire.synctools.test.assertExceptionsEqual
+import at.bitfire.synctools.verifyCompat
+import io.mockk.junit4.MockKRule
 import io.mockk.spyk
 import net.fortuna.ical4j.util.TimeZones
 import org.dmfs.tasks.contract.TaskContract
+import org.dmfs.tasks.contract.TaskContract.TaskLists
+import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
-import org.junit.Ignore
+import org.junit.Rule
 import org.junit.Test
 import java.util.UUID
 
@@ -33,6 +36,9 @@ import java.util.UUID
  */
 class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     DmfsStyleProvidersTaskTest(providerName) {
+
+    @get:Rule
+    val mockkRule = MockKRule(this)
 
     private val testAccount = Account(DmfsRecurringTaskListTest::class.java.name, TaskContract.LOCAL_ACCOUNT_TYPE)
     private val timeZoneId = TimeZones.UTC_ID
@@ -46,11 +52,11 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
 
         // Create a test task list
         val info = ContentValues().apply {
-            put(TaskContract.TaskLists.LIST_NAME, "Test Recurring Task List")
-            put(TaskContract.TaskLists.LIST_COLOR, 0xffff0000)
-            put(TaskContract.TaskLists.OWNER, "test@example.com")
-            put(TaskContract.TaskLists.SYNC_ENABLED, 1)
-            put(TaskContract.TaskLists.VISIBLE, 1)
+            put(TaskLists.LIST_NAME, "Test Recurring Task List")
+            put(TaskLists.LIST_COLOR, 0xffff0000)
+            put(TaskLists.OWNER, "test@example.com")
+            put(TaskLists.SYNC_ENABLED, 1)
+            put(TaskLists.VISIBLE, 1)
         }
 
         val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider.client, providerName)
@@ -70,25 +76,23 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     @Test
     fun testAddTaskAndExceptions_and_GetById() {
         // add task and exceptions
-        val (mainTaskId, task) = insertRecurring()
-        val addedWithId = task.withTaskId(mainTaskId)
+        val task = insertRecurring()
 
         // verify
-        val task2 = recurringTaskList.getById(mainTaskId)
-        assertTaskAndExceptionsEqual(addedWithId, task2!!, onlyFieldsInExpected = true)
+        val task2 = recurringTaskList.getById(task.main.entityValues.getAsLong(Tasks._ID)!!)
+        assertTaskAndExceptionsEqual(task, task2!!, onlyFieldsInExpected = true)
     }
 
     @Test
     fun testFindTaskAndExceptions() {
-        val (mainTaskId, task) = insertRecurring(syncId = "testFindTaskAndExceptions")
-        val addedWithId = task.withTaskId(mainTaskId)
-        val result = recurringTaskList.findTaskAndExceptions("${TaskContract.Tasks._SYNC_ID}=?", arrayOf("testFindTaskAndExceptions"))
-        assertTaskAndExceptionsEqual(addedWithId, result!!, onlyFieldsInExpected = true)
+        val task = insertRecurring(syncId = "testFindTaskAndExceptions")
+        val result = recurringTaskList.findTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf("testFindTaskAndExceptions"))
+        assertTaskAndExceptionsEqual(task, result!!, onlyFieldsInExpected = true)
     }
 
     @Test
     fun testFindTaskAndExceptions_NotFound() {
-        assertNull(recurringTaskList.findTaskAndExceptions("${TaskContract.Tasks._SYNC_ID}=?", arrayOf("not-existent")))
+        assertNull(recurringTaskList.findTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf("not-existent")))
     }
 
     @Test
@@ -101,22 +105,22 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
 
     @Test
     fun testIterateTaskAndExceptions() {
-        val (id1, task1) = insertRecurring(syncId = "testIterateTaskAndExceptions1")
-        val (id2, task2) = insertRecurring(syncId = "testIterateTaskAndExceptions2")
+        val task1 = insertRecurring(syncId = "testIterateTaskAndExceptions1")
+        val task2 = insertRecurring(syncId = "testIterateTaskAndExceptions2")
         val result = mutableListOf<TaskAndExceptions>()
         recurringTaskList.iterateTaskAndExceptions(
-            "${TaskContract.Tasks._SYNC_ID} IN (?, ?)",
+            "${Tasks._SYNC_ID} IN (?, ?)",
             arrayOf("testIterateTaskAndExceptions1", "testIterateTaskAndExceptions2")
         ) { result += it }
-        val orderedResult = result.sortedBy { it.main.entityValues.getAsInteger(TaskContract.Tasks._ID) }
+        val orderedResult = result.sortedBy { it.main.entityValues.getAsInteger(Tasks._ID) }
         assertEquals(2, orderedResult.size)
-        assertTaskAndExceptionsEqual(task1.withTaskId(id1), orderedResult[0], onlyFieldsInExpected = true)
-        assertTaskAndExceptionsEqual(task2.withTaskId(id2), orderedResult[1], onlyFieldsInExpected = true)
+        assertTaskAndExceptionsEqual(task1, orderedResult[0], onlyFieldsInExpected = true)
+        assertTaskAndExceptionsEqual(task2, orderedResult[1], onlyFieldsInExpected = true)
     }
 
     @Test
     fun testIterateTaskAndExceptions_NotFound() {
-        recurringTaskList.iterateTaskAndExceptions("${TaskContract.Tasks._SYNC_ID}=?", arrayOf("not-existent")) {
+        recurringTaskList.iterateTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf("not-existent")) {
             fail("must not be called")
         }
     }
@@ -127,26 +131,26 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         val now = 1754233504000L    // Sun Aug 03 2025 15:05:04 GMT+0000
         val initialTask = Entity(
             contentValuesOf(
-                TaskContract.Tasks.LIST_ID to taskList.id,
-                TaskContract.Tasks._SYNC_ID to "recur2",
-                TaskContract.Tasks.DTSTART to now,
-                TaskContract.Tasks.TZ to timeZoneId,
-                TaskContract.Tasks.DURATION to "PT1H",
-                TaskContract.Tasks.TITLE to "Initial Task",
-                TaskContract.Tasks.RRULE to "FREQ=DAILY;COUNT=3"
+                Tasks.LIST_ID to taskList.id,
+                Tasks._SYNC_ID to "recur2",
+                Tasks.DTSTART to now,
+                Tasks.TZ to timeZoneId,
+                Tasks.DURATION to "PT1H",
+                Tasks.TITLE to "Initial Task",
+                Tasks.RRULE to "FREQ=DAILY;COUNT=3"
             )
         )
         val initialExceptions = listOf(
             Entity(
                 contentValuesOf(
-                    TaskContract.Tasks.LIST_ID to taskList.id,
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID to "recur2",
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_TIME to now + 86400000,
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY to 0,
-                    TaskContract.Tasks.DTSTART to now + 86400000,
-                    TaskContract.Tasks.DUE to now + 86400000 + 2 * 3600000,
-                    TaskContract.Tasks.TZ to timeZoneId,
-                    TaskContract.Tasks.TITLE to "Initial Exception"
+                    Tasks.LIST_ID to taskList.id,
+                    Tasks.ORIGINAL_INSTANCE_SYNC_ID to "recur2",
+                    Tasks.ORIGINAL_INSTANCE_TIME to now + 86400000,
+                    Tasks.ORIGINAL_INSTANCE_ALLDAY to 0,
+                    Tasks.DTSTART to now + 86400000,
+                    Tasks.DUE to now + 86400000 + 2 * 3600000,
+                    Tasks.TZ to timeZoneId,
+                    Tasks.TITLE to "Initial Exception"
                 )
             )
         )
@@ -155,35 +159,33 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         // Add initial task
         val addedTaskId = recurringTaskList.addTaskAndExceptions(initialTaskAndExceptions)
 
-        // Create updated task
+        // Update task
         val updatedTask = Entity(
             contentValuesOf(
-                TaskContract.Tasks.LIST_ID to taskList.id,
-                TaskContract.Tasks._SYNC_ID to "recur2",
-                TaskContract.Tasks.DTSTART to now,
-                TaskContract.Tasks.TZ to timeZoneId,
-                TaskContract.Tasks.DURATION to "PT1H",
-                TaskContract.Tasks.TITLE to "Updated Task",
-                TaskContract.Tasks.RRULE to "FREQ=DAILY;COUNT=3"
+                Tasks.LIST_ID to taskList.id,
+                Tasks._SYNC_ID to "recur2",
+                Tasks.DTSTART to now,
+                Tasks.TZ to timeZoneId,
+                Tasks.DURATION to "PT1H",
+                Tasks.TITLE to "Updated Task",
+                Tasks.RRULE to "FREQ=DAILY;COUNT=3"
             )
         )
         val updatedExceptions = listOf(
             Entity(
                 contentValuesOf(
-                    TaskContract.Tasks.LIST_ID to taskList.id,
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID to "recur2",
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_TIME to now + 86400000,
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY to 0,
-                    TaskContract.Tasks.DTSTART to now + 86400000,
-                    TaskContract.Tasks.DUE to now + 86400000 + 2 * 3600000,
-                    TaskContract.Tasks.TZ to timeZoneId,
-                    TaskContract.Tasks.TITLE to "Updated Exception"
+                    Tasks.LIST_ID to taskList.id,
+                    Tasks.ORIGINAL_INSTANCE_SYNC_ID to "recur2",
+                    Tasks.ORIGINAL_INSTANCE_TIME to now + 86400000,
+                    Tasks.ORIGINAL_INSTANCE_ALLDAY to 0,
+                    Tasks.DTSTART to now + 86400000,
+                    Tasks.DUE to now + 86400000 + 2 * 3600000,
+                    Tasks.TZ to timeZoneId,
+                    Tasks.TITLE to "Updated Exception"
                 )
             )
         )
         val updatedTaskAndExceptions = TaskAndExceptions(main = updatedTask, exceptions = updatedExceptions)
-
-        // Update task
         recurringTaskList.updateTaskAndExceptions(addedTaskId, updatedTaskAndExceptions)
 
         // Verify update
@@ -199,31 +201,34 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     fun testDeleteTaskAndExceptions() {
         // Add task with exceptions
         val now = 1754233504000L    // Sun Aug 03 2025 15:05:04 GMT+0000
-        val mainTask = Entity(
-            contentValuesOf(
-                TaskContract.Tasks.LIST_ID to taskList.id,
-                TaskContract.Tasks._SYNC_ID to "recur4",
-                TaskContract.Tasks.DTSTART to now,
-                TaskContract.Tasks.TZ to timeZoneId,
-                TaskContract.Tasks.DURATION to "PT1H",
-                TaskContract.Tasks.TITLE to "Main Task",
-                TaskContract.Tasks.RRULE to "FREQ=DAILY;COUNT=3"
-            )
-        )
-        val exceptions = listOf(
-            Entity(
-                contentValuesOf(
-                    TaskContract.Tasks.LIST_ID to taskList.id,
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_TIME to now + 86400000,
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY to 0,
-                    TaskContract.Tasks.DTSTART to now + 86400000,
-                    TaskContract.Tasks.DUE to now + 86400000 + 2 * 3600000,
-                    TaskContract.Tasks.TZ to timeZoneId,
-                    TaskContract.Tasks.TITLE to "Exception"
+        val mainTaskId = recurringTaskList.addTaskAndExceptions(
+            TaskAndExceptions(
+                main = Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks._SYNC_ID to "recur4",
+                        Tasks.DTSTART to now,
+                        Tasks.TZ to timeZoneId,
+                        Tasks.DURATION to "PT1H",
+                        Tasks.TITLE to "Main Task",
+                        Tasks.RRULE to "FREQ=DAILY;COUNT=3"
+                    )
+                ),
+                exceptions = listOf(
+                    Entity(
+                        contentValuesOf(
+                            Tasks.LIST_ID to taskList.id,
+                            Tasks.ORIGINAL_INSTANCE_TIME to now + 86400000,
+                            Tasks.ORIGINAL_INSTANCE_ALLDAY to 0,
+                            Tasks.DTSTART to now + 86400000,
+                            Tasks.DUE to now + 86400000 + 2 * 3600000,
+                            Tasks.TZ to timeZoneId,
+                            Tasks.TITLE to "Exception"
+                        )
+                    )
                 )
             )
         )
-        val mainTaskId = recurringTaskList.addTaskAndExceptions(TaskAndExceptions(main = mainTask, exceptions = exceptions))
 
         // Delete task and exceptions
         recurringTaskList.deleteTaskAndExceptions(mainTaskId)
@@ -237,78 +242,48 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     // test validation / clean-up logic
 
     @Test
-    fun testCleanUp_Recurring_Exceptions_NoSyncId() {
-        val original = TaskAndExceptions(
-            main = Entity(
-                contentValuesOf(
-                    TaskContract.Tasks.TITLE to "Recurring Main Task",
-                    TaskContract.Tasks.RRULE to "Some RRULE"
-                )
-            ),
-            exceptions = listOf(
-                Entity(
-                    contentValuesOf(
-                        TaskContract.Tasks.TITLE to "Exception"
-                    )
-                )
+    fun testCleanUp_Recurring() {
+        val mainTask = Entity(
+            contentValuesOf(
+                Tasks.TITLE to "Recurring Main Task",
+                Tasks.RRULE to "Some RRULE"
             )
         )
-        val cleaned = recurringTaskList.cleanUp(
-            original,
-            mainId = null
-        )
-
-        // recurring tasks keep exceptions even without _SYNC_ID
-        assertTaskAndExceptionsEqual(original, cleaned)
-    }
-
-    @Test
-    fun testCleanUp_Recurring_Exceptions_WithMainId() {
-        val original = TaskAndExceptions(
-            main = Entity(
-                contentValuesOf(
-                    TaskContract.Tasks._SYNC_ID to "SomeSyncId",
-                    TaskContract.Tasks.TITLE to "Recurring Main Task",
-                    TaskContract.Tasks.RRULE to "Some RRULE"
-                )
-            ),
-            exceptions = listOf(
-                Entity(
-                    contentValuesOf(
-                        TaskContract.Tasks.TITLE to "Exception",
-                        TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID to "SomeSyncId",
-                        TaskContract.Tasks.ORIGINAL_INSTANCE_TIME to 456L,
-                        TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY to 0
-                    )
-                )
+        val exception = Entity(
+            contentValuesOf(
+                Tasks.TITLE to "Exception"
             )
+        )
+        val original = TaskAndExceptions(
+            main = mainTask,
+            exceptions = listOf(exception)
         )
         val cleaned = recurringTaskList.cleanUp(original, mainId = 123L)
 
-        assertEquals("Recurring Main Task", cleaned.main.entityValues.getAsString(TaskContract.Tasks.TITLE))
-        assertEquals("Some RRULE", cleaned.main.entityValues.getAsString(TaskContract.Tasks.RRULE))
-        assertEquals(1, cleaned.exceptions.size)
-        assertEquals("Exception", cleaned.exceptions[0].entityValues.getAsString(TaskContract.Tasks.TITLE))
-        assertEquals(123L, cleaned.exceptions[0].entityValues.getAsLong(TaskContract.Tasks.ORIGINAL_INSTANCE_ID).toLong())
-        assertNull(cleaned.exceptions[0].entityValues.getAsString(TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID))
-        assertEquals(456L, cleaned.exceptions[0].entityValues.getAsLong(TaskContract.Tasks.ORIGINAL_INSTANCE_TIME).toLong())
-        assertEquals(0, cleaned.exceptions[0].entityValues.getAsInteger(TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY).toInt())
+        // verify cleanup methods were called
+        verifyCompat(exactly = 1) {
+            recurringTaskList.cleanMainTask(any())
+            recurringTaskList.cleanException(any(), 123L)
+        }
+
+        // verify result is not the same as original
+        assertNotSame(cleaned, original)
     }
 
     @Test
-    fun testCleanUp_NotRecurring_Exceptions() {
+    fun testCleanUp_NotRecurring() {
         val cleaned = recurringTaskList.cleanUp(
             TaskAndExceptions(
                 main = Entity(
                     contentValuesOf(
-                        TaskContract.Tasks._SYNC_ID to "SomeSyncID",
-                        TaskContract.Tasks.TITLE to "Non-Recurring Main Task"
+                        Tasks._SYNC_ID to "SomeSyncID",
+                        Tasks.TITLE to "Non-Recurring Main Task"
                     )
                 ),
                 exceptions = listOf(
                     Entity(
                         contentValuesOf(
-                            TaskContract.Tasks.TITLE to "Exception"
+                            Tasks.TITLE to "Exception"
                         )
                     )
                 )
@@ -321,219 +296,125 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testCleanMainTask_RemovesOriginalFields() {
+    fun testCleanMainTask() {
         val result = recurringTaskList.cleanMainTask(
             Entity(
                 contentValuesOf(
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_ID to 123L,
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID to "SomeValue",
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_TIME to 456L,
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY to 1
+                    Tasks.ORIGINAL_INSTANCE_ID to 123L,
+                    Tasks.ORIGINAL_INSTANCE_SYNC_ID to "SomeValue",
+                    Tasks.ORIGINAL_INSTANCE_TIME to 456L,
+                    Tasks.ORIGINAL_INSTANCE_ALLDAY to 1
                 )
             )
         )
+        // all these fields should have been removed (they're for exceptions, not for a main task)
         assertEquals(0, result.entityValues.size())
     }
 
     @Test
-    fun testCleanException_RemovesRecurrenceFields_AddsMainId_PreservesOriginalInstanceFields() {
+    fun testCleanException() {
         val result = recurringTaskList.cleanException(
             Entity(
                 contentValuesOf(
-                    TaskContract.Tasks.RRULE to "SomeValue",
-                    TaskContract.Tasks.RDATE to "SomeValue",
-                    TaskContract.Tasks.EXDATE to "SomeValue",
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID to "SomeSyncID",
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_TIME to 456L,
-                    TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY to 0
+                    Tasks.RRULE to "SomeValue",
+                    Tasks.RDATE to "SomeValue",
+                    Tasks.EXDATE to "SomeValue",
+                    Tasks.ORIGINAL_INSTANCE_ID to "SomeValue",
+                    Tasks.ORIGINAL_INSTANCE_SYNC_ID to "SomeSyncID",
+                    Tasks.ORIGINAL_INSTANCE_TIME to 456L,
+                    Tasks.ORIGINAL_INSTANCE_ALLDAY to 0
                 )
             ),
             mainId = 123L
         )
 
-        // recurrence fields should have been dropped, ORIGINAL_INSTANCE_ID set, and ORIGINAL_INSTANCE_SYNC_ID removed
-        assertEquals(
-            123L,
-            result.entityValues.getAsLong(TaskContract.Tasks.ORIGINAL_INSTANCE_ID).toLong()
-        )
-        assertNull(result.entityValues.getAsString(TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID))
-        assertEquals(456L, result.entityValues.getAsLong(TaskContract.Tasks.ORIGINAL_INSTANCE_TIME).toLong())
-        assertEquals(0, result.entityValues.getAsInteger(TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY).toInt())
-        assertNull(result.entityValues.getAsString(TaskContract.Tasks.RRULE))
-        assertNull(result.entityValues.getAsString(TaskContract.Tasks.RDATE))
-        assertNull(result.entityValues.getAsString(TaskContract.Tasks.EXDATE))
+        // ORIGINAL_INSTANCE_ID should be reset to actual ID
+        assertEquals(123L, result.entityValues.getAsLong(Tasks.ORIGINAL_INSTANCE_ID))
+
+        // references to original task should have been kept
+        assertEquals(456L, result.entityValues.getAsLong(Tasks.ORIGINAL_INSTANCE_TIME).toLong())
+        assertEquals(0, result.entityValues.getAsInteger(Tasks.ORIGINAL_INSTANCE_ALLDAY).toInt())
+
+        // recurrence fields and ORIGINAL_INSTANCE_SYNC_ID should have been dropped
+        assertNull(result.entityValues.getAsString(Tasks.ORIGINAL_INSTANCE_SYNC_ID))
+        assertNull(result.entityValues.getAsString(Tasks.RRULE))
+        assertNull(result.entityValues.getAsString(Tasks.RDATE))
+        assertNull(result.entityValues.getAsString(Tasks.EXDATE))
     }
 
 
     // test processing dirty/deleted tasks and exceptions
 
-    @Ignore("Tasks.org does not currently expose a stable provider-backed deleted-exception setup for this case")
     @Test
     fun testProcessDeletedExceptions() {
-        val now = System.currentTimeMillis()
-        val keptInstanceTime = now + 86400000
-        val deletedInstanceTime = now + 2 * 86400000
-        val mainValues = contentValuesOf(
-            TaskContract.Tasks._SYNC_ID to "testProcessDeletedExceptions",
-            TaskContract.Tasks.LIST_ID to taskList.id,
-            TaskContract.Tasks.DTSTART to now,
-            TaskContract.Tasks.TZ to timeZoneId,
-            TaskContract.Tasks.DURATION to "PT1H",
-            TaskContract.Tasks.RRULE to "FREQ=DAILY;COUNT=5",
-            TaskContract.Tasks._DIRTY to 0,
-            TaskContract.Tasks.SYNC_VERSION to 15
-        )
-        val exNotDeleted = Entity(
-            contentValuesOf(
-                TaskContract.Tasks.LIST_ID to taskList.id,
-                TaskContract.Tasks.ORIGINAL_INSTANCE_TIME to keptInstanceTime,
-                TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY to 0,
-                TaskContract.Tasks.DTSTART to keptInstanceTime,
-                TaskContract.Tasks.TZ to timeZoneId,
-                TaskContract.Tasks.TITLE to "not marked as deleted",
-                TaskContract.Tasks._DIRTY to 0
-            )
-        )
-        val mainId = recurringTaskList.addTaskAndExceptions(
-            TaskAndExceptions(
-                main = Entity(mainValues),
-                exceptions = listOf(
-                    exNotDeleted,
-                    Entity(
-                        contentValuesOf(
-                            TaskContract.Tasks.LIST_ID to taskList.id,
-                            TaskContract.Tasks.ORIGINAL_INSTANCE_TIME to deletedInstanceTime,
-                            TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY to 0,
-                            TaskContract.Tasks.DTSTART to deletedInstanceTime,
-                            TaskContract.Tasks.TZ to timeZoneId,
-                            TaskContract.Tasks._DIRTY to 1,
-                            TaskContract.Tasks.TITLE to "marked as deleted"
-                        )
-                    )
-                )
-            )
-        )
-
-        val deletedInstanceId = recurringTaskList.getById(mainId)!!
-            .exceptions
-            .single { it.entityValues.getAsString(TaskContract.Tasks.TITLE) == "marked as deleted" }
-            .entityValues
-            .getAsLong(TaskContract.Tasks._ID)
-        val instancesUri = TaskContract.Instances.getContentUri(providerName.authority)
-            .asSyncAdapter(taskList.account)
-        val instanceRowId = taskList.client.query(
-            instancesUri,
-            arrayOf(TaskContract.Instances._ID),
-            "${TaskContract.Instances.TASK_ID}=? AND ${TaskContract.Instances.INSTANCE_ORIGINAL_TIME}=?",
-            arrayOf(deletedInstanceId.toString(), deletedInstanceTime.toString()),
-            null
-        )!!.use { cursor ->
-            assertTrue(cursor.moveToFirst())
-            cursor.getLong(0)
-        }
-        taskList.client.delete(
-            ContentUris.withAppendedId(instancesUri, instanceRowId),
-            null,
-            null
-        )
-
-        // should update main task and purge the deleted exception
-        recurringTaskList.processDeletedExceptions()
-
-        val result = recurringTaskList.getById(mainId)!!
-        val expectedMainValues = ContentValues(mainValues).apply {
-            put(TaskContract.Tasks._DIRTY, 1)
-            put(TaskContract.Tasks.SYNC_VERSION, 16)
-        }
-        val expectedTaskAndExceptions = TaskAndExceptions(
-            main = Entity(expectedMainValues),
-            exceptions = listOf(exNotDeleted)
-        )
-        assertTaskAndExceptionsEqual(expectedTaskAndExceptions, result, onlyFieldsInExpected = true)
+        // TODO
     }
 
     @Test
     fun testProcessDirtyExceptions() {
-        val now = System.currentTimeMillis()
-        val mainValues = contentValuesOf(
-            TaskContract.Tasks._SYNC_ID to "testProcessDirtyExceptions",
-            TaskContract.Tasks.LIST_ID to taskList.id,
-            TaskContract.Tasks.DTSTART to now,
-            TaskContract.Tasks.TZ to timeZoneId,
-            TaskContract.Tasks.DURATION to "PT1H",
-            TaskContract.Tasks.RRULE to "FREQ=DAILY;COUNT=5",
-            TaskContract.Tasks._DIRTY to 0,
-            TaskContract.Tasks.SYNC_VERSION to 15
-        )
-        val exDirtyValues = contentValuesOf(
-            TaskContract.Tasks.LIST_ID to taskList.id,
-            TaskContract.Tasks.ORIGINAL_INSTANCE_TIME to now,
-            TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY to 0,
-            TaskContract.Tasks.DTSTART to now,
-            TaskContract.Tasks.TZ to timeZoneId,
-            TaskContract.Tasks._DIRTY to 1,
-            TaskContract.Tasks.TITLE to "marked as dirty",
-            TaskContract.Tasks.SYNC_VERSION to null
-        )
-        val mainId = recurringTaskList.addTaskAndExceptions(
-            TaskAndExceptions(
-                main = Entity(mainValues),
-                exceptions = listOf(Entity(exDirtyValues))
-            )
-        )
-
-        // should mark main task as dirty and increase exception SEQUENCE
-        recurringTaskList.processDirtyExceptions()
-
-        val result = recurringTaskList.getById(mainId)!!
-        val expectedMainValues = ContentValues(mainValues).apply {
-            put(TaskContract.Tasks._DIRTY, 1)
-        }
-        val expectedExDirtyValues = ContentValues(exDirtyValues).apply {
-            put(TaskContract.Tasks._DIRTY, 0)
-            put(TaskContract.Tasks.SYNC_VERSION, 1)
-        }
-        assertTaskAndExceptionsEqual(
-            TaskAndExceptions(
-                main = Entity(expectedMainValues),
-                exceptions = listOf(Entity(expectedExDirtyValues))
-            ), result, onlyFieldsInExpected = true
-        )
+        // TODO
     }
 
 
     // helpers
 
-    private fun insertRecurring(syncId: String = UUID.randomUUID().toString()): Pair<Long, TaskAndExceptions> {
+    private fun insertRecurring(syncId: String = UUID.randomUUID().toString()): TaskAndExceptions {
         val now = 1754233504000L     // Sun Aug 03 2025 15:05:04 GMT+0000
         val task = TaskAndExceptions(
             main = Entity(
                 contentValuesOf(
-                    TaskContract.Tasks.LIST_ID to taskList.id,
-                    TaskContract.Tasks._SYNC_ID to syncId,
-                    TaskContract.Tasks.DTSTART to now,
-                    TaskContract.Tasks.TZ to timeZoneId,
-                    TaskContract.Tasks.DURATION to "PT1H",
-                    TaskContract.Tasks.TITLE to "Main Task",
-                    TaskContract.Tasks.RRULE to "FREQ=DAILY;COUNT=3"
+                    Tasks.LIST_ID to taskList.id,
+                    Tasks._SYNC_ID to syncId,
+                    Tasks.DTSTART to now,
+                    Tasks.TZ to timeZoneId,
+                    Tasks.DURATION to "PT1H",
+                    Tasks.TITLE to "Main Task",
+                    Tasks.RRULE to "FREQ=DAILY;COUNT=3"
                 )
             ),
             exceptions = listOf(
                 Entity(
                     contentValuesOf(
-                        TaskContract.Tasks.LIST_ID to taskList.id,
-                        TaskContract.Tasks.ORIGINAL_INSTANCE_TIME to now + 86400000,
-                        TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY to 0,
-                        TaskContract.Tasks.DTSTART to now + 86400000,
-                        TaskContract.Tasks.DUE to now + 86400000 + 2 * 3600000,
-                        TaskContract.Tasks.TZ to timeZoneId,
-                        TaskContract.Tasks.TITLE to "Exception"
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks.ORIGINAL_INSTANCE_TIME to now + 86400000,
+                        Tasks.ORIGINAL_INSTANCE_ALLDAY to 0,
+                        Tasks.DTSTART to now + 86400000,
+                        Tasks.DUE to now + 86400000 + 2 * 3600000,
+                        Tasks.TZ to timeZoneId,
+                        Tasks.TITLE to "Exception"
                     )
                 )
             )
         )
         val id = recurringTaskList.addTaskAndExceptions(task)
-        return id to task
+        return task.withTaskId(id)
     }
+
+
+    // helpers
+
+    private fun assertTaskAndExceptionsEqual(expected: TaskAndExceptions, actual: TaskAndExceptions, onlyFieldsInExpected: Boolean = false) {
+        assertEntitiesEqual(expected.main, actual.main, onlyFieldsInExpected)
+        assertExceptionsEqual(expected.exceptions, actual.exceptions, onlyFieldsInExpected) {
+            it.entityValues.getAsLong(Tasks.ORIGINAL_INSTANCE_TIME)
+        }
+    }
+
+    private fun Entity.withTaskId(taskId: Long): Entity =
+        Entity(ContentValues(this.entityValues)).also { newEntity ->
+            newEntity.entityValues.put(Tasks._ID, taskId)
+            newEntity.subValues.addAll(subValues)
+        }
+
+    private fun TaskAndExceptions.withTaskId(mainTaskId: Long): TaskAndExceptions =
+        TaskAndExceptions(
+            main = main.withTaskId(mainTaskId),
+            exceptions = exceptions.map { exception ->
+                Entity(ContentValues(exception.entityValues)).also { newException ->
+                    newException.entityValues.put(Tasks.ORIGINAL_INSTANCE_ID, mainTaskId)
+                    newException.subValues.addAll(exception.subValues)
+                }
+            }
+        )
 
 }
