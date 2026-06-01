@@ -94,7 +94,7 @@ class DmfsTaskList(
         // insert property rows (with reference to task row ID)
         for (row in entity.subValues) {
             batch += BatchOperation.CpoBuilder
-                .newInsert(row.uri)
+                .newInsert(tasksPropertiesUri())
                 .withValues(row.values)
                 .withValueBackReference(TaskContract.Properties.TASK_ID, taskRowIdx)
         }
@@ -267,7 +267,7 @@ class DmfsTaskList(
         // insert new property rows (with reference to task ID)
         for (row in entity.subValues) {
             batch += BatchOperation.CpoBuilder
-                .newInsert(row.uri)
+                .newInsert(tasksPropertiesUri())
                 .withValues(ContentValues(row.values).apply {
                     remove(TaskContract.Properties.PROPERTY_ID) // don't reuse property IDs
                     put(TaskContract.Properties.TASK_ID, id)

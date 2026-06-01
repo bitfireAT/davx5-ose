@@ -197,7 +197,7 @@ class DmfsTask(
      * Shortcut for [DmfsTaskList.updateTaskRow] with [id].
      */
     fun update(values: ContentValues) {
-        taskList.update(values)
+        taskList.updateTaskRow(id!!, values)
     }
 
     /**
