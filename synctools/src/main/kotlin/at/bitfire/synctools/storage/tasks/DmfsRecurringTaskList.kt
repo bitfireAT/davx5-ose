@@ -45,8 +45,9 @@ class DmfsRecurringTaskList(
      *
      * If you want to insert exceptions, [TaskContract.Tasks._SYNC_ID] must be set on the main
      * task and [TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID] should be set to the same value for the
-     * exception tasks. **It's not enough to just set [TaskContract.Tasks.ORIGINAL_INSTANCE_ID] in the
-     * exceptions**.
+     * exception tasks. The exception rows must also identify the overridden instance via
+     * [TaskContract.Tasks.ORIGINAL_INSTANCE_TIME] and [TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY].
+     * **It's not enough to just set [TaskContract.Tasks.ORIGINAL_INSTANCE_ID] in the exceptions**.
      *
      * @param taskAndExceptions    task and exceptions to insert
      *
