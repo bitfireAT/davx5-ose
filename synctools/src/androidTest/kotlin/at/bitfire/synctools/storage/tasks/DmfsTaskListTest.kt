@@ -400,7 +400,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
                     taskList.tasksPropertiesUri(),
                     contentValuesOf(
                         TaskContract.Properties.MIMETYPE to Property.Category.CONTENT_ITEM_TYPE,
-                        Property.Category.CATEGORY_NAME to "Personal"
+                        Property.Category.CATEGORY_NAME to "Work"
                     )
                 )
             }
@@ -412,13 +412,13 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             assertEquals("Updated Task Title", result?.entityValues?.getAsString(Tasks.TITLE))
 
             // Check property was updated
-            val categoryProperty = result?.subValues?.find {
+            val commentProperty = result?.subValues?.find {
                 it.values.getAsString(TaskContract.Properties.MIMETYPE) == Property.Category.CONTENT_ITEM_TYPE
             }
-            assertNotNull(categoryProperty)
+            assertNotNull(commentProperty)
             assertEquals(
-                "Personal",
-                categoryProperty?.values?.getAsString(Property.Category.CATEGORY_NAME)
+                "Work",
+                commentProperty?.values?.getAsString(Property.Category.CATEGORY_NAME)
             )
         } finally {
             taskList.delete()
