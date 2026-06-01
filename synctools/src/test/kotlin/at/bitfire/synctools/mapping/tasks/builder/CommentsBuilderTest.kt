@@ -15,12 +15,12 @@ import at.bitfire.synctools.test.assertContentValuesEqual
 import io.mockk.every
 import io.mockk.mockk
 import net.fortuna.ical4j.model.property.Comment
-import org.dmfs.tasks.contract.TaskContract.Property.Comment as DmfsComment
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.dmfs.tasks.contract.TaskContract.Property.Comment as DmfsComment
 
 @RunWith(RobolectricTestRunner::class)
 class CommentsBuilderTest {
@@ -79,6 +79,24 @@ class CommentsBuilderTest {
             DmfsComment.COMMENT to "This is a comment"
         ), result.subValues.first().values)
         assertEquals(propertiesUri, result.subValues.first().uri)
+    }
+
+    @Test
+    fun `Multiple comments`() {
+        val result = Entity(ContentValues())
+        builder.build(
+            from = VToDoUtil.build(Comment("First comment"), Comment("Second comment")),
+            to = result
+        )
+        assertEquals(2, result.subValues.size)
+        assertContentValuesEqual(contentValuesOf(
+            DmfsComment.MIMETYPE to DmfsComment.CONTENT_ITEM_TYPE,
+            DmfsComment.COMMENT to "First comment"
+        ), result.subValues[0].values)
+        assertContentValuesEqual(contentValuesOf(
+            DmfsComment.MIMETYPE to DmfsComment.CONTENT_ITEM_TYPE,
+            DmfsComment.COMMENT to "Second comment"
+        ), result.subValues[1].values)
     }
 
 }

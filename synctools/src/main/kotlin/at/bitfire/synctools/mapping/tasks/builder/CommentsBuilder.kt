@@ -12,7 +12,6 @@ import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Comment
 import org.dmfs.tasks.contract.TaskContract.Property.Comment as DmfsComment
-import kotlin.jvm.optionals.getOrNull
 
 class CommentsBuilder(
     private val taskList: DmfsTaskList
@@ -30,14 +29,15 @@ class CommentsBuilder(
     }
 
     override fun build(from: VToDo, to: Entity) {
-        val comment = from.getProperty<Comment>(Property.COMMENT).getOrNull()?.value ?: return
-        to.addSubValue(
-            taskList.tasksPropertiesUri(),
-            contentValuesOf(
-                DmfsComment.MIMETYPE to DmfsComment.CONTENT_ITEM_TYPE,
-                DmfsComment.COMMENT to comment
+        for (comment in from.getProperties<Comment>(Property.COMMENT)) {
+            to.addSubValue(
+                taskList.tasksPropertiesUri(),
+                contentValuesOf(
+                    DmfsComment.MIMETYPE to DmfsComment.CONTENT_ITEM_TYPE,
+                    DmfsComment.COMMENT to comment.value
+                )
             )
-        )
+        }
     }
 
 }
