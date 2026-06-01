@@ -127,6 +127,31 @@ class DmfsTaskList(
     }
 
     /**
+     * Gets the first task from this task list that matches the given query.
+     *
+     * @param where     selection
+     * @param whereArgs arguments for selection
+     *
+     * @return first task from this task list that matches the selection, or `null` if none found
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun findTask(where: String?, whereArgs: Array<String>?): Entity? {
+        val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+        try {
+            client.query(tasksUri(), null, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val id = cursor.getLong(cursor.getColumnIndexOrThrow(TaskContract.Tasks._ID))
+                    return getTask(id)
+                }
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query tasks", e)
+        }
+        return null
+    }
+
+    /**
      * Queries all tasks from this task list.
      *
      * Should be used rarely because it has a potentially large memory footprint.
@@ -140,6 +165,30 @@ class DmfsTaskList(
         val entities = LinkedList<Entity>()
         try {
             iterateTaskRows(null, null, null) { row ->
+                val id = row.getAsLong(TaskContract.Tasks._ID) ?: return@iterateTaskRows
+                val entity = getTask(id) ?: return@iterateTaskRows
+                entities += entity
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query tasks", e)
+        }
+        return entities
+    }
+
+    /**
+     * Queries tasks from this task list.
+     *
+     * @param where     selection
+     * @param whereArgs arguments for selection
+     *
+     * @return tasks from this task list which match the selection
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun findTasks(where: String?, whereArgs: Array<String>?): List<Entity> {
+        val entities = LinkedList<Entity>()
+        try {
+            iterateTaskRows(null, where, whereArgs) { row ->
                 val id = row.getAsLong(TaskContract.Tasks._ID) ?: return@iterateTaskRows
                 val entity = getTask(id) ?: return@iterateTaskRows
                 entities += entity
@@ -189,6 +238,30 @@ class DmfsTaskList(
     }
 
     /**
+     * Gets a specific task row, identified by its ID, from this task list.
+     *
+     * @param id        task ID
+     * @param projection requested fields
+     * @param where      additional selection (appended with AND)
+     * @param whereArgs  arguments for [where]
+     *
+     * @return task row (or `null` if not found)
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun getTaskRow(id: Long, projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null): ContentValues? {
+        try {
+            client.query(taskUri(id), projection, where, whereArgs, null)?.use { cursor ->
+                if (cursor.moveToNext())
+                    return cursor.toContentValues()
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query task row", e)
+        }
+        return null
+    }
+
+    /**
      * Iterates task rows from this task list.
      *
      * @param projection    requested fields
@@ -226,6 +299,17 @@ class DmfsTaskList(
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't update task row $id", e)
         }
+    }
+
+    /**
+     * Enqueues an update of a task's main row into a batch operation.
+     *
+     * @param id        task ID
+     * @param values    new values
+     * @param batch     batch operation in which the update is enqueued
+     */
+    fun updateTaskRow(id: Long, values: ContentValues, batch: TasksBatchOperation) {
+        batch += BatchOperation.CpoBuilder.newUpdate(taskUri(id)).withValues(values)
     }
 
     /**
@@ -294,6 +378,16 @@ class DmfsTaskList(
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't delete task $id", e)
         }
+
+    /**
+     * Enqueues a delete operation for a task into a batch.
+     *
+     * @param id        ID of the task to delete
+     * @param batch     batch operation in which the delete is enqueued
+     */
+    fun deleteTask(id: Long, batch: TasksBatchOperation) {
+        batch += BatchOperation.CpoBuilder.newDelete(taskUri(id))
+    }
 
 
     // CRUD DmfsTask

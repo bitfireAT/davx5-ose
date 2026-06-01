@@ -9,7 +9,9 @@ import android.content.Entity
 import android.provider.CalendarContract.Events
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
 import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
+import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import at.techbee.jtx.JtxContract
+import org.dmfs.tasks.contract.TaskContract
 import org.junit.Assert.assertEquals
 
 fun assertContentValuesEqual(expected: ContentValues, actual: ContentValues, onlyFieldsInExpected: Boolean = false, message: String? = null) {
@@ -87,4 +89,30 @@ fun JtxObjectAndExceptions.withJtxId(mainId: Long) =
     JtxObjectAndExceptions(
         main = main.withIntField(JtxContract.JtxICalObject.ID, mainId),
         exceptions = exceptions
+    )
+
+
+fun assertTaskAndExceptionsEqual(expected: TaskAndExceptions, actual: TaskAndExceptions, onlyFieldsInExpected: Boolean = false) {
+    assertEntitiesEqual(expected.main, actual.main, onlyFieldsInExpected)
+
+    assertEquals(expected.exceptions.size, actual.exceptions.size)
+    for (expectedException in expected.exceptions) {
+        val expectedInstanceTime = expectedException.entityValues.getAsLong(TaskContract.Tasks.ORIGINAL_INSTANCE_TIME)
+        val actualException = actual.exceptions.first {
+            val actualInstanceTime = it.entityValues.getAsLong(TaskContract.Tasks.ORIGINAL_INSTANCE_TIME)
+            actualInstanceTime == expectedInstanceTime
+        }
+        assertEntitiesEqual(expectedException, actualException, onlyFieldsInExpected)
+    }
+}
+
+fun Entity.withTaskId(taskId: Long) =
+    this.withIntField(TaskContract.Tasks._ID, taskId)
+
+fun TaskAndExceptions.withTaskId(mainTaskId: Long) =
+    TaskAndExceptions(
+        main = main.withTaskId(mainTaskId),
+        exceptions = exceptions.map { exception ->
+            exception.withIntField(TaskContract.Tasks.ORIGINAL_INSTANCE_ID, mainTaskId)
+        }
     )
