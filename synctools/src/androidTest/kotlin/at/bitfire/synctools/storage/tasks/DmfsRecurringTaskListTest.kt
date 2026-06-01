@@ -5,6 +5,7 @@
 package at.bitfire.synctools.storage.tasks
 
 import android.accounts.Account
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
@@ -347,12 +348,55 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
 
     @Test
     fun testProcessDeletedExceptions() {
-        // TODO
+        // Insert a recurring task with an exception
+        val taskAndExceptions = insertRecurring()
+        val mainTaskId = taskAndExceptions.main.entityValues.getAsLong(Tasks._ID)!!
+
+        // Get the actual exception ID from the database
+        val exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
+        val exceptionId = exceptions.first().entityValues.getAsLong(Tasks._ID)!!
+
+        // Mark the exception as deleted (delete, but not "as sync adapter"!)
+        val exceptionUri = ContentUris.withAppendedId(Tasks.getContentUri(providerName.authority), exceptionId)
+        taskList.client.delete(exceptionUri, null, null)
+
+        // Process deleted exceptions
+        recurringTaskList.processDeletedExceptions()
+
+        // Verify: exception should be deleted
+        val deletedException = taskList.getTaskRow(exceptionId)
+        assertNull("Exception should be deleted", deletedException)
+
+        // Verify: main task SYNC_VERSION should be increased by 1 (from 0 to 1)
+        val mainTaskRow = taskList.getTaskRow(mainTaskId, arrayOf(Tasks.SYNC_VERSION, Tasks._DIRTY))
+        assertEquals(1L, mainTaskRow?.getAsLong(Tasks.SYNC_VERSION))
+        assertEquals(1L, mainTaskRow?.getAsLong(Tasks._DIRTY))
     }
 
     @Test
     fun testProcessDirtyExceptions() {
-        // TODO
+        // Insert a recurring task with an exception
+        val taskAndExceptions = insertRecurring()
+        val mainTaskId = taskAndExceptions.main.entityValues.getAsLong(Tasks._ID)!!
+
+        // Get the actual exception ID from the database
+        val exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
+        val exceptionId = exceptions.first().entityValues.getAsLong(Tasks._ID)!!
+
+        // Mark the exception as dirty (but not deleted)
+        taskList.updateTaskRow(exceptionId, contentValuesOf(Tasks._DIRTY to 1, Tasks.SYNC_VERSION to 5))
+
+        // Process dirty exceptions
+        recurringTaskList.processDirtyExceptions()
+
+        // Verify: exception SYNC_VERSION should be increased by 1 (from 5 to 6)
+        val exceptionRow = taskList.getTaskRow(exceptionId, arrayOf(Tasks.SYNC_VERSION, Tasks._DIRTY))
+        assertEquals(6L, exceptionRow?.getAsLong(Tasks.SYNC_VERSION))
+        assertEquals(0L, exceptionRow?.getAsLong(Tasks._DIRTY))
+
+        // Verify: main task should be marked as dirty
+        val mainTaskRow = taskList.getTaskRow(mainTaskId, arrayOf(Tasks._DIRTY))
+        assertEquals(1L, mainTaskRow?.getAsLong(Tasks._DIRTY))
     }
 
 
