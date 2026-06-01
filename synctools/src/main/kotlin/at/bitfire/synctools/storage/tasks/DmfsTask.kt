@@ -148,6 +148,7 @@ class DmfsTask(
      * @throws at.bitfire.synctools.storage.LocalStorageException when the tasks provider doesn't return a result row
      * @throws android.os.RemoteException on tasks provider errors
      */
+    @Deprecated("Use DmfsTaskList.addTask() instead")
     fun add(): Uri {
         val batch = TasksBatchOperation(taskList.provider.client)
 
@@ -172,6 +173,7 @@ class DmfsTask(
      * @throws LocalStorageException when the tasks provider doesn't return a result row
      * @throws android.os.RemoteException on tasks provider errors
      */
+    @Deprecated("Use DmfsTaskList.updateTask() or DmfsTaskList.updateTaskRow() instead")
     fun update(task: Task): Uri {
         this.task = task
         val existingId = requireNotNull(id)
@@ -191,20 +193,17 @@ class DmfsTask(
         return ContentUris.withAppendedId(TaskContract.Tasks.getContentUri(taskList.providerName.authority), existingId)
     }
 
+    /**
+     * Shortcut for [DmfsTaskList.updateTaskRow] with [id].
+     */
     fun update(values: ContentValues) {
-        taskList.provider.client.update(taskSyncURI(), values, null, null)
+        taskList.updateTaskRow(id!!, values)
     }
 
     /**
-     * Deletes an existing task from the tasks provider storage.
-     *
-     * @return number of affected rows
-     *
-     * @throws android.os.RemoteException on tasks provider errors
+     * Shortcut for [DmfsTaskList.deleteTask] with [id].
      */
-    fun delete(): Int {
-        return taskList.provider.client.delete(taskSyncURI(), null, null)
-    }
+    fun delete(): Int = taskList.deleteTask(id!!)
 
     private fun taskSyncURI(loadProperties: Boolean = false): Uri {
         val id = requireNotNull(id)
