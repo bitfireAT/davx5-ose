@@ -433,4 +433,10 @@
   <string name="widget_sync_all">Tout synchroniser</string>
     <string name="widget_sync_all_accounts">Synchroniser tous les comptes</string>
     <!--cert4android-->
+<string name="notification_channel_user_interaction">Interaction Utilisateur</string>
+    <string name="notification_channel_user_interaction_desc">Interaction utilisateur nécessaire. Le problème a besoin d\'être traité manuellement.</string>
+    <string name="intro_autostart_text">Un firmware spécifique constructeur peut bloquer la synchronisation. Si vous êtes concerné, vous ne pouvez résoudre cela que manuellement.</string>
+    <string name="intro_tasks_tasks_org_info"><![CDATA[Certaines fonctionnalités <a href="https://www.davx5.com/faq/tasks/advanced-task-features">ne sont pas supportées</a>.]]></string>
+    <string name="intro_backups_title">Rappel de sauvegardes</string>
+    <string name="intro_backups_important">Il est important de sauvegarder vos données (contacts et calendriers inclus) régulièrement afin d\'éviter une potentielle perte de données.</string>
 </resources>
