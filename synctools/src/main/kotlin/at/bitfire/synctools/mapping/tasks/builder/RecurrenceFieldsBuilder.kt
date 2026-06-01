@@ -6,10 +6,18 @@ package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
 import at.bitfire.ical4android.Task
+import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.synctools.util.AndroidTimeUtils
+import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.DtStart
+import net.fortuna.ical4j.model.property.Due
+import net.fortuna.ical4j.model.property.ExDate
+import net.fortuna.ical4j.model.property.RDate
+import net.fortuna.ical4j.model.property.RRule
 import org.dmfs.tasks.contract.TaskContract.Tasks
+import kotlin.jvm.optionals.getOrNull
 
-class RecurrenceFieldsBuilder : DmfsTaskFieldBuilder {
+class RecurrenceFieldsBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
 
     private val allDayBuilder = AllDayBuilder()
 
@@ -31,6 +39,34 @@ class RecurrenceFieldsBuilder : DmfsTaskFieldBuilder {
                 null
             else
                 AndroidTimeUtils.recurrenceSetsToOpenTasksString(from.exDates, tz)
+        )
+    }
+
+    override fun build(from: VToDo, to: Entity) {
+        val dtStart = from.getProperty<DtStart<*>>(DtStart.DTSTART).getOrNull()
+        val due = from.getProperty<Due<*>>(Due.DUE).getOrNull()
+        val allDay = dtStart?.let { DateUtils.isDate(it) }
+            ?: due?.let { DateUtils.isDate(it) }
+            ?: true
+        val tz = if (allDay) null else allDayBuilder.getTimeZone(from)
+
+        val rRule = from.getProperty<RRule<*>>(RRule.RRULE).getOrNull()
+        to.entityValues.put(Tasks.RRULE, rRule?.value)
+
+        val rDates = from.getProperties<RDate<*>>(RDate.RDATE)
+        to.entityValues.put(Tasks.RDATE,
+            if (rDates.isEmpty())
+                null
+            else
+                AndroidTimeUtils.recurrenceSetsToOpenTasksString(rDates, tz)
+        )
+
+        val exDates = from.getProperties<ExDate<*>>(ExDate.EXDATE)
+        to.entityValues.put(Tasks.EXDATE,
+            if (exDates.isEmpty())
+                null
+            else
+                AndroidTimeUtils.recurrenceSetsToOpenTasksString(exDates, tz)
         )
     }
 
