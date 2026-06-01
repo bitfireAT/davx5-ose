@@ -51,8 +51,7 @@ class DmfsRecurringTaskList(
 
             // add main task
             val batch = TasksBatchOperation(taskList.client)
-            val idxMainTask = batch.nextBackrefIdx()    // 0
-            taskList.addTask(cleaned.main, batch)
+            val idxMainTask = taskList.addTask(cleaned.main, batch)
 
             // add exceptions
             for (exception in cleaned.exceptions)

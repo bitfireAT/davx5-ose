@@ -399,7 +399,8 @@ class DmfsTaskList(
      */
     fun updateTasks(values: ContentValues, where: String?, whereArgs: Array<String>?): Int =
         try {
-            client.update(tasksUri(), values, where, whereArgs)
+            val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+            client.update(tasksUri(), values, protectedWhere, protectedWhereArgs)
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't update ${providerName.authority} tasks", e)
         }
