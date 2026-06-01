@@ -98,7 +98,8 @@ class UnknownPropertiesBuilder(
             Property.PERCENT_COMPLETE,  // PercentCompleteBuilder
             Property.RRULE,             // RecurrenceFieldsBuilder
             Property.RDATE,             // RecurrenceFieldsBuilder
-            Property.EXRULE,            // RecurrenceFieldsBuilder
+            // Note: EXRULE is intentionally absent – it's not mapped by RecurrenceFieldsBuilder
+            // (the dmfs tasks contract has no EXRULE field), so it must be preserved here.
             Property.EXDATE,            // RecurrenceFieldsBuilder
             Property.CATEGORIES,        // CategoriesBuilder
             Property.COMMENT,           // CommentsBuilder

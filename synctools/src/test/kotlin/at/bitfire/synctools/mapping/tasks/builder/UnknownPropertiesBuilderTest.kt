@@ -16,7 +16,9 @@ import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.test.assertContentValuesEqual
 import io.mockk.every
 import io.mockk.mockk
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.parameter.XParameter
+import net.fortuna.ical4j.model.property.ExRule
 import net.fortuna.ical4j.model.property.XProperty
 import org.dmfs.tasks.contract.TaskContract.Properties
 import org.junit.Assert.assertEquals
@@ -24,6 +26,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.time.temporal.Temporal
 
 @RunWith(RobolectricTestRunner::class)
 class UnknownPropertiesBuilderTest {
@@ -113,6 +116,20 @@ class UnknownPropertiesBuilderTest {
             to = result
         )
         assertTrue(result.subValues.isEmpty())
+    }
+
+    @Test
+    fun `EXRULE is preserved as unknown property`() {
+        val result = Entity(ContentValues())
+        builder.build(
+            from = VToDoUtil.build(ExRule<Temporal>(ParameterList(), "FREQ=WEEKLY")),
+            to = result
+        )
+        assertEquals(1, result.subValues.size)
+        assertContentValuesEqual(contentValuesOf(
+            Properties.MIMETYPE to UnknownProperty.CONTENT_ITEM_TYPE,
+            UNKNOWN_PROPERTY_DATA to "[\"EXRULE\",\"FREQ=WEEKLY\"]"
+        ), result.subValues.first().values)
     }
 
 }
