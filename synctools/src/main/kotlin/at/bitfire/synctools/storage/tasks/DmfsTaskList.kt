@@ -115,6 +115,30 @@ class DmfsTaskList(
     }
 
     /**
+     * Counts the number of tasks in this task list that match the given selection criteria.
+     *
+     * @param where An optional filter declaring which rows to return.
+     * @param whereArgs Optional arguments for [where].
+     * @return The number of tasks matching the selection criteria.
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun countTasks(where: String? = null, whereArgs: Array<String>? = null): Int {
+        try {
+            val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+            client.query(
+                tasksUri(), arrayOf(Tasks._ID),
+                protectedWhere, protectedWhereArgs, null
+            )?.use { cursor ->
+                return cursor.count
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't count ${providerName.authority} tasks", e)
+        }
+        // If the query was invalid, an exception should have been thrown. So this should never be reached:
+        return 0
+    }
+
+    /**
      * Gets the first task row in the task list that matches the given query.
      *
      * @param projection    requested fields
@@ -364,6 +388,23 @@ class DmfsTaskList(
     }
 
     /**
+     * Updates tasks in this task list.
+     *
+     * @param values        values to update
+     * @param where         selection
+     * @param whereArgs     arguments for selection
+     *
+     * @return number of updated rows
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun updateTasks(values: ContentValues, where: String?, whereArgs: Array<String>?): Int =
+        try {
+            client.update(tasksUri(), values, where, whereArgs)
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't update ${providerName.authority} tasks", e)
+        }
+
+    /**
      * Enqueues an update of a task into a batch operation.
      *
      * @param id        task ID
@@ -416,37 +457,30 @@ class DmfsTaskList(
      * Enqueues a delete operation for a task into a batch.
      *
      * @param id        ID of the task to delete
-     * @param batch     batch operation in which the delete is enqueued
+     * @param batch     batch operation in which the deletion is enqueued
      */
     fun deleteTask(id: Long, batch: TasksBatchOperation) {
         batch += BatchOperation.CpoBuilder.newDelete(taskUri(id))
     }
 
-
-    // CRUD DmfsTask
-
     /**
-     * Counts the number of tasks in this task list that match the given selection criteria.
+     * Deletes tasks in this task list.
      *
-     * @param where An optional filter declaring which rows to return.
-     * @param whereArgs Optional arguments for [where].
-     * @return The number of tasks matching the selection criteria.
+     * @param where         selection
+     * @param whereArgs     arguments for selection
+     *
+     * @return number of deleted rows
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun countTasks(where: String? = null, whereArgs: Array<String>? = null): Int {
+    fun deleteTasks(where: String?, whereArgs: Array<String>?): Int =
         try {
-            val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
-            client.query(
-                tasksUri(), arrayOf(Tasks._ID),
-                protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                return cursor.count
-            }
+            client.delete(tasksUri(), where, whereArgs)
         } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't count ${providerName.authority} tasks", e)
+            throw LocalStorageException("Couldn't delete ${providerName.authority} tasks", e)
         }
-        // If the query was invalid, an exception should have been thrown. So this should never be reached:
-        return 0
-    }
+
+
+    // CRUD DmfsTask
 
     /**
      * Queries tasks from this task list. Adds a WHERE clause that restricts the
@@ -516,39 +550,6 @@ class DmfsTaskList(
         }
         return null
     }
-
-    /**
-     * Updates tasks in this task list.
-     *
-     * @param values        values to update
-     * @param where         selection
-     * @param whereArgs     arguments for selection
-     *
-     * @return number of updated rows
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun updateTasks(values: ContentValues, where: String?, whereArgs: Array<String>?): Int =
-        try {
-            client.update(tasksUri(), values, where, whereArgs)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update ${providerName.authority} tasks", e)
-        }
-
-    /**
-     * Deletes tasks in this task list.
-     *
-     * @param where         selection
-     * @param whereArgs     arguments for selection
-     *
-     * @return number of deleted rows
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun deleteTasks(where: String?, whereArgs: Array<String>?): Int =
-        try {
-            client.delete(tasksUri(), where, whereArgs)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete ${providerName.authority} tasks", e)
-        }
 
 
     // shortcuts to upper level
