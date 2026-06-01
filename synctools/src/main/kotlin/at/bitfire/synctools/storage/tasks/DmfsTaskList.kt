@@ -499,7 +499,7 @@ class DmfsTaskList(
             client.query(tasksUri(), arrayOf(Tasks._ID), protectedWhere, protectedWhereArgs, null)?.use { cursor ->
                 while (cursor.moveToNext()) {
                     val taskId = cursor.getLong(0)
-                    val entity = getTaskEntity(taskId)
+                    val entity = getTask(taskId)
                     if (entity != null)
                         tasks += DmfsTask(this, entity)
                 }
@@ -517,38 +517,8 @@ class DmfsTaskList(
      */
     @Deprecated("Use getTask() instead")
     fun getDmfsTask(id: Long): DmfsTask? {
-        val values = getTaskEntity(id) ?: return null
+        val values = getTask(id) ?: return null
         return DmfsTask(this, values)
-    }
-
-    /**
-     * Retrieves a task as entity from this task list by given id and selection.
-     *
-     * @param where selection
-     * @param whereArgs arguments for selection
-     *
-     * @return task from this task list which matches the selection
-     */
-    fun getTaskEntity(id: Long, where: String? = null, whereArgs: Array<String>? = null): Entity? {
-        try {
-            client.query(taskUri(id, true), null, where, whereArgs, null)?.use { cursor ->
-                if (cursor.moveToFirst()) {
-                    // first row holds entity main values
-                    val entity = Entity(cursor.toContentValues())
-                    // remaining rows hold entity subvalues (extended properties)
-                    while (cursor.moveToNext()) {
-                        val cv = cursor.toContentValues()
-                        // Use base properties URI for all sub-values so that Entity can be used
-                        // for both reading and writing. MIMETYPE is stored in ContentValues.
-                        entity.addSubValue(tasksPropertiesUri(asSyncAdapter = false), cv)
-                    }
-                    return entity
-                }
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query task entity", e)
-        }
-        return null
     }
 
 
