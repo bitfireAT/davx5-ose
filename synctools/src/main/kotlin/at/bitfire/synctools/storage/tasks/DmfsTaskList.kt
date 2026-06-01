@@ -29,8 +29,10 @@ class DmfsTaskList(
     val providerName: TaskProvider.ProviderName
 ) {
 
+    // task list properties
+
     private val logger
-        get() = Logger.getLogger(DmfsTaskList::class.java.name)
+        get() = Logger.getLogger(javaClass.name)
 
     /** see [TaskContract.TaskLists._ID] **/
     val id: Long = values.getAsLong(TaskContract.TaskLists._ID)
@@ -47,6 +49,251 @@ class DmfsTaskList(
     /** see [TaskContract.TaskLists._SYNC_ID] **/
     val syncId: String?
         get() = values.getAsString(TaskContract.TaskLists._SYNC_ID)
+
+
+    // CRUD tasks
+
+    /**
+     * Inserts a task into the task provider.
+     *
+     * @param entity    task to insert (with main row values and sub-values)
+     *
+     * @return ID of the new task
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun addTask(entity: Entity): Long {
+        try {
+            val batch = TasksBatchOperation(client)
+            val backRefIdx = addTask(entity, batch)
+            batch.commit()
+
+            val uri = batch.getResult(backRefIdx)?.uri
+                ?: throw LocalStorageException("Content provider returned null on insert")
+            return ContentUris.parseId(uri)
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't insert task", e)
+        }
+    }
+
+    /**
+     * Enqueues an insert operation for a task into a batch.
+     *
+     * @param entity    task to insert (with main row values and sub-values)
+     * @param batch     batch operation in which the insert is enqueued
+     *
+     * @return back-reference index of the main task row
+     */
+    fun addTask(entity: Entity, batch: TasksBatchOperation): Int {
+        // insert task row
+        val taskRowIdx = batch.nextBackrefIdx()
+        batch += BatchOperation.CpoBuilder
+            .newInsert(tasksUri())
+            .withValues(entity.entityValues)
+
+        // insert property rows (with reference to task row ID)
+        for (row in entity.subValues) {
+            batch += BatchOperation.CpoBuilder
+                .newInsert(tasksPropertiesUri())
+                .withValues(row.values)
+                .withValueBackReference(TaskContract.Properties.TASK_ID, taskRowIdx)
+        }
+
+        return taskRowIdx
+    }
+
+    /**
+     * Gets the first task row in the task list that matches the given query.
+     *
+     * @param projection    requested fields
+     * @param where         selection
+     * @param whereArgs     arguments for selection
+     *
+     * @return first task row that matches the selection, or `null` if none found
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun findTaskRow(projection: Array<String>?, where: String?, whereArgs: Array<String>?): ContentValues? {
+        try {
+            val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+            client.query(tasksUri(), projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+                if (cursor.moveToNext())
+                    return cursor.toContentValues()
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query task rows", e)
+        }
+        return null
+    }
+
+    /**
+     * Queries all tasks from this task list.
+     *
+     * Should be used rarely because it has a potentially large memory footprint.
+     * Prefer [iterateTaskRows].
+     *
+     * @return list of task entities
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun findTasks(): List<Entity> {
+        val entities = LinkedList<Entity>()
+        try {
+            iterateTaskRows(null, null, null) { row ->
+                val id = row.getAsLong(TaskContract.Tasks._ID) ?: return@iterateTaskRows
+                val entity = getTask(id) ?: return@iterateTaskRows
+                entities += entity
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query tasks", e)
+        }
+        return entities
+    }
+
+    /**
+     * Gets a specific task, identified by its ID, from this task list.
+     *
+     * @param id    task ID
+     *
+     * @return task entity (or `null` if not found)
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun getTask(id: Long): Entity? {
+        try {
+            // query tasks
+            client.query(taskUri(id, loadProperties = false), null, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val entity = Entity(cursor.toContentValues())
+                    // explicitly load task properties into subrows
+                    client.query(
+                        tasksPropertiesUri(),
+                        null,
+                        "${TaskContract.Properties.TASK_ID}=?",
+                        arrayOf(id.toString()),
+                        null
+                    )?.use { propertiesCursor ->
+                        while (propertiesCursor.moveToNext())
+                            entity.addSubValue(
+                                tasksPropertiesUri(asSyncAdapter = false),
+                                propertiesCursor.toContentValues()
+                            )
+                    }
+                    return entity
+                }
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query task entity", e)
+        }
+        return null
+    }
+
+    /**
+     * Iterates task rows from this task list.
+     *
+     * @param projection    requested fields
+     * @param where         selection
+     * @param whereArgs     arguments for selection
+     * @param body          callback that is called for each main row
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun iterateTaskRows(projection: Array<String>?, where: String?, whereArgs: Array<String>?, body: (ContentValues) -> Unit) {
+        try {
+            val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+            client.query(tasksUri(), projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+                while (cursor.moveToNext()) {
+                    val row = cursor.toContentValues()
+                    body(row)
+                }
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't iterate task rows", e)
+        }
+    }
+
+    /**
+     * Updates a specific task's main row with the given values. Doesn't influence property rows.
+     *
+     * @param id        task ID
+     * @param values    new values
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun updateTaskRow(id: Long, values: ContentValues) {
+        try {
+            client.update(taskUri(id), values, null, null)
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't update task row $id", e)
+        }
+    }
+
+    /**
+     * Updates a specific task's main row and property rows with the values from the given entity.
+     *
+     * @param id        task ID
+     * @param entity    new values of the task (main row and sub-values)
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun updateTask(id: Long, entity: Entity) {
+        try {
+            val batch = TasksBatchOperation(client)
+            updateTask(id, entity, batch)
+            batch.commit()
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't update task $id", e)
+        }
+    }
+
+    /**
+     * Enqueues an update of a task into a batch operation.
+     *
+     * @param id        task ID
+     * @param entity    new values of the task (main row and sub-values)
+     * @param batch     batch operation in which the update is enqueued
+     */
+    fun updateTask(id: Long, entity: Entity, batch: TasksBatchOperation) {
+        // delete existing property rows for this task
+        batch += BatchOperation.CpoBuilder
+            .newDelete(tasksPropertiesUri())
+            .withSelection("${TaskContract.Properties.TASK_ID}=?", arrayOf(id.toString()))
+
+        // update main row
+        val newValues = ContentValues(entity.entityValues).apply {
+            remove(TaskContract.Tasks._ID) // don't update task ID
+        }
+        batch += BatchOperation.CpoBuilder
+            .newUpdate(taskUri(id))
+            .withValues(newValues)
+
+        // insert new property rows (with reference to task ID)
+        for (row in entity.subValues) {
+            batch += BatchOperation.CpoBuilder
+                .newInsert(tasksPropertiesUri())
+                .withValues(ContentValues(row.values).apply {
+                    remove(TaskContract.Properties.PROPERTY_ID) // don't reuse property IDs
+                    put(TaskContract.Properties.TASK_ID, id)
+                })
+        }
+    }
+
+    /**
+     * Deletes a task row.
+     *
+     * The content provider automatically deletes associated property rows.
+     *
+     * @param id    ID of the task
+     *
+     * @return number of affected rows
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun deleteTask(id: Long): Int =
+        try {
+            client.delete(taskUri(id), null, null)
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't delete task $id", e)
+        }
 
 
     // CRUD DmfsTask
@@ -82,7 +329,8 @@ class DmfsTaskList(
      *
      * @return tasks from this task list which match the selection
      */
-    fun findTasks(where: String? = null, whereArgs: Array<String>? = null): List<DmfsTask> {
+    @Deprecated("Use findTasks() instead")
+    fun findDmfsTasks(where: String? = null, whereArgs: Array<String>? = null): List<DmfsTask> {
         val tasks = LinkedList<DmfsTask>()
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
@@ -105,7 +353,8 @@ class DmfsTaskList(
      *
      * @return task from this task list which matches the selection
      */
-    fun getTask(id: Long): DmfsTask? {
+    @Deprecated("Use getTask() instead")
+    fun getDmfsTask(id: Long): DmfsTask? {
         val values = getTaskEntity(id) ?: return null
         return DmfsTask(this, values)
     }
@@ -127,8 +376,9 @@ class DmfsTaskList(
                     // remaining rows hold entity subvalues (extended properties)
                     while (cursor.moveToNext()) {
                         val cv = cursor.toContentValues()
-                        val mimetype = cv.getAsString(TaskContract.PropertyColumns.MIMETYPE) // CONTENT_ITEM_TYPE of extended property
-                        entity.addSubValue(tasksPropertyUri(mimetype), cv)
+                        // Use base properties URI for all sub-values so that Entity can be used
+                        // for both reading and writing. MIMETYPE is stored in ContentValues.
+                        entity.addSubValue(tasksPropertiesUri(asSyncAdapter = false), cv)
                     }
                     return entity
                 }
@@ -213,11 +463,13 @@ class DmfsTaskList(
     fun taskUri(id: Long, loadProperties: Boolean = false): Uri =
         ContentUris.withAppendedId(tasksUri(loadProperties), id)
 
-    fun tasksPropertiesUri() =
-        TaskContract.Properties.getContentUri(providerName.authority).asSyncAdapter(account)
-
-    fun tasksPropertyUri(mimetype: String): Uri =
-        tasksPropertiesUri().buildUpon().appendPath(mimetype).build()!!
+    fun tasksPropertiesUri(asSyncAdapter: Boolean = false): Uri {
+        val uri = TaskContract.Properties.getContentUri(providerName.authority)
+        return if (asSyncAdapter)
+            uri.asSyncAdapter(account)
+        else
+            uri
+    }
 
     /**
      * Restricts a given selection/where clause to this task list ID.
