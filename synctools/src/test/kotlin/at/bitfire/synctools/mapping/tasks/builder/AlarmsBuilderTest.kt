@@ -9,6 +9,7 @@ import android.content.Entity
 import android.net.Uri
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
+import at.bitfire.synctools.mapping.tasks.VToDoUtil
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.test.assertContentValuesEqual
 import io.mockk.every
@@ -38,7 +39,7 @@ class AlarmsBuilderTest {
     private val builder = AlarmsBuilder(taskList)
 
     @Test
-    fun `No alarms`() {
+    fun `old No alarms`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(),
@@ -48,7 +49,7 @@ class AlarmsBuilderTest {
     }
 
     @Test
-    fun `Audio alarm relative to start`() {
+    fun `old Audio alarm relative to start`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(
@@ -74,7 +75,7 @@ class AlarmsBuilderTest {
     }
 
     @Test
-    fun `Display alarm`() {
+    fun `old Display alarm`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(
@@ -85,6 +86,66 @@ class AlarmsBuilderTest {
                     alarm.add<VAlarm>(Trigger(Duration.ofMinutes(-30)))
                 }
             },
+            to = result
+        )
+        assertEquals(1, result.subValues.size)
+        assertContentValuesEqual(contentValuesOf(
+            Alarm.MIMETYPE to Alarm.CONTENT_ITEM_TYPE,
+            Alarm.MINUTES_BEFORE to 30,
+            Alarm.REFERENCE to Alarm.ALARM_REFERENCE_START_DATE,
+            Alarm.MESSAGE to null,
+            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE
+        ), result.subValues.first().values)
+    }
+
+    @Test
+    fun `No alarms`() {
+        val result = Entity(ContentValues())
+        builder.build(
+            from = VToDoUtil.build(),
+            to = result
+        )
+        assertTrue(result.subValues.isEmpty())
+    }
+
+    @Test
+    fun `Audio alarm relative to start`() {
+        val result = Entity(ContentValues())
+        val alarm = VAlarm().also {
+            it.add<VAlarm>(Action(ImmutableAction.VALUE_AUDIO))
+            it.add<VAlarm>(Trigger(Duration.ofMinutes(-15)))
+        }
+        builder.build(
+            from = VToDoUtil.build(
+                properties = listOf(DtStart(ZonedDateTime.of(2025, 1, 15, 10, 0, 0, 0, ZoneOffset.UTC))),
+                alarms = listOf(alarm)
+            ),
+            to = result
+        )
+        assertEquals(1, result.subValues.size)
+        val values = result.subValues.first().values
+        assertContentValuesEqual(contentValuesOf(
+            Alarm.MIMETYPE to Alarm.CONTENT_ITEM_TYPE,
+            Alarm.MINUTES_BEFORE to 15,
+            Alarm.REFERENCE to Alarm.ALARM_REFERENCE_START_DATE,
+            Alarm.MESSAGE to null,
+            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_SOUND
+        ), values)
+        assertEquals(propertiesUri, result.subValues.first().uri)
+    }
+
+    @Test
+    fun `Display alarm`() {
+        val result = Entity(ContentValues())
+        val alarm = VAlarm().also {
+            it.add<VAlarm>(Action(ImmutableAction.VALUE_DISPLAY))
+            it.add<VAlarm>(Trigger(Duration.ofMinutes(-30)))
+        }
+        builder.build(
+            from = VToDoUtil.build(
+                properties = listOf(DtStart(ZonedDateTime.of(2025, 1, 15, 10, 0, 0, 0, ZoneOffset.UTC))),
+                alarms = listOf(alarm)
+            ),
             to = result
         )
         assertEquals(1, result.subValues.size)

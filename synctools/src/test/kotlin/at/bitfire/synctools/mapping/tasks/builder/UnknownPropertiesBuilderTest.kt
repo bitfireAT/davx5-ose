@@ -10,6 +10,7 @@ import android.net.Uri
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
+import at.bitfire.synctools.mapping.tasks.VToDoUtil
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.test.assertContentValuesEqual
@@ -34,7 +35,7 @@ class UnknownPropertiesBuilderTest {
     private val builder = UnknownPropertiesBuilder(taskList)
 
     @Test
-    fun `No unknown properties`() {
+    fun `old No unknown properties`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(),
@@ -44,7 +45,7 @@ class UnknownPropertiesBuilderTest {
     }
 
     @Test
-    fun `Unknown property with value and parameters`() {
+    fun `old Unknown property with value and parameters`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task().also {
@@ -63,13 +64,52 @@ class UnknownPropertiesBuilderTest {
     }
 
     @Test
-    fun `Unknown property exceeding size limit is ignored`() {
+    fun `old Unknown property exceeding size limit is ignored`() {
         val result = Entity(ContentValues())
         val longValue = "x".repeat(UnknownProperty.MAX_UNKNOWN_PROPERTY_SIZE + 1)
         builder.build(
             from = Task().also {
                 it.unknownProperties += XProperty("X-Huge-Property", longValue)
             },
+            to = result
+        )
+        assertTrue(result.subValues.isEmpty())
+    }
+
+    @Test
+    fun `No unknown properties`() {
+        val result = Entity(ContentValues())
+        builder.build(
+            from = VToDoUtil.build(),
+            to = result
+        )
+        assertTrue(result.subValues.isEmpty())
+    }
+
+    @Test
+    fun `Unknown property with value and parameters`() {
+        val result = Entity(ContentValues())
+        val prop = XProperty("X-Some-Property", "Some Value")
+            .add<XProperty>(XParameter("Param1", "Value1"))
+            .add<XProperty>(XParameter("Param2", "Value2"))
+        builder.build(
+            from = VToDoUtil.build(prop),
+            to = result
+        )
+        assertEquals(1, result.subValues.size)
+        assertContentValuesEqual(contentValuesOf(
+            Properties.MIMETYPE to UnknownProperty.CONTENT_ITEM_TYPE,
+            UNKNOWN_PROPERTY_DATA to "[\"X-Some-Property\",\"Some Value\",{\"Param1\":\"Value1\",\"Param2\":\"Value2\"}]"
+        ), result.subValues.first().values)
+        assertEquals(propertiesUri, result.subValues.first().uri)
+    }
+
+    @Test
+    fun `Unknown property exceeding size limit is ignored`() {
+        val result = Entity(ContentValues())
+        val longValue = "x".repeat(UnknownProperty.MAX_UNKNOWN_PROPERTY_SIZE + 1)
+        builder.build(
+            from = VToDoUtil.build(XProperty("X-Huge-Property", longValue)),
             to = result
         )
         assertTrue(result.subValues.isEmpty())
