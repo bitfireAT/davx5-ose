@@ -185,7 +185,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     // test tasks CRUD
 
     @Test
-    fun testAddTask_and_GetTask() {
+    fun testAddTask() {
         val taskList = createTaskList()
         try {
             val entity = Entity(
@@ -195,7 +195,6 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
                     Tasks.DESCRIPTION to "Test Description"
                 )
             )
-
             val id = taskList.addTask(entity)
 
             // verify that task has been inserted
@@ -212,25 +211,21 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
         val taskList = createTaskList()
         try {
             val batch = TasksBatchOperation(taskList.client)
-
             val entity = Entity(
                 contentValuesOf(
                     Tasks.LIST_ID to taskList.id,
                     Tasks.TITLE to "Batch Task"
                 )
             )
-
             val backRefIdx = taskList.addTask(entity, batch)
             batch.commit()
 
             // Get the result URI and parse the ID
             val resultUri = batch.getResult(backRefIdx)?.uri
-            assertNotNull(resultUri)
             val id = ContentUris.parseId(resultUri!!)
 
             // Verify task was inserted
             val result = taskList.getTask(id)
-            assertNotNull(result)
             assertEquals("Batch Task", result?.entityValues?.getAsString(Tasks.TITLE))
         } finally {
             taskList.delete()
@@ -254,8 +249,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
                 "${Tasks.TITLE}=?",
                 arrayOf("Find Test Task")
             )
-            assertNotNull(result)
-            assertEquals("Find Test Task", result!!.getAsString(Tasks.TITLE))
+            assertEquals("Find Test Task", result?.getAsString(Tasks.TITLE))
         } finally {
             taskList.delete()
         }
@@ -265,21 +259,22 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     fun testFindTasks() {
         val taskList = createTaskList()
         try {
-            val entity1 = Entity(
+            taskList.addTask(
+                Entity(
                 contentValuesOf(
                     Tasks.LIST_ID to taskList.id,
                     Tasks.TITLE to "Task 1"
                 )
+                )
             )
-            val entity2 = Entity(
+            taskList.addTask(
+                Entity(
                 contentValuesOf(
                     Tasks.LIST_ID to taskList.id,
                     Tasks.TITLE to "Task 2"
                 )
+                )
             )
-
-            taskList.addTask(entity1)
-            taskList.addTask(entity2)
 
             val tasks = taskList.findTasks()
             assertEquals(2, tasks.size)
@@ -300,13 +295,22 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
                     Tasks.LIST_ID to taskList.id,
                     Tasks.TITLE to "Get Test Task"
                 )
-            )
+            ).apply {
+                addSubValue(
+                    taskList.tasksPropertiesUri(),
+                    contentValuesOf(
+                        TaskContract.Properties.MIMETYPE to Property.Comment.CONTENT_ITEM_TYPE,
+                        Property.Comment.COMMENT to "Some Comment"
+                    )
+                )
+            }
 
             val id = taskList.addTask(entity)
 
             val result = taskList.getTask(id)
             assertNotNull(result)
             assertEquals("Get Test Task", result?.entityValues?.getAsString(Tasks.TITLE))
+            assertEquals("Some Comment", result?.subValues?.firstOrNull()?.values?.getAsString(Property.Comment.COMMENT))
         } finally {
             taskList.delete()
         }
@@ -316,21 +320,22 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     fun testIterateTaskRows() {
         val taskList = createTaskList()
         try {
-            val entity1 = Entity(
+            taskList.addTask(
+                Entity(
                 contentValuesOf(
                     Tasks.LIST_ID to taskList.id,
                     Tasks.TITLE to "Iterate Task 1"
                 )
+                )
             )
-            val entity2 = Entity(
+            taskList.addTask(
+                Entity(
                 contentValuesOf(
                     Tasks.LIST_ID to taskList.id,
                     Tasks.TITLE to "Iterate Task 2"
                 )
+                )
             )
-
-            val id1 = taskList.addTask(entity1)
-            val id2 = taskList.addTask(entity2)
 
             val result = mutableListOf<ContentValues>()
             taskList.iterateTaskRows(null, null, null) { row ->
@@ -355,7 +360,6 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
                     Tasks.TITLE to "Original Title"
                 )
             )
-
             val id = taskList.addTask(entity)
 
             taskList.updateTaskRow(id, contentValuesOf(Tasks.TITLE to "Updated Title"))
@@ -378,7 +382,6 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
                     Tasks.TITLE to "Update Test Task"
                 )
             ).apply {
-                // Use base properties URI for sub-values, MIMETYPE goes in ContentValues
                 addSubValue(
                     taskList.tasksPropertiesUri(),
                     contentValuesOf(
