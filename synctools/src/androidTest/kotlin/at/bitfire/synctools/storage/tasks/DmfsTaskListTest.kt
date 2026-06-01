@@ -309,8 +309,11 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
 
             val result = taskList.getTask(id)
             assertNotNull(result)
-            assertEquals("Get Test Task", result?.entityValues?.getAsString(Tasks.TITLE))
-            assertEquals("Some Comment", result?.subValues?.firstOrNull()?.values?.getAsString(Property.Comment.COMMENT))
+            assertEquals("Get Test Task", result!!.entityValues?.getAsString(Tasks.TITLE))
+
+            val subvalue = result.subValues.first()
+            assertEquals(TaskContract.Properties.getContentUri(taskList.providerName.authority), subvalue.uri)
+            assertEquals("Some Comment", subvalue.values?.getAsString(Property.Comment.COMMENT))
         } finally {
             taskList.delete()
         }

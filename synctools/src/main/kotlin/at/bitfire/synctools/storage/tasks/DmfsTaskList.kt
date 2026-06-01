@@ -174,7 +174,10 @@ class DmfsTaskList(
                         null
                     )?.use { propertiesCursor ->
                         while (propertiesCursor.moveToNext())
-                            entity.addSubValue(tasksPropertiesUri(), propertiesCursor.toContentValues())
+                            entity.addSubValue(
+                                tasksPropertiesUri(asSyncAdapter = false),
+                                propertiesCursor.toContentValues()
+                            )
                     }
                     return entity
                 }
@@ -375,7 +378,7 @@ class DmfsTaskList(
                         val cv = cursor.toContentValues()
                         // Use base properties URI for all sub-values so that Entity can be used
                         // for both reading and writing. MIMETYPE is stored in ContentValues.
-                        entity.addSubValue(tasksPropertiesUri(), cv)
+                        entity.addSubValue(tasksPropertiesUri(asSyncAdapter = false), cv)
                     }
                     return entity
                 }
@@ -460,8 +463,13 @@ class DmfsTaskList(
     fun taskUri(id: Long, loadProperties: Boolean = false): Uri =
         ContentUris.withAppendedId(tasksUri(loadProperties), id)
 
-    fun tasksPropertiesUri(): Uri =
-        TaskContract.Properties.getContentUri(providerName.authority).asSyncAdapter(account)
+    fun tasksPropertiesUri(asSyncAdapter: Boolean = false): Uri {
+        val uri = TaskContract.Properties.getContentUri(providerName.authority)
+        return if (asSyncAdapter)
+            uri.asSyncAdapter(account)
+        else
+            uri
+    }
 
     /**
      * Restricts a given selection/where clause to this task list ID.
