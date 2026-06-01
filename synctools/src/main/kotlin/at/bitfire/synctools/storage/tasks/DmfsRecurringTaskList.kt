@@ -69,7 +69,7 @@ class DmfsRecurringTaskList(
     }
 
     /**
-     * Find first task (including exceptions) that matches the query from the content provider.
+     * Find first task (including exceptions) of [taskList] that matches the query from the content provider.
      *
      * Note that the exceptions may contain deleted tasks.
      *
@@ -83,27 +83,27 @@ class DmfsRecurringTaskList(
         val mainTaskId = main.entityValues.getAsLong(Tasks._ID)
         return TaskAndExceptions(
             main = main,
-            exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
+            exceptions = findExceptions(mainTaskId)
         )
     }
 
     /**
-     * Retrieves a task and its exceptions from the content provider (associated by [TaskContract.Tasks.ORIGINAL_INSTANCE_ID]).
+     * Retrieves a task and its exceptions from the content provider.
      *
      * @param mainTaskId   [TaskContract.Tasks._ID] of the main task
      *
-     * @return task and exceptions
+     * @return the task and its exceptions, or _null_ if no task with the given id was found
      */
     fun getById(mainTaskId: Long): TaskAndExceptions? {
         val mainTask = taskList.getTask(mainTaskId) ?: return null
         return TaskAndExceptions(
             main = mainTask,
-            exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
+            exceptions = findExceptions(mainTaskId)
         )
     }
 
     /**
-     * Iterates through tasks together with their exceptions from the content provider.
+     * Iterates through tasks in [taskList] together with their exceptions.
      *
      * Note that the exceptions may contain deleted tasks.
      *
@@ -118,7 +118,7 @@ class DmfsRecurringTaskList(
             body(
                 TaskAndExceptions(
                     main = taskList.getTask(mainTaskId) ?: return@iterateTaskRows,
-                    exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
+                    exceptions = findExceptions(mainTaskId)
                 )
             )
         }
@@ -365,5 +365,17 @@ class DmfsRecurringTaskList(
 
         batch.commit()
     }
+
+
+    // helper methods
+
+    /**
+     * Finds all exceptions for a given main task by its ID.
+     *
+     * @param mainTaskId   The [Tasks._ID] of the main task
+     * @return List of exception entities linked to the main task
+     */
+    private fun findExceptions(mainTaskId: Long): List<Entity> =
+        taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
 
 }
