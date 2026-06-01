@@ -112,12 +112,11 @@ class DmfsRecurringTaskList(
      * @param body          callback that is called for each task (including exceptions)
      */
     fun iterateTaskAndExceptions(where: String?, whereArgs: Array<String>?, body: (TaskAndExceptions) -> Unit) {
-        // iterate through main tasks and attach exceptions
-        taskList.iterateTaskRows(null, where, whereArgs) { main ->
-            val mainTaskId = main.getAsLong(Tasks._ID) ?: return@iterateTaskRows
+        taskList.iterateTasks(where, whereArgs) { main ->
+            val mainTaskId = main.entityValues.getAsLong(Tasks._ID)
             body(
                 TaskAndExceptions(
-                    main = taskList.getTask(mainTaskId) ?: return@iterateTaskRows,
+                    main = main,
                     exceptions = findExceptions(mainTaskId)
                 )
             )

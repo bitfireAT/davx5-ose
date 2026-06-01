@@ -354,6 +354,50 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
+    fun testIterateTasks() {
+        val taskList = createTaskList()
+        try {
+            // Add tasks directly via Entity
+            taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks._UID to "iterate-task-1",
+                        Tasks.TITLE to "Iterate Task 1",
+                        Tasks.DESCRIPTION to "Description 1"
+                    )
+                )
+            )
+            taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks._UID to "iterate-task-2",
+                        Tasks.TITLE to "Iterate Task 2",
+                        Tasks.DESCRIPTION to "Description 2"
+                    )
+                )
+            )
+
+            val result = mutableListOf<Entity>()
+            taskList.iterateTasks(null, null) { entity ->
+                result += entity
+            }
+
+            assertEquals(2, result.size)
+            val uids = result.mapNotNull { it.entityValues.getAsString(Tasks._UID) }.toSet()
+            assertEquals(setOf("iterate-task-1", "iterate-task-2"), uids)
+
+            // Verify that entities contain properties (description)
+            val task1Entity = result.find { it.entityValues.getAsString(Tasks._UID) == "iterate-task-1" }
+            assertNotNull(task1Entity)
+            assertEquals("Description 1", task1Entity?.entityValues?.getAsString(Tasks.DESCRIPTION))
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
     fun testUpdateTaskRow() {
         val taskList = createTaskList()
         try {

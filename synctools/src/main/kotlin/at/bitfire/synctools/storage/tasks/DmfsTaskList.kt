@@ -23,6 +23,10 @@ import java.util.logging.Logger
 /**
  * Represents a locally stored task list, containing [DmfsTask]s (tasks).
  * Communicates with tasks.org-compatible content providers (currently tasks.org and OpenTasks) to store the tasks.
+ *
+ * Note: When loading tasks with properties, this implementation explicitly loads properties via separate
+ * queries rather than using the `LOAD_PROPERTIES` parameter. This is because the left-join result from
+ * `LOAD_PROPERTIES` is error-prone to process (interleaved task and property rows).
  */
 class DmfsTaskList(
     val provider: DmfsTaskListProvider,
@@ -290,6 +294,27 @@ class DmfsTaskList(
             }
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't iterate task rows", e)
+        }
+    }
+
+    /**
+     * Iterates tasks (with properties) from this task list.
+     *
+     * @param where         selection
+     * @param whereArgs     arguments for selection
+     * @param body          callback that is called for each task entity
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun iterateTasks(where: String?, whereArgs: Array<String>?, body: (Entity) -> Unit) {
+        try {
+            iterateTaskRows(null, where, whereArgs) { row ->
+                val id = row.getAsLong(Tasks._ID) ?: return@iterateTaskRows
+                val entity = getTask(id) ?: return@iterateTaskRows
+                body(entity)
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't iterate tasks", e)
         }
     }
 
