@@ -387,7 +387,6 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
                     )
                 )
             }
-
             val id = taskList.addTask(entity)
 
             // Update with new entity

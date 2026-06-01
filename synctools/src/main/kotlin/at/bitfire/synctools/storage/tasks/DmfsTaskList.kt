@@ -14,7 +14,6 @@ import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.toContentValues
-import net.fortuna.ical4j.model.Content
 import org.dmfs.tasks.contract.TaskContract
 import java.util.LinkedList
 import java.util.logging.Logger
@@ -167,9 +166,7 @@ class DmfsTaskList(
                     val entity = Entity(cursor.toContentValues())
                     // remaining rows hold entity subvalues (extended properties)
                     while (cursor.moveToNext()) {
-                        val cv = cursor.toContentValues()
-                        // Use base properties URI for all sub-values so that Entity can be used
-                        // for both reading and writing. MIMETYPE is stored in ContentValues.
+                        val cv = cursor.toContentValues()   // MIMETYPE is stored in ContentValues
                         entity.addSubValue(tasksPropertiesUri(), cv)
                     }
                     return entity
@@ -457,11 +454,8 @@ class DmfsTaskList(
     fun taskUri(id: Long, loadProperties: Boolean = false): Uri =
         ContentUris.withAppendedId(tasksUri(loadProperties), id)
 
-    fun tasksPropertiesUri() =
-        TaskContract.Properties.getContentUri(providerName.authority).asSyncAdapter(account)
-
-    fun tasksPropertyUri(mimetype: String): Uri =
-        tasksPropertiesUri().buildUpon().appendPath(mimetype).build()!!
+    fun tasksPropertiesUri(): Uri =
+        TaskContract.Properties.getContentUri(providerName.authority)
 
     /**
      * Restricts a given selection/where clause to this task list ID.
