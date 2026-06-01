@@ -82,6 +82,8 @@ class DmfsTaskList(
      *
      * @param entity    task to insert (with main row values and sub-values)
      * @param batch     batch operation in which the insert is enqueued
+     * @param idxOriginalInstanceId   when the task is inserted, [Tasks.ORIGINAL_INSTANCE_ID] is set to
+     *                                the result of the previous [batch] operation with that index
      *
      * @return back-reference index of the main task row
      */
@@ -147,7 +149,7 @@ class DmfsTaskList(
         try {
             client.query(tasksUri(), null, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
                 if (cursor.moveToFirst()) {
-                    val id = cursor.getLong(cursor.getColumnIndexOrThrow(TaskContract.Tasks._ID))
+                    val id = cursor.getLong(cursor.getColumnIndexOrThrow(Tasks._ID))
                     return getTask(id)
                 }
             }
@@ -171,7 +173,7 @@ class DmfsTaskList(
         val entities = LinkedList<Entity>()
         try {
             iterateTaskRows(null, null, null) { row ->
-                val id = row.getAsLong(TaskContract.Tasks._ID) ?: return@iterateTaskRows
+                val id = row.getAsLong(Tasks._ID) ?: return@iterateTaskRows
                 val entity = getTask(id) ?: return@iterateTaskRows
                 entities += entity
             }
@@ -195,7 +197,7 @@ class DmfsTaskList(
         val entities = LinkedList<Entity>()
         try {
             iterateTaskRows(null, where, whereArgs) { row ->
-                val id = row.getAsLong(TaskContract.Tasks._ID) ?: return@iterateTaskRows
+                val id = row.getAsLong(Tasks._ID) ?: return@iterateTaskRows
                 val entity = getTask(id) ?: return@iterateTaskRows
                 entities += entity
             }
@@ -351,7 +353,7 @@ class DmfsTaskList(
 
         // update main row
         val newValues = ContentValues(entity.entityValues).apply {
-            remove(TaskContract.Tasks._ID) // don't update task ID
+            remove(Tasks._ID) // don't update task ID
         }
         batch += BatchOperation.CpoBuilder
             .newUpdate(taskUri(id))
@@ -409,7 +411,8 @@ class DmfsTaskList(
     fun countTasks(where: String? = null, whereArgs: Array<String>? = null): Int {
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
-            client.query(tasksUri(), arrayOf(TaskContract.Tasks._ID),
+            client.query(
+                tasksUri(), arrayOf(Tasks._ID),
                 protectedWhere, protectedWhereArgs, null)?.use { cursor ->
                 return cursor.count
             }
@@ -434,7 +437,7 @@ class DmfsTaskList(
         val tasks = LinkedList<DmfsTask>()
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
-            client.query(tasksUri(), arrayOf(TaskContract.Tasks._ID), protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+            client.query(tasksUri(), arrayOf(Tasks._ID), protectedWhere, protectedWhereArgs, null)?.use { cursor ->
                 while (cursor.moveToNext()) {
                     val taskId = cursor.getLong(0)
                     val entity = getTaskEntity(taskId)
@@ -551,7 +554,7 @@ class DmfsTaskList(
         get() = provider.client
 
     fun tasksUri(loadProperties: Boolean = false): Uri {
-        val uri = TaskContract.Tasks.getContentUri(providerName.authority).asSyncAdapter(account)
+        val uri = Tasks.getContentUri(providerName.authority).asSyncAdapter(account)
         return if (loadProperties)
             uri.buildUpon()
                 .appendQueryParameter(TaskContract.LOAD_PROPERTIES, "1")
@@ -579,7 +582,7 @@ class DmfsTaskList(
      * @return           restricted selection and arguments
      */
     private fun whereWithTaskListId(where: String?, whereArgs: Array<String>?): Pair<String, Array<String>> {
-        val protectedWhere = "(${where ?: "1"}) AND ${TaskContract.Tasks.LIST_ID}=?"
+        val protectedWhere = "(${where ?: "1"}) AND ${Tasks.LIST_ID}=?"
         val protectedWhereArgs = (whereArgs ?: arrayOf()) + id.toString()
         return Pair(protectedWhere, protectedWhereArgs)
     }
@@ -610,7 +613,7 @@ class DmfsTaskList(
             val batch = TasksBatchOperation(client)
             client.query(
                 tasksUri(true), null,
-                "${TaskContract.Tasks.LIST_ID}=? AND ${TaskContract.Tasks.PARENT_ID} IS NULL AND ${TaskContract.Property.Relation.MIMETYPE}=? AND ${TaskContract.Property.Relation.RELATED_ID} IS NOT NULL",
+                "${Tasks.LIST_ID}=? AND ${Tasks.PARENT_ID} IS NULL AND ${TaskContract.Property.Relation.MIMETYPE}=? AND ${TaskContract.Property.Relation.RELATED_ID} IS NOT NULL",
                 arrayOf(id.toString(), TaskContract.Property.Relation.CONTENT_ITEM_TYPE),
                 null, null
             )?.use { cursor ->
