@@ -254,31 +254,32 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
 
     @Test
     fun testCleanUp_Recurring_Exceptions_NoSyncId() {
-        val cleaned = recurringTaskList.cleanUp(
-            TaskAndExceptions(
-                main = Entity(
-                    contentValuesOf(
-                        TaskContract.Tasks.TITLE to "Recurring Main Task",
-                        TaskContract.Tasks.RRULE to "Some RRULE"
-                    )
-                ),
-                exceptions = listOf(
-                    Entity(
-                        contentValuesOf(
-                            TaskContract.Tasks.TITLE to "Exception"
-                        )
-                    )
+        val original = TaskAndExceptions(
+            main = Entity(
+                contentValuesOf(
+                    TaskContract.Tasks.TITLE to "Recurring Main Task",
+                    TaskContract.Tasks.RRULE to "Some RRULE"
                 )
             ),
+            exceptions = listOf(
+                Entity(
+                    contentValuesOf(
+                        TaskContract.Tasks.TITLE to "Exception"
+                    )
+                )
+            )
+        )
+        val cleaned = recurringTaskList.cleanUp(
+            original,
             mainId = null
         )
 
-        // verify that exceptions were dropped (because the provider wouldn't be able to associate them without SYNC_ID)
-        assertTrue(cleaned.exceptions.isEmpty())
+        // recurring tasks keep exceptions even without _SYNC_ID
+        assertTaskAndExceptionsEqual(original, cleaned)
     }
 
     @Test
-    fun testCleanUp_Recurring_Exceptions_WithSyncId() {
+    fun testCleanUp_Recurring_Exceptions_WithMainId() {
         val original = TaskAndExceptions(
             main = Entity(
                 contentValuesOf(
@@ -298,10 +299,16 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
                 )
             )
         )
-        val cleaned = recurringTaskList.cleanUp(original)
+        val cleaned = recurringTaskList.cleanUp(original, mainId = 123L)
 
-        // verify that cleanUp didn't modify anything
-        assertTaskAndExceptionsEqual(original, cleaned)
+        assertEquals("Recurring Main Task", cleaned.main.entityValues.getAsString(TaskContract.Tasks.TITLE))
+        assertEquals("Some RRULE", cleaned.main.entityValues.getAsString(TaskContract.Tasks.RRULE))
+        assertEquals(1, cleaned.exceptions.size)
+        assertEquals("Exception", cleaned.exceptions[0].entityValues.getAsString(TaskContract.Tasks.TITLE))
+        assertEquals(123L, cleaned.exceptions[0].entityValues.getAsLong(TaskContract.Tasks.ORIGINAL_INSTANCE_ID).toLong())
+        assertNull(cleaned.exceptions[0].entityValues.getAsString(TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID))
+        assertEquals(456L, cleaned.exceptions[0].entityValues.getAsLong(TaskContract.Tasks.ORIGINAL_INSTANCE_TIME).toLong())
+        assertEquals(0, cleaned.exceptions[0].entityValues.getAsInteger(TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY).toInt())
     }
 
     @Test
@@ -321,7 +328,8 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
                         )
                     )
                 )
-            )
+            ),
+            mainId = null
         )
 
         // verify that exceptions were dropped (because the main task is not recurring)
@@ -344,24 +352,27 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testCleanException_RemovesRecurrenceFields_AddsSyncId_PreservesOriginalInstanceFields() {
+    fun testCleanException_RemovesRecurrenceFields_AddsMainId_PreservesOriginalInstanceFields() {
         val result = recurringTaskList.cleanException(
             Entity(
                 contentValuesOf(
                     TaskContract.Tasks.RRULE to "SomeValue",
                     TaskContract.Tasks.RDATE to "SomeValue",
                     TaskContract.Tasks.EXDATE to "SomeValue",
+                    TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID to "SomeSyncID",
                     TaskContract.Tasks.ORIGINAL_INSTANCE_TIME to 456L,
                     TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY to 0
                 )
-            ), "SomeSyncID"
+            ),
+            mainId = 123L
         )
 
-        // all fields should have been dropped, but ORIGINAL_INSTANCE_SYNC_ID should have been added
+        // recurrence fields should have been dropped, ORIGINAL_INSTANCE_ID set, and ORIGINAL_INSTANCE_SYNC_ID removed
         assertEquals(
-            "SomeSyncID",
-            result.entityValues.getAsString(TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID)
+            123L,
+            result.entityValues.getAsLong(TaskContract.Tasks.ORIGINAL_INSTANCE_ID).toLong()
         )
+        assertNull(result.entityValues.getAsString(TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID))
         assertEquals(456L, result.entityValues.getAsLong(TaskContract.Tasks.ORIGINAL_INSTANCE_TIME).toLong())
         assertEquals(0, result.entityValues.getAsInteger(TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY).toInt())
         assertNull(result.entityValues.getAsString(TaskContract.Tasks.RRULE))
