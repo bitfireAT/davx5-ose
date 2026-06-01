@@ -74,12 +74,12 @@ fun Entity.withIntField(name: String, value: Long?) =
         newEntity.subValues.addAll(subValues)
     }
 
-fun Entity.withId(eventId: Long) =
+fun Entity.withEventId(eventId: Long) =
     this.withIntField(Events._ID, eventId)
 
-fun EventAndExceptions.withId(mainEventId: Long) =
+fun EventAndExceptions.withEventId(mainEventId: Long) =
     EventAndExceptions(
-        main = main.withId(mainEventId),
+        main = main.withEventId(mainEventId),
         exceptions = exceptions.map { exception ->
             exception.withIntField(Events.ORIGINAL_ID, mainEventId)
         }

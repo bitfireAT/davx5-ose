@@ -16,7 +16,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.test.assertContentValuesEqual
 import at.bitfire.synctools.test.assertEventAndExceptionsEqual
-import at.bitfire.synctools.test.withId
+import at.bitfire.synctools.test.withEventId
 import at.bitfire.synctools.verifyCompat
 import io.mockk.junit4.MockKRule
 import io.mockk.spyk
@@ -83,7 +83,7 @@ class AndroidRecurringCalendarTest {
     fun testAddEventAndExceptions_and_GetById() {
         // add event and exceptions
         val (mainEventId, event) = insertRecurring()
-        val addedWithId = event.withId(mainEventId)
+        val addedWithId = event.withEventId(mainEventId)
 
         // verify that cleanUp was called
         verifyCompat (exactly = 1) {
@@ -98,7 +98,7 @@ class AndroidRecurringCalendarTest {
     @Test
     fun testFindEventAndExceptions() {
         val (mainEventId, event) = insertRecurring(syncId = "testFindEventAndExceptions")
-        val addedWithId = event.withId(mainEventId)
+        val addedWithId = event.withEventId(mainEventId)
         val result = recurringCalendar.findEventAndExceptions("${Events._SYNC_ID}=?", arrayOf("testFindEventAndExceptions"))
         assertEventAndExceptionsEqual(addedWithId, result!!, onlyFieldsInExpected = true)
     }
@@ -127,8 +127,8 @@ class AndroidRecurringCalendarTest {
         ) { result += it }
         val orderedResult = result.sortedBy { it.main.entityValues.getAsInteger(Events._ID) }
         assertEquals(2, orderedResult.size)
-        assertEventAndExceptionsEqual(event1.withId(id1), orderedResult[0], onlyFieldsInExpected = true)
-        assertEventAndExceptionsEqual(event2.withId(id2), orderedResult[1], onlyFieldsInExpected = true)
+        assertEventAndExceptionsEqual(event1.withEventId(id1), orderedResult[0], onlyFieldsInExpected = true)
+        assertEventAndExceptionsEqual(event2.withEventId(id2), orderedResult[1], onlyFieldsInExpected = true)
     }
 
     @Test
@@ -198,7 +198,7 @@ class AndroidRecurringCalendarTest {
         // Verify update
         val event2 = recurringCalendar.getById(addedEventId)
         assertEventAndExceptionsEqual(
-            updatedEventAndExceptions.withId(addedEventId),
+            updatedEventAndExceptions.withEventId(addedEventId),
             event2!!,
             onlyFieldsInExpected = true
         )
@@ -248,7 +248,7 @@ class AndroidRecurringCalendarTest {
         if (!updatedEvent2.main.entityValues.containsKey(Events.STATUS))      // STATUS will not be returned if it's null
             updatedEvent2.main.entityValues.putNull(Events.STATUS)      // add for equality check
         assertEventAndExceptionsEqual(
-            updatedEventAndExceptions.withId(updatedEventId),
+            updatedEventAndExceptions.withEventId(updatedEventId),
             updatedEvent2,
             onlyFieldsInExpected = true
         )
