@@ -14,24 +14,21 @@ import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.containsNotNull
 import org.dmfs.tasks.contract.TaskContract
+import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
  * Adds support for [TaskAndExceptions] data objects to [DmfsTaskList].
  *
- * This class provides functionality similar to [at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar]
- * but for tasks instead of events. It handles the insertion, updating, and deletion of recurring tasks
- * and their associated exceptions.
+ * It handles the insertion, updating, and deletion of recurring tasks and their associated exceptions.
  *
- * There are basically two methods for inserting an exception task:
+ * Note: OpenTasks supports two methods of linking a recurring event exception to the main task:
  *
- * 1. Insert it using the tasks provider's exception handling mechanism.
- * 2. Insert it directly as normal task (using [TaskContract.Tasks.CONTENT_URI]). In this case
- * [TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID] must be set to the [TaskContract.Tasks._SYNC_ID] of the
- * original task so that the tasks provider can associate the exception with the main task.
+ * - set [Tasks.ORIGINAL_INSTANCE_ID] to the main task's [Tasks._ID],
+ * - set [Tasks.ORIGINAL_INSTANCE_SYNC_ID] to the main task's [Tasks._SYNC_ID].
  *
- * This class only uses the second method because it needs to support all sync fields.
+ * This class only uses the direct linkage over [Tasks._ID] / [Tasks.ORIGINAL_INSTANCE_ID].
  */
 class DmfsRecurringTaskList(
     val taskList: DmfsTaskList
@@ -43,12 +40,6 @@ class DmfsRecurringTaskList(
     /**
      * Inserts a task and all its exceptions. Input data is first cleaned up using [cleanUp].
      *
-     * If you want to insert exceptions, [TaskContract.Tasks._SYNC_ID] must be set on the main
-     * task and [TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID] should be set to the same value for the
-     * exception tasks. The exception rows must also identify the overridden instance via
-     * [TaskContract.Tasks.ORIGINAL_INSTANCE_TIME] and [TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY].
-     * **It's not enough to just set [TaskContract.Tasks.ORIGINAL_INSTANCE_ID] in the exceptions**.
-     *
      * @param taskAndExceptions    task and exceptions to insert
      *
      * @return ID of the resulting main task
@@ -56,20 +47,21 @@ class DmfsRecurringTaskList(
     fun addTaskAndExceptions(taskAndExceptions: TaskAndExceptions): Long {
         try {
             // validate / clean up input
-            val cleaned = cleanUp(taskAndExceptions)
+            val cleaned = cleanUp(taskAndExceptions, mainId = null)
 
             // add main task
             val batch = TasksBatchOperation(taskList.client)
+            val idxMainTask = batch.nextBackrefIdx()    // 0
             taskList.addTask(cleaned.main, batch)
 
             // add exceptions
             for (exception in cleaned.exceptions)
-                taskList.addTask(exception, batch)
+                taskList.addTask(exception, batch, idxOriginalInstanceId = idxMainTask)
 
             batch.commit()
 
-            // main task was created as first row (index 0), return its insert result (= ID)
-            val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
+            // main task was created as first row, return its insert result (= ID)
+            val uri = batch.getResult(idxMainTask)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
             return ContentUris.parseId(uri)
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't insert task/exceptions", e)
@@ -88,10 +80,10 @@ class DmfsRecurringTaskList(
         val main = taskList.findTask(where, whereArgs) ?: return null
 
         // attach exceptions
-        val mainTaskId = main.entityValues.getAsLong(TaskContract.Tasks._ID)
+        val mainTaskId = main.entityValues.getAsLong(Tasks._ID)
         return TaskAndExceptions(
             main = main,
-            exceptions = taskList.findTasks("${TaskContract.Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
+            exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
         )
     }
 
@@ -106,7 +98,7 @@ class DmfsRecurringTaskList(
         val mainTask = taskList.getTask(mainTaskId) ?: return null
         return TaskAndExceptions(
             main = mainTask,
-            exceptions = taskList.findTasks("${TaskContract.Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
+            exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
         )
     }
 
@@ -122,11 +114,11 @@ class DmfsRecurringTaskList(
     fun iterateTaskAndExceptions(where: String?, whereArgs: Array<String>?, body: (TaskAndExceptions) -> Unit) {
         // iterate through main tasks and attach exceptions
         taskList.iterateTaskRows(null, where, whereArgs) { main ->
-            val mainTaskId = main.getAsLong(TaskContract.Tasks._ID) ?: return@iterateTaskRows
+            val mainTaskId = main.getAsLong(Tasks._ID) ?: return@iterateTaskRows
             body(
                 TaskAndExceptions(
                     main = taskList.getTask(mainTaskId) ?: return@iterateTaskRows,
-                    exceptions = taskList.findTasks("${TaskContract.Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
+                    exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
                 )
             )
         }
@@ -136,7 +128,7 @@ class DmfsRecurringTaskList(
      * Updates a task and all its exceptions. Input data is first cleaned up using
      * [cleanMainTask] and [cleanException].
      *
-     * @param id                    ID of the main task row
+     * @param id                   ID of the main task row
      * @param taskAndExceptions    new task (including exceptions)
      *
      * @return main task ID of the updated row (may be different than [id] when the task had to be re-created)
@@ -144,12 +136,12 @@ class DmfsRecurringTaskList(
     fun updateTaskAndExceptions(id: Long, taskAndExceptions: TaskAndExceptions): Long {
         try {
             // validate / clean up input
-            val cleaned = cleanUp(taskAndExceptions)
+            val cleaned = cleanUp(taskAndExceptions, mainId = id)
 
             // remove old exceptions (because they may be invalid for the updated task)
             val batch = TasksBatchOperation(taskList.client)
             batch += CpoBuilder.newDelete(taskList.tasksUri())
-                .withSelection("${TaskContract.Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(id.toString()))
+                .withSelection("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(id.toString()))
 
             // update main task
             taskList.updateTask(id, cleaned.main, batch)
@@ -183,7 +175,7 @@ class DmfsRecurringTaskList(
             // delete exceptions, too (not automatically done by provider)
             batch += CpoBuilder
                 .newDelete(taskList.tasksUri())
-                .withSelection("${TaskContract.Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(id.toString()))
+                .withSelection("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(id.toString()))
 
             batch.commit()
         } catch (e: RemoteException) {
@@ -201,22 +193,19 @@ class DmfsRecurringTaskList(
      * - Cleans up the main task with [cleanMainTask].
      * - Cleans up exceptions with [cleanException].
      *
-     * @param original  original task and exceptions
+     * @param original      original task and exceptions
+     * @param mainId        [Tasks._ID] of the main task, if it already has one
      *
      * @return task and exceptions that can actually be inserted
      */
     @VisibleForTesting
-    internal fun cleanUp(original: TaskAndExceptions): TaskAndExceptions {
+    internal fun cleanUp(original: TaskAndExceptions, mainId: Long?): TaskAndExceptions {
         val main = cleanMainTask(original.main)
 
         val mainValues = main.entityValues
-        val syncId = mainValues.getAsString(TaskContract.Tasks._SYNC_ID)
-        val recurring = mainValues.containsNotNull(TaskContract.Tasks.RRULE) || mainValues.containsNotNull(TaskContract.Tasks.RDATE)
+        val recurring = mainValues.containsNotNull(Tasks.RRULE) || mainValues.containsNotNull(Tasks.RDATE)
 
-        if (syncId == null || !recurring) {
-            // 1. main task doesn't have sync id → exceptions wouldn't be associated to main task by task provider, so ignore them
-            // 2. main task not recurring → exceptions are useless, ignore them
-
+        if (!recurring) {
             if (original.exceptions.isNotEmpty())
                 logger.log(Level.WARNING, "Dropping exceptions of task because task is not recurring or _SYNC_ID is not set", main)
 
@@ -226,7 +215,7 @@ class DmfsRecurringTaskList(
         return TaskAndExceptions(
             main = main,
             exceptions = original.exceptions.map { originalException ->
-                cleanException(originalException, syncId)
+                cleanException(originalException, mainId = mainId)
             }
         )
     }
@@ -246,8 +235,8 @@ class DmfsRecurringTaskList(
 
         // remove values that a main task shouldn't have
         val originalFields = arrayOf(
-            TaskContract.Tasks.ORIGINAL_INSTANCE_ID, TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID,
-            TaskContract.Tasks.ORIGINAL_INSTANCE_TIME, TaskContract.Tasks.ORIGINAL_INSTANCE_ALLDAY
+            Tasks.ORIGINAL_INSTANCE_ID, Tasks.ORIGINAL_INSTANCE_SYNC_ID,
+            Tasks.ORIGINAL_INSTANCE_TIME, Tasks.ORIGINAL_INSTANCE_ALLDAY
         )
         for (field in originalFields)
             values.remove(field)
@@ -263,25 +252,28 @@ class DmfsRecurringTaskList(
      * Prepares an exception for insertion into the task provider:
      *
      * - Removes values that an exception shouldn't have (`RRULE`, `RDATE`, `EXDATE`).
-     * - Makes sure that the `ORIGINAL_INSTANCE_SYNC_ID` is set to [syncId].
+     * - Makes sure that neither [Tasks.ORIGINAL_INSTANCE_ID] nor [Tasks.ORIGINAL_INSTANCE_SYNC_ID]
+     *   is set, because these fields are set by the respective operation.
      *
      * @param original  original exception
-     * @param syncId    [TaskContract.Tasks._SYNC_ID] of the main task
      *
      * @return cleaned exception that can actually be inserted
      */
     @VisibleForTesting
-    internal fun cleanException(original: Entity, syncId: String): Entity {
+    internal fun cleanException(original: Entity, mainId: Long?): Entity {
         // make a copy (don't modify original entity / values)
         val values = ContentValues(original.entityValues)
 
         // remove values that an exception shouldn't have
-        val recurrenceFields = arrayOf(TaskContract.Tasks.RRULE, TaskContract.Tasks.RDATE, TaskContract.Tasks.EXDATE)
+        val recurrenceFields = arrayOf(Tasks.RRULE, Tasks.RDATE, Tasks.EXDATE)
         for (field in recurrenceFields)
             values.remove(field)
 
-        // make sure that ORIGINAL_INSTANCE_SYNC_ID is set so that the exception can be associated to the main task
-        values.put(TaskContract.Tasks.ORIGINAL_INSTANCE_SYNC_ID, syncId)
+        if (mainId != null)
+            values.put(Tasks.ORIGINAL_INSTANCE_ID, mainId)
+        else
+            values.remove(Tasks.ORIGINAL_INSTANCE_ID)
+        values.remove(Tasks.ORIGINAL_INSTANCE_SYNC_ID)
 
         // create new result with subvalues
         val result = Entity(values)
@@ -306,22 +298,22 @@ class DmfsRecurringTaskList(
 
         // iterate through deleted exceptions
         taskList.iterateTaskRows(
-            arrayOf(TaskContract.Tasks._ID, TaskContract.Tasks.ORIGINAL_INSTANCE_ID),
-            "${TaskContract.Tasks._DELETED} AND ${TaskContract.Tasks.ORIGINAL_INSTANCE_ID} IS NOT NULL", null
+            arrayOf(Tasks._ID, Tasks.ORIGINAL_INSTANCE_ID),
+            "${Tasks._DELETED} AND ${Tasks.ORIGINAL_INSTANCE_ID} IS NOT NULL", null
         ) { values ->
-            val exceptionId = values.getAsLong(TaskContract.Tasks._ID)          // can't be null (by definition)
-            val mainId = values.getAsLong(TaskContract.Tasks.ORIGINAL_INSTANCE_ID)       // can't be null (by query)
+            val exceptionId = values.getAsLong(Tasks._ID)          // can't be null (by definition)
+            val mainId = values.getAsLong(Tasks.ORIGINAL_INSTANCE_ID)       // can't be null (by query)
             logger.fine("Found deleted exception #$exceptionId, removing it and marking original task #$mainId as dirty")
 
             // main task: get current sequence
-            val mainValues = taskList.getTaskRow(mainId, arrayOf(TaskContract.Tasks.SYNC_VERSION))
-            val mainSeq = mainValues?.getAsInteger(TaskContract.Tasks.SYNC_VERSION) ?: 0
+            val mainValues = taskList.getTaskRow(mainId, arrayOf(Tasks.SYNC_VERSION))
+            val mainSeq = mainValues?.getAsInteger(Tasks.SYNC_VERSION) ?: 0
 
             // increase sequence and mark as dirty
             taskList.updateTaskRow(
                 mainId, contentValuesOf(
-                    TaskContract.Tasks.SYNC_VERSION to mainSeq + 1,
-                    TaskContract.Tasks._DIRTY to 1
+                    Tasks.SYNC_VERSION to mainSeq + 1,
+                    Tasks._DIRTY to 1
                 ), batch
             )
 
@@ -347,26 +339,26 @@ class DmfsRecurringTaskList(
 
         // iterate through dirty exceptions
         taskList.iterateTaskRows(
-            arrayOf(TaskContract.Tasks._ID, TaskContract.Tasks.ORIGINAL_INSTANCE_ID, TaskContract.Tasks.SYNC_VERSION),
-            "${TaskContract.Tasks._DIRTY} AND NOT ${TaskContract.Tasks._DELETED} AND ${TaskContract.Tasks.ORIGINAL_INSTANCE_ID} IS NOT NULL", null
+            arrayOf(Tasks._ID, Tasks.ORIGINAL_INSTANCE_ID, Tasks.SYNC_VERSION),
+            "${Tasks._DIRTY} AND NOT ${Tasks._DELETED} AND ${Tasks.ORIGINAL_INSTANCE_ID} IS NOT NULL", null
         ) { values ->
-            val exceptionId = values.getAsLong(TaskContract.Tasks._ID)          // can't be null (by definition)
-            val mainId = values.getAsLong(TaskContract.Tasks.ORIGINAL_INSTANCE_ID)       // can't be null (by query)
-            val exceptionSeq = values.getAsInteger(TaskContract.Tasks.SYNC_VERSION) ?: 0
+            val exceptionId = values.getAsLong(Tasks._ID)          // can't be null (by definition)
+            val mainId = values.getAsLong(Tasks.ORIGINAL_INSTANCE_ID)       // can't be null (by query)
+            val exceptionSeq = values.getAsInteger(Tasks.SYNC_VERSION) ?: 0
             logger.fine("Found dirty exception $exceptionId, increasing SEQUENCE and marking main task $mainId as dirty")
 
             // mark main task as dirty
             taskList.updateTaskRow(
                 mainId, contentValuesOf(
-                    TaskContract.Tasks._DIRTY to 1
+                    Tasks._DIRTY to 1
                 ), batch
             )
 
             // increase exception SEQUENCE and set _DIRTY to 0
             taskList.updateTaskRow(
                 exceptionId, contentValuesOf(
-                    TaskContract.Tasks.SYNC_VERSION to exceptionSeq + 1,
-                    TaskContract.Tasks._DIRTY to 0
+                    Tasks.SYNC_VERSION to exceptionSeq + 1,
+                    Tasks._DIRTY to 0
                 ), batch
             )
         }

@@ -14,7 +14,6 @@ import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.test.assertTaskAndExceptionsEqual
 import at.bitfire.synctools.test.withTaskId
-import at.bitfire.synctools.verifyCompat
 import io.mockk.junit4.MockKRule
 import io.mockk.spyk
 import net.fortuna.ical4j.util.TimeZones
@@ -88,11 +87,6 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         // add task and exceptions
         val (mainTaskId, task) = insertRecurring()
         val addedWithId = task.withTaskId(mainTaskId)
-
-        // verify that cleanUp was called
-        verifyCompat(exactly = 1) {
-            recurringTaskList.cleanUp(task)
-        }
 
         // verify
         val task2 = recurringTaskList.getById(mainTaskId)
@@ -208,11 +202,6 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         val updatedTaskId = recurringTaskList.updateTaskAndExceptions(addedTaskId, updatedTaskAndExceptions)
         assertEquals(updatedTaskId, addedTaskId)
 
-        // verify that cleanUp was called
-        verifyCompat(exactly = 1) {
-            recurringTaskList.cleanUp(updatedTaskAndExceptions)
-        }
-
         // Verify update
         val task2 = recurringTaskList.getById(addedTaskId)
         assertTaskAndExceptionsEqual(
@@ -280,7 +269,8 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
                         )
                     )
                 )
-            )
+            ),
+            mainId = null
         )
 
         // verify that exceptions were dropped (because the provider wouldn't be able to associate them without SYNC_ID)

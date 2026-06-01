@@ -15,6 +15,7 @@ import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.toContentValues
 import org.dmfs.tasks.contract.TaskContract
+import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.LinkedList
 import java.util.logging.Logger
 
@@ -84,12 +85,17 @@ class DmfsTaskList(
      *
      * @return back-reference index of the main task row
      */
-    fun addTask(entity: Entity, batch: TasksBatchOperation): Int {
+    fun addTask(entity: Entity, batch: TasksBatchOperation, idxOriginalInstanceId: Int? = null): Int {
         // insert task row
         val taskRowIdx = batch.nextBackrefIdx()
+
         batch += BatchOperation.CpoBuilder
             .newInsert(tasksUri())
             .withValues(entity.entityValues)
+            .apply {
+                if (idxOriginalInstanceId != null)
+                    withValueBackReference(Tasks.ORIGINAL_INSTANCE_ID, idxOriginalInstanceId)
+            }
 
         // insert property rows (with reference to task row ID)
         for (row in entity.subValues) {
