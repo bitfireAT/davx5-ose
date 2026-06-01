@@ -54,6 +54,7 @@ import net.fortuna.ical4j.model.parameter.Role
 import net.fortuna.ical4j.model.parameter.Rsvp
 import net.fortuna.ical4j.model.parameter.SentBy
 import net.fortuna.ical4j.model.parameter.TzId
+import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.parameter.XParameter
 import net.fortuna.ical4j.model.property.Action
 import net.fortuna.ical4j.model.property.Attach
@@ -998,11 +999,12 @@ open class JtxICalObject(
             props += RRule<Temporal>(rrule)
         }
         recurid?.let { recurid ->
-            props += if (recuridTimezone == TZ_ALLDAY || recuridTimezone.isNullOrEmpty()) {
-                RecurrenceId<Temporal>(recurid)
-            } else {
-                RecurrenceId<Temporal>(ParameterList(listOf(TzId(recuridTimezone))), recurid)
-            }
+            val parameterList = mutableListOf<Parameter>()
+            if (recuridTimezone == TZ_ALLDAY)
+                parameterList.add(Value.DATE)
+            else if (!recuridTimezone.isNullOrEmpty())
+                parameterList.add(TzId(recuridTimezone))
+            props += RecurrenceId<Temporal>(ParameterList(parameterList), recurid)
         }
 
         rdate?.let { rdateString ->
