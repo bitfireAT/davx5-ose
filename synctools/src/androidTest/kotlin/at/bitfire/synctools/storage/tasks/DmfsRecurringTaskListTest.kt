@@ -22,6 +22,7 @@ import org.dmfs.tasks.contract.TaskContract.TaskLists
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -41,7 +42,10 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     @get:Rule
     val mockkRule = MockKRule(this)
 
-    private val testAccount = Account(DmfsRecurringTaskListTest::class.java.name, TaskContract.LOCAL_ACCOUNT_TYPE)
+    private val testAccount = Account(
+        DmfsRecurringTaskListTest::class.java.simpleName,
+        DmfsRecurringTaskListTest::class.java.packageName   // We can't use TaskContract.LOCAL_ACCOUNT_TYPE, see testProcessDeletedExceptions
+    )
     private val timeZoneId = TimeZones.UTC_ID
 
     private lateinit var taskList: DmfsTaskList
@@ -346,6 +350,12 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
 
     // test processing dirty/deleted tasks and exceptions
 
+    /**
+     * Tests processing _DELETED exceptions.
+     *
+     * Note: the used test account must not have accountType=[TaskContract.LOCAL_ACCOUNT_TYPE],
+     * because then the tasks provider directly deletes tasks and doesn't mark them as [Tasks._DELETED].
+     */
     @Test
     fun testProcessDeletedExceptions() {
         // Insert a recurring task with an exception
@@ -360,6 +370,10 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         val exceptionUri = ContentUris.withAppendedId(Tasks.getContentUri(providerName.authority), exceptionId)
         taskList.client.delete(exceptionUri, null, null)
 
+        // Verify: exception should still be here, but with _DELETED flag
+        val exception = taskList.getTaskRow(exceptionId)
+        assertNotNull(exception)
+
         // Process deleted exceptions
         recurringTaskList.processDeletedExceptions()
 
@@ -369,7 +383,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
 
         // Verify: main task SYNC_VERSION should be increased by 1 (from 0 to 1)
         val mainTaskRow = taskList.getTaskRow(mainTaskId, arrayOf(Tasks.SYNC_VERSION, Tasks._DIRTY))
-        assertEquals(1L, mainTaskRow?.getAsLong(Tasks.SYNC_VERSION))
+        assertEquals("1", mainTaskRow?.getAsString(Tasks.SYNC_VERSION))
         assertEquals(1L, mainTaskRow?.getAsLong(Tasks._DIRTY))
     }
 

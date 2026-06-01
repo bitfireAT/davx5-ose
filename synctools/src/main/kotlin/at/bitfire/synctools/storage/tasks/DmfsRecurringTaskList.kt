@@ -294,9 +294,9 @@ class DmfsRecurringTaskList(
             arrayOf(Tasks._ID, Tasks.ORIGINAL_INSTANCE_ID),
             "${Tasks._DELETED} AND ${Tasks.ORIGINAL_INSTANCE_ID} IS NOT NULL", null
         ) { values ->
-            val exceptionId = values.getAsLong(Tasks._ID)          // can't be null (by definition)
-            val mainId = values.getAsLong(Tasks.ORIGINAL_INSTANCE_ID)       // can't be null (by query)
-            logger.fine("Found deleted exception #$exceptionId, removing it and marking original task #$mainId as dirty")
+            val exceptionId = values.getAsLong(Tasks._ID)               // can't be null (by definition)
+            val mainId = values.getAsLong(Tasks.ORIGINAL_INSTANCE_ID)   // can't be null (by query)
+            logger.fine("Found deleted exception $exceptionId, removing it and marking original task $mainId as dirty")
 
             // main task: get current sequence
             val mainValues = taskList.getTaskRow(mainId, arrayOf(Tasks.SYNC_VERSION))
