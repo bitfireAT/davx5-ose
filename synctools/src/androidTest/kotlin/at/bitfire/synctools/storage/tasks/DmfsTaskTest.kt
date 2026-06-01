@@ -117,7 +117,7 @@ class DmfsTaskTest(
         assertNotNull("Couldn't add task", uri)
 
         // read and parse event from calendar provider
-        val testTask = taskList!!.getTask(ContentUris.parseId(uri))
+        val testTask = taskList!!.getDmfsTask(ContentUris.parseId(uri))
         try {
             assertNotNull("Inserted task is not here", testTask)
             val task2 = testTask?.task
@@ -160,7 +160,7 @@ class DmfsTaskTest(
             task.alarms += VAlarm(java.time.Duration.ofMinutes(i.toLong()))
 
         val uri = DmfsTask(taskList!!, task, "9468a4cf-0d5b-4379-a704-12f1f84100ba", null, 0).add()
-        val task2 = taskList!!.getTask(ContentUris.parseId(uri))
+        val task2 = taskList!!.getDmfsTask(ContentUris.parseId(uri))
         assertEquals(1050, task2?.task?.alarms?.size)
     }
 
@@ -181,7 +181,7 @@ class DmfsTaskTest(
         val uri = DmfsTask(taskList!!, task, "9468a4cf-0d5b-4379-a704-12f1f84100ba", null, 0).add()
         assertNotNull(uri)
 
-        val testTask = taskList!!.getTask(ContentUris.parseId(uri))
+        val testTask = taskList!!.getDmfsTask(ContentUris.parseId(uri))
         try {
             // update test event in calendar
             val task2 = testTask?.task!!
@@ -191,7 +191,7 @@ class DmfsTaskTest(
             testTask.update(task2)
 
             // read again and verify result
-            val updatedTask = taskList!!.getTask(ContentUris.parseId(uri))?.task!!
+            val updatedTask = taskList!!.getDmfsTask(ContentUris.parseId(uri))?.task!!
             assertEquals(task2.summary, updatedTask.summary)
             assertEquals(task2.location, updatedTask.location)
             assertEquals(task2.dtStart, updatedTask.dtStart)

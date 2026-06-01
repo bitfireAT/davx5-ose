@@ -148,6 +148,7 @@ class DmfsTask(
      * @throws at.bitfire.synctools.storage.LocalStorageException when the tasks provider doesn't return a result row
      * @throws android.os.RemoteException on tasks provider errors
      */
+    @Deprecated("Use DmfsTaskList.add() instead")
     fun add(): Uri {
         val batch = TasksBatchOperation(taskList.provider.client)
 
@@ -172,6 +173,7 @@ class DmfsTask(
      * @throws LocalStorageException when the tasks provider doesn't return a result row
      * @throws android.os.RemoteException on tasks provider errors
      */
+    @Deprecated("Use DmfsTaskList.update() instead")
     fun update(task: Task): Uri {
         this.task = task
         val existingId = requireNotNull(id)
@@ -192,6 +194,7 @@ class DmfsTask(
     }
 
     fun update(values: ContentValues) {
+        // TODO update shortcut to use taskList.updateTask()
         taskList.provider.client.update(taskSyncURI(), values, null, null)
     }
 
@@ -203,6 +206,7 @@ class DmfsTask(
      * @throws android.os.RemoteException on tasks provider errors
      */
     fun delete(): Int {
+        // TODO update shortcut to use taskList.deleteTask()
         return taskList.provider.client.delete(taskSyncURI(), null, null)
     }
 

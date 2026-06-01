@@ -62,10 +62,10 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName):
                 uid = "filter-uid-2"
                 summary = "Filter Test 2"
             }
-            
+
             DmfsTask(taskList, task1, "sync-id-1", null, 0).add()
             DmfsTask(taskList, task2, "sync-id-2", null, 0).add()
-            
+
             // Test counting with UID filter
             val filteredCount = taskList.countTasks("${TaskContract.Tasks._UID}=?", arrayOf("filter-uid-1"))
             assertEquals(1, filteredCount)
@@ -131,8 +131,8 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName):
 
             // OpenTasks should provide the correct relation
             taskList.provider.client.query(taskList.tasksPropertiesUri(), null,
-                    "${TaskContract.Properties.TASK_ID}=?", arrayOf(childId.toString()),
-                    null, null)!!.use { cursor ->
+                "${TaskContract.Properties.TASK_ID}=?", arrayOf(childId.toString()),
+                null, null)!!.use { cursor ->
                 assertEquals(1, cursor.count)
                 cursor.moveToNext()
 
@@ -162,7 +162,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName):
 
             // now parent_id should bet set
             taskList.provider.client.query(childContentUri, arrayOf(TaskContract.Tasks.PARENT_ID),
-                    null, null, null)!!.use { cursor ->
+                null, null, null)!!.use { cursor ->
                 assertTrue(cursor.moveToNext())
                 assertEquals(parentId, cursor.getLong(0))
             }
@@ -170,5 +170,10 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName):
             taskList.delete()
         }
     }
+
+
+    // test tasks CRUD
+
+    // TODO: add tests for addTask, etc. here
 
 }

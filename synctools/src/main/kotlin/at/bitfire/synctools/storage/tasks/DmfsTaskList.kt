@@ -14,6 +14,7 @@ import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.toContentValues
+import net.fortuna.ical4j.model.Content
 import org.dmfs.tasks.contract.TaskContract
 import java.util.LinkedList
 import java.util.logging.Logger
@@ -29,8 +30,10 @@ class DmfsTaskList(
     val providerName: TaskProvider.ProviderName
 ) {
 
+    // task list properties
+
     private val logger
-        get() = Logger.getLogger(DmfsTaskList::class.java.name)
+        get() = Logger.getLogger(javaClass.name)
 
     /** see [TaskContract.TaskLists._ID] **/
     val id: Long = values.getAsLong(TaskContract.TaskLists._ID)
@@ -47,6 +50,45 @@ class DmfsTaskList(
     /** see [TaskContract.TaskLists._SYNC_ID] **/
     val syncId: String?
         get() = values.getAsString(TaskContract.TaskLists._SYNC_ID)
+
+
+    // CRUD tasks
+
+    fun addTask(entity: Entity): Long {
+        TODO()
+    }
+
+    fun addTask(entity: Entity, batch: TasksBatchOperation): Long {
+        TODO()
+    }
+
+    fun findTaskRow(projection: Array<String>?, where: String?, whereArgs: Array<String>?): ContentValues? {
+        TODO()
+    }
+
+    fun findTasks(): List<Entity> {
+        TODO("use iterateTaskRows and call getTask for every row to build list")
+    }
+
+    fun getTask(id: Long): Entity? {
+        TODO("get main row, data rows and put together to Entity")
+    }
+
+    fun iterateTaskRows(projection: Array<String>?, where: String?, whereArgs: Array<String>?, body: (ContentValues) -> Unit) {
+        TODO()
+    }
+
+    fun updateTaskRow(id: Long, values: ContentValues) {
+        TODO("update Task row with new values")
+    }
+
+    fun updateTask(id: Long, entity: Entity) {
+        TODO("updateTask row and data rows with new values")
+    }
+
+    fun deleteTask(id: Long) {
+        TODO()
+    }
 
 
     // CRUD DmfsTask
@@ -82,7 +124,8 @@ class DmfsTaskList(
      *
      * @return tasks from this task list which match the selection
      */
-    fun findTasks(where: String? = null, whereArgs: Array<String>? = null): List<DmfsTask> {
+    @Deprecated("Use findTasks() instead")
+    fun findDmfsTasks(where: String? = null, whereArgs: Array<String>? = null): List<DmfsTask> {
         val tasks = LinkedList<DmfsTask>()
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
@@ -105,7 +148,8 @@ class DmfsTaskList(
      *
      * @return task from this task list which matches the selection
      */
-    fun getTask(id: Long): DmfsTask? {
+    @Deprecated("Use getTask() instead")
+    fun getDmfsTask(id: Long): DmfsTask? {
         val values = getTaskEntity(id) ?: return null
         return DmfsTask(this, values)
     }

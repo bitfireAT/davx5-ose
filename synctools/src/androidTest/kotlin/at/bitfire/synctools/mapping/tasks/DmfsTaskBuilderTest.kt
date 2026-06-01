@@ -826,7 +826,7 @@ class DmfsTaskBuilderTest (
         val uri = DmfsTask(taskList!!, task, "9468a4cf-0d5b-4379-a704-12f1f84100ba", null, 0).add()
         Assert.assertNotNull(uri)
 
-        val testTask = taskList!!.getTask(ContentUris.parseId(uri))
+        val testTask = taskList!!.getDmfsTask(ContentUris.parseId(uri))
         try {
             // read again and verify result
             val task2 = testTask?.task!!
