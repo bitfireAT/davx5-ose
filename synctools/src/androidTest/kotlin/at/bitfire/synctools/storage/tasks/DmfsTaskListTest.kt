@@ -261,18 +261,18 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
         try {
             taskList.addTask(
                 Entity(
-                contentValuesOf(
-                    Tasks.LIST_ID to taskList.id,
-                    Tasks.TITLE to "Task 1"
-                )
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks.TITLE to "Task 1"
+                    )
                 )
             )
             taskList.addTask(
                 Entity(
-                contentValuesOf(
-                    Tasks.LIST_ID to taskList.id,
-                    Tasks.TITLE to "Task 2"
-                )
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks.TITLE to "Task 2"
+                    )
                 )
             )
 
@@ -325,18 +325,18 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
         try {
             taskList.addTask(
                 Entity(
-                contentValuesOf(
-                    Tasks.LIST_ID to taskList.id,
-                    Tasks.TITLE to "Iterate Task 1"
-                )
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks.TITLE to "Iterate Task 1"
+                    )
                 )
             )
             taskList.addTask(
                 Entity(
-                contentValuesOf(
-                    Tasks.LIST_ID to taskList.id,
-                    Tasks.TITLE to "Iterate Task 2"
-                )
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks.TITLE to "Iterate Task 2"
+                    )
                 )
             )
 
@@ -366,7 +366,15 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
                         Tasks.TITLE to "Iterate Task 1",
                         Tasks.DESCRIPTION to "Description 1"
                     )
-                )
+                ).apply {
+                    addSubValue(
+                        taskList.tasksPropertiesUri(),
+                        contentValuesOf(
+                            TaskContract.Properties.MIMETYPE to Property.Comment.CONTENT_ITEM_TYPE,
+                            Property.Comment.COMMENT to "Task 1 Comment"
+                        )
+                    )
+                }
             )
             taskList.addTask(
                 Entity(
@@ -392,6 +400,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             val task1Entity = result.find { it.entityValues.getAsString(Tasks._UID) == "iterate-task-1" }
             assertNotNull(task1Entity)
             assertEquals("Description 1", task1Entity?.entityValues?.getAsString(Tasks.DESCRIPTION))
+            assertEquals("Task 1 Comment", task1Entity?.subValues?.first()?.values?.getAsString(Property.Comment.COMMENT))
         } finally {
             taskList.delete()
         }

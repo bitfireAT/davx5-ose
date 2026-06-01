@@ -14,19 +14,16 @@ import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.test.assertTaskAndExceptionsEqual
 import at.bitfire.synctools.test.withTaskId
-import io.mockk.junit4.MockKRule
 import io.mockk.spyk
 import net.fortuna.ical4j.util.TimeZones
 import org.dmfs.tasks.contract.TaskContract
 import org.junit.After
-import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Ignore
-import org.junit.Rule
 import org.junit.Test
 import java.util.UUID
 
@@ -42,9 +39,6 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
 
     private lateinit var taskList: DmfsTaskList
     private lateinit var recurringTaskList: DmfsRecurringTaskList
-
-    @get:Rule
-    val mockkRule = MockKRule(this)
 
     @Before
     override fun prepare() {
@@ -70,15 +64,6 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         // Clean up tasks after every test
         taskList.deleteTasks(null, null)
     }
-
-    companion object {
-        @AfterClass
-        @JvmStatic
-        fun tearDownClass() {
-            // Clean up will be handled by the test framework
-        }
-    }
-
 
     // test CRUD
 
@@ -521,19 +506,18 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
 
     private fun insertRecurring(syncId: String = UUID.randomUUID().toString()): Pair<Long, TaskAndExceptions> {
         val now = 1754233504000L     // Sun Aug 03 2025 15:05:04 GMT+0000
-        val mainTask = Entity(
-            contentValuesOf(
-                TaskContract.Tasks.LIST_ID to taskList.id,
-                TaskContract.Tasks._SYNC_ID to syncId,
-                TaskContract.Tasks.DTSTART to now,
-                TaskContract.Tasks.TZ to timeZoneId,
-                TaskContract.Tasks.DURATION to "PT1H",
-                TaskContract.Tasks.TITLE to "Main Task",
-                TaskContract.Tasks.RRULE to "FREQ=DAILY;COUNT=3"
-            )
-        )
         val task = TaskAndExceptions(
-            main = mainTask,
+            main = Entity(
+                contentValuesOf(
+                    TaskContract.Tasks.LIST_ID to taskList.id,
+                    TaskContract.Tasks._SYNC_ID to syncId,
+                    TaskContract.Tasks.DTSTART to now,
+                    TaskContract.Tasks.TZ to timeZoneId,
+                    TaskContract.Tasks.DURATION to "PT1H",
+                    TaskContract.Tasks.TITLE to "Main Task",
+                    TaskContract.Tasks.RRULE to "FREQ=DAILY;COUNT=3"
+                )
+            ),
             exceptions = listOf(
                 Entity(
                     contentValuesOf(

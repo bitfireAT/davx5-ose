@@ -177,7 +177,7 @@ class DmfsRecurringTaskList(
     }
 
 
-    // validation / clean-up logic
+    // validation / cleanup logic
 
     /**
      * Prepares a task and exceptions so that it can be inserted into the task provider:
