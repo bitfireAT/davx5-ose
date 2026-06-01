@@ -103,9 +103,7 @@ class DmfsTaskList(
     }
 
     /**
-     * Gets the first task row that matches the given query.
-     *
-     * Adds a WHERE clause that restricts the query to [TaskContract.TaskColumns.LIST_ID] = [id].
+     * Gets the first task row in the task list that matches the given query.
      *
      * @param projection    requested fields
      * @param where         selection
@@ -130,6 +128,9 @@ class DmfsTaskList(
 
     /**
      * Queries all tasks from this task list.
+     *
+     * Should be used rarely because it has a potentially large memory footprint.
+     * Prefer [iterateTaskRows].
      *
      * @return list of task entities
      *
@@ -160,9 +161,11 @@ class DmfsTaskList(
      */
     fun getTask(id: Long): Entity? {
         try {
-            client.query(taskUri(id), null, null, null, null)?.use { cursor ->
+            // query tasks
+            client.query(taskUri(id, loadProperties = false), null, null, null, null)?.use { cursor ->
                 if (cursor.moveToFirst()) {
                     val entity = Entity(cursor.toContentValues())
+                    // explicitly load task properties into subrows
                     client.query(
                         tasksPropertiesUri(),
                         null,
@@ -170,9 +173,8 @@ class DmfsTaskList(
                         arrayOf(id.toString()),
                         null
                     )?.use { propertiesCursor ->
-                        while (propertiesCursor.moveToNext()) {
+                        while (propertiesCursor.moveToNext())
                             entity.addSubValue(tasksPropertiesUri(), propertiesCursor.toContentValues())
-                        }
                     }
                     return entity
                 }
@@ -186,8 +188,6 @@ class DmfsTaskList(
     /**
      * Iterates task rows from this task list.
      *
-     * Adds a WHERE clause that restricts the query to [TaskContract.TaskColumns.LIST_ID] = [id].
-     *
      * @param projection    requested fields
      * @param where         selection
      * @param whereArgs     arguments for selection
@@ -200,7 +200,8 @@ class DmfsTaskList(
             val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
             client.query(tasksUri(), projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
                 while (cursor.moveToNext()) {
-                    body(cursor.toContentValues())
+                    val row = cursor.toContentValues()
+                    body(row)
                 }
             }
         } catch (e: RemoteException) {
@@ -281,15 +282,15 @@ class DmfsTaskList(
      *
      * @param id    ID of the task
      *
+     * @return number of affected rows
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun deleteTask(id: Long) {
+    fun deleteTask(id: Long): Int =
         try {
             client.delete(taskUri(id), null, null)
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't delete task $id", e)
         }
-    }
 
 
     // CRUD DmfsTask
