@@ -53,11 +53,11 @@ class LocalTaskList (
     override fun countModified(): Int =
         dmfsTaskList.countTasks("${Tasks._DIRTY} AND NOT ${Tasks._DELETED}", null)
 
-    override fun findDeleted() = dmfsTaskList.findTasks(Tasks._DELETED, null)
+    override fun findDeleted() = dmfsTaskList.findDmfsTasks(Tasks._DELETED, null)
         .map { LocalTask(it) }
 
     override fun findDirty(): List<LocalTask> {
-        val dmfsTasks = dmfsTaskList.findTasks(Tasks._DIRTY, null)
+        val dmfsTasks = dmfsTaskList.findDmfsTasks(Tasks._DIRTY, null)
         for (localTask in dmfsTasks) {
             try {
                 val task = requireNotNull(localTask.task)
@@ -74,7 +74,7 @@ class LocalTaskList (
     }
 
     override fun findByName(name: String) =
-        dmfsTaskList.findTasks("${Tasks._SYNC_ID}=?", arrayOf(name))
+        dmfsTaskList.findDmfsTasks("${Tasks._SYNC_ID}=?", arrayOf(name))
             .firstOrNull()?.let {
                 LocalTask(it)
             }
