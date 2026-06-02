@@ -63,11 +63,11 @@ class CreatedBuilderTest {
     fun `CREATED is stored`() {
         val result = Entity(ContentValues())
         builder.build(
-            from = VToDoUtil.build(Created(Instant.ofEpochMilli(1593771404L))),
+            from = VToDoUtil.build(Created(Instant.ofEpochSecond(1593771404L))),
             to = result
         )
         assertContentValuesEqual(contentValuesOf(
-            Tasks.CREATED to 1593771404L
+            Tasks.CREATED to 1593771404000L
         ), result.entityValues)
     }
 

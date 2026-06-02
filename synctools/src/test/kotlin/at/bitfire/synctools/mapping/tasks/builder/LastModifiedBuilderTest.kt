@@ -63,11 +63,11 @@ class LastModifiedBuilderTest {
     fun `LAST_MODIFIED is stored`() {
         val result = Entity(ContentValues())
         builder.build(
-            from = VToDoUtil.build(LastModified(Instant.ofEpochMilli(1593771404L))),
+            from = VToDoUtil.build(LastModified(Instant.ofEpochSecond(1593771404L))),
             to = result
         )
         assertContentValuesEqual(contentValuesOf(
-            Tasks.LAST_MODIFIED to 1593771404L
+            Tasks.LAST_MODIFIED to 1593771404000L
         ), result.entityValues)
     }
 
