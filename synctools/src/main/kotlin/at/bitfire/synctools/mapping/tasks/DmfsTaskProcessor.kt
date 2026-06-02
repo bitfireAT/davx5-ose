@@ -45,6 +45,7 @@ import java.util.logging.Logger
  * Reads dmfs task provider data rows into a [Task]
  * (former DmfsTask "populate..." methods).
  */
+@Deprecated("Will be dropped with Task data class, use DmfsTaskHandler instead")
 class DmfsTaskProcessor(
     private val taskList: DmfsTaskList
 ) {
