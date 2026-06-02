@@ -8,8 +8,8 @@ import android.content.ContentValues
 import at.bitfire.ical4android.Task
 import org.dmfs.tasks.contract.TaskContract.Property.Category
 
-class CategoriesHandler : DmfsTaskPropertyHandler {
-    override fun process(row: ContentValues, to: Task) {
-        row.getAsString(Category.CATEGORY_NAME)?.let { to.categories += it }
+class CategoriesHandler : DmfsTaskFieldHandler {
+    override fun process(from: ContentValues, to: Task) {
+        from.getAsString(Category.CATEGORY_NAME)?.let { to.categories += it }
     }
 }
