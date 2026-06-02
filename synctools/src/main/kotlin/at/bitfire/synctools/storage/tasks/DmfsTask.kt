@@ -71,6 +71,7 @@ class DmfsTask(
     var eTag: String? = mainValues.getAsString(COLUMN_ETAG)
     var flags: Int = mainValues.getAsInteger(COLUMN_FLAGS) ?: 0
 
+    @Deprecated("Use storage + mapping APIs separately")
     var task: Task? = null
         /**
          * This getter returns the full task data, either from [task] or, if [task] is null, by reading task
@@ -86,7 +87,7 @@ class DmfsTask(
 
             try {
                 val client = taskList.provider.client
-                client.query(taskSyncURI(true), null, null, null, null)?.use { cursor ->
+                client.query(taskList.taskUri(id, loadProperties = true), null, null, null, null)?.use { cursor ->
                     if (cursor.moveToFirst()) {
                         // create new Task which will be populated
                         val newTask = Task()
@@ -196,25 +197,18 @@ class DmfsTask(
     /**
      * Shortcut for [DmfsTaskList.updateTaskRow] with [id].
      */
-    fun update(values: ContentValues) {
-        taskList.updateTaskRow(id!!, values)
-    }
+    fun update(values: ContentValues) = taskList.updateTaskRow(id!!, values)
 
     /**
      * Shortcut for [DmfsTaskList.deleteTask] with [id].
      */
     fun delete(): Int = taskList.deleteTask(id!!)
 
-    private fun taskSyncURI(loadProperties: Boolean = false): Uri {
-        val id = requireNotNull(id)
-        return ContentUris.withAppendedId(taskList.tasksUri(loadProperties), id)
-    }
 
     companion object {
         const val UNKNOWN_PROPERTY_DATA = TaskContract.Properties.DATA0
 
         const val COLUMN_ETAG = TaskContract.Tasks.SYNC1
-
         const val COLUMN_FLAGS = TaskContract.Tasks.SYNC2
     }
 
