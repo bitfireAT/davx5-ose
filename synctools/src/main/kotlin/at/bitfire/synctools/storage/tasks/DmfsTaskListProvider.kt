@@ -158,7 +158,7 @@ class DmfsTaskListProvider(
      *
      * @return `true` if the task list was deleted, `false` otherwise (like it was not there before the call)
      */
-    fun delete(id: Long): Boolean {
+    fun deleteTaskList(id: Long): Boolean {
         logger.log(Level.FINE, "Deleting ${providerName.authority} task list (#$id)")
         try {
             return client.delete(taskListUri(id), null, null) > 0

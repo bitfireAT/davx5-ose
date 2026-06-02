@@ -525,8 +525,8 @@ class DmfsTaskList(
 
     // shortcuts to upper level
 
-    /** Calls [DmfsTaskListProvider.delete] for this task list **/
-    fun delete(): Boolean = provider.delete(id)
+    /** Calls [DmfsTaskListProvider.deleteTaskList] for this task list **/
+    fun delete(): Boolean = provider.deleteTaskList(id)
 
     /**
      * Calls [DmfsTaskListProvider.updateTaskList] for this task list.
