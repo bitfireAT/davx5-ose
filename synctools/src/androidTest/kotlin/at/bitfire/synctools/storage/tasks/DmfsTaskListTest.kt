@@ -45,66 +45,6 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testCountTasks_empty() {
-        val taskList = createTaskList()
-        try {
-            val count = taskList.countTasks(null, null)
-            assertEquals(0, count)
-        } finally {
-            taskList.delete()
-        }
-    }
-
-    @Test
-    fun testCountTasks_withFilter() {
-        val taskList = createTaskList()
-        try {
-            // Add tasks with different UIDs
-            val task1 = Task().apply {
-                uid = "filter-uid-1"
-                summary = "Filter Test 1"
-            }
-            val task2 = Task().apply {
-                uid = "filter-uid-2"
-                summary = "Filter Test 2"
-            }
-
-            DmfsTask(taskList, task1, "sync-id-1", null, 0).add()
-            DmfsTask(taskList, task2, "sync-id-2", null, 0).add()
-
-            // Test counting with UID filter
-            val filteredCount = taskList.countTasks("${Tasks._UID}=?", arrayOf("filter-uid-1"))
-            assertEquals(1, filteredCount)
-        } finally {
-            taskList.delete()
-        }
-    }
-
-    @Test
-    fun testCountTasks_withoutFilter() {
-        val taskList = createTaskList()
-        try {
-            // Add multiple tasks
-            val task1 = Task().apply {
-                uid = "task-1"
-                summary = "Test Task 1"
-            }
-            val task2 = Task().apply {
-                uid = "task-2"
-                summary = "Test Task 2"
-            }
-
-            DmfsTask(taskList, task1, "sync-id-1", null, 0).add()
-            DmfsTask(taskList, task2, "sync-id-2", null, 0).add()
-
-            val count = taskList.countTasks(null, null)
-            assertEquals(2, count)
-        } finally {
-            taskList.delete()
-        }
-    }
-
-    @Test
     fun testTouchRelations() {
         val taskList = createTaskList()
         try {
@@ -233,6 +173,66 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
+    fun testCountTasks_empty() {
+        val taskList = createTaskList()
+        try {
+            val count = taskList.countTasks(null, null)
+            assertEquals(0, count)
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
+    fun testCountTasks_withFilter() {
+        val taskList = createTaskList()
+        try {
+            // Add tasks with different UIDs
+            val task1 = Task().apply {
+                uid = "filter-uid-1"
+                summary = "Filter Test 1"
+            }
+            val task2 = Task().apply {
+                uid = "filter-uid-2"
+                summary = "Filter Test 2"
+            }
+
+            DmfsTask(taskList, task1, "sync-id-1", null, 0).add()
+            DmfsTask(taskList, task2, "sync-id-2", null, 0).add()
+
+            // Test counting with UID filter
+            val filteredCount = taskList.countTasks("${Tasks._UID}=?", arrayOf("filter-uid-1"))
+            assertEquals(1, filteredCount)
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
+    fun testCountTasks_withoutFilter() {
+        val taskList = createTaskList()
+        try {
+            // Add multiple tasks
+            val task1 = Task().apply {
+                uid = "task-1"
+                summary = "Test Task 1"
+            }
+            val task2 = Task().apply {
+                uid = "task-2"
+                summary = "Test Task 2"
+            }
+
+            DmfsTask(taskList, task1, "sync-id-1", null, 0).add()
+            DmfsTask(taskList, task2, "sync-id-2", null, 0).add()
+
+            val count = taskList.countTasks(null, null)
+            assertEquals(2, count)
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
     fun testFindTaskRow() {
         val taskList = createTaskList()
         try {
@@ -256,23 +256,51 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
+    fun testFindTask() {
+        val taskList = createTaskList()
+        try {
+            // Add a task
+            taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks._SYNC_ID to "find-test-sync-id",
+                        Tasks.TITLE to "Find Test Task"
+                    )
+                )
+            )
+
+            // Find by sync ID
+            val result = taskList.findTask("${Tasks._SYNC_ID}=?", arrayOf("find-test-sync-id"))
+            assertNotNull(result)
+            assertEquals("Find Test Task", result?.entityValues?.getAsString(Tasks.TITLE))
+
+            // Find non-existent
+            val notFound = taskList.findTask("${Tasks._SYNC_ID}=?", arrayOf("non-existent"))
+            assertNull(notFound)
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
     fun testFindTasks() {
         val taskList = createTaskList()
         try {
             taskList.addTask(
                 Entity(
-                contentValuesOf(
-                    Tasks.LIST_ID to taskList.id,
-                    Tasks.TITLE to "Task 1"
-                )
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks.TITLE to "Task 1"
+                    )
                 )
             )
             taskList.addTask(
                 Entity(
-                contentValuesOf(
-                    Tasks.LIST_ID to taskList.id,
-                    Tasks.TITLE to "Task 2"
-                )
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks.TITLE to "Task 2"
+                    )
                 )
             )
 
@@ -320,23 +348,51 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
+    fun testGetTaskRow() {
+        val taskList = createTaskList()
+        try {
+            val id = taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks.TITLE to "GetRow Test Task",
+                        Tasks.DESCRIPTION to "Description"
+                    )
+                )
+            )
+
+            // Get specific row with projection
+            val result = taskList.getTaskRow(id, arrayOf(Tasks.TITLE))
+            assertNotNull(result)
+            assertEquals("GetRow Test Task", result?.getAsString(Tasks.TITLE))
+
+            // Get non-existent
+            taskList.deleteTask(999)
+            val notFound = taskList.getTaskRow(999)
+            assertNull(notFound)
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
     fun testIterateTaskRows() {
         val taskList = createTaskList()
         try {
             taskList.addTask(
                 Entity(
-                contentValuesOf(
-                    Tasks.LIST_ID to taskList.id,
-                    Tasks.TITLE to "Iterate Task 1"
-                )
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks.TITLE to "Iterate Task 1"
+                    )
                 )
             )
             taskList.addTask(
                 Entity(
-                contentValuesOf(
-                    Tasks.LIST_ID to taskList.id,
-                    Tasks.TITLE to "Iterate Task 2"
-                )
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks.TITLE to "Iterate Task 2"
+                    )
                 )
             )
 
@@ -348,6 +404,59 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             assertEquals(2, result.size)
             val titles = result.map { it.getAsString(Tasks.TITLE) }.toSet()
             assertEquals(setOf("Iterate Task 1", "Iterate Task 2"), titles)
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
+    fun testIterateTasks() {
+        val taskList = createTaskList()
+        try {
+            // Add tasks directly via Entity
+            taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks._UID to "iterate-task-1",
+                        Tasks.TITLE to "Iterate Task 1",
+                        Tasks.DESCRIPTION to "Description 1"
+                    )
+                ).apply {
+                    addSubValue(
+                        taskList.tasksPropertiesUri(),
+                        contentValuesOf(
+                            TaskContract.Properties.MIMETYPE to Property.Comment.CONTENT_ITEM_TYPE,
+                            Property.Comment.COMMENT to "Task 1 Comment"
+                        )
+                    )
+                }
+            )
+            taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks._UID to "iterate-task-2",
+                        Tasks.TITLE to "Iterate Task 2",
+                        Tasks.DESCRIPTION to "Description 2"
+                    )
+                )
+            )
+
+            val result = mutableListOf<Entity>()
+            taskList.iterateTasks(null, null) { entity ->
+                result += entity
+            }
+
+            assertEquals(2, result.size)
+            val uids = result.mapNotNull { it.entityValues.getAsString(Tasks._UID) }.toSet()
+            assertEquals(setOf("iterate-task-1", "iterate-task-2"), uids)
+
+            // Verify that entities contain properties (description)
+            val task1Entity = result.find { it.entityValues.getAsString(Tasks._UID) == "iterate-task-1" }
+            assertNotNull(task1Entity)
+            assertEquals("Description 1", task1Entity?.entityValues?.getAsString(Tasks.DESCRIPTION))
+            assertEquals("Task 1 Comment", task1Entity?.subValues?.first()?.values?.getAsString(Property.Comment.COMMENT))
         } finally {
             taskList.delete()
         }
@@ -370,6 +479,31 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             val result = taskList.getTask(id)
             assertNotNull(result)
             assertEquals("Updated Title", result?.entityValues?.getAsString(Tasks.TITLE))
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
+    fun testUpdateTaskRow_WithBatch() {
+        val taskList = createTaskList()
+        try {
+            val id = taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks.TITLE to "Batch Update Row Test"
+                    )
+                )
+            )
+
+            val batch = TasksBatchOperation(taskList.client)
+            taskList.updateTaskRow(id, contentValuesOf(Tasks.TITLE to "Updated Via Batch"), batch)
+            batch.commit()
+
+            val result = taskList.getTask(id)
+            assertNotNull(result)
+            assertEquals("Updated Via Batch", result?.entityValues?.getAsString(Tasks.TITLE))
         } finally {
             taskList.delete()
         }
@@ -432,6 +566,105 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
+    fun testUpdateTask_WithBatch() {
+        val taskList = createTaskList()
+        try {
+            val entity = Entity(
+                contentValuesOf(
+                    Tasks.LIST_ID to taskList.id,
+                    Tasks.TITLE to "Batch Update Test"
+                )
+            ).apply {
+                addSubValue(
+                    taskList.tasksPropertiesUri(),
+                    contentValuesOf(
+                        TaskContract.Properties.MIMETYPE to Property.Comment.CONTENT_ITEM_TYPE,
+                        Property.Comment.COMMENT to "Original Comment"
+                    )
+                )
+            }
+            val id = taskList.addTask(entity)
+
+            // Update via batch
+            val updatedEntity = Entity(
+                contentValuesOf(
+                    Tasks.TITLE to "Updated Title"
+                )
+            ).apply {
+                addSubValue(
+                    taskList.tasksPropertiesUri(),
+                    contentValuesOf(
+                        TaskContract.Properties.MIMETYPE to Property.Comment.CONTENT_ITEM_TYPE,
+                        Property.Comment.COMMENT to "Updated Comment"
+                    )
+                )
+            }
+
+            val batch = TasksBatchOperation(taskList.client)
+            taskList.updateTask(id, updatedEntity, batch)
+            batch.commit()
+
+            val result = taskList.getTask(id)
+            assertNotNull(result)
+            assertEquals("Updated Title", result?.entityValues?.getAsString(Tasks.TITLE))
+
+            val commentProperty = result?.subValues?.find {
+                it.values.getAsString(TaskContract.Properties.MIMETYPE) == Property.Comment.CONTENT_ITEM_TYPE
+            }
+            assertNotNull(commentProperty)
+            assertEquals("Updated Comment", commentProperty?.values?.getAsString(Property.Comment.COMMENT))
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
+    fun testUpdateTasks() {
+        val taskList = createTaskList()
+        try {
+            // Add tasks
+            taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks._SYNC_ID to "update-test-1",
+                        Tasks.TITLE to "Original Title 1",
+                        Tasks.COMPLETED to 0
+                    )
+                )
+            )
+            taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks._SYNC_ID to "update-test-2",
+                        Tasks.TITLE to "Original Title 2",
+                        Tasks.COMPLETED to 0
+                    )
+                )
+            )
+
+            // Bulk update to mark as completed
+            val updatedCount = taskList.updateTasks(
+                contentValuesOf(Tasks.COMPLETED to 1, Tasks.TITLE to "Updated Title"),
+                "${Tasks._SYNC_ID} LIKE ?",
+                arrayOf("update-test-%")
+            )
+            assertEquals(2, updatedCount)
+
+            // Verify updates
+            val tasks = taskList.findTasks()
+            assertEquals(2, tasks.size)
+            for (task in tasks) {
+                assertEquals("Updated Title", task.entityValues.getAsString(Tasks.TITLE))
+                assertEquals(1L, task.entityValues.getAsLong(Tasks.COMPLETED))
+            }
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
     fun testDeleteTask() {
         val taskList = createTaskList()
         try {
@@ -448,6 +681,77 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             taskList.deleteTask(id)
 
             assertNull(taskList.getTask(id))
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
+    fun testDeleteTask_WithBatch() {
+        val taskList = createTaskList()
+        try {
+            val id = taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks.TITLE to "Batch Delete Test"
+                    )
+                )
+            )
+
+            // Verify exists
+            assertNotNull(taskList.getTask(id))
+
+            // Delete via batch
+            val batch = TasksBatchOperation(taskList.client)
+            taskList.deleteTask(id, batch)
+            batch.commit()
+
+            // Verify deleted
+            assertNull(taskList.getTask(id))
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
+    fun testDeleteTasks() {
+        val taskList = createTaskList()
+        try {
+            // Add multiple tasks
+            val id1 = taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks._SYNC_ID to "delete-test-1",
+                        Tasks.TITLE to "Delete Test 1"
+                    )
+                )
+            )
+            val id2 = taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks._SYNC_ID to "delete-test-2",
+                        Tasks.TITLE to "Delete Test 2"
+                    )
+                )
+            )
+
+            // Verify both exist
+            assertNotNull(taskList.getTask(id1))
+            assertNotNull(taskList.getTask(id2))
+
+            // Delete all matching sync IDs
+            val deletedCount = taskList.deleteTasks(
+                "${Tasks._SYNC_ID} LIKE ?",
+                arrayOf("delete-test-%")
+            )
+            assertEquals(2, deletedCount)
+
+            // Verify both are gone
+            assertNull(taskList.getTask(id1))
+            assertNull(taskList.getTask(id2))
         } finally {
             taskList.delete()
         }

@@ -5,6 +5,7 @@
 package at.bitfire.ical4android
 
 import android.os.Build
+import androidx.annotation.CallSuper
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import org.junit.After
@@ -40,6 +41,7 @@ abstract class DmfsStyleProvidersTaskTest(
     lateinit var provider: TaskProvider
 
     @Before
+    @CallSuper
     open fun prepare() {
         providerOrNull = TaskProvider.acquire(InstrumentationRegistry.getInstrumentation().context, providerName)
         assertNotNull("$providerName is not installed", providerOrNull != null)
@@ -49,6 +51,7 @@ abstract class DmfsStyleProvidersTaskTest(
     }
 
     @After
+    @CallSuper
     open fun shutdown() {
         providerOrNull?.close()
     }
