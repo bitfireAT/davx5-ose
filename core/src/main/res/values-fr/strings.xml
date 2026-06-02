@@ -439,4 +439,12 @@
     <string name="intro_tasks_tasks_org_info"><![CDATA[Certaines fonctionnalités <a href="https://www.davx5.com/faq/tasks/advanced-task-features">ne sont pas supportées</a>.]]></string>
     <string name="intro_backups_title">Rappel de sauvegardes</string>
     <string name="intro_backups_important">Il est important de sauvegarder vos données (contacts et calendriers inclus) régulièrement afin d\'éviter une potentielle perte de données.</string>
+    <plurals name="intro_open_source_dont_show_months">
+        <item quantity="one">%d mois</item>
+        <item quantity="many">%d mois</item>
+        <item quantity="other">%d mois</item>
+    </plurals>
+    <string name="about_translations_thanks">❤️ Merci à tous ceux qui ont contribué aux traductions !</string>
+    <string name="navigation_drawer_managed">Pour les organisations</string>
+    <string name="sync_warning_contacts_storage_disabled_title">Fournisseur de contacts manquant</string>
 </resources>
