@@ -11,13 +11,13 @@ import net.fortuna.ical4j.model.property.RelatedTo
 import org.dmfs.tasks.contract.TaskContract.Property.Relation
 import java.util.logging.Logger
 
-class RelationsHandler : DmfsTaskPropertyHandler {
+class RelationsHandler : DmfsTaskFieldHandler {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
 
-    override fun process(row: ContentValues, to: Task) {
-        val uid = row.getAsString(Relation.RELATED_UID)
+    override fun process(from: ContentValues, to: Task) {
+        val uid = from.getAsString(Relation.RELATED_UID)
         if (uid == null) {
             logger.warning("Task relation doesn't refer to same task list; can't be synchronized")
             return
@@ -27,7 +27,7 @@ class RelationsHandler : DmfsTaskPropertyHandler {
             RelatedTo(uid)
                 // add relation type as RELTYPE parameter
                 .add(
-                    when (row.getAsInteger(Relation.RELATED_TYPE)) {
+                    when (from.getAsInteger(Relation.RELATED_TYPE)) {
                         Relation.RELTYPE_CHILD ->
                             RelType.CHILD
                         Relation.RELTYPE_SIBLING ->
