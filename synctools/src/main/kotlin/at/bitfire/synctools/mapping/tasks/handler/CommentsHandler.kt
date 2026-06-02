@@ -8,8 +8,8 @@ import android.content.ContentValues
 import at.bitfire.ical4android.Task
 import org.dmfs.tasks.contract.TaskContract.Property.Comment
 
-class CommentsHandler : DmfsTaskPropertyHandler {
-    override fun process(row: ContentValues, to: Task) {
-        row.getAsString(Comment.COMMENT)?.let { to.comment = it }
+class CommentsHandler : DmfsTaskFieldHandler {
+    override fun process(from: ContentValues, to: Task) {
+        from.getAsString(Comment.COMMENT)?.let { to.comment = it }
     }
 }

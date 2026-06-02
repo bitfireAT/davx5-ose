@@ -15,7 +15,6 @@ import at.bitfire.synctools.mapping.tasks.handler.CommentsHandler
 import at.bitfire.synctools.mapping.tasks.handler.CompletedHandler
 import at.bitfire.synctools.mapping.tasks.handler.DescriptionHandler
 import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskFieldHandler
-import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskPropertyHandler
 import at.bitfire.synctools.mapping.tasks.handler.DueHandler
 import at.bitfire.synctools.mapping.tasks.handler.DurationHandler
 import at.bitfire.synctools.mapping.tasks.handler.GeoHandler
@@ -71,7 +70,7 @@ class DmfsTaskProcessor(
         RecurrenceFieldsHandler(),
     )
 
-    private val propertyHandlers: Map<String, DmfsTaskPropertyHandler> = mapOf(
+    private val propertyHandlers: Map<String, DmfsTaskFieldHandler> = mapOf(
         Alarm.CONTENT_ITEM_TYPE to AlarmsHandler(),
         Category.CONTENT_ITEM_TYPE to CategoriesHandler(),
         Comment.CONTENT_ITEM_TYPE to CommentsHandler(),
