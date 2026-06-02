@@ -27,7 +27,7 @@ class DmfsTaskHandler(
     )
 
     fun mapToVToDos(taskAndExceptions: TaskAndExceptions): MappingResult {
-        TODO("Map content provider data (EventAndExceptions) to VTODOs (AssociatedTasks) + optional generated UID")
+        TODO("Map content provider data (TaskAndExceptions) to VTODOs (AssociatedTasks) + optional generated UID")
         // just like AndroidEventHandler.mapToVEvents
         // uses mapTask()
         // result will be used by TasksSyncManager
