@@ -53,7 +53,7 @@ object AlarmTriggerCalculator {
 
         val triggerRelated = trigger.getParameter<Related>(Parameter.RELATED).getOrNull() ?: Related.START
         val triggerDuration = trigger.duration
-        val triggerTime: Temporal? = (trigger as DateProperty<*>).date
+        val triggerTime: Temporal? = trigger.date   // getDate() dynamically casts → we take a generic Temporal to avoid casting
 
         return if (triggerDuration != null) {
             triggerDurationToMinutes(
@@ -142,9 +142,8 @@ object AlarmTriggerCalculator {
         triggerTime: Temporal,
         refStart: DtStart<*>
     ): Pair<Related, Int> {
-        val triggerInstant = triggerTime.toInstant()
         val start = refStart.date.toInstant()
-        val minutes = Duration.between(triggerInstant, start).toMinutes().toInt()
+        val minutes = Duration.between(triggerTime.toInstant(), start).toMinutes().toInt()
 
         return Pair(Related.START, minutes)
     }
