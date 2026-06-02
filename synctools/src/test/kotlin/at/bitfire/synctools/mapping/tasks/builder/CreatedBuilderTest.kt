@@ -63,7 +63,7 @@ class CreatedBuilderTest {
     fun `CREATED is stored`() {
         val result = Entity(ContentValues())
         builder.build(
-            from = VToDoUtil.build(Created(null, Instant.ofEpochMilli(1593771404L))),
+            from = VToDoUtil.build(Created(Instant.ofEpochMilli(1593771404L))),
             to = result
         )
         assertContentValuesEqual(contentValuesOf(
