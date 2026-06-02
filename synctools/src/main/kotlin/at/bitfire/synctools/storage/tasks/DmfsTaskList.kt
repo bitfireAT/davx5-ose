@@ -475,7 +475,8 @@ class DmfsTaskList(
      */
     fun deleteTasks(where: String?, whereArgs: Array<String>?): Int =
         try {
-            client.delete(tasksUri(), where, whereArgs)
+            val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+            client.delete(tasksUri(), protectedWhere, protectedWhereArgs)
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't delete ${providerName.authority} tasks", e)
         }
