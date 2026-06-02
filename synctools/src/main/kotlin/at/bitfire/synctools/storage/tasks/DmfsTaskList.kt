@@ -535,12 +535,6 @@ class DmfsTaskList(
      */
     fun update(values: ContentValues): Int = provider.updateTaskList(id,values)
 
-    /** Calls [DmfsTaskListProvider.readTaskListSyncState] for this task list. */
-    fun readSyncState(): String? = provider.readTaskListSyncState(id)
-
-    /** Calls [DmfsTaskListProvider.writeTaskListSyncState] for this task list. */
-    fun writeSyncState(state: String?) = provider.writeTaskListSyncState(id, state)
-
 
     // helpers
 

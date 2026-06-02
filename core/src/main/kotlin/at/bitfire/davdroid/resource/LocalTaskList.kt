@@ -5,8 +5,10 @@
 package at.bitfire.davdroid.resource
 
 import androidx.core.content.contentValuesOf
+import at.bitfire.davdroid.resource.LocalTaskList.Companion.COLUMN_TASKLIST_SYNC_STATE
 import at.bitfire.synctools.storage.tasks.DmfsTask
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
+import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
@@ -21,7 +23,8 @@ class LocalTaskList (
     val dmfsTaskList: DmfsTaskList
 ): LocalCollection<LocalTask> {
 
-    private val logger = Logger.getGlobal()
+    private val logger
+        get() = Logger.getLogger(javaClass.name)
 
     override val readOnly
         get() = dmfsTaskList.accessLevel.let {
@@ -37,10 +40,19 @@ class LocalTaskList (
     override val title: String
         get() = dmfsTaskList.name ?: dmfsTaskList.id.toString()
 
+    /** The task list's [SyncState] is stored in serialized JSON format in the [COLUMN_TASKLIST_SYNC_STATE] column. */
     override var lastSyncState: SyncState?
-        get() = dmfsTaskList.readSyncState()?.let { SyncState.fromString(it) }
+        get() {
+            val serializedState = dmfsTaskList.provider
+                .getTaskListRow(dmfsTaskList.id, arrayOf(COLUMN_TASKLIST_SYNC_STATE))
+                ?.getAsString(COLUMN_TASKLIST_SYNC_STATE)
+            return serializedState?.let {
+                SyncState.fromString(it)
+            }
+        }
         set(state) {
-            dmfsTaskList.writeSyncState(state.toString())
+            val serializedState = state.toString()
+            dmfsTaskList.update(contentValuesOf(COLUMN_TASKLIST_SYNC_STATE to serializedState))
         }
 
 
@@ -97,8 +109,16 @@ class LocalTaskList (
         dmfsTaskList.updateTasks(
             contentValuesOf(DmfsTask.COLUMN_ETAG to null),
             "${Tasks.LIST_ID}=?",
-                arrayOf(dmfsTaskList.id.toString())
+            arrayOf(dmfsTaskList.id.toString())
         )
+    }
+
+
+    companion object {
+        /**
+         * Column to store per task list sync state as a [String].
+         */
+        private const val COLUMN_TASKLIST_SYNC_STATE = TaskContract.TaskLists.SYNC_VERSION
     }
 
 }
