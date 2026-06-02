@@ -155,16 +155,9 @@ class DmfsTaskBuilder(
     }
 
     private fun buildTask(from: VToDo, main: VToDo): Entity {
+        TODO("Build a single Entity based on from")
+        // in some cases (like to see whether the main item is all-day, "main" can be used
         // just like AndroidEventBuilder().buildEvent()
-
-        val entity = Entity(ContentValues())
-
-        for (fieldBuilder in fieldBuilders) {
-            //fieldBuilder.build(task, entity)
-        }
-
-        logger.log(Level.FINE, "Built task", entity.entityValues)
-        return entity
     }
 
     @Deprecated("Replaced by build()")
