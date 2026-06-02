@@ -23,7 +23,7 @@ import java.util.logging.Logger
  *
  * It handles the insertion, updating, and deletion of recurring tasks and their associated exceptions.
  *
- * Note: OpenTasks supports two methods of linking a recurring event exception to the main task:
+ * Note: OpenTasks supports two methods of linking a recurring task exception to the main task:
  *
  * - set [Tasks.ORIGINAL_INSTANCE_ID] to the main task's [Tasks._ID],
  * - set [Tasks.ORIGINAL_INSTANCE_SYNC_ID] to the main task's [Tasks._SYNC_ID].
