@@ -36,6 +36,7 @@ import java.util.logging.Logger
  * @param values    entity with all columns, as returned by the task provider; [org.dmfs.tasks.contract.TaskContract.Tasks._ID]
  *                  must be set to a non-null value for existing tasks, and may be absent for new (unsaved) tasks
  */
+@Deprecated("Use storage + mapping APIs separately")
 class DmfsTask(
     val taskList: DmfsTaskList,
     val values: Entity
@@ -71,7 +72,6 @@ class DmfsTask(
     var eTag: String? = mainValues.getAsString(COLUMN_ETAG)
     var flags: Int = mainValues.getAsInteger(COLUMN_FLAGS) ?: 0
 
-    @Deprecated("Use storage + mapping APIs separately")
     var task: Task? = null
         /**
          * This getter returns the full task data, either from [task] or, if [task] is null, by reading task
@@ -149,7 +149,6 @@ class DmfsTask(
      * @throws at.bitfire.synctools.storage.LocalStorageException when the tasks provider doesn't return a result row
      * @throws android.os.RemoteException on tasks provider errors
      */
-    @Deprecated("Use DmfsTaskList.addTask() instead")
     fun add(): Uri {
         val batch = TasksBatchOperation(taskList.provider.client)
 
@@ -174,7 +173,6 @@ class DmfsTask(
      * @throws LocalStorageException when the tasks provider doesn't return a result row
      * @throws android.os.RemoteException on tasks provider errors
      */
-    @Deprecated("Use DmfsTaskList.updateTask() or DmfsTaskList.updateTaskRow() instead")
     fun update(task: Task): Uri {
         this.task = task
         val existingId = requireNotNull(id)

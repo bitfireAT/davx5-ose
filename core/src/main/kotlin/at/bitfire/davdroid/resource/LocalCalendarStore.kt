@@ -89,8 +89,7 @@ class LocalCalendarStore @Inject constructor(
 
     override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalCalendar? =
         AndroidCalendarProvider(account, client)
-            .findCalendars("${Calendars._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
-            .firstOrNull()
+            .findFirstCalendar("${Calendars._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
             ?.let { localCalendarFactory.create(it) }
 
     override fun update(client: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
