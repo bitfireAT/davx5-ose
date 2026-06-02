@@ -9,6 +9,7 @@ import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.test.assertContentValuesEqual
+import net.fortuna.ical4j.model.component.VToDo
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,7 +19,7 @@ import org.robolectric.RobolectricTestRunner
 class SyncIdBuilderTest {
 
     @Test
-    fun `SyncId sets _SYNC_ID`() {
+    fun `old SyncId sets _SYNC_ID`() {
         val result = Entity(ContentValues())
         SyncIdBuilder("sync-id").build(
             from = Task(),
@@ -30,10 +31,34 @@ class SyncIdBuilderTest {
     }
 
     @Test
-    fun `SyncId is null`() {
+    fun `old SyncId is null`() {
         val result = Entity(ContentValues())
         SyncIdBuilder(null).build(
             from = Task(),
+            to = result
+        )
+        assertContentValuesEqual(contentValuesOf(
+            Tasks._SYNC_ID to null
+        ), result.entityValues)
+    }
+
+    @Test
+    fun `SyncId sets _SYNC_ID`() {
+        val result = Entity(ContentValues())
+        SyncIdBuilder("sync-id").build(
+            from = VToDo(),
+            to = result
+        )
+        assertContentValuesEqual(contentValuesOf(
+            Tasks._SYNC_ID to "sync-id"
+        ), result.entityValues)
+    }
+
+    @Test
+    fun `SyncId is null`() {
+        val result = Entity(ContentValues())
+        SyncIdBuilder(null).build(
+            from = VToDo(),
             to = result
         )
         assertContentValuesEqual(contentValuesOf(
