@@ -5,12 +5,20 @@
 package at.bitfire.synctools.mapping.tasks.handler
 
 import android.content.ContentValues
+import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
 import at.bitfire.ical4android.Task
 import io.mockk.mockk
+import net.fortuna.ical4j.model.DateList
+import net.fortuna.ical4j.model.ParameterList
+import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.Recur
+import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.parameter.TzId
+import net.fortuna.ical4j.model.property.ExDate
+import net.fortuna.ical4j.model.property.RDate
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.transform.recurrence.Frequency
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -25,6 +33,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.Temporal
+import kotlin.jvm.optionals.getOrNull
 
 @RunWith(RobolectricTestRunner::class)
 class RecurrenceFieldsHandlerTest {
@@ -35,7 +44,7 @@ class RecurrenceFieldsHandlerTest {
 
 
     @Test
-    fun `No recurrence fields leaves task empty`() {
+    fun `legacy No recurrence fields leaves task empty`() {
         val task = Task()
         handler.process(ContentValues(), task)
         assertNull(task.rRule)
@@ -44,7 +53,7 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
-    fun `RRULE without DTSTART is parsed without alignment`() {
+    fun `legacy RRULE without DTSTART is parsed without alignment`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.RRULE to "FREQ=DAILY;COUNT=10"
@@ -53,7 +62,7 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
-    fun `RRULE with COUNT is parsed correctly`() {
+    fun `legacy RRULE with COUNT is parsed correctly`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.DTSTART to 1759403653000L,    // 2025-10-02T11:14:13Z
@@ -63,7 +72,7 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
-    fun `RRULE with UNTIL before DTSTART is skipped`() {
+    fun `legacy RRULE with UNTIL before DTSTART is skipped`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.DTSTART to 1759403653000L,    // 2025-10-02T11:14:13Z
@@ -73,7 +82,7 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
-    fun `RRULE with DATE UNTIL aligned to UTC DATE-TIME when DTSTART is DATE-TIME`() {
+    fun `legacy RRULE with DATE UNTIL aligned to UTC DATE-TIME when DTSTART is DATE-TIME`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.DTSTART to 1759403653000L,    // 2025-10-02T11:14:13Z
@@ -84,7 +93,7 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
-    fun `RRULE with DATE-TIME UNTIL aligned to DATE when DTSTART is all-day`() {
+    fun `legacy RRULE with DATE-TIME UNTIL aligned to DATE when DTSTART is all-day`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.DTSTART to 1759363200000L,    // 2025-10-02T00:00:00Z (all-day)
@@ -95,7 +104,7 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
-    fun `RDATE is parsed into rDates`() {
+    fun `legacy RDATE is parsed into rDates`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.RDATE to "20251010T010203Z"
@@ -104,7 +113,7 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
-    fun `EXDATE all-day has VALUE=DATE`() {
+    fun `legacy EXDATE all-day has VALUE=DATE`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.IS_ALLDAY to 1,
@@ -115,7 +124,7 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
-    fun `Invalid RRULE is ignored without crash`() {
+    fun `legacy Invalid RRULE is ignored without crash`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.RRULE to "NOT_A_VALID_RRULE"
@@ -124,7 +133,7 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
-    fun `Invalid RDATE is ignored without crash`() {
+    fun `legacy Invalid RDATE is ignored without crash`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.RDATE to "NOT_A_VALID_RDATE"
@@ -133,7 +142,7 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
-    fun `Invalid EXDATE is ignored without crash`() {
+    fun `legacy Invalid EXDATE is ignored without crash`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.EXDATE to "NOT_A_VALID_EXDATE"
@@ -143,7 +152,7 @@ class RecurrenceFieldsHandlerTest {
 
 
     @Test
-    fun `RDATE floating datetime with Tasks_TZ uses timezone`() {
+    fun `legacy RDATE floating datetime with Tasks_TZ uses timezone`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.RDATE to "20251010T010203",
@@ -153,7 +162,7 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
-    fun `EXDATE floating datetime with Tasks_TZ uses timezone`() {
+    fun `legacy EXDATE floating datetime with Tasks_TZ uses timezone`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.EXDATE to "20251010T010203",
@@ -163,13 +172,213 @@ class RecurrenceFieldsHandlerTest {
     }
 
     @Test
-    fun `RDATE with UTC value is not double-prefixed`() {
+    fun `legacy RDATE with UTC value is not double-prefixed`() {
         val task = Task()
         handler.process(contentValuesOf(
             Tasks.RDATE to "20251010T010203Z",
             Tasks.TZ to "Europe/Vienna"
         ), task)
         assertEquals(1, task.rDates.size)
+    }
+
+    @Test
+    fun `No recurrence fields leaves task empty`() {
+        val input = Entity(ContentValues())
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertNull(task.rRule)
+        assertTrue(task.rDates.isEmpty())
+        assertTrue(task.exDates.isEmpty())
+    }
+
+    @Test
+    fun `RRULE without DTSTART is parsed without alignment`() {
+        val input = Entity(contentValuesOf(Tasks.RRULE to "FREQ=DAILY;COUNT=10"))
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals(RRule<Temporal>("FREQ=DAILY;COUNT=10"), task.rRule)
+    }
+
+    @Test
+    fun `RRULE with COUNT is parsed correctly`() {
+        val input = Entity(
+            contentValuesOf(
+                Tasks.DTSTART to 1759403653000L,    // 2025-10-02T11:14:13Z
+                Tasks.RRULE to "FREQ=WEEKLY;COUNT=5"
+            )
+        )
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals(RRule<Temporal>("FREQ=WEEKLY;COUNT=5"), task.rRule)
+    }
+
+    @Test
+    fun `RRULE with UNTIL before DTSTART is skipped`() {
+        val input = Entity(
+            contentValuesOf(
+                Tasks.DTSTART to 1759403653000L,    // 2025-10-02T11:14:13Z
+                Tasks.RRULE to "FREQ=DAILY;UNTIL=20251002T111300Z"
+            )
+        )
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertNull(task.rRule)
+    }
+
+    @Test
+    fun `RRULE with DATE UNTIL aligned to UTC DATE-TIME when DTSTART is DATE-TIME`() {
+        val input = Entity(
+            contentValuesOf(
+                Tasks.DTSTART to 1759403653000L,    // 2025-10-02T11:14:13Z
+                Tasks.RRULE to "FREQ=DAILY;UNTIL=20251015"
+            )
+        )
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        // UNTIL date aligned to DTSTART's time in UTC
+        assertEquals("FREQ=DAILY;UNTIL=20251015T111413Z", task.rRule!!.value)
+    }
+
+    @Test
+    fun `RRULE with DATE-TIME UNTIL aligned to DATE when DTSTART is all-day`() {
+        val input = Entity(
+            contentValuesOf(
+                Tasks.DTSTART to 1759363200000L,    // 2025-10-02T00:00:00Z (all-day)
+                Tasks.IS_ALLDAY to 1,
+                Tasks.RRULE to "FREQ=DAILY;UNTIL=20251015T153118Z"
+            )
+        )
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals("FREQ=DAILY;UNTIL=20251015", task.rRule!!.value)
+    }
+
+    @Test
+    fun `RDATE is parsed into rDates`() {
+        val input = Entity(contentValuesOf(Tasks.RDATE to "20251010T010203Z"))
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals(1, task.rDates.size)
+    }
+
+    @Test
+    fun `EXDATE all-day has VALUE=DATE`() {
+        val input = Entity(
+            contentValuesOf(
+                Tasks.IS_ALLDAY to 1,
+                Tasks.EXDATE to "20251010"
+            )
+        )
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals(1, task.exDates.size)
+        assertEquals("20251010", task.exDates[0].value)
+    }
+
+    @Test
+    fun `Invalid RRULE is ignored without crash`() {
+        val input = Entity(contentValuesOf(Tasks.RRULE to "NOT_A_VALID_RRULE"))
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertNull(task.rRule)
+    }
+
+    @Test
+    fun `Invalid RDATE is ignored without crash`() {
+        val input = Entity(contentValuesOf(Tasks.RDATE to "NOT_A_VALID_RDATE"))
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertTrue(task.rDates.isEmpty())
+    }
+
+    @Test
+    fun `Invalid EXDATE is ignored without crash`() {
+        val input = Entity(contentValuesOf(Tasks.EXDATE to "NOT_A_VALID_EXDATE"))
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertTrue(task.exDates.isEmpty())
+    }
+
+    @Test
+    fun `RDATE floating datetime with Tasks_TZ uses timezone`() {
+        val input = Entity(
+            contentValuesOf(
+                Tasks.RDATE to "20251010T010203",
+                Tasks.TZ to "Europe/Vienna"
+            )
+        )
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals(1, task.rDates.size)
+        assertEquals(
+            RDate(
+                ParameterList(listOf(TzId("Europe/Vienna"))),
+                DateList(dateTimeValue("20251010T010203", tzVienna))
+            ),
+            task.rDates.first()
+        )
+    }
+
+    @Test
+    fun `EXDATE floating datetime with Tasks_TZ uses timezone`() {
+        val input = Entity(
+            contentValuesOf(
+                Tasks.EXDATE to "20251010T010203",
+                Tasks.TZ to "Europe/Vienna"
+            )
+        )
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals(1, task.exDates.size)
+        assertEquals(
+            ExDate(
+                ParameterList(listOf(TzId("Europe/Vienna"))),
+                DateList(dateTimeValue("20251010T010203", tzVienna))
+            ),
+            task.exDates.first()
+        )
+    }
+
+    @Test
+    fun `RDATE with UTC value is not double-prefixed`() {
+        val input = Entity(
+            contentValuesOf(
+                Tasks.RDATE to "20251010T010203Z",
+                Tasks.TZ to "Europe/Vienna"
+            )
+        )
+        val task = VToDo()
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals(1, task.rDates.size)
+        assertEquals(RDate(DateList(dateTimeValue("20251010T010203Z"))), task.rDates.first())
     }
 
 
@@ -270,5 +479,13 @@ class RecurrenceFieldsHandlerTest {
             result
         )
     }
-
 }
+
+private val VToDo.rRule: RRule<*>?
+    get() = getProperty<RRule<*>>(Property.RRULE).getOrNull()
+
+private val VToDo.rDates: List<RDate<Temporal>>
+    get() = getProperties(Property.RDATE)
+
+private val VToDo.exDates: List<ExDate<Temporal>>
+    get() = getProperties(Property.EXDATE)
