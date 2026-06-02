@@ -6,6 +6,7 @@ package at.bitfire.synctools.storage.tasks
 
 import android.accounts.Account
 import android.content.ContentValues
+import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.storage.plusAssign
@@ -46,10 +47,12 @@ class DmfsTaskListProviderTest(providerName: TaskProvider.ProviderName) :
 
     @Test
     fun testCreateAndGetTaskList() {
-        val taskList = createTaskList(ContentValues().apply {
-            put(TaskLists.LIST_NAME, "Test Create And Get")
-            put(TaskLists.LIST_COLOR, 0xff0000ffL)
-        })
+        val taskList = createTaskList(
+            contentValuesOf(
+                TaskLists.LIST_NAME to "Test Create And Get",
+                TaskLists.LIST_COLOR to 0xff0000ffL
+            )
+        )
         try {
             assertNotNull("Created task list should not be null", taskList)
             assertEquals("Test Create And Get", taskList.name)
@@ -61,14 +64,18 @@ class DmfsTaskListProviderTest(providerName: TaskProvider.ProviderName) :
 
     @Test
     fun testFindTaskLists() {
-        val taskList1 = createTaskList(ContentValues().apply {
-            put(TaskLists.LIST_NAME, "Find Test List 1")
-            put(TaskLists.OWNER, "findtasklists@example.com")
-        })
-        val taskList2 = createTaskList(ContentValues().apply {
-            put(TaskLists.LIST_NAME, "Find Test List 2")
-            put(TaskLists.OWNER, "findtasklists@example.com")
-        })
+        val taskList1 = createTaskList(
+            contentValuesOf(
+                TaskLists.LIST_NAME to "Find Test List 1",
+                TaskLists.OWNER to "findtasklists@example.com"
+            )
+        )
+        val taskList2 = createTaskList(
+            contentValuesOf(
+                TaskLists.LIST_NAME to "Find Test List 2",
+                TaskLists.OWNER to "findtasklists@example.com"
+            )
+        )
 
         try {
             val taskLists = dmfsTaskListProvider.findTaskLists(
@@ -87,10 +94,12 @@ class DmfsTaskListProviderTest(providerName: TaskProvider.ProviderName) :
 
     @Test
     fun testFindFirstTaskList() {
-        val taskList = createTaskList(ContentValues().apply {
-            put(TaskLists.LIST_NAME, "First Test List")
-            put(TaskLists.OWNER, "first-test@example.com")
-        })
+        val taskList = createTaskList(
+            contentValuesOf(
+                TaskLists.LIST_NAME to "First Test List",
+                TaskLists.OWNER to "first-test@example.com"
+            )
+        )
 
         try {
             // Test finding existing task list
@@ -114,9 +123,11 @@ class DmfsTaskListProviderTest(providerName: TaskProvider.ProviderName) :
 
     @Test
     fun testGetTaskListRow_withProjection() {
-        val taskList = createTaskList(ContentValues().apply {
-            put(TaskLists.LIST_NAME, "Test Task List")
-        })
+        val taskList = createTaskList(
+            contentValuesOf(
+                TaskLists.LIST_NAME to "Test Task List"
+            )
+        )
         try {
             val result = taskList.provider.getTaskListRow(taskList.id, arrayOf(TaskLists.LIST_NAME))
             assertNotNull(result)
@@ -137,10 +148,12 @@ class DmfsTaskListProviderTest(providerName: TaskProvider.ProviderName) :
 
     @Test
     fun testGetTaskList() {
-        val taskList = createTaskList(ContentValues().apply {
-            put(TaskLists.LIST_NAME, "Get Test List")
-            put(TaskLists.LIST_COLOR, 0xffff00ffL)
-        })
+        val taskList = createTaskList(
+            contentValuesOf(
+                TaskLists.LIST_NAME to "Get Test List",
+                TaskLists.LIST_COLOR to 0xffff00ffL
+            )
+        )
 
         try {
             val result = dmfsTaskListProvider.getTaskList(taskList.id)
@@ -158,10 +171,10 @@ class DmfsTaskListProviderTest(providerName: TaskProvider.ProviderName) :
 
     @Test
     fun testUpdateTaskList() {
-        val info = ContentValues().apply {
-            put(TaskLists.LIST_NAME, "Update Test List")
-            put(TaskLists.LIST_COLOR, 0xff00ffffL)
-        }
+        val info = contentValuesOf(
+            TaskLists.LIST_NAME to "Update Test List",
+            TaskLists.LIST_COLOR to 0xff00ffffL
+        )
         val taskList = createTaskList(info)
 
         try {
@@ -183,9 +196,11 @@ class DmfsTaskListProviderTest(providerName: TaskProvider.ProviderName) :
 
     @Test
     fun testDeleteTaskList() {
-        val id = dmfsTaskListProvider.createTaskList(ContentValues().apply {
-            put(TaskLists.LIST_NAME, "Delete Test List")
-        })
+        val id = dmfsTaskListProvider.createTaskList(
+            contentValuesOf(
+                TaskLists.LIST_NAME to "Delete Test List"
+            )
+        )
 
         try {
             // Verify task list exists
@@ -209,15 +224,15 @@ class DmfsTaskListProviderTest(providerName: TaskProvider.ProviderName) :
     }
 
     private fun createTaskList(overwriteValues: ContentValues = ContentValues()): DmfsTaskList {
-        val cv = ContentValues().apply {
-            put(TaskLists.ACCOUNT_NAME, testAccount.name)
-            put(TaskLists.ACCOUNT_TYPE, testAccount.type)
-            put(TaskLists.LIST_NAME, UUID.randomUUID().toString())
-            put(TaskLists.LIST_COLOR, 0xffff0000L)
-            put(TaskLists.OWNER, "test@example.com")
-            put(TaskLists.SYNC_ENABLED, 1)
-            put(TaskLists.VISIBLE, 1)
-        }
+        val cv = contentValuesOf(
+            TaskLists.ACCOUNT_NAME to testAccount.name,
+            TaskLists.ACCOUNT_TYPE to testAccount.type,
+            TaskLists.LIST_NAME to UUID.randomUUID().toString(),
+            TaskLists.LIST_COLOR to 0xffff0000L,
+            TaskLists.OWNER to "test@example.com",
+            TaskLists.SYNC_ENABLED to 1,
+            TaskLists.VISIBLE to 1
+        )
         cv += overwriteValues
 
         val id = dmfsTaskListProvider.createTaskList(cv)

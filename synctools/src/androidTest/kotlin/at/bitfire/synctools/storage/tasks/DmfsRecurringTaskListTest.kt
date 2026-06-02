@@ -54,13 +54,13 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         super.prepare()
 
         // Create a test task list
-        val info = ContentValues().apply {
-            put(TaskLists.LIST_NAME, "Test Recurring Task List")
-            put(TaskLists.LIST_COLOR, 0xffff0000)
-            put(TaskLists.OWNER, "test@example.com")
-            put(TaskLists.SYNC_ENABLED, 1)
-            put(TaskLists.VISIBLE, 1)
-        }
+        val info = contentValuesOf(
+            TaskLists.LIST_NAME to "Test Recurring Task List",
+            TaskLists.LIST_COLOR to 0xffff0000,
+            TaskLists.OWNER to "test@example.com",
+            TaskLists.SYNC_ENABLED to 1,
+            TaskLists.VISIBLE to 1
+        )
 
         val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider.client, providerName)
         val id = dmfsTaskListProvider.createTaskList(info)
