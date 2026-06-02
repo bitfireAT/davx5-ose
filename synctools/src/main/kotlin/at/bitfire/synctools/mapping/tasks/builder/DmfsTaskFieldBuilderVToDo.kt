@@ -22,4 +22,23 @@ interface DmfsTaskFieldBuilderVToDo {
      */
     fun build(from: VToDo, to: Entity)
 
+    /**
+     * Maps a specific part of the given [VToDo] into the provided [Entity].
+     *
+     * If [from] references the same object as [main], this is the main task (not an exception).
+     * If [from] references a different object, this is an exception instance.
+     *
+     * Use referential equality to distinguish them:
+     * ```
+     * val isMain = from === main
+     * ```
+     *
+     * By default delegates to [build] without [main]; override when the distinction matters.
+     *
+     * @param from  task to map
+     * @param main  main (non-exception) VToDo
+     * @param to    destination [Entity] where built values are stored (set `null` values, see note)
+     */
+    fun build(from: VToDo, main: VToDo, to: Entity) = build(from, to)
+
 }
