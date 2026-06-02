@@ -10,9 +10,9 @@ import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
-import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
  * provide common configuration, like the Java toolchain version and Android configuration
  * as API levels and desugaring.
  */
+@Suppress("unused")
 class CommonBuildConfigPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
@@ -38,7 +39,10 @@ class CommonBuildConfigPlugin : Plugin<Project> {
                 javaToolchainVersion = javaToolchainVersion
             ) {
                 extensions.configure<ApplicationExtension> {
+                    // for every Android module
                     configureCommonAndroid()
+
+                    // only for Android applications
                     defaultConfig.targetSdk = 36    // Android 16
                 }
             }
@@ -51,6 +55,7 @@ class CommonBuildConfigPlugin : Plugin<Project> {
                 javaToolchainVersion = javaToolchainVersion
             ) {
                 extensions.configure<LibraryExtension> {
+                    // for every Android module
                     configureCommonAndroid()
                 }
             }
@@ -82,6 +87,7 @@ class CommonBuildConfigPlugin : Plugin<Project> {
     /** Common configuration for all Android modules */
     private fun CommonExtension.configureCommonAndroid() {
         compileSdk = 37     // Android 17
+        // see also synctools/robolectric.properties
 
         defaultConfig.apply {
             minSdk = 24     // Android 7

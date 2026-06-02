@@ -6,6 +6,7 @@ package at.bitfire.synctools.icalendar
 
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VEvent
+import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.ProdId
 
 /**
@@ -77,3 +78,4 @@ data class AssociatedComponents<T: CalendarComponent>(
 }
 
 typealias AssociatedEvents = AssociatedComponents<VEvent>
+typealias AssociatedTasks = AssociatedComponents<VToDo>

@@ -12,6 +12,15 @@ import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
 import at.techbee.jtx.JtxContract
 import org.junit.Assert.assertEquals
 
+
+// common assert helpers
+
+fun Entity.withIntField(name: String, value: Long?) =
+    Entity(ContentValues(this.entityValues)).also { newEntity ->
+        newEntity.entityValues.put(name, value)
+        newEntity.subValues.addAll(subValues)
+    }
+
 fun assertContentValuesEqual(expected: ContentValues, actual: ContentValues, onlyFieldsInExpected: Boolean = false, message: String? = null) {
     // assert keys are equal
     val expectedKeys = expected.keySet()
@@ -39,52 +48,51 @@ fun assertEntitiesEqual(expected: Entity, actual: Entity, onlyFieldsInExpected: 
         )
 }
 
-fun assertEventAndExceptionsEqual(expected: EventAndExceptions, actual: EventAndExceptions, onlyFieldsInExpected: Boolean = false) {
-    assertEntitiesEqual(expected.main, actual.main, onlyFieldsInExpected)
-
-    assertEquals(expected.exceptions.size, actual.exceptions.size)
-    for (expectedException in expected.exceptions) {
-        val expectedInstanceTime = expectedException.entityValues.getAsLong(Events.ORIGINAL_INSTANCE_TIME)
-        val actualException = actual.exceptions.first {
-            val actualInstanceTime = it.entityValues.getAsLong(Events.ORIGINAL_INSTANCE_TIME)
-            actualInstanceTime == expectedInstanceTime
-        }
+fun assertExceptionsEqual(
+    expectedExceptions: List<Entity>,
+    actualExceptions: List<Entity>,
+    onlyFieldsInExpected: Boolean = false,
+    extractKey: (Entity) -> Any?
+) {
+    assertEquals(expectedExceptions.size, actualExceptions.size)
+    for (expectedException in expectedExceptions) {
+        val expectedKey = extractKey(expectedException)
+        val actualException = actualExceptions.first { extractKey(it) == expectedKey }
         assertEntitiesEqual(expectedException, actualException, onlyFieldsInExpected)
     }
 }
 
-fun assertJtxObjectAndExceptionsEqual(expected: JtxObjectAndExceptions, actual: JtxObjectAndExceptions, onlyFieldsInExpected: Boolean = false) {
-    assertEntitiesEqual(expected.main, actual.main, onlyFieldsInExpected)
 
-    assertEquals(expected.exceptions.size, actual.exceptions.size)
-    for (expectedException in expected.exceptions) {
-        val expectedRecurId = expectedException.entityValues.getAsString(JtxContract.JtxICalObject.RECURID)
-        val actualException = actual.exceptions.first {
-            it.entityValues.getAsString(JtxContract.JtxICalObject.RECURID) == expectedRecurId
-        }
-        assertEntitiesEqual(expectedException, actualException, onlyFieldsInExpected)
-    }
-}
+// provider-specific assert helpers
 
-fun Entity.withIntField(name: String, value: Long?) =
-    Entity(ContentValues(this.entityValues)).also { newEntity ->
-        newEntity.entityValues.put(name, value)
-        newEntity.subValues.addAll(subValues)
-    }
-
-fun Entity.withId(eventId: Long) =
+fun Entity.withEventId(eventId: Long) =
     this.withIntField(Events._ID, eventId)
 
-fun EventAndExceptions.withId(mainEventId: Long) =
+fun EventAndExceptions.withEventId(mainEventId: Long) =
     EventAndExceptions(
-        main = main.withId(mainEventId),
+        main = main.withEventId(mainEventId),
         exceptions = exceptions.map { exception ->
             exception.withIntField(Events.ORIGINAL_ID, mainEventId)
         }
     )
+
+fun assertEventAndExceptionsEqual(expected: EventAndExceptions, actual: EventAndExceptions, onlyFieldsInExpected: Boolean = false) {
+    assertEntitiesEqual(expected.main, actual.main, onlyFieldsInExpected)
+    assertExceptionsEqual(expected.exceptions, actual.exceptions, onlyFieldsInExpected) {
+        it.entityValues.getAsLong(Events.ORIGINAL_INSTANCE_TIME)
+    }
+}
+
 
 fun JtxObjectAndExceptions.withJtxId(mainId: Long) =
     JtxObjectAndExceptions(
         main = main.withIntField(JtxContract.JtxICalObject.ID, mainId),
         exceptions = exceptions
     )
+
+fun assertJtxObjectAndExceptionsEqual(expected: JtxObjectAndExceptions, actual: JtxObjectAndExceptions, onlyFieldsInExpected: Boolean = false) {
+    assertEntitiesEqual(expected.main, actual.main, onlyFieldsInExpected)
+    assertExceptionsEqual(expected.exceptions, actual.exceptions, onlyFieldsInExpected) {
+        it.entityValues.getAsString(JtxContract.JtxICalObject.RECURID)
+    }
+}

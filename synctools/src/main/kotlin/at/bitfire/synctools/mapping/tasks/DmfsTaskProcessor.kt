@@ -8,12 +8,13 @@ import android.content.ContentValues
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.mapping.tasks.handler.AlarmsHandler
+import at.bitfire.synctools.mapping.tasks.handler.CategoriesHandler
 import at.bitfire.synctools.mapping.tasks.handler.ClassificationHandler
 import at.bitfire.synctools.mapping.tasks.handler.ColorHandler
+import at.bitfire.synctools.mapping.tasks.handler.CommentsHandler
 import at.bitfire.synctools.mapping.tasks.handler.CompletedHandler
 import at.bitfire.synctools.mapping.tasks.handler.DescriptionHandler
 import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskFieldHandler
-import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskPropertyHandler
 import at.bitfire.synctools.mapping.tasks.handler.DueHandler
 import at.bitfire.synctools.mapping.tasks.handler.DurationHandler
 import at.bitfire.synctools.mapping.tasks.handler.GeoHandler
@@ -22,16 +23,15 @@ import at.bitfire.synctools.mapping.tasks.handler.OrganizerHandler
 import at.bitfire.synctools.mapping.tasks.handler.PercentCompleteHandler
 import at.bitfire.synctools.mapping.tasks.handler.PriorityHandler
 import at.bitfire.synctools.mapping.tasks.handler.RecurrenceFieldsHandler
+import at.bitfire.synctools.mapping.tasks.handler.RelationsHandler
 import at.bitfire.synctools.mapping.tasks.handler.SequenceHandler
 import at.bitfire.synctools.mapping.tasks.handler.StartTimeHandler
 import at.bitfire.synctools.mapping.tasks.handler.StatusHandler
 import at.bitfire.synctools.mapping.tasks.handler.TitleHandler
 import at.bitfire.synctools.mapping.tasks.handler.UidHandler
+import at.bitfire.synctools.mapping.tasks.handler.UnknownPropertiesHandler
 import at.bitfire.synctools.mapping.tasks.handler.UrlHandler
-import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
-import net.fortuna.ical4j.model.parameter.RelType
-import net.fortuna.ical4j.model.property.RelatedTo
 import org.dmfs.tasks.contract.TaskContract.Properties
 import org.dmfs.tasks.contract.TaskContract.Property.Alarm
 import org.dmfs.tasks.contract.TaskContract.Property.Category
@@ -45,6 +45,7 @@ import java.util.logging.Logger
  * Reads dmfs task provider data rows into a [Task]
  * (former DmfsTask "populate..." methods).
  */
+@Deprecated("Will be dropped with Task data class, use DmfsTaskHandler instead")
 class DmfsTaskProcessor(
     private val taskList: DmfsTaskList
 ) {
@@ -70,8 +71,12 @@ class DmfsTaskProcessor(
         RecurrenceFieldsHandler(),
     )
 
-    private val propertyHandlers: Map<String, DmfsTaskPropertyHandler> = mapOf(
+    private val propertyHandlers: Map<String, DmfsTaskFieldHandler> = mapOf(
         Alarm.CONTENT_ITEM_TYPE to AlarmsHandler(),
+        Category.CONTENT_ITEM_TYPE to CategoriesHandler(),
+        Comment.CONTENT_ITEM_TYPE to CommentsHandler(),
+        Relation.CONTENT_ITEM_TYPE to RelationsHandler(),
+        UnknownProperty.CONTENT_ITEM_TYPE to UnknownPropertiesHandler()
     )
 
     private val logger
@@ -97,41 +102,7 @@ class DmfsTaskProcessor(
             return
         }
 
-        when (type) {
-            Category.CONTENT_ITEM_TYPE ->
-                to.categories += row.getAsString(Category.CATEGORY_NAME)
-            Comment.CONTENT_ITEM_TYPE ->
-                to.comment = row.getAsString(Comment.COMMENT)
-            Relation.CONTENT_ITEM_TYPE ->
-                populateRelatedTo(row, to)
-            UnknownProperty.CONTENT_ITEM_TYPE ->
-                to.unknownProperties += UnknownProperty.fromJsonString(row.getAsString(UNKNOWN_PROPERTY_DATA))
-            else ->
-                logger.warning("Found unknown property of type $type")
-        }
-    }
-
-    private fun populateRelatedTo(row: ContentValues, to: Task) {
-        val uid = row.getAsString(Relation.RELATED_UID)
-        if (uid == null) {
-            logger.warning("Task relation doesn't refer to same task list; can't be synchronized")
-            return
-        }
-
-        to.relatedTo.add(
-            RelatedTo(uid)
-                // add relation type as reltypeparam
-                .add(
-                    when (row.getAsInteger(Relation.RELATED_TYPE)) {
-                        Relation.RELTYPE_CHILD ->
-                            RelType.CHILD
-                        Relation.RELTYPE_SIBLING ->
-                            RelType.SIBLING
-                        else /* Relation.RELTYPE_PARENT, default value */ ->
-                            RelType.PARENT
-                    }
-                )
-        )
+        logger.warning("Found unknown property of type $type")
     }
 
 }

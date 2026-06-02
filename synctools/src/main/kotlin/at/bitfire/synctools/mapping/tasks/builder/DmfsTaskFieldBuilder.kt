@@ -7,6 +7,7 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.Entity
 import at.bitfire.ical4android.Task
 
+@Deprecated("DmfsTaskFieldBuilderVToDo should be used instead")
 interface DmfsTaskFieldBuilder {
 
     /**

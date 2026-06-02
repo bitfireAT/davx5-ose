@@ -8,6 +8,7 @@ import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
+import at.bitfire.synctools.mapping.tasks.VToDoUtil
 import at.bitfire.synctools.test.assertContentValuesEqual
 import net.fortuna.ical4j.model.DateList
 import net.fortuna.ical4j.model.property.DtStart
@@ -15,6 +16,7 @@ import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.RDate
 import net.fortuna.ical4j.model.property.RRule
 import org.dmfs.tasks.contract.TaskContract.Tasks
+import org.junit.Assert.assertNotNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -29,7 +31,7 @@ class RecurrenceFieldsBuilderTest {
     private val builder = RecurrenceFieldsBuilder()
 
     @Test
-    fun `No recurrence fields`() {
+    fun `old No recurrence fields`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task(),
@@ -43,7 +45,7 @@ class RecurrenceFieldsBuilderTest {
     }
 
     @Test
-    fun `RRULE is set`() {
+    fun `old RRULE is set`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task().also {
@@ -59,7 +61,7 @@ class RecurrenceFieldsBuilderTest {
     }
 
     @Test
-    fun `RDATE all-day dates`() {
+    fun `old RDATE all-day dates`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task().also {
@@ -73,7 +75,7 @@ class RecurrenceFieldsBuilderTest {
     }
 
     @Test
-    fun `EXDATE all-day dates`() {
+    fun `old EXDATE all-day dates`() {
         val result = Entity(ContentValues())
         builder.build(
             from = Task().also {
@@ -84,6 +86,84 @@ class RecurrenceFieldsBuilderTest {
         )
         val exdate = result.entityValues.getAsString(Tasks.EXDATE)
         assert(exdate != null) { "EXDATE should be set" }
+    }
+
+    @Test
+    fun `No recurrence fields`() {
+        val result = Entity(ContentValues())
+        builder.build(
+            from = VToDoUtil.build(),
+            to = result
+        )
+        assertContentValuesEqual(contentValuesOf(
+            Tasks.RRULE to null,
+            Tasks.RDATE to null,
+            Tasks.EXDATE to null
+        ), result.entityValues)
+    }
+
+    @Test
+    fun `RRULE is set`() {
+        val result = Entity(ContentValues())
+        builder.build(
+            from = VToDoUtil.build(
+                DtStart(LocalDate.of(2025, 1, 15)),
+                RRule<Temporal>("FREQ=DAILY;COUNT=10")
+            ),
+            to = result
+        )
+        assertContentValuesEqual(contentValuesOf(
+            Tasks.RRULE to "FREQ=DAILY;COUNT=10",
+            Tasks.RDATE to null,
+            Tasks.EXDATE to null
+        ), result.entityValues)
+    }
+
+    @Test
+    fun `RDATE all-day dates`() {
+        val result = Entity(ContentValues())
+        builder.build(
+            from = VToDoUtil.build(
+                DtStart(LocalDate.of(2025, 1, 10)),
+                RDate(DateList(LocalDate.of(2025, 1, 15)))
+            ),
+            to = result
+        )
+        val rdate = result.entityValues.getAsString(Tasks.RDATE)
+        assertNotNull("RDATE should be set", rdate)
+    }
+
+    @Test
+    fun `EXDATE all-day dates`() {
+        val result = Entity(ContentValues())
+        builder.build(
+            from = VToDoUtil.build(
+                DtStart(LocalDate.of(2025, 1, 10)),
+                RRule<Temporal>("FREQ=DAILY;COUNT=10"),
+                ExDate(DateList(LocalDate.of(2025, 1, 15)))
+            ),
+            to = result
+        )
+        val exdate = result.entityValues.getAsString(Tasks.EXDATE)
+        assertNotNull("EXDATE should be set", exdate)
+    }
+
+    @Test
+    fun `RRULE with DATE-TIME DTSTART`() {
+        val result = Entity(ContentValues())
+        val ts = ZonedDateTime.of(2025, 1, 15, 10, 0, 0, 0, ZoneOffset.UTC)
+        builder.build(
+            from = VToDoUtil.build(
+                DtStart(ts),
+                RRule<Temporal>("FREQ=DAILY;COUNT=5")
+            ),
+            to = result
+        )
+        assertContentValuesEqual(contentValuesOf(
+            Tasks.RRULE to "FREQ=DAILY;COUNT=5",
+            Tasks.RDATE to null,
+            Tasks.EXDATE to null
+        ), result.entityValues)
     }
 
 }

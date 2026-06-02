@@ -8,21 +8,36 @@ import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
-import org.dmfs.tasks.contract.TaskContract.Property.Comment
+import net.fortuna.ical4j.model.Property
+import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.Comment
+import org.dmfs.tasks.contract.TaskContract.Property.Comment as DmfsComment
 
 class CommentsBuilder(
     private val taskList: DmfsTaskList
-) : DmfsTaskFieldBuilder {
+) : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
 
     override fun build(from: Task, to: Entity) {
         val comment = from.comment ?: return
         to.addSubValue(
             taskList.tasksPropertiesUri(),
             contentValuesOf(
-                Comment.MIMETYPE to Comment.CONTENT_ITEM_TYPE,
-                Comment.COMMENT to comment
+                DmfsComment.MIMETYPE to DmfsComment.CONTENT_ITEM_TYPE,
+                DmfsComment.COMMENT to comment
             )
         )
+    }
+
+    override fun build(from: VToDo, to: Entity) {
+        for (comment in from.getProperties<Comment>(Property.COMMENT)) {
+            to.addSubValue(
+                taskList.tasksPropertiesUri(),
+                contentValuesOf(
+                    DmfsComment.MIMETYPE to DmfsComment.CONTENT_ITEM_TYPE,
+                    DmfsComment.COMMENT to comment.value
+                )
+            )
+        }
     }
 
 }
