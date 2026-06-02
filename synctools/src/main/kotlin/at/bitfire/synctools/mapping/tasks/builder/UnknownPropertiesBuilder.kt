@@ -67,7 +67,7 @@ class UnknownPropertiesBuilder(
         }
     }
 
-    internal fun unknownProperties(from: VToDo): List<Property> =
+    private fun unknownProperties(from: VToDo): List<Property> =
         from.propertyList.all.filterNot {
             KNOWN_PROPERTY_NAMES.contains(it.name.uppercase())
         }
