@@ -4,6 +4,7 @@
 
 package at.bitfire.synctools.icalendar
 
+import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.synctools.BuildConfig
 import at.bitfire.synctools.exception.InvalidICalendarException
 import net.fortuna.ical4j.model.Component
@@ -15,6 +16,7 @@ import net.fortuna.ical4j.model.PropertyContainer
 import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VEvent
+import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.DtEnd
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Due
@@ -62,6 +64,19 @@ fun <T: Temporal> CalendarComponent.due(): Due<T>? {
 
 fun <T: Temporal> VEvent.requireDtStart(): DtStart<T> =
     getProperty<DtStart<T>>(Property.DTSTART).getOrNull() ?: throw InvalidICalendarException("Missing DTSTART in VEVENT")
+
+/**
+ * Whether this VTODO represents an all-day task.
+ *
+ * All-day tasks use DATE values (not DATE-TIME). Returns `true` if:
+ * - DTSTART is a DATE value, or
+ * - DTSTART is absent and DUE is a DATE value, or
+ * - both DTSTART and DUE are absent.
+ */
+fun VToDo.isAllDay(): Boolean =
+    dtStart<Temporal>()?.let { DateUtils.isDate(it) }
+        ?: due<Temporal>()?.let { DateUtils.isDate(it) }
+        ?: true
 
 operator fun PropertyContainer.plusAssign(property: Property) {
     add<PropertyContainer>(property)

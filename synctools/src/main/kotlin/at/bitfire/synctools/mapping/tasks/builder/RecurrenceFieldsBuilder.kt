@@ -6,11 +6,9 @@ package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
 import at.bitfire.ical4android.Task
-import at.bitfire.ical4android.util.DateUtils
+import at.bitfire.synctools.icalendar.isAllDay
 import at.bitfire.synctools.util.AndroidTimeUtils
 import net.fortuna.ical4j.model.component.VToDo
-import net.fortuna.ical4j.model.property.DtStart
-import net.fortuna.ical4j.model.property.Due
 import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.RDate
 import net.fortuna.ical4j.model.property.RRule
@@ -43,11 +41,7 @@ class RecurrenceFieldsBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo 
     }
 
     override fun build(from: VToDo, to: Entity) {
-        val dtStart = from.getProperty<DtStart<*>>(DtStart.DTSTART).getOrNull()
-        val due = from.getProperty<Due<*>>(Due.DUE).getOrNull()
-        val allDay = dtStart?.let { DateUtils.isDate(it) }
-            ?: due?.let { DateUtils.isDate(it) }
-            ?: true
+        val allDay = from.isAllDay()
         val tz = if (allDay) null else allDayBuilder.getTimeZone(from)
 
         val rRule = from.getProperty<RRule<*>>(RRule.RRULE).getOrNull()

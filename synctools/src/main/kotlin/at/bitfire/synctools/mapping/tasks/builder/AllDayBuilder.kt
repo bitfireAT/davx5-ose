@@ -6,7 +6,7 @@ package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
 import at.bitfire.ical4android.Task
-import at.bitfire.ical4android.util.DateUtils
+import at.bitfire.synctools.icalendar.isAllDay
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.TimeZone
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
@@ -35,11 +35,7 @@ class AllDayBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
     }
 
     override fun build(from: VToDo, to: Entity) {
-        val dtStart = from.getProperty<DtStart<*>>(DtStart.DTSTART).getOrNull()
-        val due = from.getProperty<Due<*>>(Due.DUE).getOrNull()
-        val allDay = dtStart?.let { DateUtils.isDate(it) }
-            ?: due?.let { DateUtils.isDate(it) }
-            ?: true
+        val allDay = from.isAllDay()
         if (allDay) {
             to.entityValues.put(Tasks.IS_ALLDAY, 1)
             to.entityValues.putNull(Tasks.TZ)
