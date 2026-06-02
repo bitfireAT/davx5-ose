@@ -10,6 +10,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.COLUMN_ETAG
 import at.bitfire.synctools.test.assertContentValuesEqual
+import net.fortuna.ical4j.model.component.VToDo
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -18,7 +19,7 @@ import org.robolectric.RobolectricTestRunner
 class ETagBuilderTest {
 
     @Test
-    fun `ETag is set`() {
+    fun `old ETag is set`() {
         val result = Entity(ContentValues())
         ETagBuilder(eTag = "some-etag").build(
             from = Task(),
@@ -30,10 +31,34 @@ class ETagBuilderTest {
     }
 
     @Test
-    fun `ETag is null`() {
+    fun `old ETag is null`() {
         val result = Entity(ContentValues())
         ETagBuilder(eTag = null).build(
             from = Task(),
+            to = result
+        )
+        assertContentValuesEqual(contentValuesOf(
+            COLUMN_ETAG to null
+        ), result.entityValues)
+    }
+
+    @Test
+    fun `ETag is set`() {
+        val result = Entity(ContentValues())
+        ETagBuilder(eTag = "some-etag").build(
+            from = VToDo(),
+            to = result
+        )
+        assertContentValuesEqual(contentValuesOf(
+            COLUMN_ETAG to "some-etag"
+        ), result.entityValues)
+    }
+
+    @Test
+    fun `ETag is null`() {
+        val result = Entity(ContentValues())
+        ETagBuilder(eTag = null).build(
+            from = VToDo(),
             to = result
         )
         assertContentValuesEqual(contentValuesOf(
