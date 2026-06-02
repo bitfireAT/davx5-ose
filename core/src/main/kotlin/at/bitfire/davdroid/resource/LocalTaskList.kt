@@ -51,8 +51,12 @@ class LocalTaskList (
             }
         }
         set(state) {
-            val serializedState = state.toString()
-            dmfsTaskList.update(contentValuesOf(COLUMN_TASKLIST_SYNC_STATE to serializedState))
+            val serializedState = state?.toString()     // don't call "null".toString()
+            dmfsTaskList.update(
+                contentValuesOf(
+                    COLUMN_TASKLIST_SYNC_STATE to serializedState
+                )
+            )
         }
 
 

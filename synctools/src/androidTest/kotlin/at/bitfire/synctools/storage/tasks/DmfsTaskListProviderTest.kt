@@ -94,12 +94,12 @@ class DmfsTaskListProviderTest(providerName: TaskProvider.ProviderName) :
 
         try {
             // Test finding existing task list
-            val taskList = dmfsTaskListProvider.findFirstTaskList(
+            val found = dmfsTaskListProvider.findFirstTaskList(
                 "${TaskLists.OWNER}=?",
                 arrayOf("first-test@example.com")
             )
-            assertNotNull("Should find task list", taskList)
-            assertEquals("First Test List", taskList?.name)
+            assertNotNull("Should find task list", found)
+            assertEquals("First Test List", found?.name)
 
             // Test not finding anything
             val notFound = dmfsTaskListProvider.findFirstTaskList(
