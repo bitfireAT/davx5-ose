@@ -6,11 +6,16 @@ package at.bitfire.synctools.util
 
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
+import at.bitfire.synctools.icalendar.requireDtStart
 import at.bitfire.synctools.util.AlarmTriggerCalculator.alarmTriggerToMinutes
+import net.fortuna.ical4j.data.CalendarBuilder
+import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.Property.TRIGGER
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VAlarm
+import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.parameter.Related
+import net.fortuna.ical4j.model.property.DateProperty
 import net.fortuna.ical4j.model.property.DtEnd
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Due
@@ -18,7 +23,10 @@ import net.fortuna.ical4j.model.property.Duration
 import net.fortuna.ical4j.model.property.Trigger
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.StringReader
+import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -212,6 +220,39 @@ class AlarmTriggerCalculatorTest {
             refStart = DtStart(currentTime),
             refEnd = null,
             allowRelEnd = true
+        )!!
+
+        assertEquals(Related.START, ref)
+        assertEquals(1, min)
+    }
+
+    @Test
+    fun `trigger with floating DATE-TIME value parsed in relaxed mode`() {
+        val event = CalendarBuilder().build(
+            StringReader(
+                "BEGIN:VCALENDAR\n" +
+                        "VERSION:2.0\n" +
+                        "BEGIN:VEVENT\n" +
+                        "UID:test-uid@example.com\n" +
+                        "DTSTART:20260602T120000\n" +
+                        "BEGIN:VALARM\n" +
+                        "ACTION:DISPLAY\n" +
+                        "TRIGGER;VALUE=DATE-TIME:20260602T115831\n" +
+                        "END:VALARM\n" +
+                        "END:VEVENT\n" +
+                        "END:VCALENDAR"
+            )
+        ).getComponent<VEvent>(Component.VEVENT).get()
+        val alarm = event.alarms.first()
+        val triggerDate = (alarm.getRequiredProperty<Trigger>(TRIGGER) as DateProperty<*>).date
+
+        assertTrue(triggerDate is LocalDateTime)
+
+        val (ref, min) = alarmTriggerToMinutes(
+            alarm = alarm,
+            refStart = event.requireDtStart<Temporal>(),
+            refEnd = null,
+            allowRelEnd = false
         )!!
 
         assertEquals(Related.START, ref)
