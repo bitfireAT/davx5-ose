@@ -34,7 +34,7 @@ class DmfsRecurringTaskList(
     val taskList: DmfsTaskList
 ) {
 
-    val logger: Logger
+    private val logger: Logger
         get() = Logger.getLogger(javaClass.name)
 
     /**

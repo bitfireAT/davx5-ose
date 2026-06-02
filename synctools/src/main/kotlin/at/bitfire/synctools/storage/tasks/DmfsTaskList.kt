@@ -524,60 +524,7 @@ class DmfsTaskList(
     }
 
 
-    // shortcuts to upper level
-
-    /** Calls [DmfsTaskListProvider.deleteTaskList] for this task list **/
-    fun delete(): Boolean = provider.deleteTaskList(id)
-
-    /**
-     * Calls [DmfsTaskListProvider.updateTaskList] for this task list.
-     *
-     * **Attention**: Does not update this object with the new values!
-     */
-    fun update(values: ContentValues): Int = provider.updateTaskList(id,values)
-
-
-    // helpers
-
-    val account
-        get() = provider.account
-
-    val client
-        get() = provider.client
-
-    fun tasksUri(loadProperties: Boolean = false): Uri {
-        val uri = Tasks.getContentUri(providerName.authority).asSyncAdapter(account)
-        return if (loadProperties)
-            uri.buildUpon()
-                .appendQueryParameter(TaskContract.LOAD_PROPERTIES, "1")
-                .build()
-        else
-            uri
-    }
-
-    fun taskUri(id: Long, loadProperties: Boolean = false): Uri =
-        ContentUris.withAppendedId(tasksUri(loadProperties), id)
-
-    fun tasksPropertiesUri(asSyncAdapter: Boolean = false): Uri {
-        val uri = TaskContract.Properties.getContentUri(providerName.authority)
-        return if (asSyncAdapter)
-            uri.asSyncAdapter(account)
-        else
-            uri
-    }
-
-    /**
-     * Restricts a given selection/where clause to this task list ID.
-     *
-     * @param where      selection
-     * @param whereArgs  arguments for selection
-     * @return           restricted selection and arguments
-     */
-    private fun whereWithTaskListId(where: String?, whereArgs: Array<String>?): Pair<String, Array<String>> {
-        val protectedWhere = "(${where ?: "1"}) AND ${Tasks.LIST_ID}=?"
-        val protectedWhereArgs = (whereArgs ?: arrayOf()) + id.toString()
-        return Pair(protectedWhere, protectedWhereArgs)
-    }
+    // other operations
 
     /**
      * When tasks are added or updated, they may refer to related tasks by UID ([TaskContract.Property.Relation.RELATED_UID]).
@@ -625,6 +572,62 @@ class DmfsTaskList(
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't touch ${providerName.authority} task relations", e)
         }
+    }
+
+
+    // shortcuts to upper level
+
+    /** Calls [DmfsTaskListProvider.deleteTaskList] for this task list **/
+    fun delete(): Boolean = provider.deleteTaskList(id)
+
+    /**
+     * Calls [DmfsTaskListProvider.updateTaskList] for this task list.
+     *
+     * **Attention**: Does not update this object with the new values!
+     */
+    fun update(values: ContentValues): Int = provider.updateTaskList(id, values)
+
+
+    // helpers
+
+    val account
+        get() = provider.account
+
+    val client
+        get() = provider.client
+
+    internal fun tasksUri(loadProperties: Boolean = false): Uri {
+        val uri = Tasks.getContentUri(providerName.authority).asSyncAdapter(account)
+        return if (loadProperties)
+            uri.buildUpon()
+                .appendQueryParameter(TaskContract.LOAD_PROPERTIES, "1")
+                .build()
+        else
+            uri
+    }
+
+    internal fun taskUri(id: Long, loadProperties: Boolean = false): Uri =
+        ContentUris.withAppendedId(tasksUri(loadProperties), id)
+
+    internal fun tasksPropertiesUri(asSyncAdapter: Boolean = false): Uri {
+        val uri = TaskContract.Properties.getContentUri(providerName.authority)
+        return if (asSyncAdapter)
+            uri.asSyncAdapter(account)
+        else
+            uri
+    }
+
+    /**
+     * Restricts a given selection/where clause to this task list ID.
+     *
+     * @param where      selection
+     * @param whereArgs  arguments for selection
+     * @return           restricted selection and arguments
+     */
+    private fun whereWithTaskListId(where: String?, whereArgs: Array<String>?): Pair<String, Array<String>> {
+        val protectedWhere = "(${where ?: "1"}) AND ${Tasks.LIST_ID}=?"
+        val protectedWhereArgs = (whereArgs ?: arrayOf()) + id.toString()
+        return Pair(protectedWhere, protectedWhereArgs)
     }
 
 }

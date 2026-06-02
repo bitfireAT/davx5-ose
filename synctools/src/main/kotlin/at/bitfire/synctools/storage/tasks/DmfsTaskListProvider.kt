@@ -170,10 +170,10 @@ class DmfsTaskListProvider(
 
     // helpers
 
-    val taskListsUri
+    internal val taskListsUri
         get() = TaskContract.TaskLists.getContentUri(providerName.authority).asSyncAdapter(account)
 
-    fun taskListUri(id: Long) =
+    internal fun taskListUri(id: Long) =
         ContentUris.withAppendedId(taskListsUri, id)
 
 }
