@@ -8,7 +8,6 @@ import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
-import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Color
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -18,7 +17,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.util.Optional
-import java.util.PropertyResourceBundle
 
 @RunWith(RobolectricTestRunner::class)
 class ColorHandlerTest {
