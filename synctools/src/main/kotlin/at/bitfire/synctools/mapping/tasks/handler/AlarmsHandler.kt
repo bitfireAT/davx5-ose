@@ -18,13 +18,14 @@ import net.fortuna.ical4j.model.property.Description
 import net.fortuna.ical4j.model.property.Summary
 import net.fortuna.ical4j.model.property.Trigger
 import org.dmfs.tasks.contract.TaskContract.Property.Alarm
+import java.time.Duration
 import kotlin.jvm.optionals.getOrNull
 
 class AlarmsHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
 
     override fun process(from: ContentValues, to: Task) {
         val props = propertyListOf(
-            Trigger(java.time.Duration.ofMinutes(-from.getAsLong(Alarm.MINUTES_BEFORE))).let {
+            Trigger(Duration.ofMinutes(-from.getAsLong(Alarm.MINUTES_BEFORE))).let {
                 when (from.getAsInteger(Alarm.REFERENCE)) {
                     Alarm.ALARM_REFERENCE_START_DATE -> it.add(Related.START)
                     Alarm.ALARM_REFERENCE_DUE_DATE -> it.add(Related.END)
@@ -48,7 +49,7 @@ class AlarmsHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
     override fun process(from: Entity, main: Entity, to: VToDo) {
         val summary = to.getProperty<Summary>(Property.SUMMARY).getOrNull()?.value
         val props = propertyListOf(
-            Trigger(java.time.Duration.ofMinutes(-from.entityValues.getAsLong(Alarm.MINUTES_BEFORE))).let {
+            Trigger(Duration.ofMinutes(-from.entityValues.getAsLong(Alarm.MINUTES_BEFORE))).let {
                 when (from.entityValues.getAsInteger(Alarm.REFERENCE)) {
                     Alarm.ALARM_REFERENCE_START_DATE -> it.add(Related.START)
                     Alarm.ALARM_REFERENCE_DUE_DATE -> it.add(Related.END)
