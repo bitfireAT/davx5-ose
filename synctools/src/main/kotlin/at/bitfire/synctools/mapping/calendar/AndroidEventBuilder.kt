@@ -92,29 +92,15 @@ class AndroidEventBuilder(
      * Builds an [EventAndExceptions] object from the given [AssociatedEvents].
      *
      * If the main event is not available, it will be created from the exceptions using [createMainFromExceptions].
-     * If the main event has an invalid timezone definition, but there are exceptions, an empty event with the same UID will be created instead.
-     * Exceptions with invalid timezone definitions will be skipped.
      *
      * @param events The associated events containing the main event and exceptions.
      * @return An [EventAndExceptions] object containing the built main event and exceptions.
-     * @throws InvalidTimeZoneDefinitionException If the main event has an invalid timezone definition and there are no exceptions.
+     * @throws InvalidTimeZoneDefinitionException If an event has an invalid timezone definition: unknown `TZID` without a matching `VTIMEZONE`.
      */
     fun build(events: AssociatedEvents): EventAndExceptions {
         val mainVEvent = events.main ?: createMainFromExceptions(events.exceptions)
         return EventAndExceptions(
-            main = try {
-                buildEvent(from = mainVEvent, main = mainVEvent)
-            } catch (e: InvalidTimeZoneDefinitionException) {
-                if (events.exceptions.isNotEmpty()) {
-                    // If the main event has an invalid timezone definition, we cannot build it. In this case, we just create an empty event with the same UID and hope that the exceptions can be built.
-                    Entity(ContentValues()).apply {
-                        // We need to set at least the UID for the main event, otherwise Android will not be able to match exceptions to it.
-                        UidBuilder().build(from = mainVEvent, main = mainVEvent, to = this)
-                    }
-                } else {
-                    throw e
-                }
-            },
+            main = buildEvent(from = mainVEvent, main = mainVEvent),
             exceptions = events.exceptions.mapNotNull { exception ->
                 try {
                     buildEvent(from = exception, main = mainVEvent)

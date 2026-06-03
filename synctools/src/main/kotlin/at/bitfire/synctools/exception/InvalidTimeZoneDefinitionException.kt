@@ -4,4 +4,4 @@
 
 package at.bitfire.synctools.exception
 
-class InvalidTimeZoneDefinitionException(message: String, cause: Throwable? = null): IllegalArgumentException(message, cause)
+class InvalidTimeZoneDefinitionException(message: String, cause: Throwable): InvalidResourceException(message, cause)
