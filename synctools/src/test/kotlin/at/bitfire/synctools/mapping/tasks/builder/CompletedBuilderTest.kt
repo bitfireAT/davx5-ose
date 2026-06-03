@@ -20,7 +20,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
+import java.time.ZoneOffset
 
 @RunWith(RobolectricTestRunner::class)
 class CompletedBuilderTest {
@@ -66,9 +66,9 @@ class CompletedBuilderTest {
             from = Task(completedAt = Completed("20240601T120000")),
             to = result
         )
-        // floating date-time is interpreted in system default timezone
+        // floating date-time is interpreted as UTC date-time
         val expectedTimestamp = LocalDateTime.of(2024, 6, 1, 12, 0, 0)
-            .atZone(ZoneId.systemDefault()).toInstant().toTimestamp()
+            .toInstant(ZoneOffset.UTC).toTimestamp()
         assertContentValuesEqual(contentValuesOf(
             Tasks.COMPLETED to expectedTimestamp,
             Tasks.COMPLETED_IS_ALLDAY to 0
@@ -111,9 +111,9 @@ class CompletedBuilderTest {
             from = VToDoUtil.build(Completed("20240601T120000")),
             to = result
         )
-        // floating date-time is interpreted in system default timezone
+        // floating date-time is interpreted as UTC date-time
         val expectedTimestamp = LocalDateTime.of(2024, 6, 1, 12, 0, 0)
-            .atZone(ZoneId.systemDefault()).toInstant().toTimestamp()
+            .toInstant(ZoneOffset.UTC).toTimestamp()
         assertContentValuesEqual(contentValuesOf(
             Tasks.COMPLETED to expectedTimestamp,
             Tasks.COMPLETED_IS_ALLDAY to 0
