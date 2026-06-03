@@ -5,6 +5,7 @@
 package at.bitfire.synctools.icalendar
 
 import at.bitfire.DefaultTimezoneRule
+import at.bitfire.synctools.exception.InvalidTimeZoneDefinitionException
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.Component
@@ -20,6 +21,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import java.io.StringReader
+import java.time.DateTimeException
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -27,6 +29,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
+import kotlin.test.assertFailsWith
 
 class DatePropertyTzMapperTest {
 
@@ -122,7 +125,7 @@ class DatePropertyTzMapperTest {
 
         val timestamp = Instant.ofEpochMilli(
             /* 20250828T130000Z */ 1756386000000
-            /* offset -0300 */ + 3*3600000
+                    /* offset -0300 */ + 3*3600000
         )
         assertEquals(timestamp, ical4jDate.toInstant())
 
@@ -135,6 +138,27 @@ class DatePropertyTzMapperTest {
             timestamp,
             ZonedDateTime.of(2025, 8, 28, 13, 0, 0, 0, tzRule.defaultZoneId).toInstant()
         )
+    }
+
+    @Test
+    fun `normalizedDate with TZID unknown and without VTIMEZONE fails`() {
+        val cal = CalendarBuilder().build(StringReader("BEGIN:VCALENDAR\r\n" +
+                "VERSION:2.0\n" +
+                "BEGIN:VEVENT\n" +
+                "SUMMARY:Test Timezones\n" +
+                "DTSTART;TZID=Etc/ABC:20250828T130000\n" +
+                "END:VEVENT\n" +
+                "END:VCALENDAR"
+        ))
+        val vEvent = cal.getComponent<VEvent>(Component.VEVENT).get()
+        val dtStart = vEvent.requireDtStart<Temporal>()
+
+        assertFailsWith<DateTimeException>("Expected date call to fail with unknown timezone") {
+            dtStart.date
+        }
+        assertFailsWith<InvalidTimeZoneDefinitionException>("Expected normalizedDate call to fail with unknown timezone") {
+            dtStart.normalizedDate()
+        }
     }
 
     @Test

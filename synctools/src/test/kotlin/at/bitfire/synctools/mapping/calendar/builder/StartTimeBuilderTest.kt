@@ -11,15 +11,20 @@ import at.bitfire.DefaultTimezoneRule
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
 import at.bitfire.synctools.exception.InvalidICalendarException
+import at.bitfire.synctools.exception.InvalidTimeZoneDefinitionException
 import at.bitfire.synctools.icalendar.propertyListOf
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
+import net.fortuna.ical4j.model.parameter.TzId
 import net.fortuna.ical4j.model.property.DtStart
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.time.temporal.Temporal
+import kotlin.test.assertFailsWith
 
 @RunWith(RobolectricTestRunner::class)
 class StartTimeBuilderTest {
@@ -81,6 +86,17 @@ class StartTimeBuilderTest {
         builder.build(event, event, result)
         assertEquals(1760050923000, result.entityValues.get(Events.DTSTART))
         assertEquals("Europe/Vienna", result.entityValues.get(Events.EVENT_TIMEZONE))
+    }
+
+    @Test
+    fun `Unknown timezone should fail`() {
+        val result = Entity(ContentValues())
+        val event = VEvent(propertyListOf(
+            DtStart<Temporal>(ParameterList(listOf(TzId("Etc/ABC"))), "20251010T010203")
+        ))
+        assertFailsWith<InvalidTimeZoneDefinitionException>("Expected build call to fail with unknown timezone") {
+            builder.build(event, event, result)
+        }
     }
 
 }
