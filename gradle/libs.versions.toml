@@ -101,7 +101,9 @@ conscrypt = { module = "org.conscrypt:conscrypt-android", version.ref = "conscry
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
 ezvcard = { module = "com.googlecode.ez-vcard:ez-vcard", version.ref = "ezvcard" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
-ical4j = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4j" }
+ical4j-upstream = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4j" }
+#TODO: Switch back to org.mnode.ical4j:ical4j once 4.2.6 has been released
+ical4j = { module = "com.github.bitfireAT:ical4j", version = "e8e7481c63" }
 hilt-android-base = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }

@@ -7,10 +7,7 @@ package at.bitfire.ical4android
 import at.bitfire.DefaultTimezoneRule
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
-import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
-import net.fortuna.ical4j.model.parameter.Value
-import net.fortuna.ical4j.model.property.Completed
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Due
 import net.fortuna.ical4j.model.property.Duration
@@ -22,7 +19,6 @@ import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
-
 import java.time.Duration as JavaDuration
 import java.time.Period as JavaPeriod
 
@@ -216,19 +212,4 @@ class TaskTest {
 
         assertNull(result)
     }
-
-    /**
-     * @see at.bitfire.synctools.icalendar.Ical4jTest.`COMPLETED with date read value`
-     */
-    @Test
-    fun `toString with COMPLETED of DATE value`() {
-        val task = Task(
-            completedAt = Completed(
-                ParameterList(listOf(Value.DATE)),
-                "20250815"
-            )
-        )
-        assertEquals("Task.toString() failed: java.time.temporal.UnsupportedTemporalTypeException: Unsupported field: HourOfDay", task.toString())
-    }
-
 }

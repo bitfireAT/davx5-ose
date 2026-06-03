@@ -10,8 +10,8 @@ import at.bitfire.synctools.icalendar.Css3Color
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
-import at.bitfire.synctools.util.TemporalAdapterWorkaround
 import net.fortuna.ical4j.model.Component
+import net.fortuna.ical4j.model.TemporalAdapter
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Categories
 import net.fortuna.ical4j.model.property.Clazz
@@ -135,7 +135,7 @@ class TaskReader {
 
             val newStartDate = t.dtStart!!.date
             val newDueDate = t.due!!.date
-            if (TemporalAdapterWorkaround.isAfter(newStartDate, newDueDate)) {
+            if (TemporalAdapter.isAfter(newStartDate, newDueDate)) {
                 logger.warning("Found invalid DUE <= DTSTART; dropping DTSTART")
                 t.dtStart = null
             }

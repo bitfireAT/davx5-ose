@@ -4,9 +4,9 @@
 
 package at.bitfire.synctools.icalendar
 
-import at.bitfire.synctools.util.TemporalAdapterWorkaround
 import net.fortuna.ical4j.model.ComponentList
 import net.fortuna.ical4j.model.Property
+import net.fortuna.ical4j.model.TemporalAdapter
 import net.fortuna.ical4j.model.component.Daylight
 import net.fortuna.ical4j.model.component.Observance
 import net.fortuna.ical4j.model.component.Standard
@@ -69,10 +69,10 @@ class VTimeZoneMinifier {
             else
                 when (observance) {
                     is Standard ->
-                        if (latestStandard == null || TemporalAdapterWorkaround.isAfter(latest, latestStandard.first))
+                        if (latestStandard == null || TemporalAdapter.isAfter(latest, latestStandard.first))
                             latestStandard = Pair(latest, observance)
                     is Daylight ->
-                        if (latestDaylight == null || TemporalAdapterWorkaround.isAfter(latest, latestDaylight.first))
+                        if (latestDaylight == null || TemporalAdapter.isAfter(latest, latestDaylight.first))
                             latestDaylight = Pair(latest, observance)
                 }
         }
@@ -108,7 +108,7 @@ class VTimeZoneMinifier {
             }
             // no RRULE, check whether there's an RDATE in the future
             for (rDate in daylight.getProperties<RDate<Temporal>>(Property.RDATE)) {
-                if (rDate.dates.any { !TemporalAdapterWorkaround.isBefore(it, startLocal) }) {
+                if (rDate.dates.any { !TemporalAdapter.isBefore(it, startLocal) }) {
                     // RDATE in the future
                     keep += daylight
                     return@let
