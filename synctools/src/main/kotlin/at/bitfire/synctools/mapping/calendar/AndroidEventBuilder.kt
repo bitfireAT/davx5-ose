@@ -101,12 +101,8 @@ class AndroidEventBuilder(
         val mainVEvent = events.main ?: createMainFromExceptions(events.exceptions)
         return EventAndExceptions(
             main = buildEvent(from = mainVEvent, main = mainVEvent),
-            exceptions = events.exceptions.mapNotNull { exception ->
-                try {
-                    buildEvent(from = exception, main = mainVEvent)
-                } catch (_: InvalidTimeZoneDefinitionException) {
-                    null
-                }
+            exceptions = events.exceptions.map { exception ->
+                buildEvent(from = exception, main = mainVEvent)
             }
         )
     }
