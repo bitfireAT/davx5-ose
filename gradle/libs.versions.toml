@@ -33,19 +33,19 @@ hilt = "2.59.2"
 # keep in sync with ksp version
 kotlin = "2.3.21"
 kotlinx-coroutines = "1.11.0"
-ksp = "2.3.8"
+ksp = "2.3.9"
 ktor = "3.5.0"
 # Newer versions of aboutLibraries don't seem to work with includeBuild("../synctools").
 # When using includeBuild, temporarily use 14.0.1.
 mikepenz-aboutLibraries = "14.2.1"
-mockk = "1.14.9"
+mockk = "1.14.11"
 okhttp = "5.3.2"
 openid-appauth = "0.11.1"
 robolectric = "4.16.1"
 room = "2.8.4"
 slf4j = "2.0.18"
 spotbugs = "4.9.8"
-unifiedpush = "3.3.2"
+unifiedpush = "3.3.3"
 unifiedpush-fcm = "3.0.0"
 
 # Other libraries, especially ical4j, require Apache Commons. Some recent versions of Apache
@@ -101,7 +101,9 @@ conscrypt = { module = "org.conscrypt:conscrypt-android", version.ref = "conscry
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
 ezvcard = { module = "com.googlecode.ez-vcard:ez-vcard", version.ref = "ezvcard" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
-ical4j = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4j" }
+ical4j-upstream = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4j" }
+#TODO: Switch back to org.mnode.ical4j:ical4j once 4.2.6 has been released
+ical4j = { module = "com.github.bitfireAT:ical4j", version = "e8e7481c63" }
 hilt-android-base = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
