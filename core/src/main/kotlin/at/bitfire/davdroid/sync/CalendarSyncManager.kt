@@ -29,6 +29,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidICalendarException
+import at.bitfire.synctools.exception.InvalidTimeZoneDefinitionException
 import at.bitfire.synctools.icalendar.CalendarUidSplitter
 import at.bitfire.synctools.icalendar.ICalendarGenerator
 import at.bitfire.synctools.icalendar.ICalendarParser
@@ -303,14 +304,20 @@ class CalendarSyncManager @AssistedInject constructor(
         // Event: main VEVENT and potentially attached exceptions (further VEVENTs with RECURRENCE-ID)
         val event = uidsAndEvents.values.first()
 
-        // map AssociatedEvents (VEVENTs) to EventAndExceptions (Android events)
-        val androidEvent = AndroidEventBuilder(
-            calendar = localCollection.androidCalendar,
-            syncId = fileName,
-            eTag = eTag,
-            scheduleTag = scheduleTag,
-            flags = LocalResource.FLAG_REMOTELY_PRESENT
-        ).build(event)
+        val androidEvent = try {
+            // map AssociatedEvents (VEVENTs) to EventAndExceptions (Android events)
+            AndroidEventBuilder(
+                calendar = localCollection.androidCalendar,
+                syncId = fileName,
+                eTag = eTag,
+                scheduleTag = scheduleTag,
+                flags = LocalResource.FLAG_REMOTELY_PRESENT
+            ).build(event)
+        } catch (e: InvalidTimeZoneDefinitionException) {
+            logger.log(Level.WARNING, "Received event with invalid timezone definition, ignoring", e)
+            notifyInvalidResource(e, fileName)
+            return
+        }
 
         // add default reminder (if desired)
         accountSettings.getDefaultAlarm()?.let { minBefore ->
