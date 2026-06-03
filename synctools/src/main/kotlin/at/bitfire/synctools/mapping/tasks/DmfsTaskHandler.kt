@@ -8,6 +8,7 @@ import android.content.Entity
 import at.bitfire.synctools.icalendar.AssociatedTasks
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import net.fortuna.ical4j.model.component.VToDo
+import org.dmfs.tasks.contract.TaskContract
 
 class DmfsTaskHandler(
     // probably some mapping context here, see AndroidEventHandler
@@ -40,3 +41,6 @@ class DmfsTaskHandler(
     }
 
 }
+
+internal val Entity.NamedContentValues.mimeType: String?
+    get() = values.getAsString(TaskContract.Properties.MIMETYPE)
