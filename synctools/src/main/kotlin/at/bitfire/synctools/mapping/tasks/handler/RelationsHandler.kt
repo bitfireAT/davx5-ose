@@ -53,7 +53,7 @@ class RelationsHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
     private fun processRelated(values: ContentValues, to: VToDo) {
         val uid = values.getAsString(Relation.RELATED_UID)
         if (uid == null) {
-            logger.warning("Task relation doesn't refer to same task list; can't be synchronized")
+            logger.warning("Task relation is missing RELATED_UID; skipping")
             return
         }
 

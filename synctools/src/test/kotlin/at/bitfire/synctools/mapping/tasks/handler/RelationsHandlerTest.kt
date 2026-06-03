@@ -14,7 +14,6 @@ import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.parameter.RelType
-import net.fortuna.ical4j.model.property.Priority
 import net.fortuna.ical4j.model.property.RelatedTo
 import org.dmfs.tasks.contract.TaskContract.Property.Relation
 import org.junit.Assert.assertEquals
@@ -120,7 +119,7 @@ class RelationsHandlerTest {
 
         handler.process(from = input, main = input, to = task)
 
-        assertTrue(task.getProperties<RelatedTo>(Priority.RELATED_TO).isEmpty())
+        assertTrue(task.getProperties<RelatedTo>(Property.RELATED_TO).isEmpty())
     }
 
     @Test
