@@ -15,7 +15,7 @@ import net.fortuna.ical4j.model.property.DateProperty
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Trigger
 import java.time.Duration
-import java.time.temporal.Temporal
+import java.time.Instant
 import java.time.temporal.TemporalAmount
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -53,7 +53,7 @@ object AlarmTriggerCalculator {
 
         val triggerRelated = trigger.getParameter<Related>(Parameter.RELATED).getOrNull() ?: Related.START
         val triggerDuration = trigger.duration
-        val triggerTime: Temporal? = trigger.date   // getDate() dynamically casts → we take a generic Temporal to avoid casting
+        val triggerTime: Instant? = trigger.date    // Trigger is a DateProperty<Instant>
 
         return if (triggerDuration != null) {
             triggerDurationToMinutes(
@@ -137,13 +137,13 @@ object AlarmTriggerCalculator {
         return Pair(Related.START, minutes)
     }
 
-    // TRIGGER value is a DATE-TIME, calculate minutes from start time
+    // TRIGGER value is a DATE-TIME (UTC), calculate minutes from start time
     private fun triggerTimeToMinutes(
-        triggerTime: Temporal,
+        triggerTime: Instant,
         refStart: DtStart<*>
     ): Pair<Related, Int> {
         val start = refStart.date.toInstant()
-        val minutes = Duration.between(triggerTime.toInstant(), start).toMinutes().toInt()
+        val minutes = Duration.between(triggerTime, start).toMinutes().toInt()
 
         return Pair(Related.START, minutes)
     }
