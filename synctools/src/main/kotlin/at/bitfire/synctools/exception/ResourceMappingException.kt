@@ -5,12 +5,12 @@
 package at.bitfire.synctools.exception
 
 /**
- * Thrown when an iCalendar property responds with an unknown timezone.
+ * Thrown when an iCalendar property or resource mapping failed.
  * For example: `DTSTART` with `TZID=Unknown/Timezone` and no matching `VTIMEZONE` definition in the calendar.
  */
-class InvalidTimeZoneDefinitionException: InvalidResourceException {
+class ResourceMappingException : InvalidResourceException {
 
-    constructor(message: String): super(message)
-    constructor(message: String, ex: Throwable): super(message, ex)
+    constructor(message: String) : super(message)
+    constructor(message: String, ex: Throwable) : super(message, ex)
 
 }

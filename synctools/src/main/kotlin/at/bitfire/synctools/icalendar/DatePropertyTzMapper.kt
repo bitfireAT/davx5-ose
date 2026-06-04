@@ -5,7 +5,7 @@
 package at.bitfire.synctools.icalendar
 
 import androidx.annotation.VisibleForTesting
-import at.bitfire.synctools.exception.InvalidTimeZoneDefinitionException
+import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.parameter.TzId
@@ -35,7 +35,7 @@ object DatePropertyTzMapper {
      * - Converts ZonedDateTime with ical4j-based timezones to ZonedDateTime with system-known ZoneId.
      * - Leaves Instant, LocalDate, and other temporal types unchanged.
      *
-     * @throws InvalidTimeZoneDefinitionException If an event is given with an unknown `TZID`, and there isn't a matching `VTIMEZONE` definition in the calendar to calculate its
+     * @throws ResourceMappingException If an event is given with an unknown `TZID`, and there isn't a matching `VTIMEZONE` definition in the calendar to calculate its
      * offset.
      *
      * @return A normalized Temporal object:
@@ -55,7 +55,7 @@ object DatePropertyTzMapper {
             val tzPart = tzId?.let { " (TZID=$it)" } ?: ""
             val msg = "Date cannot be normalized because of an invalid timezone definition$tzPart without a matching VTIMEZONE"
             logger.log(Level.WARNING, msg, e)
-            throw InvalidTimeZoneDefinitionException(msg, e)
+            throw ResourceMappingException(msg, e)
         }
 
         return when (origDate) {

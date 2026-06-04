@@ -29,7 +29,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidICalendarException
-import at.bitfire.synctools.exception.InvalidTimeZoneDefinitionException
+import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.CalendarUidSplitter
 import at.bitfire.synctools.icalendar.ICalendarGenerator
 import at.bitfire.synctools.icalendar.ICalendarParser
@@ -313,7 +313,7 @@ class CalendarSyncManager @AssistedInject constructor(
                 scheduleTag = scheduleTag,
                 flags = LocalResource.FLAG_REMOTELY_PRESENT
             ).build(event)
-        } catch (e: InvalidTimeZoneDefinitionException) {
+        } catch (e: ResourceMappingException) {
             logger.log(Level.WARNING, "Received event with invalid timezone definition, ignoring", e)
             notifyInvalidResource(e, fileName)
             return

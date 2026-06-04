@@ -5,7 +5,7 @@
 package at.bitfire.synctools.icalendar
 
 import at.bitfire.DefaultTimezoneRule
-import at.bitfire.synctools.exception.InvalidTimeZoneDefinitionException
+import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.Component
@@ -156,7 +156,7 @@ class DatePropertyTzMapperTest {
         assertFailsWith<DateTimeException>("Expected date call to fail with unknown timezone") {
             dtStart.date
         }
-        assertFailsWith<InvalidTimeZoneDefinitionException>("Expected normalizedDate call to fail with unknown timezone") {
+        assertFailsWith<ResourceMappingException>("Expected normalizedDate call to fail with unknown timezone") {
             dtStart.normalizedDate()
         }
     }

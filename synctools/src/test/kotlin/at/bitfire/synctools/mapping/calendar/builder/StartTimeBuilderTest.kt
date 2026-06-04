@@ -11,7 +11,7 @@ import at.bitfire.DefaultTimezoneRule
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
 import at.bitfire.synctools.exception.InvalidICalendarException
-import at.bitfire.synctools.exception.InvalidTimeZoneDefinitionException
+import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.propertyListOf
 import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
@@ -94,7 +94,7 @@ class StartTimeBuilderTest {
         val event = VEvent(propertyListOf(
             DtStart<Temporal>(ParameterList(listOf(TzId("Etc/ABC"))), "20251010T010203")
         ))
-        assertFailsWith<InvalidTimeZoneDefinitionException>("Expected build call to fail with unknown timezone") {
+        assertFailsWith<ResourceMappingException>("Expected build call to fail with unknown timezone") {
             builder.build(event, event, result)
         }
     }

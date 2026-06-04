@@ -6,7 +6,7 @@ package at.bitfire.synctools.mapping.calendar
 
 import android.content.ContentValues
 import android.content.Entity
-import at.bitfire.synctools.exception.InvalidTimeZoneDefinitionException
+import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.AssociatedEvents
 import at.bitfire.synctools.mapping.calendar.builder.AccessLevelBuilder
 import at.bitfire.synctools.mapping.calendar.builder.AllDayBuilder
@@ -95,7 +95,7 @@ class AndroidEventBuilder(
      *
      * @param events The associated events containing the main event and exceptions.
      * @return An [EventAndExceptions] object containing the built main event and exceptions.
-     * @throws InvalidTimeZoneDefinitionException If an event has an invalid timezone definition: unknown `TZID` without a matching `VTIMEZONE`.
+     * @throws ResourceMappingException If an event has an invalid timezone definition: unknown `TZID` without a matching `VTIMEZONE`.
      */
     fun build(events: AssociatedEvents): EventAndExceptions {
         val mainVEvent = events.main ?: createMainFromExceptions(events.exceptions)
