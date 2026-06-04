@@ -5,15 +5,20 @@
 package at.bitfire.synctools.icalendar
 
 import at.bitfire.DefaultTimezoneRule
+import at.bitfire.dateTimeValue
 import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
+import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDates
+import at.bitfire.synctools.util.AndroidTimeUtils.toInstant
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.ParameterList
+import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.parameter.TzId
 import net.fortuna.ical4j.model.property.DtStart
+import net.fortuna.ical4j.model.property.ExDate
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertSame
@@ -141,6 +146,46 @@ class DatePropertyTzMapperTest {
     }
 
     @Test
+    fun `normalizedDates with TZID unknown to system`() {
+        val calendar = CalendarBuilder().build(StringReader(
+            """
+            BEGIN:VCALENDAR
+            VERSION:2.0
+            BEGIN:VTIMEZONE
+            TZID:Etc/ABC
+            BEGIN:STANDARD
+            TZNAME:-03
+            TZOFFSETFROM:-0300
+            TZOFFSETTO:-0300
+            DTSTART:19700101T000000
+            END:STANDARD
+            END:VTIMEZONE
+            BEGIN:VEVENT
+            SUMMARY:Test Timezones
+            DTSTART;TZID=Etc/ABC:20250828T130000
+            RRULE:FREQ=DAILY;COUNT=5
+            EXDATE;TZID=Etc/ABC:20250829T130000,20250830T130000
+            END:VEVENT
+            END:VCALENDAR
+            """.trimIndent()
+        ))
+        val event = calendar.getComponent<VEvent>(Component.VEVENT).get()
+        val exDate = event.getRequiredProperty<ExDate<Temporal>>(Property.EXDATE)
+
+        // ical4j returns ZonedDatetime with custom timezone from VTIMEZONE
+        assertTrue(exDate.dates.all { date -> (date as ZonedDateTime).zone.id.startsWith("ical4j-local-") })
+
+        // normalizedDate returns ZonedDatetime (at same timestamp) with system time zone
+        assertEquals(
+            listOf(
+                dateTimeValue("20250829T180000", tzRule.defaultZoneId),
+                dateTimeValue("20250830T180000", tzRule.defaultZoneId)
+            ),
+            exDate.normalizedDates()
+        )
+    }
+
+    @Test
     fun `normalizedDate with TZID unknown and without VTIMEZONE fails`() {
         val cal = CalendarBuilder().build(StringReader("BEGIN:VCALENDAR\r\n" +
                 "VERSION:2.0\n" +
@@ -158,6 +203,29 @@ class DatePropertyTzMapperTest {
         }
         assertFailsWith<ResourceMappingException>("Expected normalizedDate call to fail with unknown timezone") {
             dtStart.normalizedDate()
+        }
+    }
+
+    @Test
+    fun `normalizedDates with TZID unknown and without VTIMEZONE fails`() {
+        val calendar = CalendarBuilder().build(StringReader(
+            """
+            BEGIN:VCALENDAR
+            VERSION:2.0
+            BEGIN:VEVENT
+            SUMMARY:Test Timezones
+            DTSTART;TZID=Etc/ABC:20250828T130000
+            RRULE:FREQ=DAILY;COUNT=5
+            EXDATE;TZID=Etc/ABC:20250829T130000,20250830T130000
+            END:VEVENT
+            END:VCALENDAR
+            """.trimIndent()
+        ))
+        val event = calendar.getComponent<VEvent>(Component.VEVENT).get()
+        val exDates = event.getRequiredProperty<ExDate<Temporal>>(Property.EXDATE)
+
+        assertFailsWith<ResourceMappingException>("Expected normalizedDates call to fail because of unknown timezone") {
+            exDates.normalizedDates()
         }
     }
 
