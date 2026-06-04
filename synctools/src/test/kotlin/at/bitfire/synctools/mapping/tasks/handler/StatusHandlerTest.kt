@@ -10,7 +10,6 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Status
-import net.fortuna.ical4j.model.property.immutable.ImmutableStatus
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -71,7 +70,7 @@ class StatusHandlerTest {
 
         handler.process(from = input, main = input, to = task)
 
-        assertEquals(ImmutableStatus.VALUE_NEEDS_ACTION, task.status?.value)
+        assertEquals(Status(Status.VALUE_NEEDS_ACTION), task.status)
     }
 
     @Test
@@ -81,7 +80,7 @@ class StatusHandlerTest {
 
         handler.process(from = input, main = input, to = task)
 
-        assertEquals(ImmutableStatus.VALUE_NEEDS_ACTION, task.status?.value)
+        assertEquals(Status(Status.VALUE_NEEDS_ACTION), task.status)
     }
 
     @Test
@@ -91,7 +90,7 @@ class StatusHandlerTest {
 
         handler.process(from = input, main = input, to = task)
 
-        assertEquals(ImmutableStatus.VALUE_IN_PROCESS, task.status?.value)
+        assertEquals(Status(Status.VALUE_IN_PROCESS), task.status)
     }
 
     @Test
@@ -101,7 +100,7 @@ class StatusHandlerTest {
 
         handler.process(from = input, main = input, to = task)
 
-        assertEquals(ImmutableStatus.VALUE_COMPLETED, task.status?.value)
+        assertEquals(Status(Status.VALUE_COMPLETED), task.status)
     }
 
     @Test
@@ -111,7 +110,7 @@ class StatusHandlerTest {
 
         handler.process(from = input, main = input, to = task)
 
-        assertEquals(ImmutableStatus.VALUE_CANCELLED, task.status?.value)
+        assertEquals(Status(Status.VALUE_CANCELLED), task.status)
     }
 
     @Test
@@ -121,7 +120,7 @@ class StatusHandlerTest {
 
         handler.process(from = input, main = input, to = task)
 
-        assertEquals(ImmutableStatus.VALUE_NEEDS_ACTION, task.status?.value)
+        assertEquals(Status(Status.VALUE_NEEDS_ACTION), task.status)
     }
 
 }
