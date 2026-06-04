@@ -5,14 +5,69 @@
 package at.bitfire.synctools.mapping.tasks
 
 import android.content.Entity
+import at.bitfire.ical4android.ICalendar.Companion.withUserAgents
+import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.icalendar.AssociatedTasks
+import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.mapping.tasks.handler.AlarmsHandler
+import at.bitfire.synctools.mapping.tasks.handler.CategoriesHandler
+import at.bitfire.synctools.mapping.tasks.handler.ClassificationHandler
+import at.bitfire.synctools.mapping.tasks.handler.ColorHandler
+import at.bitfire.synctools.mapping.tasks.handler.CommentsHandler
+import at.bitfire.synctools.mapping.tasks.handler.CompletedHandler
+import at.bitfire.synctools.mapping.tasks.handler.DescriptionHandler
+import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskFieldHandler2
+import at.bitfire.synctools.mapping.tasks.handler.DueHandler
+import at.bitfire.synctools.mapping.tasks.handler.DurationHandler
+import at.bitfire.synctools.mapping.tasks.handler.GeoHandler
+import at.bitfire.synctools.mapping.tasks.handler.LocationHandler
+import at.bitfire.synctools.mapping.tasks.handler.OrganizerHandler
+import at.bitfire.synctools.mapping.tasks.handler.PercentCompleteHandler
+import at.bitfire.synctools.mapping.tasks.handler.PriorityHandler
+import at.bitfire.synctools.mapping.tasks.handler.RecurrenceFieldsHandler
+import at.bitfire.synctools.mapping.tasks.handler.RelationsHandler
+import at.bitfire.synctools.mapping.tasks.handler.SequenceHandler
+import at.bitfire.synctools.mapping.tasks.handler.StartTimeHandler
+import at.bitfire.synctools.mapping.tasks.handler.StatusHandler
+import at.bitfire.synctools.mapping.tasks.handler.TitleHandler
+import at.bitfire.synctools.mapping.tasks.handler.UidHandler
+import at.bitfire.synctools.mapping.tasks.handler.UnknownPropertiesHandler
+import at.bitfire.synctools.mapping.tasks.handler.UrlHandler
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.ProdId
+import net.fortuna.ical4j.model.property.Uid
 import org.dmfs.tasks.contract.TaskContract
+import java.util.UUID
 
 class DmfsTaskHandler(
-    // probably some mapping context here, see AndroidEventHandler
+    private val prodId: ProdId,
 ) {
+    private val fieldHandlers = arrayOf<DmfsTaskFieldHandler2>(
+        UidHandler(),
+        TitleHandler(),
+        SequenceHandler(),
+        StartTimeHandler(),
+        DueHandler(),
+        DurationHandler(),
+        DescriptionHandler(),
+        LocationHandler(),
+        GeoHandler(),
+        ColorHandler(),
+        UrlHandler(),
+        OrganizerHandler(),
+        PriorityHandler(),
+        ClassificationHandler(),
+        StatusHandler(),
+        CompletedHandler(),
+        PercentCompleteHandler(),
+        RecurrenceFieldsHandler(),
+        AlarmsHandler(),
+        CategoriesHandler(),
+        CommentsHandler(),
+        RelationsHandler(),
+        UnknownPropertiesHandler(),
+    )
 
     /**
      * Result of the [mapToVToDos] operation.
@@ -28,18 +83,46 @@ class DmfsTaskHandler(
     )
 
     fun mapToVToDos(taskAndExceptions: TaskAndExceptions): MappingResult {
-        TODO("Map content provider data (TaskAndExceptions) to VTODOs (AssociatedTasks) + optional generated UID")
-        // just like AndroidEventHandler.mapToVEvents
-        // uses mapTask()
-        // result will be used by TasksSyncManager
+        var generatedUid = false
+
+         // map main task
+        val main = mapTask(
+            entity = taskAndExceptions.main,
+            main = taskAndExceptions.main
+        )
+
+        // make sure that main task has a UID
+        if (main.uid.isEmpty) {
+            generatedUid = true
+            main += Uid(UUID.randomUUID().toString())
+        }
+
+        // Exceptions are currently not supported by the mapping code
+        val exceptions = listOf<VToDo>()
+
+        val mappedTasks = AssociatedTasks(
+            main = main,
+            exceptions = exceptions,
+            prodId = prodId.withUserAgents(listOf(TaskProvider.ProviderName.JtxBoard.packageName))
+        )
+
+        return MappingResult(
+            associatedTasks = mappedTasks,
+            uid = main.uid.get().value,
+            generatedUid = generatedUid
+        )
     }
 
     private fun mapTask(entity: Entity, main: Entity): VToDo {
-        TODO("Maps a single content-provider task (entity) to iCalendar VTODO")
-        // converts "entity", but may use "main" to acquire information like whether the main item is all-day
-        // just like AndroidEventHandler.mapEvent()
-    }
+        // initialization adds DTSTAMP
+        val vToDo = VToDo(/* initialise = */ true)
 
+        for (handler in fieldHandlers) {
+            handler.process(from = entity, main = main, to = vToDo)
+        }
+
+        return vToDo
+    }
 }
 
 internal val Entity.NamedContentValues.mimeType: String?
