@@ -29,7 +29,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidICalendarException
-import at.bitfire.synctools.exception.ResourceMappingException
+import at.bitfire.synctools.exception.InvalidResourceException
 import at.bitfire.synctools.icalendar.CalendarUidSplitter
 import at.bitfire.synctools.icalendar.ICalendarGenerator
 import at.bitfire.synctools.icalendar.ICalendarParser
@@ -268,13 +268,19 @@ class CalendarSyncManager @AssistedInject constructor(
                         val eTag = response[GetETag::class.java]?.eTag
                             ?: throw DavException("Received multi-get response without ETag")
                         val scheduleTag = response[ScheduleTag::class.java]?.scheduleTag
+                        val fileName = response.href.lastSegment
 
-                        processICalendar(
-                            fileName = response.href.lastSegment,
-                            eTag = eTag,
-                            scheduleTag = scheduleTag,
-                            reader = StringReader(iCal)
-                        )
+                        try {
+                            processICalendar(
+                                fileName = fileName,
+                                eTag = eTag,
+                                scheduleTag = scheduleTag,
+                                reader = StringReader(iCal)
+                            )
+                        } catch (e: InvalidResourceException) {
+                            logger.log(Level.WARNING, "Could not map event", e)
+                            notifyInvalidResource(e, fileName)
+                        }
                     }
                 }
             }
@@ -304,20 +310,14 @@ class CalendarSyncManager @AssistedInject constructor(
         // Event: main VEVENT and potentially attached exceptions (further VEVENTs with RECURRENCE-ID)
         val event = uidsAndEvents.values.first()
 
-        val androidEvent = try {
-            // map AssociatedEvents (VEVENTs) to EventAndExceptions (Android events)
-            AndroidEventBuilder(
-                calendar = localCollection.androidCalendar,
-                syncId = fileName,
-                eTag = eTag,
-                scheduleTag = scheduleTag,
-                flags = LocalResource.FLAG_REMOTELY_PRESENT
-            ).build(event)
-        } catch (e: ResourceMappingException) {
-            logger.log(Level.WARNING, "Received event with invalid timezone definition, ignoring", e)
-            notifyInvalidResource(e, fileName)
-            return
-        }
+        // map AssociatedEvents (VEVENTs) to EventAndExceptions (Android events)
+        val androidEvent = AndroidEventBuilder(
+            calendar = localCollection.androidCalendar,
+            syncId = fileName,
+            eTag = eTag,
+            scheduleTag = scheduleTag,
+            flags = LocalResource.FLAG_REMOTELY_PRESENT
+        ).build(event)
 
         // add default reminder (if desired)
         accountSettings.getDefaultAlarm()?.let { minBefore ->
