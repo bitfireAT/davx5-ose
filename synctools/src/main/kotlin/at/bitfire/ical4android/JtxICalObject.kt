@@ -1031,7 +1031,7 @@ open class JtxICalObject(
 
         exdate?.let { exdateString ->
             val exdates: MutableList<Long> = JtxContract.getLongListFromString(exdateString)
-            props += ExDate(when {
+            val prop = when {
                 dtstartTimezone == TZ_ALLDAY ->
                     DateList<LocalDate>(exdates.map {
                         LocalDate.ofInstant(Instant.ofEpochMilli(it), ZoneOffset.UTC)
@@ -1048,7 +1048,13 @@ open class JtxICalObject(
                     DateList<ZonedDateTime>(exdates.map {
                         ZonedDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.of(dtstartTimezone))
                     })
-            })
+            }
+
+            props += if (dtstartTimezone == TZ_ALLDAY) {
+                ExDate(ParameterList(listOf(Value.DATE)), prop)
+            } else {
+                ExDate(prop)
+            }
         }
 
         duration?.let {
