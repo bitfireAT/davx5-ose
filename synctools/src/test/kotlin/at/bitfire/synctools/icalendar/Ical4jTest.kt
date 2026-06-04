@@ -77,13 +77,8 @@ class Ical4jTest {
             ParameterList(listOf(Value.DATE)),
             "20250815"
         )
-        // Now accessing the value causes an exception:
-        try {
-            completed.value
-            fail("Has been fixed in ical4j, doesn't throw exception anymore")
-        } catch (e: UnsupportedTemporalTypeException) {
-            assertEquals("Unsupported field: HourOfDay", e.message)
-        }
+
+        assertEquals("20250815T000000Z", completed.value)
     }
 
     @Test
@@ -160,12 +155,7 @@ class Ical4jTest {
         val zdt = ZonedDateTime.of(2026, 5, 28, 18, 4, 22, 0, ZoneOffset.UTC)
         val instant = zdt.toInstant()
         assertEquals(0, TemporalComparator().compare(zdt, instant))
-        try {
-            assertEquals(0, TemporalComparator().compare(instant, zdt))
-            fail("Issue is fixed in upstream, TemporalAdapterCompat.isAfter/isBefore can be dropped")
-        } catch (e: DateTimeException) {
-            assertTrue(e.message!!.contains("Unable to obtain ZonedDateTime from TemporalAccessor"))
-        }
+        assertEquals(0, TemporalComparator().compare(instant, zdt))
     }
 
     @Test
@@ -321,13 +311,7 @@ class Ical4jTest {
 
         val result = DatePropertyRule().apply(dtStart)
 
-        //assertEquals(DtStart(dateTimeValue("20260324T140000Z")), result)
-
-        // We expect the date to be converted to UTC (see above). However, currently only the
-        // TZID parameter is removed, essentially converting the value to a floating date-time.
-        // This assertion will fail (and the one commented out above pass) once this is fixed in
-        // ical4j.
-        assertEquals(DtStart(dateTimeValue("20260324T100000")), result)
+        assertEquals(DtStart(dateTimeValue("20260324T140000Z")), result)
     }
 
     @Test
@@ -389,4 +373,29 @@ class Ical4jTest {
         }
     }
 
+    @Test
+    fun `VTIMEZONE with BYMONTH=1 RRULE`() {
+        // https://github.com/ical4j/ical4j/issues/883
+        val reader = StringReader(
+            """
+            BEGIN:VCALENDAR
+            VERSION:2.0
+            BEGIN:VTIMEZONE
+            TZID:MST
+            BEGIN:STANDARD
+            DTSTART:20000101T000000
+            RRULE:FREQ=YEARLY;BYMONTH=1
+            TZNAME:MST
+            TZOFFSETFROM:-0700
+            TZOFFSETTO:-0700
+            END:STANDARD
+            END:VTIMEZONE
+            END:VCALENDAR
+            """.trimIndent()
+        )
+
+        val calendar = ICalendarParser().parse(reader)
+
+        assertNotNull(calendar)
+    }
 }

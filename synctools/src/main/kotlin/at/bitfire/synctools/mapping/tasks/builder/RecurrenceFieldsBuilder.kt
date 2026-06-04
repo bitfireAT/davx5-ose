@@ -40,28 +40,38 @@ class RecurrenceFieldsBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo 
         )
     }
 
-    override fun build(from: VToDo, to: Entity) {
-        val allDay = from.isAllDay()
-        val tz = if (allDay) null else allDayBuilder.getTimeZone(from)
+    override fun build(from: VToDo, to: Entity) = build(from, from, to)
 
+    override fun build(from: VToDo, main: VToDo, to: Entity) {
         val rRule = from.getProperty<RRule<*>>(RRule.RRULE).getOrNull()
-        to.entityValues.put(Tasks.RRULE, rRule?.value)
-
         val rDates = from.getProperties<RDate<*>>(RDate.RDATE)
-        to.entityValues.put(Tasks.RDATE,
-            if (rDates.isEmpty())
-                null
-            else
-                AndroidTimeUtils.recurrenceSetsToOpenTasksString(rDates, tz)
-        )
+        val recurring = rRule != null || rDates.isNotEmpty()
 
-        val exDates = from.getProperties<ExDate<*>>(ExDate.EXDATE)
-        to.entityValues.put(Tasks.EXDATE,
-            if (exDates.isEmpty())
-                null
-            else
-                AndroidTimeUtils.recurrenceSetsToOpenTasksString(exDates, tz)
-        )
+        if (recurring && from === main) {
+            val allDay = from.isAllDay()
+            val tz = if (allDay) null else allDayBuilder.getTimeZone(from)
+
+            to.entityValues.put(Tasks.RRULE, rRule?.value)
+
+            to.entityValues.put(Tasks.RDATE,
+                if (rDates.isEmpty())
+                    null
+                else
+                    AndroidTimeUtils.recurrenceSetsToOpenTasksString(rDates, tz)
+            )
+
+            val exDates = from.getProperties<ExDate<*>>(ExDate.EXDATE)
+            to.entityValues.put(Tasks.EXDATE,
+                if (exDates.isEmpty())
+                    null
+                else
+                    AndroidTimeUtils.recurrenceSetsToOpenTasksString(exDates, tz)
+            )
+        } else {
+            to.entityValues.putNull(Tasks.RRULE)
+            to.entityValues.putNull(Tasks.RDATE)
+            to.entityValues.putNull(Tasks.EXDATE)
+        }
     }
 
 }
