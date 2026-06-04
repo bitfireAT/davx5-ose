@@ -53,7 +53,7 @@ object AlarmTriggerCalculator {
 
         val triggerRelated = trigger.getParameter<Related>(Parameter.RELATED).getOrNull() ?: Related.START
         val triggerDuration = trigger.duration
-        val triggerTime = trigger.date
+        val triggerTime: Instant? = trigger.date    // Trigger is a DateProperty<Instant>
 
         return if (triggerDuration != null) {
             triggerDurationToMinutes(
@@ -137,7 +137,7 @@ object AlarmTriggerCalculator {
         return Pair(Related.START, minutes)
     }
 
-    // TRIGGER value is a DATE-TIME, calculate minutes from start time
+    // TRIGGER value is a DATE-TIME (UTC), calculate minutes from start time
     private fun triggerTimeToMinutes(
         triggerTime: Instant,
         refStart: DtStart<*>

@@ -5,11 +5,14 @@
 package at.bitfire.synctools.mapping.tasks.handler
 
 import android.content.ContentValues
+import android.content.Entity
 import at.bitfire.ical4android.Task
+import at.bitfire.synctools.icalendar.plusAssign
+import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.DtStart
 import org.dmfs.tasks.contract.TaskContract.Tasks
 
-class StartTimeHandler : DmfsTaskFieldHandler {
+class StartTimeHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
 
     override fun process(from: ContentValues, to: Task) {
         val epochMillis = from.getAsLong(Tasks.DTSTART) ?: return
@@ -20,4 +23,12 @@ class StartTimeHandler : DmfsTaskFieldHandler {
         to.dtStart = DtStart(TaskTimeField(epochMillis, tzId, allDay).toTemporal())
     }
 
+    override fun process(from: Entity, main: Entity, to: VToDo) {
+        val epochMillis = from.entityValues.getAsLong(Tasks.DTSTART) ?: return
+
+        val allDay = (from.entityValues.getAsInteger(Tasks.IS_ALLDAY) ?: 0) != 0
+        val tzId = from.entityValues.getAsString(Tasks.TZ)
+
+        to += DtStart(TaskTimeField(epochMillis, tzId, allDay).toTemporal())
+    }
 }

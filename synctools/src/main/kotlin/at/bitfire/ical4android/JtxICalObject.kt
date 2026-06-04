@@ -54,6 +54,7 @@ import net.fortuna.ical4j.model.parameter.Role
 import net.fortuna.ical4j.model.parameter.Rsvp
 import net.fortuna.ical4j.model.parameter.SentBy
 import net.fortuna.ical4j.model.parameter.TzId
+import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.parameter.XParameter
 import net.fortuna.ical4j.model.property.Action
 import net.fortuna.ical4j.model.property.Attach
@@ -998,11 +999,12 @@ open class JtxICalObject(
             props += RRule<Temporal>(rrule)
         }
         recurid?.let { recurid ->
-            props += if (recuridTimezone == TZ_ALLDAY || recuridTimezone.isNullOrEmpty()) {
-                RecurrenceId<Temporal>(recurid)
-            } else {
-                RecurrenceId<Temporal>(ParameterList(listOf(TzId(recuridTimezone))), recurid)
-            }
+            val parameterList = mutableListOf<Parameter>()
+            if (recuridTimezone == TZ_ALLDAY)
+                parameterList.add(Value.DATE)
+            else if (!recuridTimezone.isNullOrEmpty())
+                parameterList.add(TzId(recuridTimezone))
+            props += RecurrenceId<Temporal>(ParameterList(parameterList), recurid)
         }
 
         rdate?.let { rdateString ->
@@ -1029,7 +1031,7 @@ open class JtxICalObject(
 
         exdate?.let { exdateString ->
             val exdates: MutableList<Long> = JtxContract.getLongListFromString(exdateString)
-            props += ExDate(when {
+            val dateList = when {
                 dtstartTimezone == TZ_ALLDAY ->
                     DateList<LocalDate>(exdates.map {
                         LocalDate.ofInstant(Instant.ofEpochMilli(it), ZoneOffset.UTC)
@@ -1046,7 +1048,13 @@ open class JtxICalObject(
                     DateList<ZonedDateTime>(exdates.map {
                         ZonedDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.of(dtstartTimezone))
                     })
-            })
+            }
+
+            props += if (dtstartTimezone == TZ_ALLDAY) {
+                ExDate(ParameterList(listOf(Value.DATE)), dateList)
+            } else {
+                ExDate(dateList)
+            }
         }
 
         duration?.let {

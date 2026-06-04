@@ -9,7 +9,6 @@ import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.os.RemoteException
-import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.LocalStorageException
@@ -113,6 +112,26 @@ class DmfsTaskListProvider(
     }
 
     /**
+     * Gets the row values of an existing task list by its ID.
+     *
+     * @param id    task list ID
+     *
+     * @return task list row (or `null` if not found)
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun getTaskListRow(id: Long, projection: Array<String>? = null): ContentValues? {
+        try {
+            client.query(taskListUri(id), projection, null, null, null)?.use { cursor ->
+                if (cursor.moveToNext())
+                    return cursor.toContentValues()
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query ${providerName.authority} task list", e)
+        }
+        return null
+    }
+
+    /**
      * Gets an existing task list by its ID.
      *
      * @param id    task list ID
@@ -120,17 +139,10 @@ class DmfsTaskListProvider(
      * @return task list (or `null` if not found)
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun getTaskList(id: Long): DmfsTaskList? {
-        try {
-            client.query(taskListUri(id), null, null, null, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return DmfsTaskList(this, cursor.toContentValues(), providerName)
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query ${providerName.authority} task list", e)
+    fun getTaskList(id: Long): DmfsTaskList? =
+        getTaskListRow(id)?.let { values ->
+            DmfsTaskList(this, values, providerName)
         }
-        return null
-    }
 
     fun updateTaskList(id: Long, info: ContentValues): Int {
         logger.log(Level.FINE, "Updating ${providerName.authority} task list (#$id)", info)
@@ -146,7 +158,7 @@ class DmfsTaskListProvider(
      *
      * @return `true` if the task list was deleted, `false` otherwise (like it was not there before the call)
      */
-    fun delete(id: Long): Boolean {
+    fun deleteTaskList(id: Long): Boolean {
         logger.log(Level.FINE, "Deleting ${providerName.authority} task list (#$id)")
         try {
             return client.delete(taskListUri(id), null, null) > 0
@@ -156,45 +168,12 @@ class DmfsTaskListProvider(
     }
 
 
-    // other methods: sync state
-
-    fun readTaskListSyncState(id: Long): String? =
-        try {
-            client.query(taskListUri(id), arrayOf(COLUMN_TASKLIST_SYNC_STATE), null, null, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return cursor.getString(0)
-                else
-                    null
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query ${providerName.authority} task list sync state", e)
-        }
-
-    fun writeTaskListSyncState(id: Long, state: String?) {
-        try {
-            val values = contentValuesOf(COLUMN_TASKLIST_SYNC_STATE to state)
-            client.update(taskListUri(id), values, null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query ${providerName.authority} task list", e)
-        }
-    }
-
-
     // helpers
 
-    val taskListsUri
+    internal val taskListsUri
         get() = TaskContract.TaskLists.getContentUri(providerName.authority).asSyncAdapter(account)
 
-    fun taskListUri(id: Long) =
+    internal fun taskListUri(id: Long) =
         ContentUris.withAppendedId(taskListsUri, id)
-
-    companion object {
-
-        /**
-         * Column to store per task list sync state as a [String].
-         */
-        private const val COLUMN_TASKLIST_SYNC_STATE = TaskContract.TaskLists.SYNC_VERSION
-
-    }
 
 }

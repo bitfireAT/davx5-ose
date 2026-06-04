@@ -15,7 +15,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.OAuthGoogle
 import at.bitfire.davdroid.network.OAuthIntegration
 import at.bitfire.davdroid.settings.Credentials
-import at.bitfire.davdroid.util.trimToNull
+import at.bitfire.synctools.util.trimToNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

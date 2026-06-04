@@ -9,11 +9,10 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
-
+import org.dmfs.tasks.contract.TaskContract
 import java.io.Closeable
 import java.util.logging.Level
 import java.util.logging.Logger
-import org.dmfs.tasks.contract.TaskContract
 
 
 class TaskProvider private constructor(

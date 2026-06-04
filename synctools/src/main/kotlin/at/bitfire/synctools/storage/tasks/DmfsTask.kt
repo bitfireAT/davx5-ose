@@ -36,6 +36,7 @@ import java.util.logging.Logger
  * @param values    entity with all columns, as returned by the task provider; [org.dmfs.tasks.contract.TaskContract.Tasks._ID]
  *                  must be set to a non-null value for existing tasks, and may be absent for new (unsaved) tasks
  */
+@Deprecated("Use storage + mapping APIs separately")
 class DmfsTask(
     val taskList: DmfsTaskList,
     val values: Entity
@@ -86,7 +87,7 @@ class DmfsTask(
 
             try {
                 val client = taskList.provider.client
-                client.query(taskSyncURI(true), null, null, null, null)?.use { cursor ->
+                client.query(taskList.taskUri(id, loadProperties = true), null, null, null, null)?.use { cursor ->
                     if (cursor.moveToFirst()) {
                         // create new Task which will be populated
                         val newTask = Task()
@@ -191,31 +192,21 @@ class DmfsTask(
         return ContentUris.withAppendedId(TaskContract.Tasks.getContentUri(taskList.providerName.authority), existingId)
     }
 
-    fun update(values: ContentValues) {
-        taskList.provider.client.update(taskSyncURI(), values, null, null)
-    }
+    /**
+     * Shortcut for [DmfsTaskList.updateTaskRow] with [id].
+     */
+    fun update(values: ContentValues) = taskList.updateTaskRow(id!!, values)
 
     /**
-     * Deletes an existing task from the tasks provider storage.
-     *
-     * @return number of affected rows
-     *
-     * @throws android.os.RemoteException on tasks provider errors
+     * Shortcut for [DmfsTaskList.deleteTask] with [id].
      */
-    fun delete(): Int {
-        return taskList.provider.client.delete(taskSyncURI(), null, null)
-    }
+    fun delete(): Int = taskList.deleteTask(id!!)
 
-    private fun taskSyncURI(loadProperties: Boolean = false): Uri {
-        val id = requireNotNull(id)
-        return ContentUris.withAppendedId(taskList.tasksUri(loadProperties), id)
-    }
 
     companion object {
         const val UNKNOWN_PROPERTY_DATA = TaskContract.Properties.DATA0
 
         const val COLUMN_ETAG = TaskContract.Tasks.SYNC1
-
         const val COLUMN_FLAGS = TaskContract.Tasks.SYNC2
     }
 

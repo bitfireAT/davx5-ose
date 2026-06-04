@@ -8,7 +8,7 @@ import android.net.Uri
 import android.provider.ContactsContract.CommonDataKinds.Organization
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.synctools.util.Utils.trimToNull
+import at.bitfire.synctools.util.trimToNull
 import java.util.LinkedList
 
 class OrganizationBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact, readOnly: Boolean)

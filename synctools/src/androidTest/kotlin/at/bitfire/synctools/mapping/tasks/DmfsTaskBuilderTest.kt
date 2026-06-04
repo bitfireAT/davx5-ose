@@ -10,12 +10,12 @@ import android.content.ContentValues
 import android.database.DatabaseUtils
 import android.net.Uri
 import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
-import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.ICalendar
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.ical4android.impl.TestTaskList
+import at.bitfire.synctools.storage.tasks.DmfsTask
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import net.fortuna.ical4j.model.DateList
@@ -826,7 +826,7 @@ class DmfsTaskBuilderTest (
         val uri = DmfsTask(taskList!!, task, "9468a4cf-0d5b-4379-a704-12f1f84100ba", null, 0).add()
         Assert.assertNotNull(uri)
 
-        val testTask = taskList!!.getTask(ContentUris.parseId(uri))
+        val testTask = taskList!!.getDmfsTask(ContentUris.parseId(uri))
         try {
             // read again and verify result
             val task2 = testTask?.task!!

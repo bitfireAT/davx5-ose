@@ -8,7 +8,7 @@ import android.content.ContentValues
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.contacts.AndroidContact
-import at.bitfire.synctools.util.Utils.trimToNull
+import at.bitfire.synctools.util.trimToNull
 import at.bitfire.synctools.vcard.GroupMethod
 import java.io.FileNotFoundException
 

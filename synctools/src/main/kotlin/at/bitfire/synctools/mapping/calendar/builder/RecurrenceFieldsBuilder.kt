@@ -9,8 +9,8 @@ import android.provider.CalendarContract.Events
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDates
 import at.bitfire.synctools.icalendar.requireDtStart
-import at.bitfire.synctools.mapping.calendar.builder.AndroidRecurrenceMapper.androidRecurrenceRuleString
 import at.bitfire.synctools.mapping.calendar.builder.AndroidRecurrenceMapper.androidRecurrenceDatesString
+import at.bitfire.synctools.mapping.calendar.builder.AndroidRecurrenceMapper.androidRecurrenceRuleString
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.ExDate

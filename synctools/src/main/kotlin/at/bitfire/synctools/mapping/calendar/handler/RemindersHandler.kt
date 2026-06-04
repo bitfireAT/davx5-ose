@@ -12,7 +12,6 @@ import android.util.Patterns
 import at.bitfire.synctools.icalendar.plusAssign
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.component.VEvent
-import net.fortuna.ical4j.model.property.Action
 import net.fortuna.ical4j.model.property.Attendee
 import net.fortuna.ical4j.model.property.Description
 import net.fortuna.ical4j.model.property.Summary

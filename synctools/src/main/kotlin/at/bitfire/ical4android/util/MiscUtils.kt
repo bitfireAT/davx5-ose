@@ -5,9 +5,7 @@
 package at.bitfire.ical4android.util
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.net.Uri
-import android.os.Build
 import android.provider.CalendarContract
 
 object MiscUtils {

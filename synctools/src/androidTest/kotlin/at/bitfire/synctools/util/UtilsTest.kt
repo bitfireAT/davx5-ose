@@ -5,11 +5,12 @@
 package at.bitfire.synctools.util
 
 import at.bitfire.synctools.util.Utils.capitalize
-import at.bitfire.synctools.util.Utils.trimToNull
+import at.bitfire.synctools.util.trimToNull
 import org.junit.Assert
 import org.junit.Test
 
 class UtilsTest {
+
     @Test
     fun testCapitalize() {
         Assert.assertEquals("Utils Test", "utils test".capitalize()) // Test multiple words
@@ -17,12 +18,4 @@ class UtilsTest {
         Assert.assertEquals("", "".capitalize()) // Test empty string
     }
 
-    @Test
-    fun testTrimToNull() {
-        Assert.assertEquals("test", "  test".trimToNull()) // Test spaces only before
-        Assert.assertEquals("test", "test  ".trimToNull()) // Test spaces only after
-        Assert.assertEquals("test", "  test  ".trimToNull()) // Test spaces before and after
-        Assert.assertNull("     ".trimToNull()) // Test spaces
-        Assert.assertNull("".trimToNull()) // Test empty string
-    }
 }

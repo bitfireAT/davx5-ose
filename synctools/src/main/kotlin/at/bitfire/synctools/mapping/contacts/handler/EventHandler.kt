@@ -11,7 +11,7 @@ import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.LabeledProperty
 import at.bitfire.synctools.mapping.contacts.handler.EventHandler.fullDateFormat
 import at.bitfire.synctools.mapping.contacts.handler.EventHandler.fullDateTimeFormats
-import at.bitfire.synctools.util.Utils.trimToNull
+import at.bitfire.synctools.util.trimToNull
 import at.bitfire.synctools.vcard.property.XAbDate
 import ezvcard.property.Anniversary
 import ezvcard.property.Birthday
