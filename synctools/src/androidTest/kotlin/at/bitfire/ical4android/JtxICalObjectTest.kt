@@ -26,9 +26,11 @@ import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
 import net.fortuna.ical4j.model.Calendar
+import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.property.Action
 import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Trigger
@@ -947,6 +949,67 @@ class JtxICalObjectTest {
         val valarm = valarms.first()
         assertEquals(ImmutableAction.DISPLAY, valarm.getProperty<Action>(Property.ACTION).get())
         assertEquals("-PT15M", valarm.getProperty<Trigger>(Property.TRIGGER).get().value)
+    }
+
+    @Test
+    fun getICalendarFormat_ExDateAllDay_hasValueDateParameter() {
+        // Test that ExDate for all-day events includes VALUE=DATE parameter
+        val obj = JtxICalObject(collection!!).apply {
+            component = Component.VTODO.name
+            uid = "exdate-allday-test@test"
+            summary = "All-day task with exception"
+            dtstart = 1744972800000L  // 2025-04-19T00:00:00Z
+            dtstartTimezone = JtxContract.JtxICalObject.TZ_ALLDAY
+            exdate = "1745059200000"  // 2025-04-20T00:00:00Z (exception date)
+        }
+
+        // Generate iCalendar VTODO from data object
+        val ical = obj.getICalendarFormat(testProdId)
+        assertNotNull(ical)
+
+        // Extract VTODO
+        val vtodos = ical!!.getComponents<VToDo>(Component.VTODO.name)
+        assertEquals(1, vtodos.size)
+
+        // Verify ExDate property has VALUE=DATE parameter
+        val exdateProp = vtodos[0].getProperty<net.fortuna.ical4j.model.property.ExDate<*>>(Property.EXDATE)
+        assertTrue("ExDate property should be present", exdateProp.isPresent)
+        
+        val exdate = exdateProp.get()
+        // Check that the ExDate has VALUE=DATE parameter
+        assertEquals("ExDate should have VALUE=DATE parameter for all-day events", 
+            Value.DATE, exdate.getParameter<Value>(Parameter.VALUE).get())
+    }
+
+    @Test
+    fun getICalendarFormat_ExDateWithTimezone_noValueDateParameter() {
+        // Test that ExDate for events with timezone does NOT include VALUE=DATE parameter
+        val obj = JtxICalObject(collection!!).apply {
+            component = Component.VTODO.name
+            uid = "exdate-timezone-test@test"
+            summary = "Task with exception and timezone"
+            dtstart = 1744972800000L  // 2025-04-19T00:00:00Z
+            dtstartTimezone = "Europe/Vienna"
+            exdate = "1745059200000"  // 2025-04-20T00:00:00Z (exception date)
+        }
+
+        // Generate iCalendar VTODO from data object
+        val ical = obj.getICalendarFormat(testProdId)
+        assertNotNull(ical)
+
+        // Extract VTODO
+        val vtodos = ical!!.getComponents<VToDo>(Component.VTODO.name)
+        assertEquals(1, vtodos.size)
+
+        // Verify ExDate property does NOT have VALUE=DATE parameter (should use default)
+        val exdateProp = vtodos[0].getProperty<net.fortuna.ical4j.model.property.ExDate<*>>(Property.EXDATE)
+        assertTrue("ExDate property should be present", exdateProp.isPresent)
+        
+        val exdate = exdateProp.get()
+        // For non-all-day events with timezone, VALUE parameter should not be DATE
+        // (it will default to DATE-TIME or have a TZID parameter)
+        assertEquals("ExDate for timezone events should not have VALUE=DATE", 
+            null, exdate.getParameter<Value>(Parameter.VALUE).orElse(null))
     }
 
 
