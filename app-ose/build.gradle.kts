@@ -48,7 +48,7 @@ android {
          *   So usually the first pre-release has `0000` and the final version has the greatest number.
          */
         versionCode = 405140000
-        versionName = "4.5.14-alpha.1"
+        versionName = "4.5.14-rc.1"
 
         base.archivesName = "davx5-$versionCode-$versionName"
 
