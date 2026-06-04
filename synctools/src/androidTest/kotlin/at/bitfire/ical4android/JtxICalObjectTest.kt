@@ -32,6 +32,7 @@ import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.property.Action
+import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Trigger
 import net.fortuna.ical4j.model.property.immutable.ImmutableAction
@@ -972,7 +973,7 @@ class JtxICalObjectTest {
         assertEquals(1, vtodos.size)
 
         // Verify ExDate property has VALUE=DATE parameter
-        val exdateProp = vtodos[0].getProperty<net.fortuna.ical4j.model.property.ExDate<*>>(Property.EXDATE)
+        val exdateProp = vtodos[0].getProperty<ExDate<*>>(Property.EXDATE)
         assertTrue("ExDate property should be present", exdateProp.isPresent)
         
         val exdate = exdateProp.get()
@@ -1002,7 +1003,7 @@ class JtxICalObjectTest {
         assertEquals(1, vtodos.size)
 
         // Verify ExDate property does NOT have VALUE=DATE parameter (should use default)
-        val exdateProp = vtodos[0].getProperty<net.fortuna.ical4j.model.property.ExDate<*>>(Property.EXDATE)
+        val exdateProp = vtodos[0].getProperty<ExDate<*>>(Property.EXDATE)
         assertTrue("ExDate property should be present", exdateProp.isPresent)
         
         val exdate = exdateProp.get()
