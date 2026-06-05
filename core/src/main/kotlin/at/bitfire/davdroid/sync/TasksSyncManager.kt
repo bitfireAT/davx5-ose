@@ -29,6 +29,7 @@ import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskReader
 import at.bitfire.ical4android.TaskWriter
 import at.bitfire.synctools.exception.InvalidICalendarException
+import at.bitfire.synctools.exception.InvalidResourceException
 import at.bitfire.synctools.storage.tasks.DmfsTask
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -160,7 +161,14 @@ class TasksSyncManager @AssistedInject constructor(
                         val eTag = response[GetETag::class.java]?.eTag
                             ?: throw DavException("Received multi-get response without ETag")
 
-                        processVTodo(response.href.lastSegment, eTag, StringReader(iCal))
+                        val fileName = response.href.lastSegment
+
+                        try {
+                            processVTodo(fileName, eTag, StringReader(iCal))
+                        } catch (e: InvalidResourceException) {
+                            logger.log(Level.WARNING, "Error while processing VTODO", e)
+                            notifyInvalidResource(e, fileName)
+                        }
                     }
                 }
             }
@@ -176,15 +184,7 @@ class TasksSyncManager @AssistedInject constructor(
     // helpers
 
     private fun processVTodo(fileName: String, eTag: String, reader: Reader) {
-        val tasks: List<Task>
-        try {
-            tasks = TaskReader().readTasks(reader)
-        } catch (e: InvalidICalendarException) {
-            logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
-            notifyInvalidResource(e, fileName)
-            return
-        }
-
+        val tasks = TaskReader().readTasks(reader)
         if (tasks.size == 1) {
             val newData = tasks.first()
 
