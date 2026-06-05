@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 /**
  * This plugin can be applied to other modules (like core, synctools etc.) in order to
  * provide common configuration, like the Java toolchain version and Android configuration
- * as API levels and desugaring.
+ * like API levels and desugaring.
  */
 @Suppress("unused")
 class CommonBuildConfigPlugin : Plugin<Project> {
