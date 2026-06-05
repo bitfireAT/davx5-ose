@@ -6,12 +6,13 @@ package at.bitfire.davdroid.resource
 
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.resource.LocalTaskList.Companion.COLUMN_TASKLIST_SYNC_STATE
+import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTask
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.logging.Logger
+import java.util.LinkedList
 
 /**
  * App-specific implementation of a task list.
@@ -22,9 +23,6 @@ import java.util.logging.Logger
 class LocalTaskList (
     internal val dmfsTaskList: DmfsTaskList
 ): LocalCollection<LocalTask> {
-
-    private val logger
-        get() = Logger.getLogger(javaClass.name)
 
     override val readOnly
         get() = dmfsTaskList.accessLevel.let {
@@ -59,6 +57,8 @@ class LocalTaskList (
             )
         }
 
+    internal val recurringTaskList = DmfsRecurringTaskList(dmfsTaskList)
+
 
     override fun countAll(): Int =
         dmfsTaskList.countTasks(null, null)
@@ -69,20 +69,28 @@ class LocalTaskList (
     override fun countModified(): Int =
         dmfsTaskList.countTasks("${Tasks._DIRTY} AND NOT ${Tasks._DELETED}", null)
 
-    override fun findDeleted() = dmfsTaskList.findDmfsTasks(Tasks._DELETED, null)
-        .map { LocalTask(it) }
-
-    override fun findDirty(): List<LocalTask> =
-        dmfsTaskList.findDmfsTasks(Tasks._DIRTY, null).map {
-            LocalTask(it)
+    override fun findDeleted(): List<LocalTask> {
+        val deleted = LinkedList<LocalTask>()
+        recurringTaskList.iterateTaskAndExceptions(Tasks._DELETED, null) {
+            deleted += LocalTask(recurringTaskList, it)
         }
+        return deleted
+    }
 
-    override fun findByName(name: String) =
-        dmfsTaskList.findDmfsTasks("${Tasks._SYNC_ID}=?", arrayOf(name))
-            .firstOrNull()?.let {
-                LocalTask(it)
-            }
+    override fun findDirty(): List<LocalTask> {
+        val dirty = LinkedList<LocalTask>()
+        recurringTaskList.iterateTaskAndExceptions(Tasks._DIRTY, null) {
+            dirty += LocalTask(recurringTaskList, it)
+        }
+        return dirty
+    }
 
+    override fun findByName(name: String): LocalTask? {
+        val result = recurringTaskList.findTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf(name))
+        return result?.let {
+            LocalTask(recurringTaskList, it)
+        }
+    }
 
     override fun markNotDirty(flags: Int): Int =
         dmfsTaskList.updateTasks(
