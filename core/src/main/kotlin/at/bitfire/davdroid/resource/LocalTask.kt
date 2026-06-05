@@ -62,7 +62,6 @@ class LocalTask(
         if (fileName.isPresent)
             values.put(Tasks._SYNC_ID, fileName.get())
         values.put(DmfsTask.COLUMN_ETAG, eTag)
-        values.put(Tasks.SYNC_VERSION, dmfsTask.task!!.sequence)
         values.put(Tasks._DIRTY, 0)
         dmfsTask.update(values)
 
@@ -79,7 +78,14 @@ class LocalTask(
         dmfsTask.flags = flags
     }
 
-    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+    override fun updateSequence(sequence: Int) {
+        dmfsTask.update(
+            contentValuesOf(
+                Tasks.SYNC_VERSION to sequence
+            )
+        )
+        dmfsTask.task?.sequence = sequence
+    }
 
     override fun updateUid(uid: String) {
         val values = contentValuesOf(Tasks._UID to uid)
