@@ -4,17 +4,13 @@
 
 plugins {
     alias(libs.plugins.android.library)
-    `maven-publish`
+    id("davx5.common-buildconfig")
 }
 
 android {
-    compileSdk = 36
-
     namespace = "at.bitfire.synctools"
 
     defaultConfig {
-        minSdk = 24        // Android 7
-
         testInstrumentationRunner = "at.bitfire.synctools.LoggingTestRunner"
 
         buildConfigField("String", "version_ical4j", "\"${libs.versions.ical4j.get()}\"")
@@ -22,11 +18,6 @@ android {
         aarMetadata {
             minCompileSdk = 29
         }
-    }
-
-    compileOptions {
-        // ical4j >= 3.x uses the Java 8 Time API
-        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures.buildConfig = true
@@ -83,21 +74,6 @@ android {
         // Configure publish variant
         singleVariant("release") {
             withSourcesJar()
-        }
-    }
-}
-
-publishing {
-    // Configure publishing data
-    publications {
-        register("release", MavenPublication::class.java) {
-            groupId = "com.github.bitfireat"
-            artifactId = "synctools"
-            version = System.getenv("GIT_COMMIT")
-
-            afterEvaluate {
-                from(components["release"])
-            }
         }
     }
 }
