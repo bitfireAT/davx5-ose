@@ -9,19 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.mikepenz.aboutLibraries.android)
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-kotlin {
-    compilerOptions {
-        // use new defaulting rule for qualifiers to avoid `@param:` prefix for DI annotations
-        freeCompilerArgs.add("-Xannotation-default-target=param-property")
-    }
+    id("davx5.common-buildconfig")
 }
 
 ksp {
@@ -29,22 +17,11 @@ ksp {
 }
 
 android {
-    compileSdk = 37
-
     defaultConfig {
-        minSdk = 24        // Android 7.0
-
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
 
         // include these rules in the app that uses the core library
         consumerProguardFile("core-proguard-rules.pro")
-    }
-
-    compileOptions {
-        // required for
-        // - dnsjava 3.x: java.nio.file.Path
-        // - ical4android: time API
-        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {

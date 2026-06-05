@@ -42,6 +42,7 @@ import java.time.Duration
 import java.time.Period
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.time.temporal.Temporal
 import java.time.temporal.UnsupportedTemporalTypeException
 
 class Ical4jTest {
@@ -397,5 +398,35 @@ class Ical4jTest {
         val calendar = ICalendarParser().parse(reader)
 
         assertNotNull(calendar)
+    }
+
+    @Test
+    fun `DateProperty_getValue() with unknown timezone`() {
+        // https://github.com/ical4j/ical4j/issues/889
+        val reader = StringReader(
+            """
+            BEGIN:VCALENDAR
+            VERSION:2.0
+            PRODID:-//Test//NONSGML v1.0//EN
+            BEGIN:VEVENT
+            UID:c3b11f81-60c1-11f1-bc40-d843aea66ff2
+            DTSTAMP:20260605T120000Z
+            DTSTART;TZID=UnknownTimeZone:20260605T120000
+            END:VEVENT
+            END:VCALENDAR
+            """.trimIndent()
+        )
+        val calendar = CalendarBuilder().build(reader)
+        val event = calendar.getComponent<VEvent>(Component.VEVENT).get()
+        val dtStart = event.getRequiredProperty<DtStart<Temporal>>(Property.DTSTART)
+
+        try {
+            dtStart.value
+            fail("DateProperty.getValue() no longer throws when an unknown timezone is referenced. " +
+                    "DatePropertyTzMapper.normalizedDate[s] could be updated to use the default time zone " +
+                    "instead of throwing. See https://github.com/bitfireAT/davx5-ose/issues/2339")
+        } catch (e: DateTimeException) {
+            assertTrue(e.message?.contains("UnknownTimeZone") == true)
+        }
     }
 }
