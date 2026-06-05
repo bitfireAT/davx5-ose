@@ -8,6 +8,7 @@ import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.icalendar.AssociatedTasks
+import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.icalendar.recurrenceId
 import at.bitfire.synctools.mapping.tasks.builder.AlarmsBuilder
@@ -214,7 +215,8 @@ class DmfsTaskBuilder(
         val isRecurring = main.getProperty<RRule<*>>(Property.RRULE).isPresent || main.getProperty<RDate<*>>(Property.RDATE).isPresent
         if (!isRecurring) {
             val recurrenceDates = exceptions.mapNotNull { exception ->
-                val recurrenceDate = exception.recurrenceId?.date ?: return@mapNotNull null
+                // Use normalizedDate instead of getDate to handle unknown TZIDs
+                val recurrenceDate = exception.recurrenceId?.normalizedDate() ?: return@mapNotNull null
                 // AndroidTimeUtils expects UTC date-times as OffsetDateTime, not Instant.
                 if (recurrenceDate is Instant) {
                     OffsetDateTime.ofInstant(recurrenceDate, ZoneOffset.UTC)
