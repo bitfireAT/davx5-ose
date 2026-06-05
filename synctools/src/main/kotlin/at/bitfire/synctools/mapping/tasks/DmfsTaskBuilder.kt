@@ -186,7 +186,7 @@ class DmfsTaskBuilder(
     private fun createMainFromExceptions(exceptions: List<VToDo>): VToDo {
         // Should in the future be replaced by a real task that has a title like "(unknown task)".
         // This main task should also have a special extended property that indicates that the task
-        // must not actually be generated as main VToDo when the event is locally edited and then uploaded.
+        // must not actually be generated as main VToDo when the task is locally edited and then uploaded.
 
         // Currently, we just use the first exception as a main task, too. This is not correct and
         // should be fixed.
