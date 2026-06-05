@@ -16,8 +16,9 @@ class SequenceUpdater {
      *
      * @return updated sequence (or *null* if sequence was not increased/modified)
      */
-    fun increaseSequence(task: Task): Int {
-        // In the future, this should use the same algorithm as
+    @Suppress("RedundantNullableReturnType")
+    fun increaseSequence(task: Task): Int? {
+        // In the future, this should only increase the sequence for group-scheduled tasks.
 
         val currentSeq = task.sequence
         val newSeq = if (currentSeq == null)
