@@ -5,11 +5,13 @@
 package at.bitfire.synctools.mapping.tasks.handler
 
 import android.content.ContentValues
+import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.Property
+import net.fortuna.ical4j.model.component.VToDo
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -22,14 +24,14 @@ class UnknownPropertiesHandlerTest {
     private val handler = UnknownPropertiesHandler()
 
     @Test
-    fun `No unknown properties`() {
+    fun `legacy No unknown properties`() {
         val task = Task()
         handler.process(ContentValues(), task)
         assertTrue(task.unknownProperties.isEmpty())
     }
 
     @Test
-    fun `Single unknown property`() {
+    fun `legacy Single unknown property`() {
         val task = Task()
         handler.process(contentValuesOf(
             UNKNOWN_PROPERTY_DATA to "[\"UID\", \"test-property\", {}]"
@@ -42,7 +44,7 @@ class UnknownPropertiesHandlerTest {
     }
 
     @Test
-    fun `Unknown property with parameters`() {
+    fun `legacy Unknown property with parameters`() {
         val task = Task()
         handler.process(contentValuesOf(
             UNKNOWN_PROPERTY_DATA to "[\"UID\", \"prop-value\", {\"X-CUSTOM\": \"custom-value\"}]"
@@ -56,7 +58,7 @@ class UnknownPropertiesHandlerTest {
     }
 
     @Test
-    fun `Multiple unknown properties accumulate`() {
+    fun `legacy Multiple unknown properties accumulate`() {
         val task = Task()
         handler.process(contentValuesOf(
             UNKNOWN_PROPERTY_DATA to "[\"X-PROP1\", \"value1\", {}]"
@@ -69,7 +71,7 @@ class UnknownPropertiesHandlerTest {
     }
 
     @Test
-    fun `Null unknown property data is skipped`() {
+    fun `legacy Null unknown property data is skipped`() {
         val task = Task()
         handler.process(ContentValues().apply {
             putNull(UNKNOWN_PROPERTY_DATA)
@@ -78,13 +80,99 @@ class UnknownPropertiesHandlerTest {
     }
 
     @Test
-    fun `Unknown property with invalid JSON`() {
+    fun `legacy Unknown property with invalid JSON`() {
         val task = Task()
         handler.process(contentValuesOf(
             UNKNOWN_PROPERTY_DATA to "not json"
         ), task)
 
         assertTrue(task.unknownProperties.isEmpty())
+    }
+
+    @Test
+    fun `No unknown properties`() {
+        val input = Entity(ContentValues())
+        val task = VToDo()
+        val initialPropertyCount = task.propertyList.all.size
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals(initialPropertyCount, task.propertyList.all.size)
+    }
+
+    @Test
+    fun `Single unknown property`() {
+        val input = Entity(contentValuesOf(
+            UNKNOWN_PROPERTY_DATA to "[\"X-CUSTOM-PROP\", \"test-property\", {}]"
+        ))
+        val task = VToDo()
+        val initialPropertyCount = task.propertyList.all.size
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals(initialPropertyCount + 1, task.propertyList.all.size)
+        val prop = task.propertyList.all.find { it.name == "X-CUSTOM-PROP" }!!
+        assertEquals("test-property", prop.value)
+    }
+
+    @Test
+    fun `Unknown property with parameters`() {
+        val input = Entity(contentValuesOf(
+            UNKNOWN_PROPERTY_DATA to "[\"X-CUSTOM-PROP\", \"prop-value\", {\"X-CUSTOM\": \"custom-value\"}]"
+        ))
+        val task = VToDo()
+        val initialPropertyCount = task.propertyList.all.size
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals(initialPropertyCount + 1, task.propertyList.all.size)
+        val prop = task.propertyList.all.find { it.name == "X-CUSTOM-PROP" }!!
+        assertEquals("prop-value", prop.value)
+        assertEquals("custom-value", prop.getRequiredParameter<Parameter>("X-CUSTOM").value)
+    }
+
+    @Test
+    fun `Multiple unknown properties accumulate`() {
+        val input = Entity(contentValuesOf(
+            UNKNOWN_PROPERTY_DATA to "[\"X-PROP1\", \"value1\", {}]"
+        ))
+        val task = VToDo()
+        val initialPropertyCount = task.propertyList.all.size
+
+        handler.process(from = input, main = input, to = task)
+
+        val input2 = Entity(contentValuesOf(
+            UNKNOWN_PROPERTY_DATA to "[\"X-PROP2\", \"value2\", {}]"
+        ))
+        handler.process(from = input2, main = input2, to = task)
+
+        assertEquals(initialPropertyCount + 2, task.propertyList.all.size)
+    }
+
+    @Test
+    fun `Null unknown property data is skipped`() {
+        val input = Entity(ContentValues().apply {
+            putNull(UNKNOWN_PROPERTY_DATA)
+        })
+        val task = VToDo()
+        val initialPropertyCount = task.propertyList.all.size
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals(initialPropertyCount, task.propertyList.all.size)
+    }
+
+    @Test
+    fun `Unknown property with invalid JSON`() {
+        val input = Entity(contentValuesOf(
+            UNKNOWN_PROPERTY_DATA to "not json"
+        ))
+        val task = VToDo()
+        val initialPropertyCount = task.propertyList.all.size
+
+        handler.process(from = input, main = input, to = task)
+
+        assertEquals(initialPropertyCount, task.propertyList.all.size)
     }
 
 }
