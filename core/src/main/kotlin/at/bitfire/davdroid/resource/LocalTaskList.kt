@@ -17,10 +17,11 @@ import java.util.logging.Logger
 /**
  * App-specific implementation of a task list.
  *
- * [TaskLists._SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
+ * [org.dmfs.tasks.contract.TaskContract.TaskLists._SYNC_ID] corresponds to the database
+ * collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
 class LocalTaskList (
-    val dmfsTaskList: DmfsTaskList
+    internal val dmfsTaskList: DmfsTaskList
 ): LocalCollection<LocalTask> {
 
     private val logger
