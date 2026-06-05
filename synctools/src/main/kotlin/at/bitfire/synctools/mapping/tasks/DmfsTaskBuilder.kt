@@ -19,6 +19,7 @@ import at.bitfire.synctools.mapping.tasks.builder.CreatedBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DescriptionBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DirtyBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DmfsTaskFieldBuilder
+import at.bitfire.synctools.mapping.tasks.builder.DmfsTaskFieldBuilderVToDo
 import at.bitfire.synctools.mapping.tasks.builder.DueBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DurationBuilder
 import at.bitfire.synctools.mapping.tasks.builder.ETagBuilder
@@ -69,7 +70,7 @@ class DmfsTaskBuilder(
     private val logger
         get() = Logger.getLogger(javaClass.name)
 
-    private val fieldBuilders: Array<DmfsTaskFieldBuilder> = arrayOf(
+    private val fieldBuilders: Array<DmfsTaskFieldBuilderVToDo> = arrayOf(
         // main task row fields
         UidBuilder(),
         SyncIdBuilder(syncId),
@@ -149,26 +150,47 @@ class DmfsTaskBuilder(
     }
 
     fun build(associatedTasks: AssociatedTasks): TaskAndExceptions {
-        TODO("Map iCalendar data (AssociatedTasks) to content provider data (TaskAndExceptions)")
-        // just like AndroidEventBuilder().build()
-        // uses buildTask()
+        val mainVToDo = associatedTasks.main ?: createMainFromExceptions(associatedTasks.exceptions)
+        return TaskAndExceptions(
+            main = buildTask(from = mainVToDo, main = mainVToDo),
+            exceptions = associatedTasks.exceptions.map { exception ->
+                buildTask(from = exception, main = mainVToDo)
+            }
+        )
     }
 
     private fun buildTask(from: VToDo, main: VToDo): Entity {
-        TODO("Build a single Entity based on from")
-        // in some cases (like to see whether the main item is all-day, "main" can be used
-        // just like AndroidEventBuilder().buildEvent()
+        val entity = Entity(ContentValues())
+        for (builder in fieldBuilders)
+            builder.build(from = from, main = main, to = entity)
+        return entity
     }
 
     @Deprecated("Replaced by build()")
     private fun buildTask(): Entity {
         val entity = Entity(ContentValues())
 
-        for (fieldBuilder in fieldBuilders)
+        for (fieldBuilder in fieldBuilders.filterIsInstance<DmfsTaskFieldBuilder>())
             fieldBuilder.build(task, entity)
         logger.log(Level.FINE, "Built task", entity.entityValues)
 
         return entity
+    }
+
+    /**
+     * It is possible that a user receives only exceptions of a task, but not the main task itself.
+     * This happens when there's a recurring task that is not visible for the user, but the user is invited to
+     * a single recurrence. However, we always need a main task for Android, so we make up one from the
+     * exceptions.
+     */
+    private fun createMainFromExceptions(exceptions: List<VToDo>): VToDo {
+        // Should in the future be replaced by a real task that has a title like "(unknown task)".
+        // This main task should also have a special extended property that indicates that the task
+        // must not actually be generated as main VToDo when the event is locally edited and then uploaded.
+
+        // Currently, we just use the first exception as a main task, too. This is not correct and
+        // should be fixed.
+        return exceptions.firstOrNull() ?: VToDo()
     }
 
 }
