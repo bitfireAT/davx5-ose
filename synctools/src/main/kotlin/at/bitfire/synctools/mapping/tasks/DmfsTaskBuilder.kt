@@ -8,6 +8,8 @@ import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.icalendar.AssociatedTasks
+import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.icalendar.recurrenceId
 import at.bitfire.synctools.mapping.tasks.builder.AlarmsBuilder
 import at.bitfire.synctools.mapping.tasks.builder.AllDayBuilder
 import at.bitfire.synctools.mapping.tasks.builder.CategoriesBuilder
@@ -45,9 +47,18 @@ import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import at.bitfire.synctools.storage.tasks.TasksBatchOperation
+import net.fortuna.ical4j.model.ComponentList
+import net.fortuna.ical4j.model.DateList
+import net.fortuna.ical4j.model.Property
+import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.RDate
+import net.fortuna.ical4j.model.property.RRule
 import org.dmfs.tasks.contract.TaskContract.Properties
 import org.dmfs.tasks.contract.TaskContract.Tasks
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -188,9 +199,35 @@ class DmfsTaskBuilder(
         // This main task should also have a special extended property that indicates that the task
         // must not actually be generated as main VToDo when the task is locally edited and then uploaded.
 
-        // Currently, we just use the first exception as a main task, too. This is not correct and
-        // should be fixed.
-        return exceptions.firstOrNull() ?: VToDo()
+        // We need at least one exception to derive a synthetic main task.
+        val firstException = exceptions.firstOrNull() ?: return VToDo()
+
+        // Clone the first exception into a new object and drop RECURRENCE-ID so it behaves as a main item.
+        val main = VToDo(
+            PropertyList(
+                firstException.propertyList.all.filterNot { it.name == Property.RECURRENCE_ID }
+            ),
+            ComponentList(firstException.alarms)
+        )
+
+        // If the copied task has no RRULE/RDATE, synthesize recurrence from exception RECURRENCE-IDs.
+        val isRecurring = main.getProperty<RRule<*>>(Property.RRULE).isPresent || main.getProperty<RDate<*>>(Property.RDATE).isPresent
+        if (!isRecurring) {
+            val recurrenceDates = exceptions.mapNotNull { exception ->
+                val recurrenceDate = exception.recurrenceId?.date ?: return@mapNotNull null
+                // AndroidTimeUtils expects UTC date-times as OffsetDateTime, not Instant.
+                if (recurrenceDate is Instant) {
+                    OffsetDateTime.ofInstant(recurrenceDate, ZoneOffset.UTC)
+                } else {
+                    recurrenceDate
+                }
+            }
+            if (recurrenceDates.isNotEmpty()) {
+                main += RDate(DateList(*recurrenceDates.toTypedArray()))
+            }
+        }
+
+        return main
     }
 
 }
