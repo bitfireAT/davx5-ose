@@ -294,14 +294,7 @@ class CalendarSyncManager @AssistedInject constructor(
     // helpers
 
     private fun processICalendar(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
-        val calendar =
-            try {
-                ICalendarParser().parse(reader)
-            } catch (e: InvalidICalendarException) {
-                logger.log(Level.WARNING, "Received invalid iCalendar, ignoring", e)
-                notifyInvalidResource(e, fileName)
-                return
-            }
+        val calendar = ICalendarParser().parse(reader)
 
         val uidsAndEvents = CalendarUidSplitter<VEvent>().associateByUid(calendar, Component.VEVENT)
         if (uidsAndEvents.size != 1) {

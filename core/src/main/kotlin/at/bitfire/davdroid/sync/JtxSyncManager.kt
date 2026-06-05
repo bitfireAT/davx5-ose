@@ -28,6 +28,7 @@ import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.exception.InvalidICalendarException
+import at.bitfire.synctools.exception.InvalidResourceException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -152,7 +153,14 @@ class JtxSyncManager @AssistedInject constructor(
                         val eTag = response[GetETag::class.java]?.eTag
                             ?: throw DavException("Received multi-get response without ETag")
 
-                        processICalObject(response.href.lastSegment, eTag, StringReader(iCal))
+                        val fileName = response.href.lastSegment
+
+                        try {
+                            processICalObject(fileName, eTag, StringReader(iCal))
+                        } catch (e: InvalidResourceException) {
+                            logger.log(Level.WARNING, "Error while processing jtx object", e)
+                            notifyInvalidResource(e, fileName)
+                        }
                     }
                 }
             }
@@ -169,15 +177,7 @@ class JtxSyncManager @AssistedInject constructor(
 
     @OpenForTesting
     internal fun processICalObject(fileName: String, eTag: String, reader: Reader) {
-        val icalobjects: MutableList<JtxICalObject> = mutableListOf()
-        try {
-            // parse the reader content and return the list of ICalObjects
-            icalobjects.addAll(JtxICalObject.fromReader(reader, localCollection))
-        } catch (e: InvalidICalendarException) {
-            logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
-            notifyInvalidResource(e, fileName)
-            return
-        }
+        val icalobjects = JtxICalObject.fromReader(reader, localCollection)
 
         logger.log(Level.INFO, "Found ${icalobjects.size} entries in $fileName", icalobjects)
 
