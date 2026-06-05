@@ -9,6 +9,7 @@ import at.bitfire.davdroid.resource.LocalTaskList.Companion.COLUMN_TASKLIST_SYNC
 import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTask
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
+import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -59,6 +60,13 @@ class LocalTaskList (
 
     internal val recurringTaskList = DmfsRecurringTaskList(dmfsTaskList)
 
+
+    fun add(taskAndExceptions: TaskAndExceptions): Long {
+        return recurringTaskList.addTaskAndExceptions(taskAndExceptions)
+    }
+
+
+    // implement LocalResource
 
     override fun countAll(): Int =
         dmfsTaskList.countTasks(null, null)

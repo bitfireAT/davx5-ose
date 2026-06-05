@@ -4,9 +4,7 @@
 
 package at.bitfire.synctools.mapping.tasks
 
-import android.content.ContentValues
 import android.content.Entity
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.icalendar.AssociatedTasks
 import at.bitfire.synctools.mapping.tasks.builder.AlarmsBuilder
 import at.bitfire.synctools.mapping.tasks.builder.AllDayBuilder
@@ -40,14 +38,9 @@ import at.bitfire.synctools.mapping.tasks.builder.TitleBuilder
 import at.bitfire.synctools.mapping.tasks.builder.UidBuilder
 import at.bitfire.synctools.mapping.tasks.builder.UnknownPropertiesBuilder
 import at.bitfire.synctools.mapping.tasks.builder.UrlBuilder
-import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
-import at.bitfire.synctools.storage.tasks.TasksBatchOperation
 import net.fortuna.ical4j.model.component.VToDo
-import org.dmfs.tasks.contract.TaskContract.Properties
-import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -56,11 +49,7 @@ import java.util.logging.Logger
 class DmfsTaskBuilder(
     private val taskList: DmfsTaskList,
 
-    @Deprecated("Argument will be removed when we switch to using the new storage/mapping API")
-    private val task: Task,
-
     // DmfsTask-level fields
-    private val id: Long?,
     syncId: String?,
     eTag: String?,
     flags: Int
@@ -109,45 +98,6 @@ class DmfsTaskBuilder(
         UnknownPropertiesBuilder(taskList),
     )
 
-    @Deprecated("Use at.bitfire.synctools.storage.tasks API instead")
-    fun addRows(batch: TasksBatchOperation) {
-        val entity = buildTask()
-
-        val mainBuilder = CpoBuilder.newInsert(taskList.tasksUri())
-            .withValues(entity.entityValues)
-        val idxTask = batch.nextBackrefIdx() // Get nextBackrefIdx BEFORE adding builder to batch
-        batch += mainBuilder
-
-        for (subValue in entity.subValues)
-            batch += CpoBuilder.newInsert(subValue.uri)
-                .withValues(subValue.values)
-                .withValueBackReference(Properties.TASK_ID, idxTask)
-
-        logger.log(Level.FINE, "Added task", mainBuilder.build())
-    }
-
-    @Deprecated("Use at.bitfire.synctools.storage.tasks API instead")
-    fun updateRows(batch: TasksBatchOperation) {
-        val existingId = requireNotNull(id)
-        val entity = buildTask()
-
-        val mainValues = ContentValues(entity.entityValues).apply {
-            // LIST_ID must not be updated (it doesn't change for updates, and setting it would cause issues)
-            remove(Tasks.LIST_ID)
-        }
-        val mainBuilder = CpoBuilder.newUpdate(taskList.taskUri(existingId))
-            .withValues(mainValues)
-        batch += mainBuilder
-
-        for (subValue in entity.subValues)
-            batch += CpoBuilder.newInsert(subValue.uri)
-                .withValues(ContentValues(subValue.values).apply {
-                    put(Properties.TASK_ID, existingId)
-                })
-
-        logger.log(Level.FINE, "Updated task", mainBuilder.build())
-    }
-
     fun build(associatedTasks: AssociatedTasks): TaskAndExceptions {
         TODO("Map iCalendar data (AssociatedTasks) to content provider data (TaskAndExceptions)")
         // just like AndroidEventBuilder().build()
@@ -158,17 +108,6 @@ class DmfsTaskBuilder(
         TODO("Build a single Entity based on from")
         // in some cases (like to see whether the main item is all-day, "main" can be used
         // just like AndroidEventBuilder().buildEvent()
-    }
-
-    @Deprecated("Replaced by build()")
-    private fun buildTask(): Entity {
-        val entity = Entity(ContentValues())
-
-        for (fieldBuilder in fieldBuilders)
-            fieldBuilder.build(task, entity)
-        logger.log(Level.FINE, "Built task", entity.entityValues)
-
-        return entity
     }
 
 }
