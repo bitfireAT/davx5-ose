@@ -119,7 +119,8 @@ class TasksSyncManager @AssistedInject constructor(
             resource.updateUid(uid)
         }
 
-        // increase SEQUENCE of main event and remember value
+        /* Increase SEQUENCE of main task in memory and remember new value.
+        Will be written to provider later over onSuccessContext. */
         val updatedSequence = SequenceUpdater().increaseSequence(task)
 
         // generate iCalendar and convert to request body
@@ -131,7 +132,7 @@ class TasksSyncManager @AssistedInject constructor(
             suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
             requestBody = icalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8),
             onSuccessContext = GeneratedResource.OnSuccessContext(
-                sequence = 234
+                sequence = updatedSequence
             )
         )
     }

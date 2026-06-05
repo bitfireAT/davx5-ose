@@ -193,7 +193,8 @@ class CalendarSyncManager @AssistedInject constructor(
         val localEvent = resource.androidEvent
         logger.log(Level.FINE, "Preparing upload of event #${resource.id}", localEvent)
 
-        // increase SEQUENCE of main event and remember value
+        /* Increase SEQUENCE of main event in memory and remember new value.
+        Will be written to provider later over onSuccessContext. */
         val updatedSequence = SequenceUpdater().increaseSequence(localEvent.main)
 
         // map Android event to iCalendar (also generates UID, if necessary)

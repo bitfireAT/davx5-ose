@@ -11,7 +11,6 @@ import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.logging.Level
 import java.util.logging.Logger
 
 /**

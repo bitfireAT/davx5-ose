@@ -16,12 +16,19 @@ class SequenceUpdater {
      *
      * @return updated sequence (or *null* if sequence was not increased/modified)
      */
-    fun increaseSequence(task: Task): Int? {
+    fun increaseSequence(task: Task): Int {
+        // In the future, this should use the same algorithm as
+
         val currentSeq = task.sequence
-        if (currentSeq == null)   // sequence has not been assigned yet (i.e. this task was just locally created)
-            task.sequence = 0
-        else                    // task was modified, increase sequence
-            task.sequence = currentSeq + 1
+        val newSeq = if (currentSeq == null)
+            0                   // sequence has not been assigned yet (i.e. this task was just locally created)
+        else
+            currentSeq + 1      // task was modified, increase sequence
+
+        // update in Task
+        task.sequence = newSeq
+
+        return newSeq
     }
 
 }
