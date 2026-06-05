@@ -29,6 +29,7 @@ import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskReader
 import at.bitfire.ical4android.TaskWriter
 import at.bitfire.synctools.exception.InvalidICalendarException
+import at.bitfire.synctools.mapping.tasks.SequenceUpdater
 import at.bitfire.synctools.storage.tasks.DmfsTask
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -113,10 +114,13 @@ class TasksSyncManager @AssistedInject constructor(
         // get/create UID
         val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(task.uid)
         if (uidIsGenerated) {
-            // modify in Task and persist to tasks provider
+            // update in Task and write to tasks provider
             task.uid = uid
             resource.updateUid(uid)
         }
+
+        // increase SEQUENCE of main event and remember value
+        val updatedSequence = SequenceUpdater().increaseSequence(task)
 
         // generate iCalendar and convert to request body
         val icalWriter = StringWriter()
@@ -125,7 +129,10 @@ class TasksSyncManager @AssistedInject constructor(
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
-            requestBody = icalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+            requestBody = icalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8),
+            onSuccessContext = GeneratedResource.OnSuccessContext(
+                sequence = 234
+            )
         )
     }
 
