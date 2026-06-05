@@ -67,8 +67,6 @@ class LocalTask(
             DmfsTask.COLUMN_ETAG to eTag,
             Tasks._DIRTY to 0
         )
-        // TODO check:
-        // values.put(Tasks.SYNC_VERSION, dmfsTask.task!!.sequence)
         if (fileName.isPresent)
             values.put(Tasks._SYNC_ID, fileName.get())
         taskList.updateTaskRow(id, values)
@@ -82,14 +80,16 @@ class LocalTask(
         )
     }
 
-    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+    override fun updateSequence(sequence: Int) {
+        taskList.updateTaskRow(id, contentValuesOf(
+            Tasks.SYNC_VERSION to sequence
+        ))
+    }
 
     override fun updateUid(uid: String) {
-        taskList.updateTaskRow(
-            id, contentValuesOf(
-                Tasks._UID to uid
-            )
-        )
+        taskList.updateTaskRow(id, contentValuesOf(
+            Tasks._UID to uid
+        ))
     }
 
     override fun deleteLocal() {

@@ -11,7 +11,6 @@ import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -73,22 +72,10 @@ class LocalTaskList (
     override fun findDeleted() = dmfsTaskList.findDmfsTasks(Tasks._DELETED, null)
         .map { LocalTask(it) }
 
-    override fun findDirty(): List<LocalTask> {
-        val dmfsTasks = dmfsTaskList.findDmfsTasks(Tasks._DIRTY, null)
-        for (localTask in dmfsTasks) {
-            try {
-                val task = requireNotNull(localTask.task)
-                val sequence = task.sequence
-                if (sequence == null)   // sequence has not been assigned yet (i.e. this task was just locally created)
-                    task.sequence = 0
-                else                    // task was modified, increase sequence
-                    task.sequence = sequence + 1
-            } catch(e: Exception) {
-                logger.log(Level.WARNING, "Couldn't check/increase sequence", e)
-            }
+    override fun findDirty(): List<LocalTask> =
+        dmfsTaskList.findDmfsTasks(Tasks._DIRTY, null).map {
+            LocalTask(it)
         }
-        return dmfsTasks.map { LocalTask(it) }
-    }
 
     override fun findByName(name: String) =
         dmfsTaskList.findDmfsTasks("${Tasks._SYNC_ID}=?", arrayOf(name))
