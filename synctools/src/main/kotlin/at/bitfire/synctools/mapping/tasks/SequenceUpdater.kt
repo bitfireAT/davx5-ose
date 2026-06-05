@@ -18,7 +18,9 @@ class SequenceUpdater {
      */
     @Suppress("RedundantNullableReturnType")
     fun increaseSequence(task: Task): Int? {
-        // In the future, this should only increase the sequence for group-scheduled tasks.
+        /* In the future, this should only increase the sequence for group-scheduled tasks
+        and return null for non-group-scheduled tasks. However, at the moment we don't support
+        attendees and thus there's no way to determine whether a task is group-scheduled or not. */
 
         val currentSeq = task.sequence
         val newSeq = if (currentSeq == null)
