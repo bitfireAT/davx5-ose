@@ -13,8 +13,13 @@ import net.fortuna.ical4j.model.property.Url
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.net.URI
 import java.net.URISyntaxException
+import java.util.logging.Level
+import java.util.logging.Logger
 
 class UrlHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
+
+    private val logger
+        get() = Logger.getLogger(UrlHandler::class.java.name)
 
     override fun process(from: ContentValues, to: Task) {
         to.url = from.getAsString(Tasks.URL)
@@ -25,8 +30,9 @@ class UrlHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
         if (url != null) {
             try {
                 to += Url(URI(url))
-            } catch (_: URISyntaxException) {
+            } catch (e: URISyntaxException) {
                 // Ignore invalid URLs
+                logger.log(Level.WARNING, "Ignoring invalid task URL: $url", e)
             }
         }
     }
