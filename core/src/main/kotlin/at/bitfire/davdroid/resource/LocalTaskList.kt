@@ -7,7 +7,6 @@ package at.bitfire.davdroid.resource
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.resource.LocalTaskList.Companion.COLUMN_TASKLIST_SYNC_STATE
 import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
-import at.bitfire.synctools.storage.tasks.DmfsTask
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import org.dmfs.tasks.contract.TaskContract

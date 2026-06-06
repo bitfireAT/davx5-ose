@@ -10,7 +10,7 @@ import android.net.Uri
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
-import at.bitfire.synctools.storage.tasks.DmfsTask
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import com.google.common.base.MoreObjects
 import org.apache.commons.lang3.StringUtils
@@ -39,7 +39,7 @@ class LocalTask(
         get() = mainValues.getAsString(Tasks._SYNC_ID)
 
     override val eTag: String?
-        get() = mainValues.getAsString(DmfsTask.COLUMN_ETAG)
+        get() = mainValues.getAsString(DmfsTasksContract.COLUMN_ETAG)
 
     /**
      * Note: Schedule-Tag is not supported for tasks
@@ -47,7 +47,7 @@ class LocalTask(
     override val scheduleTag: String? = null
 
     override val flags: Int
-        get() = mainValues.getAsInteger(DmfsTask.COLUMN_FLAGS) ?: 0
+        get() = mainValues.getAsInteger(DmfsTasksContract.COLUMN_FLAGS) ?: 0
 
 
     // sync methods
@@ -64,7 +64,7 @@ class LocalTask(
             logger.fine("Schedule-Tag for tasks not supported, won't save")
 
         val values = contentValuesOf(
-            DmfsTask.COLUMN_ETAG to eTag,
+            DmfsTasksContract.COLUMN_ETAG to eTag,
             Tasks._DIRTY to 0
         )
         if (fileName.isPresent)
@@ -75,7 +75,7 @@ class LocalTask(
     override fun updateFlags(flags: Int) {
         taskList.updateTaskRow(
             id, contentValuesOf(
-                DmfsTask.COLUMN_FLAGS to flags
+                DmfsTasksContract.COLUMN_FLAGS to flags
             )
         )
     }
