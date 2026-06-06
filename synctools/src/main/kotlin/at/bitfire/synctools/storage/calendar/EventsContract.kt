@@ -9,7 +9,7 @@ import android.provider.CalendarContract
 import at.bitfire.synctools.storage.calendar.EventsContract.CATEGORIES_SEPARATOR
 
 /**
- * How this library uses some Android event sync columns and data rows.
+ * How synctools uses some Android event sync columns and data rows.
  */
 object EventsContract {
 
