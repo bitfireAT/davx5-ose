@@ -8,6 +8,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.resource.LocalTaskList.Companion.COLUMN_TASKLIST_SYNC_STATE
 import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
@@ -101,20 +102,20 @@ class LocalTaskList (
 
     override fun markNotDirty(flags: Int): Int =
         dmfsTaskList.updateTasks(
-            contentValuesOf(DmfsTask.COLUMN_FLAGS to flags),
+            contentValuesOf(DmfsTasksContract.COLUMN_FLAGS to flags),
             "${Tasks.LIST_ID}=? AND ${Tasks._DIRTY}=0",
             arrayOf(dmfsTaskList.id.toString())
         )
 
     override fun removeNotDirtyMarked(flags: Int) =
         dmfsTaskList.deleteTasks(
-            "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${DmfsTask.COLUMN_FLAGS}=?",
+            "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${DmfsTasksContract.COLUMN_FLAGS}=?",
             arrayOf(dmfsTaskList.id.toString(), flags.toString())
         )
 
     override fun forgetETags() {
         dmfsTaskList.updateTasks(
-            contentValuesOf(DmfsTask.COLUMN_ETAG to null),
+            contentValuesOf(DmfsTasksContract.COLUMN_ETAG to null),
             "${Tasks.LIST_ID}=?",
             arrayOf(dmfsTaskList.id.toString())
         )

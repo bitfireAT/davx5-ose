@@ -13,6 +13,7 @@ import android.provider.CalendarContract.Reminders
 import androidx.core.content.ContextCompat
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.Binds
 import dagger.Module
@@ -38,7 +39,7 @@ class AccountSettingsMigration10 @Inject constructor(
     override fun migrate(account: Account) {
         TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.use { provider ->
             val tasksUri = provider.tasksUri().asSyncAdapter(account)
-            val emptyETag = contentValuesOf(DmfsTask.COLUMN_ETAG to null)
+            val emptyETag = contentValuesOf(DmfsTasksContract.COLUMN_ETAG to null)
             provider.client.update(tasksUri, emptyETag, "${TaskContract.Tasks._DIRTY}=0 AND ${TaskContract.Tasks._DELETED}=0", null)
         }
 
