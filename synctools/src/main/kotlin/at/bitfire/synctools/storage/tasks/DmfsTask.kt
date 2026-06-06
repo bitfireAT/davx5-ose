@@ -13,6 +13,8 @@ import at.bitfire.synctools.mapping.tasks.DmfsTaskBuilder
 import at.bitfire.synctools.mapping.tasks.DmfsTaskProcessor
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract.COLUMN_ETAG
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract.COLUMN_FLAGS
 import at.bitfire.synctools.storage.toContentValues
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.parameter.RelType
@@ -201,13 +203,5 @@ class DmfsTask(
      * Shortcut for [DmfsTaskList.deleteTask] with [id].
      */
     fun delete(): Int = taskList.deleteTask(id!!)
-
-
-    companion object {
-        const val UNKNOWN_PROPERTY_DATA = TaskContract.Properties.DATA0
-
-        const val COLUMN_ETAG = TaskContract.Tasks.SYNC1
-        const val COLUMN_FLAGS = TaskContract.Tasks.SYNC2
-    }
 
 }
