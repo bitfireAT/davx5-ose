@@ -12,6 +12,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.storage.tasks.DmfsTask
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import com.google.common.base.MoreObjects
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
@@ -61,7 +62,7 @@ class LocalTask(
         val values = ContentValues(4)
         if (fileName.isPresent)
             values.put(Tasks._SYNC_ID, fileName.get())
-        values.put(DmfsTask.COLUMN_ETAG, eTag)
+        values.put(DmfsTasksContract.COLUMN_ETAG, eTag)
         values.put(Tasks._DIRTY, 0)
         dmfsTask.update(values)
 
@@ -72,7 +73,7 @@ class LocalTask(
 
     override fun updateFlags(flags: Int) {
         if (id != null) {
-            val values = contentValuesOf(DmfsTask.COLUMN_FLAGS to flags)
+            val values = contentValuesOf(DmfsTasksContract.COLUMN_FLAGS to flags)
             dmfsTask.update(values)
         }
         dmfsTask.flags = flags
