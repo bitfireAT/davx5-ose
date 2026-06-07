@@ -5,7 +5,7 @@
 package at.bitfire.synctools.mapping.tasks
 
 import android.content.Entity
-import at.bitfire.synctools.storage.calendar.EventsContract
+import org.dmfs.tasks.contract.TaskContract.Tasks
 
 class SequenceUpdater {
 
@@ -24,7 +24,7 @@ class SequenceUpdater {
         attendees and thus there's no way to determine whether a task is group-scheduled or not. */
 
         val mainValues = mainTask.entityValues
-        val currentSeq = mainValues.getAsInteger(EventsContract.COLUMN_SEQUENCE)
+        val currentSeq = mainValues.getAsInteger(Tasks.SYNC_VERSION)
 
         val newSeq = if (currentSeq == null)
             0                   // sequence has not been assigned yet (i.e. this task was just locally created)
