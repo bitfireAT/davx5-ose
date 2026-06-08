@@ -22,6 +22,7 @@ import net.fortuna.ical4j.util.TimeZones
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.After
+import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNotSame
@@ -29,6 +30,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import java.util.UUID
@@ -45,7 +47,6 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
 
     private val timeZoneId = TimeZones.UTC_ID
 
-    private lateinit var testAccount: Account
     private lateinit var taskList: DmfsTaskList
     private lateinit var recurringTaskList: DmfsRecurringTaskList
 
@@ -55,8 +56,9 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
 
         // A real non-local account is required here:
         // - lists in local (TaskContract.LOCAL_ACCOUNT_TYPE) accounts are deleted immediately instead of being marked as _DELETED
-        // - lists in fake non-local accounts are removed by the tasks provider as stale lists → flaky tests
-        testAccount = TestAccount.create(accountName = "${javaClass.simpleName}-${providerName}-${UUID.randomUUID()}")
+        // - lists in fake non-local accounts are removed by the tasks provider as stale lists
+        // The account is created once per class to avoid repeated AccountManager churn while
+        // still creating a fresh list for every test method.
         taskList = TestTaskList.create(testAccount, provider)
         recurringTaskList = spyk(DmfsRecurringTaskList(taskList))
     }
@@ -66,7 +68,24 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         // Clean up tasks after every test
         taskList.deleteTasks(null, null)
         taskList.delete()
-        TestAccount.remove(testAccount)
+    }
+
+    companion object {
+
+        private lateinit var testAccount: Account
+
+        @BeforeClass
+        @JvmStatic
+        fun createTestAccount() {
+            testAccount = TestAccount.create(accountName = DmfsRecurringTaskListTest::class.java.simpleName)
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun removeTestAccount() {
+            TestAccount.remove(testAccount)
+        }
+
     }
 
     // test CRUD
