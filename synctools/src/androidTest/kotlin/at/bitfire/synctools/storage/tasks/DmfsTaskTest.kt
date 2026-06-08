@@ -13,6 +13,8 @@ import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.impl.TestTaskList
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract.COLUMN_ETAG
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract.COLUMN_FLAGS
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.parameter.RelType
@@ -70,8 +72,8 @@ class DmfsTaskTest(
             taskList!!, Entity(contentValuesOf(
                 Tasks._ID to 123,
                 Tasks._SYNC_ID to "some-ical.ics",
-                DmfsTask.COLUMN_ETAG to "some-etag",
-                DmfsTask.COLUMN_FLAGS to 45
+                COLUMN_ETAG to "some-etag",
+                COLUMN_FLAGS to 45
             ))
         )
         assertEquals(123L, dmfsTask.id)

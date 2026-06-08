@@ -8,7 +8,7 @@ import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
-import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.COLUMN_ETAG
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract.COLUMN_ETAG
 import at.bitfire.synctools.test.assertContentValuesEqual
 import net.fortuna.ical4j.model.component.VToDo
 import org.junit.Test
