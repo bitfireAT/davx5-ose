@@ -12,7 +12,7 @@
 
     <application>
         <service
-                android:name=".test.account.TestAccountAuthenticatorService"
+                android:name="at.bitfire.synctools.test.account.TestAccountAuthenticatorService"
                 android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
