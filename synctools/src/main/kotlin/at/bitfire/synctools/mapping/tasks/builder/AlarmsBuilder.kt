@@ -6,7 +6,6 @@ package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.icalendar.dtStart
 import at.bitfire.synctools.icalendar.due
 import at.bitfire.synctools.storage.tasks.DmfsTaskList

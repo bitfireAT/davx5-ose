@@ -5,7 +5,6 @@
 package at.bitfire.synctools.mapping.tasks.handler
 
 import android.content.ContentValues
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.exception.InvalidLocalResourceException
 
 interface DmfsTaskFieldHandler {

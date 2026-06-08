@@ -5,7 +5,6 @@
 package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
-import at.bitfire.ical4android.Task
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.parameter.Email

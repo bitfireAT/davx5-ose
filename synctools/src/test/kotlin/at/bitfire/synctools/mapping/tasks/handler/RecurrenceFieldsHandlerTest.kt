@@ -9,7 +9,6 @@ import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
-import at.bitfire.ical4android.Task
 import io.mockk.mockk
 import net.fortuna.ical4j.model.DateList
 import net.fortuna.ical4j.model.ParameterList

@@ -8,7 +8,6 @@ import android.content.ContentValues
 import android.content.Entity
 import android.net.Uri
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Property

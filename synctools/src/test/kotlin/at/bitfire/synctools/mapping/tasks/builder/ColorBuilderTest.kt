@@ -7,7 +7,6 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.icalendar.Css3Color
 import at.bitfire.synctools.mapping.tasks.VToDoUtil.build
 import at.bitfire.synctools.test.assertContentValuesEqual

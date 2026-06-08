@@ -6,7 +6,6 @@ package at.bitfire.synctools.mapping.tasks.handler
 
 import android.content.ContentValues
 import android.content.Entity
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.util.AndroidTimeUtils
 import net.fortuna.ical4j.model.component.VToDo

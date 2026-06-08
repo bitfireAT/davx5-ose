@@ -6,7 +6,6 @@ package at.bitfire.synctools.mapping.tasks.handler
 
 import android.content.ContentValues
 import android.content.Entity
-import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
 import at.bitfire.synctools.icalendar.plusAssign
