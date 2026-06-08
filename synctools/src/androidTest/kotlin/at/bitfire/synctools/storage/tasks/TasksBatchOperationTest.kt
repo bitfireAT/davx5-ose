@@ -10,7 +10,6 @@ import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.impl.TestTaskList
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
-import at.bitfire.synctools.test.BuildConfig
 import org.dmfs.tasks.contract.TaskContract
 import org.junit.Test
 
@@ -18,7 +17,7 @@ class TasksBatchOperationTest(
     providerName: TaskProvider.ProviderName
 ) : DmfsStyleProvidersTaskTest(providerName) {
 
-    private val testAccount = Account(javaClass.name, BuildConfig.APPLICATION_ID)
+    private val testAccount = Account(javaClass.name, TaskContract.LOCAL_ACCOUNT_TYPE)
 
     @Test(expected = LocalStorageException::class)
     fun testTasksProvider_OperationsPerYieldPoint_500_WithoutMax() {

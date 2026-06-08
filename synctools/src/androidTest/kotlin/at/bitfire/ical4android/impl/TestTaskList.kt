@@ -13,6 +13,14 @@ import org.dmfs.tasks.contract.TaskContract
 
 object TestTaskList {
 
+    /**
+     * Creates a test task list on the given test account.
+     *
+     * @param account   test account (must have a real account type or [TaskContract.LOCAL_ACCOUNT_TYPE],
+     *                  otherwise the provider may immediately remove the account again)
+     * @param provider  tasks provider to use
+     * @return the created test task List (don't forget to delete it when tests are finished)
+     */
     fun create(account: Account, provider: TaskProvider): DmfsTaskList {
         val values = contentValuesOf(
             TaskContract.TaskListColumns.LIST_NAME to "Test Task List",

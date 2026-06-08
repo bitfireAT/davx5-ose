@@ -43,7 +43,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     val mockkRule = MockKRule(this)
 
     // We can't use TaskContract.LOCAL_ACCOUNT_TYPE, see testProcessDeletedExceptions
-    private val testAccount = Account(javaClass.simpleName, javaClass.name)
+    private val testAccount = Account(javaClass.simpleName, TaskContract.LOCAL_ACCOUNT_TYPE)
     private val timeZoneId = TimeZones.UTC_ID
 
     private lateinit var taskList: DmfsTaskList
