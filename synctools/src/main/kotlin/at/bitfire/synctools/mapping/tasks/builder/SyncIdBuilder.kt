@@ -10,7 +10,8 @@ import org.dmfs.tasks.contract.TaskContract.Tasks
 
 class SyncIdBuilder(
     private val syncId: String?
-) : DmfsTaskFieldBuilderVToDo {
+) : DmfsTaskEntityBuilder {
+
     override fun build(from: VToDo, to: Entity) {
         to.entityValues.put(Tasks._SYNC_ID, syncId)
     }

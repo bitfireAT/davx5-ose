@@ -21,7 +21,8 @@ import kotlin.jvm.optionals.getOrNull
  */
 class RelationsBuilder(
     private val taskList: DmfsTaskList
-) : DmfsTaskFieldBuilderVToDo {
+) : DmfsTaskEntityBuilder {
+
     override fun build(from: VToDo, to: Entity) {
         // parent_id will be re-calculated when the relation row is inserted (if there is any)
         to.entityValues.put(Tasks.PARENT_ID, null as Long?)

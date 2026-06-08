@@ -14,9 +14,10 @@ import net.fortuna.ical4j.model.property.RRule
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class RecurrenceFieldsBuilder : DmfsTaskFieldBuilderVToDo {
+class RecurrenceFieldsBuilder : DmfsTaskEntityBuilder {
 
     private val allDayBuilder = AllDayBuilder()
+
     override fun build(from: VToDo, to: Entity) = build(from, from, to)
 
     override fun build(from: VToDo, main: VToDo, to: Entity) {

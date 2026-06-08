@@ -14,7 +14,8 @@ import org.dmfs.tasks.contract.TaskContract.Property.Category
 
 class CategoriesBuilder(
     private val taskList: DmfsTaskList
-) : DmfsTaskFieldBuilderVToDo {
+) : DmfsTaskEntityBuilder {
+
     override fun build(from: VToDo, to: Entity) {
         for (categoriesProp in from.getProperties<Categories>(Property.CATEGORIES)) {
             for (category in categoriesProp.categories.texts) {

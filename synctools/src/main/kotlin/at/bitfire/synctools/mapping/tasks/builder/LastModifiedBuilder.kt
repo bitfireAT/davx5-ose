@@ -12,7 +12,7 @@ import net.fortuna.ical4j.model.property.LastModified
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class LastModifiedBuilder : DmfsTaskFieldBuilderVToDo {
+class LastModifiedBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         val lastModified = from.getProperty<LastModified>(LastModified.LAST_MODIFIED).getOrNull()

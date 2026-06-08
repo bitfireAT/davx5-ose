@@ -10,7 +10,7 @@ import net.fortuna.ical4j.model.property.Duration
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class DurationBuilder : DmfsTaskFieldBuilderVToDo {
+class DurationBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         val duration = from.getProperty<Duration>(Duration.DURATION).getOrNull()

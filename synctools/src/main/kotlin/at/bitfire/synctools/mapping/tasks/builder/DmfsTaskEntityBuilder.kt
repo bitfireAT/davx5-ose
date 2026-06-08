@@ -7,7 +7,7 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.Entity
 import net.fortuna.ical4j.model.component.VToDo
 
-interface DmfsTaskFieldBuilderVToDo {
+interface DmfsTaskEntityBuilder {
 
     /**
      * Maps a specific part of the given [VToDo] into the provided [Entity].

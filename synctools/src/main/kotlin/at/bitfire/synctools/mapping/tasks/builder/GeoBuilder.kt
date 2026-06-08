@@ -10,7 +10,7 @@ import net.fortuna.ical4j.model.property.Geo
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class GeoBuilder : DmfsTaskFieldBuilderVToDo {
+class GeoBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         val geo = from.getProperty<Geo>(Geo.GEO).getOrNull()

@@ -10,7 +10,7 @@ import net.fortuna.ical4j.model.property.Priority
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class PriorityBuilder : DmfsTaskFieldBuilderVToDo {
+class PriorityBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         val priority = from.getProperty<Priority>(Priority.PRIORITY).getOrNull()

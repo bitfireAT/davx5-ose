@@ -10,7 +10,7 @@ import net.fortuna.ical4j.model.property.Sequence
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class SequenceBuilder : DmfsTaskFieldBuilderVToDo {
+class SequenceBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         /* When we build the SYNC_VERSION column from a real task, we set the sequence to 0 (not null), so that we

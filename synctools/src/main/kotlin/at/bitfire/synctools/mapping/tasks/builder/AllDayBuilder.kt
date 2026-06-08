@@ -18,7 +18,7 @@ import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.time.ZoneId
 import kotlin.jvm.optionals.getOrNull
 
-class AllDayBuilder : DmfsTaskFieldBuilderVToDo {
+class AllDayBuilder : DmfsTaskEntityBuilder {
 
     private val tzRegistry by lazy { TimeZoneRegistryFactory.getInstance().createRegistry() }
 

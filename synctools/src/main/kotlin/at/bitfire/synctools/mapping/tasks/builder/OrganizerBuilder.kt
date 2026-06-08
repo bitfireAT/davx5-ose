@@ -14,10 +14,11 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
 
-class OrganizerBuilder : DmfsTaskFieldBuilderVToDo {
+class OrganizerBuilder : DmfsTaskEntityBuilder {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
+
     override fun build(from: VToDo, to: Entity) {
         val organizer = from.getProperty<Organizer>(Organizer.ORGANIZER).getOrNull()
         if (organizer == null) {

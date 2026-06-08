@@ -18,7 +18,7 @@ import at.bitfire.synctools.mapping.tasks.builder.CompletedBuilder
 import at.bitfire.synctools.mapping.tasks.builder.CreatedBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DescriptionBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DirtyBuilder
-import at.bitfire.synctools.mapping.tasks.builder.DmfsTaskFieldBuilderVToDo
+import at.bitfire.synctools.mapping.tasks.builder.DmfsTaskEntityBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DueBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DurationBuilder
 import at.bitfire.synctools.mapping.tasks.builder.ETagBuilder
@@ -43,13 +43,9 @@ import at.bitfire.synctools.mapping.tasks.builder.UrlBuilder
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import net.fortuna.ical4j.model.component.VToDo
-import java.util.logging.Logger
 
-/**
- * Writes [at.bitfire.ical4android.Task] to dmfs task provider data rows.
- */
 class DmfsTaskBuilder(
-    private val taskList: DmfsTaskList,
+    taskList: DmfsTaskList,
 
     // DmfsTask-level fields
     syncId: String?,
@@ -57,10 +53,7 @@ class DmfsTaskBuilder(
     flags: Int
 ) {
 
-    private val logger
-        get() = Logger.getLogger(javaClass.name)
-
-    private val fieldBuilders: Array<DmfsTaskFieldBuilderVToDo> = arrayOf(
+    private val fieldBuilders: Array<DmfsTaskEntityBuilder> = arrayOf(
         // main task row fields
         UidBuilder(),
         SyncIdBuilder(syncId),

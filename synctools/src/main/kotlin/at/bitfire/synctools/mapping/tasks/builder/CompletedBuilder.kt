@@ -12,7 +12,7 @@ import net.fortuna.ical4j.model.property.Completed
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class CompletedBuilder : DmfsTaskFieldBuilderVToDo {
+class CompletedBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         val completed = from.getProperty<Completed>(Completed.COMPLETED).getOrNull()

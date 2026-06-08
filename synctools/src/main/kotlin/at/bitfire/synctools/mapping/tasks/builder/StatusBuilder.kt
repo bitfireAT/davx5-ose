@@ -11,7 +11,7 @@ import net.fortuna.ical4j.model.property.immutable.ImmutableStatus
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class StatusBuilder : DmfsTaskFieldBuilderVToDo {
+class StatusBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         val status = from.getProperty<Status>(Status.STATUS).getOrNull()

@@ -12,7 +12,7 @@ import net.fortuna.ical4j.model.property.Due
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class DueBuilder : DmfsTaskFieldBuilderVToDo {
+class DueBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         val due = from.getProperty<Due<*>>(Due.DUE).getOrNull()

@@ -22,7 +22,8 @@ import kotlin.jvm.optionals.getOrNull
 
 class AlarmsBuilder(
     private val taskList: DmfsTaskList
-) : DmfsTaskFieldBuilderVToDo {
+) : DmfsTaskEntityBuilder {
+
     override fun build(from: VToDo, to: Entity) {
         for (alarm in from.alarms) {
             val (alarmRef, minutes) = AlarmTriggerCalculator.alarmTriggerToMinutes(

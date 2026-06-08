@@ -17,10 +17,11 @@ import java.util.logging.Logger
 
 class UnknownPropertiesBuilder(
     private val taskList: DmfsTaskList
-) : DmfsTaskFieldBuilderVToDo {
+) : DmfsTaskEntityBuilder {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
+
     override fun build(from: VToDo, to: Entity) {
         for (property in unknownProperties(from)) {
             val value = property.value

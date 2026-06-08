@@ -8,7 +8,7 @@ import android.content.Entity
 import net.fortuna.ical4j.model.component.VToDo
 import org.dmfs.tasks.contract.TaskContract.Tasks
 
-class DirtyBuilder : DmfsTaskFieldBuilderVToDo {
+class DirtyBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         // DIRTY is always unset when we create or update a task row

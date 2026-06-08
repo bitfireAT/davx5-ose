@@ -11,7 +11,7 @@ import net.fortuna.ical4j.model.property.immutable.ImmutableClazz
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class ClassificationBuilder : DmfsTaskFieldBuilderVToDo {
+class ClassificationBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         val clazz = from.getProperty<Clazz>(Clazz.CLASS).getOrNull()
