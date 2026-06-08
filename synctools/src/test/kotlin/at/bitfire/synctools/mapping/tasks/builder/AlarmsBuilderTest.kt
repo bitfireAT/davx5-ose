@@ -37,65 +37,8 @@ class AlarmsBuilderTest {
     }
     private val builder = AlarmsBuilder(taskList)
 
-    @Test
-    fun `old No alarms`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertTrue(result.subValues.isEmpty())
-    }
 
-    @Test
-    fun `old Audio alarm relative to start`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(
-                dtStart = DtStart(ZonedDateTime.of(2025, 1, 15, 10, 0, 0, 0, ZoneOffset.UTC))
-            ).also {
-                it.alarms += VAlarm().also { alarm ->
-                    alarm.add<VAlarm>(Action(ImmutableAction.VALUE_AUDIO))
-                    alarm.add<VAlarm>(Trigger(Duration.ofMinutes(-15)))
-                }
-            },
-            to = result
-        )
-        assertEquals(1, result.subValues.size)
-        val values = result.subValues.first().values
-        assertContentValuesEqual(contentValuesOf(
-            Alarm.MIMETYPE to Alarm.CONTENT_ITEM_TYPE,
-            Alarm.MINUTES_BEFORE to 15,
-            Alarm.REFERENCE to Alarm.ALARM_REFERENCE_START_DATE,
-            Alarm.MESSAGE to null,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_SOUND
-        ), values)
-        assertEquals(propertiesUri, result.subValues.first().uri)
-    }
 
-    @Test
-    fun `old Display alarm`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(
-                dtStart = DtStart(ZonedDateTime.of(2025, 1, 15, 10, 0, 0, 0, ZoneOffset.UTC))
-            ).also {
-                it.alarms += VAlarm().also { alarm ->
-                    alarm.add<VAlarm>(Action(ImmutableAction.VALUE_DISPLAY))
-                    alarm.add<VAlarm>(Trigger(Duration.ofMinutes(-30)))
-                }
-            },
-            to = result
-        )
-        assertEquals(1, result.subValues.size)
-        assertContentValuesEqual(contentValuesOf(
-            Alarm.MIMETYPE to Alarm.CONTENT_ITEM_TYPE,
-            Alarm.MINUTES_BEFORE to 30,
-            Alarm.REFERENCE to Alarm.ALARM_REFERENCE_START_DATE,
-            Alarm.MESSAGE to null,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE
-        ), result.subValues.first().values)
-    }
 
     @Test
     fun `No alarms`() {

@@ -36,47 +36,6 @@ class UnknownPropertiesBuilderTest {
     }
     private val builder = UnknownPropertiesBuilder(taskList)
 
-    @Test
-    fun `old No unknown properties`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertTrue(result.subValues.isEmpty())
-    }
-
-    @Test
-    fun `old Unknown property with value and parameters`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task().also {
-                it.unknownProperties += (XProperty("X-Some-Property", "Some Value")
-                    .add<XProperty>(XParameter("Param1", "Value1"))
-                    .add<XProperty>(XParameter("Param2", "Value2")))
-            },
-            to = result
-        )
-        assertEquals(1, result.subValues.size)
-        assertContentValuesEqual(contentValuesOf(
-            Properties.MIMETYPE to UnknownProperty.CONTENT_ITEM_TYPE,
-            UNKNOWN_PROPERTY_DATA to "[\"X-Some-Property\",\"Some Value\",{\"Param1\":\"Value1\",\"Param2\":\"Value2\"}]"
-        ), result.subValues.first().values)
-        assertEquals(propertiesUri, result.subValues.first().uri)
-    }
-
-    @Test
-    fun `old Unknown property exceeding size limit is ignored`() {
-        val result = Entity(ContentValues())
-        val longValue = "x".repeat(UnknownProperty.MAX_UNKNOWN_PROPERTY_SIZE + 1)
-        builder.build(
-            from = Task().also {
-                it.unknownProperties += XProperty("X-Huge-Property", longValue)
-            },
-            to = result
-        )
-        assertTrue(result.subValues.isEmpty())
-    }
 
     @Test
     fun `No unknown properties`() {

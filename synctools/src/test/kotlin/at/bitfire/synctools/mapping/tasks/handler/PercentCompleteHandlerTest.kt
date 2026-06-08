@@ -21,26 +21,6 @@ class PercentCompleteHandlerTest {
 
     private val handler = PercentCompleteHandler()
 
-    @Test
-    fun `legacy No PERCENT_COMPLETE leaves percentComplete null`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertNull(task.percentComplete)
-    }
-
-    @Test
-    fun `legacy PERCENT_COMPLETE 0 is mapped correctly`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.PERCENT_COMPLETE to 0), task)
-        assertEquals(0, task.percentComplete)
-    }
-
-    @Test
-    fun `legacy PERCENT_COMPLETE 100 is mapped correctly`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.PERCENT_COMPLETE to 100), task)
-        assertEquals(100, task.percentComplete)
-    }
 
     @Test
     fun `No PERCENT_COMPLETE leaves percentComplete null`() {

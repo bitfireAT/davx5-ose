@@ -24,19 +24,6 @@ class UrlHandlerTest {
 
     private val handler = UrlHandler()
 
-    @Test
-    fun `legacy No URL`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertNull(task.url)
-    }
-
-    @Test
-    fun `legacy URL set`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.URL to "https://example.com"), task)
-        assertEquals("https://example.com", task.url)
-    }
 
     @Test
     fun `No URL`() {

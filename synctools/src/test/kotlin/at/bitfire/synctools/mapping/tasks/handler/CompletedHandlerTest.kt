@@ -24,20 +24,6 @@ class CompletedHandlerTest {
 
     private val handler = CompletedHandler()
 
-    @Test
-    fun `legacy No COMPLETED leaves completedAt null`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertNull(task.completedAt)
-    }
-
-    @Test
-    fun `legacy COMPLETED epoch millis is mapped correctly`() {
-        val task = Task()
-        val epochMillis = 1_700_000_000_000L
-        handler.process(contentValuesOf(Tasks.COMPLETED to epochMillis), task)
-        assertEquals(Completed(Instant.ofEpochMilli(epochMillis)), task.completedAt)
-    }
 
     @Test
     fun `No COMPLETED leaves completedAt null`() {

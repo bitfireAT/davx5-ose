@@ -23,38 +23,6 @@ class TitleBuilderTest {
     private val builder = TitleBuilder()
 
     @Test
-    fun `old No SUMMARY`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertTrue(result.entityValues.containsKey(Tasks.TITLE))
-        assertNull(result.entityValues.get(Tasks.TITLE))
-    }
-
-    @Test
-    fun `old SUMMARY is blank`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(summary = ""),
-            to = result
-        )
-        assertTrue(result.entityValues.containsKey(Tasks.TITLE))
-        assertNull(result.entityValues.get(Tasks.TITLE))
-    }
-
-    @Test
-    fun `old SUMMARY is text`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(summary = "Task Summary"),
-            to = result
-        )
-        assertEquals("Task Summary", result.entityValues.getAsString(Tasks.TITLE))
-    }
-
-    @Test
     fun `No SUMMARY`() {
         val result = Entity(ContentValues())
         builder.build(

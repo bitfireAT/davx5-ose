@@ -21,40 +21,6 @@ class PriorityHandlerTest {
 
     private val handler = PriorityHandler()
 
-    @Test
-    fun `legacy No PRIORITY leaves priority at default (0)`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertEquals(0, task.priority)
-    }
-
-    @Test
-    fun `legacy PRIORITY is 0 (undefined)`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.PRIORITY to 0), task)
-        assertEquals(0, task.priority)
-    }
-
-    @Test
-    fun `legacy PRIORITY is 1 (high)`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.PRIORITY to 1), task)
-        assertEquals(1, task.priority)
-    }
-
-    @Test
-    fun `legacy PRIORITY is 5 (medium)`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.PRIORITY to 5), task)
-        assertEquals(5, task.priority)
-    }
-
-    @Test
-    fun `legacy PRIORITY is 9 (low)`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.PRIORITY to 9), task)
-        assertEquals(9, task.priority)
-    }
 
     @Test
     fun `No PRIORITY doesn't add PRIORITY property`() {

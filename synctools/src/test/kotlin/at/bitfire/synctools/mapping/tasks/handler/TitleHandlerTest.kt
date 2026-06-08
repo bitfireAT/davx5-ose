@@ -21,19 +21,6 @@ class TitleHandlerTest {
 
     private val handler = TitleHandler()
 
-    @Test
-    fun `legacy No title`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertNull(task.summary)
-    }
-
-    @Test
-    fun `legacy Title set`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.TITLE to "Test Task"), task)
-        assertEquals("Test Task", task.summary)
-    }
 
     @Test
     fun `No title`() {

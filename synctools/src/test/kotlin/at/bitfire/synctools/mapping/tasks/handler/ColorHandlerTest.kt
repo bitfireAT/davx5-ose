@@ -22,19 +22,6 @@ class ColorHandlerTest {
 
     private val handler = ColorHandler()
 
-    @Test
-    fun `legacy No COLOR`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertNull(task.color)
-    }
-
-    @Test
-    fun `legacy COLOR set`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.TASK_COLOR to 0xFF112233.toInt()), task)
-        assertEquals(0xFF112233.toInt(), task.color)
-    }
 
     @Test
     fun `No COLOR`() {

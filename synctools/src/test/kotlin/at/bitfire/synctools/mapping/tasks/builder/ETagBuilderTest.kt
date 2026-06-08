@@ -17,29 +17,6 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class ETagBuilderTest {
 
-    @Test
-    fun `old ETag is set`() {
-        val result = Entity(ContentValues())
-        ETagBuilder(eTag = "some-etag").build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            COLUMN_ETAG to "some-etag"
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old ETag is null`() {
-        val result = Entity(ContentValues())
-        ETagBuilder(eTag = null).build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            COLUMN_ETAG to null
-        ), result.entityValues)
-    }
 
     @Test
     fun `ETag is set`() {

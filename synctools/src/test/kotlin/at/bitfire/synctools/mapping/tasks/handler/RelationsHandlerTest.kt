@@ -8,7 +8,6 @@ import android.content.ContentValues
 import android.content.Entity
 import android.net.Uri
 import androidx.core.content.contentValuesOf
-import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VToDo
@@ -20,91 +19,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.jvm.optionals.getOrNull
 
 @RunWith(RobolectricTestRunner::class)
 class RelationsHandlerTest {
 
     private val handler = RelationsHandler()
 
-    @Test
-    fun `legacy No relation without UID`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Relation.RELATED_TYPE to Relation.RELTYPE_PARENT
-        ), task)
-        assertTrue(task.relatedTo.isEmpty())
-    }
-
-    @Test
-    fun `legacy Parent relation`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Relation.RELATED_UID to "parent-uid",
-            Relation.RELATED_TYPE to Relation.RELTYPE_PARENT
-        ), task)
-
-        assertEquals(1, task.relatedTo.size)
-        val relatedTo = task.relatedTo.first()
-        assertEquals("parent-uid", relatedTo.value)
-        assertEquals(RelType.PARENT, relatedTo.getParameter<RelType>(Parameter.RELTYPE)?.getOrNull())
-    }
-
-    @Test
-    fun `legacy Child relation`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Relation.RELATED_UID to "child-uid",
-            Relation.RELATED_TYPE to Relation.RELTYPE_CHILD
-        ), task)
-
-        assertEquals(1, task.relatedTo.size)
-        val relatedTo = task.relatedTo.first()
-        assertEquals("child-uid", relatedTo.value)
-        assertEquals(RelType.CHILD, relatedTo.getParameter<RelType>(Parameter.RELTYPE)?.getOrNull())
-    }
-
-    @Test
-    fun `legacy Sibling relation`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Relation.RELATED_UID to "sibling-uid",
-            Relation.RELATED_TYPE to Relation.RELTYPE_SIBLING
-        ), task)
-
-        assertEquals(1, task.relatedTo.size)
-        val relatedTo = task.relatedTo.first()
-        assertEquals("sibling-uid", relatedTo.value)
-        assertEquals(RelType.SIBLING, relatedTo.getParameter<RelType>(Parameter.RELTYPE)?.getOrNull())
-    }
-
-    @Test
-    fun `legacy Default to parent when type not specified`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Relation.RELATED_UID to "default-uid"
-        ), task)
-
-        assertEquals(1, task.relatedTo.size)
-        val relatedTo = task.relatedTo.first()
-        assertEquals("default-uid", relatedTo.value)
-        assertEquals(RelType.PARENT, relatedTo.getParameter<RelType>(Parameter.RELTYPE)?.getOrNull())
-    }
-
-    @Test
-    fun `legacy Multiple relations accumulate`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Relation.RELATED_UID to "parent-uid",
-            Relation.RELATED_TYPE to Relation.RELTYPE_PARENT
-        ), task)
-        handler.process(contentValuesOf(
-            Relation.RELATED_UID to "child-uid",
-            Relation.RELATED_TYPE to Relation.RELTYPE_CHILD
-        ), task)
-
-        assertEquals(2, task.relatedTo.size)
-    }
 
     @Test
     fun `No relation without UID`() {

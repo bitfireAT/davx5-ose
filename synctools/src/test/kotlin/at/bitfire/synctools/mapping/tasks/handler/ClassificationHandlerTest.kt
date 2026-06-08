@@ -22,40 +22,6 @@ class ClassificationHandlerTest {
 
     private val handler = ClassificationHandler()
 
-    @Test
-    fun `legacy No CLASSIFICATION`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertNull(task.classification)
-    }
-
-    @Test
-    fun `legacy CLASSIFICATION_PUBLIC maps to CLASS PUBLIC`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.CLASSIFICATION to Tasks.CLASSIFICATION_PUBLIC), task)
-        assertEquals(Clazz(Clazz.VALUE_PUBLIC), task.classification)
-    }
-
-    @Test
-    fun `legacy CLASSIFICATION_PRIVATE maps to CLASS PRIVATE`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.CLASSIFICATION to Tasks.CLASSIFICATION_PRIVATE), task)
-        assertEquals(Clazz(Clazz.VALUE_PRIVATE), task.classification)
-    }
-
-    @Test
-    fun `legacy CLASSIFICATION_CONFIDENTIAL maps to CLASS CONFIDENTIAL`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.CLASSIFICATION to Tasks.CLASSIFICATION_CONFIDENTIAL), task)
-        assertEquals(Clazz(Clazz.VALUE_CONFIDENTIAL), task.classification)
-    }
-
-    @Test
-    fun `legacy Unknown CLASSIFICATION maps to null`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.CLASSIFICATION to 99), task)
-        assertNull(task.classification)
-    }
 
     @Test
     fun `No CLASSIFICATION`() {

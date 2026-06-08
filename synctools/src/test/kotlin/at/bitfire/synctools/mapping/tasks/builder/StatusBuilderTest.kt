@@ -21,65 +21,6 @@ class StatusBuilderTest {
 
     private val builder = StatusBuilder()
 
-    @Test
-    fun `old No STATUS defaults to STATUS_DEFAULT`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.STATUS to Tasks.STATUS_DEFAULT
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old STATUS is NEEDS-ACTION`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(status = Status(ImmutableStatus.VALUE_NEEDS_ACTION)),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.STATUS to Tasks.STATUS_NEEDS_ACTION
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old STATUS is IN-PROCESS`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(status = Status(ImmutableStatus.VALUE_IN_PROCESS)),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.STATUS to Tasks.STATUS_IN_PROCESS
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old STATUS is COMPLETED`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(status = Status(ImmutableStatus.VALUE_COMPLETED)),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.STATUS to Tasks.STATUS_COMPLETED
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old STATUS is CANCELLED`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(status = Status(ImmutableStatus.VALUE_CANCELLED)),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.STATUS to Tasks.STATUS_CANCELLED
-        ), result.entityValues)
-    }
 
     @Test
     fun `No STATUS defaults to STATUS_DEFAULT`() {

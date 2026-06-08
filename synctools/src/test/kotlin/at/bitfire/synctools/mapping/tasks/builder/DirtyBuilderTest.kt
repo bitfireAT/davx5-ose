@@ -19,17 +19,6 @@ class DirtyBuilderTest {
 
     private val builder = DirtyBuilder()
 
-    @Test
-    fun `old DIRTY is set to 0`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks._DIRTY to 0
-        ), result.entityValues)
-    }
 
     @Test
     fun `DIRTY is set to 0`() {

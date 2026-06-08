@@ -21,19 +21,6 @@ class LocationHandlerTest {
 
     private val handler = LocationHandler()
 
-    @Test
-    fun `legacy No LOCATION`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertNull(task.location)
-    }
-
-    @Test
-    fun `legacy LOCATION set`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.LOCATION to "Vienna, Austria"), task)
-        assertEquals("Vienna, Austria", task.location)
-    }
 
     @Test
     fun `No LOCATION`() {

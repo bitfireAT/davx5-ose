@@ -22,54 +22,6 @@ class OrganizerBuilderTest {
 
     private val builder = OrganizerBuilder()
 
-    @Test
-    fun `old No ORGANIZER`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.ORGANIZER to null
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old ORGANIZER is email address`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(organizer = Organizer("mailto:organizer@example.com")),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.ORGANIZER to "organizer@example.com"
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old ORGANIZER is custom URI without email`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(organizer = Organizer("local-id:user")),
-            to = result
-        )
-        // Custom URI without email → null (tasks have no ownerAccount fallback)
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.ORGANIZER to null
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old ORGANIZER is custom URI with email parameter`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(organizer = Organizer("local-id:user").add(Email("organizer@example.com"))),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.ORGANIZER to "organizer@example.com"
-        ), result.entityValues)
-    }
 
     @Test
     fun `No ORGANIZER`() {

@@ -27,42 +27,6 @@ class DueHandlerTest {
 
     private val handler = DueHandler()
 
-    @Test
-    fun `legacy No DUE leaves due null`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertNull(task.due)
-    }
-
-    @Test
-    fun `legacy All-day due date`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Tasks.DUE to 1592697600000L,        // 2020-06-21 00:00:00 UTC
-            Tasks.IS_ALLDAY to 1,
-        ), task)
-        assertEquals(Due(LocalDate.of(2020, 6, 21)), task.due)
-    }
-
-    @Test
-    fun `legacy Non-all-day due with timezone`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Tasks.DUE to 1592733600000L,        // 2020-06-21 10:00:00 UTC = 12:00:00 Europe/Vienna
-            Tasks.TZ to "Europe/Vienna",
-        ), task)
-        val expected = ZonedDateTime.of(2020, 6, 21, 12, 0, 0, 0, ZoneId.of("Europe/Vienna"))
-        assertEquals(Due(expected), task.due)
-    }
-
-    @Test
-    fun `legacy Non-all-day due without timezone (UTC Instant)`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Tasks.DUE to 1592733600000L,        // 2020-06-21 10:00:00 UTC
-        ), task)
-        assertEquals(Due(Instant.ofEpochMilli(1592733600000L)), task.due)
-    }
 
     @Test
     fun `No DUE leaves due null`() {

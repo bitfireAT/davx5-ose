@@ -18,18 +18,6 @@ import org.robolectric.RobolectricTestRunner
 class SyncFlagsBuilderTest {
 
     @Test
-    fun `old Flags set to 123`() {
-        val result = Entity(ContentValues())
-        SyncFlagsBuilder(123).build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            COLUMN_FLAGS to 123
-        ), result.entityValues)
-    }
-
-    @Test
     fun `Flags set to 123`() {
         val result = Entity(ContentValues())
         SyncFlagsBuilder(123).build(

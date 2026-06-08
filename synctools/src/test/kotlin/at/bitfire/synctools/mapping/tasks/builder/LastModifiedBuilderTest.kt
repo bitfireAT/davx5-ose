@@ -22,29 +22,6 @@ class LastModifiedBuilderTest {
 
     private val builder = LastModifiedBuilder()
 
-    @Test
-    fun `old No LAST_MODIFIED stores null`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.LAST_MODIFIED to null
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old LAST_MODIFIED is stored`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(lastModified = 1593771404L),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.LAST_MODIFIED to 1593771404L
-        ), result.entityValues)
-    }
 
     @Test
     fun `No LAST_MODIFIED stores null`() {

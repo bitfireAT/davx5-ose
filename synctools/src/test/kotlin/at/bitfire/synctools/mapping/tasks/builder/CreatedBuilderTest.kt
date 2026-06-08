@@ -23,30 +23,6 @@ class CreatedBuilderTest {
     private val builder = CreatedBuilder()
 
     @Test
-    fun `old No CREATED stores null`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.CREATED to null
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old CREATED is stored`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(createdAt = 1593771404L),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.CREATED to 1593771404L
-        ), result.entityValues)
-    }
-
-    @Test
     fun `No CREATED stores null`() {
         val result = Entity(ContentValues())
         builder.build(

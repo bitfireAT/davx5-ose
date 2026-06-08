@@ -18,18 +18,6 @@ import org.robolectric.RobolectricTestRunner
 class ListIdBuilderTest {
 
     @Test
-    fun `old ListId sets LIST_ID`() {
-        val result = Entity(ContentValues())
-        ListIdBuilder(42L).build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.LIST_ID to 42L
-        ), result.entityValues)
-    }
-
-    @Test
     fun `ListId sets LIST_ID`() {
         val result = Entity(ContentValues())
         ListIdBuilder(42L).build(

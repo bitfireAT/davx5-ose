@@ -21,19 +21,6 @@ class DescriptionHandlerTest {
 
     private val handler = DescriptionHandler()
 
-    @Test
-    fun `legacy No DESCRIPTION`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertNull(task.description)
-    }
-
-    @Test
-    fun `legacy DESCRIPTION set`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.DESCRIPTION to "Task details"), task)
-        assertEquals("Task details", task.description)
-    }
 
     @Test
     fun `No DESCRIPTION`() {

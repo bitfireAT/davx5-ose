@@ -18,30 +18,6 @@ import org.robolectric.RobolectricTestRunner
 class SyncIdBuilderTest {
 
     @Test
-    fun `old SyncId sets _SYNC_ID`() {
-        val result = Entity(ContentValues())
-        SyncIdBuilder("sync-id").build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks._SYNC_ID to "sync-id"
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old SyncId is null`() {
-        val result = Entity(ContentValues())
-        SyncIdBuilder(null).build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks._SYNC_ID to null
-        ), result.entityValues)
-    }
-
-    @Test
     fun `SyncId sets _SYNC_ID`() {
         val result = Entity(ContentValues())
         SyncIdBuilder("sync-id").build(

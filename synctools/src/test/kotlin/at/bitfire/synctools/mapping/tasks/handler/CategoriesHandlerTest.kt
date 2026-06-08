@@ -25,39 +25,6 @@ class CategoriesHandlerTest {
 
     private val handler = CategoriesHandler()
 
-    @Test
-    fun `legacy No category`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertTrue(task.categories.isEmpty())
-    }
-
-    @Test
-    fun `legacy Single category`() {
-        val task = Task()
-        handler.process(contentValuesOf(Category.CATEGORY_NAME to "Work"), task)
-        assertEquals(1, task.categories.size)
-        assertEquals("Work", task.categories.first())
-    }
-
-    @Test
-    fun `legacy Multiple categories accumulate`() {
-        val task = Task()
-        handler.process(contentValuesOf(Category.CATEGORY_NAME to "Work"), task)
-        handler.process(contentValuesOf(Category.CATEGORY_NAME to "Personal"), task)
-
-        assertEquals(2, task.categories.size)
-        assertTrue(task.categories.containsAll(listOf("Work", "Personal")))
-    }
-
-    @Test
-    fun `legacy Null category is skipped`() {
-        val task = Task()
-        handler.process(ContentValues().apply {
-            putNull(Category.CATEGORY_NAME)
-        }, task)
-        assertTrue(task.categories.isEmpty())
-    }
 
     @Test
     fun `No category`() {
