@@ -58,8 +58,7 @@ class DavResourceFinder @AssistedInject constructor(
     @Assisted private val credentials: Credentials? = null,
     @ApplicationContext val context: Context,
     private val dnsRecordResolver: DnsRecordResolver,
-    httpClientBuilder: HttpClientBuilder,
-    private val logger: Logger
+    httpClientBuilder: HttpClientBuilder
 ) {
 
     @AssistedFactory
@@ -74,6 +73,8 @@ class DavResourceFinder @AssistedInject constructor(
         override fun toString() = wellKnownName
     }
 
+    // we need a new logger because it's used for logBuffer → don't inject
+    val logger: Logger = Logger.getLogger(javaClass.name)
     private val logBuffer: StringHandler = initLogging()
 
     private var encountered401 = false
