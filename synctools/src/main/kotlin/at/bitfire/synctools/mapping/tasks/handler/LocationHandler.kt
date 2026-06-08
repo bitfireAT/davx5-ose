@@ -11,11 +11,7 @@ import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Location
 import org.dmfs.tasks.contract.TaskContract.Tasks
 
-class LocationHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
-
-    override fun process(from: ContentValues, to: Task) {
-        to.location = from.getAsString(Tasks.LOCATION)
-    }
+class LocationHandler : DmfsTaskEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VToDo) {
         val location = from.entityValues.getAsString(Tasks.LOCATION)

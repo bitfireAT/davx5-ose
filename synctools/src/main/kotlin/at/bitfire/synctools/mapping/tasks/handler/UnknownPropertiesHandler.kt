@@ -14,21 +14,10 @@ import net.fortuna.ical4j.model.component.VToDo
 import org.json.JSONException
 import java.util.logging.Logger
 
-class UnknownPropertiesHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
+class UnknownPropertiesHandler : DmfsTaskEntityHandler {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
-
-    override fun process(from: ContentValues, to: Task) {
-        from.getAsString(UNKNOWN_PROPERTY_DATA)?.let { properties ->
-            try {
-                to.unknownProperties += UnknownProperty.fromJsonString(properties)
-            } catch (e: JSONException) {
-                // Ignore properties with invalid JSON
-                logger.warning("Got an unknown property with invalid JSON: $e")
-            }
-        }
-    }
 
     override fun process(from: Entity, main: Entity, to: VToDo) {
         for (row in from.subValues.filter { it.mimeType == UnknownProperty.CONTENT_ITEM_TYPE }) {

@@ -12,13 +12,7 @@ import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Duration
 import org.dmfs.tasks.contract.TaskContract.Tasks
 
-class DurationHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
-
-    override fun process(from: ContentValues, to: Task) {
-        from.getAsString(Tasks.DURATION)?.let { durationStr ->
-            to.duration = Duration(AndroidTimeUtils.parseDuration(durationStr))
-        }
-    }
+class DurationHandler : DmfsTaskEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VToDo) {
         val durationString = from.entityValues.getAsString(Tasks.DURATION)

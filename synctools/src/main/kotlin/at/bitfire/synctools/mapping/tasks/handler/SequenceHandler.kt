@@ -11,11 +11,7 @@ import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Sequence
 import org.dmfs.tasks.contract.TaskContract.Tasks
 
-class SequenceHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
-
-    override fun process(from: ContentValues, to: Task) {
-        to.sequence = from.getAsInteger(Tasks.SYNC_VERSION)
-    }
+class SequenceHandler : DmfsTaskEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VToDo) {
         val sequence = from.entityValues.getAsInteger(Tasks.SYNC_VERSION)

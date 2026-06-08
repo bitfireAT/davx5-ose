@@ -11,11 +11,7 @@ import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Priority
 import org.dmfs.tasks.contract.TaskContract.Tasks
 
-class PriorityHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
-
-    override fun process(from: ContentValues, to: Task) {
-        from.getAsInteger(Tasks.PRIORITY)?.let { to.priority = it }
-    }
+class PriorityHandler : DmfsTaskEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VToDo) {
         val priority = from.entityValues.getAsInteger(Tasks.PRIORITY)

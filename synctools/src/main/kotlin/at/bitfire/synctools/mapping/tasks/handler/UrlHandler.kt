@@ -15,15 +15,10 @@ import java.net.URISyntaxException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class UrlHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
+class UrlHandler : DmfsTaskEntityHandler {
 
     private val logger
         get() = Logger.getLogger(UrlHandler::class.java.name)
-
-    override fun process(from: ContentValues, to: Task) {
-        to.url = from.getAsString(Tasks.URL)
-    }
-
     override fun process(from: Entity, main: Entity, to: VToDo) {
         val url = from.entityValues.getAsString(Tasks.URL)
         if (url != null) {

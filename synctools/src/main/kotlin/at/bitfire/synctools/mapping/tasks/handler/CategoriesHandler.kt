@@ -13,10 +13,7 @@ import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Categories
 import org.dmfs.tasks.contract.TaskContract.Property.Category
 
-class CategoriesHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
-    override fun process(from: ContentValues, to: Task) {
-        from.getAsString(Category.CATEGORY_NAME)?.let { to.categories += it }
-    }
+class CategoriesHandler : DmfsTaskEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VToDo) {
         for (row in from.subValues.filter { it.mimeType == Category.CONTENT_ITEM_TYPE }) {

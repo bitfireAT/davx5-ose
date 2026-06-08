@@ -11,11 +11,7 @@ import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Summary
 import org.dmfs.tasks.contract.TaskContract.Tasks
 
-class TitleHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
-
-    override fun process(from: ContentValues, to: Task) {
-        to.summary = from.getAsString(Tasks.TITLE)
-    }
+class TitleHandler : DmfsTaskEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VToDo) {
         val title = from.entityValues.getAsString(Tasks.TITLE)

@@ -13,18 +13,10 @@ import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class GeoHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
+class GeoHandler : DmfsTaskEntityHandler {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
-
-    override fun process(from: ContentValues, to: Task) {
-        val geo = parseGeoString(from.getAsString(Tasks.GEO))
-        if (geo != null) {
-            to.geoPosition = geo
-        }
-    }
-
     override fun process(from: Entity, main: Entity, to: VToDo) {
         val geo = parseGeoString(from.entityValues.getAsString(Tasks.GEO))
         if (geo != null) {
