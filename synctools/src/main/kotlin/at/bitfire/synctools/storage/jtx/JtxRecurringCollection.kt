@@ -10,7 +10,6 @@ import android.content.Entity
 import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
-import at.bitfire.synctools.storage.JtxBatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.containsNotNull
 import at.techbee.jtx.JtxContract

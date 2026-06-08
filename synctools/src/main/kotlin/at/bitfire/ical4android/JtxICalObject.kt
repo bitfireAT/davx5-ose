@@ -20,7 +20,7 @@ import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDates
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.synctools.storage.JtxBatchOperation
+import at.bitfire.synctools.storage.jtx.JtxBatchOperation
 import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.techbee.jtx.JtxContract

@@ -2,13 +2,11 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android.impl
+package at.bitfire.synctools.storage.tasks
 
 import android.accounts.Account
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.TaskProvider
-import at.bitfire.synctools.storage.tasks.DmfsTaskList
-import at.bitfire.synctools.storage.tasks.DmfsTaskListProvider
 import org.dmfs.tasks.contract.TaskContract
 
 object TestTaskList {

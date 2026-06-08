@@ -11,7 +11,6 @@ import android.net.Uri
 import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
-import at.bitfire.synctools.storage.JtxBatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract

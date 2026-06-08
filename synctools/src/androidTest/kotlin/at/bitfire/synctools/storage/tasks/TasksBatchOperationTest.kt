@@ -7,7 +7,6 @@ package at.bitfire.synctools.storage.tasks
 import android.accounts.Account
 import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
 import at.bitfire.ical4android.TaskProvider
-import at.bitfire.ical4android.impl.TestTaskList
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import org.dmfs.tasks.contract.TaskContract
