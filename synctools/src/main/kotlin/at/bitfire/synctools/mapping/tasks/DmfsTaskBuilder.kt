@@ -151,6 +151,7 @@ class DmfsTaskBuilder(
     }
 
     fun build(associatedTasks: AssociatedTasks): TaskAndExceptions {
+        // TODO: when recurrence is supported on tasks, no exception should be thrown, but instead a reference should be created for exceptions. See AndroidEventBuilder
         val mainVToDo = associatedTasks.main ?: throw ResourceMappingException("Main task is missing in associated tasks")
         return TaskAndExceptions(
             main = buildTask(from = mainVToDo, main = mainVToDo),
