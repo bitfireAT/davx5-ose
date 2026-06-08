@@ -482,48 +482,6 @@ class DmfsTaskList(
         }
 
 
-    // CRUD DmfsTask
-
-    /**
-     * Queries tasks from this task list. Adds a WHERE clause that restricts the
-     * query to [TaskContract.TaskColumns.LIST_ID] = [id].
-     *
-     * @param where selection
-     * @param whereArgs arguments for selection
-     *
-     * @return tasks from this task list which match the selection
-     */
-    @Deprecated("Use findTasks() instead")
-    fun findDmfsTasks(where: String? = null, whereArgs: Array<String>? = null): List<DmfsTask> {
-        val tasks = LinkedList<DmfsTask>()
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
-            client.query(tasksUri(), arrayOf(Tasks._ID), protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                while (cursor.moveToNext()) {
-                    val taskId = cursor.getLong(0)
-                    val entity = getTask(taskId)
-                    if (entity != null)
-                        tasks += DmfsTask(this, entity)
-                }
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query ${providerName.authority} tasks", e)
-        }
-        return tasks
-    }
-
-    /**
-     * Gets a task from this task list by given id.
-     *
-     * @return task from this task list which matches the selection
-     */
-    @Deprecated("Use getTask() instead")
-    fun getDmfsTask(id: Long): DmfsTask? {
-        val values = getTask(id) ?: return null
-        return DmfsTask(this, values)
-    }
-
-
     // other operations
 
     /**
