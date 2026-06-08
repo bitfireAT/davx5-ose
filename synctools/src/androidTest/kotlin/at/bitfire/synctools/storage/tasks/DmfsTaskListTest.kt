@@ -36,10 +36,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
         info.put(TaskLists.VISIBLE, 1)
 
         val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider.client, providerName)
-        val id = dmfsTaskListProvider.createTaskList(info)
-        assertNotNull(id)
-
-        return dmfsTaskListProvider.getTaskList(id)!!
+        return dmfsTaskListProvider.createAndGetTaskList(info)
     }
 
     @Test
@@ -110,13 +107,9 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             taskList.touchRelations()
 
             // now parent_id should bet set
-            taskList.provider.client.query(
-                childContentUri, arrayOf(Tasks.PARENT_ID),
-                null, null, null
-            )!!.use { cursor ->
-                assertTrue(cursor.moveToNext())
-                assertEquals(parentId, cursor.getLong(0))
-            }
+            val child = taskList.getTaskRow(childId, arrayOf(Tasks.PARENT_ID))
+            assertNotNull(child)
+            assertEquals(parentId, child?.getAsLong(Tasks.PARENT_ID))
         } finally {
             taskList.delete()
         }
