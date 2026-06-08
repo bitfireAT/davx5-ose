@@ -5,7 +5,7 @@
 package at.bitfire.ical4android.impl
 
 import android.accounts.Account
-import android.content.ContentValues
+import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTaskListProvider
@@ -13,17 +13,23 @@ import org.dmfs.tasks.contract.TaskContract
 
 object TestTaskList {
 
-    fun create(
-        account: Account,
-        provider: TaskProvider,
-    ): DmfsTaskList {
-        val values = ContentValues(4)
-        values.put(TaskContract.TaskListColumns.LIST_NAME, "Test Task List")
-        values.put(TaskContract.TaskListColumns.LIST_COLOR, 0xffff0000)
-        values.put(TaskContract.TaskListColumns.SYNC_ENABLED, 1)
-        values.put(TaskContract.TaskListColumns.VISIBLE, 1)
+    /**
+     * Creates a test task list on the given test account.
+     *
+     * @param account   test account (must have a real account type or [TaskContract.LOCAL_ACCOUNT_TYPE],
+     *                  otherwise the provider may immediately remove the account again)
+     * @param provider  tasks provider to use
+     * @return the created test task List (don't forget to delete it when tests are finished)
+     */
+    fun create(account: Account, provider: TaskProvider): DmfsTaskList {
+        val values = contentValuesOf(
+            TaskContract.TaskListColumns.LIST_NAME to "Test Task List",
+            TaskContract.TaskListColumns.LIST_COLOR to 0xffff0000,
+            TaskContract.TaskListColumns.SYNC_ENABLED to 1,
+            TaskContract.TaskListColumns.VISIBLE to 1
+        )
+        
         val dmfsTaskListProvider = DmfsTaskListProvider(account, provider.client, provider.name)
-
         return dmfsTaskListProvider.createAndGetTaskList(values)
     }
 

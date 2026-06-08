@@ -5,17 +5,12 @@
 package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
-import at.bitfire.ical4android.Task
 import net.fortuna.ical4j.model.component.VToDo
 import org.dmfs.tasks.contract.TaskContract.Tasks
 
 class ListIdBuilder(
     private val listId: Long
-) : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks.LIST_ID, listId)
-    }
+) : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         to.entityValues.put(Tasks.LIST_ID, listId)

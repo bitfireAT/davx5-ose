@@ -7,8 +7,7 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.Entity
 import net.fortuna.ical4j.model.component.VToDo
 
-// TODO: Once all super-classes of DmfsTaskFieldBuilder are migrated to DmfsTaskFieldBuilderVToDo, we can remove the old DmfsTaskFieldBuilder and rename this interface to DmfsTaskFieldBuilder
-interface DmfsTaskFieldBuilderVToDo {
+interface DmfsTaskEntityBuilder {
 
     /**
      * Maps a specific part of the given [VToDo] into the provided [Entity].

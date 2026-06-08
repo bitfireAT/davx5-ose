@@ -8,7 +8,6 @@ import android.content.ContentValues
 import android.content.Entity
 import android.net.Uri
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.mapping.tasks.VToDoUtil
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.test.assertContentValuesEqual
@@ -32,43 +31,6 @@ class CategoriesBuilderTest {
     }
     private val builder = CategoriesBuilder(taskList)
 
-    @Test
-    fun `old No categories`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertTrue(result.subValues.isEmpty())
-    }
-
-    @Test
-    fun `old One category`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task().also { it.categories += "Work" },
-            to = result
-        )
-        assertEquals(1, result.subValues.size)
-        assertContentValuesEqual(contentValuesOf(
-            Category.MIMETYPE to Category.CONTENT_ITEM_TYPE,
-            Category.CATEGORY_NAME to "Work"
-        ), result.subValues.first().values)
-        assertEquals(propertiesUri, result.subValues.first().uri)
-    }
-
-    @Test
-    fun `old Multiple categories`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task().also {
-                it.categories += "Work"
-                it.categories += "Personal"
-            },
-            to = result
-        )
-        assertEquals(2, result.subValues.size)
-    }
 
     @Test
     fun `No categories`() {

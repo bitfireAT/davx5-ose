@@ -7,7 +7,6 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.mapping.tasks.VToDoUtil
 import at.bitfire.synctools.test.assertContentValuesEqual
 import net.fortuna.ical4j.model.property.Priority
@@ -21,29 +20,6 @@ class PriorityBuilderTest {
 
     private val builder = PriorityBuilder()
 
-    @Test
-    fun `old No PRIORITY`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.PRIORITY to 0
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old PRIORITY is 5`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(priority = 5),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.PRIORITY to 5
-        ), result.entityValues)
-    }
 
     @Test
     fun `No PRIORITY`() {
