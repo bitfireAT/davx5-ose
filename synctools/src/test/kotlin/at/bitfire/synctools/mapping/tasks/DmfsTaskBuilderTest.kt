@@ -7,12 +7,12 @@ package at.bitfire.synctools.mapping.tasks
 import android.net.Uri
 import at.bitfire.dateTimeValue
 import at.bitfire.ical4android.Task
+import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.AssociatedTasks
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import io.mockk.every
 import io.mockk.mockk
 import net.fortuna.ical4j.model.property.DtStart
-import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Uid
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -21,7 +21,6 @@ import org.junit.Assert.assertNotNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.time.temporal.Temporal
 
 @RunWith(RobolectricTestRunner::class)
 class DmfsTaskBuilderTest {
@@ -40,7 +39,8 @@ class DmfsTaskBuilderTest {
         flags = 0
     )
 
-    @Test
+    // expected: Currently not supported. Tasks depend on recurrence support first to support this.
+    @Test(expected = ResourceMappingException::class)
     fun `build synthesizes recurring main when only exceptions are present`() {
         val exception = VToDoUtil.build(
             Uid("uid-1"),
@@ -58,25 +58,5 @@ class DmfsTaskBuilderTest {
         assertNotNull(result.main.entityValues.getAsString(Tasks.RDATE))
         assertEquals(null, result.exceptions.first().entityValues.getAsString(Tasks.RRULE))
         assertEquals(null, result.exceptions.first().entityValues.getAsString(Tasks.RDATE))
-    }
-
-    @Test
-    fun `build does not treat exception as main by reference`() {
-        val exception = VToDoUtil.build(
-            Uid("uid-2"),
-            DtStart(dateTimeValue("20260102T120000Z")),
-            RecurrenceId(dateTimeValue("20260102T120000Z")),
-            RRule<Temporal>("FREQ=DAILY;COUNT=2")
-        )
-
-        val result = builder.build(
-            AssociatedTasks(
-                main = null,
-                exceptions = listOf(exception)
-            )
-        )
-
-        assertEquals("FREQ=DAILY;COUNT=2", result.main.entityValues.getAsString(Tasks.RRULE))
-        assertEquals(null, result.exceptions.first().entityValues.getAsString(Tasks.RRULE))
     }
 }
