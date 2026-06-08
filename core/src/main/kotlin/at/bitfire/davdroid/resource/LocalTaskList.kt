@@ -6,12 +6,11 @@ package at.bitfire.davdroid.resource
 
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.resource.LocalTaskList.Companion.COLUMN_TASKLIST_SYNC_STATE
-import at.bitfire.synctools.storage.tasks.DmfsTask
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -72,22 +71,10 @@ class LocalTaskList (
     override fun findDeleted() = dmfsTaskList.findDmfsTasks(Tasks._DELETED, null)
         .map { LocalTask(it) }
 
-    override fun findDirty(): List<LocalTask> {
-        val dmfsTasks = dmfsTaskList.findDmfsTasks(Tasks._DIRTY, null)
-        for (localTask in dmfsTasks) {
-            try {
-                val task = requireNotNull(localTask.task)
-                val sequence = task.sequence
-                if (sequence == null)   // sequence has not been assigned yet (i.e. this task was just locally created)
-                    task.sequence = 0
-                else                    // task was modified, increase sequence
-                    task.sequence = sequence + 1
-            } catch(e: Exception) {
-                logger.log(Level.WARNING, "Couldn't check/increase sequence", e)
-            }
+    override fun findDirty(): List<LocalTask> =
+        dmfsTaskList.findDmfsTasks(Tasks._DIRTY, null).map {
+            LocalTask(it)
         }
-        return dmfsTasks.map { LocalTask(it) }
-    }
 
     override fun findByName(name: String) =
         dmfsTaskList.findDmfsTasks("${Tasks._SYNC_ID}=?", arrayOf(name))
@@ -98,20 +85,20 @@ class LocalTaskList (
 
     override fun markNotDirty(flags: Int): Int =
         dmfsTaskList.updateTasks(
-            contentValuesOf(DmfsTask.COLUMN_FLAGS to flags),
+            contentValuesOf(DmfsTasksContract.COLUMN_FLAGS to flags),
             "${Tasks.LIST_ID}=? AND ${Tasks._DIRTY}=0",
             arrayOf(dmfsTaskList.id.toString())
         )
 
     override fun removeNotDirtyMarked(flags: Int) =
         dmfsTaskList.deleteTasks(
-            "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${DmfsTask.COLUMN_FLAGS}=?",
+            "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${DmfsTasksContract.COLUMN_FLAGS}=?",
             arrayOf(dmfsTaskList.id.toString(), flags.toString())
         )
 
     override fun forgetETags() {
         dmfsTaskList.updateTasks(
-            contentValuesOf(DmfsTask.COLUMN_ETAG to null),
+            contentValuesOf(DmfsTasksContract.COLUMN_ETAG to null),
             "${Tasks.LIST_ID}=?",
             arrayOf(dmfsTaskList.id.toString())
         )

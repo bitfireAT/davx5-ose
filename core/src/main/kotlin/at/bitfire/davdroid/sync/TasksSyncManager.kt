@@ -25,10 +25,10 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.TaskReader
 import at.bitfire.ical4android.TaskWriter
-import at.bitfire.synctools.exception.InvalidICalendarException
+import at.bitfire.synctools.exception.InvalidResourceException
+import at.bitfire.synctools.mapping.tasks.SequenceUpdater
 import at.bitfire.synctools.storage.tasks.DmfsTask
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -113,10 +113,14 @@ class TasksSyncManager @AssistedInject constructor(
         // get/create UID
         val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(task.uid)
         if (uidIsGenerated) {
-            // modify in Task and persist to tasks provider
+            // update in Task and write to tasks provider
             task.uid = uid
             resource.updateUid(uid)
         }
+
+        /* Increase SEQUENCE of main task in memory and remember new value.
+        Will be written to provider later over onSuccessContext. */
+        val updatedSequence = SequenceUpdater().increaseSequence(task)
 
         // generate iCalendar and convert to request body
         val icalWriter = StringWriter()
@@ -125,7 +129,10 @@ class TasksSyncManager @AssistedInject constructor(
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
-            requestBody = icalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+            requestBody = icalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8),
+            onSuccessContext = GeneratedResource.OnSuccessContext(
+                sequence = updatedSequence
+            )
         )
     }
 
@@ -160,7 +167,14 @@ class TasksSyncManager @AssistedInject constructor(
                         val eTag = response[GetETag::class.java]?.eTag
                             ?: throw DavException("Received multi-get response without ETag")
 
-                        processVTodo(response.href.lastSegment, eTag, StringReader(iCal))
+                        val fileName = response.href.lastSegment
+
+                        try {
+                            processVTodo(fileName, eTag, StringReader(iCal))
+                        } catch (e: InvalidResourceException) {
+                            logger.log(Level.WARNING, "Error while processing VTODO", e)
+                            notifyInvalidResource(e, fileName)
+                        }
                     }
                 }
             }
@@ -176,15 +190,7 @@ class TasksSyncManager @AssistedInject constructor(
     // helpers
 
     private fun processVTodo(fileName: String, eTag: String, reader: Reader) {
-        val tasks: List<Task>
-        try {
-            tasks = TaskReader().readTasks(reader)
-        } catch (e: InvalidICalendarException) {
-            logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
-            notifyInvalidResource(e, fileName)
-            return
-        }
-
+        val tasks = TaskReader().readTasks(reader)
         if (tasks.size == 1) {
             val newData = tasks.first()
 
