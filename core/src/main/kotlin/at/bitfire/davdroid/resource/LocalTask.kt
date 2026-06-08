@@ -26,7 +26,8 @@ class LocalTask(
     val taskAndExceptions: TaskAndExceptions
 ): LocalResource {
 
-    private val logger: Logger = Logger.getLogger(javaClass.name)
+    private val logger
+        get() = Logger.getLogger(javaClass.name)
 
     private val taskList = recurringTaskList.taskList
 
