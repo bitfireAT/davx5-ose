@@ -102,9 +102,8 @@ class AndroidRecurringCalendar(
      *
      * @return event and exceptions
      */
-    fun getById(mainEventId: Long): EventAndExceptions? {
-        return findEventAndExceptions("${Events._ID}=?", arrayOf(mainEventId.toString()))
-    }
+    fun getById(mainEventId: Long): EventAndExceptions? =
+        findEventAndExceptions("${Events._ID}=?", arrayOf(mainEventId.toString()))
 
     /**
      * Iterates through main events together with their exceptions from the content provider.
@@ -116,9 +115,8 @@ class AndroidRecurringCalendar(
      * @param body          callback that is called for each event (including exceptions)
      */
     fun iterateEventAndExceptions(where: String?, whereArgs: Array<String>?, body: (EventAndExceptions) -> Unit) {
-        val (mainWhere, mainWhereArgs) = whereWithMainEventsOnly(where, whereArgs)
-
         // iterate through main events and attach exceptions
+        val (mainWhere, mainWhereArgs) = whereWithMainEventsOnly(where, whereArgs)
         calendar.iterateEvents(mainWhere, mainWhereArgs) { main ->
             val mainEventId = main.entityValues.getAsLong(Events._ID)
             body(EventAndExceptions(

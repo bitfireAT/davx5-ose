@@ -70,8 +70,6 @@ class DmfsRecurringTaskList(
     /**
      * Find first main task of [taskList] that matches the query from the content provider and attach its exceptions.
      *
-     * Exception rows are excluded from the lookup by requiring [Tasks.ORIGINAL_INSTANCE_ID] to be `NULL`.
-     *
      * Note that the exceptions may contain deleted tasks.
      *
      * @param where         selection
@@ -92,20 +90,15 @@ class DmfsRecurringTaskList(
     /**
      * Retrieves a main task and its exceptions from the content provider.
      *
-     * Exception rows are excluded from the lookup by requiring [Tasks.ORIGINAL_INSTANCE_ID] to be `NULL`.
-     *
      * @param mainTaskId   [TaskContract.Tasks._ID] of the main task
      *
      * @return the task and its exceptions, or _null_ if no task with the given id was found
      */
-    fun getById(mainTaskId: Long): TaskAndExceptions? {
-        return findTaskAndExceptions("${Tasks._ID}=?", arrayOf(mainTaskId.toString()))
-    }
+    fun getById(mainTaskId: Long): TaskAndExceptions? =
+        findTaskAndExceptions("${Tasks._ID}=?", arrayOf(mainTaskId.toString()))
 
     /**
      * Iterates through main tasks in [taskList] together with their exceptions.
-     *
-     * Exception rows are excluded from the iteration by requiring [Tasks.ORIGINAL_INSTANCE_ID] to be `NULL`.
      *
      * Note that the exceptions may contain deleted tasks.
      *
@@ -115,7 +108,6 @@ class DmfsRecurringTaskList(
      */
     fun iterateTaskAndExceptions(where: String?, whereArgs: Array<String>?, body: (TaskAndExceptions) -> Unit) {
         val (mainWhere, mainWhereArgs) = whereWithMainTasksOnly(where, whereArgs)
-
         taskList.iterateTasks(mainWhere, mainWhereArgs) { main ->
             val mainTaskId = main.entityValues.getAsLong(Tasks._ID)
             body(
