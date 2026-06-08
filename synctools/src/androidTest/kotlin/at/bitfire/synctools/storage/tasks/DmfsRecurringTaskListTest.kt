@@ -12,6 +12,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.impl.TestTaskList
+import at.bitfire.synctools.test.account.TestAccount
 import at.bitfire.synctools.test.assertEntitiesEqual
 import at.bitfire.synctools.test.assertExceptionsEqual
 import at.bitfire.synctools.verifyCompat
@@ -42,10 +43,9 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     @get:Rule
     val mockkRule = MockKRule(this)
 
-    // We can't use TaskContract.LOCAL_ACCOUNT_TYPE, see testProcessDeletedExceptions
-    private val testAccount = Account(javaClass.simpleName, TaskContract.LOCAL_ACCOUNT_TYPE)
     private val timeZoneId = TimeZones.UTC_ID
 
+    private lateinit var testAccount: Account
     private lateinit var taskList: DmfsTaskList
     private lateinit var recurringTaskList: DmfsRecurringTaskList
 
@@ -53,6 +53,10 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     override fun prepare() {
         super.prepare()
 
+        // A real non-local account is required here:
+        // - lists in local (TaskContract.LOCAL_ACCOUNT_TYPE) accounts are deleted immediately instead of being marked as _DELETED
+        // - lists in fake non-local accounts are removed by the tasks provider as stale lists → flaky tests
+        testAccount = TestAccount.create(accountName = "${javaClass.simpleName}-${providerName}-${UUID.randomUUID()}")
         taskList = TestTaskList.create(testAccount, provider)
         recurringTaskList = spyk(DmfsRecurringTaskList(taskList))
     }
@@ -62,6 +66,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         // Clean up tasks after every test
         taskList.deleteTasks(null, null)
         taskList.delete()
+        TestAccount.remove(testAccount)
     }
 
     // test CRUD

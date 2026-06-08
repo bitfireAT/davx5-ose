@@ -1,0 +1,9 @@
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
+<account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
+        android:accountType="@string/test_account_type"
+        android:icon="@android:drawable/sym_def_app_icon"
+        android:label="@string/test_account_type"
+        android:smallIcon="@android:drawable/sym_def_app_icon" />
