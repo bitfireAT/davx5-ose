@@ -6,7 +6,6 @@ package at.bitfire.synctools.mapping.tasks.handler
 
 import android.content.ContentValues
 import android.content.Entity
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.icalendar.plusAssign
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Organizer
@@ -15,19 +14,10 @@ import java.net.URISyntaxException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class OrganizerHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
+class OrganizerHandler : DmfsTaskEntityHandler {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
-
-    override fun process(from: ContentValues, to: Task) {
-        val email = from.getAsString(Tasks.ORGANIZER) ?: return
-        try {
-            to.organizer = Organizer("mailto:$email")
-        } catch (e: URISyntaxException) {
-            logger.log(Level.WARNING, "Invalid ORGANIZER email", e)
-        }
-    }
 
     override fun process(from: Entity, main: Entity, to: VToDo) {
         val email = from.entityValues.getAsString(Tasks.ORGANIZER)

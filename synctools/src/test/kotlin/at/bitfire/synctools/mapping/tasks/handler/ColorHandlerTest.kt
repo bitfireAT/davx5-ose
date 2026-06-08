@@ -7,7 +7,6 @@ package at.bitfire.synctools.mapping.tasks.handler
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Color
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -23,19 +22,6 @@ class ColorHandlerTest {
 
     private val handler = ColorHandler()
 
-    @Test
-    fun `legacy No COLOR`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertNull(task.color)
-    }
-
-    @Test
-    fun `legacy COLOR set`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.TASK_COLOR to 0xFF112233.toInt()), task)
-        assertEquals(0xFF112233.toInt(), task.color)
-    }
 
     @Test
     fun `No COLOR`() {

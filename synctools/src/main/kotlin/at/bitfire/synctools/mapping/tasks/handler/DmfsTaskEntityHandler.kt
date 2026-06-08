@@ -8,7 +8,7 @@ import android.content.Entity
 import at.bitfire.synctools.exception.InvalidLocalResourceException
 import net.fortuna.ical4j.model.component.VToDo
 
-interface DmfsTaskFieldHandler2 {
+interface DmfsTaskEntityHandler {
 
     /**
      * Takes specific data from a task (= task row + data rows, taken from the content provider)

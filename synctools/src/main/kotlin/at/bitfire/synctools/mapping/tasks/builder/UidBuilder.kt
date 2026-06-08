@@ -5,17 +5,12 @@
 package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
-import at.bitfire.ical4android.Task
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Uid
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class UidBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks._UID, from.uid)
-    }
+class UidBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         val uid = from.getProperty<Uid>(Uid.UID).getOrNull()

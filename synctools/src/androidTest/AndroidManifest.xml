@@ -1,7 +1,25 @@
-<manifest xmlns:tools="http://schemas.android.com/tools">
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <!--
     Since Mockk 1.14.7 it's required to use minSdk 26. We use 23, so override for tests.
     -->
     <uses-sdk tools:overrideLibrary="io.mockk.android,io.mockk.proxy.android" />
+
+    <application>
+        <service
+                android:name="at.bitfire.synctools.test.account.TestAccountAuthenticatorService"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                    android:name="android.accounts.AccountAuthenticator"
+                    android:resource="@xml/test_account_authenticator" />
+        </service>
+    </application>
 </manifest>

@@ -1,0 +1,11 @@
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
+<resources>
+    <!--
+    Dedicated account type for synctools instrumented tests. This must be backed by the
+    androidTest-only authenticator so the dmfs tasks provider sees it as a real account.
+    -->
+    <string name="test_account_type" translatable="false">at.bitfire.synctools.test.account</string>
+</resources>

@@ -7,7 +7,6 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.mapping.tasks.VToDoUtil
 import at.bitfire.synctools.test.assertContentValuesEqual
 import net.fortuna.ical4j.model.component.VToDo
@@ -21,30 +20,6 @@ import org.robolectric.RobolectricTestRunner
 class UidBuilderTest {
 
     private val builder = UidBuilder()
-
-    @Test
-    fun `old No UID`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks._UID to null
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old UID is set`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task().also { it.uid = "some-uid" },
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks._UID to "some-uid"
-        ), result.entityValues)
-    }
 
     @Test
     fun `No UID`() {

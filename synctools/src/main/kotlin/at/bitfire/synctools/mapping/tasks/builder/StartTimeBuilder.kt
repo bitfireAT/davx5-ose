@@ -5,7 +5,6 @@
 package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import net.fortuna.ical4j.model.component.VToDo
@@ -13,11 +12,7 @@ import net.fortuna.ical4j.model.property.DtStart
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class StartTimeBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks.DTSTART, from.dtStart?.normalizedDate()?.toTimestamp())
-    }
+class StartTimeBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         val dtStart = from.getProperty<DtStart<*>>(DtStart.DTSTART).getOrNull()
