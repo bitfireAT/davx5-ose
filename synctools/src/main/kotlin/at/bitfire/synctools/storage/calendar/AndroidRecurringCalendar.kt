@@ -76,7 +76,7 @@ class AndroidRecurringCalendar(
     }
 
     /**
-     * Find first event (including exceptions) that matches the query from the content provider.
+     * Find first main event that matches the query from the content provider and attach its exceptions.
      *
      * Note that the exceptions may contain deleted events.
      *
@@ -84,7 +84,8 @@ class AndroidRecurringCalendar(
      * @param whereArgs     arguments for selection
      */
     fun findEventAndExceptions(where: String?, whereArgs: Array<String>?): EventAndExceptions? {
-        val main = calendar.findEvent(where, whereArgs) ?: return null
+        val (mainWhere, mainWhereArgs) = whereWithMainEventsOnly(where, whereArgs)
+        val main = calendar.findEvent(mainWhere, mainWhereArgs) ?: return null
 
         // attach exceptions
         val mainEventId = main.entityValues.getAsLong(Events._ID)
@@ -95,22 +96,18 @@ class AndroidRecurringCalendar(
     }
 
     /**
-     * Retrieves an event and its exceptions from the content provider (associated by [Events.ORIGINAL_ID]).
+     * Retrieves a main event and its exceptions from the content provider (associated by [Events.ORIGINAL_ID]).
      *
      * @param mainEventId   [Events._ID] of the main event
      *
      * @return event and exceptions
      */
     fun getById(mainEventId: Long): EventAndExceptions? {
-        val mainEvent = calendar.getEvent(mainEventId) ?: return null
-        return EventAndExceptions(
-            main = mainEvent,
-            exceptions = calendar.findEvents("${Events.ORIGINAL_ID}=?", arrayOf(mainEventId.toString()))
-        )
+        return findEventAndExceptions("${Events._ID}=?", arrayOf(mainEventId.toString()))
     }
 
     /**
-     * Iterates through events together with their exceptions from the content provider.
+     * Iterates through main events together with their exceptions from the content provider.
      *
      * Note that the exceptions may contain deleted events.
      *
@@ -119,8 +116,10 @@ class AndroidRecurringCalendar(
      * @param body          callback that is called for each event (including exceptions)
      */
     fun iterateEventAndExceptions(where: String?, whereArgs: Array<String>?, body: (EventAndExceptions) -> Unit) {
+        val (mainWhere, mainWhereArgs) = whereWithMainEventsOnly(where, whereArgs)
+
         // iterate through main events and attach exceptions
-        calendar.iterateEvents(where, whereArgs) { main ->
+        calendar.iterateEvents(mainWhere, mainWhereArgs) { main ->
             val mainEventId = main.entityValues.getAsLong(Events._ID)
             body(EventAndExceptions(
                 main = main,
@@ -130,7 +129,7 @@ class AndroidRecurringCalendar(
     }
 
     /**
-     * Updates an event and all its exceptions. Input data is first cleaned up using
+     * Updates a main event and all its exceptions. Input data is first cleaned up using
      * [cleanMainEvent] and [cleanException].
      *
      * @param id                    ID of the main event row
@@ -172,9 +171,9 @@ class AndroidRecurringCalendar(
     }
 
     /**
-     * Deletes an event and all its potential exceptions.
+     * Deletes a main event and all its potential exceptions.
      *
-     * @param id    ID of the event
+     * @param id    ID of the main event
      */
     fun deleteEventAndExceptions(id: Long) {
         try {
@@ -371,5 +370,10 @@ class AndroidRecurringCalendar(
         batch.commit()
     }
 
+    private fun whereWithMainEventsOnly(where: String?, whereArgs: Array<String>?): Pair<String, Array<String>> {
+        val protectedWhere = "(${where ?: "1"}) AND ${Events.ORIGINAL_ID} IS NULL AND ${Events.ORIGINAL_SYNC_ID} IS NULL"
+        val protectedWhereArgs = whereArgs ?: arrayOf()
+        return Pair(protectedWhere, protectedWhereArgs)
+    }
 
 }
