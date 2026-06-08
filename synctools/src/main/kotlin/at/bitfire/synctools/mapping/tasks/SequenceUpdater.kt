@@ -31,6 +31,9 @@ class SequenceUpdater {
         else
             currentSeq + 1      // task was modified, increase sequence
 
+        // update in mainTask
+        mainValues.put(Tasks.SYNC_VERSION, newSeq)
+
         return newSeq
     }
 
