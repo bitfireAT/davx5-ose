@@ -17,6 +17,7 @@ import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.ical4android.impl.TestTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTask
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract.UNKNOWN_PROPERTY_DATA
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import net.fortuna.ical4j.model.DateList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
@@ -808,7 +809,7 @@ class DmfsTaskBuilderTest (
             val unknownProperty = firstProperty(taskId, UnknownProperty.CONTENT_ITEM_TYPE)!!
             assertEquals(
                 xProperty,
-                UnknownProperty.fromJsonString(unknownProperty.getAsString(DmfsTask.UNKNOWN_PROPERTY_DATA))
+                UnknownProperty.fromJsonString(unknownProperty.getAsString(UNKNOWN_PROPERTY_DATA))
             )
         }
     }

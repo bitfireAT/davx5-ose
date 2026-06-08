@@ -9,6 +9,7 @@ import android.content.Entity
 import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.mapping.tasks.mimeType
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.UNKNOWN_PROPERTY_DATA
 import net.fortuna.ical4j.model.component.VToDo
 import org.json.JSONException
@@ -31,7 +32,13 @@ class UnknownPropertiesHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
     }
 
     override fun process(from: Entity, main: Entity, to: VToDo) {
-        from.entityValues.getAsString(UNKNOWN_PROPERTY_DATA)?.let { properties ->
+        for (row in from.subValues.filter { it.mimeType == UnknownProperty.CONTENT_ITEM_TYPE }) {
+            processUnknownProperty(row.values, to)
+        }
+    }
+
+    private fun processUnknownProperty(values: ContentValues, to: VToDo) {
+        values.getAsString(UNKNOWN_PROPERTY_DATA)?.let { properties ->
             try {
                 to += UnknownProperty.fromJsonString(properties)
             } catch (e: JSONException) {
