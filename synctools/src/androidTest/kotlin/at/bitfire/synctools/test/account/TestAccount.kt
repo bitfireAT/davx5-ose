@@ -33,7 +33,7 @@ object TestAccount {
 
         if (Build.VERSION.SDK_INT >= 26) {
             val manager = AccountManager.get(context)
-            for ((providerName, _) in listOf(TaskProvider.ProviderName.entries))
+            for (providerName in TaskProvider.ProviderName.entries)
                 if (manager.getAccountVisibility(account, providerName.packageName) != AccountManager.VISIBILITY_VISIBLE)
                     manager.setAccountVisibility(account, providerName.packageName, AccountManager.VISIBILITY_VISIBLE)
         }
