@@ -107,7 +107,7 @@ class LocalTask(
             .add("eTag", eTag)
             .add("flags", flags)
             .add(
-                "event", try {
+                "task", try {
                     // only include truncated main task row (won't contain attachments, unknown properties etc.)
                     StringUtils.abbreviate(mainValues.toString(), 1000)
                 } catch (e: Exception) {

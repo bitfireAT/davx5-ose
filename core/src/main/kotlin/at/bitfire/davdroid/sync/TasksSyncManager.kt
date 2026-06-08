@@ -40,6 +40,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.ProdId
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -119,7 +120,7 @@ class TasksSyncManager @AssistedInject constructor(
         val updatedSequence = SequenceUpdater().increaseSequence(localTask.main)
 
         // map Android event to iCalendar (also generates UID, if necessary)
-        val handler = DmfsTaskHandler()
+        val handler = DmfsTaskHandler(ProdId(productIds.iCalProdId))
         val mappedVToDos = handler.mapToVToDos(localTask)
 
         // persist UID if it was generated
