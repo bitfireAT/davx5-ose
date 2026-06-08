@@ -114,7 +114,7 @@ class TasksSyncManager @AssistedInject constructor(
         val localTask = resource.taskAndExceptions
         logger.log(Level.FINE, "Preparing upload of task #${resource.id}", localTask)
 
-        /* Increase SEQUENCE of main event in memory and remember new value.
+        /* Increase SEQUENCE of main task in memory and remember new value.
         Will be written to provider later over onSuccessContext. */
         val updatedSequence = SequenceUpdater().increaseSequence(localTask.main)
 
