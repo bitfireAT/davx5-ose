@@ -13,11 +13,13 @@ import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.test.assertContentValuesEqual
 import junit.framework.TestCase.assertEquals
 import org.junit.After
 import org.junit.AfterClass
+import org.junit.Assert.assertNotNull
 import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Test
@@ -119,6 +121,49 @@ class AndroidCalendarProviderBehaviorTest {
 
         val event2 = calendar.getEventRow(id)
         assertContentValuesEqual(values, event2!!, onlyFieldsInExpected = true)
+    }
+
+    @Test
+    fun testInsertEventWithInfiniteRRule() {
+        assertNotNull(
+            client.insert(
+                Events.CONTENT_URI.asSyncAdapter(testAccount), contentValuesOf(
+                    Events.CALENDAR_ID to calendar.id,
+                    Events.DTSTART to 1643192678000,
+                    Events.DURATION to "P1H",
+                    Events.RRULE to "FREQ=YEARLY",
+                    Events.TITLE to "Test event with infinite RRULE"
+                )
+            )
+        )
+    }
+
+    @Test(expected = AssertionError::class)
+    fun testInsertEventWithInfiniteRRulePlusRDate() {
+        // see https://issuetracker.google.com/issues/37116691
+
+        assertNotNull(
+            client.insert(
+                Events.CONTENT_URI.asSyncAdapter(testAccount), contentValuesOf(
+                    Events.CALENDAR_ID to calendar.id,
+                    Events.DTSTART to 1643192678000,
+                    Events.DURATION to "PT1H",
+                    Events.RRULE to "FREQ=YEARLY",
+                    Events.RDATE to "20230101T000000Z",
+                    Events.TITLE to "Test event with infinite RRULE and RDATE"
+                )
+            )
+        )
+
+        /** FAILS:
+        W RecurrenceProcessor: DateException with r=FREQ=YEARLY;WKST=MO rangeStart=135697573414 rangeEnd=9223372036854775807
+        W CalendarProvider2: Could not calculate last date.
+        W CalendarProvider2: com.android.calendarcommon2.DateException: No range end provided for a recurrence that has no UNTIL or COUNT.
+        W CalendarProvider2: 	at com.android.calendarcommon2.RecurrenceProcessor.expand(RecurrenceProcessor.java:766)
+        W CalendarProvider2: 	at com.android.calendarcommon2.RecurrenceProcessor.expand(RecurrenceProcessor.java:661)
+        W CalendarProvider2: 	at com.android.calendarcommon2.RecurrenceProcessor.getLastOccurence(RecurrenceProcessor.java:130)
+        W CalendarProvider2: 	at com.android.calendarcommon2.RecurrenceProcessor.getLastOccurence(RecurrenceProcessor.java:61)
+         */
     }
 
     /**
