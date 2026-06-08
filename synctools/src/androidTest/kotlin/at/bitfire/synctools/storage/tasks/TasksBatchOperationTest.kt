@@ -2,20 +2,21 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.synctools.storage
+package at.bitfire.synctools.storage.tasks
 
 import android.accounts.Account
 import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.impl.TestTaskList
-import at.bitfire.synctools.storage.tasks.TasksBatchOperation
+import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.test.BuildConfig
 import org.dmfs.tasks.contract.TaskContract
 import org.junit.Test
 
 class TasksBatchOperationTest(
     providerName: TaskProvider.ProviderName
-): DmfsStyleProvidersTaskTest(providerName) {
+) : DmfsStyleProvidersTaskTest(providerName) {
 
     private val testAccount = Account(javaClass.name, BuildConfig.APPLICATION_ID)
 
