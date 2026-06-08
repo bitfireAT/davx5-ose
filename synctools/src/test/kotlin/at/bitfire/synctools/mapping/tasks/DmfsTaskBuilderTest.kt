@@ -6,7 +6,6 @@ package at.bitfire.synctools.mapping.tasks
 
 import android.net.Uri
 import at.bitfire.dateTimeValue
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.AssociatedTasks
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
@@ -32,8 +31,6 @@ class DmfsTaskBuilderTest {
 
     private val builder = DmfsTaskBuilder(
         taskList = taskList,
-        task = Task(),
-        id = null,
         syncId = null,
         eTag = null,
         flags = 0
