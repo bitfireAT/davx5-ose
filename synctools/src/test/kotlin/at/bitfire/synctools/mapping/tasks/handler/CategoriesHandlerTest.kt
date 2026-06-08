@@ -125,10 +125,9 @@ class CategoriesHandlerTest {
         val vToDo = VToDo()
         val input = Entity(ContentValues()).apply {
             addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
-                Category.MIMETYPE to Category.CONTENT_ITEM_TYPE
-            ).apply {
-                putNull(Category.CATEGORY_NAME)
-            })
+                Category.MIMETYPE to Category.CONTENT_ITEM_TYPE,
+                Category.CATEGORY_NAME to null
+            ))
         }
         handler.process(from = input, main = input, to = vToDo)
 
