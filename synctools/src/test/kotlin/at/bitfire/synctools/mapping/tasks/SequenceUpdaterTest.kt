@@ -7,8 +7,8 @@ package at.bitfire.synctools.mapping.tasks
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import junit.framework.Assert.assertEquals
 import org.dmfs.tasks.contract.TaskContract.Tasks
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
