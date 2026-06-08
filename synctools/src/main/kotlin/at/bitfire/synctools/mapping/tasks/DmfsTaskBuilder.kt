@@ -7,6 +7,7 @@ package at.bitfire.synctools.mapping.tasks
 import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.ical4android.Task
+import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.AssociatedTasks
 import at.bitfire.synctools.mapping.tasks.builder.AlarmsBuilder
 import at.bitfire.synctools.mapping.tasks.builder.AllDayBuilder
@@ -19,6 +20,7 @@ import at.bitfire.synctools.mapping.tasks.builder.CreatedBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DescriptionBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DirtyBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DmfsTaskFieldBuilder
+import at.bitfire.synctools.mapping.tasks.builder.DmfsTaskFieldBuilderVToDo
 import at.bitfire.synctools.mapping.tasks.builder.DueBuilder
 import at.bitfire.synctools.mapping.tasks.builder.DurationBuilder
 import at.bitfire.synctools.mapping.tasks.builder.ETagBuilder
@@ -69,7 +71,7 @@ class DmfsTaskBuilder(
     private val logger
         get() = Logger.getLogger(javaClass.name)
 
-    private val fieldBuilders: Array<DmfsTaskFieldBuilder> = arrayOf(
+    private val fieldBuilders: Array<DmfsTaskFieldBuilderVToDo> = arrayOf(
         // main task row fields
         UidBuilder(),
         SyncIdBuilder(syncId),
@@ -149,22 +151,28 @@ class DmfsTaskBuilder(
     }
 
     fun build(associatedTasks: AssociatedTasks): TaskAndExceptions {
-        TODO("Map iCalendar data (AssociatedTasks) to content provider data (TaskAndExceptions)")
-        // just like AndroidEventBuilder().build()
-        // uses buildTask()
+        // TODO: when recurrence is supported on tasks, no exception should be thrown, but instead a reference should be created for exceptions. See AndroidEventBuilder
+        val mainVToDo = associatedTasks.main ?: throw ResourceMappingException("Main task is missing in associated tasks")
+        return TaskAndExceptions(
+            main = buildTask(from = mainVToDo, main = mainVToDo),
+            exceptions = associatedTasks.exceptions.map { exception ->
+                buildTask(from = exception, main = mainVToDo)
+            }
+        )
     }
 
     private fun buildTask(from: VToDo, main: VToDo): Entity {
-        TODO("Build a single Entity based on from")
-        // in some cases (like to see whether the main item is all-day, "main" can be used
-        // just like AndroidEventBuilder().buildEvent()
+        val entity = Entity(ContentValues())
+        for (builder in fieldBuilders)
+            builder.build(from = from, main = main, to = entity)
+        return entity
     }
 
     @Deprecated("Replaced by build()")
     private fun buildTask(): Entity {
         val entity = Entity(ContentValues())
 
-        for (fieldBuilder in fieldBuilders)
+        for (fieldBuilder in fieldBuilders.filterIsInstance<DmfsTaskFieldBuilder>())
             fieldBuilder.build(task, entity)
         logger.log(Level.FINE, "Built task", entity.entityValues)
 
