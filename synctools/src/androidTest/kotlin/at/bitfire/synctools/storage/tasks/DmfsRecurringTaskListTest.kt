@@ -11,6 +11,7 @@ import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
 import at.bitfire.ical4android.TaskProvider
+import at.bitfire.ical4android.impl.TestTaskList
 import at.bitfire.synctools.test.assertEntitiesEqual
 import at.bitfire.synctools.test.assertExceptionsEqual
 import at.bitfire.synctools.verifyCompat
@@ -18,7 +19,6 @@ import io.mockk.junit4.MockKRule
 import io.mockk.spyk
 import net.fortuna.ical4j.util.TimeZones
 import org.dmfs.tasks.contract.TaskContract
-import org.dmfs.tasks.contract.TaskContract.TaskLists
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -53,18 +53,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     override fun prepare() {
         super.prepare()
 
-        // Create a test task list
-        val info = contentValuesOf(
-            TaskLists.LIST_NAME to "Test Recurring Task List",
-            TaskLists.LIST_COLOR to 0xffff0000,
-            TaskLists.OWNER to "test@example.com",
-            TaskLists.SYNC_ENABLED to 1,
-            TaskLists.VISIBLE to 1
-        )
-
-        val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider.client, providerName)
-        val id = dmfsTaskListProvider.createTaskList(info)
-        taskList = dmfsTaskListProvider.getTaskList(id)!!
+        taskList = TestTaskList.create(testAccount, provider)
         recurringTaskList = spyk(DmfsRecurringTaskList(taskList))
     }
 
@@ -72,6 +61,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     fun cleanUp() {
         // Clean up tasks after every test
         taskList.deleteTasks(null, null)
+        taskList.delete()
     }
 
     // test CRUD
