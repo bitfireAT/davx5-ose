@@ -6,6 +6,7 @@ package at.bitfire.synctools.mapping.tasks.handler
 
 import android.content.ContentValues
 import android.content.Entity
+import android.net.Uri
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
 import net.fortuna.ical4j.model.Property
@@ -72,7 +73,12 @@ class CategoriesHandlerTest {
     @Test
     fun `Single category`() {
         val vToDo = VToDo()
-        val input = Entity(contentValuesOf(Category.CATEGORY_NAME to "Work"))
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Category.MIMETYPE to Category.CONTENT_ITEM_TYPE,
+                Category.CATEGORY_NAME to "Work"
+            ))
+        }
         handler.process(from = input, main = input, to = vToDo)
 
         // Collect all category texts from all Categories properties
@@ -89,10 +95,17 @@ class CategoriesHandlerTest {
     @Test
     fun `Multiple categories accumulate`() {
         val vToDo = VToDo()
-        val input1 = Entity(contentValuesOf(Category.CATEGORY_NAME to "Work"))
-        val input2 = Entity(contentValuesOf(Category.CATEGORY_NAME to "Personal"))
-        handler.process(from = input1, main = input1, to = vToDo)
-        handler.process(from = input2, main = input2, to = vToDo)
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Category.MIMETYPE to Category.CONTENT_ITEM_TYPE,
+                Category.CATEGORY_NAME to "Work"
+            ))
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Category.MIMETYPE to Category.CONTENT_ITEM_TYPE,
+                Category.CATEGORY_NAME to "Personal"
+            ))
+        }
+        handler.process(from = input, main = input, to = vToDo)
 
         // Collect all category texts from all Categories properties
         val allCategories = mutableListOf<String>()
@@ -110,9 +123,12 @@ class CategoriesHandlerTest {
     @Test
     fun `Null category is skipped`() {
         val vToDo = VToDo()
-        val input = Entity(ContentValues().apply {
-            putNull(Category.CATEGORY_NAME)
-        })
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Category.MIMETYPE to Category.CONTENT_ITEM_TYPE,
+                Category.CATEGORY_NAME to null
+            ))
+        }
         handler.process(from = input, main = input, to = vToDo)
 
         val categories = vToDo.getProperty<Categories>(Property.CATEGORIES).getOrNull()
