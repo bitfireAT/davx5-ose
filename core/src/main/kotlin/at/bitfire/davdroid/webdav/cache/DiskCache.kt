@@ -25,7 +25,8 @@ class DiskCache(
         const val CLEANUP_RATE = 15
     }
 
-    private val logger = Logger.getGlobal()
+    private val logger: Logger
+        get() = Logger.getLogger(javaClass.name)
     private var writeCounter: Int = 0
 
     init {

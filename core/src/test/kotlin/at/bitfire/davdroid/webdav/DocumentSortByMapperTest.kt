@@ -11,7 +11,7 @@ import java.util.logging.Logger
 
 class DocumentSortByMapperTest {
 
-    private val mapper = DocumentSortByMapper(Logger.getGlobal())
+    private val mapper = DocumentSortByMapper(Logger.getLogger(javaClass.name))
 
     @Test
     fun test_MapContentProviderToSql() {

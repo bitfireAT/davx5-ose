@@ -30,10 +30,10 @@ import java.util.logging.Logger
  */
 class StreamingFileDescriptor @AssistedInject constructor(
     @Assisted private val client: OkHttpClient,
-    @Assisted private val url: HttpUrl,
-    @Assisted private val mimeType: MediaType?,
     @Assisted private val externalScope: CoroutineScope,
     @Assisted private val finishedCallback: OnSuccessCallback,
+    @Assisted private val mimeType: MediaType?,
+    @Assisted private val url: HttpUrl,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {

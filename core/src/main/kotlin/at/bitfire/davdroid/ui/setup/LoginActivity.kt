@@ -51,6 +51,8 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
     }
 
     companion object {
+        private val logger: Logger
+            get() = Logger.getLogger(LoginActivity::class.java.name)
 
         /**
          * When set, "login by URL" will be activated by default, and the URL field will be set to this value.
@@ -87,7 +89,6 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
             var givenPassword: String? = null
 
             // extract URI or email and optionally username/password from Intent data
-            val logger = Logger.getGlobal()
             intent.data?.normalizeScheme()?.let { uri ->
                 val realScheme = when (uri.scheme) {
                     // replace caldav[s]:// and carddav[s]:// with http[s]://

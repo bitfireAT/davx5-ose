@@ -49,7 +49,7 @@ class TaskProvider private constructor(
     companion object {
 
         private val logger
-            get() = Logger.getLogger(TaskProvider::javaClass.name)
+            get() = Logger.getLogger(TaskProvider::class.java.name)
 
         val TASK_PROVIDERS = listOf(
                 ProviderName.OpenTasks,

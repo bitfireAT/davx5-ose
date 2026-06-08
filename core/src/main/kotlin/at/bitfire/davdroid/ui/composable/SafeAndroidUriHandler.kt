@@ -16,11 +16,14 @@ class SafeAndroidUriHandler(
     val context: Context
 ): UriHandler {
 
+    private val logger: Logger
+        get() = Logger.getLogger(javaClass.name)
+
     override fun openUri(uri: String) {
         try {
             AndroidUriHandler(context).openUri(uri)
         } catch (e: Exception) {
-            Logger.getGlobal().log(Level.WARNING, "No browser available", e)
+            logger.log(Level.WARNING, "No browser available", e)
             // no browser available
             Toast.makeText(context, R.string.install_browser, Toast.LENGTH_LONG).show()
         }

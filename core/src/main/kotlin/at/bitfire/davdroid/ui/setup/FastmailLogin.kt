@@ -44,6 +44,9 @@ import java.util.logging.Logger
 
 object FastmailLogin : LoginType {
 
+    private val logger: Logger
+        get() = Logger.getLogger(javaClass.name)
+
     override val title: Int
         get() = R.string.login_fastmail
 
@@ -99,7 +102,7 @@ object FastmailLogin : LoginType {
                     try {
                         authRequestContract.launch(authRequest)
                     } catch (e: ActivityNotFoundException) {
-                        Logger.getGlobal().log(Level.WARNING, "Couldn't start OAuth intent", e)
+                        logger.log(Level.WARNING, "Couldn't start OAuth intent", e)
                         model.signInFailed()
                     }
                 }

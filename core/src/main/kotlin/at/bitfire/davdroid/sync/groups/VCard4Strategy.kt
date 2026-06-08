@@ -18,7 +18,7 @@ import java.util.logging.Logger
 class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
 
     private val logger: Logger
-        get() = Logger.getGlobal()
+        get() = Logger.getLogger(javaClass.name)
     
     override fun beforeUploadDirty() {
         /* Mark groups with changed members as dirty:

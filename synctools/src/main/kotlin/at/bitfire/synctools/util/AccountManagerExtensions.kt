@@ -26,6 +26,5 @@ fun AccountManager.setAndVerifyUserData(account: Account, key: String, value: St
         Thread.sleep(100)
     }
 
-    val logger = Logger.getLogger(javaClass.name)
-    logger.warning("AccountManager failed to set $account user data $key := $value")
+    Logger.getGlobal().warning("AccountManager failed to set $account user data $key := $value")
 }

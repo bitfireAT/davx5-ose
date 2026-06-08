@@ -64,7 +64,8 @@ class DmfsTask(
         this.task = task
     }
 
-    private val logger = Logger.getLogger(javaClass.name)
+    private val logger: Logger
+        get() = Logger.getLogger(javaClass.name)
 
     private val mainValues
         get() = values.entityValues

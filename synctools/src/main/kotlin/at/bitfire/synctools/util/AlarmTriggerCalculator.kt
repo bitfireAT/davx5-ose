@@ -22,7 +22,8 @@ import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
 
 object AlarmTriggerCalculator {
-    private val logger = Logger.getLogger(javaClass.name)
+    private val logger: Logger
+        get() = Logger.getLogger(javaClass.name)
 
     /**
      * Calculates the minutes before/after an event/task to know when a given alarm occurs.

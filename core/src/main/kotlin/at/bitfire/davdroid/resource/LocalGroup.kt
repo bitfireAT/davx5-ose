@@ -35,7 +35,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
     companion object {
         
         private val logger: Logger
-            get() = Logger.getGlobal()
+            get() = Logger.getLogger(LocalGroup::class.java.name)
 
         const val COLUMN_FLAGS = Groups.SYNC4
 

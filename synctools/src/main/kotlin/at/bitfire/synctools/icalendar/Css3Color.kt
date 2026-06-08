@@ -169,7 +169,7 @@ enum class Css3Color(val argb: Int) {
     companion object {
 
         private val logger
-            get() = Logger.getLogger(Css3Color::javaClass.name)
+            get() = Logger.getLogger(Css3Color::class.java.name)
 
         /**
          * Parses the given color either as CSS3 color name or as (A)RGB hex value.

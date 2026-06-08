@@ -33,6 +33,9 @@ import java.util.logging.Logger
 
 object PermissionUtils {
 
+    private val logger: Logger
+        get() = Logger.getLogger(javaClass.name)
+
     /** There's an undocumented intent that is sent when the battery optimization whitelist changes. */
     const val ACTION_POWER_SAVE_WHITELIST_CHANGED = "android.os.action.POWER_SAVE_WHITELIST_CHANGED"
 
@@ -152,7 +155,7 @@ object PermissionUtils {
         if (intent.resolveActivity(context.packageManager) != null)
             context.startActivity(intent)
         else
-            Logger.getGlobal().warning("App settings Intent not resolvable")
+            logger.warning("App settings Intent not resolvable")
     }
 
 }

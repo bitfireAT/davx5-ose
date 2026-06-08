@@ -29,7 +29,8 @@ class PagingReader(
     private val pageCache: LoadingCache<RandomAccessCallback.PageIdentifier, ByteArray>
 ) {
 
-    val logger: Logger = Logger.getLogger(javaClass.name)
+    private val logger: Logger
+        get() = Logger.getLogger(javaClass.name)
 
 
     /**

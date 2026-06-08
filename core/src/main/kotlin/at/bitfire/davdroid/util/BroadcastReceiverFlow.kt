@@ -33,11 +33,9 @@ fun broadcastReceiverFlow(
     flags: Int? = null,
     immediate: Boolean
 ): Flow<Intent> = callbackFlow {
-    val logger = Logger.getGlobal()
-
     val receiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            logger.fine("broadcastReceiverFlow received $intent")
+            Logger.getGlobal().fine("broadcastReceiverFlow received $intent")
             trySend(intent)
         }
     }
@@ -45,7 +43,7 @@ fun broadcastReceiverFlow(
     // register receiver
     var filterDump = filter.toString()
     filter.dump({ filterDump = it }, "")
-    logger.fine("Registering broadcast receiver for $filterDump (flags=$flags)")
+    Logger.getGlobal().fine("Registering broadcast receiver for $filterDump (flags=$flags)")
     if (flags != null)
         ContextCompat.registerReceiver(context, receiver, filter, null, null, flags)
     else
@@ -57,7 +55,7 @@ fun broadcastReceiverFlow(
 
     // wait until flow is cancelled, then clean up
     awaitClose {
-        logger.fine("Unregistering broadcast receiver for $filterDump")
+        Logger.getGlobal().fine("Unregistering broadcast receiver for $filterDump")
         context.unregisterReceiver(receiver)
     }
 }

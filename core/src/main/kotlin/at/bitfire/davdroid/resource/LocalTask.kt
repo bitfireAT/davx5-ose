@@ -25,7 +25,8 @@ class LocalTask(
     val dmfsTask: DmfsTask
 ): LocalResource {
 
-    val logger: Logger = Logger.getLogger(javaClass.name)
+    val logger: Logger
+        get() = Logger.getLogger(javaClass.name)
 
 
     // LocalResource implementation

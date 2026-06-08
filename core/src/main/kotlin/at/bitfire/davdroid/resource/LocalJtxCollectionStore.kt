@@ -26,9 +26,10 @@ import javax.annotation.WillNotClose
 import javax.inject.Inject
 
 class LocalJtxCollectionStore @Inject constructor(
-    @ApplicationContext val context: Context,
     val accountSettingsFactory: AccountSettings.Factory,
+    @ApplicationContext val context: Context,
     db: AppDatabase,
+    private val logger: Logger,
     val principalRepository: PrincipalRepository
 ): LocalDataStore<LocalJtxCollection> {
 
@@ -81,7 +82,7 @@ class LocalJtxCollectionStore @Inject constructor(
             if (owner != null)
                 put(JtxContract.JtxCollection.OWNER, owner.url.toString())
             else
-                Logger.getGlobal().warning("No collection owner given. Will create jtx collection without owner")
+                logger.warning("No collection owner given. Will create jtx collection without owner")
             put(JtxContract.JtxCollection.OWNER_DISPLAYNAME, owner?.displayName)
             if (withColor && info.color != null)
                 put(JtxContract.JtxCollection.COLOR, info.color)

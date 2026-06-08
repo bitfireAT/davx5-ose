@@ -51,6 +51,9 @@ import java.util.logging.Logger
 
 object GoogleLogin : LoginType {
 
+    private val logger: Logger
+        get() = Logger.getLogger(javaClass.name)
+
     override val title: Int
         get() = R.string.login_type_google
 
@@ -113,7 +116,7 @@ object GoogleLogin : LoginType {
                     try {
                         authRequestContract.launch(authRequest)
                     } catch (e: ActivityNotFoundException) {
-                        Logger.getGlobal().log(Level.WARNING, "Couldn't start OAuth intent", e)
+                        logger.log(Level.WARNING, "Couldn't start OAuth intent", e)
                         model.signInFailed()
                     }
                 }

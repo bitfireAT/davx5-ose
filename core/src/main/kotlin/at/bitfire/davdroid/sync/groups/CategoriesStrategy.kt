@@ -12,7 +12,7 @@ import java.util.logging.Logger
 class CategoriesStrategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
 
     private val logger: Logger
-        get() = Logger.getGlobal()
+        get() = Logger.getLogger(javaClass.name)
 
     override fun beforeUploadDirty() {
         // groups with DELETED=1: set all members to dirty, then remove group
