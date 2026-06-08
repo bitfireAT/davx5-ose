@@ -6,12 +6,15 @@ package at.bitfire.synctools.mapping.tasks.handler
 
 import android.content.ContentValues
 import android.content.Entity
+import android.net.Uri
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.Task
+import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.UNKNOWN_PROPERTY_DATA
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VToDo
+import org.dmfs.tasks.contract.TaskContract.Properties
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -102,9 +105,12 @@ class UnknownPropertiesHandlerTest {
 
     @Test
     fun `Single unknown property`() {
-        val input = Entity(contentValuesOf(
-            UNKNOWN_PROPERTY_DATA to "[\"X-CUSTOM-PROP\", \"test-property\", {}]"
-        ))
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Properties.MIMETYPE to UnknownProperty.CONTENT_ITEM_TYPE,
+                UNKNOWN_PROPERTY_DATA to "[\"X-CUSTOM-PROP\", \"test-property\", {}]"
+            ))
+        }
         val task = VToDo()
         val initialPropertyCount = task.propertyList.all.size
 
@@ -117,9 +123,12 @@ class UnknownPropertiesHandlerTest {
 
     @Test
     fun `Unknown property with parameters`() {
-        val input = Entity(contentValuesOf(
-            UNKNOWN_PROPERTY_DATA to "[\"X-CUSTOM-PROP\", \"prop-value\", {\"X-CUSTOM\": \"custom-value\"}]"
-        ))
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Properties.MIMETYPE to UnknownProperty.CONTENT_ITEM_TYPE,
+                UNKNOWN_PROPERTY_DATA to "[\"X-CUSTOM-PROP\", \"prop-value\", {\"X-CUSTOM\": \"custom-value\"}]"
+            ))
+        }
         val task = VToDo()
         val initialPropertyCount = task.propertyList.all.size
 
@@ -133,27 +142,33 @@ class UnknownPropertiesHandlerTest {
 
     @Test
     fun `Multiple unknown properties accumulate`() {
-        val input = Entity(contentValuesOf(
-            UNKNOWN_PROPERTY_DATA to "[\"X-PROP1\", \"value1\", {}]"
-        ))
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Properties.MIMETYPE to UnknownProperty.CONTENT_ITEM_TYPE,
+                UNKNOWN_PROPERTY_DATA to "[\"X-PROP1\", \"value1\", {}]"
+            ))
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Properties.MIMETYPE to UnknownProperty.CONTENT_ITEM_TYPE,
+                UNKNOWN_PROPERTY_DATA to "[\"X-PROP2\", \"value2\", {}]"
+            ))
+        }
         val task = VToDo()
         val initialPropertyCount = task.propertyList.all.size
 
         handler.process(from = input, main = input, to = task)
-
-        val input2 = Entity(contentValuesOf(
-            UNKNOWN_PROPERTY_DATA to "[\"X-PROP2\", \"value2\", {}]"
-        ))
-        handler.process(from = input2, main = input2, to = task)
 
         assertEquals(initialPropertyCount + 2, task.propertyList.all.size)
     }
 
     @Test
     fun `Null unknown property data is skipped`() {
-        val input = Entity(ContentValues().apply {
-            putNull(UNKNOWN_PROPERTY_DATA)
-        })
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Properties.MIMETYPE to UnknownProperty.CONTENT_ITEM_TYPE
+            ).apply {
+                putNull(UNKNOWN_PROPERTY_DATA)
+            })
+        }
         val task = VToDo()
         val initialPropertyCount = task.propertyList.all.size
 
@@ -164,9 +179,12 @@ class UnknownPropertiesHandlerTest {
 
     @Test
     fun `Unknown property with invalid JSON`() {
-        val input = Entity(contentValuesOf(
-            UNKNOWN_PROPERTY_DATA to "not json"
-        ))
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Properties.MIMETYPE to UnknownProperty.CONTENT_ITEM_TYPE,
+                UNKNOWN_PROPERTY_DATA to "not json"
+            ))
+        }
         val task = VToDo()
         val initialPropertyCount = task.propertyList.all.size
 

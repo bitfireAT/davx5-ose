@@ -9,6 +9,7 @@ import android.content.Entity
 import at.bitfire.ical4android.Task
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.icalendar.propertyListOf
+import at.bitfire.synctools.mapping.tasks.mimeType
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.component.VToDo
@@ -48,23 +49,29 @@ class AlarmsHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
 
     override fun process(from: Entity, main: Entity, to: VToDo) {
         val summary = to.getProperty<Summary>(Property.SUMMARY).getOrNull()?.value
+        for (row in from.subValues.filter { it.mimeType == Alarm.CONTENT_ITEM_TYPE }) {
+            processAlarm(row.values, summary, to)
+        }
+    }
+
+    private fun processAlarm(values: ContentValues, summary: String?, to: VToDo) {
         val props = propertyListOf(
-            Trigger(Duration.ofMinutes(-from.entityValues.getAsLong(Alarm.MINUTES_BEFORE))).let {
-                when (from.entityValues.getAsInteger(Alarm.REFERENCE)) {
+            Trigger(Duration.ofMinutes(-values.getAsLong(Alarm.MINUTES_BEFORE))).let {
+                when (values.getAsInteger(Alarm.REFERENCE)) {
                     Alarm.ALARM_REFERENCE_START_DATE -> it.add(Related.START)
                     Alarm.ALARM_REFERENCE_DUE_DATE -> it.add(Related.END)
                     else -> it
                 }
             },
             Action(
-                when (from.entityValues.getAsInteger(Alarm.ALARM_TYPE)) {
+                when (values.getAsInteger(Alarm.ALARM_TYPE)) {
                     Alarm.ALARM_TYPE_EMAIL -> Action.VALUE_EMAIL
                     Alarm.ALARM_TYPE_SOUND -> Action.VALUE_AUDIO
                     // show alarm by default
                     else -> Action.VALUE_DISPLAY
                 }
             ),
-            Description(from.entityValues.getAsString(Alarm.MESSAGE) ?: summary)
+            Description(values.getAsString(Alarm.MESSAGE) ?: summary)
         )
 
         to += VAlarm(props)
