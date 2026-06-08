@@ -11,11 +11,7 @@ import net.fortuna.ical4j.model.property.Location
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class LocationBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks.LOCATION, from.location.trimToNull())
-    }
+class LocationBuilder : DmfsTaskFieldBuilderVToDo {
 
     override fun build(from: VToDo, to: Entity) {
         val location = from.getProperty<Location>(Location.LOCATION).getOrNull()

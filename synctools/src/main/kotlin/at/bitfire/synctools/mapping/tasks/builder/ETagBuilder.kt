@@ -10,12 +10,7 @@ import net.fortuna.ical4j.model.component.VToDo
 
 class ETagBuilder(
     private val eTag: String?
-) : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(COLUMN_ETAG, eTag)
-    }
-
+) : DmfsTaskFieldBuilderVToDo {
     override fun build(from: VToDo, to: Entity) {
         to.entityValues.put(COLUMN_ETAG, eTag)
     }

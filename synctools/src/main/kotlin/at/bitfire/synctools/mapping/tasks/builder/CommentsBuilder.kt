@@ -14,19 +14,7 @@ import org.dmfs.tasks.contract.TaskContract.Property.Comment as DmfsComment
 
 class CommentsBuilder(
     private val taskList: DmfsTaskList
-) : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        val comment = from.comment ?: return
-        to.addSubValue(
-            taskList.tasksPropertiesUri(),
-            contentValuesOf(
-                DmfsComment.MIMETYPE to DmfsComment.CONTENT_ITEM_TYPE,
-                DmfsComment.COMMENT to comment
-            )
-        )
-    }
-
+) : DmfsTaskFieldBuilderVToDo {
     override fun build(from: VToDo, to: Entity) {
         for (comment in from.getProperties<Comment>(Property.COMMENT)) {
             to.addSubValue(

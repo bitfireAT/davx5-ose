@@ -10,12 +10,7 @@ import org.dmfs.tasks.contract.TaskContract.Tasks
 
 class ListIdBuilder(
     private val listId: Long
-) : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks.LIST_ID, listId)
-    }
-
+) : DmfsTaskFieldBuilderVToDo {
     override fun build(from: VToDo, to: Entity) {
         to.entityValues.put(Tasks.LIST_ID, listId)
     }

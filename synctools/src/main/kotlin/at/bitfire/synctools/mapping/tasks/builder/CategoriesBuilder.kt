@@ -14,20 +14,7 @@ import org.dmfs.tasks.contract.TaskContract.Property.Category
 
 class CategoriesBuilder(
     private val taskList: DmfsTaskList
-) : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        for (category in from.categories) {
-            to.addSubValue(
-                taskList.tasksPropertiesUri(),
-                contentValuesOf(
-                    Category.MIMETYPE to Category.CONTENT_ITEM_TYPE,
-                    Category.CATEGORY_NAME to category
-                )
-            )
-        }
-    }
-
+) : DmfsTaskFieldBuilderVToDo {
     override fun build(from: VToDo, to: Entity) {
         for (categoriesProp in from.getProperties<Categories>(Property.CATEGORIES)) {
             for (category in categoriesProp.categories.texts) {

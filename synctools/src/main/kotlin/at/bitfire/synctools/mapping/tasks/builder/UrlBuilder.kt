@@ -10,11 +10,7 @@ import net.fortuna.ical4j.model.property.Url
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class UrlBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks.URL, from.url)
-    }
+class UrlBuilder : DmfsTaskFieldBuilderVToDo {
 
     override fun build(from: VToDo, to: Entity) {
         val url = from.getProperty<Url>(Url.URL).getOrNull()

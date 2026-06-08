@@ -11,11 +11,7 @@ import net.fortuna.ical4j.model.property.Summary
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class TitleBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks.TITLE, from.summary.trimToNull())
-    }
+class TitleBuilder : DmfsTaskFieldBuilderVToDo {
 
     override fun build(from: VToDo, to: Entity) {
         val summary = from.getProperty<Summary>(Summary.SUMMARY).getOrNull()

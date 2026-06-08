@@ -10,12 +10,7 @@ import net.fortuna.ical4j.model.component.VToDo
 
 class SyncFlagsBuilder(
     private val flags: Int
-) : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(COLUMN_FLAGS, flags)
-    }
-
+) : DmfsTaskFieldBuilderVToDo {
     override fun build(from: VToDo, to: Entity) {
         to.entityValues.put(COLUMN_FLAGS, flags)
     }

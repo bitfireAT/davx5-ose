@@ -11,11 +11,7 @@ import net.fortuna.ical4j.model.property.Color
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class ColorBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks.TASK_COLOR, from.color)
-    }
+class ColorBuilder : DmfsTaskFieldBuilderVToDo {
 
     override fun build(from: VToDo, to: Entity) {
         val color = from.getProperty<Color>(Color.PROPERTY_NAME).getOrNull()

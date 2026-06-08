@@ -10,11 +10,7 @@ import net.fortuna.ical4j.model.property.Uid
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class UidBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks._UID, from.uid)
-    }
+class UidBuilder : DmfsTaskFieldBuilderVToDo {
 
     override fun build(from: VToDo, to: Entity) {
         val uid = from.getProperty<Uid>(Uid.UID).getOrNull()

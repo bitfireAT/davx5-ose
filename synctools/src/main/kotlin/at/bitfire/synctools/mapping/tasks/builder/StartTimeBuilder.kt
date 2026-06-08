@@ -12,11 +12,7 @@ import net.fortuna.ical4j.model.property.DtStart
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class StartTimeBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks.DTSTART, from.dtStart?.normalizedDate()?.toTimestamp())
-    }
+class StartTimeBuilder : DmfsTaskFieldBuilderVToDo {
 
     override fun build(from: VToDo, to: Entity) {
         val dtStart = from.getProperty<DtStart<*>>(DtStart.DTSTART).getOrNull()

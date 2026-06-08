@@ -12,11 +12,7 @@ import net.fortuna.ical4j.model.property.Due
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class DueBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks.DUE, from.due?.normalizedDate()?.toTimestamp())
-    }
+class DueBuilder : DmfsTaskFieldBuilderVToDo {
 
     override fun build(from: VToDo, to: Entity) {
         val due = from.getProperty<Due<*>>(Due.DUE).getOrNull()

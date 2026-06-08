@@ -12,13 +12,7 @@ import net.fortuna.ical4j.model.property.Completed
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class CompletedBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        // COMPLETED must always be a DATE-TIME
-        to.entityValues.put(Tasks.COMPLETED, from.completedAt?.normalizedDate()?.toTimestamp())
-        to.entityValues.put(Tasks.COMPLETED_IS_ALLDAY, 0)
-    }
+class CompletedBuilder : DmfsTaskFieldBuilderVToDo {
 
     override fun build(from: VToDo, to: Entity) {
         val completed = from.getProperty<Completed>(Completed.COMPLETED).getOrNull()

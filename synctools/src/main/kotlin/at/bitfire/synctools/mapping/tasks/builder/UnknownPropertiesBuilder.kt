@@ -17,33 +17,10 @@ import java.util.logging.Logger
 
 class UnknownPropertiesBuilder(
     private val taskList: DmfsTaskList
-) : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
+) : DmfsTaskFieldBuilderVToDo {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
-
-    override fun build(from: Task, to: Entity) {
-        for (property in from.unknownProperties) {
-            val value = property.value
-            if (value == null) {
-                logger.warning("Ignoring unknown property with null value")
-                continue
-            }
-            if (value.length > UnknownProperty.MAX_UNKNOWN_PROPERTY_SIZE) {
-                logger.warning("Ignoring unknown property with ${value.length} octets (too long)")
-                continue
-            }
-
-            to.addSubValue(
-                taskList.tasksPropertiesUri(),
-                contentValuesOf(
-                    Properties.MIMETYPE to UnknownProperty.CONTENT_ITEM_TYPE,
-                    UNKNOWN_PROPERTY_DATA to UnknownProperty.toJsonString(property)
-                )
-            )
-        }
-    }
-
     override fun build(from: VToDo, to: Entity) {
         for (property in unknownProperties(from)) {
             val value = property.value

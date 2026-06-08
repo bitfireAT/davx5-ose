@@ -12,11 +12,7 @@ import net.fortuna.ical4j.model.property.Created
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class CreatedBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks.CREATED, from.createdAt)
-    }
+class CreatedBuilder : DmfsTaskFieldBuilderVToDo {
 
     override fun build(from: VToDo, to: Entity) {
         val createdAt = from.getProperty<Created>(Created.CREATED).getOrNull()
