@@ -23,7 +23,7 @@ import java.time.ZonedDateTime
  * - [Events.DTEND] is present / not null (because DTEND then takes precedence over DURATION), and/or
  * - [Events.DURATION] is null / not present.
  */
-class DurationHandler: AndroidEventFieldHandler {
+class DurationHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         val values = from.entityValues

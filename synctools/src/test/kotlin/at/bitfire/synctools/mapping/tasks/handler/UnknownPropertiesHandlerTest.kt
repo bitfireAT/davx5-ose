@@ -8,15 +8,12 @@ import android.content.ContentValues
 import android.content.Entity
 import android.net.Uri
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.UNKNOWN_PROPERTY_DATA
 import net.fortuna.ical4j.model.Parameter
-import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VToDo
 import org.dmfs.tasks.contract.TaskContract.Properties
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -26,71 +23,6 @@ class UnknownPropertiesHandlerTest {
 
     private val handler = UnknownPropertiesHandler()
 
-    @Test
-    fun `legacy No unknown properties`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertTrue(task.unknownProperties.isEmpty())
-    }
-
-    @Test
-    fun `legacy Single unknown property`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            UNKNOWN_PROPERTY_DATA to "[\"UID\", \"test-property\", {}]"
-        ), task)
-
-        assertEquals(1, task.unknownProperties.size)
-        val prop = task.unknownProperties.first()
-        assertEquals(Property.UID, prop.name)
-        assertEquals("test-property", prop.value)
-    }
-
-    @Test
-    fun `legacy Unknown property with parameters`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            UNKNOWN_PROPERTY_DATA to "[\"UID\", \"prop-value\", {\"X-CUSTOM\": \"custom-value\"}]"
-        ), task)
-
-        assertEquals(1, task.unknownProperties.size)
-        val prop = task.unknownProperties.first()
-        assertEquals(Property.UID, prop.name)
-        assertEquals("prop-value", prop.value)
-        assertEquals("custom-value", prop.getRequiredParameter<Parameter>("X-CUSTOM").value)
-    }
-
-    @Test
-    fun `legacy Multiple unknown properties accumulate`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            UNKNOWN_PROPERTY_DATA to "[\"X-PROP1\", \"value1\", {}]"
-        ), task)
-        handler.process(contentValuesOf(
-            UNKNOWN_PROPERTY_DATA to "[\"X-PROP2\", \"value2\", {}]"
-        ), task)
-
-        assertEquals(2, task.unknownProperties.size)
-    }
-
-    @Test
-    fun `legacy Null unknown property data is skipped`() {
-        val task = Task()
-        handler.process(ContentValues().apply {
-            putNull(UNKNOWN_PROPERTY_DATA)
-        }, task)
-        assertTrue(task.unknownProperties.isEmpty())
-    }
-
-    @Test
-    fun `legacy Unknown property with invalid JSON`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            UNKNOWN_PROPERTY_DATA to "not json"
-        ), task)
-
-        assertTrue(task.unknownProperties.isEmpty())
-    }
 
     @Test
     fun `No unknown properties`() {

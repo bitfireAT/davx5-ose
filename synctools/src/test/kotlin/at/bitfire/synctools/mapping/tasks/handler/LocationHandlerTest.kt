@@ -7,7 +7,6 @@ package at.bitfire.synctools.mapping.tasks.handler
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Location
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -22,19 +21,6 @@ class LocationHandlerTest {
 
     private val handler = LocationHandler()
 
-    @Test
-    fun `legacy No LOCATION`() {
-        val task = Task()
-        handler.process(ContentValues(), task)
-        assertNull(task.location)
-    }
-
-    @Test
-    fun `legacy LOCATION set`() {
-        val task = Task()
-        handler.process(contentValuesOf(Tasks.LOCATION to "Vienna, Austria"), task)
-        assertEquals("Vienna, Austria", task.location)
-    }
 
     @Test
     fun `No LOCATION`() {

@@ -10,7 +10,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalContact.Companion.COLUMN_HASHCODE
 import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.synctools.storage.ContactsBatchOperation
+import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

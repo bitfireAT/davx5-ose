@@ -8,7 +8,7 @@ import android.content.Entity
 import at.bitfire.synctools.exception.InvalidLocalResourceException
 import net.fortuna.ical4j.model.component.VEvent
 
-interface AndroidEventFieldHandler {
+interface AndroidEventEntityHandler {
 
     /**
      * Takes specific data from an event (= event row plus data rows, taken from the content provider)

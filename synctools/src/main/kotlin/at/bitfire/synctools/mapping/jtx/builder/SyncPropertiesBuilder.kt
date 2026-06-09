@@ -13,7 +13,7 @@ class SyncPropertiesBuilder(
     private val eTag: String?,
     private val scheduleTag: String?,
     private val flags: Int
-) : JtxEntityBuilder {
+) : JtxObjectEntityBuilder {
 
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
         to.entityValues.put(JtxContract.JtxICalObject.FILENAME, fileName)

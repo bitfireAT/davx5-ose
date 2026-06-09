@@ -8,7 +8,7 @@ import android.content.Entity
 import at.bitfire.synctools.storage.calendar.EventsContract
 import net.fortuna.ical4j.model.component.VEvent
 
-class SequenceBuilder: AndroidEntityBuilder {
+class SequenceBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         /* When we build the SEQUENCE column from a real event, we set the sequence to 0 (not null), so that we

@@ -12,7 +12,7 @@ import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.property.Resources
 
-class ResourcesBuilder : JtxEntityBuilder {
+class ResourcesBuilder : JtxObjectEntityBuilder {
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
         if (from is VJournal) {
             // VJOURNAL doesn't support the RESOURCES property

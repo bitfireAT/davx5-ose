@@ -12,7 +12,7 @@ import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.icalendar.recurrenceId
 import at.bitfire.synctools.mapping.calendar.handler.AccessLevelHandler
-import at.bitfire.synctools.mapping.calendar.handler.AndroidEventFieldHandler
+import at.bitfire.synctools.mapping.calendar.handler.AndroidEventEntityHandler
 import at.bitfire.synctools.mapping.calendar.handler.AttendeesHandler
 import at.bitfire.synctools.mapping.calendar.handler.AvailabilityHandler
 import at.bitfire.synctools.mapping.calendar.handler.CategoriesHandler
@@ -62,7 +62,7 @@ class AndroidEventHandler(
     private val prodIdGenerator: ProdIdGenerator
 ) {
 
-    private val fieldHandlers: Array<AndroidEventFieldHandler> = arrayOf(
+    private val entityHandlers: Array<AndroidEventEntityHandler> = arrayOf(
         // event row fields
         UidHandler(),
         OriginalInstanceTimeHandler(),
@@ -195,7 +195,7 @@ class AndroidEventHandler(
         // initialization adds DTSTAMP
         val vEvent = VEvent(/* initialise = */ true)
 
-        for (handler in fieldHandlers)
+        for (handler in entityHandlers)
             handler.process(from = entity, main = main, to = vEvent)
         return vEvent
     }

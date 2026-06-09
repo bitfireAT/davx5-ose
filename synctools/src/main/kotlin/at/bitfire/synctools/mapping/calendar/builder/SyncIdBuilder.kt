@@ -10,7 +10,7 @@ import net.fortuna.ical4j.model.component.VEvent
 
 class SyncIdBuilder(
     private val syncId: String?
-): AndroidEntityBuilder {
+) : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         if (from === main) {

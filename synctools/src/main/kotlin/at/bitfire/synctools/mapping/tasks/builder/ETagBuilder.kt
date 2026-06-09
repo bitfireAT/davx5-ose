@@ -5,17 +5,12 @@
 package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.COLUMN_ETAG
 import net.fortuna.ical4j.model.component.VToDo
 
 class ETagBuilder(
     private val eTag: String?
-) : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(COLUMN_ETAG, eTag)
-    }
+) : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         to.entityValues.put(COLUMN_ETAG, eTag)

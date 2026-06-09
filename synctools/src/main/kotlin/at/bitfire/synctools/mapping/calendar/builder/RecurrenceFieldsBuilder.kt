@@ -21,7 +21,7 @@ import java.time.temporal.Temporal
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrDefault
 
-class RecurrenceFieldsBuilder: AndroidEntityBuilder {
+class RecurrenceFieldsBuilder : AndroidEventEntityBuilder {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)

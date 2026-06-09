@@ -13,7 +13,7 @@ import net.fortuna.ical4j.model.property.Url
 import java.net.URI
 import java.net.URISyntaxException
 
-class UrlHandler: AndroidEventFieldHandler {
+class UrlHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         val extended = from.subValues.filter { it.uri == ExtendedProperties.CONTENT_URI }.map { it.values }

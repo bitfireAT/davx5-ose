@@ -43,10 +43,14 @@ class LocalEvent(
         get() = mainValues.getAsInteger(EventsContract.COLUMN_FLAGS) ?: 0
 
 
+    // sync methods
+
     fun update(data: EventAndExceptions) {
         recurringCalendar.updateEventAndExceptions(id, data)
     }
 
+
+    // LocalResource implementation
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         val values = contentValuesOf(
@@ -96,7 +100,7 @@ class LocalEvent(
             .add("flags", flags)
             .add("event", try {
                 // only include truncated main event row (won't contain attachments, unknown properties etc.)
-                StringUtils.abbreviate(androidEvent.main.entityValues.toString(), 1000)
+                StringUtils.abbreviate(mainValues.toString(), 1000)
             } catch (e: Exception) {
                 e
             })

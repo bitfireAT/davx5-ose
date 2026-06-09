@@ -9,8 +9,8 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
 import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.test.account.TestAccount
 import at.bitfire.synctools.test.assertEntitiesEqual
 import at.bitfire.synctools.test.assertExceptionsEqual
 import at.bitfire.synctools.verifyCompat
@@ -18,9 +18,9 @@ import io.mockk.junit4.MockKRule
 import io.mockk.spyk
 import net.fortuna.ical4j.util.TimeZones
 import org.dmfs.tasks.contract.TaskContract
-import org.dmfs.tasks.contract.TaskContract.TaskLists
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.After
+import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNotSame
@@ -28,6 +28,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import java.util.UUID
@@ -42,8 +43,6 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     @get:Rule
     val mockkRule = MockKRule(this)
 
-    // We can't use TaskContract.LOCAL_ACCOUNT_TYPE, see testProcessDeletedExceptions
-    private val testAccount = Account(javaClass.simpleName, javaClass.name)
     private val timeZoneId = TimeZones.UTC_ID
 
     private lateinit var taskList: DmfsTaskList
@@ -53,18 +52,12 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     override fun prepare() {
         super.prepare()
 
-        // Create a test task list
-        val info = contentValuesOf(
-            TaskLists.LIST_NAME to "Test Recurring Task List",
-            TaskLists.LIST_COLOR to 0xffff0000,
-            TaskLists.OWNER to "test@example.com",
-            TaskLists.SYNC_ENABLED to 1,
-            TaskLists.VISIBLE to 1
-        )
-
-        val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider.client, providerName)
-        val id = dmfsTaskListProvider.createTaskList(info)
-        taskList = dmfsTaskListProvider.getTaskList(id)!!
+        // A real non-local account is required here:
+        // - lists in local (TaskContract.LOCAL_ACCOUNT_TYPE) accounts are deleted immediately instead of being marked as _DELETED
+        // - lists in fake non-local accounts are removed by the tasks provider as stale lists
+        // The account is created once per class to avoid repeated AccountManager churn while
+        // still creating a fresh list for every test method.
+        taskList = TestTaskList.create(testAccount, provider)
         recurringTaskList = spyk(DmfsRecurringTaskList(taskList))
     }
 
@@ -72,6 +65,25 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     fun cleanUp() {
         // Clean up tasks after every test
         taskList.deleteTasks(null, null)
+        taskList.delete()
+    }
+
+    companion object {
+
+        private lateinit var testAccount: Account
+
+        @BeforeClass
+        @JvmStatic
+        fun createTestAccount() {
+            testAccount = TestAccount.create(accountName = DmfsRecurringTaskListTest::class.java.simpleName)
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun removeTestAccount() {
+            TestAccount.remove(testAccount)
+        }
+
     }
 
     // test CRUD
@@ -94,8 +106,30 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
+    fun testFindTaskAndExceptions_IgnoresExceptionMatches() {
+        insertRecurring()
+
+        val result = recurringTaskList.findTaskAndExceptions("${Tasks.TITLE}=?", arrayOf("Exception"))
+
+        assertNull(result)
+    }
+
+    @Test
     fun testFindTaskAndExceptions_NotFound() {
         assertNull(recurringTaskList.findTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf("not-existent")))
+    }
+
+    @Test
+    fun testGetById_ExceptionId_ReturnsNull() {
+        val task = insertRecurring()
+        val mainTaskId = task.main.entityValues.getAsLong(Tasks._ID)!!
+        val exceptionId = taskList.findTaskRow(
+            arrayOf(Tasks._ID),
+            "${Tasks.ORIGINAL_INSTANCE_ID}=?",
+            arrayOf(mainTaskId.toString())
+        )!!.getAsLong(Tasks._ID)!!
+
+        assertNull(recurringTaskList.getById(exceptionId))
     }
 
     @Test
@@ -119,6 +153,15 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         assertEquals(2, orderedResult.size)
         assertTaskAndExceptionsEqual(task1, orderedResult[0], onlyFieldsInExpected = true)
         assertTaskAndExceptionsEqual(task2, orderedResult[1], onlyFieldsInExpected = true)
+    }
+
+    @Test
+    fun testIterateTaskAndExceptions_IgnoresExceptionMatches() {
+        insertRecurring()
+
+        recurringTaskList.iterateTaskAndExceptions("${Tasks.TITLE}=?", arrayOf("Exception")) {
+            fail("must not be called")
+        }
     }
 
     @Test

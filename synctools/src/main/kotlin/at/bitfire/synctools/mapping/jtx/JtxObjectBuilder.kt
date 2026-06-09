@@ -11,7 +11,7 @@ import at.bitfire.synctools.mapping.jtx.builder.CategoriesBuilder
 import at.bitfire.synctools.mapping.jtx.builder.CollectionIdBuilder
 import at.bitfire.synctools.mapping.jtx.builder.CommentsBuilder
 import at.bitfire.synctools.mapping.jtx.builder.DescriptionBuilder
-import at.bitfire.synctools.mapping.jtx.builder.JtxEntityBuilder
+import at.bitfire.synctools.mapping.jtx.builder.JtxObjectEntityBuilder
 import at.bitfire.synctools.mapping.jtx.builder.RecurrenceFieldsBuilder
 import at.bitfire.synctools.mapping.jtx.builder.RemindersBuilder
 import at.bitfire.synctools.mapping.jtx.builder.ResourcesBuilder
@@ -33,7 +33,7 @@ class JtxObjectBuilder(
     flags: Int
 ) {
 
-    private val fieldBuilders: Array<JtxEntityBuilder> = arrayOf(
+    private val entityBuilders: Array<JtxObjectEntityBuilder> = arrayOf(
         CollectionIdBuilder(collectionId),
         SyncPropertiesBuilder(fileName, eTag, scheduleTag, flags),
 
@@ -61,7 +61,7 @@ class JtxObjectBuilder(
     private fun buildComponent(from: CalendarComponent, main: CalendarComponent): Entity {
         val entity = Entity(ContentValues())
 
-        for (builder in fieldBuilders) {
+        for (builder in entityBuilders) {
             builder.build(from = from, main = main, to = entity)
         }
 

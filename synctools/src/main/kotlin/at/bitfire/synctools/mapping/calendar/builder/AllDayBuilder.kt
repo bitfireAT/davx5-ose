@@ -11,7 +11,7 @@ import at.bitfire.synctools.icalendar.dtStart
 import net.fortuna.ical4j.model.component.VEvent
 import java.time.temporal.Temporal
 
-class AllDayBuilder: AndroidEntityBuilder {
+class AllDayBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         val allDay = DateUtils.isDate(from.dtStart<Temporal>())

@@ -16,7 +16,7 @@ import at.bitfire.synctools.mapping.tasks.handler.ColorHandler
 import at.bitfire.synctools.mapping.tasks.handler.CommentsHandler
 import at.bitfire.synctools.mapping.tasks.handler.CompletedHandler
 import at.bitfire.synctools.mapping.tasks.handler.DescriptionHandler
-import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskFieldHandler2
+import at.bitfire.synctools.mapping.tasks.handler.DmfsTaskEntityHandler
 import at.bitfire.synctools.mapping.tasks.handler.DueHandler
 import at.bitfire.synctools.mapping.tasks.handler.DurationHandler
 import at.bitfire.synctools.mapping.tasks.handler.GeoHandler
@@ -43,7 +43,7 @@ import java.util.UUID
 class DmfsTaskHandler(
     private val prodId: ProdId,
 ) {
-    private val fieldHandlers = arrayOf<DmfsTaskFieldHandler2>(
+    private val entityHandlers = arrayOf<DmfsTaskEntityHandler>(
         UidHandler(),
         TitleHandler(),
         SequenceHandler(),
@@ -117,7 +117,7 @@ class DmfsTaskHandler(
         // initialization adds DTSTAMP
         val vToDo = VToDo(/* initialise = */ true)
 
-        for (handler in fieldHandlers) {
+        for (handler in entityHandlers) {
             handler.process(from = entity, main = main, to = vToDo)
         }
 

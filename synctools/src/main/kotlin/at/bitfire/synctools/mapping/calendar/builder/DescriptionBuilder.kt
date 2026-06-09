@@ -9,7 +9,7 @@ import android.provider.CalendarContract.Events
 import at.bitfire.synctools.util.trimToNull
 import net.fortuna.ical4j.model.component.VEvent
 
-class DescriptionBuilder: AndroidEntityBuilder {
+class DescriptionBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         to.entityValues.put(Events.DESCRIPTION, from.description?.value.trimToNull())

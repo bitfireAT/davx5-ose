@@ -10,7 +10,7 @@ import net.fortuna.ical4j.model.component.VEvent
 
 class SyncFlagsBuilder(
     private val flags: Int
-): AndroidEntityBuilder {
+) : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         to.entityValues.put(EventsContract.COLUMN_FLAGS, flags)

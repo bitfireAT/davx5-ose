@@ -12,7 +12,7 @@ import at.bitfire.ical4android.UnknownProperty
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Clazz
 
-class AccessLevelBuilder: AndroidEntityBuilder {
+class AccessLevelBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         val accessLevel: Int

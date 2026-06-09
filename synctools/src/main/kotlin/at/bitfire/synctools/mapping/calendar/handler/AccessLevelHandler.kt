@@ -14,7 +14,7 @@ import net.fortuna.ical4j.model.property.Clazz
 import net.fortuna.ical4j.model.property.immutable.ImmutableClazz
 import org.json.JSONException
 
-class AccessLevelHandler: AndroidEventFieldHandler {
+class AccessLevelHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         val values = from.entityValues

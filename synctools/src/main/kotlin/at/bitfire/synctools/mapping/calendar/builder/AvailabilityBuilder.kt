@@ -9,7 +9,7 @@ import android.provider.CalendarContract.Events
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Transp
 
-class AvailabilityBuilder: AndroidEntityBuilder {
+class AvailabilityBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         val availability = when (from.timeTransparency?.value?.uppercase()) {
