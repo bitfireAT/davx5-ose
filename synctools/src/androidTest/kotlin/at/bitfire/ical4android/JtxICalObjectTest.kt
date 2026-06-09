@@ -12,11 +12,11 @@ import android.os.ParcelFileDescriptor
 import android.util.Base64
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.ical4android.impl.TestJtxCollection
-import at.bitfire.ical4android.impl.testProdId
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.icalendar.recurrenceId
+import at.bitfire.synctools.storage.jtx.TestJtxCollection
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
+import at.bitfire.synctools.testProdId
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject
 import at.techbee.jtx.JtxContract.JtxICalObject.Component

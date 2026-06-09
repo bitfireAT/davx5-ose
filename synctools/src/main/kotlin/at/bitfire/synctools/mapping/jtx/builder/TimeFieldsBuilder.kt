@@ -22,7 +22,7 @@ import java.util.logging.Logger
 /**
  * Handles the iCalendar properties: DTSTART, DTEND, DUE, DURATION
  */
-class TimeFieldsBuilder : JtxEntityBuilder {
+class TimeFieldsBuilder : JtxObjectEntityBuilder {
     private val logger
         get() = Logger.getLogger(javaClass.name)
 

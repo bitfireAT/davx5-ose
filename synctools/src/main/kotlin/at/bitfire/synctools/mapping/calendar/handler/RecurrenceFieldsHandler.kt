@@ -25,7 +25,7 @@ import java.time.temporal.Temporal
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class RecurrenceFieldsHandler: AndroidEventFieldHandler {
+class RecurrenceFieldsHandler : AndroidEventEntityHandler {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)

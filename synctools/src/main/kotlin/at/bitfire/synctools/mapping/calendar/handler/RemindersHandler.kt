@@ -23,7 +23,7 @@ import java.util.logging.Logger
 
 class RemindersHandler(
     private val accountName: String
-): AndroidEventFieldHandler {
+) : AndroidEventEntityHandler {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)

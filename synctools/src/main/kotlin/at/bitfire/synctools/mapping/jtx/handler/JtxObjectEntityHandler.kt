@@ -8,7 +8,7 @@ import android.content.Entity
 import at.bitfire.synctools.exception.InvalidLocalResourceException
 import net.fortuna.ical4j.model.component.CalendarComponent
 
-interface JtxFieldHandler {
+interface JtxObjectEntityHandler {
 
     /**
      * Takes specific data from a jtx object (= jtx object row plus data rows, taken from the jtx

@@ -7,7 +7,7 @@ package at.bitfire.synctools.mapping.calendar.builder
 import android.content.Entity
 import net.fortuna.ical4j.model.component.VEvent
 
-interface AndroidEntityBuilder {
+interface AndroidEventEntityBuilder {
 
     /**
      * Maps a specific part of the given event into the provided [Entity].

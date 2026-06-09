@@ -15,8 +15,8 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
-import at.bitfire.synctools.storage.ContactsBatchOperation
 import at.bitfire.synctools.storage.contacts.CachedGroupMembershipContract
+import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule

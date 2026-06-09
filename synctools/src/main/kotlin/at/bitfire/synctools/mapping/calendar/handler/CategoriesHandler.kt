@@ -12,7 +12,7 @@ import net.fortuna.ical4j.model.TextList
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Categories
 
-class CategoriesHandler: AndroidEventFieldHandler {
+class CategoriesHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         val extended = from.subValues.filter { it.uri == ExtendedProperties.CONTENT_URI }.map { it.values }

@@ -17,7 +17,7 @@ import net.fortuna.ical4j.model.property.Action
 import java.time.temporal.Temporal
 import kotlin.jvm.optionals.getOrNull
 
-class RemindersBuilder: AndroidEntityBuilder {
+class RemindersBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         for (reminder in from.alarms)

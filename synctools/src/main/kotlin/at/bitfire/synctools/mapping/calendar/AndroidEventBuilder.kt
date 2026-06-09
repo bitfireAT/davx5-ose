@@ -10,7 +10,7 @@ import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.AssociatedEvents
 import at.bitfire.synctools.mapping.calendar.builder.AccessLevelBuilder
 import at.bitfire.synctools.mapping.calendar.builder.AllDayBuilder
-import at.bitfire.synctools.mapping.calendar.builder.AndroidEntityBuilder
+import at.bitfire.synctools.mapping.calendar.builder.AndroidEventEntityBuilder
 import at.bitfire.synctools.mapping.calendar.builder.AttendeesBuilder
 import at.bitfire.synctools.mapping.calendar.builder.AvailabilityBuilder
 import at.bitfire.synctools.mapping.calendar.builder.CalendarIdBuilder
@@ -56,7 +56,7 @@ class AndroidEventBuilder(
     flags: Int
 ) {
 
-    private val fieldBuilders: Array<AndroidEntityBuilder> = arrayOf(
+    private val entityBuilders: Array<AndroidEventEntityBuilder> = arrayOf(
         // sync columns (as defined in CalendarContract.EventsColumns)
         SyncIdBuilder(syncId),
         DirtyAndDeletedBuilder(),
@@ -109,7 +109,7 @@ class AndroidEventBuilder(
 
     fun buildEvent(from: VEvent, main: VEvent): Entity {
         val entity = Entity(ContentValues())
-        for (builder in fieldBuilders)
+        for (builder in entityBuilders)
             builder.build(from = from, main = main, to = entity)
         return entity
     }

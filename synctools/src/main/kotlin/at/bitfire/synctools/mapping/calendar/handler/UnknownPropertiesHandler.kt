@@ -14,7 +14,7 @@ import org.json.JSONException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class UnknownPropertiesHandler: AndroidEventFieldHandler {
+class UnknownPropertiesHandler : AndroidEventEntityHandler {
 
     private val logger: Logger
         get() = Logger.getLogger(javaClass.name)

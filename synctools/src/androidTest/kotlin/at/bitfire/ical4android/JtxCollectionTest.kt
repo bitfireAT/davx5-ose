@@ -8,10 +8,9 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentValues
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.ical4android.impl.TestJtxCollection
-import at.bitfire.ical4android.impl.testProdId
-
+import at.bitfire.synctools.storage.jtx.TestJtxCollection
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
+import at.bitfire.synctools.testProdId
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import junit.framework.TestCase.assertEquals

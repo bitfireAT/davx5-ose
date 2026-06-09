@@ -12,7 +12,7 @@ import net.fortuna.ical4j.model.parameter.AltRep
 import net.fortuna.ical4j.model.parameter.Language
 import net.fortuna.ical4j.model.property.Comment
 
-class CommentsHandler : JtxFieldHandler {
+class CommentsHandler : JtxObjectEntityHandler {
     override fun process(
         from: Entity,
         main: Entity,

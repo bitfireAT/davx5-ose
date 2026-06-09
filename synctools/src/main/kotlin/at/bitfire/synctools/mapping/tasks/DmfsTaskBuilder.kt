@@ -53,7 +53,7 @@ class DmfsTaskBuilder(
     flags: Int
 ) {
 
-    private val fieldBuilders: Array<DmfsTaskEntityBuilder> = arrayOf(
+    private val entityBuilders: Array<DmfsTaskEntityBuilder> = arrayOf(
         // main task row fields
         UidBuilder(),
         SyncIdBuilder(syncId),
@@ -106,7 +106,7 @@ class DmfsTaskBuilder(
 
     private fun buildTask(from: VToDo, main: VToDo): Entity {
         val entity = Entity(ContentValues())
-        for (builder in fieldBuilders)
+        for (builder in entityBuilders)
             builder.build(from = from, main = main, to = entity)
         return entity
     }

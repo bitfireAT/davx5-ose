@@ -10,7 +10,7 @@ import net.fortuna.ical4j.model.component.VEvent
 
 class CalendarIdBuilder(
     private val calendarId: Long
-): AndroidEntityBuilder {
+) : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         to.entityValues.put(Events.CALENDAR_ID, calendarId)

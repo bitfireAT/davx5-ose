@@ -11,7 +11,7 @@ import at.bitfire.synctools.util.trimToNull
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Location
 
-class LocationHandler: AndroidEventFieldHandler {
+class LocationHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         val location = from.entityValues.getAsString(Events.EVENT_LOCATION).trimToNull()

@@ -7,7 +7,7 @@ package at.bitfire.davdroid.resource.workaround
 import android.content.ContentValues
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.synctools.storage.ContactsBatchOperation
+import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 
 /**
  * Only required for [Android7DirtyVerifier]. If that class is removed because the minimum SDK is raised to Android 8,

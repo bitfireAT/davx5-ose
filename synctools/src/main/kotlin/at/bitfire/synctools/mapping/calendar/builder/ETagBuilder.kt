@@ -11,7 +11,7 @@ import net.fortuna.ical4j.model.component.VEvent
 class ETagBuilder(
     private val eTag: String?,
     private val scheduleTag: String?
-): AndroidEntityBuilder {
+) : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         val values = to.entityValues

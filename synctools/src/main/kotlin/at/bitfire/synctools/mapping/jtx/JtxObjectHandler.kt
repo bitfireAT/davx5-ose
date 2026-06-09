@@ -9,7 +9,7 @@ import at.bitfire.synctools.icalendar.AssociatedComponents
 import at.bitfire.synctools.mapping.jtx.handler.CategoriesHandler
 import at.bitfire.synctools.mapping.jtx.handler.CommentsHandler
 import at.bitfire.synctools.mapping.jtx.handler.DescriptionHandler
-import at.bitfire.synctools.mapping.jtx.handler.JtxFieldHandler
+import at.bitfire.synctools.mapping.jtx.handler.JtxObjectEntityHandler
 import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
@@ -28,7 +28,7 @@ import java.util.UUID
 class JtxObjectHandler(
     private val prodId: ProdId
 ) {
-    private val fieldHandlers: Array<JtxFieldHandler> = arrayOf(
+    private val entityHandlers: Array<JtxObjectEntityHandler> = arrayOf(
         CategoriesHandler(),
         CommentsHandler(),
         DescriptionHandler()
@@ -100,7 +100,7 @@ class JtxObjectHandler(
             JtxContract.JtxICalObject.Component.VTODO -> VToDo()
         }
 
-        for (handler in fieldHandlers) {
+        for (handler in entityHandlers) {
             handler.process(from = entity, main = main, to = calendarComponent)
         }
 
