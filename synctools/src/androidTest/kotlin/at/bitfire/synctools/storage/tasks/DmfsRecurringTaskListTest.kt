@@ -108,8 +108,30 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
+    fun testFindTaskAndExceptions_IgnoresExceptionMatches() {
+        insertRecurring()
+
+        val result = recurringTaskList.findTaskAndExceptions("${Tasks.TITLE}=?", arrayOf("Exception"))
+
+        assertNull(result)
+    }
+
+    @Test
     fun testFindTaskAndExceptions_NotFound() {
         assertNull(recurringTaskList.findTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf("not-existent")))
+    }
+
+    @Test
+    fun testGetById_ExceptionId_ReturnsNull() {
+        val task = insertRecurring()
+        val mainTaskId = task.main.entityValues.getAsLong(Tasks._ID)!!
+        val exceptionId = taskList.findTaskRow(
+            arrayOf(Tasks._ID),
+            "${Tasks.ORIGINAL_INSTANCE_ID}=?",
+            arrayOf(mainTaskId.toString())
+        )!!.getAsLong(Tasks._ID)!!
+
+        assertNull(recurringTaskList.getById(exceptionId))
     }
 
     @Test
@@ -133,6 +155,15 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         assertEquals(2, orderedResult.size)
         assertTaskAndExceptionsEqual(task1, orderedResult[0], onlyFieldsInExpected = true)
         assertTaskAndExceptionsEqual(task2, orderedResult[1], onlyFieldsInExpected = true)
+    }
+
+    @Test
+    fun testIterateTaskAndExceptions_IgnoresExceptionMatches() {
+        insertRecurring()
+
+        recurringTaskList.iterateTaskAndExceptions("${Tasks.TITLE}=?", arrayOf("Exception")) {
+            fail("must not be called")
+        }
     }
 
     @Test
