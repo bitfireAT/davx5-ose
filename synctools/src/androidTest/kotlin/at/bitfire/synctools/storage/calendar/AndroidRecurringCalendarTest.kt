@@ -104,8 +104,29 @@ class AndroidRecurringCalendarTest {
     }
 
     @Test
+    fun testFindEventAndExceptions_IgnoresExceptionMatches() {
+        insertRecurring()
+
+        val result = recurringCalendar.findEventAndExceptions("${Events.TITLE}=?", arrayOf("Exception"))
+
+        assertNull(result)
+    }
+
+    @Test
     fun testFindEventAndExceptions_NotFound() {
         assertNull(recurringCalendar.findEventAndExceptions("${Events._SYNC_ID}=?", arrayOf("not-existent")))
+    }
+
+    @Test
+    fun testGetById_ExceptionId_ReturnsNull() {
+        val (mainEventId, _) = insertRecurring()
+        val exceptionId = calendar.findEventRow(
+            arrayOf(Events._ID),
+            "${Events.ORIGINAL_ID}=?",
+            arrayOf(mainEventId.toString())
+        )!!.getAsLong(Events._ID)!!
+
+        assertNull(recurringCalendar.getById(exceptionId))
     }
 
     @Test
@@ -129,6 +150,15 @@ class AndroidRecurringCalendarTest {
         assertEquals(2, orderedResult.size)
         assertEventAndExceptionsEqual(event1.withEventId(id1), orderedResult[0], onlyFieldsInExpected = true)
         assertEventAndExceptionsEqual(event2.withEventId(id2), orderedResult[1], onlyFieldsInExpected = true)
+    }
+
+    @Test
+    fun testIterateEventAndExceptions_IgnoresExceptionMatches() {
+        insertRecurring()
+
+        recurringCalendar.iterateEventAndExceptions("${Events.TITLE}=?", arrayOf("Exception")) {
+            fail("must not be called")
+        }
     }
 
     @Test

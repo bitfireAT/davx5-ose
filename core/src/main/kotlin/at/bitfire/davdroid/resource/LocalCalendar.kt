@@ -75,9 +75,7 @@ class LocalCalendar @AssistedInject constructor(
 
     override fun findDeleted(): List<LocalEvent> {
         val result = LinkedList<LocalEvent>()
-        recurringCalendar.iterateEventAndExceptions(
-            "${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null
-        ) { eventAndExceptions ->
+        recurringCalendar.iterateEventAndExceptions(Events.DELETED, null) { eventAndExceptions ->
             result += LocalEvent(recurringCalendar, eventAndExceptions)
         }
         return result
@@ -85,16 +83,14 @@ class LocalCalendar @AssistedInject constructor(
 
     override fun findDirty(): List<LocalEvent> {
         val dirty = LinkedList<LocalEvent>()
-        recurringCalendar.iterateEventAndExceptions(
-            "${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL", null
-        ) { eventAndExceptions ->
+        recurringCalendar.iterateEventAndExceptions(Events.DIRTY, null) { eventAndExceptions ->
             dirty += LocalEvent(recurringCalendar, eventAndExceptions)
         }
         return dirty
     }
 
     override fun findByName(name: String) =
-        recurringCalendar.findEventAndExceptions("${Events._SYNC_ID}=? AND ${Events.ORIGINAL_SYNC_ID} IS null", arrayOf(name))?.let {
+        recurringCalendar.findEventAndExceptions("${Events._SYNC_ID}=?", arrayOf(name))?.let {
             LocalEvent(recurringCalendar, it)
         }
 
