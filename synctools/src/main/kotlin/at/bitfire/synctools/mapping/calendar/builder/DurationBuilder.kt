@@ -26,7 +26,7 @@ import java.time.temporal.Temporal
 import java.time.temporal.TemporalAmount
 import kotlin.jvm.optionals.getOrNull
 
-class DurationBuilder: AndroidEntityBuilder {
+class DurationBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         val values = to.entityValues

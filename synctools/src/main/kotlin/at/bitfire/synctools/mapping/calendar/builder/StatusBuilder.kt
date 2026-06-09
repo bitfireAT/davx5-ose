@@ -9,7 +9,7 @@ import android.provider.CalendarContract.Events
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Status
 
-class StatusBuilder: AndroidEntityBuilder {
+class StatusBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         to.entityValues.put(Events.STATUS, when (from.status?.value?.uppercase()) {

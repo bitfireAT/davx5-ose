@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.synctools.storage.tasks
+package at.bitfire.synctools.storage.contacts
 
 import android.Manifest
 import android.accounts.Account
@@ -10,9 +10,7 @@ import android.content.ContentProviderClient
 import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-
 import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.synctools.storage.ContactsBatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.test.BuildConfig
 import org.junit.After

@@ -10,7 +10,7 @@ import at.bitfire.synctools.icalendar.plusAssign
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.immutable.ImmutableStatus
 
-class StatusHandler: AndroidEventFieldHandler {
+class StatusHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         val status = when (from.entityValues.getAsInteger(Events.STATUS)) {

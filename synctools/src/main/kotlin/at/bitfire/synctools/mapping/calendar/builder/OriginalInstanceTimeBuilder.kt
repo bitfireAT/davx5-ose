@@ -17,7 +17,7 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
 
-class OriginalInstanceTimeBuilder: AndroidEntityBuilder {
+class OriginalInstanceTimeBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         val values = to.entityValues

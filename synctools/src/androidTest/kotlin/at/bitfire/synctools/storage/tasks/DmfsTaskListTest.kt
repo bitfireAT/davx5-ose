@@ -10,7 +10,6 @@ import android.content.ContentValues
 import android.content.Entity
 import android.database.DatabaseUtils
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
 import at.bitfire.ical4android.TaskProvider
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Property
@@ -19,7 +18,6 @@ import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :

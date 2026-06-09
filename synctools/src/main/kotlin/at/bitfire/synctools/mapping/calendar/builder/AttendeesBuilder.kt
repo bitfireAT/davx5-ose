@@ -21,7 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 class AttendeesBuilder(
     private val calendar: AndroidCalendar
-): AndroidEntityBuilder {
+) : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         for (attendee in from.getProperties<Attendee>(Property.ATTENDEE))

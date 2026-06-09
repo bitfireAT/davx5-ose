@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.synctools.storage
+package at.bitfire.synctools.storage.jtx
 
 import android.accounts.Account
 import android.content.ContentProviderClient
@@ -13,6 +13,7 @@ import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
+import at.bitfire.synctools.storage.BatchOperation
 
 import at.bitfire.synctools.test.BuildConfig
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule

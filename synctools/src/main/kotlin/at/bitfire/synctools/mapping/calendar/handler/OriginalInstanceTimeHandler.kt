@@ -17,7 +17,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
-class OriginalInstanceTimeHandler: AndroidEventFieldHandler {
+class OriginalInstanceTimeHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         // only applicable to exceptions, not to main events

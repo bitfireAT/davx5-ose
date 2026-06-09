@@ -16,7 +16,7 @@ import kotlin.jvm.optionals.getOrNull
 
 class ColorBuilder(
     private val calendar: AndroidCalendar
-): AndroidEntityBuilder {
+) : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         val values = to.entityValues

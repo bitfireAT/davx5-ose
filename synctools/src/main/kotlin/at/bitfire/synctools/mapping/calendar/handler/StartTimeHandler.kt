@@ -11,7 +11,7 @@ import at.bitfire.synctools.icalendar.plusAssign
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.DtStart
 
-class StartTimeHandler: AndroidEventFieldHandler {
+class StartTimeHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         val values = from.entityValues
