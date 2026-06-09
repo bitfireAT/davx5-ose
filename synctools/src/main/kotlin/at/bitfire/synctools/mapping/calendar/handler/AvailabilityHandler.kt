@@ -11,7 +11,7 @@ import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Transp
 import net.fortuna.ical4j.model.property.immutable.ImmutableTransp
 
-class AvailabilityHandler: AndroidEventFieldHandler {
+class AvailabilityHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         val transp: Transp = when (from.entityValues.getAsInteger(Events.AVAILABILITY)) {

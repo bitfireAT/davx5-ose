@@ -15,7 +15,7 @@ import java.net.URISyntaxException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class OrganizerHandler: AndroidEventFieldHandler {
+class OrganizerHandler : AndroidEventEntityHandler {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)

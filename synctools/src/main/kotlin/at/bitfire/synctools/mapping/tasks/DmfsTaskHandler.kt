@@ -43,7 +43,7 @@ import java.util.UUID
 class DmfsTaskHandler(
     private val prodId: ProdId,
 ) {
-    private val fieldHandlers = arrayOf<DmfsTaskEntityHandler>(
+    private val entityHandlers = arrayOf<DmfsTaskEntityHandler>(
         UidHandler(),
         TitleHandler(),
         SequenceHandler(),
@@ -117,7 +117,7 @@ class DmfsTaskHandler(
         // initialization adds DTSTAMP
         val vToDo = VToDo(/* initialise = */ true)
 
-        for (handler in fieldHandlers) {
+        for (handler in entityHandlers) {
             handler.process(from = entity, main = main, to = vToDo)
         }
 

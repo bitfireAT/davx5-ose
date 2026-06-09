@@ -8,7 +8,7 @@ import android.content.Entity
 import android.provider.CalendarContract.Events
 import net.fortuna.ical4j.model.component.VEvent
 
-class DirtyAndDeletedBuilder: AndroidEntityBuilder {
+class DirtyAndDeletedBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         // DIRTY and DELETED is always unset when we create or update an event row

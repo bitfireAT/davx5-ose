@@ -24,7 +24,7 @@ import net.fortuna.ical4j.model.property.Repeat
 import net.fortuna.ical4j.model.property.Trigger
 import kotlin.jvm.optionals.getOrNull
 
-class RemindersBuilder : JtxEntityBuilder {
+class RemindersBuilder : JtxObjectEntityBuilder {
 
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
         for (alarm in getAlarms(from)) {

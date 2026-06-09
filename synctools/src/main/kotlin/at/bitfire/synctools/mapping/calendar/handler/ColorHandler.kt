@@ -12,7 +12,7 @@ import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Color
 import java.util.logging.Logger
 
-class ColorHandler: AndroidEventFieldHandler {
+class ColorHandler : AndroidEventEntityHandler {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)

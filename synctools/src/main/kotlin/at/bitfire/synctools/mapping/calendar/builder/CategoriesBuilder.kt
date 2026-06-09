@@ -13,7 +13,7 @@ import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Categories
 import kotlin.jvm.optionals.getOrNull
 
-class CategoriesBuilder: AndroidEntityBuilder {
+class CategoriesBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         val categories = from.getProperty<Categories>(Property.CATEGORIES).getOrNull()?.categories?.texts

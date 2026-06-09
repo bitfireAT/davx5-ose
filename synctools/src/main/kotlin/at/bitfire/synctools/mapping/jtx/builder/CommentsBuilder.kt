@@ -15,7 +15,7 @@ import net.fortuna.ical4j.model.parameter.Language
 import net.fortuna.ical4j.model.property.Comment
 import kotlin.jvm.optionals.getOrNull
 
-class CommentsBuilder : JtxEntityBuilder {
+class CommentsBuilder : JtxObjectEntityBuilder {
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
         for (comment in from.getProperties<Comment>(Property.COMMENT)) {
             val text = comment.value

@@ -16,7 +16,7 @@ import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.property.DateListProperty
 import net.fortuna.ical4j.model.property.RRule
 
-class RecurrenceFieldsBuilder : JtxEntityBuilder {
+class RecurrenceFieldsBuilder : JtxObjectEntityBuilder {
 
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
         if (from === main) {

@@ -9,7 +9,7 @@ import android.provider.CalendarContract.Events
 import net.fortuna.ical4j.model.component.VEvent
 import kotlin.jvm.optionals.getOrNull
 
-class UidBuilder: AndroidEntityBuilder {
+class UidBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         // Always take UID from main event because exceptions must have the same UID anyway.

@@ -15,7 +15,7 @@ import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Color
 import java.util.logging.Logger
 
-class UnknownPropertiesBuilder: AndroidEntityBuilder {
+class UnknownPropertiesBuilder : AndroidEventEntityBuilder {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
