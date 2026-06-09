@@ -68,7 +68,7 @@ class DmfsRecurringTaskList(
     }
 
     /**
-     * Find first task (including exceptions) of [taskList] that matches the query from the content provider.
+     * Find first main task of [taskList] that matches the query from the content provider and attach its exceptions.
      *
      * Note that the exceptions may contain deleted tasks.
      *
@@ -76,7 +76,8 @@ class DmfsRecurringTaskList(
      * @param whereArgs     arguments for selection
      */
     fun findTaskAndExceptions(where: String?, whereArgs: Array<String>?): TaskAndExceptions? {
-        val main = taskList.findTask(where, whereArgs) ?: return null
+        val (mainWhere, mainWhereArgs) = whereWithMainTasksOnly(where, whereArgs)
+        val main = taskList.findTask(mainWhere, mainWhereArgs) ?: return null
 
         // attach exceptions
         val mainTaskId = main.entityValues.getAsLong(Tasks._ID)
@@ -87,22 +88,17 @@ class DmfsRecurringTaskList(
     }
 
     /**
-     * Retrieves a task and its exceptions from the content provider.
+     * Retrieves a main task and its exceptions from the content provider.
      *
      * @param mainTaskId   [TaskContract.Tasks._ID] of the main task
      *
      * @return the task and its exceptions, or _null_ if no task with the given id was found
      */
-    fun getById(mainTaskId: Long): TaskAndExceptions? {
-        val mainTask = taskList.getTask(mainTaskId) ?: return null
-        return TaskAndExceptions(
-            main = mainTask,
-            exceptions = findExceptions(mainTaskId)
-        )
-    }
+    fun getById(mainTaskId: Long): TaskAndExceptions? =
+        findTaskAndExceptions("${Tasks._ID}=?", arrayOf(mainTaskId.toString()))
 
     /**
-     * Iterates through tasks in [taskList] together with their exceptions.
+     * Iterates through main tasks in [taskList] together with their exceptions.
      *
      * Note that the exceptions may contain deleted tasks.
      *
@@ -111,7 +107,8 @@ class DmfsRecurringTaskList(
      * @param body          callback that is called for each task (including exceptions)
      */
     fun iterateTaskAndExceptions(where: String?, whereArgs: Array<String>?, body: (TaskAndExceptions) -> Unit) {
-        taskList.iterateTasks(where, whereArgs) { main ->
+        val (mainWhere, mainWhereArgs) = whereWithMainTasksOnly(where, whereArgs)
+        taskList.iterateTasks(mainWhere, mainWhereArgs) { main ->
             val mainTaskId = main.entityValues.getAsLong(Tasks._ID)
             body(
                 TaskAndExceptions(
@@ -369,5 +366,11 @@ class DmfsRecurringTaskList(
      */
     private fun findExceptions(mainTaskId: Long): List<Entity> =
         taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
+
+    private fun whereWithMainTasksOnly(where: String?, whereArgs: Array<String>?): Pair<String, Array<String>> {
+        val protectedWhere = "(${where ?: "1"}) AND ${Tasks.ORIGINAL_INSTANCE_ID} IS NULL"
+        val protectedWhereArgs = whereArgs ?: arrayOf()
+        return Pair(protectedWhere, protectedWhereArgs)
+    }
 
 }
