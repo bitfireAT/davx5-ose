@@ -13,7 +13,7 @@ import kotlin.jvm.optionals.getOrNull
 
 class UidBuilder : JtxObjectEntityBuilder {
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
-        val uid = main.getProperty<Uid>(Property.UID).getOrNull()?.value
+        val uid = from.getProperty<Uid>(Property.UID).getOrNull()?.value
         to.entityValues.put(JtxContract.JtxICalObject.UID, uid)
     }
 }

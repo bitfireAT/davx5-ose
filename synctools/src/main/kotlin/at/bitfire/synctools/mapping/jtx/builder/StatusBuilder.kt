@@ -13,7 +13,7 @@ import kotlin.jvm.optionals.getOrNull
 
 class StatusBuilder : JtxObjectEntityBuilder {
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
-        val status = main.getProperty<Status>(Property.STATUS).getOrNull()?.value
+        val status = from.getProperty<Status>(Property.STATUS).getOrNull()?.value
         to.entityValues.put(JtxContract.JtxICalObject.STATUS, status)
     }
 }
