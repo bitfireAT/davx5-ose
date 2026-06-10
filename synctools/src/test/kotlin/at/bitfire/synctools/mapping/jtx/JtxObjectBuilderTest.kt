@@ -11,6 +11,7 @@ import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.Priority
 import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.XProperty
 import org.junit.Assert.assertEquals
@@ -64,6 +65,21 @@ class JtxObjectBuilderTest {
         assertFalse(result.exceptions.isEmpty())
         assertEquals("VTODO", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
         assertEquals("VTODO", result.exceptions.single().entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+    }
+
+    @Test
+    fun `build() maps PRIORITY to PRIORITY`() {
+        val main = VToDo().apply {
+            this += Priority(5)
+        }
+        val component = AssociatedComponents<CalendarComponent>(
+            main = main,
+            exceptions = emptyList()
+        )
+
+        val result = builder.build(component)
+
+        assertEquals(5, result.main.entityValues.get(JtxContract.JtxICalObject.PRIORITY))
     }
 
     @Test
