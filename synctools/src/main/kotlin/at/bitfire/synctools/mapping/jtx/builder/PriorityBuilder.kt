@@ -12,7 +12,7 @@ import kotlin.jvm.optionals.getOrNull
 
 class PriorityBuilder : JtxObjectEntityBuilder {
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
-        val priority = main.getProperty<Priority>(Priority.PRIORITY).getOrNull()?.level
+        val priority = from.getProperty<Priority>(Priority.PRIORITY).getOrNull()?.level
         to.entityValues.put(JtxContract.JtxICalObject.PRIORITY, priority)
     }
 }
