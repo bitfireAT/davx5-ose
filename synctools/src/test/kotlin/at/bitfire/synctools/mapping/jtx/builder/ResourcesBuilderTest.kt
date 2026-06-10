@@ -26,9 +26,9 @@ class ResourcesBuilderTest {
     @Test
     fun `VTODO without resources`() {
         val output = Entity(ContentValues())
-        val journal = VToDo()
+        val task = VToDo()
 
-        builder.build(from = journal, main = journal, output)
+        builder.build(from = task, main = task, output)
 
         assertEquals(0, output.subValues.size)
     }
@@ -36,11 +36,12 @@ class ResourcesBuilderTest {
     @Test
     fun `VTODO with single resource`() {
         val output = Entity(ContentValues())
-        val journal = VToDo().apply {
+        val task = VToDo().apply {
             this += Resources("resource")
         }
+        val main = VToDo()
 
-        builder.build(from = journal, main = journal, output)
+        builder.build(from = task, main = main, output)
 
         assertEquals(1, output.subValues.size)
         val subValue = output.subValues.first()
@@ -59,12 +60,12 @@ class ResourcesBuilderTest {
     @Test
     fun `VTODO with multiple resources`() {
         val output = Entity(ContentValues())
-        val journal = VToDo().apply {
+        val task = VToDo().apply {
             this += Resources(listOf("one", "two"))
             this += Resources("three")
         }
 
-        builder.build(from = journal, main = journal, output)
+        builder.build(from = task, main = task, output)
 
         assertEquals(3, output.subValues.size)
         val first = output.subValues[0]

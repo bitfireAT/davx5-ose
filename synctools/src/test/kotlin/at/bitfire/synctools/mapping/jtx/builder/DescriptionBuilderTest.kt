@@ -41,10 +41,11 @@ class DescriptionBuilderTest {
     fun `DESCRIPTION has text`() {
         val output = Entity(ContentValues())
         val toDo = VToDo(propertyListOf(Description("text")))
+        val main = VToDo()
 
         builder.build(
             from = toDo,
-            main = toDo,
+            main = main,
             to = output
         )
         assertEquals("text", output.entityValues.get(JtxContract.JtxICalObject.DESCRIPTION))

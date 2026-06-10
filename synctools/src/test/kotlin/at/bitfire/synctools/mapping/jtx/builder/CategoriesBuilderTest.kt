@@ -27,8 +27,9 @@ class CategoriesBuilderTest {
         val journal = VJournal().apply {
             this += Categories(TextList("one", "two"))
         }
+        val main = VJournal()
 
-        builder.build(from = journal, main = journal, output)
+        builder.build(from = journal, main = main, output)
 
         assertEquals(2, output.subValues.size)
         val first = output.subValues[0]
