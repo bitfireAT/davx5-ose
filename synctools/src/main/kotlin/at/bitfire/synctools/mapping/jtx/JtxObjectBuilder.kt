@@ -10,6 +10,7 @@ import at.bitfire.synctools.icalendar.AssociatedComponents
 import at.bitfire.synctools.mapping.jtx.builder.CategoriesBuilder
 import at.bitfire.synctools.mapping.jtx.builder.CollectionIdBuilder
 import at.bitfire.synctools.mapping.jtx.builder.CommentsBuilder
+import at.bitfire.synctools.mapping.jtx.builder.ComponentBuilder
 import at.bitfire.synctools.mapping.jtx.builder.DescriptionBuilder
 import at.bitfire.synctools.mapping.jtx.builder.JtxObjectEntityBuilder
 import at.bitfire.synctools.mapping.jtx.builder.RecurrenceFieldsBuilder
@@ -36,6 +37,7 @@ class JtxObjectBuilder(
 
     private val entityBuilders: Array<JtxObjectEntityBuilder> = arrayOf(
         CollectionIdBuilder(collectionId),
+        ComponentBuilder(),
         SyncPropertiesBuilder(fileName, eTag, scheduleTag, flags),
 
         DescriptionBuilder(),
