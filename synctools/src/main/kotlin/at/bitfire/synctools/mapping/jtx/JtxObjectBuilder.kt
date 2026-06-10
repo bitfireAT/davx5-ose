@@ -17,6 +17,7 @@ import at.bitfire.synctools.mapping.jtx.builder.RemindersBuilder
 import at.bitfire.synctools.mapping.jtx.builder.ResourcesBuilder
 import at.bitfire.synctools.mapping.jtx.builder.SyncPropertiesBuilder
 import at.bitfire.synctools.mapping.jtx.builder.TimeFieldsBuilder
+import at.bitfire.synctools.mapping.jtx.builder.UidBuilder
 import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VJournal
@@ -43,7 +44,8 @@ class JtxObjectBuilder(
         RemindersBuilder(),
         CategoriesBuilder(),
         CommentsBuilder(),
-        ResourcesBuilder()
+        ResourcesBuilder(),
+        UidBuilder(),
     )
 
     fun build(component: AssociatedComponents<CalendarComponent>): JtxObjectAndExceptions {
