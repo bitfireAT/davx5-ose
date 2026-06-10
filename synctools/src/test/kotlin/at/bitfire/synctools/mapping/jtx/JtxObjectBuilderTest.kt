@@ -6,6 +6,7 @@ package at.bitfire.synctools.mapping.jtx
 
 import at.bitfire.synctools.icalendar.AssociatedComponents
 import at.bitfire.synctools.icalendar.plusAssign
+import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
@@ -42,6 +43,7 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertTrue(result.exceptions.isEmpty())
+        assertEquals("VTODO", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
     }
 
     @Test
@@ -58,6 +60,8 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertFalse(result.exceptions.isEmpty())
+        assertEquals("VTODO", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+        assertEquals("VTODO", result.exceptions.single().entityValues.get(JtxContract.JtxICalObject.COMPONENT))
     }
 
     @Test
@@ -71,6 +75,7 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertTrue(result.exceptions.isEmpty())
+        assertEquals("VJOURNAL", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
     }
 
     @Test
@@ -87,6 +92,8 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertFalse(result.exceptions.isEmpty())
+        assertEquals("VJOURNAL", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+        assertEquals("VJOURNAL", result.exceptions.single().entityValues.get(JtxContract.JtxICalObject.COMPONENT))
     }
 
     @Test
