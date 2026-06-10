@@ -40,9 +40,10 @@ class StatusBuilderTest {
     @Test
     fun `STATUS is DRAFT`() {
         val journal = VJournal(propertyListOf(ImmutableStatus.VJOURNAL_DRAFT))
+        val main = VJournal()
         val output = Entity(ContentValues())
 
-        builder.build(from = journal, main = journal, to = output)
+        builder.build(from = journal, main = main, to = output)
 
         assertContentValuesEqual(
             contentValuesOf(JtxContract.JtxICalObject.STATUS to StatusJournal.DRAFT.name),

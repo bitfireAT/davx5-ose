@@ -13,7 +13,7 @@ import kotlin.jvm.optionals.getOrNull
 
 class SummaryBuilder : JtxObjectEntityBuilder {
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
-        val summary = main.getProperty<Summary>(Property.SUMMARY).getOrNull()?.value
+        val summary = from.getProperty<Summary>(Property.SUMMARY).getOrNull()?.value
         to.entityValues.put(JtxContract.JtxICalObject.SUMMARY, summary)
     }
 }

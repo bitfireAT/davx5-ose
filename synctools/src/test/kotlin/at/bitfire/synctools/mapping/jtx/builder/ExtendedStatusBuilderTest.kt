@@ -40,8 +40,9 @@ class ExtendedStatusBuilderTest {
         val task = VToDo().apply {
             this += XProperty(JtxICalObject.X_PROP_XSTATUS, "Bla")
         }
+        val main = VToDo()
 
-        builder.build(from = task, main = task, to = output)
+        builder.build(from = task, main = main, to = output)
 
         assertEquals("Bla", output.entityValues.get(JtxContract.JtxICalObject.EXTENDED_STATUS))
     }

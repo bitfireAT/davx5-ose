@@ -35,9 +35,10 @@ class UidBuilderTest {
     @Test
     fun `UID is set`() {
         val journal = VJournal(propertyListOf(Uid("some-uid")))
+        val main = VJournal()
         val result = Entity(ContentValues())
 
-        builder.build(from = journal, main = journal, to = result)
+        builder.build(from = journal, main = main, to = result)
 
         assertContentValuesEqual(contentValuesOf(JtxContract.JtxICalObject.UID to "some-uid"), result.entityValues)
     }
