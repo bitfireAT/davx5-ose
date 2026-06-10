@@ -47,9 +47,10 @@ class RemindersBuilderTest {
                 this += Trigger(ParameterList(listOf(Related.START)), "-PT1H")
             }
         }
+        val main = VToDo()
         val output = Entity(ContentValues())
 
-        builder.build(from = task, main = task, to = output)
+        builder.build(from = task, main = main, to = output)
 
         assertEquals(1, output.subValues.size)
         val alarmSubValue = output.subValues.first()

@@ -13,7 +13,7 @@ import kotlin.jvm.optionals.getOrNull
 
 class ExtendedStatusBuilder : JtxObjectEntityBuilder {
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
-        val extendedStatus = main.getProperty<XProperty>(JtxICalObject.X_PROP_XSTATUS).getOrNull()?.value
+        val extendedStatus = from.getProperty<XProperty>(JtxICalObject.X_PROP_XSTATUS).getOrNull()?.value
         to.entityValues.put(JtxContract.JtxICalObject.EXTENDED_STATUS, extendedStatus)
     }
 }

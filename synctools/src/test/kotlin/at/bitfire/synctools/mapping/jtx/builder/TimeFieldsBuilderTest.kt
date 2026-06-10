@@ -38,8 +38,9 @@ class TimeFieldsBuilderTest {
         val journal = VJournal().apply {
             this += DtStart(dateTimeValue("20260518T120000Z"))
         }
+        val main = VJournal()
 
-        builder.build(from = journal, main = journal, output)
+        builder.build(from = journal, main = main, output)
 
         assertContentValuesEqual(
             contentValuesOf(

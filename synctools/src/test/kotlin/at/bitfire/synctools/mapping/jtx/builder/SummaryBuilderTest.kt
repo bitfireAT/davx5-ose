@@ -36,9 +36,10 @@ class SummaryBuilderTest {
     @Test
     fun `SUMMARY has text`() {
         val task = VToDo(propertyListOf(Summary("text")))
+        val main = VToDo()
         val output = Entity(ContentValues())
 
-        builder.build(from = task, main = task, to = output)
+        builder.build(from = task, main = main, to = output)
 
         assertEquals("text", output.entityValues.get(JtxContract.JtxICalObject.SUMMARY))
     }
