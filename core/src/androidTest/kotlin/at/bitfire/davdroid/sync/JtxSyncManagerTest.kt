@@ -91,7 +91,7 @@ class JtxSyncManagerTest {
             type = Collection.TYPE_CALENDAR,
             url = "https://example.com".toHttpUrl()
         )
-        localJtxCollection = localJtxCollectionStore.create(provider, dbCollection)!!
+        localJtxCollection = localJtxCollectionStore.create(provider, dbCollection)
         syncManager = jtxSyncManagerFactory.jtxSyncManager(
             account = account,
             httpClient = httpClientBuilder.build(),
@@ -129,13 +129,19 @@ class JtxSyncManagerTest {
                 "END:VCALENDAR"
 
         // Should create "demo-calendar"
-        syncManager.processICalObject("demo-calendar", "abc123", StringReader(calendar))
+        syncManager.processICalObject("demo-calendar", "abc123", "scheduleTag", StringReader(calendar))
 
         // Verify main VTODO is created
-        val localJtxIcalObject = localJtxCollection.findByName("demo-calendar")!!
-        assertEquals("47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f", localJtxIcalObject.uid)
-        assertEquals("abc123", localJtxIcalObject.eTag)
-        assertEquals("Test Task (Main VTODO)", localJtxIcalObject.summary)
+        val localJtxObject = localJtxCollection.findByName("demo-calendar")!!
+        assertEquals(
+            "47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f",
+            localJtxObject.jtxObjectAndExceptions.main.entityValues.getAsString(JtxContract.JtxICalObject.UID)
+        )
+        assertEquals("abc123", localJtxObject.eTag)
+        assertEquals(
+            "Test Task (Main VTODO)",
+            localJtxObject.jtxObjectAndExceptions.main.entityValues.getAsString(JtxContract.JtxICalObject.SUMMARY)
+        )
     }
 
     @Test
@@ -167,20 +173,26 @@ class JtxSyncManagerTest {
                 "END:VCALENDAR"
 
         // Create and store calendar
-        syncManager.processICalObject("demo-calendar", "abc123", StringReader(calendar))
+        syncManager.processICalObject("demo-calendar", "abc123", "scheduleTag", StringReader(calendar))
 
         // Verify main VTODO was created with RRULE present
-        val mainVtodo = localJtxCollection.findByName("demo-calendar")!!
-        assertEquals("Test Task (Main VTODO)", mainVtodo.summary)
-        assertEquals("FREQ=WEEKLY;UNTIL=20250505T235959Z;INTERVAL=1;BYDAY=FR", mainVtodo.rrule)
+        val localJtxObject = localJtxCollection.findByName("demo-calendar")!!
+        val mainTask = localJtxObject.jtxObjectAndExceptions.main
+        assertEquals("Test Task (Main VTODO)", mainTask.entityValues.getAsString(JtxContract.JtxICalObject.SUMMARY))
+        assertEquals(
+            "FREQ=WEEKLY;UNTIL=20250505T235959Z;INTERVAL=1;BYDAY=FR",
+            mainTask.entityValues.getAsString(JtxContract.JtxICalObject.RRULE)
+        )
 
         // Verify the RRULE exception instance was created with correct recurrence-id timezone
-        val vtodoException = localJtxCollection.findRecurInstance(
-            uid = "47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f",
-            recurid = "20250228T130000"
-        )!!
-        assertEquals("Test Task (Exception)", vtodoException.summary)
-        assertEquals("America/New_York", vtodoException.recuridTimezone)
+        val firstException = localJtxObject.jtxObjectAndExceptions.exceptions.first()
+        assertEquals(
+            "Test Task (Exception)",
+            firstException.entityValues.getAsString(JtxContract.JtxICalObject.SUMMARY)
+        )
+        assertEquals(
+            "America/New_York",
+            firstException.entityValues.getAsString(JtxContract.JtxICalObject.RECURID_TIMEZONE)
+        )
     }
-
 }
