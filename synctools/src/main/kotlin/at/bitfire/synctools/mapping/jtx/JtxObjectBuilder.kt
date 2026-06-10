@@ -14,6 +14,7 @@ import at.bitfire.synctools.mapping.jtx.builder.ComponentBuilder
 import at.bitfire.synctools.mapping.jtx.builder.DescriptionBuilder
 import at.bitfire.synctools.mapping.jtx.builder.ExtendedStatusBuilder
 import at.bitfire.synctools.mapping.jtx.builder.JtxObjectEntityBuilder
+import at.bitfire.synctools.mapping.jtx.builder.PriorityBuilder
 import at.bitfire.synctools.mapping.jtx.builder.RecurrenceFieldsBuilder
 import at.bitfire.synctools.mapping.jtx.builder.RemindersBuilder
 import at.bitfire.synctools.mapping.jtx.builder.ResourcesBuilder
@@ -42,6 +43,7 @@ class JtxObjectBuilder(
         SyncPropertiesBuilder(fileName, eTag, scheduleTag, flags),
 
         DescriptionBuilder(),
+        PriorityBuilder(),
         ExtendedStatusBuilder(),
         RecurrenceFieldsBuilder(),
         TimeFieldsBuilder(),
