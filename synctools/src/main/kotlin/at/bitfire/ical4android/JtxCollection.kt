@@ -24,6 +24,7 @@ import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
 
+@Deprecated("Use at.bitfire.synctools.storage.jtx + at.bitfire.synctools.mapping.jtx API instead")
 class JtxCollection(
     val account: Account,
     val client: ContentProviderClient,

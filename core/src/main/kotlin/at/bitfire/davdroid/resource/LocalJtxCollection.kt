@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.resource
 
-import android.accounts.Account
-import android.content.ContentProviderClient
 import at.bitfire.ical4android.JtxCollection
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
@@ -117,11 +115,5 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     override fun removeNotDirtyMarked(flags: Int) = jtxCollection.deleteByFlags(flags)
 
     override fun forgetETags() = jtxCollection.updateSetETag(null)
-
-
-    object Factory {
-        fun newInstance(account: Account, client: ContentProviderClient, id: Long) =
-            LocalJtxCollection(JtxCollection(account, client, id))
-    }
 
 }

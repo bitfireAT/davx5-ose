@@ -113,6 +113,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
 
+@Deprecated("Use at.bitfire.synctools.storage.jtx + at.bitfire.synctools.mapping.jtx API instead")
 class JtxICalObject(
     val collection: JtxCollection
 ) {
