@@ -6,7 +6,6 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import androidx.core.content.contentValuesOf
@@ -63,8 +62,7 @@ class LocalJtxCollectionStore @Inject constructor(
             withColor = true
         )
 
-        val uri = JtxCollection.create(account, client, values)
-        return LocalJtxCollection(account, client, ContentUris.parseId(uri))
+        return LocalJtxCollection(JtxCollection.createAndGet(account, client, context, values))
     }
 
     private fun valuesFromCollection(info: Collection, account: Account, withColor: Boolean): ContentValues {
@@ -95,16 +93,18 @@ class LocalJtxCollectionStore @Inject constructor(
     }
 
     override fun getAll(account: Account, client: ContentProviderClient): List<LocalJtxCollection> =
-        JtxCollection.find(account, client, context, LocalJtxCollection.Factory, null, null)
+        JtxCollection.find(account, client, context, null, null).map { LocalJtxCollection(it) }
 
     override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalJtxCollection? =
-        JtxCollection.find(account, client, context, LocalJtxCollection.Factory,
-            "${JtxContract.JtxCollection.SYNC_ID}=?", arrayOf(dbCollectionId.toString())).firstOrNull()
+        JtxCollection.find(
+            account, client, context,
+            "${JtxContract.JtxCollection.SYNC_ID}=?", arrayOf(dbCollectionId.toString())
+        ).firstOrNull()?.let { LocalJtxCollection(it) }
 
     override fun update(client: ContentProviderClient, localCollection: LocalJtxCollection, fromCollection: Collection) {
-        val accountSettings = accountSettingsFactory.create(localCollection.account)
-        val values = valuesFromCollection(fromCollection, account = localCollection.account, withColor = accountSettings.getManageCalendarColors())
-        localCollection.update(values)
+        val accountSettings = accountSettingsFactory.create(localCollection.jtxCollection.account)
+        val values = valuesFromCollection(fromCollection, account = localCollection.jtxCollection.account, withColor = accountSettings.getManageCalendarColors())
+        localCollection.jtxCollection.update(values)
     }
 
     override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?) {
@@ -116,7 +116,7 @@ class LocalJtxCollectionStore @Inject constructor(
     }
 
     override fun delete(localCollection: LocalJtxCollection) {
-        localCollection.delete()
+        localCollection.jtxCollection.delete()
     }
 
 }

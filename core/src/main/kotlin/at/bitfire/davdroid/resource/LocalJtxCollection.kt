@@ -4,11 +4,7 @@
 
 package at.bitfire.davdroid.resource
 
-import android.accounts.Account
-import android.content.ContentProviderClient
 import at.bitfire.ical4android.JtxCollection
-import at.bitfire.ical4android.JtxCollectionFactory
-import at.bitfire.ical4android.JtxICalObject
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 
@@ -17,81 +13,90 @@ import at.techbee.jtx.JtxContract.asSyncAdapter
  *
  * [at.techbee.jtx.JtxContract.JtxCollection.SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
-class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Long):
-    JtxCollection<JtxICalObject>(account, client, LocalJtxICalObject.Factory, id),
-    LocalCollection<LocalJtxICalObject>{
+class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
+    LocalCollection<LocalJtxICalObject> {
 
     override val readOnly: Boolean
         get() = throw NotImplementedError()
 
     override val tag: String
-        get() =  "jtx-${account.name}-$id"
+        get() = "jtx-${jtxCollection.account.name}-${jtxCollection.id}"
 
     override val dbCollectionId: Long?
-        get() = syncId
+        get() = jtxCollection.syncId
 
     override val title: String
-        get() = displayname ?: id.toString()
+        get() = jtxCollection.displayname ?: jtxCollection.id.toString()
 
     override var lastSyncState: SyncState?
-        get() = SyncState.fromString(syncstate)
-        set(value) { syncstate = value.toString() }
+        get() = SyncState.fromString(jtxCollection.syncstate)
+        set(value) {
+            jtxCollection.syncstate = value.toString()
+        }
+
+    val supportsVTODO: Boolean
+        get() = jtxCollection.supportsVTODO
+
+    val supportsVJOURNAL: Boolean
+        get() = jtxCollection.supportsVJOURNAL
+
+    fun updateLastSync() = jtxCollection.updateLastSync()
 
 
     override fun countAll(): Int =
-        client.query(
-            JtxContract.JtxICalObject.CONTENT_URI.asSyncAdapter(account),
+        jtxCollection.client.query(
+            JtxContract.JtxICalObject.CONTENT_URI.asSyncAdapter(jtxCollection.account),
             arrayOf(JtxContract.JtxICalObject.ID),
             "${JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID}=?",
-            arrayOf(id.toString()),
+            arrayOf(jtxCollection.id.toString()),
             null
         )?.use { cursor ->
             cursor.count
         } ?: 0
 
     override fun countDeleted() =
-        client.query(
-            JtxContract.JtxICalObject.CONTENT_URI.asSyncAdapter(account),
+        jtxCollection.client.query(
+            JtxContract.JtxICalObject.CONTENT_URI.asSyncAdapter(jtxCollection.account),
             arrayOf(JtxContract.JtxICalObject.ID),
             "${JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID}=? AND ${JtxContract.JtxICalObject.DELETED}",
-            arrayOf(id.toString()),
+            arrayOf(jtxCollection.id.toString()),
             null
         )?.use { cursor ->
             cursor.count
         } ?: 0
 
     override fun countModified() =
-        client.query(
-            JtxContract.JtxICalObject.CONTENT_URI.asSyncAdapter(account),
+        jtxCollection.client.query(
+            JtxContract.JtxICalObject.CONTENT_URI.asSyncAdapter(jtxCollection.account),
             arrayOf(JtxContract.JtxICalObject.ID),
             "${JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID}=? AND ${JtxContract.JtxICalObject.DIRTY} AND NOT ${JtxContract.JtxICalObject.DELETED}",
-            arrayOf(id.toString()),
+            arrayOf(jtxCollection.id.toString()),
             null
         )?.use { cursor ->
             cursor.count
         } ?: 0
 
     override fun findDeleted(): List<LocalJtxICalObject> {
-        val values = queryDeletedICalObjects()
+        val values = jtxCollection.queryDeletedICalObjects()
         val localJtxICalObjects = mutableListOf<LocalJtxICalObject>()
         values.forEach {
-            localJtxICalObjects.add(LocalJtxICalObject.Factory.fromProvider(this, it))
+            localJtxICalObjects.add(LocalJtxICalObject(jtxCollection, it))
         }
         return localJtxICalObjects
     }
 
     override fun findDirty(): List<LocalJtxICalObject> {
-        val values = queryDirtyICalObjects()
+        val values = jtxCollection.queryDirtyICalObjects()
         val localJtxICalObjects = mutableListOf<LocalJtxICalObject>()
         values.forEach {
-            localJtxICalObjects.add(LocalJtxICalObject.Factory.fromProvider(this, it))
+            localJtxICalObjects.add(LocalJtxICalObject(jtxCollection, it))
         }
         return localJtxICalObjects
     }
 
     override fun findByName(name: String): LocalJtxICalObject? {
-        val values = queryByFilename(name) ?: return null
-        return LocalJtxICalObject.Factory.fromProvider(this, values)
+        val values = jtxCollection.queryByFilename(name) ?: return null
+        return LocalJtxICalObject(jtxCollection, values)
     }
 
     /**
@@ -101,19 +106,14 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
      * @return LocalJtxICalObject or null if none or multiple entries found
      */
     fun findRecurInstance(uid: String, recurid: String): LocalJtxICalObject? {
-        val values = queryRecur(uid, recurid) ?: return null
-        return LocalJtxICalObject.Factory.fromProvider(this, values)
+        val values = jtxCollection.queryRecur(uid, recurid) ?: return null
+        return LocalJtxICalObject(jtxCollection, values)
     }
 
-    override fun markNotDirty(flags: Int)= updateSetFlags(flags)
+    override fun markNotDirty(flags: Int) = jtxCollection.updateSetFlags(flags)
 
-    override fun removeNotDirtyMarked(flags: Int) = deleteByFlags(flags)
+    override fun removeNotDirtyMarked(flags: Int) = jtxCollection.deleteByFlags(flags)
 
-    override fun forgetETags() = updateSetETag(null)
-
-
-    object Factory: JtxCollectionFactory<LocalJtxCollection> {
-        override fun newInstance(account: Account, client: ContentProviderClient, id: Long) = LocalJtxCollection(account, client, id)
-    }
+    override fun forgetETags() = jtxCollection.updateSetETag(null)
 
 }

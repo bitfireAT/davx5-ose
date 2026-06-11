@@ -10,15 +10,12 @@ import android.content.ContentUris
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.ical4android.JtxCollection
-import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
-
 import at.bitfire.synctools.test.BuildConfig
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.techbee.jtx.JtxContract
-import io.mockk.mockk
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -64,8 +61,7 @@ class JtxBatchOperationTest {
             }
             batch.commit()
         } finally {
-            val collection = JtxCollection<JtxICalObject>(testAccount, provider, mockk(), collectionId)
-            collection.delete()
+            JtxCollection(testAccount, provider, collectionId).delete()
         }
     }
 
