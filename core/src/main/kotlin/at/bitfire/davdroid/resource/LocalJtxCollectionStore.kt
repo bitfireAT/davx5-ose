@@ -6,7 +6,6 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import androidx.core.content.contentValuesOf
@@ -63,8 +62,7 @@ class LocalJtxCollectionStore @Inject constructor(
             withColor = true
         )
 
-        val uri = JtxCollection.create(account, client, values)
-        return LocalJtxCollection(JtxCollection(account, client, ContentUris.parseId(uri)))
+        return LocalJtxCollection(JtxCollection.createAndGet(account, client, context, values))
     }
 
     private fun valuesFromCollection(info: Collection, account: Account, withColor: Boolean): ContentValues {

@@ -42,6 +42,13 @@ class JtxCollection(
                 ?: throw LocalStorageException("Couldn't create JTX Collection")
         }
 
+        fun createAndGet(account: Account, client: ContentProviderClient, context: Context, values: ContentValues): JtxCollection {
+            val id = ContentUris.parseId(create(account, client, values))
+            return find(account, client, context, "${JtxContract.JtxCollection.ID}=?", arrayOf(id.toString()))
+                .firstOrNull()
+                ?: throw LocalStorageException("Couldn't query jtx collection that was just created")
+        }
+
         fun find(account: Account, client: ContentProviderClient, context: Context, where: String?, whereArgs: Array<String>?): List<JtxCollection> {
             val collections = LinkedList<JtxCollection>()
             client.query(JtxContract.JtxCollection.CONTENT_URI.asSyncAdapter(account), null, where, whereArgs, null)?.use { cursor ->
