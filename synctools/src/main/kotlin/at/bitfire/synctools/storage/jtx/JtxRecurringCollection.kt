@@ -184,30 +184,14 @@ class JtxRecurringCollection(
     }
 
     /**
-     * Enqueues a delete of a jtx main object into [batch]. The jtx Board provider's
-     * [removeOrphans()] will clean up associated exceptions when the main is removed.
-     *
-     * Does nothing if [id] refers to an exception row (i.e. [JtxContract.JtxICalObject.RECURID]
-     * IS NOT NULL), because deleting only the exception would leave the actual main and the
-     * remaining exceptions dangling.
+     * Enqueues deletion of a jtx main object into [batch]. Possible exceptions are automatically
+     * removed by the jtx Board content provider.
      *
      * @param id    ID of the main jtx object
-     * @param batch batch to enqueue the delete into
+     * @param batch batch to enqueue the deletion into
      */
     fun deleteJtxObjectAndExceptions(id: Long, batch: JtxBatchOperation) {
         try {
-            // Guard: verify the row exists and is a main object (RECURID IS NULL).
-            // Deleting an exception row here would leave its main and sibling exceptions dangling,
-            // because the jtx Board provider's removeOrphans() only runs when the main is removed.
-            val row = collection.getJtxObjectRow(
-                id,
-                arrayOf(JtxContract.JtxICalObject.ID),
-                where = "${JtxContract.JtxICalObject.RECURID} IS NULL"
-            )
-            if (row == null) {
-                logger.warning("deleteJtxObjectAndExceptions called with ID $id which does not exist or is an exception (RECURID IS NOT NULL) – ignoring")
-                return
-            }
             // delete main object; the jtx Board provider's removeOrphans() will clean up
             // associated exceptions and auto-generated instances when the main is removed
             collection.deleteJtxObject(id, batch)
@@ -218,10 +202,6 @@ class JtxRecurringCollection(
 
     /**
      * Deletes a jtx main object and all its exceptions.
-     *
-     * Does nothing if [id] refers to an exception row (i.e. [JtxContract.JtxICalObject.RECURID]
-     * IS NOT NULL), because deleting only the exception would leave the actual main and the
-     * remaining exceptions dangling.
      *
      * @param id    ID of the main jtx object
      */
