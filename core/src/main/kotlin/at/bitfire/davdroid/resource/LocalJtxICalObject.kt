@@ -19,7 +19,7 @@ import kotlin.jvm.optionals.getOrNull
  * Represents a Journal, Note or Task entry
  */
 class LocalJtxICalObject(
-    collection: JtxCollection<*>,
+    collection: JtxCollection,
     fileName: String?,
     eTag: String?,
     scheduleTag: String?,
@@ -37,7 +37,7 @@ class LocalJtxICalObject(
     object Factory : JtxICalObjectFactory<LocalJtxICalObject> {
 
         override fun fromProvider(
-            collection: JtxCollection<JtxICalObject>,
+            collection: JtxCollection,
             values: ContentValues
         ): LocalJtxICalObject {
             val fileName = values.getAsString(JtxContract.JtxICalObject.FILENAME)

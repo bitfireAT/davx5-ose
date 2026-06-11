@@ -8,6 +8,6 @@ import android.content.ContentValues
 
 interface JtxICalObjectFactory<out T: JtxICalObject> {
 
-    fun fromProvider(collection: JtxCollection<JtxICalObject>, values: ContentValues): T
+    fun fromProvider(collection: JtxCollection, values: ContentValues): T
 
 }
