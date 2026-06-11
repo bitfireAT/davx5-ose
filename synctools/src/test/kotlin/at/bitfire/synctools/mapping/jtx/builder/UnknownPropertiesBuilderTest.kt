@@ -67,6 +67,9 @@ class UnknownPropertiesBuilderTest {
             SUMMARY:summary
             UID:uid
             URL:https://domain.example/
+            X-COMPLETEDTIMEZONE:Europe/Vienna
+            X-GEOFENCE-RADIUS:5
+            X-STATUS:extra
             DTSTAMP:20260610T120000Z
             PRODID:why here
             END:VTODO
