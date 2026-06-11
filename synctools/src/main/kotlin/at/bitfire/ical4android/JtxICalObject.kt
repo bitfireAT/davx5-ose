@@ -113,7 +113,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
 
-open class JtxICalObject(
+class JtxICalObject(
     val collection: JtxCollection
 ) {
 

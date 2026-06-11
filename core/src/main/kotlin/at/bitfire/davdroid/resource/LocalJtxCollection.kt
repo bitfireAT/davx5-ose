@@ -82,7 +82,7 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         val values = jtxCollection.queryDeletedICalObjects()
         val localJtxICalObjects = mutableListOf<LocalJtxICalObject>()
         values.forEach {
-            localJtxICalObjects.add(LocalJtxICalObject.Factory.fromProvider(jtxCollection, it))
+            localJtxICalObjects.add(LocalJtxICalObject(jtxCollection, it))
         }
         return localJtxICalObjects
     }
@@ -91,14 +91,14 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         val values = jtxCollection.queryDirtyICalObjects()
         val localJtxICalObjects = mutableListOf<LocalJtxICalObject>()
         values.forEach {
-            localJtxICalObjects.add(LocalJtxICalObject.Factory.fromProvider(jtxCollection, it))
+            localJtxICalObjects.add(LocalJtxICalObject(jtxCollection, it))
         }
         return localJtxICalObjects
     }
 
     override fun findByName(name: String): LocalJtxICalObject? {
         val values = jtxCollection.queryByFilename(name) ?: return null
-        return LocalJtxICalObject.Factory.fromProvider(jtxCollection, values)
+        return LocalJtxICalObject(jtxCollection, values)
     }
 
     /**
@@ -109,7 +109,7 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
      */
     fun findRecurInstance(uid: String, recurid: String): LocalJtxICalObject? {
         val values = jtxCollection.queryRecur(uid, recurid) ?: return null
-        return LocalJtxICalObject.Factory.fromProvider(jtxCollection, values)
+        return LocalJtxICalObject(jtxCollection, values)
     }
 
     override fun markNotDirty(flags: Int) = jtxCollection.updateSetFlags(flags)
