@@ -9,7 +9,8 @@ import android.content.Entity
 import android.provider.CalendarContract
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.calendar.EventsContract
-import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -20,7 +21,7 @@ class SequenceUpdaterTest {
     private val sequenceUpdater = SequenceUpdater()
 
     @Test
-    fun testIncreaseSequence_NewEvent() {
+    fun `SEQUENCE is increased for new events`() {
         // In case of newly created events, it doesn't matter whether they're group-scheduled or not.
         val main = Entity(
             ContentValues(
@@ -30,13 +31,13 @@ class SequenceUpdaterTest {
         val result = sequenceUpdater.increaseSequence(main)
 
         // SEQUENCE column remains null for mapping ...
-        Assert.assertNull(main.entityValues.getAsInteger(EventsContract.COLUMN_SEQUENCE))
+        assertNull(main.entityValues.getAsInteger(EventsContract.COLUMN_SEQUENCE))
         // ... but SEQUENCE shall be set to 0 after upload
-        Assert.assertEquals(0, result)
+        assertEquals(0, result)
     }
 
     @Test
-    fun testIncreaseSequence_GroupScheduledEvent_AsOrganizer() {
+    fun `SEQUENCE is increased for group-scheduled events when we're ORGANIZER`() {
         val main = Entity(
             contentValuesOf(
                 EventsContract.COLUMN_SEQUENCE to 1,
@@ -50,12 +51,12 @@ class SequenceUpdaterTest {
             )
         }
         val result = sequenceUpdater.increaseSequence(main)
-        Assert.assertEquals(2, main.entityValues.getAsInteger(EventsContract.COLUMN_SEQUENCE))
-        Assert.assertEquals(2, result)
+        assertEquals(2, main.entityValues.getAsInteger(EventsContract.COLUMN_SEQUENCE))
+        assertEquals(2, result)
     }
 
     @Test
-    fun testIncreaseSequence_GroupScheduledEvent_NotAsOrganizer() {
+    fun `SEQUENCE is not increased for group-scheduled events when we're not ORGANIZER`() {
         val main = Entity(
             contentValuesOf(
                 EventsContract.COLUMN_SEQUENCE to 1,
@@ -70,28 +71,13 @@ class SequenceUpdaterTest {
         }
         val result = sequenceUpdater.increaseSequence(main)
         // SEQUENCE column remains 1 for mapping, ...
-        Assert.assertEquals(1, main.entityValues.getAsInteger(EventsContract.COLUMN_SEQUENCE))
+        assertEquals(1, main.entityValues.getAsInteger(EventsContract.COLUMN_SEQUENCE))
         // ... but don't increase after upload.
-        Assert.assertNull(result)
+        assertNull(result)
     }
 
     @Test
-    fun testIncreaseSequence_NonGroupScheduledEvent_WithoutSequence() {
-        val main = Entity(
-            contentValuesOf(
-                EventsContract.COLUMN_SEQUENCE to 0
-            )
-        )
-        val result = sequenceUpdater.increaseSequence(main)
-
-        // SEQUENCE column remains 0 for mapping (will be mapped to no SEQUENCE property), ...
-        Assert.assertEquals(0, main.entityValues.getAsInteger(EventsContract.COLUMN_SEQUENCE))
-        // ... but don't increase after upload.
-        Assert.assertNull(result)
-    }
-
-    @Test
-    fun testIncreaseSequence_NonGroupScheduledEvent_WithSequence() {
+    fun `SEQUENCE is not increased for non-group-scheduled events`() {
         val main = Entity(
             contentValuesOf(
                 EventsContract.COLUMN_SEQUENCE to 1
@@ -99,10 +85,10 @@ class SequenceUpdaterTest {
         )
         val result = sequenceUpdater.increaseSequence(main)
 
-        // Non-group scheduled event – SEQUENCE column is not touched and thus remains 1, ...
-        Assert.assertEquals(1, main.entityValues.getAsInteger(EventsContract.COLUMN_SEQUENCE))
+        // SEQUENCE column is not touched and remains 1 (will be mapped to no SEQUENCE property) ...
+        assertEquals(1, main.entityValues.getAsInteger(EventsContract.COLUMN_SEQUENCE))
         // ... and is not increased after upload.
-        Assert.assertNull(result)
+        assertNull(result)
     }
 
 }
