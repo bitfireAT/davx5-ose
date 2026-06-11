@@ -4,8 +4,8 @@
 
 package at.bitfire.davdroid.resource
 
-import android.content.ContentValues
 import android.os.RemoteException
+import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.jtx.JtxCollection
 import at.techbee.jtx.JtxContract
@@ -43,11 +43,8 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     val supportsVJOURNAL: Boolean
         get() = jtxCollection.supportsVJournal
 
-    fun updateLastSync() {
-        val values = ContentValues(1)
-        values.put(JtxContract.JtxCollection.LAST_SYNC, System.currentTimeMillis())
-        jtxCollection.update(values)
-    }
+    fun updateLastSync() =
+        jtxCollection.update(contentValuesOf(JtxContract.JtxCollection.LAST_SYNC to System.currentTimeMillis()))
 
 
     override fun countAll(): Int =
@@ -98,11 +95,11 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
             arrayOf(uid, recurid)
         )?.let { LocalJtxICalObject(jtxCollection, it) }
 
-    override fun markNotDirty(flags: Int): Int {
-        val values = ContentValues(1)
-        values.put(JtxICalObject.FLAGS, flags)
-        return jtxCollection.updateJtxObjectRows(values, "${JtxICalObject.DIRTY}=?", arrayOf("0"))
-    }
+    override fun markNotDirty(flags: Int): Int =
+        jtxCollection.updateJtxObjectRows(
+            contentValuesOf(JtxICalObject.FLAGS to flags),
+            "${JtxICalObject.DIRTY}=?", arrayOf("0")
+        )
 
     override fun removeNotDirtyMarked(flags: Int): Int =
         try {
@@ -116,9 +113,7 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         }
 
     override fun forgetETags() {
-        val values = ContentValues(1)
-        values.putNull(JtxICalObject.ETAG)
-        jtxCollection.updateJtxObjectRows(values, null, null)
+        jtxCollection.updateJtxObjectRows(contentValuesOf(JtxICalObject.ETAG to null), null, null)
     }
 
 }
