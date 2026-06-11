@@ -8,6 +8,7 @@ import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
+import at.bitfire.synctools.icalendar.dtEnd
 import at.bitfire.synctools.icalendar.dtStart
 import at.bitfire.synctools.icalendar.due
 import at.bitfire.synctools.icalendar.plusAssign
