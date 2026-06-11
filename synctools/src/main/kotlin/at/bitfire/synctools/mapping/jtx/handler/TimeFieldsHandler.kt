@@ -7,14 +7,18 @@ package at.bitfire.synctools.mapping.jtx.handler
 import android.content.Entity
 import at.bitfire.synctools.icalendar.plusAssign
 import at.techbee.jtx.JtxContract
-import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.CalendarComponent
-import net.fortuna.ical4j.model.parameter.TzId
 import net.fortuna.ical4j.model.property.DtEnd
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Due
 import net.fortuna.ical4j.model.property.Duration
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.temporal.Temporal
 
 /**
@@ -22,25 +26,27 @@ import java.time.temporal.Temporal
  */
 class TimeFieldsHandler : JtxObjectEntityHandler {
     override fun process(from: Entity, main: Entity, to: CalendarComponent) {
-        // The builder already parses only the required properties based on VJOURNAL or VTODO, and ignores due if needed, so we can just add the ones that are present
-        appendField(from, to, JtxContract.JtxICalObject.DTSTART, JtxContract.JtxICalObject.DTSTART_TIMEZONE) { p, v -> DtStart<Temporal>(p, v) }
-        appendField(from, to, JtxContract.JtxICalObject.DTEND, JtxContract.JtxICalObject.DTEND_TIMEZONE) { p, v -> DtEnd<Temporal>(p, v) }
-        appendField(from, to, JtxContract.JtxICalObject.DUE, JtxContract.JtxICalObject.DUE_TIMEZONE) { p, v -> Due<Temporal>(p, v) }
+        appendDateField(from, to, JtxContract.JtxICalObject.DTSTART, JtxContract.JtxICalObject.DTSTART_TIMEZONE) { DtStart(it) }
+        appendDateField(from, to, JtxContract.JtxICalObject.DTEND, JtxContract.JtxICalObject.DTEND_TIMEZONE) { DtEnd(it) }
+        appendDateField(from, to, JtxContract.JtxICalObject.DUE, JtxContract.JtxICalObject.DUE_TIMEZONE) { Due(it) }
 
         from.entityValues.getAsString(JtxContract.JtxICalObject.DURATION)?.let { duration ->
             to += Duration(duration)
         }
     }
 
-    private fun appendField(from: Entity, to: CalendarComponent, property: String, timezoneProperty: String, builder: (ParameterList, String) -> Property) {
-        // If the actual property value is missing, ignore the field
-        val value = from.entityValues.getAsString(property) ?: return
-        val timeZoneName: String? = from.entityValues.getAsString(timezoneProperty)
-        if (timeZoneName != null) {
-            val tzId = TzId(timeZoneName)
-            to += builder(ParameterList(listOf(tzId)), value)
-        } else {
-            to += builder(ParameterList(), value)
+    private fun appendDateField(from: Entity, to: CalendarComponent, property: String, timezoneProperty: String, builder: (Temporal) -> Property) {
+        val epochMillis = from.entityValues.getAsLong(property) ?: return
+        val instant = Instant.ofEpochMilli(epochMillis)
+        val timezone = from.entityValues.getAsString(timezoneProperty)
+
+        val temporal: Temporal = when {
+            timezone == JtxContract.JtxICalObject.TZ_ALLDAY -> LocalDate.ofInstant(instant, ZoneOffset.UTC)
+            timezone == ZoneOffset.UTC.id -> instant
+            timezone.isNullOrEmpty() -> LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+            else -> ZonedDateTime.ofInstant(instant, ZoneId.of(timezone))
         }
+
+        to += builder(temporal)
     }
 }

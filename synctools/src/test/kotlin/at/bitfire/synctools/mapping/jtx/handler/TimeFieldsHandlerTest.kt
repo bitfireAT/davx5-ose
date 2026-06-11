@@ -6,14 +6,17 @@ package at.bitfire.synctools.mapping.jtx.handler
 
 import android.content.ContentValues
 import android.content.Entity
-import androidx.core.content.contentValuesOf
-import at.bitfire.synctools.icalendar.dtEnd
+import at.bitfire.dateTimeValue
+import at.bitfire.dateValue
 import at.bitfire.synctools.icalendar.dtStart
 import at.bitfire.synctools.icalendar.due
-import at.techbee.jtx.JtxContract
+import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.mapping.jtx.builder.TimeFieldsBuilder
 import net.fortuna.ical4j.model.Property
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VToDo
-import net.fortuna.ical4j.model.parameter.TzId
+import net.fortuna.ical4j.model.property.DtStart
+import net.fortuna.ical4j.model.property.Due
 import net.fortuna.ical4j.model.property.Duration
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -22,143 +25,105 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.time.temporal.Temporal
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.assertNotNull
 
 @RunWith(RobolectricTestRunner::class)
 class TimeFieldsHandlerTest {
 
+    private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
+    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna")
+
+    private val builder = TimeFieldsBuilder()
     private val handler = TimeFieldsHandler()
+
+    private fun buildAndProcess(original: VToDo): VToDo {
+        val entity = Entity(ContentValues())
+        builder.build(from = original, main = original, to = entity)
+        val result = VToDo()
+        handler.process(from = entity, main = entity, to = result)
+        return result
+    }
 
     @Test
     fun `No time fields`() {
-        val input = Entity(ContentValues())
-        val output = VToDo()
+        val result = buildAndProcess(VToDo())
 
-        handler.process(from = input, main = input, to = output)
-
-        assertNull(output.dtStart<Temporal>())
-        assertNull(output.dtEnd<Temporal>())
-        assertNull(output.due<Temporal>())
-        assertNull(output.getProperty<Duration>(Property.DURATION).getOrNull())
+        assertNull(result.dtStart<Temporal>())
+        assertNull(result.dtEnd<Temporal>())
+        assertNull(result.due<Temporal>())
+        assertNull(result.getProperty<Duration>(Property.DURATION).getOrNull())
     }
 
     @Test
-    fun `DTSTART UTC`() {
-        val input = Entity(contentValuesOf(JtxContract.JtxICalObject.DTSTART to "20260518T120000Z"))
-        val output = VToDo()
+    fun `DTSTART UTC round-trip`() {
+        val original = VToDo().apply {
+            this += DtStart(dateTimeValue("20260518T120000Z"))
+        }
 
-        handler.process(from = input, main = input, to = output)
+        val result = buildAndProcess(original)
 
-        val dtStart = output.dtStart<Temporal>()
-        assertEquals("20260518T120000Z", dtStart?.value)
-        assertNull(output.dtEnd<Temporal>())
-        assertNull(output.due<Temporal>())
+        assertEquals(original.dtStart<Temporal>(), result.dtStart<Temporal>())
+        assertNull(result.due<Temporal>())
     }
 
     @Test
-    fun `DTSTART with timezone`() {
-        val input = Entity(
-            contentValuesOf(
-                JtxContract.JtxICalObject.DTSTART to "20260518T120000",
-                JtxContract.JtxICalObject.DTSTART_TIMEZONE to "Europe/Vienna"
-            )
-        )
-        val output = VToDo()
+    fun `DTSTART with timezone round-trip`() {
+        val original = VToDo().apply {
+            this += DtStart(dateTimeValue("20260518T120000", tzVienna))
+        }
 
-        handler.process(from = input, main = input, to = output)
+        val result = buildAndProcess(original)
 
-        val dtStart = output.dtStart<Temporal>()
-        assertNotNull(dtStart)
-        assertEquals("20260518T120000", dtStart.value)
-        assertEquals("Europe/Vienna", dtStart.getParameter<TzId>("TZID").getOrNull()?.value)
+        assertEquals(original.dtStart<Temporal>(), result.dtStart<Temporal>())
     }
 
     @Test
-    fun `DTSTART floating (no timezone)`() {
-        val input = Entity(contentValuesOf(JtxContract.JtxICalObject.DTSTART to "20260518T120000"))
-        val output = VToDo()
+    fun `DTSTART floating round-trip`() {
+        val original = VToDo().apply {
+            this += DtStart(dateTimeValue("20260518T120000"))
+        }
 
-        handler.process(from = input, main = input, to = output)
+        val result = buildAndProcess(original)
 
-        val dtStart = output.dtStart<Temporal>()
-        assertNotNull(dtStart)
-        assertEquals("20260518T120000", dtStart.value)
-        assertNull(dtStart.getParameter<TzId>("TZID").getOrNull())
+        assertEquals(original.dtStart<Temporal>(), result.dtStart<Temporal>())
     }
 
     @Test
-    fun `DTSTART and DUE with timezones`() {
-        val input = Entity(
-            contentValuesOf(
-                JtxContract.JtxICalObject.DTSTART to "20260518T120000",
-                JtxContract.JtxICalObject.DTSTART_TIMEZONE to "Europe/Vienna",
-                JtxContract.JtxICalObject.DUE to "20260520T120000",
-                JtxContract.JtxICalObject.DUE_TIMEZONE to "Europe/Vienna"
-            )
-        )
-        val output = VToDo()
+    fun `DTSTART all-day round-trip`() {
+        val original = VToDo().apply {
+            this += DtStart(dateValue("20260518"))
+        }
 
-        handler.process(from = input, main = input, to = output)
+        val result = buildAndProcess(original)
 
-        val dtStart = output.dtStart<Temporal>()
-        val due = output.due<Temporal>()
-
-        assertNotNull(dtStart)
-        assertNotNull(due)
-
-        assertEquals("20260518T120000", dtStart.value)
-        assertEquals("20260520T120000", due.value)
-        assertEquals("Europe/Vienna", due.getParameter<TzId>("TZID")?.getOrNull()?.value)
+        assertEquals(original.dtStart<Temporal>(), result.dtStart<Temporal>())
     }
 
     @Test
-    fun `DTEND with timezone`() {
-        val input = Entity(
-            contentValuesOf(
-                JtxContract.JtxICalObject.DTSTART to "20260518T120000Z",
-                JtxContract.JtxICalObject.DTEND to "20260518T140000",
-                JtxContract.JtxICalObject.DTEND_TIMEZONE to "Europe/Vienna"
-            )
-        )
-        val output = VToDo()
+    fun `DTSTART and DUE with timezone round-trip`() {
+        val original = VToDo().apply {
+            this += DtStart(dateTimeValue("20260518T120000", tzVienna))
+            this += Due(dateTimeValue("20260520T120000", tzVienna))
+        }
 
-        handler.process(from = input, main = input, to = output)
+        val result = buildAndProcess(original)
 
-        val dtEnd = output.dtEnd<Temporal>()
+        assertEquals(original.dtStart<Temporal>(), result.dtStart<Temporal>())
+        assertEquals(original.due<Temporal>(), result.due<Temporal>())
+    }
 
-        assertNotNull(dtEnd)
+    @Test
+    fun `DTSTART and DURATION round-trip`() {
+        val original = VToDo().apply {
+            this += DtStart(dateTimeValue("20260518T120000", tzVienna))
+            this += Duration("P1D")
+        }
 
-        assertEquals("20260518T140000", dtEnd.value)
+        val result = buildAndProcess(original)
+
+        assertEquals(original.dtStart<Temporal>(), result.dtStart<Temporal>())
         assertEquals(
-            "Europe/Vienna",
-            dtEnd.getParameter<TzId>("TZID")?.getOrNull()?.value
+            original.getProperty<Duration>(Property.DURATION).getOrNull()?.value,
+            result.getProperty<Duration>(Property.DURATION).getOrNull()?.value
         )
-    }
-
-    @Test
-    fun `DURATION only`() {
-        val input = Entity(contentValuesOf(JtxContract.JtxICalObject.DURATION to "P1D"))
-        val output = VToDo()
-
-        handler.process(from = input, main = input, to = output)
-
-        assertEquals("P1D", output.getProperty<Duration>(Property.DURATION).getOrNull()?.value)
-        assertNull(output.dtStart<Temporal>())
-    }
-
-    @Test
-    fun `DTSTART with DURATION`() {
-        val input = Entity(
-            contentValuesOf(
-                JtxContract.JtxICalObject.DTSTART to "20260518T120000Z",
-                JtxContract.JtxICalObject.DURATION to "PT2H"
-            )
-        )
-        val output = VToDo()
-
-        handler.process(from = input, main = input, to = output)
-
-        assertEquals("20260518T120000Z", output.dtStart<Temporal>()?.value)
-        assertEquals("PT2H", output.getProperty<Duration>(Property.DURATION).getOrNull()?.value)
     }
 }
