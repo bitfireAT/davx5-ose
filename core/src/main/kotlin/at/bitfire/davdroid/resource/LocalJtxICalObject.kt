@@ -29,15 +29,16 @@ class LocalJtxICalObject(
         eTag: String?,
         scheduleTag: String?,
         flags: Int
-    ) : this(JtxICalObject(collection).also {
-        it.fileName = fileName
-        it.eTag = eTag
-        it.scheduleTag = scheduleTag
-        it.flags = flags
-    })
+    ) : this(JtxICalObject(collection)) {
+        jtxICalObject.fileName = fileName
+        jtxICalObject.eTag = eTag
+        jtxICalObject.scheduleTag = scheduleTag
+        jtxICalObject.flags = flags
+    }
 
-    constructor(collection: JtxCollection, values: ContentValues) :
-            this(JtxICalObject(collection).also { it.populateFromContentValues(values) })
+    constructor(collection: JtxCollection, values: ContentValues) : this(JtxICalObject(collection)) {
+        jtxICalObject.populateFromContentValues(values)
+    }
 
 
     override val id: Long
