@@ -11,7 +11,7 @@ import at.bitfire.ical4android.JtxICalObject
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.XProperty
-import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,7 +40,7 @@ class GeoFenceRadiusHandlerTest {
 
         handler.process(from = input, main = input, to = output)
 
-        assertNotNull("500", output.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull()?.value)
+        assertEquals("500", output.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull()?.value)
     }
 
     @Test
