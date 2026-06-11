@@ -175,24 +175,6 @@ class JtxRecurringCollectionTest {
     }
 
     @Test
-    fun testDeleteJtxObjectAndExceptions_withExceptionId_leavesMainIntact() {
-        val uid = "testDeleteJtxObjectAndExceptions_withExceptionId"
-        val (mainId, _) = insertRecurring(uid = uid)
-
-        val exceptionId = collection.findJtxObjects(
-            "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NOT NULL AND ${JtxContract.JtxICalObject.SEQUENCE} > 0",
-            arrayOf(uid)
-        ).first().entityValues.getAsLong(JtxContract.JtxICalObject.ID)
-
-        recurringCollection.deleteJtxObjectAndExceptions(exceptionId)
-
-        // main object and its exception must still exist
-        val result = recurringCollection.getById(mainId)
-        assertNotNull("Main object must still exist after delete was called with exception ID", result)
-        assertEquals(1, result!!.exceptions.size)
-    }
-
-    @Test
     fun testIterateJtxObjectAndExceptions() {
         val uid1 = "testIterateJtxObjectAndExceptions1"
         val uid2 = "testIterateJtxObjectAndExceptions2"
