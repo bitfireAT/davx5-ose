@@ -24,10 +24,12 @@ import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
 
-open class JtxCollection<out T: JtxICalObject>(val account: Account,
-                                               val client: ContentProviderClient,
-                                               private val iCalObjectFactory: JtxICalObjectFactory<JtxICalObject>,
-                                               val id: Long) {
+@Deprecated("Use at.bitfire.synctools.storage.jtx + at.bitfire.synctools.mapping.jtx API instead")
+class JtxCollection(
+    val account: Account,
+    val client: ContentProviderClient,
+    val id: Long
+) {
 
     companion object {
 
@@ -40,12 +42,19 @@ open class JtxCollection<out T: JtxICalObject>(val account: Account,
                 ?: throw LocalStorageException("Couldn't create JTX Collection")
         }
 
-        fun<T: JtxCollection<JtxICalObject>> find(account: Account, client: ContentProviderClient, context: Context, factory: JtxCollectionFactory<T>, where: String?, whereArgs: Array<String>?): List<T> {
-            val collections = LinkedList<T>()
+        fun createAndGet(account: Account, client: ContentProviderClient, context: Context, values: ContentValues): JtxCollection {
+            val id = ContentUris.parseId(create(account, client, values))
+            return find(account, client, context, "${JtxContract.JtxCollection.ID}=?", arrayOf(id.toString()))
+                .firstOrNull()
+                ?: throw LocalStorageException("Couldn't query jtx collection that was just created")
+        }
+
+        fun find(account: Account, client: ContentProviderClient, context: Context, where: String?, whereArgs: Array<String>?): List<JtxCollection> {
+            val collections = LinkedList<JtxCollection>()
             client.query(JtxContract.JtxCollection.CONTENT_URI.asSyncAdapter(account), null, where, whereArgs, null)?.use { cursor ->
                 while (cursor.moveToNext()) {
                     val values = cursor.toContentValues()
-                    val collection = factory.newInstance(account, client, values.getAsLong(JtxContract.JtxCollection.ID))
+                    val collection = JtxCollection(account, client, values.getAsLong(JtxContract.JtxCollection.ID))
                     collection.populate(values, context)
                     collections += collection
                 }
@@ -78,7 +87,7 @@ open class JtxCollection<out T: JtxICalObject>(val account: Account,
         client.update(ContentUris.withAppendedId(JtxContract.JtxCollection.CONTENT_URI.asSyncAdapter(account), id), values, null, null)
     }
 
-    protected fun populate(values: ContentValues, context: Context) {
+    private fun populate(values: ContentValues, context: Context) {
         url = values.getAsString(JtxContract.JtxCollection.URL)
         displayname = values.getAsString(JtxContract.JtxCollection.DISPLAYNAME)
         syncstate = values.getAsString(JtxContract.JtxCollection.SYNC_VERSION)

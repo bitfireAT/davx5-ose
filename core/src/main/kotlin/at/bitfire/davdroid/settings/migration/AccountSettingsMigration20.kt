@@ -15,9 +15,9 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
+import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.ical4android.JtxCollection
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.techbee.jtx.JtxContract
 import dagger.Binds
@@ -105,10 +105,11 @@ class AccountSettingsMigration20 @Inject constructor(
                             ))
                         }
                     }
-                    is JtxCollection<*> -> {    // jtxBoard
-                        val url = taskList.url ?: continue
+                    is LocalJtxCollection -> {    // jtxBoard
+                        val url = taskList.jtxCollection.url ?: continue
                         collectionRepository.getByServiceAndUrl(calDavServiceId, url)?.let { collection ->
-                            taskList.update(contentValuesOf(
+                            taskList.jtxCollection.update(
+                                contentValuesOf(
                                 JtxContract.JtxCollection.SYNC_ID to collection.id
                             ))
                         }

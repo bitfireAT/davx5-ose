@@ -14,7 +14,6 @@ import androidx.core.content.pm.PackageInfoCompat
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.icalendar.recurrenceId
-import at.bitfire.synctools.storage.jtx.TestJtxCollection
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.bitfire.synctools.testProdId
 import at.techbee.jtx.JtxContract
@@ -57,7 +56,7 @@ class JtxICalObjectTest {
     private lateinit var client: ContentProviderClient
 
     private val testAccount = Account(javaClass.name, JtxContract.JtxCollection.TEST_ACCOUNT_TYPE)
-    private var collection: JtxCollection<at.bitfire.ical4android.JtxICalObject>? = null
+    private var collection: JtxCollection? = null
     private var sample: at.bitfire.ical4android.JtxICalObject? = null
 
     private val url = "https://jtx.techbee.at"
@@ -80,7 +79,7 @@ class JtxICalObjectTest {
 
         val collectionUri = JtxCollection.create(testAccount, client, cvCollection)
         assertNotNull(collectionUri)
-        collection = JtxCollection.find(testAccount, client, context, TestJtxCollection.Factory, null, null)[0]
+        collection = JtxCollection.find(testAccount, client, context, null, null)[0]
         assertNotNull(collection)
 
         sample = JtxICalObject(collection!!).apply {
@@ -131,7 +130,7 @@ class JtxICalObjectTest {
     fun tearDown() {
         client.close()
         collection?.delete()
-        val collections = JtxCollection.find(testAccount, client, context, TestJtxCollection.Factory, null, null)
+        val collections = JtxCollection.find(testAccount, client, context, null, null)
         assertEquals(0, collections.size)
     }
 
