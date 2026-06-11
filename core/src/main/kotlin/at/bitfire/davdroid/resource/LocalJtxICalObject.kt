@@ -61,6 +61,9 @@ class LocalJtxICalObject(
 
     val uid: String get() = jtxICalObject.uid
     val recurid: String? get() = jtxICalObject.recurid
+    val summary: String? get() = jtxICalObject.summary
+    val rrule: String? get() = jtxICalObject.rrule
+    val recuridTimezone: String? get() = jtxICalObject.recuridTimezone
 
     fun write(os: OutputStream, prodId: ProdId) = jtxICalObject.write(os, prodId)
     fun applyNewData(data: JtxICalObject) = jtxICalObject.applyNewData(data)
