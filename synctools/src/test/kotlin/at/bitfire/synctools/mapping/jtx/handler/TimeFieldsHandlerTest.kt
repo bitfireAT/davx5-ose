@@ -6,6 +6,7 @@ package at.bitfire.synctools.mapping.jtx.handler
 
 import android.content.ContentValues
 import android.content.Entity
+import androidx.core.content.contentValuesOf
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
 import at.bitfire.synctools.icalendar.dtEnd
@@ -13,6 +14,7 @@ import at.bitfire.synctools.icalendar.dtStart
 import at.bitfire.synctools.icalendar.due
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.mapping.jtx.builder.TimeFieldsBuilder
+import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VToDo
@@ -24,6 +26,7 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.time.Instant
 import java.time.temporal.Temporal
 import kotlin.jvm.optionals.getOrNull
 
@@ -110,6 +113,23 @@ class TimeFieldsHandlerTest {
 
         assertEquals(original.dtStart<Temporal>(), result.dtStart<Temporal>())
         assertEquals(original.due<Temporal>(), result.due<Temporal>())
+    }
+
+    @Test
+    fun `DTSTART with invalid timezone falls back to UTC`() {
+        val epochMillis = 1779105600000L  // 2026-05-18T12:00:00Z
+        val input = Entity(
+            contentValuesOf(
+                JtxContract.JtxICalObject.DTSTART to epochMillis,
+                JtxContract.JtxICalObject.DTSTART_TIMEZONE to "Invalid/Timezone"
+            )
+        )
+        val output = VToDo()
+
+        handler.process(from = input, main = input, to = output)
+
+        // Invalid timezone must be ignored and interpreted as UTC
+        assertEquals(DtStart(Instant.ofEpochMilli(epochMillis)), output.dtStart<Temporal>())
     }
 
     @Test
