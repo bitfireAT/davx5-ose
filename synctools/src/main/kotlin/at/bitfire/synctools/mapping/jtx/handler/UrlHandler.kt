@@ -5,7 +5,6 @@
 package at.bitfire.synctools.mapping.jtx.handler
 
 import android.content.Entity
-import at.bitfire.synctools.exception.InvalidLocalResourceException
 import at.bitfire.synctools.icalendar.plusAssign
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.CalendarComponent
@@ -18,8 +17,8 @@ class UrlHandler : JtxObjectEntityHandler {
         from.entityValues.getAsString(JtxContract.JtxICalObject.URL)?.let { url ->
             try {
                 to += Url(URI(url))
-            } catch (e: URISyntaxException) {
-                throw InvalidLocalResourceException("Got an invalid URL: $url", e)
+            } catch (_: URISyntaxException) {
+                // Invalid URLs are just ignored
             }
         }
     }

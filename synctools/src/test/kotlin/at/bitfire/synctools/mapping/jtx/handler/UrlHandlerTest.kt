@@ -7,13 +7,11 @@ package at.bitfire.synctools.mapping.jtx.handler
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.synctools.exception.InvalidLocalResourceException
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Url
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -45,12 +43,12 @@ class UrlHandlerTest {
     }
 
     @Test
-    fun `URL with invalid value throws InvalidLocalResourceException`() {
+    fun `URL with invalid value is ignored`() {
         val input = Entity(contentValuesOf(JtxContract.JtxICalObject.URL to "not a valid uri ://"))
         val output = VToDo()
 
-        assertThrows(InvalidLocalResourceException::class.java) {
-            handler.process(from = input, main = input, to = output)
-        }
+        handler.process(from = input, main = input, to = output)
+
+        assertNull(output.url)
     }
 }
