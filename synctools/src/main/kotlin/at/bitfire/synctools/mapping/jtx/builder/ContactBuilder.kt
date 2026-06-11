@@ -12,7 +12,7 @@ import kotlin.jvm.optionals.getOrNull
 
 class ContactBuilder : JtxObjectEntityBuilder {
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
-        val contact = from.getProperty<Contact>(Contact.CONTACT)?.getOrNull()?.value
+        val contact = from.getProperty<Contact>(Contact.CONTACT).getOrNull()?.value
         to.entityValues.put(JtxContract.JtxICalObject.CONTACT, contact)
     }
 }
