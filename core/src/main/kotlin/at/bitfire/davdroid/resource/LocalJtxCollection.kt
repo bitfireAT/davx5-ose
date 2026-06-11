@@ -51,20 +51,20 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         jtxCollection.countJtxObjects(null, null)
 
     override fun countDeleted(): Int =
-        jtxCollection.countJtxObjects("${JtxICalObject.DELETED}", null)
+        jtxCollection.countJtxObjects(JtxICalObject.DELETED, null)
 
     override fun countModified(): Int =
         jtxCollection.countJtxObjects("${JtxICalObject.DIRTY} AND NOT ${JtxICalObject.DELETED}", null)
 
     override fun findDeleted(): List<LocalJtxICalObject> = buildList {
-        JtxRecurringCollection(jtxCollection).iterateJtxObjectAndExceptions(JtxICalObject.DELETED, null) { objectAndExceptions ->
-            add(LocalJtxICalObject(jtxCollection, objectAndExceptions.main.entityValues))
+        JtxRecurringCollection(jtxCollection).iterateJtxObjectAndExceptions(JtxICalObject.DELETED, null) {
+            add(LocalJtxICalObject(jtxCollection, it.main.entityValues))
         }
     }
 
     override fun findDirty(): List<LocalJtxICalObject> = buildList {
-        JtxRecurringCollection(jtxCollection).iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) { objectAndExceptions ->
-            add(LocalJtxICalObject(jtxCollection, objectAndExceptions.main.entityValues))
+        JtxRecurringCollection(jtxCollection).iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) {
+            add(LocalJtxICalObject(jtxCollection, it.main.entityValues))
         }
     }
 
@@ -93,17 +93,14 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     override fun removeNotDirtyMarked(flags: Int): Int {
         val recurringCollection = JtxRecurringCollection(jtxCollection)
         val batch = JtxBatchOperation(jtxCollection.client)
-        var count = 0
         recurringCollection.iterateJtxObjectAndExceptions(
             "NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=?",
             arrayOf(flags.toString())
         ) { objectAndExceptions ->
             val id = objectAndExceptions.main.entityValues.getAsLong(JtxICalObject.ID)!!
             recurringCollection.deleteJtxObjectAndExceptions(id, batch)
-            count++
         }
-        batch.commit()
-        return count
+        return batch.commit()
     }
 
     override fun forgetETags() {
