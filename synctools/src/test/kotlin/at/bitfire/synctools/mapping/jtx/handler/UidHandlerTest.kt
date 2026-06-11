@@ -18,9 +18,9 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.jvm.optionals.getOrNull
 
 @RunWith(RobolectricTestRunner::class)
-class UIDHandlerTest {
+class UidHandlerTest {
 
-    private val handler = UIDHandler()
+    private val handler = UidHandler()
 
     @Test
     fun `No UID`() {

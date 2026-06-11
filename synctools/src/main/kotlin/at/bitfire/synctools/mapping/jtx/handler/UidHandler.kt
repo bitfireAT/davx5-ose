@@ -10,7 +10,7 @@ import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.property.Uid
 
-class UIDHandler : JtxObjectEntityHandler {
+class UidHandler : JtxObjectEntityHandler {
     override fun process(from: Entity, main: Entity, to: CalendarComponent) {
         from.entityValues.getAsString(JtxContract.JtxICalObject.UID)?.let { uid ->
             to += Uid(uid)
