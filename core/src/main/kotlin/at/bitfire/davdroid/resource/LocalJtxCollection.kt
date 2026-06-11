@@ -5,9 +5,9 @@
 package at.bitfire.davdroid.resource
 
 import androidx.core.content.contentValuesOf
-import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.jtx.JtxBatchOperation
 import at.bitfire.synctools.storage.jtx.JtxCollection
+import at.bitfire.synctools.storage.jtx.JtxRecurringCollection
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject
 
@@ -57,27 +57,22 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         jtxCollection.countJtxObjects("${JtxICalObject.DIRTY} AND NOT ${JtxICalObject.DELETED}", null)
 
     override fun findDeleted(): List<LocalJtxICalObject> = buildList {
-        jtxCollection.iterateJtxObjectRows(
-            null,
-            "${JtxICalObject.DELETED} AND ${JtxICalObject.RECURID} IS NULL",
-            null
-        ) { add(LocalJtxICalObject(jtxCollection, it)) }
+        JtxRecurringCollection(jtxCollection).iterateJtxObjectAndExceptions(JtxICalObject.DELETED, null) { objectAndExceptions ->
+            add(LocalJtxICalObject(jtxCollection, objectAndExceptions.main.entityValues))
+        }
     }
 
     override fun findDirty(): List<LocalJtxICalObject> = buildList {
-        jtxCollection.iterateJtxObjectRows(
-            null,
-            "${JtxICalObject.DIRTY} AND ${JtxICalObject.RECURID} IS NULL",
-            null
-        ) { add(LocalJtxICalObject(jtxCollection, it)) }
+        JtxRecurringCollection(jtxCollection).iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) { objectAndExceptions ->
+            add(LocalJtxICalObject(jtxCollection, objectAndExceptions.main.entityValues))
+        }
     }
 
     override fun findByName(name: String): LocalJtxICalObject? =
-        jtxCollection.findJtxObjectRow(
-            null,
-            "${JtxICalObject.FILENAME}=? AND ${JtxICalObject.RECURID} IS NULL",
-            arrayOf(name)
-        )?.let { LocalJtxICalObject(jtxCollection, it) }
+        JtxRecurringCollection(jtxCollection)
+            .findJtxObjectAndExceptions("${JtxICalObject.FILENAME}=?", arrayOf(name))
+            ?.main?.entityValues
+            ?.let { LocalJtxICalObject(jtxCollection, it) }
 
     /**
      * Finds and returns a recurrence instance of a [LocalJtxICalObject]
@@ -86,11 +81,8 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
      * @return LocalJtxICalObject or null if none or multiple entries found
      */
     fun findRecurInstance(uid: String, recurid: String): LocalJtxICalObject? =
-        jtxCollection.findJtxObjectRow(
-            null,
-            "${JtxICalObject.UID}=? AND ${JtxICalObject.RECURID}=?",
-            arrayOf(uid, recurid)
-        )?.let { LocalJtxICalObject(jtxCollection, it) }
+        JtxRecurringCollection(jtxCollection).findExceptionRow(uid, recurid)
+            ?.let { LocalJtxICalObject(jtxCollection, it) }
 
     override fun markNotDirty(flags: Int): Int =
         jtxCollection.updateJtxObjectRows(
@@ -99,22 +91,19 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         )
 
     override fun removeNotDirtyMarked(flags: Int): Int {
+        val recurringCollection = JtxRecurringCollection(jtxCollection)
         val batch = JtxBatchOperation(jtxCollection.client)
-        jtxCollection.iterateJtxObjectRows(
-            arrayOf(JtxICalObject.ID, JtxICalObject.UID),
-            "NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=? AND ${JtxICalObject.RECURID} IS NULL",
+        var count = 0
+        recurringCollection.iterateJtxObjectAndExceptions(
+            "NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=?",
             arrayOf(flags.toString())
-        ) { values ->
-            val id = values.getAsLong(JtxICalObject.ID)!!
-            val uid = values.getAsString(JtxICalObject.UID)!!
-            batch += CpoBuilder
-                .newDelete(jtxCollection.jtxObjectsUri)
-                .withSelection(
-                    "${JtxICalObject.ID}=? OR (${JtxICalObject.UID}=? AND ${JtxICalObject.RECURID} IS NOT NULL)",
-                    arrayOf(id.toString(), uid)
-                )
+        ) { objectAndExceptions ->
+            val id = objectAndExceptions.main.entityValues.getAsLong(JtxICalObject.ID)!!
+            recurringCollection.deleteJtxObjectAndExceptions(id, batch)
+            count++
         }
-        return batch.commit()
+        batch.commit()
+        return count
     }
 
     override fun forgetETags() {
