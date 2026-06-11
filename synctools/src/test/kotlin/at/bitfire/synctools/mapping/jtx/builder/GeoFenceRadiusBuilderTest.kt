@@ -35,13 +35,25 @@ class GeoFenceRadiusBuilderTest {
     }
 
     @Test
-    fun `X-GEOFENCE-RADIUS stores value as String`() {
+    fun `X-GEOFENCE-RADIUS valid value`() {
         val task = VToDo(propertyListOf(XProperty(JtxICalObject.X_PROP_GEOFENCE_RADIUS, "500")))
         val main = VToDo()
         val output = Entity(ContentValues())
 
         builder.build(from = task, main = main, to = output)
 
-        assertEquals("500", output.entityValues.getAsString(JtxContract.JtxICalObject.GEOFENCE_RADIUS))
+        assertEquals("500", output.entityValues.getAsInteger(JtxContract.JtxICalObject.GEOFENCE_RADIUS))
+    }
+
+    @Test
+    fun `X-GEOFENCE-RADIUS invalid value`() {
+        val task = VToDo(propertyListOf(XProperty(JtxICalObject.X_PROP_GEOFENCE_RADIUS, "abc")))
+        val main = VToDo()
+        val output = Entity(ContentValues())
+
+        builder.build(from = task, main = main, to = output)
+
+        assertTrue(output.entityValues.containsKey(JtxContract.JtxICalObject.GEOFENCE_RADIUS))
+        assertNull(output.entityValues.get(JtxContract.JtxICalObject.GEOFENCE_RADIUS))
     }
 }

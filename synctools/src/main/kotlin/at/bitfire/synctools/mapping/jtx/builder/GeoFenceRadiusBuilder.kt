@@ -14,6 +14,6 @@ import kotlin.jvm.optionals.getOrNull
 class GeoFenceRadiusBuilder : JtxObjectEntityBuilder {
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
         val geoFenceRadius = from.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull()
-        to.entityValues.put(JtxContract.JtxICalObject.GEOFENCE_RADIUS, geoFenceRadius?.value)
+        to.entityValues.put(JtxContract.JtxICalObject.GEOFENCE_RADIUS, geoFenceRadius?.value?.toIntOrNull())
     }
 }
