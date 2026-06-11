@@ -42,7 +42,7 @@ class GeoFenceRadiusBuilderTest {
 
         builder.build(from = task, main = main, to = output)
 
-        assertEquals("500", output.entityValues.getAsInteger(JtxContract.JtxICalObject.GEOFENCE_RADIUS))
+        assertEquals(500, output.entityValues.getAsInteger(JtxContract.JtxICalObject.GEOFENCE_RADIUS))
     }
 
     @Test
