@@ -99,10 +99,10 @@ class SequenceUpdaterTest {
         )
         val result = sequenceUpdater.increaseSequence(main)
 
-        // SEQUENCE column is increased to 2 for mapping, ...
-        Assert.assertEquals(2, main.entityValues.getAsInteger(EventsContract.COLUMN_SEQUENCE))
-        // ... and increased after upload.
-        Assert.assertEquals(2, result)
+        // Non-group scheduled event – SEQUENCE column is not touched and thus remains 1, ...
+        Assert.assertEquals(1, main.entityValues.getAsInteger(EventsContract.COLUMN_SEQUENCE))
+        // ... and is not increased after upload.
+        Assert.assertNull(result)
     }
 
 }

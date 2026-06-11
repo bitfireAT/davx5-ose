@@ -49,22 +49,14 @@ class SequenceUpdater {
                 (currentSeq + 1).also { newSeq ->
                     mainValues.put(EventsContract.COLUMN_SEQUENCE, newSeq)
                 }
-            } else
-            /* Upload of a group-scheduled event and we are not the organizer, so we don't increase the SEQUENCE. */
-                null
-
-        } else /* not group-scheduled */  {
-            return if (currentSeq == 0) {
-                /* The event was uploaded once and has SEQUENCE of 0 (which is mapped to an empty SEQUENCE property).
-                We don't need to increase the SEQUENCE because the event is not group-scheduled. */
-                null
             } else {
-                /* Upload of a non-group-scheduled event where a SEQUENCE > 0 is present. Increase by one after upload.
-                We also have to store it into the Entity so that the new value will be mapped. */
-                (currentSeq + 1).also { newSeq ->
-                    mainValues.put(EventsContract.COLUMN_SEQUENCE, newSeq)
-                }
+                /* Upload of a group-scheduled event and we are not the organizer, so we don't increase the SEQUENCE. */
+                null
             }
+
+        } else /* not group-scheduled */ {
+            // SEQUENCE is not emitted for non-group-scheduled events, no need to increase.
+            return null
         }
     }
 
