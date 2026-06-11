@@ -12,6 +12,7 @@ import net.fortuna.ical4j.model.property.Geo
 import net.fortuna.ical4j.model.property.XProperty
 import kotlin.jvm.optionals.getOrNull
 
+/** Includes `GEO_LAT`, `GEO_LONG` and `GEOFENCE_RADIUS`. */
 class GeoBuilder : JtxObjectEntityBuilder {
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
         val geo = from.getProperty<Geo>(Geo.GEO).getOrNull()
