@@ -40,7 +40,7 @@ class GeoFenceRadiusHandlerTest {
 
         handler.process(from = input, main = input, to = output)
 
-        assertNotNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull())
+        assertNotNull("500", output.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull()?.value)
     }
 
     @Test
