@@ -40,7 +40,7 @@ class SequenceHandlerTest {
     }
 
     @Test
-    fun `Non-group-scheduled event, sequence is 1`() {
+    fun `Sequence is 1 (non-group-scheduled event)`() {
         val entity = Entity(
             contentValuesOf(
                 EventsContract.COLUMN_SEQUENCE to 1
@@ -52,7 +52,7 @@ class SequenceHandlerTest {
     }
 
     @Test
-    fun `Group-scheduled event, sequence is 1`() {
+    fun `Sequence is 1 (group-scheduled event)`() {
         val entity = Entity(contentValuesOf(
             EventsContract.COLUMN_SEQUENCE to 1
         )
