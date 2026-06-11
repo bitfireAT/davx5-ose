@@ -4,9 +4,9 @@
 
 package at.bitfire.davdroid.resource
 
-import android.os.RemoteException
 import androidx.core.content.contentValuesOf
-import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
+import at.bitfire.synctools.storage.jtx.JtxBatchOperation
 import at.bitfire.synctools.storage.jtx.JtxCollection
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject
@@ -98,16 +98,24 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
             "NOT ${JtxICalObject.DIRTY}", null
         )
 
-    override fun removeNotDirtyMarked(flags: Int): Int =
-        try {
-            jtxCollection.client.delete(
-                jtxCollection.jtxObjectsUri,
-                "${JtxICalObject.ICALOBJECT_COLLECTIONID}=? AND NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=?",
-                arrayOf(jtxCollection.id.toString(), flags.toString())
-            )
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't remove not-dirty-marked jtx objects", e)
+    override fun removeNotDirtyMarked(flags: Int): Int {
+        val batch = JtxBatchOperation(jtxCollection.client)
+        jtxCollection.iterateJtxObjectRows(
+            arrayOf(JtxICalObject.ID, JtxICalObject.UID),
+            "NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=? AND ${JtxICalObject.RECURID} IS NULL",
+            arrayOf(flags.toString())
+        ) { values ->
+            val id = values.getAsLong(JtxICalObject.ID)!!
+            val uid = values.getAsString(JtxICalObject.UID)!!
+            batch += CpoBuilder
+                .newDelete(jtxCollection.jtxObjectsUri)
+                .withSelection(
+                    "${JtxICalObject.ID}=? OR (${JtxICalObject.UID}=? AND ${JtxICalObject.RECURID} IS NOT NULL)",
+                    arrayOf(id.toString(), uid)
+                )
         }
+        return batch.commit()
+    }
 
     override fun forgetETags() {
         jtxCollection.updateJtxObjectRows(contentValuesOf(JtxICalObject.ETAG to null), null, null)
