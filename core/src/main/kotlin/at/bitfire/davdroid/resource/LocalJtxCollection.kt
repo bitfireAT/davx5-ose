@@ -51,27 +51,24 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         jtxCollection.countJtxObjects(null, null)
 
     override fun countDeleted(): Int =
-        jtxCollection.countJtxObjects("${JtxICalObject.DELETED}=?", arrayOf("1"))
+        jtxCollection.countJtxObjects("${JtxICalObject.DELETED}", null)
 
     override fun countModified(): Int =
-        jtxCollection.countJtxObjects(
-            "${JtxICalObject.DIRTY}=? AND NOT ${JtxICalObject.DELETED}",
-            arrayOf("1")
-        )
+        jtxCollection.countJtxObjects("${JtxICalObject.DIRTY} AND NOT ${JtxICalObject.DELETED}", null)
 
     override fun findDeleted(): List<LocalJtxICalObject> = buildList {
         jtxCollection.iterateJtxObjectRows(
             null,
-            "${JtxICalObject.DELETED}=? AND ${JtxICalObject.RECURID} IS NULL",
-            arrayOf("1")
+            "${JtxICalObject.DELETED} AND ${JtxICalObject.RECURID} IS NULL",
+            null
         ) { add(LocalJtxICalObject(jtxCollection, it)) }
     }
 
     override fun findDirty(): List<LocalJtxICalObject> = buildList {
         jtxCollection.iterateJtxObjectRows(
             null,
-            "${JtxICalObject.DIRTY}=? AND ${JtxICalObject.RECURID} IS NULL",
-            arrayOf("1")
+            "${JtxICalObject.DIRTY} AND ${JtxICalObject.RECURID} IS NULL",
+            null
         ) { add(LocalJtxICalObject(jtxCollection, it)) }
     }
 
@@ -98,15 +95,15 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     override fun markNotDirty(flags: Int): Int =
         jtxCollection.updateJtxObjectRows(
             contentValuesOf(JtxICalObject.FLAGS to flags),
-            "${JtxICalObject.DIRTY}=?", arrayOf("0")
+            "NOT ${JtxICalObject.DIRTY}", null
         )
 
     override fun removeNotDirtyMarked(flags: Int): Int =
         try {
             jtxCollection.client.delete(
                 jtxCollection.jtxObjectsUri,
-                "${JtxICalObject.ICALOBJECT_COLLECTIONID}=? AND ${JtxICalObject.DIRTY}=? AND ${JtxICalObject.FLAGS}=?",
-                arrayOf(jtxCollection.id.toString(), "0", flags.toString())
+                "${JtxICalObject.ICALOBJECT_COLLECTIONID}=? AND NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=?",
+                arrayOf(jtxCollection.id.toString(), flags.toString())
             )
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't remove not-dirty-marked jtx objects", e)
