@@ -4,9 +4,10 @@
 
 package at.bitfire.synctools.icalendar
 
-import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.synctools.BuildConfig
 import at.bitfire.synctools.exception.InvalidICalendarException
+import net.fortuna.ical4j.data.CalendarBuilder
+import net.fortuna.ical4j.data.ParserException
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.ComponentContainer
 import net.fortuna.ical4j.model.ComponentList
@@ -16,14 +17,19 @@ import net.fortuna.ical4j.model.PropertyContainer
 import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VEvent
+import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.DtEnd
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Due
+import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Sequence
 import net.fortuna.ical4j.model.property.Uid
+import java.io.StringReader
 import java.time.temporal.Temporal
+import java.util.logging.Level
+import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -92,4 +98,23 @@ operator fun Property.plusAssign(parameter: Parameter) {
 
 operator fun <T : Component> ComponentContainer<T>.plusAssign(component: T) {
     add<ComponentContainer<T>>(component)
+}
+
+
+fun ProdId.withUserAgents(userAgents: List<String>): ProdId =
+    if (userAgents.isEmpty())
+        this
+    else
+        ProdId(value + " (${userAgents.joinToString(", ")})")
+
+fun timezoneDefToTzId(timezoneDef: String): String? {
+    try {
+        val builder = CalendarBuilder()
+        val cal = builder.build(StringReader(timezoneDef))
+        val timezone = cal.getComponent<VTimeZone>(VTimeZone.VTIMEZONE).getOrNull()
+        timezone?.timeZoneId?.let { return it.value }
+    } catch (e: ParserException) {
+        Logger.getLogger("at.bitfire.synctools.icalendar").log(Level.SEVERE, "Can't understand time zone definition", e)
+    }
+    return null
 }

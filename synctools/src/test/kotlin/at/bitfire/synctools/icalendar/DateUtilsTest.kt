@@ -2,17 +2,15 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android.util
+package at.bitfire.synctools.icalendar
 
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
-import at.bitfire.ical4android.util.DateUtils.isDate
+import at.bitfire.synctools.icalendar.DateUtils.isDate
 import net.fortuna.ical4j.model.property.DateProperty
 import net.fortuna.ical4j.model.property.DtEnd
 import net.fortuna.ical4j.model.property.DtStart
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.temporal.Temporal

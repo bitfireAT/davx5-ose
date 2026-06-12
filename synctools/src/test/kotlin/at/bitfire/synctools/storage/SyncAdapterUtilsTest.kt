@@ -2,18 +2,17 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android.util
+package at.bitfire.synctools.storage
 
 import android.accounts.Account
 import android.net.Uri
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class MiscUtilsTest {
+class SyncAdapterUtilsTest {
 
     @Test
     fun testUriHelper_asSyncAdapter() {

@@ -9,7 +9,7 @@ import android.content.Entity
 import android.provider.CalendarContract.ExtendedProperties
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.UnknownProperty
+import at.bitfire.synctools.storage.UnknownProperty
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Color

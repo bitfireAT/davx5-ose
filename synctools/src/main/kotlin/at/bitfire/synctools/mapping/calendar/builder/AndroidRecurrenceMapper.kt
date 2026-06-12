@@ -4,10 +4,10 @@
 
 package at.bitfire.synctools.mapping.calendar.builder
 
-import at.bitfire.ical4android.util.DateUtils
-import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
+import at.bitfire.synctools.icalendar.DateUtils
 import at.bitfire.synctools.util.AndroidTimeUtils.toInstant
 import at.bitfire.synctools.util.AndroidTimeUtils.toZonedDateTime
+import at.bitfire.synctools.util.TimeApiExtensions.toLocalDate
 import net.fortuna.ical4j.model.Property
 import java.time.LocalDate
 import java.time.ZoneId

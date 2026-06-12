@@ -4,7 +4,7 @@
 
 package at.bitfire.synctools.mapping.tasks.handler
 
-import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
+import at.bitfire.synctools.util.TimeApiExtensions.toLocalDate
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import java.time.Instant
 import java.time.temporal.Temporal

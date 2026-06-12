@@ -2,12 +2,12 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android.util
+package at.bitfire.synctools.util
 
-import at.bitfire.ical4android.util.TimeApiExtensions.abs
-import at.bitfire.ical4android.util.TimeApiExtensions.toDuration
-import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
-import at.bitfire.ical4android.util.TimeApiExtensions.toRfc5545Duration
+import at.bitfire.synctools.util.TimeApiExtensions.abs
+import at.bitfire.synctools.util.TimeApiExtensions.toDuration
+import at.bitfire.synctools.util.TimeApiExtensions.toLocalDate
+import at.bitfire.synctools.util.TimeApiExtensions.toRfc5545Duration
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Test

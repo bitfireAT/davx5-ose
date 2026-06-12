@@ -10,9 +10,8 @@ import android.content.ContentProviderClient
 import android.provider.CalendarContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
-
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.asSyncAdapter
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

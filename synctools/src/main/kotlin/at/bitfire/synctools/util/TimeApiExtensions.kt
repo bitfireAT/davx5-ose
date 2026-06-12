@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android.util
+package at.bitfire.synctools.util
 
 import net.fortuna.ical4j.util.TimeZones
 import java.time.Duration
@@ -32,9 +32,6 @@ object TimeApiExtensions {
 
     /***** Durations *****/
 
-    /**
-     * Returns the absolute (positive) temporal amount.
-     */
     fun TemporalAmount.abs(): TemporalAmount =
         when (this) {
             is Duration ->
@@ -141,11 +138,8 @@ object TimeApiExtensions {
 
     /***** Temporals *****/
 
-    /**
-     * Gets the [LocalDate] part of this [Temporal] instance.
-     */
-    fun Temporal.toLocalDate(): LocalDate {
-        return when (this) {
+    fun Temporal.toLocalDate(): LocalDate =
+        when (this) {
             is LocalDate -> this
             is LocalDateTime -> toLocalDate()
             is OffsetDateTime -> toLocalDate()
@@ -153,6 +147,5 @@ object TimeApiExtensions {
             is Instant -> LocalDate.ofInstant(this, ZoneOffset.UTC)
             else -> error("Unsupported Temporal type: ${this::class.qualifiedName}")
         }
-    }
 
 }
