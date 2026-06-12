@@ -7,11 +7,11 @@ package at.bitfire.synctools.mapping.calendar.builder
 import android.content.Entity
 import android.provider.CalendarContract.Events
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
+import at.bitfire.synctools.icalendar.isAllDay
 import at.bitfire.synctools.icalendar.recurrenceId
 import at.bitfire.synctools.icalendar.requireDtStart
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.bitfire.synctools.util.AndroidTimeUtils.toZonedDateTime
-import at.bitfire.synctools.util.DateUtils
 import at.bitfire.synctools.util.TimeApiExtensions.isDate
 import at.bitfire.synctools.util.TimeApiExtensions.isDateTime
 import net.fortuna.ical4j.model.component.VEvent
@@ -26,7 +26,7 @@ class OriginalInstanceTimeBuilder : AndroidEventEntityBuilder {
         if (from !== main) {
             // only for exceptions
             val originalDtStart = main.requireDtStart<Temporal>()
-            values.put(Events.ORIGINAL_ALL_DAY, if (DateUtils.isDate(originalDtStart)) 1 else 0)
+            values.put(Events.ORIGINAL_ALL_DAY, if (originalDtStart.isAllDay()) 1 else 0)
 
             var recurrenceDate = from.recurrenceId?.normalizedDate()
             val originalDate = originalDtStart.normalizedDate()

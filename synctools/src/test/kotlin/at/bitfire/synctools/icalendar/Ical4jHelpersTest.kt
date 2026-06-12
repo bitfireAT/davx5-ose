@@ -4,8 +4,14 @@
 
 package at.bitfire.synctools.icalendar
 
+import at.bitfire.dateTimeValue
+import at.bitfire.dateValue
+import net.fortuna.ical4j.model.property.DateProperty
+import net.fortuna.ical4j.model.property.DtStart
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class Ical4jHelpersTest {
@@ -54,6 +60,13 @@ class Ical4jHelpersTest {
                         "END:VCALENDAR"
             )
         )
+    }
+
+    @Test
+    fun testIsAllDay_DateProperty() {
+        assertTrue(DtStart(dateValue("20200101")).isAllDay())
+        assertFalse(DtStart(dateTimeValue("20200101T010203Z")).isAllDay())
+        assertFalse((null as DateProperty<*>?).isAllDay())
     }
 
 }

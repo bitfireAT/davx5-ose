@@ -6,7 +6,6 @@ package at.bitfire.synctools.icalendar
 
 import at.bitfire.synctools.BuildConfig
 import at.bitfire.synctools.exception.InvalidICalendarException
-import at.bitfire.synctools.util.DateUtils
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.data.ParserException
 import net.fortuna.ical4j.model.Component
@@ -16,10 +15,12 @@ import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.PropertyContainer
 import net.fortuna.ical4j.model.PropertyList
+import net.fortuna.ical4j.model.TemporalAdapter
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.DateProperty
 import net.fortuna.ical4j.model.property.DtEnd
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Due
@@ -38,6 +39,20 @@ import kotlin.jvm.optionals.getOrNull
  */
 @Suppress("unused")
 const val ical4jVersion = BuildConfig.version_ical4j
+
+
+// DateProperty extensions
+
+/**
+ * Whether this date property represents an all-day date (VALUE=DATE).
+ *
+ * All-day dates use DATE values (not DATE-TIME). Returns `true` if this is a
+ * [DateProperty] with DATE precision (no time component).
+ *
+ * @return `true` if this is a DATE value, `false` if it's a DATE-TIME value or null.
+ */
+fun DateProperty<*>?.isAllDay(): Boolean =
+    this != null && !TemporalAdapter.isDateTimePrecision(date)
 
 
 // component access helpers
@@ -81,8 +96,8 @@ fun <T: Temporal> VEvent.requireDtStart(): DtStart<T> =
  * - both DTSTART and DUE are absent.
  */
 fun VToDo.isAllDay(): Boolean =
-    dtStart<Temporal>()?.let { DateUtils.isDate(it) }
-        ?: due<Temporal>()?.let { DateUtils.isDate(it) }
+    dtStart<Temporal>()?.isAllDay()
+        ?: due<Temporal>()?.isAllDay()
         ?: true
 
 operator fun PropertyContainer.plusAssign(property: Property) {
