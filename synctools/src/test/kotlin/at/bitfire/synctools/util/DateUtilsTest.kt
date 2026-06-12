@@ -13,7 +13,6 @@ import net.fortuna.ical4j.model.property.DtStart
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.time.temporal.Temporal
 
 class DateUtilsTest {
 
@@ -29,20 +28,6 @@ class DateUtilsTest {
         assertFalse(DateUtils.isDateTime(DtEnd(dateValue("20200101"))))
         assertTrue(DateUtils.isDateTime(DtEnd(dateTimeValue("20200101T010203Z"))))
         assertFalse(DateUtils.isDateTime(null as DateProperty<*>?))
-    }
-
-    @Test
-    fun isDate_Temporal() {
-        assertTrue(isDate(dateValue("20200101")))
-        assertFalse(isDate(dateTimeValue("20200101T010203Z")))
-        assertFalse(isDate(null as Temporal?))
-    }
-
-    @Test
-    fun isDateTime_Temporal() {
-        assertFalse(DateUtils.isDateTime(dateValue("20200101")))
-        assertTrue(DateUtils.isDateTime(dateTimeValue("20200101T010203Z")))
-        assertFalse(DateUtils.isDateTime(null as Temporal?))
     }
 
 }

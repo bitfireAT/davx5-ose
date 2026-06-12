@@ -4,6 +4,7 @@
 
 package at.bitfire.synctools.util
 
+import net.fortuna.ical4j.model.TemporalAdapter
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -27,6 +28,10 @@ object TimeApiExtensions {
     private const val SECONDS_PER_WEEK = SECONDS_PER_DAY * DAYS_PER_WEEK
 
     // Temporal extensions
+
+    fun Temporal?.isDate(): Boolean = this != null && !TemporalAdapter.isDateTimePrecision(this)
+
+    fun Temporal?.isDateTime(): Boolean = this != null && TemporalAdapter.isDateTimePrecision(this)
 
     fun Temporal.toLocalDate(): LocalDate =
         when (this) {

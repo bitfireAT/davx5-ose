@@ -12,6 +12,8 @@ import at.bitfire.synctools.icalendar.requireDtStart
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.bitfire.synctools.util.AndroidTimeUtils.toZonedDateTime
 import at.bitfire.synctools.util.DateUtils
+import at.bitfire.synctools.util.TimeApiExtensions.isDate
+import at.bitfire.synctools.util.TimeApiExtensions.isDateTime
 import net.fortuna.ical4j.model.component.VEvent
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -30,11 +32,11 @@ class OriginalInstanceTimeBuilder : AndroidEventEntityBuilder {
             val originalDate = originalDtStart.normalizedDate()
 
             // rewrite recurrenceDate, if necessary
-            if (DateUtils.isDateTime(recurrenceDate) && DateUtils.isDate(originalDate)) {
+            if (recurrenceDate.isDateTime() && originalDate.isDate()) {
                 // rewrite RECURRENCE-ID;VALUE=DATE-TIME to VALUE=DATE for all-day events
                 recurrenceDate = recurrenceDate!!.toZonedDateTime().toLocalDate()
 
-            } else if (recurrenceDate is LocalDate && DateUtils.isDateTime(originalDate)) {
+            } else if (recurrenceDate is LocalDate && originalDate.isDateTime()) {
                 // rewrite RECURRENCE-ID;VALUE=DATE to VALUE=DATE-TIME for non-all-day-events
                 // guess time and time zone from DTSTART
                 val zonedDateTime = originalDate.toZonedDateTime()

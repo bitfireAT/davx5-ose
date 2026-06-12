@@ -12,8 +12,8 @@ import at.bitfire.synctools.icalendar.requireDtStart
 import at.bitfire.synctools.util.AndroidTimeUtils.androidTimezoneId
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.bitfire.synctools.util.AndroidTimeUtils.toZonedDateTime
-import at.bitfire.synctools.util.DateUtils
 import at.bitfire.synctools.util.TimeApiExtensions.abs
+import at.bitfire.synctools.util.TimeApiExtensions.isDate
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.RDate
@@ -86,7 +86,7 @@ class EndTimeBuilder : AndroidEventEntityBuilder {
     internal fun alignWithDtStart(endDate: Temporal, startDate: Temporal): Temporal {
         return if (endDate is LocalDate) {
             // DTEND is DATE
-            if (DateUtils.isDate(startDate)) {
+            if (startDate.isDate()) {
                 // DTEND is DATE, DTSTART is DATE
                 endDate
             } else {
@@ -101,7 +101,7 @@ class EndTimeBuilder : AndroidEventEntityBuilder {
             }
         } else {
             // DTEND is DATE-TIME
-            if (DateUtils.isDate(startDate)) {
+            if (startDate.isDate()) {
                 // DTEND is DATE-TIME, DTSTART is DATE → only take date part
                 endDate.toZonedDateTime().toLocalDate()
             } else {
@@ -126,7 +126,7 @@ class EndTimeBuilder : AndroidEventEntityBuilder {
 
         val dur = duration.abs()   // always take positive temporal amount
 
-        return if (DateUtils.isDate(startDate)) {
+        return if (startDate.isDate()) {
             // DTSTART is DATE
             when (dur) {
                 is Period -> {

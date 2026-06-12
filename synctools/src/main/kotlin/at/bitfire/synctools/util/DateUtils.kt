@@ -6,7 +6,6 @@ package at.bitfire.synctools.util
 
 import net.fortuna.ical4j.model.TemporalAdapter
 import net.fortuna.ical4j.model.property.DateProperty
-import java.time.temporal.Temporal
 
 object DateUtils {
 
@@ -15,11 +14,5 @@ object DateUtils {
 
     fun isDateTime(date: DateProperty<*>?): Boolean =
         date != null && TemporalAdapter.isDateTimePrecision(date.date)
-
-    fun isDate(date: Temporal?): Boolean =
-        date != null && !TemporalAdapter.isDateTimePrecision(date)
-
-    fun isDateTime(date: Temporal?): Boolean =
-        date != null && TemporalAdapter.isDateTimePrecision(date)
 
 }
