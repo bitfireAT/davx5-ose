@@ -23,14 +23,15 @@ class OrganizerBuilder : JtxObjectEntityBuilder {
         val organizer = from.getProperty<Organizer>(Property.ORGANIZER).getOrNull()
         if (organizer != null) {
             val organizerValues = buildOrganizer(organizer)
-            // Only add organizer if caladdress exists (otherwise an empty ORGANIZER is created)
-            if (organizerValues.getAsString(JtxContract.JtxOrganizer.CALADDRESS)?.isNotEmpty() == true)
+            if (organizerValues != null)
                 to.addSubValue(JtxContract.JtxOrganizer.CONTENT_URI, organizerValues)
         }
     }
 
-    private fun buildOrganizer(organizer: Organizer): ContentValues {
-        val calAddress = organizer.calAddress?.toString()
+    private fun buildOrganizer(organizer: Organizer): ContentValues? {
+        // Only add organizer if caladdress exists (otherwise an empty ORGANIZER is created)
+        val calAddress = organizer.calAddress?.toString() ?: return null
+
         val cn = organizer.getParameter<Cn>(Parameter.CN).getOrNull()?.value
         val dir = organizer.getParameter<Dir>(Parameter.DIR).getOrNull()?.value
         val sentBy = organizer.getParameter<SentBy>(Parameter.SENT_BY).getOrNull()?.value
