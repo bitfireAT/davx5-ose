@@ -8,7 +8,7 @@ import android.accounts.Account
 import android.content.ContentResolver
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

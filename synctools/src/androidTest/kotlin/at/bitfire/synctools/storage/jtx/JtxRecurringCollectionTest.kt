@@ -10,8 +10,8 @@ import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.bitfire.synctools.test.assertJtxObjectAndExceptionsEqual
 import at.bitfire.synctools.test.withJtxId
@@ -39,7 +39,7 @@ class JtxRecurringCollectionTest {
 
         @JvmField
         @ClassRule
-        val permissionRule = GrantPermissionOrSkipRule(TaskProvider.PERMISSIONS_JTX.toSet())
+        val permissionRule = GrantPermissionOrSkipRule(TaskProvider.ProviderName.JtxBoard.permissions.toSet())
 
         private val testAccount = Account(
             JtxRecurringCollectionTest::class.java.name,

@@ -37,6 +37,10 @@ class JtxObjectBuilder(
     flags: Int
 ) {
 
+    /* Note: the storage layer (JtxCollection) doesn't read/write all sub-rows,
+    but only those defined in JtxCollection.SUB_VALUE_URIS – so all sub-rows
+    that are supported by builders/handlers should also be present there. */
+
     private val entityBuilders: Array<JtxObjectEntityBuilder> = arrayOf(
         CollectionIdBuilder(collectionId),
         ComponentBuilder(),

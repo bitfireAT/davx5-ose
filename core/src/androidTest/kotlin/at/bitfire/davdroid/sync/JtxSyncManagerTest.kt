@@ -15,7 +15,7 @@ import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.PermissionUtils
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -60,7 +60,7 @@ class JtxSyncManagerTest {
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule
-    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.PERMISSIONS_JTX.toSet())
+    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.ProviderName.JtxBoard.permissions.toSet())
 
     lateinit var account: Account
 
@@ -73,7 +73,7 @@ class JtxSyncManagerTest {
         hiltRule.inject()
 
         // Check jtxBoard permissions were granted (+jtxBoard is installed); skip test otherwise
-        assumeTrue(PermissionUtils.havePermissions(context, TaskProvider.PERMISSIONS_JTX))
+        assumeTrue(PermissionUtils.havePermissions(context, TaskProvider.ProviderName.JtxBoard.permissions))
 
         // Acquire the jtx content provider
         val providerOrNull = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)
