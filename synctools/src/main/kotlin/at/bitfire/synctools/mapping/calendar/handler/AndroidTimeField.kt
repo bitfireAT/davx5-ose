@@ -9,6 +9,7 @@ import java.time.DateTimeException
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
 import java.time.zone.ZoneRulesException
@@ -18,13 +19,14 @@ import java.time.zone.ZoneRulesException
  * fields into other representations.
  *
  * @param timestamp     value of the Android `DTSTART`/`DTEND` field (timestamp in milliseconds)
- * @param timeZone      value of the respective Android timezone field or `null` for system default time zone
+ * @param timeZone      value of the respective Android timezone field or `null` for system default time zone;
+ *                      ignored for [allDay] events (those are always UTC, see [android.provider.CalendarContract.Events])
  * @param allDay        whether Android `ALL_DAY` field is non-null and not zero
  */
 class AndroidTimeField(
     private val timestamp: Long,
     private val timeZone: String?,
-    private val allDay: Boolean,
+    private val allDay: Boolean
 ) {
 
     /** ID of system default timezone */
@@ -39,8 +41,11 @@ class AndroidTimeField(
     fun toTemporal(): Temporal {
         val instant = Instant.ofEpochMilli(timestamp)
 
-        if (allDay)
-            return LocalDate.ofInstant(instant, ZoneId.of(timeZone ?: defaultTzId))
+        if (allDay) {
+            /* All-day timestamps are always stored as midnight UTC, so we can ignore
+            EVENT_TIMEZONE (and there were actual cases of invalid strings for all-day events). */
+            return LocalDate.ofInstant(instant, ZoneOffset.UTC)
+        }
 
         // non-all-day
         val tzId = timeZone
