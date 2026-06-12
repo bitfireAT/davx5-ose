@@ -19,12 +19,12 @@ class TasksBatchOperationTest(
 
     @Test(expected = LocalStorageException::class)
     fun testTasksProvider_OperationsPerYieldPoint_500_WithoutMax() {
-        val batch = BatchOperation(provider.client, maxOperationsPerYieldPoint = null)
-        val taskList = TestTaskList.create(testAccount, provider)
+        val batch = BatchOperation(provider, maxOperationsPerYieldPoint = null)
+        val taskList = TestTaskList.create(testAccount, providerName, provider)
         try {
             // 500 operations should fail with BatchOperation(maxOperationsPerYieldPoint = null) (max. 499)
             repeat(500) { idx ->
-                batch += BatchOperation.CpoBuilder.newInsert(TaskContract.Tasks.getContentUri(provider.name.authority)!!)
+                batch += BatchOperation.CpoBuilder.newInsert(TaskContract.Tasks.getContentUri(providerName.authority)!!)
                     .withValue(TaskContract.Tasks.LIST_ID, taskList.id)
                     .withValue(TaskContract.Tasks.TITLE, "Task $idx")
             }
@@ -36,12 +36,12 @@ class TasksBatchOperationTest(
 
     @Test
     fun testTasksProvider_OperationsPerYieldPoint_501() {
-        val batch = TasksBatchOperation(provider.client)
-        val taskList = TestTaskList.create(testAccount, provider)
+        val batch = TasksBatchOperation(provider)
+        val taskList = TestTaskList.create(testAccount, providerName, provider)
         try {
             // 501 operations should succeed with ContactsBatchOperation
             repeat(501) { idx ->
-                batch += BatchOperation.CpoBuilder.newInsert(TaskContract.Tasks.getContentUri(provider.name.authority)!!)
+                batch += BatchOperation.CpoBuilder.newInsert(TaskContract.Tasks.getContentUri(providerName.authority)!!)
                     .withValue(TaskContract.Tasks.LIST_ID, taskList.id)
                     .withValue(TaskContract.Tasks.TITLE, "Task $idx")
             }

@@ -32,11 +32,12 @@ class AccountSettingsMigration8 @Inject constructor(
      * SEQUENCE and should not be used for the eTag.
      */
     override fun migrate(account: Account) {
-        TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.use { provider ->
+        val providerName = TaskProvider.ProviderName.OpenTasks
+        TaskProvider.acquireClient(context, providerName)?.use { client ->
             // ETag is now in sync_version instead of sync1
             // UID  is now in _uid         instead of sync2
-            val tasksUri = TaskContract.Tasks.getContentUri(provider.name.authority)!!
-            provider.client.query(
+            val tasksUri = TaskContract.Tasks.getContentUri(providerName.authority)!!
+            client.query(
                 tasksUri.asSyncAdapter(account),
                 arrayOf(TaskContract.Tasks._ID, TaskContract.Tasks.SYNC1, TaskContract.Tasks.SYNC2),
                 "${TaskContract.Tasks.ACCOUNT_TYPE}=? AND ${TaskContract.Tasks.ACCOUNT_NAME}=?",
@@ -52,7 +53,7 @@ class AccountSettingsMigration8 @Inject constructor(
                         TaskContract.Tasks.SYNC2 to null
                     )
                     logger.log(Level.FINE, "Updating task $id", values)
-                    provider.client.update(
+                    client.update(
                         ContentUris.withAppendedId(tasksUri, id).asSyncAdapter(account),
                         values, null, null)
                 }

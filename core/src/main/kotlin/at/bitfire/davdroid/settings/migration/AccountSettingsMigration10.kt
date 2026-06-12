@@ -24,7 +24,6 @@ import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import org.dmfs.tasks.contract.TaskContract
 import javax.inject.Inject
-import kotlin.use
 
 /**
  * Task synchronization now handles alarms, categories, relations and unknown properties.
@@ -37,10 +36,11 @@ class AccountSettingsMigration10 @Inject constructor(
 ): AccountSettingsMigration {
 
     override fun migrate(account: Account) {
-        TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.use { provider ->
-            val tasksUri = TaskContract.Tasks.getContentUri(provider.name.authority)!!.asSyncAdapter(account)
+        val providerName = TaskProvider.ProviderName.OpenTasks
+        TaskProvider.acquireClient(context, providerName)?.use { client ->
+            val tasksUri = TaskContract.Tasks.getContentUri(providerName.authority)!!.asSyncAdapter(account)
             val emptyETag = contentValuesOf(DmfsTasksContract.COLUMN_ETAG to null)
-            provider.client.update(tasksUri, emptyETag, "${TaskContract.Tasks._DIRTY}=0 AND ${TaskContract.Tasks._DELETED}=0", null)
+            client.update(tasksUri, emptyETag, "${TaskContract.Tasks._DIRTY}=0 AND ${TaskContract.Tasks._DELETED}=0", null)
         }
 
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)

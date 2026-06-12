@@ -57,7 +57,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         // - lists in fake non-local accounts are removed by the tasks provider as stale lists
         // The account is created once per class to avoid repeated AccountManager churn while
         // still creating a fresh list for every test method.
-        taskList = TestTaskList.create(testAccount, provider)
+        taskList = TestTaskList.create(testAccount, providerName, provider)
         recurringTaskList = spyk(DmfsRecurringTaskList(taskList))
     }
 

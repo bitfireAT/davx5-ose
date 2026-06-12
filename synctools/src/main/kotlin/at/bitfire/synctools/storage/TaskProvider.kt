@@ -4,12 +4,11 @@
 
 package at.bitfire.synctools.storage
 
-import android.annotation.SuppressLint
 import android.content.ContentProviderClient
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
-import java.io.Closeable
+import com.google.errorprone.annotations.MustBeClosed
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -17,10 +16,7 @@ import java.util.logging.Logger
  * Basic properties of and access to supported task providers on
  * application/content provider level.
  */
-class TaskProvider private constructor(
-    val name: ProviderName,
-    val client: ContentProviderClient
-): Closeable {
+object TaskProvider {
 
     enum class ProviderName(
         val authority: String,
@@ -54,59 +50,51 @@ class TaskProvider private constructor(
     }
 
 
-    companion object {
+    private val logger
+        get() = Logger.getLogger(javaClass.name)
 
-        private val logger
-            get() = Logger.getLogger(TaskProvider::class.java.name)
+    /**
+     * Acquires a content provider client for a given task provider after verifying its version.
+     * The caller is responsible for closing the returned client.
+     *
+     * @param context will be used to acquire the content provider client
+     * @param name task provider to acquire content provider for; `null` to try all supported providers
+     *
+     * @return content provider client for the given task provider (`null` if not available)
+     * @throws [ProviderTooOldException] if the tasks provider is installed, but doesn't meet the minimum version requirement
+     */
+    @MustBeClosed
+    fun acquireClient(context: Context, name: ProviderName? = null): ContentProviderClient? {
+        val providers = name?.let { arrayOf(it) } ?: ProviderName.entries.toTypedArray()
+        for (provider in providers)
+            try {
+                checkVersion(context, provider)
 
-        /**
-         * Acquires a content provider for a given task provider. The content provider will
-         * be released when the TaskProvider is closed with [close].
-         * @param context will be used to acquire the content provider client
-         * @param name task provider to acquire content provider for; *null* to try all supported providers
-         * @return content provider for the given task provider (may be *null*)
-         * @throws [ProviderTooOldException] if the tasks provider is installed, but doesn't meet the minimum version requirement
-         */
-        @SuppressLint("Recycle")
-        fun acquire(context: Context, name: ProviderName? = null): TaskProvider? {
-            val providers =
-                    name?.let { arrayOf(it) }       // provider name given? create array from it
-                    ?: ProviderName.values()        // otherwise, try all providers
-            for (provider in providers)
-                try {
-                    checkVersion(context, provider)
-
-                    val client = context.contentResolver.acquireContentProviderClient(provider.authority)
-                    if (client != null)
-                        return TaskProvider(provider, client)
-                } catch(e: SecurityException) {
-                    logger.log(Level.WARNING, "Not allowed to access task provider", e)
-                } catch(e: PackageManager.NameNotFoundException) {
-                    logger.warning("Package ${provider.packageName} not installed")
-                }
-            return null
-        }
-
-        /**
-         * Checks the version code of an installed tasks provider.
-         * @throws PackageManager.NameNotFoundException if the tasks provider is not installed
-         * @throws [ProviderTooOldException] if the tasks provider is installed, but doesn't meet the minimum version requirement
-         * */
-        fun checkVersion(context: Context, name: ProviderName) {
-            // check whether package is available with required minimum version
-            val info = context.packageManager.getPackageInfo(name.packageName, 0)
-            val installedVersionCode = PackageInfoCompat.getLongVersionCode(info)
-            if (installedVersionCode < name.minVersionCode) {
-                val exception = ProviderTooOldException(name, installedVersionCode, info.versionName)
-                logger.log(Level.WARNING, "Task provider too old", exception)
-                throw exception
+                val client = context.contentResolver.acquireContentProviderClient(provider.authority)
+                if (client != null)
+                    return client
+            } catch (e: SecurityException) {
+                logger.log(Level.WARNING, "Not allowed to access task provider", e)
+            } catch (e: PackageManager.NameNotFoundException) {
+                logger.warning("Package ${provider.packageName} not installed")
             }
-        }
-
+        return null
     }
 
-    override fun close() {
-        client.close()
+    /**
+     * Checks the version code of an installed tasks provider.
+     * @throws PackageManager.NameNotFoundException if the tasks provider is not installed
+     * @throws [ProviderTooOldException] if the tasks provider is installed, but doesn't meet the minimum version requirement
+     * */
+    fun checkVersion(context: Context, name: ProviderName) {
+        // check whether package is available with required minimum version
+        val info = context.packageManager.getPackageInfo(name.packageName, 0)
+        val installedVersionCode = PackageInfoCompat.getLongVersionCode(info)
+        if (installedVersionCode < name.minVersionCode) {
+            val exception = ProviderTooOldException(name, installedVersionCode, info.versionName)
+            logger.log(Level.WARNING, "Task provider too old", exception)
+            throw exception
+        }
     }
 
 
