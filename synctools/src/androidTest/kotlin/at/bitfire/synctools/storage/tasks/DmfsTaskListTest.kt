@@ -33,7 +33,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
         info.put(TaskLists.SYNC_ENABLED, 1)
         info.put(TaskLists.VISIBLE, 1)
 
-        val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider.client, providerName)
+        val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider, providerName)
         return dmfsTaskListProvider.createAndGetTaskList(info)
     }
 

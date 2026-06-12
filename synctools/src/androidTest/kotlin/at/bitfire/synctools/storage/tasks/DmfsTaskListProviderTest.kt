@@ -24,7 +24,7 @@ class DmfsTaskListProviderTest(providerName: TaskProvider.ProviderName) :
 
     private val testAccount = Account(javaClass.name, TaskContract.LOCAL_ACCOUNT_TYPE)
     private val dmfsTaskListProvider by lazy {
-        DmfsTaskListProvider(testAccount, provider.client, providerName)
+        DmfsTaskListProvider(testAccount, provider, providerName)
     }
 
     @Test

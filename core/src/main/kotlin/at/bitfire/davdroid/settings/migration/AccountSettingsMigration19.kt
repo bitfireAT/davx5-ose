@@ -36,8 +36,7 @@ class AccountSettingsMigration19 @Inject constructor(
         val authorities = listOf(
             "at.bitfire.davdroid.addressbooks",
             CalendarContract.AUTHORITY,
-            TaskProvider.ProviderName.entries.map { it.authority }.toTypedArray()
-        )
+        ) + TaskProvider.ProviderName.entries.map { it.authority }
         for (authority in authorities) {
             val oldWorkerName = "periodic-sync $authority ${account.type}/${account.name}"
             workManager.cancelUniqueWork(oldWorkerName)
