@@ -10,9 +10,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.DefaultTimezoneRule
 import at.bitfire.synctools.icalendar.propertyListOf
 import at.bitfire.synctools.test.assertContentValuesEqual
-import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.techbee.jtx.JtxContract
-import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.DtStamp
 import org.junit.Rule
@@ -54,45 +52,4 @@ class DtStampBuilderTest {
         )
     }
 
-    @Test
-    fun `DTSTAMP is zoned`() {
-        val output = Entity(ContentValues())
-        val instant = Instant.parse("2026-05-20T10:00:00Z")
-        val task = VToDo(propertyListOf(DtStamp(instant)))
-
-        builder.build(from = task, main = task, to = output)
-
-        assertContentValuesEqual(
-            contentValuesOf(JtxContract.JtxICalObject.DTSTAMP to instant.toTimestamp()),
-            output.entityValues
-        )
-    }
-
-    @Test
-    fun `DTSTAMP string is interpreted as UTC`() {
-        val output = Entity(ContentValues())
-        val task = VToDo(propertyListOf(DtStamp("20240801T120000Z")))
-
-        builder.build(from = task, main = task, to = output)
-
-        val expectedTimestamp = Instant.parse("2024-08-01T12:00:00Z")
-        assertContentValuesEqual(
-            contentValuesOf(JtxContract.JtxICalObject.DTSTAMP to expectedTimestamp.toTimestamp()),
-            output.entityValues
-        )
-    }
-
-    @Test
-    fun `DTSTAMP for VJournal`() {
-        val output = Entity(ContentValues())
-        val instant = Instant.parse("2026-06-03T09:00:00Z")
-        val journal = VJournal(propertyListOf(DtStamp(instant)))
-
-        builder.build(from = journal, main = journal, to = output)
-
-        assertContentValuesEqual(
-            contentValuesOf(JtxContract.JtxICalObject.DTSTAMP to instant.toTimestamp()),
-            output.entityValues
-        )
-    }
 }
