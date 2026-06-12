@@ -6,13 +6,14 @@ package at.bitfire.synctools.storage.calendar
 
 import android.accounts.Account
 import android.net.Uri
+import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class CalendarUtilsTest {
+class EventsContractTest {
 
     @Test
     fun testUriHelper_asSyncAdapter() {

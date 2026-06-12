@@ -11,6 +11,7 @@ import android.provider.CalendarContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
