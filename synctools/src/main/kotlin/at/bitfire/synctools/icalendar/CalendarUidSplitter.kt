@@ -9,7 +9,7 @@ import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.component.CalendarComponent
 import kotlin.jvm.optionals.getOrNull
 
-class CalendarUidSplitter<T: CalendarComponent> {
+class CalendarUidSplitter<T : CalendarComponent> {
 
     /**
      * Splits iCalendar components by UID and classifies them as
