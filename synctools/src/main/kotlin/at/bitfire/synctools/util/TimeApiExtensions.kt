@@ -4,7 +4,6 @@
 
 package at.bitfire.synctools.util
 
-import net.fortuna.ical4j.util.TimeZones
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -15,8 +14,6 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
 import java.time.temporal.TemporalAmount
-import java.util.Calendar
-import java.util.TimeZone
 
 object TimeApiExtensions {
 
@@ -28,8 +25,6 @@ object TimeApiExtensions {
     const val SECONDS_PER_HOUR = SECONDS_PER_MINUTE * 60
     const val SECONDS_PER_DAY = SECONDS_PER_HOUR * 24
     private const val SECONDS_PER_WEEK = SECONDS_PER_DAY * DAYS_PER_WEEK
-
-    val tzUTC: TimeZone by lazy { TimeZones.getUtcTimeZone() }
 
     // Temporal extensions
 
@@ -75,12 +70,8 @@ object TimeApiExtensions {
         when (this) {
             is Duration -> this
             is Period -> {
-                val calEnd = Calendar.getInstance(tzUTC)
-                calEnd.timeInMillis = position.toEpochMilli()
-                calEnd.add(Calendar.DAY_OF_MONTH, days)
-                calEnd.add(Calendar.MONTH, months)
-                calEnd.add(Calendar.YEAR, years)
-                Duration.ofMillis(calEnd.timeInMillis - position.toEpochMilli())
+                val start = position.atOffset(ZoneOffset.UTC)
+                Duration.between(start, start + this)
             }
             else -> throw IllegalArgumentException("TemporalAmount must be Period or Duration")
         }
