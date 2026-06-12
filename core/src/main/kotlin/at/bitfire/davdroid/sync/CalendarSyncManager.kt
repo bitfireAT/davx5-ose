@@ -28,7 +28,6 @@ import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.synctools.exception.InvalidICalendarException
 import at.bitfire.synctools.exception.InvalidResourceException
 import at.bitfire.synctools.icalendar.CalendarUidSplitter
 import at.bitfire.synctools.icalendar.ICalendarGenerator
@@ -67,7 +66,7 @@ class CalendarSyncManager @AssistedInject constructor(
     accountSettingsFactory: AccountSettings.Factory,
     private val productIds: ProductIds,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
-): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
+) : SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
     httpClient,
     SyncDataType.EVENTS,
