@@ -14,6 +14,8 @@ import androidx.core.content.pm.PackageInfoCompat
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.icalendar.recurrenceId
+import at.bitfire.synctools.storage.jtx.JtxCollection
+import at.bitfire.synctools.storage.jtx.JtxCollectionProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.bitfire.synctools.testProdId
 import at.techbee.jtx.JtxContract
@@ -77,10 +79,7 @@ class JtxICalObjectTest {
         Assume.assumeNotNull(clientOrNull)
         client = clientOrNull!!
 
-        val collectionUri = JtxCollection.create(testAccount, client, cvCollection)
-        assertNotNull(collectionUri)
-        collection = JtxCollection.find(testAccount, client, context, null, null)[0]
-        assertNotNull(collection)
+        collection = JtxCollectionProvider(testAccount, client).createAndGetCollection(cvCollection)
 
         sample = JtxICalObject(collection!!).apply {
             this.summary = "summ"
@@ -128,10 +127,10 @@ class JtxICalObjectTest {
 
     @After
     fun tearDown() {
-        client.close()
         collection?.delete()
-        val collections = JtxCollection.find(testAccount, client, context, null, null)
+        val collections = JtxCollectionProvider(testAccount, client).findCollections()
         assertEquals(0, collections.size)
+        client.close()
     }
 
 
