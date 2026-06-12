@@ -7,8 +7,8 @@ package at.bitfire.davdroid.resource
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxICalObject
+import at.bitfire.synctools.storage.jtx.JtxCollection
 import at.techbee.jtx.JtxContract.JtxICalObject.getViewIntentUriFor
 import com.google.common.base.MoreObjects
 import net.fortuna.ical4j.model.property.ProdId
