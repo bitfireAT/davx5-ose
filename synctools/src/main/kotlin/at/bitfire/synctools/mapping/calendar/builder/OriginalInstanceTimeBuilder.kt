@@ -7,11 +7,11 @@ package at.bitfire.synctools.mapping.calendar.builder
 import android.content.Entity
 import android.provider.CalendarContract.Events
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
-import at.bitfire.synctools.icalendar.DateUtils
 import at.bitfire.synctools.icalendar.recurrenceId
 import at.bitfire.synctools.icalendar.requireDtStart
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.bitfire.synctools.util.AndroidTimeUtils.toZonedDateTime
+import at.bitfire.synctools.util.DateUtils
 import net.fortuna.ical4j.model.component.VEvent
 import java.time.LocalDate
 import java.time.ZonedDateTime

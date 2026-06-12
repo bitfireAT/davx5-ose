@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.synctools.icalendar
+package at.bitfire.synctools.util
 
 import net.fortuna.ical4j.model.TemporalAdapter
 import net.fortuna.ical4j.model.property.DateProperty

@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.synctools.storage
+package at.bitfire.synctools.storage.calendar
 
 import android.accounts.Account
 import android.net.Uri
@@ -12,7 +12,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class SyncAdapterUtilsTest {
+class CalendarUtilsTest {
 
     @Test
     fun testUriHelper_asSyncAdapter() {

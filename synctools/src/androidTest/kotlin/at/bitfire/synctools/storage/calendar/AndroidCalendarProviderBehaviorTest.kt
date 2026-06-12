@@ -14,7 +14,6 @@ import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.storage.LocalStorageException
-import at.bitfire.synctools.storage.asSyncAdapter
 import at.bitfire.synctools.test.assertContentValuesEqual
 import junit.framework.TestCase.assertEquals
 import org.junit.After

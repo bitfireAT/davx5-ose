@@ -6,6 +6,7 @@ package at.bitfire.synctools.icalendar
 
 import at.bitfire.synctools.BuildConfig
 import at.bitfire.synctools.exception.InvalidICalendarException
+import at.bitfire.synctools.util.DateUtils
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.data.ParserException
 import net.fortuna.ical4j.model.Component

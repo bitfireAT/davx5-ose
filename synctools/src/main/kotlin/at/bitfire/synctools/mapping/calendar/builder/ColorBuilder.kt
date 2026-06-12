@@ -8,8 +8,8 @@ import android.content.Entity
 import android.provider.CalendarContract.Colors
 import android.provider.CalendarContract.Events
 import androidx.annotation.VisibleForTesting
-import at.bitfire.synctools.storage.asSyncAdapter
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
+import at.bitfire.synctools.storage.calendar.asSyncAdapter
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Color
 import kotlin.jvm.optionals.getOrNull

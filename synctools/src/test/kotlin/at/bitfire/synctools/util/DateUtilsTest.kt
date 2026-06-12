@@ -2,11 +2,11 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.synctools.icalendar
+package at.bitfire.synctools.util
 
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
-import at.bitfire.synctools.icalendar.DateUtils.isDate
+import at.bitfire.synctools.util.DateUtils.isDate
 import net.fortuna.ical4j.model.property.DateProperty
 import net.fortuna.ical4j.model.property.DtEnd
 import net.fortuna.ical4j.model.property.DtStart

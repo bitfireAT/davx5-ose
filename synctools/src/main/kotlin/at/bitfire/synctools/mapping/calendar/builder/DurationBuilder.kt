@@ -8,10 +8,10 @@ import android.content.Entity
 import android.provider.CalendarContract.Events
 import androidx.annotation.VisibleForTesting
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
-import at.bitfire.synctools.icalendar.DateUtils
 import at.bitfire.synctools.icalendar.requireDtStart
 import at.bitfire.synctools.util.AndroidTimeUtils.toInstant
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
+import at.bitfire.synctools.util.DateUtils
 import at.bitfire.synctools.util.TimeApiExtensions.abs
 import at.bitfire.synctools.util.TimeApiExtensions.toDuration
 import at.bitfire.synctools.util.TimeApiExtensions.toLocalDate

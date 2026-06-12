@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.synctools.storage
+package at.bitfire.synctools.storage.calendar
 
 import android.accounts.Account
 import android.net.Uri

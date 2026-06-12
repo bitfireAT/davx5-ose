@@ -12,7 +12,6 @@ import android.os.RemoteException
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.TaskProvider
-import at.bitfire.synctools.storage.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Tasks

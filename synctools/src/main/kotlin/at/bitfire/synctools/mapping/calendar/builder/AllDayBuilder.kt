@@ -6,8 +6,8 @@ package at.bitfire.synctools.mapping.calendar.builder
 
 import android.content.Entity
 import android.provider.CalendarContract.Events
-import at.bitfire.synctools.icalendar.DateUtils
 import at.bitfire.synctools.icalendar.dtStart
+import at.bitfire.synctools.util.DateUtils
 import net.fortuna.ical4j.model.component.VEvent
 import java.time.temporal.Temporal
 

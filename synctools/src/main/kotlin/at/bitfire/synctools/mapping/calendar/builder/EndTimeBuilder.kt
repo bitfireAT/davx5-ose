@@ -8,11 +8,11 @@ import android.content.Entity
 import android.provider.CalendarContract.Events
 import androidx.annotation.VisibleForTesting
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
-import at.bitfire.synctools.icalendar.DateUtils
 import at.bitfire.synctools.icalendar.requireDtStart
 import at.bitfire.synctools.util.AndroidTimeUtils.androidTimezoneId
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.bitfire.synctools.util.AndroidTimeUtils.toZonedDateTime
+import at.bitfire.synctools.util.DateUtils
 import at.bitfire.synctools.util.TimeApiExtensions.abs
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
