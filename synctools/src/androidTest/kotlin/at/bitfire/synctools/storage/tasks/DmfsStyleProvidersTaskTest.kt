@@ -7,7 +7,7 @@ package at.bitfire.synctools.storage.tasks
 import android.os.Build
 import androidx.annotation.CallSuper
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import org.junit.After
 import org.junit.Assert.assertNotNull

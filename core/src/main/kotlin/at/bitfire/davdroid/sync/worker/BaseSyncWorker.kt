@@ -33,7 +33,7 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_ENTRIES
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_LIST
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
 import at.bitfire.davdroid.ui.NotificationRegistry
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import dagger.Lazy
 import kotlinx.coroutines.delay
 import java.util.Collections

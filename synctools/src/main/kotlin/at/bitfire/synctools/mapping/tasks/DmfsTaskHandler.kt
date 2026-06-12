@@ -6,7 +6,6 @@ package at.bitfire.synctools.mapping.tasks
 
 import android.content.Entity
 import at.bitfire.ical4android.ICalendar.Companion.withUserAgents
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.icalendar.AssociatedTasks
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.mapping.tasks.handler.AlarmsHandler
@@ -33,6 +32,7 @@ import at.bitfire.synctools.mapping.tasks.handler.TitleHandler
 import at.bitfire.synctools.mapping.tasks.handler.UidHandler
 import at.bitfire.synctools.mapping.tasks.handler.UnknownPropertiesHandler
 import at.bitfire.synctools.mapping.tasks.handler.UrlHandler
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.ProdId

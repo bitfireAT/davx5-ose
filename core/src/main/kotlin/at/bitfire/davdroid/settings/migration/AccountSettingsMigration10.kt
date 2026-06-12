@@ -12,7 +12,7 @@ import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Reminders
 import androidx.core.content.ContextCompat
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.Binds

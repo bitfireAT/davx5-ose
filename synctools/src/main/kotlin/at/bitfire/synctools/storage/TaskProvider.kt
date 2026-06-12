@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android
+package at.bitfire.synctools.storage
 
 import android.annotation.SuppressLint
 import android.content.ContentProviderClient
@@ -14,7 +14,10 @@ import java.io.Closeable
 import java.util.logging.Level
 import java.util.logging.Logger
 
-
+/**
+ * Basic properties of and access to supported task providers on
+ * application/content provider level.
+ */
 class TaskProvider private constructor(
     val name: ProviderName,
     val client: ContentProviderClient
@@ -28,18 +31,31 @@ class TaskProvider private constructor(
         private val readPermission: String,
         private val writePermission: String
     ) {
-        JtxBoard("at.techbee.jtx.provider", "at.techbee.jtx", 210000000, "2.10.00", PERMISSION_JTX_READ, PERMISSION_JTX_WRITE),
-        TasksOrg("org.tasks.opentasks", "org.tasks", 100000, "10.0", PERMISSION_TASKS_ORG_READ, PERMISSION_TASKS_ORG_WRITE),
-        OpenTasks("org.dmfs.tasks", "org.dmfs.tasks", 103, "1.1.8.2", PERMISSION_OPENTASKS_READ, PERMISSION_OPENTASKS_WRITE);
 
-        companion object {
-            fun fromAuthority(authority: String): ProviderName {
-                for (provider in values())
-                    if (provider.authority == authority)
-                        return provider
-                throw IllegalArgumentException("Unknown tasks authority $authority")
-            }
-        }
+        JtxBoard(
+            authority = "at.techbee.jtx.provider",
+            packageName = "at.techbee.jtx",
+            minVersionCode = 210000000,
+            minVersionName = "2.10.00",
+            readPermission = PERMISSION_JTX_READ,
+            writePermission = PERMISSION_JTX_WRITE
+        ),
+        TasksOrg(
+            authority = "org.tasks.opentasks",
+            packageName = "org.tasks",
+            minVersionCode = 100000,
+            minVersionName = "10.0",
+            readPermission = PERMISSION_TASKS_ORG_READ,
+            writePermission = PERMISSION_TASKS_ORG_WRITE
+        ),
+        OpenTasks(
+            authority = "org.dmfs.tasks",
+            packageName = "org.dmfs.tasks",
+            minVersionCode = 103,
+            minVersionName = "1.1.8.2",
+            readPermission = PERMISSION_OPENTASKS_READ,
+            writePermission = PERMISSION_OPENTASKS_WRITE
+        );
 
         val permissions: Array<String>
             get() = arrayOf(readPermission, writePermission)
@@ -49,13 +65,7 @@ class TaskProvider private constructor(
     companion object {
 
         private val logger
-            get() = Logger.getLogger(TaskProvider::javaClass.name)
-
-        val TASK_PROVIDERS = listOf(
-                ProviderName.OpenTasks,
-                ProviderName.TasksOrg,
-                ProviderName.JtxBoard
-        )
+            get() = Logger.getLogger(TaskProvider::class.java.name)
 
         const val PERMISSION_OPENTASKS_READ = "org.dmfs.permission.READ_TASKS"
         const val PERMISSION_OPENTASKS_WRITE = "org.dmfs.permission.WRITE_TASKS"
@@ -97,15 +107,6 @@ class TaskProvider private constructor(
             return null
         }
 
-        fun fromProviderClient(
-                context: Context,
-                provider: ProviderName,
-                client: ContentProviderClient
-        ): TaskProvider {
-            checkVersion(context, provider)
-            return TaskProvider(provider, client)
-        }
-
         /**
          * Checks the version code of an installed tasks provider.
          * @throws PackageManager.NameNotFoundException if the tasks provider is not installed
@@ -124,14 +125,7 @@ class TaskProvider private constructor(
 
     }
 
-
-    fun taskListsUri() = TaskContract.TaskLists.getContentUri(name.authority)!!
-    fun syncStateUri() = TaskContract.SyncState.getContentUri(name.authority)!!
-
     fun tasksUri() = TaskContract.Tasks.getContentUri(name.authority)!!
-    fun propertiesUri() = TaskContract.Properties.getContentUri(name.authority)!!
-    fun alarmsUri() = TaskContract.Alarms.getContentUri(name.authority)!!
-    fun categoriesUri() = TaskContract.Categories.getContentUri(name.authority)!!
 
 
     override fun close() {
@@ -140,9 +134,9 @@ class TaskProvider private constructor(
 
 
     class ProviderTooOldException(
-            val provider: ProviderName,
-            installedVersionCode: Long,
-            val installedVersionName: String?
+        val provider: ProviderName,
+        installedVersionCode: Long,
+        val installedVersionName: String?
     ): Exception("Package ${provider.packageName} has version $installedVersionName ($installedVersionCode), " +
             "required: ${provider.minVersionName} (${provider.minVersionCode})")
 

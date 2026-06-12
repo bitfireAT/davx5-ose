@@ -11,7 +11,7 @@ import at.bitfire.davdroid.ui.PermissionsViewModel
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
 import at.bitfire.davdroid.util.PermissionUtils.CONTACT_PERMISSIONS
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

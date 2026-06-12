@@ -9,7 +9,7 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.account.TestAccount
 import at.bitfire.synctools.test.assertEntitiesEqual
 import at.bitfire.synctools.test.assertExceptionsEqual

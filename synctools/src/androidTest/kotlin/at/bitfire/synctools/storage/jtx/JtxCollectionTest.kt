@@ -11,8 +11,8 @@ import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.bitfire.synctools.test.assertEntitiesEqual
 import at.techbee.jtx.JtxContract

@@ -8,7 +8,7 @@ import android.accounts.Account
 import android.content.ContentUris
 import android.content.Context
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.Binds
 import dagger.Module

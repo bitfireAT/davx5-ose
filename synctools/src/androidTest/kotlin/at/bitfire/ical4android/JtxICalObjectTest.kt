@@ -14,6 +14,7 @@ import androidx.core.content.pm.PackageInfoCompat
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.icalendar.recurrenceId
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.jtx.JtxCollection
 import at.bitfire.synctools.storage.jtx.JtxCollectionProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule

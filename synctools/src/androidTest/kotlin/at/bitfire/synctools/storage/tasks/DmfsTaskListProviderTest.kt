@@ -7,7 +7,7 @@ package at.bitfire.synctools.storage.tasks
 import android.accounts.Account
 import android.content.ContentValues
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.plusAssign
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskLists

@@ -9,7 +9,7 @@ import android.content.ContentResolver
 import android.provider.CalendarContract
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
