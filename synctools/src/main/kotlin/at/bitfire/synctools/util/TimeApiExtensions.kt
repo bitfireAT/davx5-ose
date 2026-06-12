@@ -20,6 +20,8 @@ import java.util.TimeZone
 
 object TimeApiExtensions {
 
+    // some constants
+
     const val DAYS_PER_WEEK = 7
 
     const val SECONDS_PER_MINUTE = 60
@@ -29,9 +31,27 @@ object TimeApiExtensions {
 
     val tzUTC: TimeZone by lazy { TimeZones.getUtcTimeZone() }
 
+    // Temporal extensions
 
-    /***** Durations *****/
+    fun Temporal.toLocalDate(): LocalDate =
+        when (this) {
+            is LocalDate -> this
+            is LocalDateTime -> toLocalDate()
+            is OffsetDateTime -> toLocalDate()
+            is ZonedDateTime -> toLocalDate()
+            is Instant -> LocalDate.ofInstant(this, ZoneOffset.UTC)
+            else -> error("Unsupported Temporal type: ${this::class.qualifiedName}")
+        }
 
+    // TemporalAmount extensions
+
+    /**
+     * Returns the absolute value of this temporal amount.
+     * Supported types: [Duration], [Period].
+     *
+     * @return Absolute value of this temporal amount.
+     * @throws IllegalArgumentException if the temporal amount is not a [Duration] or [Period].
+     */
     fun TemporalAmount.abs(): TemporalAmount =
         when (this) {
             is Duration ->
@@ -44,6 +64,13 @@ object TimeApiExtensions {
             else -> throw IllegalArgumentException("TemporalAmount must be Period or Duration")
         }
 
+    /**
+     * Converts a TemporalAmount (Period or Duration) to a Duration relative to a given point in time.
+     *
+     * @param position The reference point in time for the conversion.
+     * @return The resulting Duration.
+     * @throws IllegalArgumentException if the TemporalAmount is neither a Period nor a Duration.
+     */
     fun TemporalAmount.toDuration(position: Instant): Duration =
         when (this) {
             is Duration -> this
@@ -134,18 +161,5 @@ object TimeApiExtensions {
             throw NotImplementedError("Only Duration and Period is supported")
         return builder.toString()
     }
-
-
-    /***** Temporals *****/
-
-    fun Temporal.toLocalDate(): LocalDate =
-        when (this) {
-            is LocalDate -> this
-            is LocalDateTime -> toLocalDate()
-            is OffsetDateTime -> toLocalDate()
-            is ZonedDateTime -> toLocalDate()
-            is Instant -> LocalDate.ofInstant(this, ZoneOffset.UTC)
-            else -> error("Unsupported Temporal type: ${this::class.qualifiedName}")
-        }
 
 }
