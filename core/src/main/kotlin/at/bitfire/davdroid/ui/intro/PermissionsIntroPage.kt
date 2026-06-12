@@ -11,7 +11,7 @@ import at.bitfire.davdroid.ui.PermissionsViewModel
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
 import at.bitfire.davdroid.util.PermissionUtils.CONTACT_PERMISSIONS
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -24,9 +24,9 @@ class PermissionsIntroPage @Inject constructor(
     override fun getShowPolicy(): ShowPolicy {
         // show PermissionsFragment as intro fragment when no permissions are granted
         val permissions = CONTACT_PERMISSIONS + CALENDAR_PERMISSIONS +
-                TaskProvider.PERMISSIONS_JTX +
-                TaskProvider.PERMISSIONS_OPENTASKS +
-                TaskProvider.PERMISSIONS_TASKS_ORG
+                TaskProvider.ProviderName.JtxBoard.permissions +
+                TaskProvider.ProviderName.OpenTasks.permissions +
+                TaskProvider.ProviderName.TasksOrg.permissions
         return if (PermissionUtils.haveAnyPermission(context, permissions))
             ShowPolicy.DONT_SHOW
         else

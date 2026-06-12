@@ -8,7 +8,7 @@ import android.accounts.Account
 import android.content.ContentUris
 import android.content.Context
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.Binds
 import dagger.Module
@@ -32,10 +32,13 @@ class AccountSettingsMigration8 @Inject constructor(
      * SEQUENCE and should not be used for the eTag.
      */
     override fun migrate(account: Account) {
-        TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.use { provider ->
+        val providerName = TaskProvider.ProviderName.OpenTasks
+        TaskProvider.acquireRecentClient(context, providerName)?.use { client ->
             // ETag is now in sync_version instead of sync1
             // UID  is now in _uid         instead of sync2
-            provider.client.query(provider.tasksUri().asSyncAdapter(account),
+            val tasksUri = TaskContract.Tasks.getContentUri(providerName.authority)!!
+            client.query(
+                tasksUri.asSyncAdapter(account),
                 arrayOf(TaskContract.Tasks._ID, TaskContract.Tasks.SYNC1, TaskContract.Tasks.SYNC2),
                 "${TaskContract.Tasks.ACCOUNT_TYPE}=? AND ${TaskContract.Tasks.ACCOUNT_NAME}=?",
                 arrayOf(account.type, account.name), null)!!.use { cursor ->
@@ -50,8 +53,8 @@ class AccountSettingsMigration8 @Inject constructor(
                         TaskContract.Tasks.SYNC2 to null
                     )
                     logger.log(Level.FINE, "Updating task $id", values)
-                    provider.client.update(
-                        ContentUris.withAppendedId(provider.tasksUri(), id).asSyncAdapter(account),
+                    client.update(
+                        ContentUris.withAppendedId(tasksUri, id).asSyncAdapter(account),
                         values, null, null)
                 }
             }

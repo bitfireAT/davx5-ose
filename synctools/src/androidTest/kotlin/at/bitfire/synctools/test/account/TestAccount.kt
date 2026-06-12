@@ -8,7 +8,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.R
 import at.bitfire.synctools.util.AndroidAccountUtils
 import org.junit.Assert.assertTrue

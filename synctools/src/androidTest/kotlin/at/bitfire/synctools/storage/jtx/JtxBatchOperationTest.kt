@@ -8,9 +8,9 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.BuildConfig
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.techbee.jtx.JtxContract
@@ -22,7 +22,7 @@ import org.junit.Test
 class JtxBatchOperationTest {
 
     @get:Rule
-    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.PERMISSIONS_JTX.toSet())
+    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.ProviderName.JtxBoard.permissions.toSet())
 
     private val testAccount = Account(javaClass.name, BuildConfig.APPLICATION_ID)
 

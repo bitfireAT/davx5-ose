@@ -10,7 +10,7 @@ import android.content.ContentValues
 import android.content.Entity
 import android.database.DatabaseUtils
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Property
 import org.dmfs.tasks.contract.TaskContract.TaskLists
@@ -33,7 +33,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
         info.put(TaskLists.SYNC_ENABLED, 1)
         info.put(TaskLists.VISIBLE, 1)
 
-        val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider.client, providerName)
+        val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider, providerName)
         return dmfsTaskListProvider.createAndGetTaskList(info)
     }
 
