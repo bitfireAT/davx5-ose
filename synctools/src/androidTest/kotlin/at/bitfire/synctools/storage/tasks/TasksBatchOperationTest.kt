@@ -24,7 +24,7 @@ class TasksBatchOperationTest(
         try {
             // 500 operations should fail with BatchOperation(maxOperationsPerYieldPoint = null) (max. 499)
             repeat(500) { idx ->
-                batch += BatchOperation.CpoBuilder.newInsert(provider.tasksUri())
+                batch += BatchOperation.CpoBuilder.newInsert(TaskContract.Tasks.getContentUri(provider.name.authority)!!)
                     .withValue(TaskContract.Tasks.LIST_ID, taskList.id)
                     .withValue(TaskContract.Tasks.TITLE, "Task $idx")
             }
@@ -41,7 +41,7 @@ class TasksBatchOperationTest(
         try {
             // 501 operations should succeed with ContactsBatchOperation
             repeat(501) { idx ->
-                batch += BatchOperation.CpoBuilder.newInsert(provider.tasksUri())
+                batch += BatchOperation.CpoBuilder.newInsert(TaskContract.Tasks.getContentUri(provider.name.authority)!!)
                     .withValue(TaskContract.Tasks.LIST_ID, taskList.id)
                     .withValue(TaskContract.Tasks.TITLE, "Task $idx")
             }

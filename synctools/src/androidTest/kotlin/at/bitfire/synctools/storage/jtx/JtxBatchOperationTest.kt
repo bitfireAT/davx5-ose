@@ -22,7 +22,7 @@ import org.junit.Test
 class JtxBatchOperationTest {
 
     @get:Rule
-    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.PERMISSIONS_JTX.toSet())
+    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.ProviderName.JtxBoard.permissions.toSet())
 
     private val testAccount = Account(javaClass.name, BuildConfig.APPLICATION_ID)
 

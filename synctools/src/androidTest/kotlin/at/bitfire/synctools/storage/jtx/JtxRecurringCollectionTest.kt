@@ -39,7 +39,7 @@ class JtxRecurringCollectionTest {
 
         @JvmField
         @ClassRule
-        val permissionRule = GrantPermissionOrSkipRule(TaskProvider.PERMISSIONS_JTX.toSet())
+        val permissionRule = GrantPermissionOrSkipRule(TaskProvider.ProviderName.JtxBoard.permissions.toSet())
 
         private val testAccount = Account(
             JtxRecurringCollectionTest::class.java.name,

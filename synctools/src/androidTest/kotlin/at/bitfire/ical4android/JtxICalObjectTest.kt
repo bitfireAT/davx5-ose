@@ -53,7 +53,7 @@ import kotlin.jvm.optionals.getOrNull
 class JtxICalObjectTest {
 
     @get:Rule
-    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.PERMISSIONS_JTX.toSet())
+    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.ProviderName.JtxBoard.permissions.toSet())
 
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     private lateinit var client: ContentProviderClient

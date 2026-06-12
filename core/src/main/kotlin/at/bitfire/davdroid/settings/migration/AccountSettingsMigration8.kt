@@ -35,7 +35,9 @@ class AccountSettingsMigration8 @Inject constructor(
         TaskProvider.acquire(context, TaskProvider.ProviderName.OpenTasks)?.use { provider ->
             // ETag is now in sync_version instead of sync1
             // UID  is now in _uid         instead of sync2
-            provider.client.query(provider.tasksUri().asSyncAdapter(account),
+            val tasksUri = TaskContract.Tasks.getContentUri(provider.name.authority)!!
+            provider.client.query(
+                tasksUri.asSyncAdapter(account),
                 arrayOf(TaskContract.Tasks._ID, TaskContract.Tasks.SYNC1, TaskContract.Tasks.SYNC2),
                 "${TaskContract.Tasks.ACCOUNT_TYPE}=? AND ${TaskContract.Tasks.ACCOUNT_NAME}=?",
                 arrayOf(account.type, account.name), null)!!.use { cursor ->
@@ -51,7 +53,7 @@ class AccountSettingsMigration8 @Inject constructor(
                     )
                     logger.log(Level.FINE, "Updating task $id", values)
                     provider.client.update(
-                        ContentUris.withAppendedId(provider.tasksUri(), id).asSyncAdapter(account),
+                        ContentUris.withAppendedId(tasksUri, id).asSyncAdapter(account),
                         values, null, null)
                 }
             }

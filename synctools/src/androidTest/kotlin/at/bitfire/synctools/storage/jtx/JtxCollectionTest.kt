@@ -33,7 +33,7 @@ class JtxCollectionTest {
 
         @JvmField
         @ClassRule
-        val permissionRule = GrantPermissionOrSkipRule(TaskProvider.PERMISSIONS_JTX.toSet())
+        val permissionRule = GrantPermissionOrSkipRule(TaskProvider.ProviderName.JtxBoard.permissions.toSet())
 
         private val testAccount = Account(
             JtxCollectionTest::class.java.name,

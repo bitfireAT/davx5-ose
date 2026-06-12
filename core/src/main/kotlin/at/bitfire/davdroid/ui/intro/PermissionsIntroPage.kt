@@ -24,9 +24,7 @@ class PermissionsIntroPage @Inject constructor(
     override fun getShowPolicy(): ShowPolicy {
         // show PermissionsFragment as intro fragment when no permissions are granted
         val permissions = CONTACT_PERMISSIONS + CALENDAR_PERMISSIONS +
-                TaskProvider.PERMISSIONS_JTX +
-                TaskProvider.PERMISSIONS_OPENTASKS +
-                TaskProvider.PERMISSIONS_TASKS_ORG
+                TaskProvider.ProviderName.entries.flatMap { it.permissions.toList() }
         return if (PermissionUtils.haveAnyPermission(context, permissions))
             ShowPolicy.DONT_SHOW
         else

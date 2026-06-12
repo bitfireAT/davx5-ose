@@ -22,7 +22,7 @@ import org.junit.Test
 class JtxCollectionProviderTest {
 
     @get:Rule
-    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.PERMISSIONS_JTX.toSet())
+    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.ProviderName.JtxBoard.permissions.toSet())
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 

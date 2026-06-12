@@ -9,7 +9,6 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
-import org.dmfs.tasks.contract.TaskContract
 import java.io.Closeable
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -28,8 +27,7 @@ class TaskProvider private constructor(
         val packageName: String,
         val minVersionCode: Long,
         val minVersionName: String,
-        private val readPermission: String,
-        private val writePermission: String
+        val permissions: Array<String>
     ) {
 
         JtxBoard(
@@ -37,28 +35,22 @@ class TaskProvider private constructor(
             packageName = "at.techbee.jtx",
             minVersionCode = 210000000,
             minVersionName = "2.10.00",
-            readPermission = PERMISSION_JTX_READ,
-            writePermission = PERMISSION_JTX_WRITE
+            permissions = arrayOf("at.techbee.jtx.permission.READ", "at.techbee.jtx.permission.WRITE")
         ),
         TasksOrg(
             authority = "org.tasks.opentasks",
             packageName = "org.tasks",
             minVersionCode = 100000,
             minVersionName = "10.0",
-            readPermission = PERMISSION_TASKS_ORG_READ,
-            writePermission = PERMISSION_TASKS_ORG_WRITE
+            permissions = arrayOf("org.tasks.permission.READ_TASKS", "org.tasks.permission.WRITE_TASKS")
         ),
         OpenTasks(
             authority = "org.dmfs.tasks",
             packageName = "org.dmfs.tasks",
             minVersionCode = 103,
             minVersionName = "1.1.8.2",
-            readPermission = PERMISSION_OPENTASKS_READ,
-            writePermission = PERMISSION_OPENTASKS_WRITE
+            permissions = arrayOf("org.dmfs.permission.READ_TASKS", "org.dmfs.permission.WRITE_TASKS")
         );
-
-        val permissions: Array<String>
-            get() = arrayOf(readPermission, writePermission)
     }
 
 
@@ -66,18 +58,6 @@ class TaskProvider private constructor(
 
         private val logger
             get() = Logger.getLogger(TaskProvider::class.java.name)
-
-        const val PERMISSION_OPENTASKS_READ = "org.dmfs.permission.READ_TASKS"
-        const val PERMISSION_OPENTASKS_WRITE = "org.dmfs.permission.WRITE_TASKS"
-        val PERMISSIONS_OPENTASKS = arrayOf(PERMISSION_OPENTASKS_READ, PERMISSION_OPENTASKS_WRITE)
-
-        const val PERMISSION_TASKS_ORG_READ = "org.tasks.permission.READ_TASKS"
-        const val PERMISSION_TASKS_ORG_WRITE = "org.tasks.permission.WRITE_TASKS"
-        val PERMISSIONS_TASKS_ORG = arrayOf(PERMISSION_TASKS_ORG_READ, PERMISSION_TASKS_ORG_WRITE)
-
-        const val PERMISSION_JTX_READ = "at.techbee.jtx.permission.READ"
-        const val PERMISSION_JTX_WRITE = "at.techbee.jtx.permission.WRITE"
-        val PERMISSIONS_JTX = arrayOf(PERMISSION_JTX_READ, PERMISSION_JTX_WRITE)
 
         /**
          * Acquires a content provider for a given task provider. The content provider will
@@ -124,9 +104,6 @@ class TaskProvider private constructor(
         }
 
     }
-
-    fun tasksUri() = TaskContract.Tasks.getContentUri(name.authority)!!
-
 
     override fun close() {
         client.close()
