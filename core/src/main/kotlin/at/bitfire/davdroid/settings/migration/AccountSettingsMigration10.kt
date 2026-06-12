@@ -37,7 +37,7 @@ class AccountSettingsMigration10 @Inject constructor(
 
     override fun migrate(account: Account) {
         val providerName = TaskProvider.ProviderName.OpenTasks
-        TaskProvider.acquireClient(context, providerName)?.use { client ->
+        TaskProvider.acquireRecentClient(context, providerName)?.use { client ->
             val tasksUri = TaskContract.Tasks.getContentUri(providerName.authority)!!.asSyncAdapter(account)
             val emptyETag = contentValuesOf(DmfsTasksContract.COLUMN_ETAG to null)
             client.update(tasksUri, emptyETag, "${TaskContract.Tasks._DIRTY}=0 AND ${TaskContract.Tasks._DELETED}=0", null)

@@ -45,7 +45,7 @@ abstract class DmfsStyleProvidersTaskTest(
     @Before
     @CallSuper
     open fun prepare() {
-        providerOrNull = TaskProvider.acquireClient(InstrumentationRegistry.getInstrumentation().context, providerName)
+        providerOrNull = TaskProvider.acquireRecentClient(InstrumentationRegistry.getInstrumentation().context, providerName)
         assertNotNull("$providerName is not installed", providerOrNull != null)
 
         provider = providerOrNull!!

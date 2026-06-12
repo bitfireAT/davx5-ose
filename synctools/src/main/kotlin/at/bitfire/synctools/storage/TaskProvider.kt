@@ -54,32 +54,27 @@ object TaskProvider {
         get() = Logger.getLogger(javaClass.name)
 
     /**
-     * Acquires a content provider client for a given task provider after verifying its version.
-     * The caller is responsible for closing the returned client.
+     * Acquires a content provider client for a given task provider after verifying that it's new
+     * enough. The caller is responsible for closing the returned client.
      *
      * @param context will be used to acquire the content provider client
-     * @param name task provider to acquire content provider for; `null` to try all supported providers
+     * @param name task provider to acquire content provider for
      *
      * @return content provider client for the given task provider (`null` if not available)
      * @throws [ProviderTooOldException] if the tasks provider is installed, but doesn't meet the minimum version requirement
      */
     @MustBeClosed
-    fun acquireClient(context: Context, name: ProviderName? = null): ContentProviderClient? {
-        val providers = name?.let { arrayOf(it) } ?: ProviderName.entries.toTypedArray()
-        for (provider in providers)
-            try {
-                checkVersion(context, provider)
-
-                val client = context.contentResolver.acquireContentProviderClient(provider.authority)
-                if (client != null)
-                    return client
-            } catch (e: SecurityException) {
-                logger.log(Level.WARNING, "Not allowed to access task provider", e)
-            } catch (e: PackageManager.NameNotFoundException) {
-                logger.warning("Package ${provider.packageName} not installed")
-            }
-        return null
-    }
+    fun acquireRecentClient(context: Context, name: ProviderName): ContentProviderClient? =
+        try {
+            checkVersion(context, name)
+            context.contentResolver.acquireContentProviderClient(name.authority)
+        } catch (e: SecurityException) {
+            logger.log(Level.WARNING, "Not allowed to access task provider", e)
+            null
+        } catch (_: PackageManager.NameNotFoundException) {
+            logger.warning("Package ${name.packageName} not installed")
+            null
+        }
 
     /**
      * Checks the version code of an installed tasks provider.

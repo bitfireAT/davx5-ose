@@ -33,7 +33,7 @@ class AccountSettingsMigration8 @Inject constructor(
      */
     override fun migrate(account: Account) {
         val providerName = TaskProvider.ProviderName.OpenTasks
-        TaskProvider.acquireClient(context, providerName)?.use { client ->
+        TaskProvider.acquireRecentClient(context, providerName)?.use { client ->
             // ETag is now in sync_version instead of sync1
             // UID  is now in _uid         instead of sync2
             val tasksUri = TaskContract.Tasks.getContentUri(providerName.authority)!!
