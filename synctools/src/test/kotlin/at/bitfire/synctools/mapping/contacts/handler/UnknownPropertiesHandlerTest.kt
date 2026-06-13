@@ -6,7 +6,7 @@ package at.bitfire.synctools.mapping.contacts.handler
 
 import android.content.ContentValues
 import at.bitfire.synctools.mapping.contacts.Contact
-import at.bitfire.synctools.storage.contacts.UnknownPropertyContract
+import at.bitfire.synctools.storage.contacts.ContactContract
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -20,7 +20,7 @@ class UnknownPropertiesHandlerTest {
     fun testUnknownProperties_Empty() {
         val contact = Contact()
         UnknownPropertiesHandler.handle(ContentValues().apply {
-            putNull(UnknownPropertyContract.UNKNOWN_PROPERTIES)
+            putNull(ContactContract.UnknownProperty.UNKNOWN_PROPERTIES)
         }, contact)
         assertNull(contact.unknownProperties)
     }
@@ -29,7 +29,7 @@ class UnknownPropertiesHandlerTest {
     fun testUnknownProperties_Values() {
         val contact = Contact()
         UnknownPropertiesHandler.handle(ContentValues().apply {
-            put(UnknownPropertyContract.UNKNOWN_PROPERTIES, "X-TEST:12345")
+            put(ContactContract.UnknownProperty.UNKNOWN_PROPERTIES, "X-TEST:12345")
         }, contact)
         assertEquals("X-TEST:12345", contact.unknownProperties)
     }

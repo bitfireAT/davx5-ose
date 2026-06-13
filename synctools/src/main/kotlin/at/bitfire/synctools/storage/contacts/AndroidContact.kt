@@ -21,6 +21,7 @@ import at.bitfire.synctools.mapping.contacts.RawContactHandler
 import at.bitfire.synctools.mapping.contacts.builder.PhotoBuilder
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.contacts.ContactContract.asSyncAdapter
 import java.io.FileNotFoundException
 
 open class AndroidContact(

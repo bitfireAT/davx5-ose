@@ -17,6 +17,7 @@ import androidx.annotation.CallSuper
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.contacts.ContactContract.asSyncAdapter
 import at.bitfire.synctools.storage.plusAssign
 import java.io.FileNotFoundException
 import java.util.logging.Logger

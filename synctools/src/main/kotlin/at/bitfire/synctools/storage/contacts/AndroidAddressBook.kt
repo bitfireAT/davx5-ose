@@ -8,12 +8,12 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
-import android.net.Uri
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import androidx.core.content.contentValuesOf
+import at.bitfire.synctools.storage.contacts.ContactContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.vcard.GroupMethod
 import java.io.FileNotFoundException
