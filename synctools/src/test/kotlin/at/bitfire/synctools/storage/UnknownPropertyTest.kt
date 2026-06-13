@@ -6,6 +6,7 @@ package at.bitfire.synctools.storage
 
 import androidx.test.filters.SmallTest
 import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.mapping.UnknownProperty
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.parameter.Rsvp
 import net.fortuna.ical4j.model.parameter.XParameter

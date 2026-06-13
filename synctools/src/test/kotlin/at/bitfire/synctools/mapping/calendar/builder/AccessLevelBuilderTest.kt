@@ -10,7 +10,7 @@ import android.provider.CalendarContract.Events
 import android.provider.CalendarContract.ExtendedProperties
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.icalendar.propertyListOf
-import at.bitfire.synctools.storage.UnknownProperty
+import at.bitfire.synctools.mapping.UnknownProperty
 import at.bitfire.synctools.test.assertContentValuesEqual
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Clazz
