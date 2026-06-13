@@ -10,10 +10,18 @@ import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.Context
 import android.provider.ContactsContract
+import android.provider.ContactsContract.CommonDataKinds.GroupMembership
+import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.LabeledProperty
+import at.bitfire.synctools.mapping.contacts.PendingMemberships
+import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
+import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
+import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
+import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -117,7 +125,101 @@ class LocalAddressBookTest {
     }
 
 
+    @Test
+    fun testApplyPendingMemberships_addPendingMembership() {
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.GROUP_VCARDS) { ab ->
+            val contact1 = LocalContact(ab, Contact().apply {
+                uid = "test1"
+                displayName = "Test"
+            }, "test1.vcf", null, 0)
+            contact1.add()
+
+            val group = newGroup(ab)
+            // set pending membership of contact1
+            ab.provider!!.update(
+                ContentUris.withAppendedId(ab.groupsSyncUri(), group.id!!),
+                contentValuesOf(GroupColumns.PENDING_MEMBERS to PendingMemberships(setOf("test1")).toString()),
+                null, null
+            )
+
+            // pending membership -> contact1 should be added to group
+            ab.applyPendingMemberships()
+
+            // check group membership
+            ab.provider!!.query(
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(GroupMembership.GROUP_ROW_ID, GroupMembership.RAW_CONTACT_ID),
+                "${GroupMembership.MIMETYPE}=?", arrayOf(GroupMembership.CONTENT_ITEM_TYPE),
+                null
+            )!!.use { cursor ->
+                assertTrue(cursor.moveToNext())
+                assertEquals(group.id, cursor.getLong(0))
+                assertEquals(contact1.id, cursor.getLong(1))
+
+                assertFalse(cursor.moveToNext())
+            }
+            // check cached group membership
+            ab.provider!!.query(
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
+                "${CachedGroupMembership.MIMETYPE}=?", arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
+                null
+            )!!.use { cursor ->
+                assertTrue(cursor.moveToNext())
+                assertEquals(group.id, cursor.getLong(0))
+                assertEquals(contact1.id, cursor.getLong(1))
+
+                assertFalse(cursor.moveToNext())
+            }
+        }
+    }
+
+    @Test
+    fun testApplyPendingMemberships_removeMembership() {
+        localTestAddressBookProvider.provide(account, provider, GroupMethod.GROUP_VCARDS) { ab ->
+            val contact1 = LocalContact(ab, Contact().apply {
+                uid = "test1"
+                displayName = "Test"
+            }, "test1.vcf", null, 0)
+            contact1.add()
+
+            val group = newGroup(ab)
+
+            // add contact1 to group
+            val batch = ContactsBatchOperation(ab.provider!!)
+            contact1.addToGroup(batch, group.id!!)
+            batch.commit()
+
+            // no pending memberships -> membership should be removed
+            ab.applyPendingMemberships()
+
+            // check group membership
+            ab.provider!!.query(
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
+                arrayOf(GroupMembership.GROUP_ROW_ID, GroupMembership.RAW_CONTACT_ID),
+                "${GroupMembership.MIMETYPE}=?",
+                arrayOf(GroupMembership.CONTENT_ITEM_TYPE),
+                null
+            )!!.use { cursor ->
+                assertFalse(cursor.moveToNext())
+            }
+            // check cached group membership
+            ab.provider!!.query(
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
+                arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
+                "${CachedGroupMembership.MIMETYPE}=?",
+                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
+                null
+            )!!.use { cursor ->
+                assertFalse(cursor.moveToNext())
+            }
+        }
+    }
+
+
     // helpers
+
+    private fun newGroup(addressBook: LocalAddressBook): LocalGroup =
+        LocalGroup(addressBook, Contact().apply { displayName = "Test Group" }, null, null, 0)
+            .apply { add() }
 
     /**
      * Returns the dirty flag of the given contact.

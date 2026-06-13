@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync.groups
 import android.content.ContentUris
 import android.provider.ContactsContract
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.sync.ContactsSyncManager.Companion.disjunct
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
@@ -49,7 +48,7 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
     }
 
     override fun postProcess() {
-        LocalGroup.applyPendingMemberships(addressBook)
+        addressBook.applyPendingMemberships()
     }
 
 }
