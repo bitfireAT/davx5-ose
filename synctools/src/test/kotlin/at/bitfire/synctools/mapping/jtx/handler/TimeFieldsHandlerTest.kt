@@ -118,6 +118,22 @@ class TimeFieldsHandlerTest {
     }
 
     @Test
+    fun `DTSTART with timezone UTC string is treated as UTC`() {
+        val epochMillis = 1779105600000L  // 2026-05-18T12:00:00Z
+        val input = Entity(
+            contentValuesOf(
+                JtxContract.JtxICalObject.DTSTART to epochMillis,
+                JtxContract.JtxICalObject.DTSTART_TIMEZONE to "UTC"
+            )
+        )
+        val output = VToDo()
+
+        handler.process(from = input, main = input, to = output)
+
+        assertEquals(DtStart(Instant.ofEpochMilli(epochMillis)), output.dtStart<Temporal>())
+    }
+
+    @Test
     fun `DTSTART with invalid timezone falls back to UTC`() {
         val epochMillis = 1779105600000L  // 2026-05-18T12:00:00Z
         val input = Entity(
