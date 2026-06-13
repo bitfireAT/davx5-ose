@@ -120,6 +120,61 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
+    fun testFindAllTasksWithSyncId_ReturnsMultipleMatches() {
+        // Insert a task that simulates an already-synced server copy (has an eTag via SYNC1).
+        val syncId = "duplicate-uid-${UUID.randomUUID()}"
+        val now = 1754233504000L
+        val syncedTask = Entity(
+            contentValuesOf(
+                Tasks.LIST_ID to taskList.id,
+                Tasks._SYNC_ID to syncId,
+                Tasks.TITLE to "Synced Task",
+                Tasks.DTSTART to now,
+                Tasks.TZ to timeZoneId,
+                // Simulate an already-synced task: set SYNC1 (eTag) to a non-null value.
+                // We write it directly as a task row value.
+                org.dmfs.tasks.contract.TaskContract.Tasks.SYNC1 to "etag-abc123"
+            )
+        )
+        taskList.addTask(syncedTask)
+
+        // Insert a second task with the same _SYNC_ID that was never uploaded (no eTag, dirty).
+        val dirtyTask = Entity(
+            contentValuesOf(
+                Tasks.LIST_ID to taskList.id,
+                Tasks._SYNC_ID to syncId,
+                Tasks.TITLE to "Dirty Local Task",
+                Tasks.DTSTART to now + 3600000,
+                Tasks.TZ to timeZoneId
+                // No SYNC1 (eTag) — simulates a task that was never uploaded.
+            )
+        )
+        taskList.addTask(dirtyTask)
+
+        // Both tasks should be found.
+        val results = recurringTaskList.findAllTasksWithSyncId(syncId)
+        assertEquals("findAllTasksWithSyncId must return both tasks with the same syncId", 2, results.size)
+
+        val titles = results.map { it.main.entityValues.getAsString(Tasks.TITLE) }.toSet()
+        assertTrue(titles.contains("Synced Task"))
+        assertTrue(titles.contains("Dirty Local Task"))
+    }
+
+    @Test
+    fun testFindAllTasksWithSyncId_SingleMatch() {
+        val syncId = "single-${UUID.randomUUID()}"
+        insertRecurring(syncId = syncId)
+        val results = recurringTaskList.findAllTasksWithSyncId(syncId)
+        assertEquals(1, results.size)
+    }
+
+    @Test
+    fun testFindAllTasksWithSyncId_NoMatch() {
+        val results = recurringTaskList.findAllTasksWithSyncId("no-such-id")
+        assertEquals(0, results.size)
+    }
+
+    @Test
     fun testGetById_ExceptionId_ReturnsNull() {
         val task = insertRecurring()
         val mainTaskId = task.main.entityValues.getAsLong(Tasks._ID)!!

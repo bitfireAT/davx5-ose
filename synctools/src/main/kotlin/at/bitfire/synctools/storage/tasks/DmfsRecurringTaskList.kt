@@ -98,6 +98,24 @@ class DmfsRecurringTaskList(
         findTaskAndExceptions("${Tasks._ID}=?", arrayOf(mainTaskId.toString()))
 
     /**
+     * Finds all main tasks in [taskList] that have the given [Tasks._SYNC_ID], together with their exceptions.
+     *
+     * Normally a sync ID is unique, but when a task is created locally with the same UID as a task
+     * already present on the server, there can be two entries with the same [Tasks._SYNC_ID]:
+     * one that is already synced (with an eTag) and one that was never uploaded (dirty, no eTag).
+     *
+     * @param syncId    value of [Tasks._SYNC_ID] to search for
+     * @return list of all matching tasks (each with their exceptions); may be empty
+     */
+    fun findAllTasksWithSyncId(syncId: String): List<TaskAndExceptions> {
+        val result = mutableListOf<TaskAndExceptions>()
+        iterateTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf(syncId)) { taskAndExceptions ->
+            result += taskAndExceptions
+        }
+        return result
+    }
+
+    /**
      * Iterates through main tasks in [taskList] together with their exceptions.
      *
      * Note that the exceptions may contain deleted tasks.
