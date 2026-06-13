@@ -14,7 +14,7 @@ import android.provider.CalendarContract.Calendars
 import androidx.core.content.contentValuesOf
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.sync.account.TestAccount
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
+import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

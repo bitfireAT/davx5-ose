@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android
+package at.bitfire.synctools.icalendar
 
 import net.fortuna.ical4j.util.TimeZones
 import org.junit.Assert.assertEquals

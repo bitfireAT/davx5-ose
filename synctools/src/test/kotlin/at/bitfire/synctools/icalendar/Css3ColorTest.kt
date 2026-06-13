@@ -2,9 +2,8 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android
+package at.bitfire.synctools.icalendar
 
-import at.bitfire.synctools.icalendar.Css3Color
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

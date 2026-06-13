@@ -2,13 +2,12 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android
+package at.bitfire.synctools.icalendar
 
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VEvent
 import org.junit.Assert.assertEquals
-import org.junit.Ignore
 import org.junit.Test
 import java.io.StringReader
 

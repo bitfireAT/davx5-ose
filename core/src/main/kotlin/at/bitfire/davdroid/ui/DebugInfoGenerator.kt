@@ -58,7 +58,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.use
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
+import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter as asCalendarSyncAdapter
 import at.bitfire.synctools.util.Utils.asSyncAdapter as asContactsSyncAdapter
 import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 

@@ -9,10 +9,10 @@ import android.content.ContentValues
 import android.content.Entity
 import android.net.Uri
 import android.os.RemoteException
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.TaskProvider
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Tasks
