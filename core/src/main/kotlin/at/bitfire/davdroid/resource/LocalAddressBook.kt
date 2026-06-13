@@ -23,6 +23,7 @@ import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.AndroidGroup
+import at.bitfire.synctools.storage.contacts.ContactContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import at.bitfire.synctools.util.AndroidAccountUtils
 import at.bitfire.synctools.util.setAndVerifyUserData
@@ -111,7 +112,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
             // update data rows
             val dataValues = contentValuesOf(ContactsContract.Data.IS_READ_ONLY to if (readOnly) 1 else 0)
-            provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
+            provider!!.update(ContactsContract.Data.CONTENT_URI.asSyncAdapter(), dataValues, null, null)
 
             // update group rows
             val groupValues = contentValuesOf(Groups.GROUP_IS_READ_ONLY to if (readOnly) 1 else 0)
@@ -270,7 +271,8 @@ open class LocalAddressBook @AssistedInject constructor(
 
     fun getContactIdsByGroupMembership(groupId: Long): List<Long> {
         val ids = LinkedList<Long>()
-        provider!!.query(syncAdapterURI(ContactsContract.Data.CONTENT_URI), arrayOf(GroupMembership.RAW_CONTACT_ID),
+        provider!!.query(
+            ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(GroupMembership.RAW_CONTACT_ID),
             "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?)",
             arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupId.toString()), null)?.use { cursor ->
             while (cursor.moveToNext())
