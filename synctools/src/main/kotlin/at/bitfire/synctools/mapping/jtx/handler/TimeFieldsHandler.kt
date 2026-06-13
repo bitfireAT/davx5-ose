@@ -46,7 +46,7 @@ class TimeFieldsHandler : JtxObjectEntityHandler {
 
         val temporal: Temporal = when {
             timezone == JtxContract.JtxICalObject.TZ_ALLDAY -> LocalDate.ofInstant(instant, ZoneOffset.UTC)
-            timezone == ZoneOffset.UTC.id -> instant
+            timezone == ZoneOffset.UTC.id || timezone == "UTC" -> instant
             timezone.isNullOrEmpty() -> LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
             else -> try {
                 ZonedDateTime.ofInstant(instant, ZoneId.of(timezone))
