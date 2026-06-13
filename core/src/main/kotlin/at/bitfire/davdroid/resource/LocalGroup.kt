@@ -15,10 +15,11 @@ import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
 import androidx.core.content.contentValuesOf
-import at.bitfire.davdroid.resource.LocalGroup.Companion.COLUMN_PENDING_MEMBERS
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.PendingMemberships
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
+import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
@@ -38,15 +39,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
         private val logger: Logger
             get() = Logger.getGlobal()
 
-        const val COLUMN_FLAGS = Groups.SYNC4
-
-        /** List of member UIDs, as sent by server. This list will be used to establish
-         *  the group memberships when all groups and contacts have been synchronized.
-         *  Use [PendingMemberships] to create/read the list. */
-        const val COLUMN_PENDING_MEMBERS = Groups.SYNC3
-
         /**
-         * Processes all groups with non-null [COLUMN_PENDING_MEMBERS]: the pending memberships
+         * Processes all groups with non-null [GroupColumns.PENDING_MEMBERS]: the pending memberships
          * are applied (if possible) to keep cached memberships in sync.
          *
          * @param addressBook    address book to take groups from
@@ -121,8 +115,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
 
     constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues) : super(addressBook, values) {
-        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
-        values.getAsString(COLUMN_PENDING_MEMBERS)?.let { members ->
+        flags = values.getAsInteger(GroupColumns.FLAGS) ?: 0
+        values.getAsString(GroupColumns.PENDING_MEMBERS)?.let { members ->
             pendingMemberships = PendingMemberships.fromString(members).uids
         }
     }
@@ -135,8 +129,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
     override fun contentValues(): ContentValues  {
         val values = super.contentValues()
-        values.put(COLUMN_FLAGS, flags)
-        values.put(COLUMN_PENDING_MEMBERS, PendingMemberships(getContact().members).toString())
+        values.put(GroupColumns.FLAGS, flags)
+        values.put(GroupColumns.PENDING_MEMBERS, PendingMemberships(getContact().members).toString())
         return values
     }
 
@@ -202,7 +196,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
     }
 
     override fun updateFlags(flags: Int) {
-        val values = contentValuesOf(COLUMN_FLAGS to flags)
+        val values = contentValuesOf(GroupColumns.FLAGS to flags)
         addressBook.provider!!.update(groupSyncUri(), values, null, null)
 
         this.flags = flags
@@ -267,25 +261,6 @@ class LocalGroup: AndroidGroup, LocalAddress {
                 members += cursor.getLong(0)
         }
         return members
-    }
-
-
-    // helper class for COLUMN_PENDING_MEMBERSHIPS blob
-
-    class PendingMemberships(
-        /** list of member UIDs that shall be assigned **/
-        val uids: Set<String>
-    ) {
-
-        companion object {
-            const val SEPARATOR = '\n'
-
-            fun fromString(value: String) =
-                PendingMemberships(value.split(SEPARATOR).toSet())
-        }
-
-        override fun toString() = uids.joinToString(SEPARATOR.toString())
-
     }
 
 

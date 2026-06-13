@@ -8,14 +8,16 @@ import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
-import android.content.ContentValues
 import android.content.Context
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
+import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.PendingMemberships
 import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
+import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import at.bitfire.synctools.vcard.GroupMethod
@@ -77,9 +79,7 @@ class LocalGroupTest {
             // set pending membership of contact1
             ab.provider!!.update(
                 ContentUris.withAppendedId(ab.groupsSyncUri(), group.id!!),
-                ContentValues().apply {
-                    put(LocalGroup.COLUMN_PENDING_MEMBERS, LocalGroup.PendingMemberships(setOf("test1")).toString())
-                },
+                contentValuesOf(GroupColumns.PENDING_MEMBERS to PendingMemberships(setOf("test1")).toString()),
                 null, null
             )
 
@@ -166,11 +166,12 @@ class LocalGroupTest {
 
             // insert group membership, but no cached group membership
             ab.provider!!.insert(
-                ContactsContract.Data.CONTENT_URI.asSyncAdapter(), ContentValues().apply {
-                    put(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
-                    put(GroupMembership.RAW_CONTACT_ID, contact1.id)
-                    put(GroupMembership.GROUP_ROW_ID, group.id)
-                }
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
+                contentValuesOf(
+                    GroupMembership.MIMETYPE to GroupMembership.CONTENT_ITEM_TYPE,
+                    GroupMembership.RAW_CONTACT_ID to contact1.id,
+                    GroupMembership.GROUP_ROW_ID to group.id
+                )
             )
 
             group.clearDirty(Optional.empty(), null)
@@ -202,11 +203,12 @@ class LocalGroupTest {
 
             // insert cached group membership, but no group membership
             ab.provider!!.insert(
-                ContactsContract.Data.CONTENT_URI.asSyncAdapter(), ContentValues().apply {
-                    put(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                    put(CachedGroupMembership.RAW_CONTACT_ID, contact1.id)
-                    put(CachedGroupMembership.GROUP_ID, group.id)
-                }
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
+                contentValuesOf(
+                    CachedGroupMembership.MIMETYPE to CachedGroupMembership.CONTENT_ITEM_TYPE,
+                    CachedGroupMembership.RAW_CONTACT_ID to contact1.id,
+                    CachedGroupMembership.GROUP_ID to group.id
+                )
             )
 
             group.clearDirty(Optional.empty(), null)

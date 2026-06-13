@@ -34,7 +34,7 @@ interface ContactDirtyVerifier {
     // contact level functions
 
     /**
-     * Sets the [LocalContact.COLUMN_HASHCODE] column in the given [ContentValues] to the hash code of the contact data.
+     * Sets the [AddressContract.RawContactColumns.HASHCODE] column in the given [ContentValues] to the hash code of the contact data.
      *
      * @param contact   the contact to calculate the hash code for
      * @param toValues  set the hash code into these values
@@ -42,12 +42,12 @@ interface ContactDirtyVerifier {
     fun setHashCodeColumn(contact: LocalContact, toValues: ContentValues)
 
     /**
-     * Sets the [LocalContact.COLUMN_HASHCODE] field of the contact to the hash code of the contact data directly in the content provider.
+     * Sets the [AddressContract.RawContactColumns.HASHCODE] field of the contact to the hash code of the contact data directly in the content provider.
      */
     fun updateHashCode(addressBook: LocalAddressBook, contact: LocalContact)
 
     /**
-      Sets the [LocalContact.COLUMN_HASHCODE] field of the contact to the hash code of the contact data in a content provider batch operation.
+    Sets the [AddressContract.RawContactColumns.HASHCODE] field of the contact to the hash code of the contact data in a content provider batch operation.
      */
     fun updateHashCode(contact: LocalContact, batch: ContactsBatchOperation)
 

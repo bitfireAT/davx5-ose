@@ -7,6 +7,7 @@ package at.bitfire.synctools.storage.contacts
 import android.accounts.Account
 import android.net.Uri
 import android.provider.ContactsContract
+import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership.MIMETYPE
 import at.bitfire.synctools.storage.contacts.AddressContract.UnknownProperty.MIMETYPE
@@ -57,6 +58,26 @@ object AddressContract {
 
         /** Column name for the ID of the group this cached membership refers to. Type: [Long] */
         const val GROUP_ID = RawContacts.Data.DATA1
+    }
+
+    /** Sync columns used on [RawContacts] rows. */
+    object RawContactColumns {
+        /** Sync flags for local change tracking (see [at.bitfire.synctools.storage.LocalCollection]). */
+        const val FLAGS = RawContacts.SYNC4
+
+        /** Hash of contact data; used by the Android 7 workaround to detect real data changes. */
+        const val HASHCODE = RawContacts.SYNC3
+    }
+
+    /** Sync columns used on [Groups] rows. */
+    object GroupColumns {
+        /** Sync flags for local change tracking (see [at.bitfire.synctools.storage.LocalCollection]). */
+        const val FLAGS = Groups.SYNC4
+
+        /** List of member UIDs, as sent by server. This list will be used to establish
+         *  the group memberships when all groups and contacts have been synchronized.
+         *  Use [at.bitfire.synctools.mapping.contacts.PendingMemberships] to create/read the list. */
+        const val PENDING_MEMBERS = Groups.SYNC3
     }
 
     object UnknownProperty {

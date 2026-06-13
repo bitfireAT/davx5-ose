@@ -20,6 +20,8 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
+import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
@@ -129,12 +131,12 @@ open class LocalAddressBook @AssistedInject constructor(
     /* operations on the collection (address book) itself */
 
     override fun markNotDirty(flags: Int): Int {
-        val values = contentValuesOf(LocalContact.COLUMN_FLAGS to flags)
+        val values = contentValuesOf(RawContactColumns.FLAGS to flags)
         var number = provider!!.update(rawContactsSyncUri(), values, "${RawContacts.DIRTY}=0", null)
 
         if (includeGroups) {
             values.clear()
-            values.put(LocalGroup.COLUMN_FLAGS, flags)
+            values.put(GroupColumns.FLAGS, flags)
             number += provider!!.update(groupsSyncUri(), values, "NOT ${Groups.DIRTY}", null)
         }
 
@@ -143,11 +145,13 @@ open class LocalAddressBook @AssistedInject constructor(
 
     override fun removeNotDirtyMarked(flags: Int): Int {
         var number = provider!!.delete(rawContactsSyncUri(),
-                "NOT ${RawContacts.DIRTY} AND ${LocalContact.COLUMN_FLAGS}=?", arrayOf(flags.toString()))
+                                       "NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?", arrayOf(flags.toString())
+        )
 
         if (includeGroups)
             number += provider!!.delete(groupsSyncUri(),
-                    "NOT ${Groups.DIRTY} AND ${LocalGroup.COLUMN_FLAGS}=?", arrayOf(flags.toString()))
+                                        "NOT ${Groups.DIRTY} AND ${GroupColumns.FLAGS}=?", arrayOf(flags.toString())
+            )
 
         return number
     }
