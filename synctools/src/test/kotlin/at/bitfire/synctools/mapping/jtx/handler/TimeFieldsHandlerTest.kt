@@ -9,6 +9,7 @@ import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
+import at.bitfire.synctools.exception.InvalidLocalResourceException
 import at.bitfire.synctools.icalendar.dtEnd
 import at.bitfire.synctools.icalendar.dtStart
 import at.bitfire.synctools.icalendar.due
@@ -29,6 +30,7 @@ import org.robolectric.RobolectricTestRunner
 import java.time.Instant
 import java.time.temporal.Temporal
 import kotlin.jvm.optionals.getOrNull
+import kotlin.test.assertFailsWith
 
 @RunWith(RobolectricTestRunner::class)
 class TimeFieldsHandlerTest {
@@ -146,5 +148,17 @@ class TimeFieldsHandlerTest {
             original.getProperty<Duration>(Property.DURATION).getOrNull()?.value,
             result.getProperty<Duration>(Property.DURATION).getOrNull()?.value
         )
+    }
+
+    @Test
+    fun `DURATION without DTSTART throws InvalidLocalResourceException`() {
+        val input = Entity(
+            contentValuesOf(
+                JtxContract.JtxICalObject.DURATION to "P1D"
+            )
+        )
+        assertFailsWith<InvalidLocalResourceException> {
+            handler.process(from = input, main = input, to = VToDo())
+        }
     }
 }
