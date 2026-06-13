@@ -2,11 +2,10 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.synctools.storage
+package at.bitfire.synctools.mapping
 
 import androidx.test.filters.SmallTest
 import at.bitfire.synctools.icalendar.plusAssign
-import at.bitfire.synctools.mapping.UnknownProperty
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.parameter.Rsvp
 import net.fortuna.ical4j.model.parameter.XParameter
