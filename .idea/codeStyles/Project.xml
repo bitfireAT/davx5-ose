@@ -44,7 +44,6 @@
     <codeStyleSettings language="kotlin">
       <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
       <option name="BLOCK_COMMENT_AT_FIRST_COLUMN" value="false" />
-      <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
       <option name="ALIGN_MULTILINE_EXTENDS_LIST" value="true" />
       <option name="METHOD_CALL_CHAIN_WRAP" value="5" />
       <option name="FIELD_ANNOTATION_WRAP" value="1" />

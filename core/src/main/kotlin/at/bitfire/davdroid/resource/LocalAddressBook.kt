@@ -55,13 +55,13 @@ open class LocalAddressBook @AssistedInject constructor(
     @Assisted("account") val account: Account,
     @Assisted("addressBookAccount") _addressBookAccount: Account,
     @Assisted provider: ContentProviderClient,
-    @Assisted open override val groupMethod: GroupMethod,
+    @Assisted override val groupMethod: GroupMethod,
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     internal val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,
     private val syncFramework: SyncFrameworkIntegration
-): AndroidAddressBook<LocalContact, LocalGroup>(_addressBookAccount, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
+) : AndroidAddressBook<LocalContact, LocalGroup>(_addressBookAccount, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
 
     @AssistedFactory
     interface Factory {
@@ -144,13 +144,15 @@ open class LocalAddressBook @AssistedInject constructor(
     }
 
     override fun removeNotDirtyMarked(flags: Int): Int {
-        var number = provider!!.delete(rawContactsSyncUri(),
-                                       "NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?", arrayOf(flags.toString())
+        var number = provider!!.delete(
+            rawContactsSyncUri(),
+            "NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?", arrayOf(flags.toString())
         )
 
         if (includeGroups)
-            number += provider!!.delete(groupsSyncUri(),
-                                        "NOT ${Groups.DIRTY} AND ${GroupColumns.FLAGS}=?", arrayOf(flags.toString())
+            number += provider!!.delete(
+                groupsSyncUri(),
+                "NOT ${Groups.DIRTY} AND ${GroupColumns.FLAGS}=?", arrayOf(flags.toString())
             )
 
         return number
@@ -243,10 +245,10 @@ open class LocalAddressBook @AssistedInject constructor(
      * @throws RemoteException on content provider errors
      */
     override fun findDeleted() =
-            if (includeGroups)
-                findDeletedContacts() + findDeletedGroups()
-            else
-                findDeletedContacts()
+        if (includeGroups)
+            findDeletedContacts() + findDeletedGroups()
+        else
+            findDeletedContacts()
 
     fun findDeletedContacts() = queryContacts(RawContacts.DELETED, null)
     fun findDeletedGroups() = queryGroups(Groups.DELETED, null)
@@ -256,10 +258,11 @@ open class LocalAddressBook @AssistedInject constructor(
      * @throws RemoteException on content provider errors
      */
     override fun findDirty() =
-            if (includeGroups)
-                findDirtyContacts() + findDirtyGroups()
-            else
-                findDirtyContacts()
+        if (includeGroups)
+            findDirtyContacts() + findDirtyGroups()
+        else
+            findDirtyContacts()
+
     fun findDirtyContacts() = queryContacts(RawContacts.DIRTY, null)
     fun findDirtyGroups() = queryGroups(Groups.DIRTY, null)
 
@@ -278,7 +281,8 @@ open class LocalAddressBook @AssistedInject constructor(
         provider!!.query(
             ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(GroupMembership.RAW_CONTACT_ID),
             "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?)",
-            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupId.toString()), null)?.use { cursor ->
+            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupId.toString()), null
+        )?.use { cursor ->
             while (cursor.moveToNext())
                 ids += cursor.getLong(0)
         }
@@ -286,8 +290,10 @@ open class LocalAddressBook @AssistedInject constructor(
     }
 
     fun getContactUidFromId(contactId: Long): String? {
-        provider!!.query(rawContactsSyncUri(), arrayOf(AndroidContact.COLUMN_UID),
-            "${RawContacts._ID}=?", arrayOf(contactId.toString()), null)?.use { cursor ->
+        provider!!.query(
+            rawContactsSyncUri(), arrayOf(AndroidContact.COLUMN_UID),
+            "${RawContacts._ID}=?", arrayOf(contactId.toString()), null
+        )?.use { cursor ->
             if (cursor.moveToNext())
                 return cursor.getString(0)
         }
