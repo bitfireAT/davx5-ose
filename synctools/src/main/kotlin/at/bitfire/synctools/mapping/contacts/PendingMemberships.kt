@@ -5,7 +5,7 @@
 package at.bitfire.synctools.mapping.contacts
 
 /**
- * Serializes/deserializes a set of member UIDs stored in [AddressContract.GroupColumns.PENDING_MEMBERS].
+ * Serializes/deserializes a set of member UIDs stored in [at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns.PENDING_MEMBERS].
  * The list will be used to establish group memberships when all groups and contacts have been synchronized.
  */
 class PendingMemberships(
@@ -16,7 +16,7 @@ class PendingMemberships(
         const val SEPARATOR = '\n'
 
         fun fromString(value: String) =
-            PendingMemberships(value.split(SEPARATOR).toSet())
+            PendingMemberships(value.split(SEPARATOR).filter { it.isNotEmpty() }.toSet())
     }
 
     override fun toString() = uids.joinToString(SEPARATOR.toString())

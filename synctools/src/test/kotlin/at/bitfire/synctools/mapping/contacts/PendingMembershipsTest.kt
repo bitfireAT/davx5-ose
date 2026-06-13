@@ -25,7 +25,7 @@ class PendingMembershipsTest {
 
     @Test
     fun testFromString_empty() =
-        assertEquals(setOf(""), PendingMemberships.fromString("").uids)
+        assertEquals(emptySet<String>(), PendingMemberships.fromString("").uids)
 
     @Test
     fun testFromString_single() =
