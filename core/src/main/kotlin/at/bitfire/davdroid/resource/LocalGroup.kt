@@ -18,12 +18,12 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.resource.LocalGroup.Companion.COLUMN_PENDING_MEMBERS
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.AndroidGroup
 import at.bitfire.synctools.storage.contacts.AndroidGroupFactory
-import at.bitfire.synctools.storage.contacts.ContactContract.CachedGroupMembership
-import at.bitfire.synctools.storage.contacts.ContactContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import com.google.common.base.MoreObjects
 import java.util.LinkedList

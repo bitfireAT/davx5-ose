@@ -13,7 +13,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.synctools.storage.contacts.ContactContract.asSyncAdapter
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

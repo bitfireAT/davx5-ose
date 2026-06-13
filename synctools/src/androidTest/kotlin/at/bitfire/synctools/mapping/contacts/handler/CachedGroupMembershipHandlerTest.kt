@@ -12,8 +12,8 @@ import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.storage.contacts.AddressContract
 import at.bitfire.synctools.storage.contacts.AndroidContact
-import at.bitfire.synctools.storage.contacts.ContactContract
 import at.bitfire.synctools.storage.contacts.TestAddressBook
 import at.bitfire.synctools.vcard.GroupMethod
 import org.junit.AfterClass
@@ -30,8 +30,8 @@ class CachedGroupMembershipHandlerTest {
         val contact = Contact()
         val androidContact = AndroidContact(addressBook, contact, null, null)
         CachedGroupMembershipHandler(androidContact, GroupMethod.GROUP_VCARDS).handle(ContentValues().apply {
-            put(ContactContract.CachedGroupMembership.GROUP_ID, 123456)
-            put(ContactContract.CachedGroupMembership.RAW_CONTACT_ID, 789)
+            put(AddressContract.CachedGroupMembership.GROUP_ID, 123456)
+            put(AddressContract.CachedGroupMembership.RAW_CONTACT_ID, 789)
         }, contact)
         assertArrayEquals(arrayOf(123456L), androidContact.cachedGroupMemberships.toArray())
     }

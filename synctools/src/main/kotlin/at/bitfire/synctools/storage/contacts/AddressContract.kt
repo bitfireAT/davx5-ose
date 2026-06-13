@@ -8,13 +8,13 @@ import android.accounts.Account
 import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.ContactsContract.RawContacts
-import at.bitfire.synctools.storage.contacts.ContactContract.CachedGroupMembership.MIMETYPE
-import at.bitfire.synctools.storage.contacts.ContactContract.UnknownProperty.MIMETYPE
+import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership.MIMETYPE
+import at.bitfire.synctools.storage.contacts.AddressContract.UnknownProperty.MIMETYPE
 
 /**
  * How synctools uses some Android contacts sync columns and data rows.
  */
-object ContactContract {
+object AddressContract {
 
     /**
      * Appends [ContactsContract.CALLER_IS_SYNCADAPTER] to prevent dirty-marking; optionally appends

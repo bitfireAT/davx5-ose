@@ -21,8 +21,8 @@ import at.bitfire.synctools.mapping.contacts.RawContactHandler
 import at.bitfire.synctools.mapping.contacts.builder.PhotoBuilder
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
-import at.bitfire.synctools.storage.contacts.ContactContract.CachedGroupMembership
-import at.bitfire.synctools.storage.contacts.ContactContract.asSyncAdapter
+import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import java.io.FileNotFoundException
 
 open class AndroidContact(
@@ -50,7 +50,7 @@ open class AndroidContact(
      * Only filled after [getContact] has been called.
      *
      * Used to detect which groups have become dirty when a contact's memberships change.
-     * See [ContactContract.CachedGroupMembership] for details.
+     * See [AddressContract.CachedGroupMembership] for details.
      */
     val cachedGroupMemberships = HashSet<Long>()
 

@@ -20,10 +20,10 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.AndroidGroup
-import at.bitfire.synctools.storage.contacts.ContactContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import at.bitfire.synctools.util.AndroidAccountUtils
 import at.bitfire.synctools.util.setAndVerifyUserData
