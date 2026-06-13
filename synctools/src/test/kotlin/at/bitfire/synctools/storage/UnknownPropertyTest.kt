@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android
+package at.bitfire.synctools.storage
 
 import androidx.test.filters.SmallTest
 import at.bitfire.synctools.icalendar.plusAssign

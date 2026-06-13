@@ -4,12 +4,11 @@
 
 package at.bitfire.synctools.util
 
-import at.bitfire.ical4android.util.TimeApiExtensions
-import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.util.AndroidTimeUtils.androidTimezoneId
 import at.bitfire.synctools.util.AndroidTimeUtils.toInstant
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
+import at.bitfire.synctools.util.TimeApiExtensions.toLocalDate
 import net.fortuna.ical4j.model.CalendarDateFormat
 import net.fortuna.ical4j.model.DateList
 import net.fortuna.ical4j.model.TemporalAdapter

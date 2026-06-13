@@ -2,9 +2,9 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android.util
+package at.bitfire.synctools.util
 
-import net.fortuna.ical4j.util.TimeZones
+import net.fortuna.ical4j.model.TemporalAdapter
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -15,10 +15,10 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
 import java.time.temporal.TemporalAmount
-import java.util.Calendar
-import java.util.TimeZone
 
 object TimeApiExtensions {
+
+    // some constants
 
     const val DAYS_PER_WEEK = 7
 
@@ -27,13 +27,30 @@ object TimeApiExtensions {
     const val SECONDS_PER_DAY = SECONDS_PER_HOUR * 24
     private const val SECONDS_PER_WEEK = SECONDS_PER_DAY * DAYS_PER_WEEK
 
-    val tzUTC: TimeZone by lazy { TimeZones.getUtcTimeZone() }
+    // Temporal extensions
 
+    fun Temporal?.isDate(): Boolean = this != null && !TemporalAdapter.isDateTimePrecision(this)
 
-    /***** Durations *****/
+    fun Temporal?.isDateTime(): Boolean = this != null && TemporalAdapter.isDateTimePrecision(this)
+
+    fun Temporal.toLocalDate(): LocalDate =
+        when (this) {
+            is LocalDate -> this
+            is LocalDateTime -> toLocalDate()
+            is OffsetDateTime -> toLocalDate()
+            is ZonedDateTime -> toLocalDate()
+            is Instant -> LocalDate.ofInstant(this, ZoneOffset.UTC)
+            else -> error("Unsupported Temporal type: ${this::class.qualifiedName}")
+        }
+
+    // TemporalAmount extensions
 
     /**
-     * Returns the absolute (positive) temporal amount.
+     * Returns the absolute value of this temporal amount.
+     * Supported types: [Duration], [Period].
+     *
+     * @return Absolute value of this temporal amount.
+     * @throws IllegalArgumentException if the temporal amount is not a [Duration] or [Period].
      */
     fun TemporalAmount.abs(): TemporalAmount =
         when (this) {
@@ -47,16 +64,19 @@ object TimeApiExtensions {
             else -> throw IllegalArgumentException("TemporalAmount must be Period or Duration")
         }
 
+    /**
+     * Converts a TemporalAmount (Period or Duration) to a Duration relative to a given point in time.
+     *
+     * @param position The reference point in time for the conversion.
+     * @return The resulting Duration.
+     * @throws IllegalArgumentException if the TemporalAmount is neither a Period nor a Duration.
+     */
     fun TemporalAmount.toDuration(position: Instant): Duration =
         when (this) {
             is Duration -> this
             is Period -> {
-                val calEnd = Calendar.getInstance(tzUTC)
-                calEnd.timeInMillis = position.toEpochMilli()
-                calEnd.add(Calendar.DAY_OF_MONTH, days)
-                calEnd.add(Calendar.MONTH, months)
-                calEnd.add(Calendar.YEAR, years)
-                Duration.ofMillis(calEnd.timeInMillis - position.toEpochMilli())
+                val start = position.atOffset(ZoneOffset.UTC)
+                Duration.between(start, start + this)
             }
             else -> throw IllegalArgumentException("TemporalAmount must be Period or Duration")
         }
@@ -136,23 +156,6 @@ object TimeApiExtensions {
         } else
             throw NotImplementedError("Only Duration and Period is supported")
         return builder.toString()
-    }
-
-
-    /***** Temporals *****/
-
-    /**
-     * Gets the [LocalDate] part of this [Temporal] instance.
-     */
-    fun Temporal.toLocalDate(): LocalDate {
-        return when (this) {
-            is LocalDate -> this
-            is LocalDateTime -> toLocalDate()
-            is OffsetDateTime -> toLocalDate()
-            is ZonedDateTime -> toLocalDate()
-            is Instant -> LocalDate.ofInstant(this, ZoneOffset.UTC)
-            else -> error("Unsupported Temporal type: ${this::class.qualifiedName}")
-        }
     }
 
 }

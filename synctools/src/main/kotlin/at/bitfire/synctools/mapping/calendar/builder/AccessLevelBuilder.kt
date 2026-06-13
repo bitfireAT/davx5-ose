@@ -8,7 +8,7 @@ import android.content.Entity
 import android.provider.CalendarContract.Events
 import android.provider.CalendarContract.ExtendedProperties
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.UnknownProperty
+import at.bitfire.synctools.storage.UnknownProperty
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Clazz
 

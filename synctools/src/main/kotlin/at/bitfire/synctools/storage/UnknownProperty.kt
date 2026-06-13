@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android
+package at.bitfire.synctools.storage
 
 import android.content.ContentResolver
 import net.fortuna.ical4j.data.DefaultParameterFactorySupplier
@@ -53,16 +53,16 @@ object UnknownProperty {
         val value = json.getString(1)
 
         val builder = PropertyBuilder(propertyFactorySupplier)
-                .name(name)
-                .value(value)
+            .name(name)
+            .value(value)
 
         json.optJSONObject(2)?.let { jsonParams ->
             for (paramName in jsonParams.keys())
                 builder.parameter(
-                        ParameterBuilder(parameterFactorySupplier)
-                                .name(paramName)
-                                .value(jsonParams.getString(paramName))
-                                .build()
+                    ParameterBuilder(parameterFactorySupplier)
+                        .name(paramName)
+                        .value(jsonParams.getString(paramName))
+                        .build()
                 )
         }
 

@@ -2,13 +2,19 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.ical4android.util
+package at.bitfire.synctools.util
 
-import at.bitfire.ical4android.util.TimeApiExtensions.abs
-import at.bitfire.ical4android.util.TimeApiExtensions.toDuration
-import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
-import at.bitfire.ical4android.util.TimeApiExtensions.toRfc5545Duration
+import at.bitfire.dateTimeValue
+import at.bitfire.dateValue
+import at.bitfire.synctools.util.TimeApiExtensions.abs
+import at.bitfire.synctools.util.TimeApiExtensions.isDate
+import at.bitfire.synctools.util.TimeApiExtensions.isDateTime
+import at.bitfire.synctools.util.TimeApiExtensions.toDuration
+import at.bitfire.synctools.util.TimeApiExtensions.toLocalDate
+import at.bitfire.synctools.util.TimeApiExtensions.toRfc5545Duration
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
 import java.time.Duration
@@ -20,8 +26,24 @@ import java.time.Period
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.chrono.JapaneseDate
+import java.time.temporal.Temporal
 
 class TimeApiExtensionsTest {
+
+    @Test
+    fun isDate_Temporal() {
+        assertTrue(dateValue("20200101").isDate())
+        assertFalse(dateTimeValue("20200101T010203Z").isDate())
+        assertFalse((null as Temporal?).isDate())
+    }
+
+    @Test
+    fun isDateTime_Temporal() {
+        assertFalse(dateValue("20200101").isDateTime())
+        assertTrue(dateTimeValue("20200101T010203Z").isDateTime())
+        assertFalse((null as Temporal?).isDateTime())
+    }
+
 
     @Test
     fun testTemporalAmount_abs_Duration_negative() {

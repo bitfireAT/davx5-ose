@@ -5,9 +5,9 @@
 package at.bitfire.synctools.mapping.tasks
 
 import android.content.Entity
-import at.bitfire.ical4android.ICalendar.Companion.withUserAgents
 import at.bitfire.synctools.icalendar.AssociatedTasks
 import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.icalendar.withUserAgents
 import at.bitfire.synctools.mapping.tasks.handler.AlarmsHandler
 import at.bitfire.synctools.mapping.tasks.handler.CategoriesHandler
 import at.bitfire.synctools.mapping.tasks.handler.ClassificationHandler
