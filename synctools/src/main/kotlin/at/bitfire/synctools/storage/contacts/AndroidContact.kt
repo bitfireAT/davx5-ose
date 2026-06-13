@@ -107,7 +107,7 @@ open class AndroidContact(
         var iter: EntityIterator? = null
         try {
             iter = RawContacts.newEntityIterator(addressBook.provider!!.query(
-                    addressBook.syncAdapterURI(ContactsContract.RawContactsEntity.CONTENT_URI),
+                    ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount),
                     null, RawContacts._ID + "=?", arrayOf(id.toString()), null))
 
             if (iter.hasNext()) {
@@ -142,7 +142,7 @@ open class AndroidContact(
         val provider = addressBook.provider!!
         val batch = ContactsBatchOperation(provider)
 
-        val builder = BatchOperation.CpoBuilder.newInsert(addressBook.syncAdapterURI(RawContacts.CONTENT_URI))
+        val builder = BatchOperation.CpoBuilder.newInsert(RawContacts.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount))
         buildContact(builder, false)
         batch += builder
 
@@ -290,10 +290,10 @@ open class AndroidContact(
 
     fun rawContactSyncURI(): Uri {
         val id = requireNotNull(id)
-        return addressBook.syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, id))
+        return ContentUris.withAppendedId(RawContacts.CONTENT_URI, id).asSyncAdapter(addressBook.addressBookAccount)
     }
 
-    fun dataSyncURI() = addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI)
+    fun dataSyncURI() = ContactsContract.Data.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount)
 
     override fun toString() =
         "AndroidContact(id=$id, fileName=$fileName, eTag=$eTag, cachedContact=$cachedContact)"

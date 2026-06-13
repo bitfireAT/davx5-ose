@@ -36,7 +36,7 @@ open class AndroidAddressBook<T1: AndroidContact, T2: AndroidGroup>(
          * @throws android.os.RemoteException on content provider errors
          */
         get() {
-            provider!!.query(syncAdapterURI(ContactsContract.Settings.CONTENT_URI), null, null, null, null)?.use { cursor ->
+            provider!!.query(ContactsContract.Settings.CONTENT_URI.asSyncAdapter(addressBookAccount), null, null, null, null)?.use { cursor ->
                 if (cursor.moveToNext())
                     return cursor.toContentValues()
             }
@@ -52,7 +52,7 @@ open class AndroidAddressBook<T1: AndroidContact, T2: AndroidGroup>(
         set(values) {
             values.put(ContactsContract.Settings.ACCOUNT_NAME, addressBookAccount.name)
             values.put(ContactsContract.Settings.ACCOUNT_TYPE, addressBookAccount.type)
-            provider!!.insert(syncAdapterURI(ContactsContract.Settings.CONTENT_URI), values)
+            provider!!.insert(ContactsContract.Settings.CONTENT_URI.asSyncAdapter(addressBookAccount), values)
         }
 
     var syncState: ByteArray?
@@ -123,7 +123,7 @@ open class AndroidAddressBook<T1: AndroidContact, T2: AndroidGroup>(
 
     fun findOrCreateGroup(title: String): Long {
         provider!!.query(
-            syncAdapterURI(Groups.CONTENT_URI), arrayOf(Groups._ID),
+            Groups.CONTENT_URI.asSyncAdapter(addressBookAccount), arrayOf(Groups._ID),
             "${Groups.TITLE}=?", arrayOf(title), null
         )?.use { cursor ->
             if (cursor.moveToNext())
@@ -131,7 +131,7 @@ open class AndroidAddressBook<T1: AndroidContact, T2: AndroidGroup>(
         }
 
         val values = contentValuesOf(Groups.TITLE to title)
-        val uri = provider.insert(syncAdapterURI(Groups.CONTENT_URI), values)
+        val uri = provider.insert(Groups.CONTENT_URI.asSyncAdapter(addressBookAccount), values)
             ?: throw RemoteException("Couldn't create contact group")
         return ContentUris.parseId(uri)
     }
@@ -139,13 +139,7 @@ open class AndroidAddressBook<T1: AndroidContact, T2: AndroidGroup>(
 
     // helpers
 
-    fun syncAdapterURI(uri: Uri) = uri.buildUpon()
-            .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
-            .appendQueryParameter(RawContacts.ACCOUNT_NAME, addressBookAccount.name)
-            .appendQueryParameter(RawContacts.ACCOUNT_TYPE, addressBookAccount.type)
-            .build()!!
-
-    fun rawContactsSyncUri() = syncAdapterURI(RawContacts.CONTENT_URI)
-    fun groupsSyncUri() = syncAdapterURI(Groups.CONTENT_URI)
+    fun rawContactsSyncUri() = RawContacts.CONTENT_URI.asSyncAdapter(addressBookAccount)
+    fun groupsSyncUri() = Groups.CONTENT_URI.asSyncAdapter(addressBookAccount)
 
 }
