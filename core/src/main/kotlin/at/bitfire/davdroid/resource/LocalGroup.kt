@@ -31,10 +31,10 @@ import java.util.Optional
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
 
-class LocalGroup: AndroidGroup, LocalAddress {
+class LocalGroup : AndroidGroup, LocalAddress {
 
     companion object {
-        
+
         private val logger: Logger
             get() = Logger.getGlobal()
 
@@ -112,9 +112,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
     constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues) : super(addressBook, values)
 
     constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, contact: Contact, fileName: String?, eTag: String?, flags: Int)
-        : super(addressBook, contact, fileName, eTag) {
-        this.flags = flags
-    }
+            : super(addressBook, contact, fileName, eTag, flags)
 
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
@@ -206,7 +204,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
             .add("fileName", fileName)
             .add("eTag", eTag)
             .add("flags", flags)
-            .add("contact",
+            .add(
+                "contact",
                 try {
                     getContact().toString()
                 } catch (e: Exception) {
@@ -234,10 +233,10 @@ class LocalGroup: AndroidGroup, LocalAddress {
         val members = LinkedList<Long>()
         addressBook.provider!!.query(
             ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
-                arrayOf(Data.RAW_CONTACT_ID),
-                "${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?",
-                arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()),
-                null
+            arrayOf(Data.RAW_CONTACT_ID),
+            "${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?",
+            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()),
+            null
         )?.use { cursor ->
             while (cursor.moveToNext())
                 members += cursor.getLong(0)
@@ -248,9 +247,9 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
     // factory
 
-    object Factory: AndroidGroupFactory<LocalGroup> {
+    object Factory : AndroidGroupFactory<LocalGroup> {
         override fun fromProvider(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues) =
-                LocalGroup(addressBook, values)
+            LocalGroup(addressBook, values)
     }
 
 }

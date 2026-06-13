@@ -21,7 +21,7 @@ import com.google.common.base.MoreObjects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-class LocalContact: AndroidContact, LocalAddress {
+class LocalContact : AndroidContact, LocalAddress {
 
     override val addressBook: LocalAddressBook
         get() = super.addressBook as LocalAddressBook
@@ -32,9 +32,13 @@ class LocalContact: AndroidContact, LocalAddress {
 
     constructor(addressBook: LocalAddressBook, values: ContentValues) : super(addressBook, values)
 
-    constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, _flags: Int): super(addressBook, contact, fileName, eTag) {
-        flags = _flags
-    }
+    constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, flags: Int) : super(
+        addressBook,
+        contact,
+        fileName,
+        eTag,
+        flags
+    )
 
     /**
      * Clears cached contact (that is used by [getContact]) so that the next call of [getContact]
@@ -128,9 +132,9 @@ class LocalContact: AndroidContact, LocalAddress {
 
     // factory
 
-    object Factory: AndroidContactFactory<LocalContact> {
+    object Factory : AndroidContactFactory<LocalContact> {
         override fun fromProvider(addressBook: AndroidAddressBook<LocalContact, *>, values: ContentValues) =
-                LocalContact(addressBook as LocalAddressBook, values)
+            LocalContact(addressBook as LocalAddressBook, values)
     }
 
 }

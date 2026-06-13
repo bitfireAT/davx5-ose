@@ -47,10 +47,17 @@ open class AndroidGroup(
         }
 	}
 
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, contact: Contact, fileName: String?  = null, eTag: String? = null): this(addressBook) {
+    constructor(
+        addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>,
+        contact: Contact,
+        fileName: String? = null,
+        eTag: String? = null,
+        flags: Int = 0
+    ) : this(addressBook) {
 		cachedContact = contact
         this.fileName = fileName
         this.eTag = eTag
+        this.flags = flags
 	}
 
 
