@@ -57,7 +57,7 @@ fun DateProperty<*>?.isAllDay(): Boolean =
 
 // component access helpers
 
-fun<T: CalendarComponent> componentListOf(vararg components: T): ComponentList<T> =
+fun <T : CalendarComponent> componentListOf(vararg components: T): ComponentList<T> =
     ComponentList(components.toList())
 
 fun propertyListOf(vararg properties: Property): PropertyList =
@@ -72,19 +72,19 @@ val CalendarComponent.recurrenceId: RecurrenceId<*>?
 val CalendarComponent.sequence: Sequence?
     get() = getProperty<Sequence>(Property.SEQUENCE).getOrNull()
 
-fun <T: Temporal> CalendarComponent.dtStart(): DtStart<T>? {
+fun <T : Temporal> CalendarComponent.dtStart(): DtStart<T>? {
     return getProperty<DtStart<T>>(Property.DTSTART).getOrNull()
 }
 
-fun <T: Temporal> CalendarComponent.dtEnd(): DtEnd<T>? {
+fun <T : Temporal> CalendarComponent.dtEnd(): DtEnd<T>? {
     return getProperty<DtEnd<T>>(Property.DTEND).getOrNull()
 }
 
-fun <T: Temporal> CalendarComponent.due(): Due<T>? {
+fun <T : Temporal> CalendarComponent.due(): Due<T>? {
     return getProperty<Due<T>>(Property.DUE).getOrNull()
 }
 
-fun <T: Temporal> VEvent.requireDtStart(): DtStart<T> =
+fun <T : Temporal> VEvent.requireDtStart(): DtStart<T> =
     getProperty<DtStart<T>>(Property.DTSTART).getOrNull() ?: throw InvalidICalendarException("Missing DTSTART in VEVENT")
 
 /**
@@ -123,14 +123,12 @@ fun ProdId.withUserAgents(userAgents: List<String>): ProdId =
     else
         ProdId(value + " (${userAgents.joinToString(", ")})")
 
-fun timezoneDefToTzId(timezoneDef: String): String? {
+fun timezoneDefToTzId(timezoneDef: String): String? =
     try {
-        val builder = CalendarBuilder()
-        val cal = builder.build(StringReader(timezoneDef))
+        val cal = CalendarBuilder().build(StringReader(timezoneDef))
         val timezone = cal.getComponent<VTimeZone>(VTimeZone.VTIMEZONE).getOrNull()
-        timezone?.timeZoneId?.let { return it.value }
+        timezone?.timeZoneId?.value
     } catch (e: ParserException) {
         Logger.getLogger("at.bitfire.synctools.icalendar").log(Level.SEVERE, "Can't understand time zone definition", e)
+        null
     }
-    return null
-}
