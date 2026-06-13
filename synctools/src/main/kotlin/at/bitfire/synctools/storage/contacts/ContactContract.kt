@@ -16,10 +16,19 @@ import at.bitfire.synctools.storage.contacts.ContactContract.UnknownProperty.MIM
  */
 object ContactContract {
 
-    fun Uri.asSyncAdapter(account: Account): Uri = buildUpon()
+    /**
+     * Appends [ContactsContract.CALLER_IS_SYNCADAPTER] to prevent dirty-marking; optionally appends
+     * [account] for collection-level URIs that need account filtering or assignment (independent of
+     * the sync-adapter flag in the provider).
+     */
+    fun Uri.asSyncAdapter(account: Account? = null): Uri = buildUpon()
         .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
-        .appendQueryParameter(RawContacts.ACCOUNT_NAME, account.name)
-        .appendQueryParameter(RawContacts.ACCOUNT_TYPE, account.type)
+        .apply {
+            if (account != null) {
+                appendQueryParameter(RawContacts.ACCOUNT_NAME, account.name)
+                appendQueryParameter(RawContacts.ACCOUNT_TYPE, account.type)
+            }
+        }
         .build()
 
     object CachedGroupMembership {

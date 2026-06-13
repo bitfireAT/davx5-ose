@@ -73,7 +73,8 @@ open class AndroidGroup(
 
         val id = requireNotNull(id)
         val contact = Contact()
-        addressBook.provider!!.query(ContentUris.withAppendedId(Groups.CONTENT_URI, id).asSyncAdapter(addressBook.addressBookAccount),
+        addressBook.provider!!.query(
+            ContentUris.withAppendedId(Groups.CONTENT_URI, id).asSyncAdapter(),
                 arrayOf(COLUMN_UID, Groups.TITLE, Groups.NOTES), null, null, null)?.use { cursor ->
             if (!cursor.moveToNext())
                 throw FileNotFoundException("Contact group not found")
@@ -85,7 +86,8 @@ open class AndroidGroup(
         }
 
         // get all contacts which are member of the group
-        addressBook.provider.query(ContactsContract.Data.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount),
+        addressBook.provider.query(
+            ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 arrayOf(Data.RAW_CONTACT_ID),
                 GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?",
                 arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()), null)?.use { membershipCursor ->
@@ -94,7 +96,8 @@ open class AndroidGroup(
                 logger.fine("Member ID: $contactId")
 
                 // get UID from the member
-                addressBook.provider.query(ContentUris.withAppendedId(RawContacts.CONTENT_URI, contactId).asSyncAdapter(addressBook.addressBookAccount),
+                addressBook.provider.query(
+                    ContentUris.withAppendedId(RawContacts.CONTENT_URI, contactId).asSyncAdapter(),
                         arrayOf(at.bitfire.synctools.storage.contacts.AndroidContact.COLUMN_UID), null, null, null)?.use { rawContactCursor ->
                     if (rawContactCursor.moveToNext()) {
                         val uid = rawContactCursor.getString(0)

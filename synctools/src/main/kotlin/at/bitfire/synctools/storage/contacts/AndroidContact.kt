@@ -109,7 +109,7 @@ open class AndroidContact(
         var iter: EntityIterator? = null
         try {
             iter = RawContacts.newEntityIterator(addressBook.provider!!.query(
-                    ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount),
+                ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(),
                     null, RawContacts._ID + "=?", arrayOf(id.toString()), null))
 
             if (iter.hasNext()) {
@@ -144,7 +144,7 @@ open class AndroidContact(
         val provider = addressBook.provider!!
         val batch = ContactsBatchOperation(provider)
 
-        val builder = BatchOperation.CpoBuilder.newInsert(RawContacts.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount))
+        val builder = BatchOperation.CpoBuilder.newInsert(RawContacts.CONTENT_URI.asSyncAdapter())
         buildContact(builder, false)
         batch += builder
 
@@ -156,7 +156,7 @@ open class AndroidContact(
         id = ContentUris.parseId(resultUri)
 
         getContact().photo?.let { photo ->
-            PhotoBuilder.insertPhoto(provider, addressBook.addressBookAccount, id!!, photo)
+            PhotoBuilder.insertPhoto(provider, id!!, photo)
         }
 
         return resultUri
@@ -188,7 +188,7 @@ open class AndroidContact(
         batch.commit()
 
         getContact().photo?.let { photo ->
-            PhotoBuilder.insertPhoto(provider, addressBook.addressBookAccount, id!!, photo)
+            PhotoBuilder.insertPhoto(provider, id!!, photo)
         }
 
         return uri
@@ -292,10 +292,10 @@ open class AndroidContact(
 
     fun rawContactSyncURI(): Uri {
         val id = requireNotNull(id)
-        return ContentUris.withAppendedId(RawContacts.CONTENT_URI, id).asSyncAdapter(addressBook.addressBookAccount)
+        return ContentUris.withAppendedId(RawContacts.CONTENT_URI, id).asSyncAdapter()
     }
 
-    fun dataSyncURI() = ContactsContract.Data.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount)
+    fun dataSyncURI() = ContactsContract.Data.CONTENT_URI.asSyncAdapter()
 
     override fun toString() =
         "AndroidContact(id=$id, fileName=$fileName, eTag=$eTag, cachedContact=$cachedContact)"
