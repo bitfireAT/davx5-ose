@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.ContactsContract.RawContacts
+import at.bitfire.synctools.storage.contacts.ContactContract.CachedGroupMembership.MIMETYPE
 import at.bitfire.synctools.storage.contacts.ContactContract.UnknownProperty.MIMETYPE
 
 /**
@@ -20,6 +21,20 @@ object ContactContract {
         .appendQueryParameter(RawContacts.ACCOUNT_NAME, account.name)
         .appendQueryParameter(RawContacts.ACCOUNT_TYPE, account.type)
         .build()
+
+    object CachedGroupMembership {
+        /** Column name for the MIME type of the data row. Type: [String] */
+        const val MIMETYPE = RawContacts.Data.MIMETYPE
+
+        /** MIME type of cached group membership data rows. Stored in [MIMETYPE]. */
+        const val CONTENT_ITEM_TYPE = "x.davdroid/cached-group-membership"
+
+        /** Column name for the ID of the raw contact this cached membership belongs to. Type: [Long] */
+        const val RAW_CONTACT_ID = RawContacts.Data.RAW_CONTACT_ID
+
+        /** Column name for the ID of the group this cached membership refers to. Type: [Long] */
+        const val GROUP_ID = RawContacts.Data.DATA1
+    }
 
     object UnknownProperty {
         /** Column name for the MIME type of the data row. Type: [String] */

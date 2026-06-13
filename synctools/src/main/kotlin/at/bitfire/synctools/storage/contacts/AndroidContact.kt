@@ -21,6 +21,7 @@ import at.bitfire.synctools.mapping.contacts.RawContactHandler
 import at.bitfire.synctools.mapping.contacts.builder.PhotoBuilder
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.contacts.ContactContract.CachedGroupMembership
 import at.bitfire.synctools.storage.contacts.ContactContract.asSyncAdapter
 import java.io.FileNotFoundException
 
@@ -49,7 +50,7 @@ open class AndroidContact(
      * Only filled after [getContact] has been called.
      *
      * Used to detect which groups have become dirty when a contact's memberships change.
-     * See [CachedGroupMembershipContract] for details.
+     * See [ContactContract.CachedGroupMembership] for details.
      */
     val cachedGroupMemberships = HashSet<Long>()
 
@@ -245,9 +246,9 @@ open class AndroidContact(
 
         batch += BatchOperation.CpoBuilder
             .newInsert(dataSyncURI())
-            .withValue(CachedGroupMembershipContract.MIMETYPE, CachedGroupMembershipContract.CONTENT_ITEM_TYPE)
-            .withValue(CachedGroupMembershipContract.RAW_CONTACT_ID, id)
-            .withValue(CachedGroupMembershipContract.GROUP_ID, groupID)
+            .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+            .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
+            .withValue(CachedGroupMembership.GROUP_ID, groupID)
         cachedGroupMemberships += groupID
     }
 
@@ -256,7 +257,7 @@ open class AndroidContact(
             .newDelete(dataSyncURI())
             .withSelection(
                 "${Data.RAW_CONTACT_ID}=? AND ${Data.MIMETYPE} IN (?,?)",
-                arrayOf(id!!.toString(), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembershipContract.CONTENT_ITEM_TYPE)
+                arrayOf(id!!.toString(), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
             )
         groupMemberships.clear()
         cachedGroupMemberships.clear()
