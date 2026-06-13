@@ -55,8 +55,8 @@ class LocalContact: AndroidContact, LocalAddress {
 
         val values = ContentValues(4)
         if (fileName.isPresent)
-            values.put(COLUMN_FILENAME, fileName.get())
-        values.put(COLUMN_ETAG, eTag)
+            values.put(RawContactColumns.FILENAME, fileName.get())
+        values.put(RawContactColumns.ETAG, eTag)
         values.put(RawContacts.DIRTY, 0)
 
         // Android 7 workaround
@@ -93,7 +93,7 @@ class LocalContact: AndroidContact, LocalAddress {
     override fun updateSequence(sequence: Int) = throw NotImplementedError()
 
     override fun updateUid(uid: String) {
-        val values = contentValuesOf(COLUMN_UID to uid)
+        val values = contentValuesOf(RawContactColumns.UID to uid)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 

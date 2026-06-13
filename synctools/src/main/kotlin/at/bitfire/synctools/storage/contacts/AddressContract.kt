@@ -17,6 +17,8 @@ import at.bitfire.synctools.storage.contacts.AddressContract.UnknownProperty.MIM
  */
 object AddressContract {
 
+    // extension methods
+
     /**
      * Appends [ContactsContract.CALLER_IS_SYNCADAPTER] to prevent dirty-marking; optionally appends
      * [account] for collection-level URIs that need account filtering or assignment (independent of
@@ -31,6 +33,26 @@ object AddressContract {
             }
         }
         .build()
+
+    // raw contacts: main row columns and sub-row definitions
+
+    /** Sync columns used on [RawContacts] rows. */
+    object RawContactColumns {
+        /** Column name for the file name (vCard FILENAME). Maps to [RawContacts.SOURCE_ID]. */
+        const val FILENAME = RawContacts.SOURCE_ID
+
+        /** Column name for the UID. Maps to [RawContacts.SYNC1]. */
+        const val UID = RawContacts.SYNC1
+
+        /** Column name for the ETag. Maps to [RawContacts.SYNC2]. */
+        const val ETAG = RawContacts.SYNC2
+
+        /** Hash of contact data; used by the Android 7 workaround to detect real data changes. */
+        const val HASHCODE = RawContacts.SYNC3
+
+        /** Sync flags for local change tracking (see LocalCollection). */
+        const val FLAGS: String = RawContacts.SYNC4
+    }
 
     /**
      * Represents a "cached group membership" row. Cached group memberships exist only
@@ -60,26 +82,6 @@ object AddressContract {
         const val GROUP_ID = RawContacts.Data.DATA1
     }
 
-    /** Sync columns used on [RawContacts] rows. */
-    object RawContactColumns {
-        /** Sync flags for local change tracking (see [at.bitfire.synctools.storage.LocalCollection]). */
-        const val FLAGS = RawContacts.SYNC4
-
-        /** Hash of contact data; used by the Android 7 workaround to detect real data changes. */
-        const val HASHCODE = RawContacts.SYNC3
-    }
-
-    /** Sync columns used on [Groups] rows. */
-    object GroupColumns {
-        /** Sync flags for local change tracking (see [at.bitfire.synctools.storage.LocalCollection]). */
-        const val FLAGS = Groups.SYNC4
-
-        /** List of member UIDs, as sent by server. This list will be used to establish
-         *  the group memberships when all groups and contacts have been synchronized.
-         *  Use [at.bitfire.synctools.mapping.contacts.PendingMemberships] to create/read the list. */
-        const val PENDING_MEMBERS = Groups.SYNC3
-    }
-
     object UnknownProperty {
         /** Column name for the MIME type of the data row. Type: [String] */
         const val MIMETYPE = RawContacts.Data.MIMETYPE
@@ -87,11 +89,31 @@ object AddressContract {
         /** MIME type of unknown-property data rows. Stored in [MIMETYPE]. */
         const val CONTENT_ITEM_TYPE = "x.davdroid/unknown-properties"
 
-        /** Column name for the ID of the raw contact this row belongs to. Type: [Long] */
-        const val RAW_CONTACT_ID = RawContacts.Data.RAW_CONTACT_ID
-
         /** Column name for the serialized unknown vCard properties. Type: [String] */
         const val UNKNOWN_PROPERTIES = RawContacts.Data.DATA1
+    }
+
+    // group row columns
+
+    /** Sync columns used on [Groups] rows. */
+    object GroupColumns {
+        /** Column name for the file name (vCard FILENAME). Maps to [Groups.SOURCE_ID]. */
+        const val FILENAME = Groups.SOURCE_ID
+
+        /** Column name for the UID. Maps to [Groups.SYNC1]. */
+        const val UID = Groups.SYNC1
+
+        /** Column name for the ETag. Maps to [Groups.SYNC2]. */
+        const val ETAG = Groups.SYNC2
+
+        /** List of member UIDs, as sent by server. This list will be used to establish
+         *  the group memberships when all groups and contacts have been synchronized.
+         *  Use [at.bitfire.synctools.mapping.contacts.PendingMemberships] to create/read the list. */
+        const val PENDING_MEMBERS = Groups.SYNC3
+
+        /** Sync flags for local change tracking (see LocalCollection). */
+        const val FLAGS = Groups.SYNC4
+
     }
 
 }

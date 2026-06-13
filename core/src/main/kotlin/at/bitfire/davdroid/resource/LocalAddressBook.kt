@@ -24,8 +24,6 @@ import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
-import at.bitfire.synctools.storage.contacts.AndroidContact
-import at.bitfire.synctools.storage.contacts.AndroidGroup
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import at.bitfire.synctools.util.AndroidAccountUtils
 import at.bitfire.synctools.util.setAndVerifyUserData
@@ -232,9 +230,9 @@ open class LocalAddressBook @AssistedInject constructor(
         countContacts("${RawContacts.DIRTY} AND NOT ${RawContacts.DELETED}", null)
 
     override fun findByName(name: String): LocalAddress? {
-        val result = queryContacts("${AndroidContact.COLUMN_FILENAME}=?", arrayOf(name)).firstOrNull()
+        val result = queryContacts("${RawContactColumns.FILENAME}=?", arrayOf(name)).firstOrNull()
         return if (includeGroups)
-            result ?: queryGroups("${AndroidGroup.COLUMN_FILENAME}=?", arrayOf(name)).firstOrNull()
+            result ?: queryGroups("${GroupColumns.FILENAME}=?", arrayOf(name)).firstOrNull()
         else
             result
     }
@@ -268,10 +266,10 @@ open class LocalAddressBook @AssistedInject constructor(
 
     override fun forgetETags() {
         if (includeGroups) {
-            val values = contentValuesOf(AndroidGroup.COLUMN_ETAG to null)
+            val values = contentValuesOf(GroupColumns.ETAG to null)
             provider!!.update(groupsSyncUri(), values, null, null)
         }
-        val values = contentValuesOf(AndroidContact.COLUMN_ETAG to null)
+        val values = contentValuesOf(RawContactColumns.ETAG to null)
         provider!!.update(rawContactsSyncUri(), values, null, null)
     }
 
@@ -291,7 +289,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
     fun getContactUidFromId(contactId: Long): String? {
         provider!!.query(
-            rawContactsSyncUri(), arrayOf(AndroidContact.COLUMN_UID),
+            rawContactsSyncUri(), arrayOf(RawContactColumns.UID),
             "${RawContacts._ID}=?", arrayOf(contactId.toString()), null
         )?.use { cursor ->
             if (cursor.moveToNext())

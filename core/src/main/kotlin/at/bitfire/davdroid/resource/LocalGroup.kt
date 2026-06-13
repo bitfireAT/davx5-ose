@@ -142,8 +142,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
         val values = ContentValues(3)
         if (fileName.isPresent)
-            values.put(COLUMN_FILENAME, fileName.get())
-        values.putNull(COLUMN_ETAG)     // don't save changed ETag but null, so that the group is downloaded again, so that pendingMembers is updated
+            values.put(GroupColumns.FILENAME, fileName.get())
+        values.putNull(GroupColumns.ETAG)     // don't save changed ETag but null, so that the group is downloaded again, so that pendingMembers is updated
         values.put(Groups.DIRTY, 0)
         update(values)
 
@@ -205,7 +205,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
     override fun updateSequence(sequence: Int) = throw NotImplementedError()
 
     override fun updateUid(uid: String) {
-        val values = contentValuesOf(AndroidContact.COLUMN_UID to uid)
+        val values = contentValuesOf(GroupColumns.UID to uid)
         addressBook.provider!!.update(groupSyncUri(), values, null, null)
     }
 

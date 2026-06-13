@@ -29,14 +29,6 @@ open class AndroidContact(
     open val addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>
 ) {
 
-    companion object {
-
-        const val COLUMN_FILENAME = RawContacts.SOURCE_ID
-        const val COLUMN_UID = RawContacts.SYNC1
-        const val COLUMN_ETAG = RawContacts.SYNC2
-
-    }
-
     var id: Long? = null
         protected set
 
@@ -83,8 +75,8 @@ open class AndroidContact(
      */
     constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, values: ContentValues): this(addressBook) {
         id = values.getAsLong(RawContacts._ID)
-        fileName = values.getAsString(COLUMN_FILENAME)
-        eTag = values.getAsString(COLUMN_ETAG)
+        fileName = values.getAsString(AddressContract.RawContactColumns.FILENAME)
+        eTag = values.getAsString(AddressContract.RawContactColumns.ETAG)
     }
 
 
@@ -212,9 +204,9 @@ open class AndroidContact(
 
         builder .withValue(RawContacts.DIRTY, 0)
                 .withValue(RawContacts.DELETED, 0)
-                .withValue(COLUMN_FILENAME, fileName)
-                .withValue(COLUMN_ETAG, eTag)
-                .withValue(COLUMN_UID, getContact().uid)
+            .withValue(AddressContract.RawContactColumns.FILENAME, fileName)
+            .withValue(AddressContract.RawContactColumns.ETAG, eTag)
+            .withValue(AddressContract.RawContactColumns.UID, getContact().uid)
 
         if (addressBook.readOnly)
             builder.withValue(RawContacts.RAW_CONTACT_IS_READ_ONLY, 1)

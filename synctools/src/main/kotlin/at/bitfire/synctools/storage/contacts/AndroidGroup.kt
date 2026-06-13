@@ -25,14 +25,6 @@ import java.util.logging.Logger
 open class AndroidGroup(
     val addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>
 ) {
-
-    companion object {
-        
-        const val COLUMN_FILENAME = Groups.SOURCE_ID
-        const val COLUMN_UID = Groups.SYNC1
-        const val COLUMN_ETAG = Groups.SYNC2
-        
-    }
     
     protected val logger
         get() = Logger.getLogger(javaClass.name)
@@ -44,8 +36,8 @@ open class AndroidGroup(
 
 	constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, values: ContentValues): this(addressBook) {
         id = values.getAsLong(Groups._ID)
-        fileName = values.getAsString(COLUMN_FILENAME)
-        eTag = values.getAsString(COLUMN_ETAG)
+        fileName = values.getAsString(AddressContract.GroupColumns.FILENAME)
+        eTag = values.getAsString(AddressContract.GroupColumns.ETAG)
 	}
 
     constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, contact: Contact, fileName: String?  = null, eTag: String? = null): this(addressBook) {
@@ -75,7 +67,8 @@ open class AndroidGroup(
         val contact = Contact()
         addressBook.provider!!.query(
             ContentUris.withAppendedId(Groups.CONTENT_URI, id).asSyncAdapter(),
-                arrayOf(COLUMN_UID, Groups.TITLE, Groups.NOTES), null, null, null)?.use { cursor ->
+            arrayOf(AddressContract.GroupColumns.UID, Groups.TITLE, Groups.NOTES), null, null, null
+        )?.use { cursor ->
             if (!cursor.moveToNext())
                 throw FileNotFoundException("Contact group not found")
 
@@ -98,7 +91,8 @@ open class AndroidGroup(
                 // get UID from the member
                 addressBook.provider.query(
                     ContentUris.withAppendedId(RawContacts.CONTENT_URI, contactId).asSyncAdapter(),
-                        arrayOf(at.bitfire.synctools.storage.contacts.AndroidContact.COLUMN_UID), null, null, null)?.use { rawContactCursor ->
+                    arrayOf(AddressContract.RawContactColumns.UID), null, null, null
+                )?.use { rawContactCursor ->
                     if (rawContactCursor.moveToNext()) {
                         val uid = rawContactCursor.getString(0)
                         if (!uid.isNullOrBlank()) {
@@ -121,9 +115,9 @@ open class AndroidGroup(
     protected open fun contentValues(): ContentValues {
         val contact = getContact()
         val values = contentValuesOf(
-            COLUMN_FILENAME to fileName,
-            COLUMN_ETAG to eTag,
-            COLUMN_UID to contact.uid,
+            AddressContract.GroupColumns.FILENAME to fileName,
+            AddressContract.GroupColumns.ETAG to eTag,
+            AddressContract.GroupColumns.UID to contact.uid,
             Groups.TITLE to contact.displayName,
             Groups.NOTES to contact.note
         )

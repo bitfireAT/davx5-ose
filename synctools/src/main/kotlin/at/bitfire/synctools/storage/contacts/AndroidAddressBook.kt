@@ -115,7 +115,7 @@ open class AndroidAddressBook<T1: AndroidContact, T2: AndroidGroup>(
             queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
 
     fun findContactByUid(uid: String) =
-            queryContacts("${AndroidContact.COLUMN_UID}=?", arrayOf(uid)).firstOrNull()
+        queryContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf(uid)).firstOrNull()
 
     @Throws(FileNotFoundException::class)
     fun findGroupById(id: Long) =
