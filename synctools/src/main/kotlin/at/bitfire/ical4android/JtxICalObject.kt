@@ -18,9 +18,9 @@ import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDates
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.icalendar.withUserAgents
+import at.bitfire.synctools.mapping.UnknownProperty
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.TaskProvider
-import at.bitfire.synctools.storage.UnknownProperty
 import at.bitfire.synctools.storage.jtx.JtxBatchOperation
 import at.bitfire.synctools.storage.jtx.JtxCollection
 import at.bitfire.synctools.storage.toContentValues

@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.synctools.storage
+package at.bitfire.synctools.mapping
 
 import android.content.ContentResolver
 import net.fortuna.ical4j.data.DefaultParameterFactorySupplier

@@ -7,8 +7,8 @@ package at.bitfire.synctools.mapping.tasks.handler
 import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.mapping.UnknownProperty
 import at.bitfire.synctools.mapping.tasks.mimeType
-import at.bitfire.synctools.storage.UnknownProperty
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.UNKNOWN_PROPERTY_DATA
 import net.fortuna.ical4j.model.component.VToDo
 import org.json.JSONException
