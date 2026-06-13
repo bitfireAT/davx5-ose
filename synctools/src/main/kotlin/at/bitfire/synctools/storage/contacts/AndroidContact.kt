@@ -14,7 +14,6 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
-import androidx.annotation.CallSuper
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.RawContactBuilder
 import at.bitfire.synctools.mapping.contacts.RawContactHandler
@@ -36,6 +35,8 @@ open class AndroidContact(
         protected set
 
     var eTag: String? = null
+
+    var flags: Int = 0
 
     /**
      * IDs of groups this contact's cached group membership rows belong to.
@@ -77,6 +78,7 @@ open class AndroidContact(
         id = values.getAsLong(RawContacts._ID)
         fileName = values.getAsString(AddressContract.RawContactColumns.FILENAME)
         eTag = values.getAsString(AddressContract.RawContactColumns.ETAG)
+        flags = values.getAsInteger(AddressContract.RawContactColumns.FLAGS) ?: 0
     }
 
 
@@ -196,14 +198,14 @@ open class AndroidContact(
     fun delete() = addressBook.provider!!.delete(rawContactSyncURI(), null, null)
 
 
-    @CallSuper
-    protected open fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
+    protected fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
         if (!update)
             builder	.withValue(RawContacts.ACCOUNT_NAME, addressBook.addressBookAccount.name)
                     .withValue(RawContacts.ACCOUNT_TYPE, addressBook.addressBookAccount.type)
 
         builder .withValue(RawContacts.DIRTY, 0)
                 .withValue(RawContacts.DELETED, 0)
+            .withValue(AddressContract.RawContactColumns.FLAGS, flags)
             .withValue(AddressContract.RawContactColumns.FILENAME, fileName)
             .withValue(AddressContract.RawContactColumns.ETAG, eTag)
             .withValue(AddressContract.RawContactColumns.UID, getContact().uid)

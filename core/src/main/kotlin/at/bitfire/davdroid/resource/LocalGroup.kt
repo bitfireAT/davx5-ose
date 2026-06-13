@@ -16,7 +16,6 @@ import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
-import at.bitfire.synctools.mapping.contacts.PendingMemberships
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
 import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
@@ -109,29 +108,12 @@ class LocalGroup: AndroidGroup, LocalAddress {
         get() = null
         set(_) = throw NotImplementedError()
 
-    override var flags: Int = 0
 
-    var pendingMemberships = setOf<String>()
-
-
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues) : super(addressBook, values) {
-        flags = values.getAsInteger(GroupColumns.FLAGS) ?: 0
-        values.getAsString(GroupColumns.PENDING_MEMBERS)?.let { members ->
-            pendingMemberships = PendingMemberships.fromString(members).uids
-        }
-    }
+    constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues) : super(addressBook, values)
 
     constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, contact: Contact, fileName: String?, eTag: String?, flags: Int)
         : super(addressBook, contact, fileName, eTag) {
         this.flags = flags
-    }
-
-
-    override fun contentValues(): ContentValues  {
-        val values = super.contentValues()
-        values.put(GroupColumns.FLAGS, flags)
-        values.put(GroupColumns.PENDING_MEMBERS, PendingMemberships(getContact().members).toString())
-        return values
     }
 
 

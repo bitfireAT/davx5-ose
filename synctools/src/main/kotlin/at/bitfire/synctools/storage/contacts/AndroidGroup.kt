@@ -13,9 +13,9 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
-import androidx.annotation.CallSuper
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.PendingMemberships
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.plusAssign
@@ -34,10 +34,17 @@ open class AndroidGroup(
     var fileName: String? = null
     var eTag: String? = null
 
+    var flags: Int = 0
+    var pendingMemberships = setOf<String>()
+
 	constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, values: ContentValues): this(addressBook) {
         id = values.getAsLong(Groups._ID)
         fileName = values.getAsString(AddressContract.GroupColumns.FILENAME)
         eTag = values.getAsString(AddressContract.GroupColumns.ETAG)
+        flags = values.getAsInteger(AddressContract.GroupColumns.FLAGS) ?: 0
+        values.getAsString(AddressContract.GroupColumns.PENDING_MEMBERS)?.let { members ->
+            pendingMemberships = PendingMemberships.fromString(members).uids
+        }
 	}
 
     constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, contact: Contact, fileName: String?  = null, eTag: String? = null): this(addressBook) {
@@ -111,17 +118,17 @@ open class AndroidGroup(
     }
 
 
-    @CallSuper
-    protected open fun contentValues(): ContentValues {
+    protected fun contentValues(): ContentValues {
         val contact = getContact()
-        val values = contentValuesOf(
+        return contentValuesOf(
+            AddressContract.GroupColumns.FLAGS to flags,
+            AddressContract.GroupColumns.PENDING_MEMBERS to PendingMemberships(contact.members).toString(),
             AddressContract.GroupColumns.FILENAME to fileName,
             AddressContract.GroupColumns.ETAG to eTag,
             AddressContract.GroupColumns.UID to contact.uid,
             Groups.TITLE to contact.displayName,
             Groups.NOTES to contact.note
         )
-        return values
     }
 
     /**

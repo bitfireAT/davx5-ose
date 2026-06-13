@@ -13,7 +13,6 @@ import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.getContactLookupUri
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
-import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
@@ -30,12 +29,8 @@ class LocalContact: AndroidContact, LocalAddress {
     override val scheduleTag: String?
         get() = null
 
-    override var flags: Int = 0
 
-
-    constructor(addressBook: LocalAddressBook, values: ContentValues): super(addressBook, values) {
-        flags = values.getAsInteger(RawContactColumns.FLAGS) ?: 0
-    }
+    constructor(addressBook: LocalAddressBook, values: ContentValues) : super(addressBook, values)
 
     constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, _flags: Int): super(addressBook, contact, fileName, eTag) {
         flags = _flags
@@ -129,14 +124,6 @@ class LocalContact: AndroidContact, LocalAddress {
                 ContentUris.withAppendedId(RawContacts.CONTENT_URI, idNotNull)
             )
         }
-
-
-    // data rows
-
-    override fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
-        builder.withValue(RawContactColumns.FLAGS, flags)
-        super.buildContact(builder, update)
-    }
 
 
     // factory
