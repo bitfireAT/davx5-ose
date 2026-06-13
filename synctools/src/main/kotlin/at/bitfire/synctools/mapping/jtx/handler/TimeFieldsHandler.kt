@@ -5,6 +5,7 @@
 package at.bitfire.synctools.mapping.jtx.handler
 
 import android.content.Entity
+import at.bitfire.synctools.exception.InvalidLocalResourceException
 import at.bitfire.synctools.icalendar.plusAssign
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
@@ -35,6 +36,11 @@ class TimeFieldsHandler : JtxObjectEntityHandler {
         appendDateField(from, to, JtxContract.JtxICalObject.DUE, JtxContract.JtxICalObject.DUE_TIMEZONE) { Due(it) }
 
         from.entityValues.getAsString(JtxContract.JtxICalObject.DURATION)?.let { duration ->
+            val missingDtStart = to.getProperty<DtStart<Temporal>>(DtStart.DTSTART).isEmpty
+            if (missingDtStart) {
+                throw InvalidLocalResourceException("DURATION is set but DTSTART is missing")
+            }
+
             to += Duration(duration)
         }
     }
