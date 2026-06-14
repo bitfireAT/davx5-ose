@@ -20,7 +20,12 @@ android {
         }
     }
 
-    buildFeatures.buildConfig = true
+    buildFeatures {
+        buildConfig = true
+    }
+    testFixtures {
+        enable = true
+    }
 
     sourceSets {
         getByName("main") {
@@ -76,10 +81,6 @@ android {
             withSourcesJar()
         }
     }
-
-    testFixtures {
-        enable = true
-    }
 }
 
 dependencies {
@@ -101,9 +102,10 @@ dependencies {
     implementation(libs.commons.codec)
     implementation(libs.commons.lang)
 
-    // Useful annotations
+    // useful annotations
     api(libs.spotbugs.annotations)
 
+    // test fixtures
     testFixturesImplementation(libs.androidx.test.rules)
 
     // instrumented tests
