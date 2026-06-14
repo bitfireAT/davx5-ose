@@ -23,7 +23,7 @@ import at.bitfire.synctools.vcard.GroupMethod
 import java.io.FileNotFoundException
 import java.util.LinkedList
 
-open class AndroidAddressBook(
+class AndroidAddressBook(
     context: Context,
     var addressBookAccount: Account,
     val provider: ContentProviderClient

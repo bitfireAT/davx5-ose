@@ -5,7 +5,6 @@
 package at.bitfire.synctools.storage.contacts
 
 import android.Manifest
-import android.accounts.Account
 import android.content.ContentProviderClient
 import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
@@ -26,10 +25,8 @@ class AndroidGroupTest {
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
-        private val testAddressBookAccount = Account("AndroidContactGroupTest", "at.bitfire.vcard4android")
-
         private lateinit var provider: ContentProviderClient
-        private lateinit var addressBook: TestAddressBook
+        private lateinit var addressBook: AndroidAddressBook
 
         @BeforeClass
         @JvmStatic
@@ -38,12 +35,13 @@ class AndroidGroupTest {
             provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
             assertNotNull(provider)
 
-            addressBook = TestAddressBook(testAddressBookAccount, provider)
+            addressBook = TestAddressBook.create(provider)
         }
 
         @BeforeClass
         @JvmStatic
         fun disconnect() {
+            TestAddressBook.remove(addressBook)
             @Suppress("DEPRECATION")
             provider.release()
         }
@@ -60,7 +58,7 @@ class AndroidGroupTest {
     }
 
     private fun removeGroups() {
-        addressBook.provider!!.delete(addressBook.groupsSyncUri(), null, null)
+        addressBook.provider.delete(addressBook.groupsSyncUri(), null, null)
         assertEquals(0, addressBook.queryGroups(null, null).size)
     }
 

@@ -5,7 +5,6 @@
 package at.bitfire.synctools.mapping.contacts.handler
 
 import android.Manifest
-import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
@@ -16,6 +15,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.TestUtils
+import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.TestAddressBook
 import org.junit.Assert
@@ -38,24 +38,23 @@ class PhotoHandlerTest {
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
-        private val testAddressBookAccount = Account("AndroidContactTest", "at.bitfire.vcard4android")
-
         val testContext = InstrumentationRegistry.getInstrumentation().context
         private lateinit var provider: ContentProviderClient
-        private lateinit var addressBook: TestAddressBook
+        private lateinit var addressBook: AndroidAddressBook
 
         @BeforeClass
         @JvmStatic
         fun connect() {
             provider = testContext.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-            Assert.assertNotNull(provider)
+            assertNotNull(provider)
 
-            addressBook = TestAddressBook(testAddressBookAccount, provider)
+            addressBook = TestAddressBook.create(provider)
         }
 
         @BeforeClass
         @JvmStatic
         fun disconnect() {
+            TestAddressBook.remove(addressBook)
             @Suppress("DEPRECATION")
             provider.release()
         }
