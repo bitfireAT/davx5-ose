@@ -78,11 +78,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
     internal val ab = AndroidAddressBook(context, _addressBookAccount, provider)
 
-    var addressBookAccount: Account
-        get() = ab.addressBookAccount
-        set(value) {
-            ab.addressBookAccount = value
-        }
+    var addressBookAccount: Account by ab::addressBookAccount
 
     override val tag: String
         get() = "contacts-${addressBookAccount.name}"
@@ -99,23 +95,11 @@ open class LocalAddressBook @AssistedInject constructor(
             accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_COLLECTION_ID, id.toString())
         }
 
-    override var readOnly: Boolean
-        get() = ab.readOnly
-        set(value) {
-            ab.readOnly = value
-        }
+    override var readOnly: Boolean by ab::readOnly
 
-    var settings: ContentValues
-        get() = ab.settings
-        set(value) {
-            ab.settings = value
-        }
+    var settings: ContentValues by ab::settings
 
-    var syncState: ByteArray?
-        get() = ab.syncState
-        set(value) {
-            ab.syncState = value
-        }
+    var syncState: ByteArray? by ab::syncState
 
     override var lastSyncState: SyncState?
         get() = syncState?.let { SyncState.fromString(String(it)) }
