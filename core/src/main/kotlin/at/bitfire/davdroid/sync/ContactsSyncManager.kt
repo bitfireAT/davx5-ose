@@ -402,7 +402,7 @@ class ContactsSyncManager @AssistedInject constructor(
             // create new contact/group
             if (newData.group) {
                 logger.log(Level.INFO, "Creating local group", newData)
-                val newGroup = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                val newGroup = LocalGroup(localCollection.ab, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                 SyncException.wrapWithLocalResource(newGroup) {
                     newGroup.add()
                     updated = newGroup
@@ -440,7 +440,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
                     if (newData.group) {
                         logger.log(Level.INFO, "Creating local group (was contact before)", newData)
-                        val newGroup = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                        val newGroup = LocalGroup(localCollection.ab, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                         SyncException.wrapWithLocalResource(newGroup) {
                             newGroup.add()
                             updated = newGroup

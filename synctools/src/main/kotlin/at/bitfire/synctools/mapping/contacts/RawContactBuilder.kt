@@ -23,7 +23,7 @@ import at.bitfire.synctools.mapping.contacts.builder.WebsiteBuilder
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 
-class RawContactBuilder(addressBook: AndroidAddressBook<*, *>) {
+class RawContactBuilder(addressBook: AndroidAddressBook) {
 
     private val dataRowBuilderFactories = mutableListOf(
         EmailBuilder.Factory,

@@ -25,7 +25,7 @@ import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import java.io.FileNotFoundException
 
 open class AndroidContact(
-    open val addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>
+    open val addressBook: AndroidAddressBook
 ) {
 
     var id: Long? = null
@@ -66,7 +66,7 @@ open class AndroidContact(
      * Creates a new instance, initialized with some metadata. Usually used to insert a contact to an address book.
      */
     constructor(
-        addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>,
+        addressBook: AndroidAddressBook,
         _contact: Contact,
         _fileName: String?,
         _eTag: String?,
@@ -81,7 +81,7 @@ open class AndroidContact(
     /**
      * Creates a new instance, initialized with metadata from the content provider. Usually used when reading a contact from an address book.
      */
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, values: ContentValues) : this(addressBook) {
+    constructor(addressBook: AndroidAddressBook, values: ContentValues) : this(addressBook) {
         id = values.getAsLong(RawContacts._ID)
         fileName = values.getAsString(AddressContract.RawContactColumns.FILENAME)
         eTag = values.getAsString(AddressContract.RawContactColumns.ETAG)
@@ -110,7 +110,7 @@ open class AndroidContact(
         var iter: EntityIterator? = null
         try {
             iter = RawContacts.newEntityIterator(
-                addressBook.provider!!.query(
+                addressBook.provider.query(
                     ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(),
                     null, RawContacts._ID + "=?", arrayOf(id.toString()), null
                 )
@@ -145,7 +145,7 @@ open class AndroidContact(
 
 
     fun add(): Uri {
-        val provider = addressBook.provider!!
+        val provider = addressBook.provider
         val batch = ContactsBatchOperation(provider)
 
         val builder = BatchOperation.CpoBuilder.newInsert(RawContacts.CONTENT_URI.asSyncAdapter())
@@ -169,7 +169,7 @@ open class AndroidContact(
     fun update(data: Contact): Uri {
         setContact(data)
 
-        val provider = addressBook.provider!!
+        val provider = addressBook.provider
         val batch = ContactsBatchOperation(provider)
         val uri = rawContactSyncURI()
         val builder = BatchOperation.CpoBuilder.newUpdate(uri)
@@ -205,7 +205,7 @@ open class AndroidContact(
      *
      * @throws RemoteException on contacts provider errors
      */
-    fun delete() = addressBook.provider!!.delete(rawContactSyncURI(), null, null)
+    fun delete() = addressBook.provider.delete(rawContactSyncURI(), null, null)
 
 
     protected fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {

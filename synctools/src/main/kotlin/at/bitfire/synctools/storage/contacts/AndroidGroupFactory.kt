@@ -8,6 +8,6 @@ import android.content.ContentValues
 
 interface AndroidGroupFactory<T: AndroidGroup> {
 
-    fun fromProvider(addressBook: AndroidAddressBook<out AndroidContact, T>, values: ContentValues): T
+    fun fromProvider(addressBook: AndroidAddressBook, values: ContentValues): T
 
 }

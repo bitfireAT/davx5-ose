@@ -43,7 +43,7 @@ class RawContactHandler(
         NoteHandler,
         OrganizationHandler,
         PhoneHandler,
-        PhotoHandler(androidContact.addressBook.provider!!),
+        PhotoHandler(androidContact.addressBook.provider),
         RelationHandler,
         SipAddressHandler,
         StructuredNameHandler,

@@ -23,7 +23,7 @@ import java.io.FileNotFoundException
 import java.util.logging.Logger
 
 open class AndroidGroup(
-    val addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>
+    val addressBook: AndroidAddressBook
 ) {
     
     protected val logger
@@ -37,7 +37,7 @@ open class AndroidGroup(
     var flags: Int = 0
     var pendingMemberships = setOf<String>()
 
-	constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, values: ContentValues): this(addressBook) {
+    constructor(addressBook: AndroidAddressBook, values: ContentValues) : this(addressBook) {
         id = values.getAsLong(Groups._ID)
         fileName = values.getAsString(AddressContract.GroupColumns.FILENAME)
         eTag = values.getAsString(AddressContract.GroupColumns.ETAG)
@@ -48,7 +48,7 @@ open class AndroidGroup(
 	}
 
     constructor(
-        addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>,
+        addressBook: AndroidAddressBook,
         contact: Contact,
         fileName: String? = null,
         eTag: String? = null,
@@ -79,7 +79,7 @@ open class AndroidGroup(
 
         val id = requireNotNull(id)
         val contact = Contact()
-        addressBook.provider!!.query(
+        addressBook.provider.query(
             ContentUris.withAppendedId(Groups.CONTENT_URI, id).asSyncAdapter(),
             arrayOf(AddressContract.GroupColumns.UID, Groups.TITLE, Groups.NOTES), null, null, null
         )?.use { cursor ->
@@ -153,7 +153,7 @@ open class AndroidGroup(
         )
         if (addressBook.readOnly)
             values.put(Groups.GROUP_IS_READ_ONLY, 1)
-        val uri = addressBook.provider!!.insert(addressBook.groupsSyncUri(), values)
+        val uri = addressBook.provider.insert(addressBook.groupsSyncUri(), values)
                 ?: throw LocalStorageException("Empty result from content provider when adding group")
         id = ContentUris.parseId(uri)
         return uri
@@ -173,11 +173,11 @@ open class AndroidGroup(
 
     fun update(values: ContentValues): Uri {
         val uri = groupSyncURI()
-        addressBook.provider!!.update(uri, values, null, null)
+        addressBook.provider.update(uri, values, null, null)
         return uri
     }
 
-    fun delete() = addressBook.provider!!.delete(groupSyncURI(), null, null)
+    fun delete() = addressBook.provider.delete(groupSyncURI(), null, null)
 
 
     // helpers
