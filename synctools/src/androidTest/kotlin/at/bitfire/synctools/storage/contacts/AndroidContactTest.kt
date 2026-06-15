@@ -23,6 +23,7 @@ import ezvcard.property.Email
 import ezvcard.util.PartialDate
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import org.junit.AfterClass
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -53,7 +54,7 @@ class AndroidContactTest {
             addressBook = TestAddressBook.create(provider)
         }
 
-        @BeforeClass
+        @AfterClass
         @JvmStatic
         fun disconnect() {
             TestAddressBook.remove(addressBook)

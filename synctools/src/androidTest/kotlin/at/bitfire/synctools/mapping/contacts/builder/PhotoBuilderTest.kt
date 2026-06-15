@@ -18,6 +18,7 @@ import at.bitfire.synctools.mapping.contacts.TestUtils
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.TestAddressBook
+import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -47,7 +48,7 @@ class PhotoBuilderTest {
             addressBook = TestAddressBook.create(provider)
         }
 
-        @BeforeClass
+        @AfterClass
         @JvmStatic
         fun disconnect() {
             TestAddressBook.remove(addressBook)

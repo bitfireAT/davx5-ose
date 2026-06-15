@@ -11,6 +11,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
 import org.junit.After
+import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -38,7 +39,7 @@ class AndroidGroupTest {
             addressBook = TestAddressBook.create(provider)
         }
 
-        @BeforeClass
+        @AfterClass
         @JvmStatic
         fun disconnect() {
             TestAddressBook.remove(addressBook)
