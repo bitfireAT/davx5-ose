@@ -13,6 +13,7 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.ContactsContract.Groups
+import android.provider.ContactsContract.RawContacts
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
@@ -189,7 +190,9 @@ class LocalAddressBookTest {
             // check group membership
             localAddressBook.ab.provider.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(GroupMembership.GROUP_ROW_ID, GroupMembership.RAW_CONTACT_ID),
-                "${GroupMembership.MIMETYPE}=?", arrayOf(GroupMembership.CONTENT_ITEM_TYPE),
+                // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
+                "${GroupMembership.MIMETYPE}=? AND ${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=?",
+                arrayOf(GroupMembership.CONTENT_ITEM_TYPE, localAddressBook.addressBookAccount.name, localAddressBook.addressBookAccount.type),
                 null
             )!!.use { cursor ->
                 assertTrue(cursor.moveToNext())
@@ -201,7 +204,9 @@ class LocalAddressBookTest {
             // check cached group membership
             localAddressBook.ab.provider.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
-                "${CachedGroupMembership.MIMETYPE}=?", arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
+                // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
+                "${CachedGroupMembership.MIMETYPE}=? AND ${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=?",
+                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, localAddressBook.addressBookAccount.name, localAddressBook.addressBookAccount.type),
                 null
             )!!.use { cursor ->
                 assertTrue(cursor.moveToNext())
@@ -236,8 +241,9 @@ class LocalAddressBookTest {
             localAddressBook.ab.provider.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 arrayOf(GroupMembership.GROUP_ROW_ID, GroupMembership.RAW_CONTACT_ID),
-                "${GroupMembership.MIMETYPE}=?",
-                arrayOf(GroupMembership.CONTENT_ITEM_TYPE),
+                // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
+                "${GroupMembership.MIMETYPE}=? AND ${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=?",
+                arrayOf(GroupMembership.CONTENT_ITEM_TYPE, localAddressBook.addressBookAccount.name, localAddressBook.addressBookAccount.type),
                 null
             )!!.use { cursor ->
                 assertFalse(cursor.moveToNext())
@@ -246,8 +252,9 @@ class LocalAddressBookTest {
             localAddressBook.ab.provider.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
-                "${CachedGroupMembership.MIMETYPE}=?",
-                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
+                // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
+                "${CachedGroupMembership.MIMETYPE}=? AND ${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=?",
+                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, localAddressBook.addressBookAccount.name, localAddressBook.addressBookAccount.type),
                 null
             )!!.use { cursor ->
                 assertFalse(cursor.moveToNext())
@@ -271,7 +278,7 @@ class LocalAddressBookTest {
      */
     fun isContactDirty(addressBook: LocalAddressBook, id: Long): Boolean {
         val uri = ContentUris.withAppendedId(addressBook.ab.rawContactsSyncUri(), id)
-        provider.query(uri, arrayOf(ContactsContract.RawContacts.DIRTY), null, null, null)?.use { cursor ->
+        provider.query(uri, arrayOf(RawContacts.DIRTY), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst())
                 return cursor.getInt(0) != 0
         }

@@ -10,6 +10,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
+import android.provider.ContactsContract.RawContacts
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
@@ -88,8 +89,9 @@ class LocalGroupTest {
             localAddressBook.ab.provider.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
-                "${CachedGroupMembership.MIMETYPE}=?",
-                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
+                // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
+                "${CachedGroupMembership.MIMETYPE}=? AND ${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=?",
+                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, localAddressBook.addressBookAccount.name, localAddressBook.addressBookAccount.type),
                 null
             )!!.use { cursor ->
                 assertTrue(cursor.moveToNext())
@@ -124,7 +126,9 @@ class LocalGroupTest {
             // cached group membership should be gone
             localAddressBook.ab.provider.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
-                "${CachedGroupMembership.MIMETYPE}=?", arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
+                // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
+                "${CachedGroupMembership.MIMETYPE}=? AND ${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=?",
+                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, localAddressBook.addressBookAccount.name, localAddressBook.addressBookAccount.type),
                 null
             )!!.use { cursor ->
                 assertFalse(cursor.moveToNext())

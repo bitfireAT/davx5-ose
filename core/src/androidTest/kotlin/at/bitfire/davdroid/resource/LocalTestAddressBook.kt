@@ -11,15 +11,13 @@ import android.content.Context
 import at.bitfire.davdroid.R
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.UUID
 import javax.inject.Inject
 
 class LocalTestAddressBook @Inject constructor(
     @ApplicationContext private val context: Context,
     private val factory: LocalAddressBook.Factory
 ) {
-
-    private val counter = AtomicInteger()
 
     fun provide(
         account: Account,
@@ -28,7 +26,7 @@ class LocalTestAddressBook @Inject constructor(
         block: (LocalAddressBook) -> Unit
     ) {
         val accountType = context.getString(R.string.account_type_address_book)
-        val abAccount = Account("Test Address Book ${counter.incrementAndGet()}", accountType)
+        val abAccount = Account("Test Address Book ${UUID.randomUUID()}", accountType)
         AccountManager.get(context).addAccountExplicitly(abAccount, null, null)
         val ab = factory.create(account, abAccount, provider, groupMethod)
         try {
