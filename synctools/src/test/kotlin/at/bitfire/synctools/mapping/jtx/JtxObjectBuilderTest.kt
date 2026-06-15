@@ -46,7 +46,7 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertTrue(result.exceptions.isEmpty())
-        assertEquals("VTODO", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+        assertEquals("VTODO", result.main.entity.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
     }
 
     @Test
@@ -63,8 +63,8 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertFalse(result.exceptions.isEmpty())
-        assertEquals("VTODO", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
-        assertEquals("VTODO", result.exceptions.single().entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+        assertEquals("VTODO", result.main.entity.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+        assertEquals("VTODO", result.exceptions.single().entity.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
     }
 
     @Test
@@ -79,7 +79,7 @@ class JtxObjectBuilderTest {
 
         val result = builder.build(component)
 
-        assertEquals(5, result.main.entityValues.get(JtxContract.JtxICalObject.PRIORITY))
+        assertEquals(5, result.main.entity.entityValues.get(JtxContract.JtxICalObject.PRIORITY))
     }
 
     @Test
@@ -96,7 +96,7 @@ class JtxObjectBuilderTest {
 
         assertEquals(
             "Bla",
-            result.main.entityValues.getAsString(JtxContract.JtxICalObject.EXTENDED_STATUS)
+            result.main.entity.entityValues.getAsString(JtxContract.JtxICalObject.EXTENDED_STATUS)
         )
     }
 
@@ -111,7 +111,7 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertTrue(result.exceptions.isEmpty())
-        assertEquals("VJOURNAL", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+        assertEquals("VJOURNAL", result.main.entity.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
     }
 
     @Test
@@ -128,8 +128,8 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertFalse(result.exceptions.isEmpty())
-        assertEquals("VJOURNAL", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
-        assertEquals("VJOURNAL", result.exceptions.single().entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+        assertEquals("VJOURNAL", result.main.entity.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+        assertEquals("VJOURNAL", result.exceptions.single().entity.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
     }
 
     @Test
