@@ -24,12 +24,13 @@ import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembersh
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import java.io.FileNotFoundException
 
-open class AndroidContact(
-    open val addressBook: AndroidAddressBook
+@Deprecated("Replaced by AndroidAddressBook Entity CRUD")
+class AndroidContact(
+    val addressBook: AndroidAddressBook
 ) {
 
     var id: Long? = null
-        protected set
+        private set
 
     var fileName: String? = null
 
@@ -64,17 +65,12 @@ open class AndroidContact(
     /**
      * Creates a new instance, initialized with some metadata. Usually used to insert a contact to an address book.
      */
-    constructor(
-        addressBook: AndroidAddressBook,
-        _contact: Contact,
-        _fileName: String?,
-        _eTag: String?,
-        _flags: Int = 0
-    ) : this(addressBook) {
-        fileName = _fileName
-        eTag = _eTag
-        flags = _flags
-        setContact(_contact)
+    constructor(addressBook: AndroidAddressBook, contact: Contact, fileName: String?, eTag: String?, flags: Int = 0)
+            : this(addressBook) {
+        this@AndroidContact.fileName = fileName
+        this@AndroidContact.eTag = eTag
+        this@AndroidContact.flags = flags
+        setContact(contact)
     }
 
     /**
@@ -207,7 +203,7 @@ open class AndroidContact(
     fun delete() = addressBook.provider.delete(rawContactSyncURI(), null, null)
 
 
-    protected fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
+    private fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
         if (!update)
             builder.withValue(RawContacts.ACCOUNT_NAME, addressBook.addressBookAccount.name)
                 .withValue(RawContacts.ACCOUNT_TYPE, addressBook.addressBookAccount.type)
@@ -231,7 +227,7 @@ open class AndroidContact(
      *
      * @throws RemoteException on contact provider errors
      */
-    protected fun insertDataRows(batch: ContactsBatchOperation) {
+    private fun insertDataRows(batch: ContactsBatchOperation) {
         val contact = getContact()
         rawContactBuilder.insertDataRows(dataSyncURI(), id, contact, batch, addressBook.readOnly)
     }
