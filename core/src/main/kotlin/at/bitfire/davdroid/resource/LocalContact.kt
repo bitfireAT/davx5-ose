@@ -27,9 +27,6 @@ class LocalContact(
     constructor(localAddressBook: LocalAddressBook, values: ContentValues)
             : this(localAddressBook, AndroidContact(localAddressBook.ab, values))
 
-    constructor(localAddressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, flags: Int)
-            : this(localAddressBook, AndroidContact(localAddressBook.ab, contact, fileName, eTag, flags))
-
 
     private val provider get() = androidContact.addressBook.provider
 

@@ -67,18 +67,16 @@ class LocalAddressBookTest {
     fun test_readOnly() {
         localTestAddressBook.provide(account, provider) { addressBook ->
             // insert contact with phone number and a group
-            val localContact = LocalContact(
-                addressBook, Contact(
+            val localContact = addressBook.addContact(
+                Contact(
                     uid = "readOnly-test",
                     displayName = "Read-Only Test Contact",
                     phoneNumbers = LinkedList(listOf(LabeledProperty(Telephone("1234567890"))))
                 ), null, null, 0
             )
-            val contactUri = localContact.androidContact.add()
-            val contactId = ContentUris.parseId(contactUri)
-            val localGroup = LocalGroup(addressBook, Contact(displayName = "Read-Only Test Group"), null, null, 0)
-            val groupUri = localGroup.androidGroup.add()
-            val groupId = ContentUris.parseId(groupUri)
+            val contactId = localContact.id!!
+            val localGroup = addressBook.addGroup(Contact(displayName = "Read-Only Test Group"), null, null, 0)
+            val groupId = localGroup.id!!
 
             assertFalse(addressBook.readOnly)
 
@@ -117,10 +115,8 @@ class LocalAddressBookTest {
                 displayName = "Test Contact",
                 phoneNumbers = LinkedList(listOf(LabeledProperty(Telephone("1234567890"))))
             )
-            val newContact = LocalContact(addressBook, contact, null, null, 0)
-            val uri = newContact.androidContact.add()
-            val id = ContentUris.parseId(uri)
-            val localContact = addressBook.findContactById(id)
+            val localContact = addressBook.addContact(contact, null, null, 0)
+            val id = localContact.id!!
             localContact.resetDirty()
             assertFalse("Contact is dirty before moving", isContactDirty(addressBook, id))
 
@@ -147,9 +143,8 @@ class LocalAddressBookTest {
     fun test_renameAccount_retainsGroups() {
         localTestAddressBook.provide(account, provider) { addressBook ->
             // insert group
-            val localGroup = LocalGroup(addressBook, Contact(displayName = "Test Group"), null, null, 0)
-            val uri = localGroup.androidGroup.add()
-            val id = ContentUris.parseId(uri)
+            val localGroup = addressBook.addGroup(Contact(displayName = "Test Group"), null, null, 0)
+            val id = localGroup.id!!
 
             // make sure it's not dirty
             localGroup.clearDirty(Optional.empty(), null, null)
@@ -173,11 +168,10 @@ class LocalAddressBookTest {
     @Test
     fun testApplyPendingMemberships_addPendingMembership() {
         localTestAddressBook.provide(account, provider, GroupMethod.GROUP_VCARDS) { localAddressBook ->
-            val contact1 = LocalContact(localAddressBook, Contact().apply {
+            val contact1 = localAddressBook.addContact(Contact().apply {
                 uid = "test1"
                 displayName = "Test"
             }, "test1.vcf", null, 0)
-            contact1.androidContact.add()
 
             val group = newGroup(localAddressBook)
             // set pending membership of contact1
@@ -224,11 +218,10 @@ class LocalAddressBookTest {
     @Test
     fun testApplyPendingMemberships_removeMembership() {
         localTestAddressBook.provide(account, provider, GroupMethod.GROUP_VCARDS) { localAddressBook ->
-            val contact1 = LocalContact(localAddressBook, Contact().apply {
+            val contact1 = localAddressBook.addContact(Contact().apply {
                 uid = "test1"
                 displayName = "Test"
             }, "test1.vcf", null, 0)
-            contact1.androidContact.add()
 
             val group = newGroup(localAddressBook)
 
@@ -269,8 +262,7 @@ class LocalAddressBookTest {
     // helpers
 
     private fun newGroup(addressBook: LocalAddressBook): LocalGroup =
-        LocalGroup(addressBook, Contact().apply { displayName = "Test Group" }, null, null, 0)
-            .apply { androidGroup.add() }
+        addressBook.addGroup(Contact().apply { displayName = "Test Group" }, null, null, 0)
 
     /**
      * Returns the dirty flag of the given contact.

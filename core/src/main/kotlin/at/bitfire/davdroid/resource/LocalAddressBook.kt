@@ -19,11 +19,14 @@ import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
+import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
+import at.bitfire.synctools.storage.contacts.AndroidContact
+import at.bitfire.synctools.storage.contacts.AndroidGroup
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.util.AndroidAccountUtils
@@ -255,6 +258,18 @@ open class LocalAddressBook @AssistedInject constructor(
         ab.provider.update(ab.rawContactsSyncUri(), values, null, null)
     }
 
+
+    fun addContact(data: Contact, fileName: String?, eTag: String?, flags: Int): LocalContact {
+        val androidContact = AndroidContact(ab, data, fileName, eTag, flags)
+        androidContact.add()
+        return LocalContact(this, androidContact)
+    }
+
+    fun addGroup(data: Contact, fileName: String?, eTag: String?, flags: Int): LocalGroup {
+        val androidGroup = AndroidGroup(ab, data, fileName, eTag, flags)
+        androidGroup.add()
+        return LocalGroup(this, androidGroup)
+    }
 
     fun queryContacts(where: String?, whereArgs: Array<String>?): List<LocalContact> {
         val contacts = LinkedList<LocalContact>()

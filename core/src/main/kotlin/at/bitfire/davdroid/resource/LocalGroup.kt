@@ -34,9 +34,6 @@ class LocalGroup(
     constructor(localAddressBook: LocalAddressBook, values: ContentValues)
             : this(localAddressBook, AndroidGroup(localAddressBook.ab, values))
 
-    constructor(localAddressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, flags: Int)
-            : this(localAddressBook, AndroidGroup(localAddressBook.ab, contact, fileName, eTag, flags))
-
 
     private val provider get() = androidGroup.addressBook.provider
 
