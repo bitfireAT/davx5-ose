@@ -145,7 +145,7 @@ class AndroidGroupTest {
         val group = AndroidGroup(addressBook, Contact().apply { displayName = "Test Group" })
         group.add()
 
-        val contact = AndroidContact(addressBook, Contact().apply { displayName = "Test Contact" })
+        val contact = AndroidContact(addressBook, Contact().apply { displayName = "Test Contact" }, null, null, 0)
         contact.add()
 
         val batch = ContactsBatchOperation(addressBook.provider)
