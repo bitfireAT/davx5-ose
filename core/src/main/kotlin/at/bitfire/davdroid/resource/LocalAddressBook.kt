@@ -113,7 +113,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
             // update data rows
             val dataValues = contentValuesOf(ContactsContract.Data.IS_READ_ONLY to if (readOnly) 1 else 0)
-            provider!!.update(ContactsContract.Data.CONTENT_URI.asSyncAdapter(), dataValues, null, null)
+            provider!!.update(ContactsContract.Data.CONTENT_URI.asSyncAdapter(addressBookAccount), dataValues, null, null)
 
             // update group rows
             val groupValues = contentValuesOf(Groups.GROUP_IS_READ_ONLY to if (readOnly) 1 else 0)

@@ -66,7 +66,7 @@ object AddressContract {
      * its cached group memberships. If they differ, the respective contact group
      * is set to dirty (because its memberships have changed).
      *
-     * Cached group memberships must not be used for anything else that detecting dirty groups.
+     * Cached group memberships must not be used for anything else than detecting dirty groups.
      */
     object CachedGroupMembership {
         /** Column name for the MIME type of the data row. Type: [String] */
@@ -107,9 +107,8 @@ object AddressContract {
         const val ETAG = Groups.SYNC2
 
         /** List of member UIDs, as sent by server. This list will be used to establish
-         *  the group memberships when all groups and contacts have been synchronized.
-         *  Use [at.bitfire.synctools.mapping.contacts.PendingMemberships] to create/read the list. */
-        const val PENDING_MEMBERS = Groups.SYNC3
+         *  the group memberships when all groups and contacts have been synchronized. */
+        const val PENDING_MEMBERS: String = Groups.SYNC3
 
         /** Sync flags for local change tracking (see LocalCollection). */
         const val FLAGS = Groups.SYNC4

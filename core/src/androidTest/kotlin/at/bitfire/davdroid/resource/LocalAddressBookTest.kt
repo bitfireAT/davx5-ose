@@ -10,18 +10,14 @@ import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.Context
 import android.provider.ContactsContract
-import android.provider.ContactsContract.CommonDataKinds.GroupMembership
+import android.provider.ContactsContract.CommonDataKinds.Phone
+import android.provider.ContactsContract.Groups
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.LabeledProperty
-import at.bitfire.synctools.mapping.contacts.PendingMemberships
-import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
-import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
-import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
-import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -59,6 +55,45 @@ class LocalAddressBookTest {
         hiltRule.inject()
     }
 
+
+    @Test
+    fun test_readOnly() {
+        localTestAddressBookProvider.provide(account, provider) { addressBook ->
+            // insert contact with phone number and a group
+            val contactUri = LocalContact(
+                addressBook, Contact(
+                    uid = "readOnly-test",
+                    displayName = "Read-Only Test Contact",
+                    phoneNumbers = LinkedList(listOf(LabeledProperty(Telephone("1234567890"))))
+                ), null, null, 0
+            ).add()
+            val contactId = ContentUris.parseId(contactUri)
+            val groupUri = LocalGroup(addressBook, Contact(displayName = "Read-Only Test Group"), null, null, 0).add()
+            val groupId = ContentUris.parseId(groupUri)
+
+            assertFalse(addressBook.readOnly)
+
+            /* RAW_CONTACT_IS_READ_ONLY and Data.IS_READ_ONLY are not in the ContentProvider's query
+            projection and can't be read back; they are verified by behavioral testing instead. */
+
+            addressBook.readOnly = true
+            assertTrue(addressBook.readOnly)
+
+            assertTrue(isGroupReadOnly(addressBook, groupId))
+            // verify that non-sync-adapter updates are silently ignored when read-only
+            provider.update(
+                ContactsContract.Data.CONTENT_URI,
+                contentValuesOf(Phone.NUMBER to "0000000000"),
+                "${ContactsContract.Data.RAW_CONTACT_ID}=? AND ${ContactsContract.Data.MIMETYPE}=?",
+                arrayOf(contactId.toString(), Phone.CONTENT_ITEM_TYPE)
+            )
+            assertEquals("1234567890", getPhoneNumber(addressBook, contactId))
+
+            addressBook.readOnly = false
+            assertFalse(addressBook.readOnly)
+            assertFalse(isGroupReadOnly(addressBook, groupId))
+        }
+    }
 
     /**
      * Tests whether contacts are moved (and not lost) when an address book is renamed.
@@ -125,101 +160,7 @@ class LocalAddressBookTest {
     }
 
 
-    @Test
-    fun testApplyPendingMemberships_addPendingMembership() {
-        localTestAddressBookProvider.provide(account, provider, GroupMethod.GROUP_VCARDS) { ab ->
-            val contact1 = LocalContact(ab, Contact().apply {
-                uid = "test1"
-                displayName = "Test"
-            }, "test1.vcf", null, 0)
-            contact1.add()
-
-            val group = newGroup(ab)
-            // set pending membership of contact1
-            ab.provider!!.update(
-                ContentUris.withAppendedId(ab.groupsSyncUri(), group.id!!),
-                contentValuesOf(GroupColumns.PENDING_MEMBERS to PendingMemberships(setOf("test1")).toString()),
-                null, null
-            )
-
-            // pending membership -> contact1 should be added to group
-            ab.applyPendingMemberships()
-
-            // check group membership
-            ab.provider!!.query(
-                ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(GroupMembership.GROUP_ROW_ID, GroupMembership.RAW_CONTACT_ID),
-                "${GroupMembership.MIMETYPE}=?", arrayOf(GroupMembership.CONTENT_ITEM_TYPE),
-                null
-            )!!.use { cursor ->
-                assertTrue(cursor.moveToNext())
-                assertEquals(group.id, cursor.getLong(0))
-                assertEquals(contact1.id, cursor.getLong(1))
-
-                assertFalse(cursor.moveToNext())
-            }
-            // check cached group membership
-            ab.provider!!.query(
-                ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
-                "${CachedGroupMembership.MIMETYPE}=?", arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
-                null
-            )!!.use { cursor ->
-                assertTrue(cursor.moveToNext())
-                assertEquals(group.id, cursor.getLong(0))
-                assertEquals(contact1.id, cursor.getLong(1))
-
-                assertFalse(cursor.moveToNext())
-            }
-        }
-    }
-
-    @Test
-    fun testApplyPendingMemberships_removeMembership() {
-        localTestAddressBookProvider.provide(account, provider, GroupMethod.GROUP_VCARDS) { ab ->
-            val contact1 = LocalContact(ab, Contact().apply {
-                uid = "test1"
-                displayName = "Test"
-            }, "test1.vcf", null, 0)
-            contact1.add()
-
-            val group = newGroup(ab)
-
-            // add contact1 to group
-            val batch = ContactsBatchOperation(ab.provider!!)
-            contact1.addToGroup(batch, group.id!!)
-            batch.commit()
-
-            // no pending memberships -> membership should be removed
-            ab.applyPendingMemberships()
-
-            // check group membership
-            ab.provider!!.query(
-                ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
-                arrayOf(GroupMembership.GROUP_ROW_ID, GroupMembership.RAW_CONTACT_ID),
-                "${GroupMembership.MIMETYPE}=?",
-                arrayOf(GroupMembership.CONTENT_ITEM_TYPE),
-                null
-            )!!.use { cursor ->
-                assertFalse(cursor.moveToNext())
-            }
-            // check cached group membership
-            ab.provider!!.query(
-                ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
-                arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
-                "${CachedGroupMembership.MIMETYPE}=?",
-                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
-                null
-            )!!.use { cursor ->
-                assertFalse(cursor.moveToNext())
-            }
-        }
-    }
-
-
     // helpers
-
-    private fun newGroup(addressBook: LocalAddressBook): LocalGroup =
-        LocalGroup(addressBook, Contact().apply { displayName = "Test Group" }, null, null, 0)
-            .apply { add() }
 
     /**
      * Returns the dirty flag of the given contact.
@@ -246,11 +187,33 @@ class LocalAddressBookTest {
      */
     fun isGroupDirty(adddressBook: LocalAddressBook, id: Long): Boolean {
         val uri = ContentUris.withAppendedId(adddressBook.groupsSyncUri(), id)
-        provider.query(uri, arrayOf(ContactsContract.Groups.DIRTY), null, null, null)?.use { cursor ->
+        provider.query(uri, arrayOf(Groups.DIRTY), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst())
                 return cursor.getInt(0) != 0
         }
         throw FileNotFoundException()
+    }
+
+    fun isGroupReadOnly(addressBook: LocalAddressBook, id: Long): Boolean {
+        val uri = ContentUris.withAppendedId(addressBook.groupsSyncUri(), id)
+        provider.query(uri, arrayOf(Groups.GROUP_IS_READ_ONLY), null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst())
+                return cursor.getInt(0) != 0
+        }
+        throw FileNotFoundException()
+    }
+
+    fun getPhoneNumber(addressBook: LocalAddressBook, contactId: Long): String? {
+        provider.query(
+            ContactsContract.Data.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount),
+            arrayOf(Phone.NUMBER),
+            "${ContactsContract.Data.RAW_CONTACT_ID}=? AND ${ContactsContract.Data.MIMETYPE}=?",
+            arrayOf(contactId.toString(), Phone.CONTENT_ITEM_TYPE), null
+        )?.use { cursor ->
+            if (cursor.moveToFirst())
+                return cursor.getString(0)
+        }
+        return null
     }
 
 

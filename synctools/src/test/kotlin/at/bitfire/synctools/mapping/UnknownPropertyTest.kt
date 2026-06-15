@@ -4,7 +4,6 @@
 
 package at.bitfire.synctools.mapping
 
-import androidx.test.filters.SmallTest
 import at.bitfire.synctools.icalendar.plusAssign
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.parameter.Rsvp
@@ -22,7 +21,6 @@ import org.robolectric.RobolectricTestRunner
 class UnknownPropertyTest {
 
     @Test
-    @SmallTest
     fun testFromJsonString() {
         val prop = UnknownProperty.fromJsonString("[ \"UID\", \"PropValue\" ]")
         assertTrue(prop is Uid)
@@ -31,7 +29,6 @@ class UnknownPropertyTest {
     }
 
     @Test
-    @SmallTest
     fun testFromJsonStringWithParameters() {
         val prop = UnknownProperty.fromJsonString("[ \"ATTENDEE\", \"PropValue\", { \"x-param1\": \"value1\", \"x-param2\": \"value2\" } ]")
         assertTrue(prop is Attendee)
@@ -43,14 +40,12 @@ class UnknownPropertyTest {
     }
 
     @Test(expected = JSONException::class)
-    @SmallTest
     fun testFromInvalidJsonString() {
         UnknownProperty.fromJsonString("This isn't JSON")
     }
 
 
     @Test
-    @SmallTest
     fun testToJsonString() {
         val attendee = Attendee("mailto:test@test.at")
         assertEquals(

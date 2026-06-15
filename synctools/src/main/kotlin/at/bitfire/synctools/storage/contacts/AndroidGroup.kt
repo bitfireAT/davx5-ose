@@ -13,6 +13,7 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
+import androidx.annotation.CallSuper
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.PendingMemberships
@@ -47,13 +48,7 @@ open class AndroidGroup(
         }
 	}
 
-    constructor(
-        addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>,
-        contact: Contact,
-        fileName: String? = null,
-        eTag: String? = null,
-        flags: Int = 0
-    ) : this(addressBook) {
+    constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, contact: Contact, fileName: String? = null, eTag: String? = null, flags: Int = 0): this(addressBook) {
 		cachedContact = contact
         this.fileName = fileName
         this.eTag = eTag
@@ -125,17 +120,17 @@ open class AndroidGroup(
     }
 
 
-    protected fun contentValues(): ContentValues {
+    @CallSuper
+    protected open fun contentValues(): ContentValues {
         val contact = getContact()
-        return contentValuesOf(
-            AddressContract.GroupColumns.FLAGS to flags,
-            AddressContract.GroupColumns.PENDING_MEMBERS to PendingMemberships(contact.members).toString(),
+        val values = contentValuesOf(
             AddressContract.GroupColumns.FILENAME to fileName,
             AddressContract.GroupColumns.ETAG to eTag,
             AddressContract.GroupColumns.UID to contact.uid,
             Groups.TITLE to contact.displayName,
             Groups.NOTES to contact.note
         )
+        return values
     }
 
     /**

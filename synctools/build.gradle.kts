@@ -20,7 +20,12 @@ android {
         }
     }
 
-    buildFeatures.buildConfig = true
+    buildFeatures {
+        buildConfig = true
+    }
+    testFixtures {
+        enable = true
+    }
 
     sourceSets {
         getByName("main") {
@@ -97,19 +102,17 @@ dependencies {
     implementation(libs.commons.codec)
     implementation(libs.commons.lang)
 
-    // synctools.test package also provide test rules
-    implementation(libs.androidx.test.rules)
-
-    // Useful annotations
+    // useful annotations
     api(libs.spotbugs.annotations)
+
+    // test fixtures
+    testFixturesImplementation(libs.androidx.test.rules)
 
     // instrumented tests
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(libs.androidx.test.rules)
-    androidTestImplementation(libs.androidx.test.runner)
 
     // install third-party APKs for instrumented tests (if available)
     val apkDir = file("apk")
