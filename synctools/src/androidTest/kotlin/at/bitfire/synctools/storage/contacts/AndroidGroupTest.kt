@@ -14,6 +14,7 @@ import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.ClassRule
@@ -129,6 +130,31 @@ class AndroidGroupTest {
         // delete group
         group.delete()
         assertEquals(0, addressBook.queryGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)).size)
+    }
+
+    @Test
+    fun testGetMembers_empty() {
+        val group = AndroidGroup(addressBook, Contact().apply { displayName = "Test Group" })
+        group.add()
+
+        assertTrue(group.getMembers().isEmpty())
+    }
+
+    @Test
+    fun testGetMembers() {
+        val group = AndroidGroup(addressBook, Contact().apply { displayName = "Test Group" })
+        group.add()
+
+        val contact = AndroidContact(addressBook, Contact().apply { displayName = "Test Contact" })
+        contact.add()
+
+        val batch = ContactsBatchOperation(addressBook.provider)
+        contact.addToGroup(batch, group.id!!)
+        batch.commit()
+
+        val members = group.getMembers()
+        assertEquals(1, members.size)
+        assertEquals(contact.id, members.first())
     }
 
 }

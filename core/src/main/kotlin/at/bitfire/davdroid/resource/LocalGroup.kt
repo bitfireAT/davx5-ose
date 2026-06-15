@@ -8,12 +8,9 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import android.os.RemoteException
 import android.provider.ContactsContract
-import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
-import android.provider.ContactsContract.RawContacts.Data
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
@@ -23,17 +20,11 @@ import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidGroup
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import com.google.common.base.MoreObjects
-import java.util.LinkedList
 import java.util.Optional
 
 class LocalGroup(
-    val localAddressBook: LocalAddressBook,
     val androidGroup: AndroidGroup
 ) : LocalAddress {
-
-    constructor(localAddressBook: LocalAddressBook, values: ContentValues)
-            : this(localAddressBook, AndroidGroup(localAddressBook.ab, values))
-
 
     private val provider get() = androidGroup.addressBook.provider
 
@@ -82,7 +73,7 @@ class LocalGroup(
             )
 
         // insert updated cached group memberships
-        for (member in getMembers())
+        for (member in androidGroup.getMembers())
             batch += BatchOperation.CpoBuilder
                 .newInsert(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
                 .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
@@ -98,7 +89,7 @@ class LocalGroup(
     fun markMembersDirty() {
         val batch = ContactsBatchOperation(provider)
 
-        for (member in getMembers())
+        for (member in androidGroup.getMembers())
             batch += BatchOperation.CpoBuilder
                 .newUpdate(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member).asSyncAdapter())
                 .withValue(RawContacts.DIRTY, 1)
@@ -152,29 +143,5 @@ class LocalGroup(
             ).toString()
 
     override fun getViewUri(context: Context): Uri? = null
-
-
-    // helpers
-
-    /**
-     * Lists all members of this group.
-     * @return list of all members' raw contact IDs
-     * @throws RemoteException on contact provider errors
-     */
-    internal fun getMembers(): List<Long> {
-        val id = requireNotNull(id)
-        val members = LinkedList<Long>()
-        provider.query(
-            ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
-            arrayOf(Data.RAW_CONTACT_ID),
-            "${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?",
-            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()),
-            null
-        )?.use { cursor ->
-            while (cursor.moveToNext())
-                members += cursor.getLong(0)
-        }
-        return members
-    }
 
 }

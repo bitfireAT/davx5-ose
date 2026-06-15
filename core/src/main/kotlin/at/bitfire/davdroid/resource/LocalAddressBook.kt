@@ -268,14 +268,14 @@ open class LocalAddressBook @AssistedInject constructor(
     fun addGroup(data: Contact, fileName: String?, eTag: String?, flags: Int): LocalGroup {
         val androidGroup = AndroidGroup(ab, data, fileName, eTag, flags)
         androidGroup.add()
-        return LocalGroup(this, androidGroup)
+        return LocalGroup(androidGroup)
     }
 
     fun queryContacts(where: String?, whereArgs: Array<String>?): List<LocalContact> {
         val contacts = LinkedList<LocalContact>()
         ab.provider.query(ab.rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
             while (cursor.moveToNext())
-                contacts += LocalContact(this, cursor.toContentValues())
+                contacts += LocalContact(this, AndroidContact(ab, cursor.toContentValues()))
         }
         return contacts
     }
@@ -284,7 +284,7 @@ open class LocalAddressBook @AssistedInject constructor(
         val groups = LinkedList<LocalGroup>()
         ab.provider.query(ab.groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
             while (cursor.moveToNext())
-                groups += LocalGroup(this, cursor.toContentValues())
+                groups += LocalGroup(AndroidGroup(ab, cursor.toContentValues()))
         }
         return groups
     }
@@ -381,7 +381,7 @@ open class LocalAddressBook @AssistedInject constructor(
     fun removeEmptyGroups() {
         // find groups without members
         /** should be done using {@link Groups.SUMMARY_COUNT}, but it's not implemented in Android yet */
-        queryGroups(null, null).filter { it.getMembers().isEmpty() }.forEach { group ->
+        queryGroups(null, null).filter { it.androidGroup.getMembers().isEmpty() }.forEach { group ->
             logger.log(Level.FINE, "Deleting group", group)
             group.androidGroup.delete()
         }
