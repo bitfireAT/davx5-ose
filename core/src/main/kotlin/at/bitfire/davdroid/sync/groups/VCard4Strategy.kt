@@ -31,8 +31,8 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
         for (contact in addressBook.findDirtyContacts())
             try {
                 logger.fine("Looking for changed group memberships of contact ${contact.fileName}")
-                val cachedGroups = contact.getCachedGroupMemberships()
-                val currentGroups = contact.getGroupMemberships()
+                val cachedGroups = contact.androidContact.getCachedGroupMemberships()
+                val currentGroups = contact.androidContact.getGroupMemberships()
                 for (groupID in cachedGroups disjunct currentGroups) {
                     logger.fine("Marking group as dirty: $groupID")
                     batch += BatchOperation.CpoBuilder

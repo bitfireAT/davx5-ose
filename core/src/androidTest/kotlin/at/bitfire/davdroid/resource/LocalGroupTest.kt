@@ -71,7 +71,7 @@ class LocalGroupTest {
 
             val contact1 =
                 LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
-            contact1.add()
+            contact1.androidContact.add()
 
             // insert group membership, but no cached group membership
             localAddressBook.ab.provider.insert(
@@ -109,7 +109,7 @@ class LocalGroupTest {
             val group = newGroup(localAddressBook)
 
             val contact1 = LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
-            contact1.add()
+            contact1.androidContact.add()
 
             // insert cached group membership, but no group membership
             localAddressBook.ab.provider.insert(
@@ -143,10 +143,10 @@ class LocalGroupTest {
 
             val contact1 =
                 LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
-            contact1.add()
+            contact1.androidContact.add()
 
             val batch = ContactsBatchOperation(localAddressBook.ab.provider)
-            contact1.addToGroup(batch, group.id!!)
+            contact1.androidContact.addToGroup(batch, group.id!!)
             batch.commit()
 
             assertEquals(0, localAddressBook.findDirty().size)
@@ -172,7 +172,7 @@ class LocalGroupTest {
                 displayName = "Test Group"
             }, null, null, 0
         ).apply {
-            add()
+            androidGroup.add()
         }
 
 }

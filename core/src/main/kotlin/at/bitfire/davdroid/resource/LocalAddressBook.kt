@@ -322,7 +322,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
         queryGroups("${Groups.ACCOUNT_TYPE}=? AND ${Groups.ACCOUNT_NAME}=?", arrayOf(addressBookAccount.type, addressBookAccount.name)).forEach { group ->
             val groupId = group.id!!
-            val pendingMemberUids = group.pendingMemberships.toMutableSet()
+            val pendingMemberUids = group.androidGroup.pendingMemberships.toMutableSet()
             val batch = ContactsBatchOperation(ab.provider)
 
             val changeContactIDs = HashSet<Long>()
@@ -333,7 +333,7 @@ open class LocalAddressBook @AssistedInject constructor(
                 if (!pendingMemberUids.contains(uid)) {
                     logger.fine("$currentMemberId removed from group $groupId; removing group membership")
                     val currentMember = findContactById(currentMemberId)
-                    currentMember.removeGroupMemberships(batch)
+                    currentMember.androidContact.removeGroupMemberships(batch)
                     changeContactIDs += currentMemberId
                 }
 
@@ -348,7 +348,7 @@ open class LocalAddressBook @AssistedInject constructor(
                 }
 
                 logger.fine("Assigning member $missingMember to group $groupId")
-                missingMember.addToGroup(batch, groupId)
+                missingMember.androidContact.addToGroup(batch, groupId)
                 changeContactIDs += missingMember.id!!
             }
 
@@ -368,7 +368,7 @@ open class LocalAddressBook @AssistedInject constructor(
         /** should be done using {@link Groups.SUMMARY_COUNT}, but it's not implemented in Android yet */
         queryGroups(null, null).filter { it.getMembers().isEmpty() }.forEach { group ->
             logger.log(Level.FINE, "Deleting group", group)
-            group.delete()
+            group.androidGroup.delete()
         }
     }
 
