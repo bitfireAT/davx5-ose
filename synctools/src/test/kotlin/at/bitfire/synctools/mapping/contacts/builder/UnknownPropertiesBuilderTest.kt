@@ -6,7 +6,7 @@ package at.bitfire.synctools.mapping.contacts.builder
 
 import android.net.Uri
 import at.bitfire.synctools.mapping.contacts.Contact
-import at.bitfire.synctools.storage.contacts.UnknownPropertyContract
+import at.bitfire.synctools.storage.contacts.AddressContract
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,8 +28,8 @@ class UnknownPropertiesBuilderTest {
             unknownProperties = "X-TEST:12345"
         }, false).build().also { result ->
             assertEquals(1, result.size)
-            assertEquals(UnknownPropertyContract.CONTENT_ITEM_TYPE, result[0].values[UnknownPropertyContract.MIMETYPE])
-            assertEquals("X-TEST:12345", result[0].values[UnknownPropertyContract.UNKNOWN_PROPERTIES])
+            assertEquals(AddressContract.UnknownProperty.CONTENT_ITEM_TYPE, result[0].values[AddressContract.UnknownProperty.MIMETYPE])
+            assertEquals("X-TEST:12345", result[0].values[AddressContract.UnknownProperty.UNKNOWN_PROPERTIES])
         }
     }
 

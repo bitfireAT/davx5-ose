@@ -8,14 +8,17 @@ import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
-import android.content.ContentValues
 import android.content.Context
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
+import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
-import at.bitfire.synctools.storage.contacts.CachedGroupMembershipContract
+import at.bitfire.synctools.mapping.contacts.PendingMemberships
+import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
+import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -76,9 +79,7 @@ class LocalGroupTest {
             // set pending membership of contact1
             ab.provider!!.update(
                 ContentUris.withAppendedId(ab.groupsSyncUri(), group.id!!),
-                ContentValues().apply {
-                    put(LocalGroup.COLUMN_PENDING_MEMBERS, LocalGroup.PendingMemberships(setOf("test1")).toString())
-                },
+                contentValuesOf(GroupColumns.PENDING_MEMBERS to PendingMemberships(setOf("test1")).toString()),
                 null, null
             )
 
@@ -87,7 +88,7 @@ class LocalGroupTest {
 
             // check group membership
             ab.provider!!.query(
-                ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI), arrayOf(GroupMembership.GROUP_ROW_ID, GroupMembership.RAW_CONTACT_ID),
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(GroupMembership.GROUP_ROW_ID, GroupMembership.RAW_CONTACT_ID),
                 "${GroupMembership.MIMETYPE}=?", arrayOf(GroupMembership.CONTENT_ITEM_TYPE),
                 null
             )!!.use { cursor ->
@@ -99,8 +100,8 @@ class LocalGroupTest {
             }
             // check cached group membership
             ab.provider!!.query(
-                ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI), arrayOf(CachedGroupMembershipContract.GROUP_ID, CachedGroupMembershipContract.RAW_CONTACT_ID),
-                "${CachedGroupMembershipContract.MIMETYPE}=?", arrayOf(CachedGroupMembershipContract.CONTENT_ITEM_TYPE),
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
+                "${CachedGroupMembership.MIMETYPE}=?", arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
                 null
             )!!.use { cursor ->
                 assertTrue(cursor.moveToNext())
@@ -133,7 +134,7 @@ class LocalGroupTest {
 
             // check group membership
             ab.provider!!.query(
-                ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI),
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 arrayOf(GroupMembership.GROUP_ROW_ID, GroupMembership.RAW_CONTACT_ID),
                 "${GroupMembership.MIMETYPE}=?",
                 arrayOf(GroupMembership.CONTENT_ITEM_TYPE),
@@ -143,10 +144,10 @@ class LocalGroupTest {
             }
             // check cached group membership
             ab.provider!!.query(
-                ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI),
-                arrayOf(CachedGroupMembershipContract.GROUP_ID, CachedGroupMembershipContract.RAW_CONTACT_ID),
-                "${CachedGroupMembershipContract.MIMETYPE}=?",
-                arrayOf(CachedGroupMembershipContract.CONTENT_ITEM_TYPE),
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
+                arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
+                "${CachedGroupMembership.MIMETYPE}=?",
+                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
                 null
             )!!.use { cursor ->
                 assertFalse(cursor.moveToNext())
@@ -165,21 +166,22 @@ class LocalGroupTest {
 
             // insert group membership, but no cached group membership
             ab.provider!!.insert(
-                ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI), ContentValues().apply {
-                    put(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
-                    put(GroupMembership.RAW_CONTACT_ID, contact1.id)
-                    put(GroupMembership.GROUP_ROW_ID, group.id)
-                }
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
+                contentValuesOf(
+                    GroupMembership.MIMETYPE to GroupMembership.CONTENT_ITEM_TYPE,
+                    GroupMembership.RAW_CONTACT_ID to contact1.id,
+                    GroupMembership.GROUP_ROW_ID to group.id
+                )
             )
 
             group.clearDirty(Optional.empty(), null)
 
             // check cached group membership
             ab.provider!!.query(
-                ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI),
-                arrayOf(CachedGroupMembershipContract.GROUP_ID, CachedGroupMembershipContract.RAW_CONTACT_ID),
-                "${CachedGroupMembershipContract.MIMETYPE}=?",
-                arrayOf(CachedGroupMembershipContract.CONTENT_ITEM_TYPE),
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
+                arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
+                "${CachedGroupMembership.MIMETYPE}=?",
+                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
                 null
             )!!.use { cursor ->
                 assertTrue(cursor.moveToNext())
@@ -201,19 +203,20 @@ class LocalGroupTest {
 
             // insert cached group membership, but no group membership
             ab.provider!!.insert(
-                ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI), ContentValues().apply {
-                    put(CachedGroupMembershipContract.MIMETYPE, CachedGroupMembershipContract.CONTENT_ITEM_TYPE)
-                    put(CachedGroupMembershipContract.RAW_CONTACT_ID, contact1.id)
-                    put(CachedGroupMembershipContract.GROUP_ID, group.id)
-                }
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
+                contentValuesOf(
+                    CachedGroupMembership.MIMETYPE to CachedGroupMembership.CONTENT_ITEM_TYPE,
+                    CachedGroupMembership.RAW_CONTACT_ID to contact1.id,
+                    CachedGroupMembership.GROUP_ID to group.id
+                )
             )
 
             group.clearDirty(Optional.empty(), null)
 
             // cached group membership should be gone
             ab.provider!!.query(
-                ab.syncAdapterURI(ContactsContract.Data.CONTENT_URI), arrayOf(CachedGroupMembershipContract.GROUP_ID, CachedGroupMembershipContract.RAW_CONTACT_ID),
-                "${CachedGroupMembershipContract.MIMETYPE}=?", arrayOf(CachedGroupMembershipContract.CONTENT_ITEM_TYPE),
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
+                "${CachedGroupMembership.MIMETYPE}=?", arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
                 null
             )!!.use { cursor ->
                 assertFalse(cursor.moveToNext())

@@ -13,8 +13,8 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.storage.contacts.AddressContract
 import at.bitfire.synctools.storage.contacts.AndroidContact
-import at.bitfire.synctools.storage.contacts.CachedGroupMembershipContract
 import at.bitfire.synctools.storage.contacts.TestAddressBook
 import at.bitfire.synctools.vcard.GroupMethod
 import org.junit.AfterClass
@@ -35,7 +35,7 @@ class GroupMembershipHandlerTest {
         val androidContact = AndroidContact(addressBook, contact, null, null)
         GroupMembershipHandler(androidContact, GroupMethod.CATEGORIES).handle(ContentValues().apply {
             put(GroupMembership.GROUP_ROW_ID, groupId)
-            put(CachedGroupMembershipContract.RAW_CONTACT_ID, -1)
+            put(AddressContract.CachedGroupMembership.RAW_CONTACT_ID, -1)
         }, contact)
         assertArrayEquals(arrayOf(groupId), androidContact.groupMemberships.toArray())
         assertArrayEquals(arrayOf("TEST GROUP"), contact.categories.toArray())
@@ -48,7 +48,7 @@ class GroupMembershipHandlerTest {
         val androidContact = AndroidContact(addressBook, contact, null, null)
         GroupMembershipHandler(androidContact, GroupMethod.GROUP_VCARDS).handle(ContentValues().apply {
             put(GroupMembership.GROUP_ROW_ID, 12345L)  // group doesn't have to really exist for GROUP_VCARDS
-            put(CachedGroupMembershipContract.RAW_CONTACT_ID, -1)
+            put(AddressContract.CachedGroupMembership.RAW_CONTACT_ID, -1)
         }, contact)
         assertArrayEquals(arrayOf(12345L), androidContact.groupMemberships.toArray())
         assertTrue(contact.categories.isEmpty())

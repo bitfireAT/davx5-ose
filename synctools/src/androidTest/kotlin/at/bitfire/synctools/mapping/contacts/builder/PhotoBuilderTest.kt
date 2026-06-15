@@ -85,7 +85,7 @@ class PhotoBuilderTest {
 
         try {
             val photo = TestUtils.resourceToByteArray("/large.jpg")
-            val photoUri = PhotoBuilder.insertPhoto(provider, testAddressBookAccount, rawContactId, photo)
+            val photoUri = PhotoBuilder.insertPhoto(provider, rawContactId, photo)
             assertNotNull(photoUri)
 
             // the photo is processed and often resized by the contacts provider
@@ -117,7 +117,7 @@ class PhotoBuilderTest {
         val contact = AndroidContact(addressBook, Contact().apply { displayName = "Contact with photo" }, null, null)
         contact.add()
         try {
-            assertNull(PhotoBuilder.insertPhoto(provider, testAddressBookAccount, contact.id!!, ByteArray(100) /* invalid photo  */))
+            assertNull(PhotoBuilder.insertPhoto(provider, contact.id!!, ByteArray(100) /* invalid photo  */))
         } finally {
             contact.delete()
         }

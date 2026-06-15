@@ -14,6 +14,7 @@ import android.provider.ContactsContract.RawContacts.getContactLookupUri
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.AndroidContactFactory
@@ -22,11 +23,6 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class LocalContact: AndroidContact, LocalAddress {
-
-    companion object {
-        const val COLUMN_FLAGS = RawContacts.SYNC4
-        const val COLUMN_HASHCODE = RawContacts.SYNC3
-    }
 
     override val addressBook: LocalAddressBook
         get() = super.addressBook as LocalAddressBook
@@ -38,7 +34,7 @@ class LocalContact: AndroidContact, LocalAddress {
 
 
     constructor(addressBook: LocalAddressBook, values: ContentValues): super(addressBook, values) {
-        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
+        flags = values.getAsInteger(RawContactColumns.FLAGS) ?: 0
     }
 
     constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, _flags: Int): super(addressBook, contact, fileName, eTag) {
@@ -59,8 +55,8 @@ class LocalContact: AndroidContact, LocalAddress {
 
         val values = ContentValues(4)
         if (fileName.isPresent)
-            values.put(COLUMN_FILENAME, fileName.get())
-        values.put(COLUMN_ETAG, eTag)
+            values.put(RawContactColumns.FILENAME, fileName.get())
+        values.put(RawContactColumns.ETAG, eTag)
         values.put(RawContacts.DIRTY, 0)
 
         // Android 7 workaround
@@ -88,7 +84,7 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
     override fun updateFlags(flags: Int) {
-        val values = contentValuesOf(COLUMN_FLAGS to flags)
+        val values = contentValuesOf(RawContactColumns.FLAGS to flags)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
         this.flags = flags
@@ -97,7 +93,7 @@ class LocalContact: AndroidContact, LocalAddress {
     override fun updateSequence(sequence: Int) = throw NotImplementedError()
 
     override fun updateUid(uid: String) {
-        val values = contentValuesOf(COLUMN_UID to uid)
+        val values = contentValuesOf(RawContactColumns.UID to uid)
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
     }
 
@@ -138,7 +134,7 @@ class LocalContact: AndroidContact, LocalAddress {
     // data rows
 
     override fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
-        builder.withValue(COLUMN_FLAGS, flags)
+        builder.withValue(RawContactColumns.FLAGS, flags)
         super.buildContact(builder, update)
     }
 

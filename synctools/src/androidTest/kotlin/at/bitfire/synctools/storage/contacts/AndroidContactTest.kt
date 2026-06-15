@@ -165,8 +165,8 @@ class AndroidContactTest {
     fun testGetContactNotFound() {
         val values = ContentValues()
         values.put(ContactsContract.RawContacts._ID, Long.MAX_VALUE)
-        values.put(AndroidContact.COLUMN_FILENAME, "nonexistent.vcf")
-        values.put(AndroidContact.COLUMN_ETAG, "etag")
+        values.put(AddressContract.RawContactColumns.FILENAME, "nonexistent.vcf")
+        values.put(AddressContract.RawContactColumns.ETAG, "etag")
         AndroidContact(addressBook, values).getContact()
     }
 
