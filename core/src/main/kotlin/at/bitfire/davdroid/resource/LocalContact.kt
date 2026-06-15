@@ -13,32 +13,32 @@ import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.getContactLookupUri
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
-import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
-import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
-import at.bitfire.synctools.storage.contacts.AndroidContactFactory
 import com.google.common.base.MoreObjects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class LocalContact : AndroidContact, LocalAddress {
 
-    override val addressBook: LocalAddressBook
-        get() = super.addressBook as LocalAddressBook
+    val localAddressBook: LocalAddressBook
 
     override val scheduleTag: String?
         get() = null
 
-    override var flags: Int = 0
 
-
-    constructor(addressBook: LocalAddressBook, values: ContentValues) : super(addressBook, values) {
-        flags = values.getAsInteger(RawContactColumns.FLAGS) ?: 0
+    constructor(localAddressBook: LocalAddressBook, values: ContentValues) : super(localAddressBook.ab, values) {
+        this.localAddressBook = localAddressBook
     }
 
-    constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, _flags: Int) : super(addressBook, contact, fileName, eTag) {
-        flags = _flags
+    constructor(localAddressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, flags: Int) : super(
+        localAddressBook.ab,
+        contact,
+        fileName,
+        eTag,
+        flags
+    ) {
+        this.localAddressBook = localAddressBook
     }
 
     /**
@@ -60,9 +60,9 @@ class LocalContact : AndroidContact, LocalAddress {
         values.put(RawContacts.DIRTY, 0)
 
         // Android 7 workaround
-        addressBook.dirtyVerifier.getOrNull()?.setHashCodeColumn(this, values)
+        localAddressBook.dirtyVerifier.getOrNull()?.setHashCodeColumn(this, values)
 
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+        addressBook.provider.update(rawContactSyncURI(), values, null, null)
 
         if (fileName.isPresent)
             this.fileName = fileName.get()
@@ -71,7 +71,7 @@ class LocalContact : AndroidContact, LocalAddress {
 
     fun resetDirty() {
         val values = contentValuesOf(RawContacts.DIRTY to 0)
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+        addressBook.provider.update(rawContactSyncURI(), values, null, null)
     }
 
     override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
@@ -85,7 +85,7 @@ class LocalContact : AndroidContact, LocalAddress {
 
     override fun updateFlags(flags: Int) {
         val values = contentValuesOf(RawContactColumns.FLAGS to flags)
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+        addressBook.provider.update(rawContactSyncURI(), values, null, null)
 
         this.flags = flags
     }
@@ -94,7 +94,7 @@ class LocalContact : AndroidContact, LocalAddress {
 
     override fun updateUid(uid: String) {
         val values = contentValuesOf(RawContactColumns.UID to uid)
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+        addressBook.provider.update(rawContactSyncURI(), values, null, null)
     }
 
     override fun deleteLocal() {
@@ -103,7 +103,7 @@ class LocalContact : AndroidContact, LocalAddress {
 
     override fun resetDeleted() {
         val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+        addressBook.provider.update(rawContactSyncURI(), values, null, null)
     }
 
     override fun getDebugSummary() =
@@ -129,21 +129,5 @@ class LocalContact : AndroidContact, LocalAddress {
                 ContentUris.withAppendedId(RawContacts.CONTENT_URI, idNotNull)
             )
         }
-
-
-    // data rows
-
-    override fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
-        builder.withValue(RawContactColumns.FLAGS, flags)
-        super.buildContact(builder, update)
-    }
-
-
-    // factory
-
-    object Factory : AndroidContactFactory<LocalContact> {
-        override fun fromProvider(addressBook: AndroidAddressBook<LocalContact, *>, values: ContentValues) =
-            LocalContact(addressBook as LocalAddressBook, values)
-    }
 
 }

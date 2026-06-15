@@ -5,7 +5,6 @@
 package at.bitfire.synctools.storage.contacts
 
 import android.Manifest
-import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.provider.ContactsContract
@@ -24,6 +23,7 @@ import ezvcard.property.Email
 import ezvcard.util.PartialDate
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import org.junit.AfterClass
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -41,10 +41,8 @@ class AndroidContactTest {
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
-        private val testAddressBookAccount = Account("AndroidContactTest", "at.bitfire.vcard4android")
-
         private lateinit var provider: ContentProviderClient
-        private lateinit var addressBook: TestAddressBook
+        private lateinit var addressBook: AndroidAddressBook
 
         @BeforeClass
         @JvmStatic
@@ -53,12 +51,13 @@ class AndroidContactTest {
             provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
             assertNotNull(provider)
 
-            addressBook = TestAddressBook(testAddressBookAccount, provider)
+            addressBook = TestAddressBook.create(provider)
         }
 
-        @BeforeClass
+        @AfterClass
         @JvmStatic
         fun disconnect() {
+            TestAddressBook.remove(addressBook)
             @Suppress("DEPRECATION")
             provider.release()
         }

@@ -5,7 +5,6 @@
 package at.bitfire.synctools.mapping.contacts.handler
 
 import android.Manifest
-import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.provider.ContactsContract
@@ -26,14 +25,18 @@ class CachedGroupMembershipHandlerTest {
 
     @Test
     fun testMembership() {
-        val addressBook = TestAddressBook(account, provider)
-        val contact = Contact()
-        val androidContact = AndroidContact(addressBook, contact, null, null)
-        CachedGroupMembershipHandler(androidContact, GroupMethod.GROUP_VCARDS).handle(ContentValues().apply {
-            put(AddressContract.CachedGroupMembership.GROUP_ID, 123456)
-            put(AddressContract.CachedGroupMembership.RAW_CONTACT_ID, 789)
-        }, contact)
-        assertArrayEquals(arrayOf(123456L), androidContact.cachedGroupMemberships.toArray())
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val contact = Contact()
+            val androidContact = AndroidContact(addressBook, contact, null, null)
+            CachedGroupMembershipHandler(androidContact, GroupMethod.GROUP_VCARDS).handle(ContentValues().apply {
+                put(AddressContract.CachedGroupMembership.GROUP_ID, 123456)
+                put(AddressContract.CachedGroupMembership.RAW_CONTACT_ID, 789)
+            }, contact)
+            assertArrayEquals(arrayOf(123456L), androidContact.cachedGroupMemberships.toArray())
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
     }
 
 
@@ -42,8 +45,6 @@ class CachedGroupMembershipHandlerTest {
         @JvmField
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
-
-        val account = Account("CachedGroupMembershipHandlerTest", "at.bitfire.vcard4android")
 
         private lateinit var provider: ContentProviderClient
 

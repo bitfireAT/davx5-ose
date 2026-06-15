@@ -107,8 +107,9 @@ object AddressContract {
         const val ETAG = Groups.SYNC2
 
         /** List of member UIDs, as sent by server. This list will be used to establish
-         *  the group memberships when all groups and contacts have been synchronized. */
-        const val PENDING_MEMBERS: String = Groups.SYNC3
+         *  the group memberships when all groups and contacts have been synchronized.
+         *  Use [at.bitfire.synctools.mapping.contacts.PendingMemberships] to create/read the list. */
+        const val PENDING_MEMBERS = Groups.SYNC3
 
         /** Sync flags for local change tracking (see LocalCollection). */
         const val FLAGS = Groups.SYNC4

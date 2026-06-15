@@ -91,7 +91,7 @@ class Android7DirtyVerifier @Inject constructor(
     }
 
     private fun getLastHashCode(addressBook: LocalAddressBook, contact: LocalContact): Int {
-        addressBook.provider!!.query(contact.rawContactSyncURI(), arrayOf(RawContactColumns.HASHCODE), null, null, null)?.use { c ->
+        addressBook.ab.provider.query(contact.rawContactSyncURI(), arrayOf(RawContactColumns.HASHCODE), null, null, null)?.use { c ->
             if (c.moveToNext() && !c.isNull(0))
                 return c.getInt(0)
         }
@@ -127,7 +127,7 @@ class Android7DirtyVerifier @Inject constructor(
         val values = ContentValues(1)
         setHashCodeColumn(contact, values)
 
-        addressBook.provider!!.update(contact.rawContactSyncURI(), values, null, null)
+        addressBook.ab.provider.update(contact.rawContactSyncURI(), values, null, null)
     }
 
     override fun updateHashCode(contact: LocalContact, batch: ContactsBatchOperation) {
