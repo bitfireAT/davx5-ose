@@ -11,6 +11,7 @@ import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
+import org.junit.AfterClass
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -37,7 +38,7 @@ class AndroidAddressBookTest {
             assertNotNull(provider)
         }
 
-        @BeforeClass
+        @AfterClass
         @JvmStatic
         fun disconnect() {
             @Suppress("DEPRECATION")

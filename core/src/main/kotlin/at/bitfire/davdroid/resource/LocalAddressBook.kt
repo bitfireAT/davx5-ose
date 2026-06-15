@@ -269,7 +269,7 @@ open class LocalAddressBook @AssistedInject constructor(
         val groups = LinkedList<LocalGroup>()
         ab.provider.query(ab.groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
             while (cursor.moveToNext())
-                groups += LocalGroup(ab, cursor.toContentValues())
+                groups += LocalGroup(this, cursor.toContentValues())
         }
         return groups
     }

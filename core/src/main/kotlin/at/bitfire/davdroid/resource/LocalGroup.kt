@@ -20,7 +20,6 @@ import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
 import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
-import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidGroup
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import com.google.common.base.MoreObjects
@@ -34,10 +33,10 @@ class LocalGroup : AndroidGroup, LocalAddress {
         set(_) = throw NotImplementedError()
 
 
-    constructor(addressBook: AndroidAddressBook, values: ContentValues) : super(addressBook, values)
+    constructor(localAddressBook: LocalAddressBook, values: ContentValues) : super(localAddressBook.ab, values)
 
-    constructor(addressBook: AndroidAddressBook, contact: Contact, fileName: String?, eTag: String?, flags: Int)
-            : super(addressBook, contact, fileName, eTag, flags)
+    constructor(localAddressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, flags: Int)
+            : super(localAddressBook.ab, contact, fileName, eTag, flags)
 
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {

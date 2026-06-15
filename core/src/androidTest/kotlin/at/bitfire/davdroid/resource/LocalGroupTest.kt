@@ -44,7 +44,7 @@ class LocalGroupTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var localAddressBookFactory: LocalAddressBook.Factory
+    lateinit var localTestAddressBook: LocalTestAddressBook
 
     lateinit var provider: ContentProviderClient
 
@@ -65,7 +65,7 @@ class LocalGroupTest {
 
     @Test
     fun testClearDirty_addCachedGroupMembership() {
-        LocalTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES, localAddressBookFactory) { localAddressBook ->
+        localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
             val group = newGroup(localAddressBook)
 
             val contact1 =
@@ -103,7 +103,7 @@ class LocalGroupTest {
 
     @Test
     fun testClearDirty_removeCachedGroupMembership() {
-        LocalTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES, localAddressBookFactory) { localAddressBook ->
+        localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
             val group = newGroup(localAddressBook)
 
             val contact1 = LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
@@ -134,7 +134,7 @@ class LocalGroupTest {
 
     @Test
     fun testMarkMembersDirty() {
-        LocalTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES, localAddressBookFactory) { localAddressBook ->
+        localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
             val group = newGroup(localAddressBook)
 
             val contact1 =
@@ -153,7 +153,7 @@ class LocalGroupTest {
 
     @Test
     fun testUpdate() {
-        LocalTestAddressBook.provide(account, provider, factory = localAddressBookFactory) {
+        localTestAddressBook.provide(account, provider) {
             val group = newGroup(it)
             group.update(Contact(displayName = "New Group Name"), null, null, null, 0)
         }

@@ -49,7 +49,7 @@ class LocalAddressBookTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var localAddressBookFactory: LocalAddressBook.Factory
+    lateinit var localTestAddressBook: LocalTestAddressBook
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -64,7 +64,7 @@ class LocalAddressBookTest {
 
     @Test
     fun test_readOnly() {
-        LocalTestAddressBook.provide(account, provider, factory = localAddressBookFactory) { addressBook ->
+        localTestAddressBook.provide(account, provider) { addressBook ->
             // insert contact with phone number and a group
             val contactUri = LocalContact(
                 addressBook, Contact(
@@ -106,7 +106,7 @@ class LocalAddressBookTest {
      */
     @Test
     fun test_renameAccount_retainsContacts() {
-        LocalTestAddressBook.provide(account, provider, factory = localAddressBookFactory) { addressBook ->
+        localTestAddressBook.provide(account, provider) { addressBook ->
             // insert contact with data row
             val uid = "12345"
             val contact = Contact(
@@ -141,7 +141,7 @@ class LocalAddressBookTest {
      */
     @Test
     fun test_renameAccount_retainsGroups() {
-        LocalTestAddressBook.provide(account, provider, factory = localAddressBookFactory) { addressBook ->
+        localTestAddressBook.provide(account, provider) { addressBook ->
             // insert group
             val localGroup = LocalGroup(addressBook, Contact(displayName = "Test Group"), null, null, 0)
             val uri = localGroup.add()
@@ -168,7 +168,7 @@ class LocalAddressBookTest {
 
     @Test
     fun testApplyPendingMemberships_addPendingMembership() {
-        LocalTestAddressBook.provide(account, provider, GroupMethod.GROUP_VCARDS, localAddressBookFactory) { localAddressBook ->
+        localTestAddressBook.provide(account, provider, GroupMethod.GROUP_VCARDS) { localAddressBook ->
             val contact1 = LocalContact(localAddressBook, Contact().apply {
                 uid = "test1"
                 displayName = "Test"
@@ -215,7 +215,7 @@ class LocalAddressBookTest {
 
     @Test
     fun testApplyPendingMemberships_removeMembership() {
-        LocalTestAddressBook.provide(account, provider, GroupMethod.GROUP_VCARDS, localAddressBookFactory) { localAddressBook ->
+        localTestAddressBook.provide(account, provider, GroupMethod.GROUP_VCARDS) { localAddressBook ->
             val contact1 = LocalContact(localAddressBook, Contact().apply {
                 uid = "test1"
                 displayName = "Test"
@@ -269,8 +269,8 @@ class LocalAddressBookTest {
      *
      * @throws FileNotFoundException if the contact can't be found
      */
-    fun isContactDirty(adddressBook: LocalAddressBook, id: Long): Boolean {
-        val uri = ContentUris.withAppendedId(adddressBook.ab.rawContactsSyncUri(), id)
+    fun isContactDirty(addressBook: LocalAddressBook, id: Long): Boolean {
+        val uri = ContentUris.withAppendedId(addressBook.ab.rawContactsSyncUri(), id)
         provider.query(uri, arrayOf(ContactsContract.RawContacts.DIRTY), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst())
                 return cursor.getInt(0) != 0
@@ -285,8 +285,8 @@ class LocalAddressBookTest {
      *
      * @throws FileNotFoundException if the group can't be found
      */
-    fun isGroupDirty(adddressBook: LocalAddressBook, id: Long): Boolean {
-        val uri = ContentUris.withAppendedId(adddressBook.ab.groupsSyncUri(), id)
+    fun isGroupDirty(addressBook: LocalAddressBook, id: Long): Boolean {
+        val uri = ContentUris.withAppendedId(addressBook.ab.groupsSyncUri(), id)
         provider.query(uri, arrayOf(Groups.DIRTY), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst())
                 return cursor.getInt(0) != 0

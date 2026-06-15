@@ -7,21 +7,24 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import androidx.test.platform.app.InstrumentationRegistry
+import android.content.Context
 import at.bitfire.davdroid.R
 import at.bitfire.synctools.vcard.GroupMethod
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.atomic.AtomicInteger
+import javax.inject.Inject
 
-object LocalTestAddressBook {
+class LocalTestAddressBook @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val factory: LocalAddressBook.Factory
+) {
 
-    private val context by lazy { InstrumentationRegistry.getInstrumentation().targetContext }
     private val counter = AtomicInteger()
 
     fun provide(
         account: Account,
         provider: ContentProviderClient,
         groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS,
-        factory: LocalAddressBook.Factory,
         block: (LocalAddressBook) -> Unit
     ) {
         val accountType = context.getString(R.string.account_type_address_book)

@@ -52,7 +52,7 @@ class AccountSettingsMigration20Test {
     lateinit var migration: AccountSettingsMigration20
 
     @Inject
-    lateinit var localAddressBookFactory: LocalAddressBook.Factory
+    lateinit var localTestAddressBook: LocalTestAddressBook
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -94,7 +94,7 @@ class AccountSettingsMigration20Test {
             url = url.toHttpUrl()
         ))
 
-        LocalTestAddressBook.provide(account, mockk(relaxed = true), GroupMethod.GROUP_VCARDS, localAddressBookFactory) { addressBook ->
+        localTestAddressBook.provide(account, mockk(relaxed = true), GroupMethod.GROUP_VCARDS) { addressBook ->
 
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
