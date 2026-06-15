@@ -69,9 +69,7 @@ class LocalGroupTest {
         localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
             val group = newGroup(localAddressBook)
 
-            val contact1 =
-                LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
-            contact1.add()
+            val contact1 = localAddressBook.addContact(Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
 
             // insert group membership, but no cached group membership
             localAddressBook.ab.provider.insert(
@@ -108,8 +106,7 @@ class LocalGroupTest {
         localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
             val group = newGroup(localAddressBook)
 
-            val contact1 = LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
-            contact1.add()
+            val contact1 = localAddressBook.addContact(Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
 
             // insert cached group membership, but no group membership
             localAddressBook.ab.provider.insert(
@@ -141,12 +138,10 @@ class LocalGroupTest {
         localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
             val group = newGroup(localAddressBook)
 
-            val contact1 =
-                LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
-            contact1.add()
+            val contact1 = localAddressBook.addContact(Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
 
             val batch = ContactsBatchOperation(localAddressBook.ab.provider)
-            contact1.addToGroup(batch, group.id!!)
+            contact1.androidContact.addToGroup(batch, group.id!!)
             batch.commit()
 
             assertEquals(0, localAddressBook.findDirty().size)
@@ -167,12 +162,6 @@ class LocalGroupTest {
     // helpers
 
     private fun newGroup(addressBook: LocalAddressBook): LocalGroup =
-        LocalGroup(addressBook,
-            Contact().apply {
-                displayName = "Test Group"
-            }, null, null, 0
-        ).apply {
-            add()
-        }
+        addressBook.addGroup(Contact().apply { displayName = "Test Group" }, null, null, 0)
 
 }

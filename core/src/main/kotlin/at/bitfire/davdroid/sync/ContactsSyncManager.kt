@@ -271,8 +271,8 @@ class ContactsSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalAddress): GeneratedResource {
         val contact: Contact = when (resource) {
-            is LocalContact -> resource.getContact()
-            is LocalGroup -> resource.getContact()
+            is LocalContact -> resource.androidContact.getContact()
+            is LocalGroup -> resource.androidGroup.getContact()
             else -> throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
         }
         logger.log(Level.FINE, "Preparing upload of vCard #${resource.id}", contact)
@@ -402,17 +402,15 @@ class ContactsSyncManager @AssistedInject constructor(
             // create new contact/group
             if (newData.group) {
                 logger.log(Level.INFO, "Creating local group", newData)
-                val newGroup = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                val newGroup = localCollection.addGroup(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                 SyncException.wrapWithLocalResource(newGroup) {
-                    newGroup.add()
                     updated = newGroup
                 }
 
             } else {
                 logger.log(Level.INFO, "Creating local contact", newData)
-                val newContact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                val newContact = localCollection.addContact(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                 SyncException.wrapWithLocalResource(newContact) {
-                    newContact.add()
                     updated = newContact
                 }
             }
@@ -440,17 +438,15 @@ class ContactsSyncManager @AssistedInject constructor(
 
                     if (newData.group) {
                         logger.log(Level.INFO, "Creating local group (was contact before)", newData)
-                        val newGroup = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                        val newGroup = localCollection.addGroup(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                         SyncException.wrapWithLocalResource(newGroup) {
-                            newGroup.add()
                             updated = newGroup
                         }
 
                     } else {
                         logger.log(Level.INFO, "Creating local contact (was group before)", newData)
-                        val newContact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                        val newContact = localCollection.addContact(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                         SyncException.wrapWithLocalResource(newContact) {
-                            newContact.add()
                             updated = newContact
                         }
                     }
