@@ -8,8 +8,10 @@ import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.techbee.jtx.JtxContract
+import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.parameter.XParameter
+import net.fortuna.ical4j.model.property.Clazz
 import net.fortuna.ical4j.model.property.XProperty
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -97,6 +99,20 @@ class UnknownPropertiesHandlerTest {
         val property = output.getProperty<XProperty>("X-UNKNOWN").getOrNull()
         assertEquals("value", property?.value)
         assertEquals("custom-value", property?.getParameter<XParameter>("X-CUSTOM")?.getOrNull()?.value)
+    }
+
+    @Test
+    fun `Known property stored as unknown property is restored`() {
+        val input = Entity(ContentValues())
+        input.addSubValue(
+            JtxContract.JtxUnknown.CONTENT_URI,
+            contentValuesOf(JtxContract.JtxUnknown.UNKNOWN_VALUE to """["CLASS","PRIVATE"]""")
+        )
+        val output = VToDo()
+
+        handler.process(from = input, main = input, to = output)
+
+        assertEquals("PRIVATE", output.getProperty<Clazz>(Property.CLASS).getOrNull()?.value)
     }
 
     @Test
