@@ -91,7 +91,8 @@ class Android7DirtyVerifier @Inject constructor(
     }
 
     private fun getLastHashCode(addressBook: LocalAddressBook, contact: LocalContact): Int {
-        addressBook.ab.provider.query(contact.rawContactSyncURI(), arrayOf(RawContactColumns.HASHCODE), null, null, null)?.use { c ->
+        val provider = addressBook.ab.provider
+        provider.query(contact.androidContact.rawContactSyncURI(), arrayOf(RawContactColumns.HASHCODE), null, null, null)?.use { c ->
             if (c.moveToNext() && !c.isNull(0))
                 return c.getInt(0)
         }
@@ -111,8 +112,9 @@ class Android7DirtyVerifier @Inject constructor(
         contact.clearCachedContact()
 
         // groupMemberships is filled by getContact()
-        val dataHash = contact.getContact().hashCode()
-        val groupHash = contact.groupMemberships.hashCode()
+        val ac = contact.androidContact
+        val dataHash = ac.getContact().hashCode()
+        val groupHash = ac.groupMemberships.hashCode()
         val combinedHash = dataHash xor groupHash
         logger.log(Level.FINE, "Calculated data hash = $dataHash, group memberships hash = $groupHash → combined hash = $combinedHash", contact)
         return combinedHash
@@ -124,17 +126,18 @@ class Android7DirtyVerifier @Inject constructor(
     }
 
     override fun updateHashCode(addressBook: LocalAddressBook, contact: LocalContact) {
+        val provider = addressBook.ab.provider
         val values = ContentValues(1)
         setHashCodeColumn(contact, values)
 
-        addressBook.ab.provider.update(contact.rawContactSyncURI(), values, null, null)
+        provider.update(contact.androidContact.rawContactSyncURI(), values, null, null)
     }
 
     override fun updateHashCode(contact: LocalContact, batch: ContactsBatchOperation) {
         val hashCode = contactDataHashCode(contact)
 
         batch += BatchOperation.CpoBuilder
-            .newUpdate(contact.rawContactSyncURI())
+            .newUpdate(contact.androidContact.rawContactSyncURI())
             .withValue(RawContactColumns.HASHCODE, hashCode)
     }
 

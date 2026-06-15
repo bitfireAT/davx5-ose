@@ -19,11 +19,14 @@ import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
+import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
+import at.bitfire.synctools.storage.contacts.AndroidContact
+import at.bitfire.synctools.storage.contacts.AndroidGroup
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.util.AndroidAccountUtils
@@ -256,11 +259,23 @@ open class LocalAddressBook @AssistedInject constructor(
     }
 
 
+    fun addContact(data: Contact, fileName: String?, eTag: String?, flags: Int): LocalContact {
+        val androidContact = AndroidContact(ab, data, fileName, eTag, flags)
+        androidContact.add()
+        return LocalContact(this, androidContact)
+    }
+
+    fun addGroup(data: Contact, fileName: String?, eTag: String?, flags: Int): LocalGroup {
+        val androidGroup = AndroidGroup(ab, data, fileName, eTag, flags)
+        androidGroup.add()
+        return LocalGroup(androidGroup)
+    }
+
     fun queryContacts(where: String?, whereArgs: Array<String>?): List<LocalContact> {
         val contacts = LinkedList<LocalContact>()
         ab.provider.query(ab.rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
             while (cursor.moveToNext())
-                contacts += LocalContact(this, cursor.toContentValues())
+                contacts += LocalContact(this, AndroidContact(ab, cursor.toContentValues()))
         }
         return contacts
     }
@@ -269,7 +284,7 @@ open class LocalAddressBook @AssistedInject constructor(
         val groups = LinkedList<LocalGroup>()
         ab.provider.query(ab.groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
             while (cursor.moveToNext())
-                groups += LocalGroup(this, cursor.toContentValues())
+                groups += LocalGroup(AndroidGroup(ab, cursor.toContentValues()))
         }
         return groups
     }
@@ -322,7 +337,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
         queryGroups("${Groups.ACCOUNT_TYPE}=? AND ${Groups.ACCOUNT_NAME}=?", arrayOf(addressBookAccount.type, addressBookAccount.name)).forEach { group ->
             val groupId = group.id!!
-            val pendingMemberUids = group.pendingMemberships.toMutableSet()
+            val pendingMemberUids = group.androidGroup.pendingMemberships.toMutableSet()
             val batch = ContactsBatchOperation(ab.provider)
 
             val changeContactIDs = HashSet<Long>()
@@ -333,7 +348,7 @@ open class LocalAddressBook @AssistedInject constructor(
                 if (!pendingMemberUids.contains(uid)) {
                     logger.fine("$currentMemberId removed from group $groupId; removing group membership")
                     val currentMember = findContactById(currentMemberId)
-                    currentMember.removeGroupMemberships(batch)
+                    currentMember.androidContact.removeGroupMemberships(batch)
                     changeContactIDs += currentMemberId
                 }
 
@@ -348,7 +363,7 @@ open class LocalAddressBook @AssistedInject constructor(
                 }
 
                 logger.fine("Assigning member $missingMember to group $groupId")
-                missingMember.addToGroup(batch, groupId)
+                missingMember.androidContact.addToGroup(batch, groupId)
                 changeContactIDs += missingMember.id!!
             }
 
@@ -366,9 +381,9 @@ open class LocalAddressBook @AssistedInject constructor(
     fun removeEmptyGroups() {
         // find groups without members
         /** should be done using {@link Groups.SUMMARY_COUNT}, but it's not implemented in Android yet */
-        queryGroups(null, null).filter { it.getMembers().isEmpty() }.forEach { group ->
+        queryGroups(null, null).filter { it.androidGroup.getMembers().isEmpty() }.forEach { group ->
             logger.log(Level.FINE, "Deleting group", group)
-            group.delete()
+            group.androidGroup.delete()
         }
     }
 

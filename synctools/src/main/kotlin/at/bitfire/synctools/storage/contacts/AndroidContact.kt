@@ -32,7 +32,6 @@ open class AndroidContact(
         protected set
 
     var fileName: String? = null
-        protected set
 
     var eTag: String? = null
 

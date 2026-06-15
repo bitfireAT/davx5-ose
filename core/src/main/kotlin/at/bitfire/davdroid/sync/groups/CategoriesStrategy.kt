@@ -19,7 +19,7 @@ class CategoriesStrategy(val addressBook: LocalAddressBook): ContactGroupStrateg
         for (group in addressBook.findDeletedGroups()) {
             logger.fine("Finally removing group $group")
             group.markMembersDirty()
-            group.delete()
+            group.androidGroup.delete()
         }
 
         // groups with DIRTY=1: mark all members as dirty, then clean DIRTY flag of group

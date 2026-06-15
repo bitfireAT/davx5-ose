@@ -20,6 +20,7 @@ import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.plusAssign
 import java.io.FileNotFoundException
+import java.util.LinkedList
 import java.util.logging.Logger
 
 open class AndroidGroup(
@@ -178,6 +179,26 @@ open class AndroidGroup(
     }
 
     fun delete() = addressBook.provider.delete(groupSyncURI(), null, null)
+
+    /**
+     * Lists all members of this group.
+     * @return list of all members' raw contact IDs
+     */
+    fun getMembers(): List<Long> {
+        val id = requireNotNull(id)
+        val members = LinkedList<Long>()
+        addressBook.provider.query(
+            ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
+            arrayOf(Data.RAW_CONTACT_ID),
+            "${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?",
+            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()),
+            null
+        )?.use { cursor ->
+            while (cursor.moveToNext())
+                members += cursor.getLong(0)
+        }
+        return members
+    }
 
 
     // helpers
