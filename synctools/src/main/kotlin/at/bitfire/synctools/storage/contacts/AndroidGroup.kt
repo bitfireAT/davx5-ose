@@ -13,7 +13,6 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
-import androidx.annotation.CallSuper
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.PendingMemberships
@@ -24,7 +23,7 @@ import java.io.FileNotFoundException
 import java.util.logging.Logger
 
 open class AndroidGroup(
-    val addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>
+    val addressBook: AndroidAddressBook
 ) {
     
     protected val logger
@@ -38,7 +37,7 @@ open class AndroidGroup(
     var flags: Int = 0
     var pendingMemberships = setOf<String>()
 
-	constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, values: ContentValues): this(addressBook) {
+    constructor(addressBook: AndroidAddressBook, values: ContentValues) : this(addressBook) {
         id = values.getAsLong(Groups._ID)
         fileName = values.getAsString(AddressContract.GroupColumns.FILENAME)
         eTag = values.getAsString(AddressContract.GroupColumns.ETAG)
@@ -48,7 +47,13 @@ open class AndroidGroup(
         }
 	}
 
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, contact: Contact, fileName: String? = null, eTag: String? = null, flags: Int = 0): this(addressBook) {
+    constructor(
+        addressBook: AndroidAddressBook,
+        contact: Contact,
+        fileName: String? = null,
+        eTag: String? = null,
+        flags: Int = 0
+    ) : this(addressBook) {
 		cachedContact = contact
         this.fileName = fileName
         this.eTag = eTag
@@ -74,7 +79,7 @@ open class AndroidGroup(
 
         val id = requireNotNull(id)
         val contact = Contact()
-        addressBook.provider!!.query(
+        addressBook.provider.query(
             ContentUris.withAppendedId(Groups.CONTENT_URI, id).asSyncAdapter(),
             arrayOf(AddressContract.GroupColumns.UID, Groups.TITLE, Groups.NOTES), null, null, null
         )?.use { cursor ->
@@ -120,17 +125,17 @@ open class AndroidGroup(
     }
 
 
-    @CallSuper
-    protected open fun contentValues(): ContentValues {
+    protected fun contentValues(): ContentValues {
         val contact = getContact()
-        val values = contentValuesOf(
+        return contentValuesOf(
+            AddressContract.GroupColumns.FLAGS to flags,
+            AddressContract.GroupColumns.PENDING_MEMBERS to PendingMemberships(contact.members).toString(),
             AddressContract.GroupColumns.FILENAME to fileName,
             AddressContract.GroupColumns.ETAG to eTag,
             AddressContract.GroupColumns.UID to contact.uid,
             Groups.TITLE to contact.displayName,
             Groups.NOTES to contact.note
         )
-        return values
     }
 
     /**
@@ -148,7 +153,7 @@ open class AndroidGroup(
         )
         if (addressBook.readOnly)
             values.put(Groups.GROUP_IS_READ_ONLY, 1)
-        val uri = addressBook.provider!!.insert(addressBook.groupsSyncUri(), values)
+        val uri = addressBook.provider.insert(addressBook.groupsSyncUri(), values)
                 ?: throw LocalStorageException("Empty result from content provider when adding group")
         id = ContentUris.parseId(uri)
         return uri
@@ -168,11 +173,11 @@ open class AndroidGroup(
 
     fun update(values: ContentValues): Uri {
         val uri = groupSyncURI()
-        addressBook.provider!!.update(uri, values, null, null)
+        addressBook.provider.update(uri, values, null, null)
         return uri
     }
 
-    fun delete() = addressBook.provider!!.delete(groupSyncURI(), null, null)
+    fun delete() = addressBook.provider.delete(groupSyncURI(), null, null)
 
 
     // helpers

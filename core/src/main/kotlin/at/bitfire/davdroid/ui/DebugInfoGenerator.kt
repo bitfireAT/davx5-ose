@@ -44,6 +44,7 @@ import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.util.TextTable
 import at.bitfire.synctools.storage.TaskProvider
+import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.dmfs.tasks.contract.TaskContract
@@ -387,7 +388,7 @@ class DebugInfoGenerator @Inject constructor(
         val table = dumpAndroidAccount(account, AccountDumpInfo.addressBookAccount(account))
         writer.append(TextTable.indent(table, 4))
             .append("Collection ID: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_COLLECTION_ID)}\n")
-            .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
+            .append("    Read-only: ${accountManager.getUserData(account, AndroidAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
     }
 
     /**

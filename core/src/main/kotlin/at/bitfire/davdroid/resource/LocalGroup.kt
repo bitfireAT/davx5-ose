@@ -20,10 +20,7 @@ import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
 import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
-import at.bitfire.synctools.storage.contacts.AndroidAddressBook
-import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.AndroidGroup
-import at.bitfire.synctools.storage.contacts.AndroidGroupFactory
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import com.google.common.base.MoreObjects
 import java.util.LinkedList
@@ -36,10 +33,10 @@ class LocalGroup : AndroidGroup, LocalAddress {
         set(_) = throw NotImplementedError()
 
 
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues) : super(addressBook, values)
+    constructor(localAddressBook: LocalAddressBook, values: ContentValues) : super(localAddressBook.ab, values)
 
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, contact: Contact, fileName: String?, eTag: String?, flags: Int)
-            : super(addressBook, contact, fileName, eTag, flags)
+    constructor(localAddressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, flags: Int)
+            : super(localAddressBook.ab, contact, fileName, eTag, flags)
 
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
@@ -59,7 +56,7 @@ class LocalGroup : AndroidGroup, LocalAddress {
         this.eTag = null
 
         // update cached group memberships
-        val batch = ContactsBatchOperation(addressBook.provider!!)
+        val batch = ContactsBatchOperation(addressBook.provider)
 
         // delete old cached group memberships
         batch += BatchOperation.CpoBuilder
@@ -84,7 +81,7 @@ class LocalGroup : AndroidGroup, LocalAddress {
      * Marks all members of the current group as dirty.
      */
     fun markMembersDirty() {
-        val batch = ContactsBatchOperation(addressBook.provider!!)
+        val batch = ContactsBatchOperation(addressBook.provider)
 
         for (member in getMembers())
             batch += BatchOperation.CpoBuilder
@@ -104,7 +101,7 @@ class LocalGroup : AndroidGroup, LocalAddress {
 
     override fun updateFlags(flags: Int) {
         val values = contentValuesOf(GroupColumns.FLAGS to flags)
-        addressBook.provider!!.update(groupSyncUri(), values, null, null)
+        addressBook.provider.update(groupSyncUri(), values, null, null)
 
         this.flags = flags
     }
@@ -113,7 +110,7 @@ class LocalGroup : AndroidGroup, LocalAddress {
 
     override fun updateUid(uid: String) {
         val values = contentValuesOf(GroupColumns.UID to uid)
-        addressBook.provider!!.update(groupSyncUri(), values, null, null)
+        addressBook.provider.update(groupSyncUri(), values, null, null)
     }
 
     override fun deleteLocal() {
@@ -122,7 +119,7 @@ class LocalGroup : AndroidGroup, LocalAddress {
 
     override fun resetDeleted() {
         val values = contentValuesOf(Groups.DELETED to 0)
-        addressBook.provider!!.update(groupSyncUri(), values, null, null)
+        addressBook.provider.update(groupSyncUri(), values, null, null)
     }
 
     override fun getDebugSummary() =
@@ -158,7 +155,7 @@ class LocalGroup : AndroidGroup, LocalAddress {
     internal fun getMembers(): List<Long> {
         val id = requireNotNull(id)
         val members = LinkedList<Long>()
-        addressBook.provider!!.query(
+        addressBook.provider.query(
             ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
             arrayOf(Data.RAW_CONTACT_ID),
             "${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?",
@@ -169,14 +166,6 @@ class LocalGroup : AndroidGroup, LocalAddress {
                 members += cursor.getLong(0)
         }
         return members
-    }
-
-
-    // factory
-
-    object Factory : AndroidGroupFactory<LocalGroup> {
-        override fun fromProvider(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues) =
-            LocalGroup(addressBook, values)
     }
 
 }

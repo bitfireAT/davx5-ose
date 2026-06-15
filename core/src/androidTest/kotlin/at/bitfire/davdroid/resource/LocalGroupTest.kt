@@ -10,6 +10,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
+import android.provider.ContactsContract.RawContacts
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
@@ -44,7 +45,7 @@ class LocalGroupTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var localTestAddressBookProvider: LocalTestAddressBookProvider
+    lateinit var localTestAddressBook: LocalTestAddressBook
 
     lateinit var provider: ContentProviderClient
 
@@ -65,15 +66,15 @@ class LocalGroupTest {
 
     @Test
     fun testClearDirty_addCachedGroupMembership() {
-        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
-            val group = newGroup(ab)
+        localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
+            val group = newGroup(localAddressBook)
 
             val contact1 =
-                LocalContact(ab, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
+                LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
             contact1.add()
 
             // insert group membership, but no cached group membership
-            ab.provider!!.insert(
+            localAddressBook.ab.provider.insert(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 contentValuesOf(
                     GroupMembership.MIMETYPE to GroupMembership.CONTENT_ITEM_TYPE,
@@ -85,11 +86,12 @@ class LocalGroupTest {
             group.clearDirty(Optional.empty(), null)
 
             // check cached group membership
-            ab.provider!!.query(
+            localAddressBook.ab.provider.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
-                "${CachedGroupMembership.MIMETYPE}=?",
-                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
+                // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
+                "${CachedGroupMembership.MIMETYPE}=? AND ${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=?",
+                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, localAddressBook.addressBookAccount.name, localAddressBook.addressBookAccount.type),
                 null
             )!!.use { cursor ->
                 assertTrue(cursor.moveToNext())
@@ -103,14 +105,14 @@ class LocalGroupTest {
 
     @Test
     fun testClearDirty_removeCachedGroupMembership() {
-        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
-            val group = newGroup(ab)
+        localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
+            val group = newGroup(localAddressBook)
 
-            val contact1 = LocalContact(ab, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
+            val contact1 = LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
             contact1.add()
 
             // insert cached group membership, but no group membership
-            ab.provider!!.insert(
+            localAddressBook.ab.provider.insert(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 contentValuesOf(
                     CachedGroupMembership.MIMETYPE to CachedGroupMembership.CONTENT_ITEM_TYPE,
@@ -122,9 +124,11 @@ class LocalGroupTest {
             group.clearDirty(Optional.empty(), null)
 
             // cached group membership should be gone
-            ab.provider!!.query(
+            localAddressBook.ab.provider.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
-                "${CachedGroupMembership.MIMETYPE}=?", arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
+                // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
+                "${CachedGroupMembership.MIMETYPE}=? AND ${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=?",
+                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, localAddressBook.addressBookAccount.name, localAddressBook.addressBookAccount.type),
                 null
             )!!.use { cursor ->
                 assertFalse(cursor.moveToNext())
@@ -134,27 +138,27 @@ class LocalGroupTest {
 
     @Test
     fun testMarkMembersDirty() {
-        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
-            val group = newGroup(ab)
+        localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
+            val group = newGroup(localAddressBook)
 
             val contact1 =
-                LocalContact(ab, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
+                LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
             contact1.add()
 
-            val batch = ContactsBatchOperation(ab.provider!!)
+            val batch = ContactsBatchOperation(localAddressBook.ab.provider)
             contact1.addToGroup(batch, group.id!!)
             batch.commit()
 
-            assertEquals(0, ab.findDirty().size)
+            assertEquals(0, localAddressBook.findDirty().size)
             group.markMembersDirty()
-            assertEquals(contact1.id, ab.findDirty().first().id)
+            assertEquals(contact1.id, localAddressBook.findDirty().first().id)
         }
     }
 
     @Test
     fun testUpdate() {
-        localTestAddressBookProvider.provide(account, provider) { ab ->
-            val group = newGroup(ab)
+        localTestAddressBook.provide(account, provider) {
+            val group = newGroup(it)
             group.update(Contact(displayName = "New Group Name"), null, null, null, 0)
         }
     }
