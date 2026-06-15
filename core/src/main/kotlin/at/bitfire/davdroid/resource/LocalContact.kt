@@ -22,7 +22,7 @@ import com.google.common.base.MoreObjects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-class LocalContact: AndroidContact, LocalAddress {
+class LocalContact : AndroidContact, LocalAddress {
 
     override val addressBook: LocalAddressBook
         get() = super.addressBook as LocalAddressBook
@@ -33,11 +33,11 @@ class LocalContact: AndroidContact, LocalAddress {
     override var flags: Int = 0
 
 
-    constructor(addressBook: LocalAddressBook, values: ContentValues): super(addressBook, values) {
+    constructor(addressBook: LocalAddressBook, values: ContentValues) : super(addressBook, values) {
         flags = values.getAsInteger(RawContactColumns.FLAGS) ?: 0
     }
 
-    constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, _flags: Int): super(addressBook, contact, fileName, eTag) {
+    constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, _flags: Int) : super(addressBook, contact, fileName, eTag) {
         flags = _flags
     }
 
@@ -141,9 +141,9 @@ class LocalContact: AndroidContact, LocalAddress {
 
     // factory
 
-    object Factory: AndroidContactFactory<LocalContact> {
+    object Factory : AndroidContactFactory<LocalContact> {
         override fun fromProvider(addressBook: AndroidAddressBook<LocalContact, *>, values: ContentValues) =
-                LocalContact(addressBook as LocalAddressBook, values)
+            LocalContact(addressBook as LocalAddressBook, values)
     }
 
 }

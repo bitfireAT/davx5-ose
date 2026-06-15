@@ -16,6 +16,7 @@ import android.provider.ContactsContract.RawContacts.Data
 import androidx.annotation.CallSuper
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.PendingMemberships
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.plusAssign
@@ -34,16 +35,24 @@ open class AndroidGroup(
     var fileName: String? = null
     var eTag: String? = null
 
+    var flags: Int = 0
+    var pendingMemberships = setOf<String>()
+
 	constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, values: ContentValues): this(addressBook) {
         id = values.getAsLong(Groups._ID)
         fileName = values.getAsString(AddressContract.GroupColumns.FILENAME)
         eTag = values.getAsString(AddressContract.GroupColumns.ETAG)
+        flags = values.getAsInteger(AddressContract.GroupColumns.FLAGS) ?: 0
+        values.getAsString(AddressContract.GroupColumns.PENDING_MEMBERS)?.let { members ->
+            pendingMemberships = PendingMemberships.fromString(members).uids
+        }
 	}
 
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, contact: Contact, fileName: String?  = null, eTag: String? = null): this(addressBook) {
+    constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, contact: Contact, fileName: String? = null, eTag: String? = null, flags: Int = 0): this(addressBook) {
 		cachedContact = contact
         this.fileName = fileName
         this.eTag = eTag
+        this.flags = flags
 	}
 
 

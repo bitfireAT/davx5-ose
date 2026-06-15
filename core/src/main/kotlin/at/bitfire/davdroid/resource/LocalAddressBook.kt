@@ -36,6 +36,7 @@ import java.util.LinkedList
 import java.util.Optional
 import java.util.logging.Level
 import java.util.logging.Logger
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * A local address book. Requires its own Android account, because Android manages contacts per
@@ -300,6 +301,56 @@ open class LocalAddressBook @AssistedInject constructor(
 
 
     /* special group operations */
+
+    /**
+     * Processes all groups with pending memberships: applies them (if possible) to keep cached
+     * memberships in sync.
+     */
+    fun applyPendingMemberships() {
+        logger.info("Assigning memberships of contact groups")
+
+        queryGroups("${Groups.ACCOUNT_TYPE}=? AND ${Groups.ACCOUNT_NAME}=?", arrayOf(addressBookAccount.type, addressBookAccount.name)) { group ->
+            val groupId = group.id!!
+            val pendingMemberUids = group.pendingMemberships.toMutableSet()
+            val batch = ContactsBatchOperation(provider!!)
+
+            val changeContactIDs = HashSet<Long>()
+
+            for (currentMemberId in getContactIdsByGroupMembership(groupId)) {
+                val uid = getContactUidFromId(currentMemberId) ?: continue
+
+                if (!pendingMemberUids.contains(uid)) {
+                    logger.fine("$currentMemberId removed from group $groupId; removing group membership")
+                    val currentMember = findContactById(currentMemberId)
+                    currentMember.removeGroupMemberships(batch)
+                    changeContactIDs += currentMemberId
+                }
+
+                pendingMemberUids -= uid
+            }
+
+            for (missingMemberUid in pendingMemberUids) {
+                val missingMember = findContactByUid(missingMemberUid)
+                if (missingMember == null) {
+                    logger.warning("Group $groupId has member $missingMemberUid which is not found in the address book; ignoring")
+                    continue
+                }
+
+                logger.fine("Assigning member $missingMember to group $groupId")
+                missingMember.addToGroup(batch, groupId)
+                changeContactIDs += missingMember.id!!
+            }
+
+            dirtyVerifier.getOrNull()?.let { verifier ->
+                // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+                changeContactIDs
+                    .map { id -> findContactById(id) }
+                    .forEach { contact -> verifier.updateHashCode(contact, batch) }
+            }
+
+            batch.commit()
+        }
+    }
 
     fun removeEmptyGroups() {
         // find groups without members
