@@ -23,11 +23,12 @@ import java.io.FileNotFoundException
 import java.util.LinkedList
 import java.util.logging.Logger
 
-open class AndroidGroup(
+@Deprecated("Replaced by AndroidAddressBook Entity CRUD")
+class AndroidGroup(
     val addressBook: AndroidAddressBook
 ) {
-    
-    protected val logger
+
+    private val logger
         get() = Logger.getLogger(javaClass.name)
 
     var id: Long? = null
@@ -46,20 +47,15 @@ open class AndroidGroup(
         values.getAsString(AddressContract.GroupColumns.PENDING_MEMBERS)?.let { members ->
             pendingMemberships = PendingMemberships.fromString(members).uids
         }
-	}
+    }
 
-    constructor(
-        addressBook: AndroidAddressBook,
-        contact: Contact,
-        fileName: String? = null,
-        eTag: String? = null,
-        flags: Int = 0
-    ) : this(addressBook) {
-		cachedContact = contact
+    constructor(addressBook: AndroidAddressBook, contact: Contact, fileName: String? = null, eTag: String? = null, flags: Int = 0)
+            : this(addressBook) {
+        cachedContact = contact
         this.fileName = fileName
         this.eTag = eTag
         this.flags = flags
-	}
+    }
 
 
     /**
@@ -75,7 +71,7 @@ open class AndroidGroup(
      * @throws FileNotFoundException when the group is not available (anymore)
      * @throws RemoteException on contact provider errors
      */
-     fun getContact(): Contact {
+    fun getContact(): Contact {
         cachedContact?.let { return it }
 
         val id = requireNotNull(id)
@@ -96,9 +92,10 @@ open class AndroidGroup(
         // get all contacts which are member of the group
         addressBook.provider.query(
             ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
-                arrayOf(Data.RAW_CONTACT_ID),
-                GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?",
-                arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()), null)?.use { membershipCursor ->
+            arrayOf(Data.RAW_CONTACT_ID),
+            GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?",
+            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()), null
+        )?.use { membershipCursor ->
             while (membershipCursor.moveToNext()) {
                 val contactId = membershipCursor.getLong(0)
                 logger.fine("Member ID: $contactId")
@@ -126,7 +123,7 @@ open class AndroidGroup(
     }
 
 
-    protected fun contentValues(): ContentValues {
+    private fun contentValues(): ContentValues {
         val contact = getContact()
         return contentValuesOf(
             AddressContract.GroupColumns.FLAGS to flags,
@@ -155,10 +152,10 @@ open class AndroidGroup(
         if (addressBook.readOnly)
             values.put(Groups.GROUP_IS_READ_ONLY, 1)
         val uri = addressBook.provider.insert(addressBook.groupsSyncUri(), values)
-                ?: throw LocalStorageException("Empty result from content provider when adding group")
+            ?: throw LocalStorageException("Empty result from content provider when adding group")
         id = ContentUris.parseId(uri)
         return uri
-	}
+    }
 
     /**
      * Updates a group from a [Contact], which represents a vCard received from the
