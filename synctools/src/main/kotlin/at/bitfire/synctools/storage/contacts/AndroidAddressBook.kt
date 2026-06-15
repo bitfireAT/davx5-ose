@@ -24,12 +24,13 @@ import java.io.FileNotFoundException
 import java.util.LinkedList
 
 class AndroidAddressBook(
-    context: Context,
+    private val context: Context,
     var addressBookAccount: Account,
     val provider: ContentProviderClient
 ) {
 
-    private val accountManager = AccountManager.get(context)
+    val accountManager
+        get() = AccountManager.get(context)
 
     val groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS
 
