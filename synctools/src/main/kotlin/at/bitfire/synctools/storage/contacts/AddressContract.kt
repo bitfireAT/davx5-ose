@@ -66,7 +66,11 @@ object AddressContract {
      * its cached group memberships. If they differ, the respective contact group
      * is set to dirty (because its memberships have changed).
      *
+    <<<<<<< HEAD
      * Cached group memberships must not be used for anything else that detecting dirty groups.
+    =======
+     * Cached group memberships must not be used for anything else than detecting dirty groups.
+    >>>>>>> main
      */
     object CachedGroupMembership {
         /** Column name for the MIME type of the data row. Type: [String] */

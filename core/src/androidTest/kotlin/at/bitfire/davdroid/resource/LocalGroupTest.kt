@@ -44,7 +44,7 @@ class LocalGroupTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var localTestAddressBookProvider: LocalTestAddressBookProvider
+    lateinit var localAddressBookFactory: LocalAddressBook.Factory
 
     lateinit var provider: ContentProviderClient
 
@@ -65,15 +65,15 @@ class LocalGroupTest {
 
     @Test
     fun testClearDirty_addCachedGroupMembership() {
-        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
-            val group = newGroup(ab)
+        LocalTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES, localAddressBookFactory) { localAddressBook ->
+            val group = newGroup(localAddressBook)
 
             val contact1 =
-                LocalContact(ab, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
+                LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
             contact1.add()
 
             // insert group membership, but no cached group membership
-            ab.provider!!.insert(
+            localAddressBook.ab.provider.insert(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 contentValuesOf(
                     GroupMembership.MIMETYPE to GroupMembership.CONTENT_ITEM_TYPE,
@@ -85,7 +85,7 @@ class LocalGroupTest {
             group.clearDirty(Optional.empty(), null)
 
             // check cached group membership
-            ab.provider!!.query(
+            localAddressBook.ab.provider.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
                 "${CachedGroupMembership.MIMETYPE}=?",
@@ -103,14 +103,14 @@ class LocalGroupTest {
 
     @Test
     fun testClearDirty_removeCachedGroupMembership() {
-        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
-            val group = newGroup(ab)
+        LocalTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES, localAddressBookFactory) { localAddressBook ->
+            val group = newGroup(localAddressBook)
 
-            val contact1 = LocalContact(ab, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
+            val contact1 = LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
             contact1.add()
 
             // insert cached group membership, but no group membership
-            ab.provider!!.insert(
+            localAddressBook.ab.provider.insert(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 contentValuesOf(
                     CachedGroupMembership.MIMETYPE to CachedGroupMembership.CONTENT_ITEM_TYPE,
@@ -122,7 +122,7 @@ class LocalGroupTest {
             group.clearDirty(Optional.empty(), null)
 
             // cached group membership should be gone
-            ab.provider!!.query(
+            localAddressBook.ab.provider.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
                 "${CachedGroupMembership.MIMETYPE}=?", arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE),
                 null
@@ -134,27 +134,27 @@ class LocalGroupTest {
 
     @Test
     fun testMarkMembersDirty() {
-        localTestAddressBookProvider.provide(account, provider, GroupMethod.CATEGORIES) { ab ->
-            val group = newGroup(ab)
+        LocalTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES, localAddressBookFactory) { localAddressBook ->
+            val group = newGroup(localAddressBook)
 
             val contact1 =
-                LocalContact(ab, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
+                LocalContact(localAddressBook, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
             contact1.add()
 
-            val batch = ContactsBatchOperation(ab.provider!!)
+            val batch = ContactsBatchOperation(localAddressBook.ab.provider)
             contact1.addToGroup(batch, group.id!!)
             batch.commit()
 
-            assertEquals(0, ab.findDirty().size)
+            assertEquals(0, localAddressBook.findDirty().size)
             group.markMembersDirty()
-            assertEquals(contact1.id, ab.findDirty().first().id)
+            assertEquals(contact1.id, localAddressBook.findDirty().first().id)
         }
     }
 
     @Test
     fun testUpdate() {
-        localTestAddressBookProvider.provide(account, provider) { ab ->
-            val group = newGroup(ab)
+        LocalTestAddressBook.provide(account, provider, factory = localAddressBookFactory) {
+            val group = newGroup(it)
             group.update(Contact(displayName = "New Group Name"), null, null, null, 0)
         }
     }

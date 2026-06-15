@@ -17,12 +17,12 @@ import org.junit.runners.model.Statement
  *
  * @param permissions   requested permissions
  */
-class GrantPermissionOrSkipRule(permissions: Set<String>): TestRule {
+class GrantPermissionOrSkipRule(permissions: Set<String>) : TestRule {
 
     val grantRule: TestRule = GrantPermissionRule.grant(*permissions.toTypedArray())
 
     override fun apply(base: Statement, description: Description) =
-        object: Statement() {
+        object : Statement() {
             override fun evaluate() {
                 val innerStatement = grantRule.apply(base, description)
                 try {
