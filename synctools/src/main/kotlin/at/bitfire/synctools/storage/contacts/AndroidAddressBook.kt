@@ -20,6 +20,7 @@ import at.bitfire.synctools.storage.contacts.AndroidAddressBook.Companion.USER_D
 import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
+import org.jetbrains.annotations.TestOnly
 import java.io.FileNotFoundException
 import java.util.LinkedList
 
@@ -132,12 +133,10 @@ class AndroidAddressBook(
     }
 
 
+    @TestOnly
     @Throws(FileNotFoundException::class)
     fun findContactById(id: Long) =
             queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
-
-    fun findContactByUid(uid: String) =
-        queryContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf(uid)).firstOrNull()
 
     @Throws(FileNotFoundException::class)
     fun findGroupById(id: Long) =

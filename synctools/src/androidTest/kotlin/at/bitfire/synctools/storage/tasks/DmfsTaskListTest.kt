@@ -276,37 +276,6 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testFindTasks() {
-        val taskList = createTaskList()
-        try {
-            taskList.addTask(
-                Entity(
-                    contentValuesOf(
-                        Tasks.LIST_ID to taskList.id,
-                        Tasks.TITLE to "Task 1"
-                    )
-                )
-            )
-            taskList.addTask(
-                Entity(
-                    contentValuesOf(
-                        Tasks.LIST_ID to taskList.id,
-                        Tasks.TITLE to "Task 2"
-                    )
-                )
-            )
-
-            val tasks = taskList.findTasks()
-            assertEquals(2, tasks.size)
-
-            val titles = tasks.map { it.entityValues.getAsString(Tasks.TITLE) }.toSet()
-            assertEquals(setOf("Task 1", "Task 2"), titles)
-        } finally {
-            taskList.delete()
-        }
-    }
-
-    @Test
     fun testGetTask() {
         val taskList = createTaskList()
         try {
@@ -645,7 +614,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             assertEquals(2, updatedCount)
 
             // Verify updates
-            val tasks = taskList.findTasks()
+            val tasks = taskList.findTasks(null, null)
             assertEquals(2, tasks.size)
             for (task in tasks) {
                 assertEquals("Updated Title", task.entityValues.getAsString(Tasks.TITLE))

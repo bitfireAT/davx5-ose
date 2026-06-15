@@ -194,6 +194,7 @@ class AndroidCalendar(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
+    @TestOnly
     fun findEventRow(projection: Array<String>?, where: String?, whereArgs: Array<String>?): ContentValues? {
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
@@ -214,9 +215,10 @@ class AndroidCalendar(
      *
      * @return event (or `null` if not found)
      */
-    fun getEvent(id: Long, where: String? = null, whereArgs: Array<String>? = null): Entity? {
+    @TestOnly
+    fun getEvent(id: Long): Entity? {
         try {
-            client.query(eventEntityUri(id), null, where, whereArgs, null)?.use { cursor ->
+            client.query(eventEntityUri(id), null, null, null, null)?.use { cursor ->
                 val iterator = EventsEntity.newEntityIterator(cursor, client)
                 if (iterator.hasNext())
                     return iterator.next()

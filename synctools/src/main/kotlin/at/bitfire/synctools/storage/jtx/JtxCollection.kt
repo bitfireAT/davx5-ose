@@ -9,12 +9,12 @@ import android.content.ContentValues
 import android.content.Entity
 import android.net.Uri
 import android.os.RemoteException
-import androidx.annotation.VisibleForTesting
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
+import org.jetbrains.annotations.TestOnly
 import java.util.LinkedList
 
 /**
@@ -436,7 +436,7 @@ class JtxCollection(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    @VisibleForTesting
+    @TestOnly
     fun deleteAllJtxObjects() {
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(null, null)
