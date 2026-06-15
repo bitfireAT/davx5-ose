@@ -434,11 +434,12 @@ class JtxRecurringCollection(
      * exceptions and must not be treated as such. The provider sets SEQUENCE to at least 1 for any
      * sync-adapter-inserted exception.
      */
-    private fun findExceptionsByUid(uid: String): List<Entity> =
-        collection.findJtxObjects(
+    private fun findExceptionsByUid(uid: String): List<Entity> = buildList {
+        collection.iterateJtxObjects(
             "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NOT NULL AND ${JtxContract.JtxICalObject.SEQUENCE} > 0",
             arrayOf(uid)
-        )
+        ) { add(it) }
+    }
 
     /**
      * Adds [JtxContract.JtxICalObject.RECURID] IS NULL to [where] to restrict queries to main objects only.

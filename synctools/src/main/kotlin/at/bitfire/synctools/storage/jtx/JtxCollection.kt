@@ -15,7 +15,6 @@ import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import org.jetbrains.annotations.TestOnly
-import java.util.LinkedList
 
 /**
  * Represents a locally stored jtx collection (journals, notes, tasks). Communicates with
@@ -166,32 +165,6 @@ class JtxCollection(
             throw LocalStorageException("Couldn't query jtx objects", e)
         }
         return null
-    }
-
-    /**
-     * Queries jtx objects from this jtx collection.
-     *
-     * Adds a WHERE clause that restricts the query to [JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID] = [id].
-     *
-     * @param where     selection
-     * @param whereArgs arguments for selection
-     *
-     * @return jtx object entities from this collection which match the selection
-     *
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun findJtxObjects(where: String?, whereArgs: Array<String>?): List<Entity> {
-        val entities = LinkedList<Entity>()
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
-            client.query(jtxObjectsUri, null, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                while (cursor.moveToNext())
-                    entities += readEntity(cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query jtx objects", e)
-        }
-        return entities
     }
 
     /**

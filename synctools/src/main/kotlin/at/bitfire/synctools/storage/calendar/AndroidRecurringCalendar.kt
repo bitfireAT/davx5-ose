@@ -91,7 +91,7 @@ class AndroidRecurringCalendar(
         val mainEventId = main.entityValues.getAsLong(Events._ID)
         return EventAndExceptions(
             main = main,
-            exceptions = calendar.findEvents("${Events.ORIGINAL_ID}=?", arrayOf(mainEventId.toString()))
+            exceptions = buildList { calendar.iterateEvents("${Events.ORIGINAL_ID}=?", arrayOf(mainEventId.toString())) { add(it) } }
         )
     }
 
@@ -121,7 +121,7 @@ class AndroidRecurringCalendar(
             val mainEventId = main.entityValues.getAsLong(Events._ID)
             body(EventAndExceptions(
                 main = main,
-                exceptions = calendar.findEvents("${Events.ORIGINAL_ID}=?", arrayOf(mainEventId.toString()))
+                exceptions = buildList { calendar.iterateEvents("${Events.ORIGINAL_ID}=?", arrayOf(mainEventId.toString())) { add(it) } }
             ))
         }
     }

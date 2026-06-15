@@ -17,7 +17,6 @@ import at.bitfire.synctools.storage.toContentValues
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.jetbrains.annotations.TestOnly
-import java.util.LinkedList
 import java.util.logging.Logger
 
 
@@ -187,30 +186,6 @@ class DmfsTaskList(
             throw LocalStorageException("Couldn't query tasks", e)
         }
         return null
-    }
-
-    /**
-     * Queries tasks from this task list.
-     *
-     * @param where     selection
-     * @param whereArgs arguments for selection
-     *
-     * @return tasks from this task list which match the selection
-     *
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun findTasks(where: String?, whereArgs: Array<String>?): List<Entity> {
-        val entities = LinkedList<Entity>()
-        try {
-            iterateTaskRows(null, where, whereArgs) { row ->
-                val id = row.getAsLong(Tasks._ID) ?: return@iterateTaskRows
-                val entity = getTask(id) ?: return@iterateTaskRows
-                entities += entity
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query tasks", e)
-        }
-        return entities
     }
 
     /**

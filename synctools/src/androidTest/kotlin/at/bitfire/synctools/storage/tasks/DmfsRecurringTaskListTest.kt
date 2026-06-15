@@ -404,8 +404,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         val mainTaskId = taskAndExceptions.main.entityValues.getAsLong(Tasks._ID)!!
 
         // Get the actual exception ID from the database
-        val exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
-        val exceptionId = exceptions.first().entityValues.getAsLong(Tasks._ID)!!
+        val exceptionId = taskList.findTask("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))!!.entityValues.getAsLong(Tasks._ID)!!
 
         // Mark the exception as deleted (delete, but not "as sync adapter"!)
         val exceptionUri = ContentUris.withAppendedId(Tasks.getContentUri(providerName.authority), exceptionId)
@@ -435,8 +434,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         val mainTaskId = taskAndExceptions.main.entityValues.getAsLong(Tasks._ID)!!
 
         // Get the actual exception ID from the database
-        val exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
-        val exceptionId = exceptions.first().entityValues.getAsLong(Tasks._ID)!!
+        val exceptionId = taskList.findTask("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))!!.entityValues.getAsLong(Tasks._ID)!!
 
         // Mark the exception as dirty (but not deleted)
         taskList.updateTaskRow(exceptionId, contentValuesOf(Tasks._DIRTY to 1, Tasks.SYNC_VERSION to 5))

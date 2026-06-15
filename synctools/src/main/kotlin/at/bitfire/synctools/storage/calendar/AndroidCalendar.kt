@@ -24,7 +24,6 @@ import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import org.jetbrains.annotations.TestOnly
-import java.util.LinkedList
 import java.util.logging.Logger
 
 /**
@@ -159,32 +158,6 @@ class AndroidCalendar(
             throw LocalStorageException("Couldn't query events", e)
         }
         return null
-    }
-
-    /**
-     * Queries events from this calendar.
-     *
-     * Adds a WHERE clause that restricts the query to [CalendarContract.EventsColumns.CALENDAR_ID] = [id].
-     *
-     * @param where     selection
-     * @param whereArgs arguments for selection
-     *
-     * @return events from this calendar which match the selection
-     *
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun findEvents(where: String?, whereArgs: Array<String>?): List<Entity> {
-        val entities = LinkedList<Entity>()
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
-            client.query(eventEntitiesUri, null, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                for (entity in EventsEntity.newEntityIterator(cursor, client))
-                    entities += entity
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query events", e)
-        }
-        return entities
     }
 
     /**

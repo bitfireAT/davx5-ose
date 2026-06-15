@@ -614,7 +614,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             assertEquals(2, updatedCount)
 
             // Verify updates
-            val tasks = taskList.findTasks(null, null)
+            val tasks = buildList { taskList.iterateTasks(null, null) { add(it) } }
             assertEquals(2, tasks.size)
             for (task in tasks) {
                 assertEquals("Updated Title", task.entityValues.getAsString(Tasks.TITLE))
