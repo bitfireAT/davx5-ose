@@ -16,7 +16,6 @@ import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
-import at.bitfire.synctools.mapping.contacts.PendingMemberships
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
 import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
@@ -29,110 +28,18 @@ import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import com.google.common.base.MoreObjects
 import java.util.LinkedList
 import java.util.Optional
-import java.util.logging.Logger
-import kotlin.jvm.optionals.getOrNull
 
-class LocalGroup: AndroidGroup, LocalAddress {
-
-    companion object {
-        
-        private val logger: Logger
-            get() = Logger.getGlobal()
-
-        /**
-         * Processes all groups with non-null [GroupColumns.PENDING_MEMBERS]: the pending memberships
-         * are applied (if possible) to keep cached memberships in sync.
-         *
-         * @param addressBook    address book to take groups from
-         */
-        fun applyPendingMemberships(addressBook: LocalAddressBook) {
-            logger.info("Assigning memberships of contact groups")
-
-            addressBook.allGroups { group ->
-                val groupId = group.id!!
-                val pendingMemberUids = group.pendingMemberships.toMutableSet()
-                val batch = ContactsBatchOperation(addressBook.provider!!)
-
-                // required for workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                val changeContactIDs = HashSet<Long>()
-
-                // process members which are currently in this group, but shouldn't be
-                for (currentMemberId in addressBook.getContactIdsByGroupMembership(groupId)) {
-                    val uid = addressBook.getContactUidFromId(currentMemberId) ?: continue
-
-                    if (!pendingMemberUids.contains(uid)) {
-                        logger.fine("$currentMemberId removed from group $groupId; removing group membership")
-                        val currentMember = addressBook.findContactById(currentMemberId)
-                        currentMember.removeGroupMemberships(batch)
-
-                        // Android 7 hack
-                        changeContactIDs += currentMemberId
-                    }
-
-                    // UID is processed, remove from pendingMembers
-                    pendingMemberUids -= uid
-                }
-                // now pendingMemberUids contains all UIDs which are not assigned yet
-
-                // process members which should be in this group, but aren't
-                for (missingMemberUid in pendingMemberUids) {
-                    val missingMember = addressBook.findContactByUid(missingMemberUid)
-                    if (missingMember == null) {
-                        logger.warning("Group $groupId has member $missingMemberUid which is not found in the address book; ignoring")
-                        continue
-                    }
-
-                    logger.fine("Assigning member $missingMember to group $groupId")
-                    missingMember.addToGroup(batch, groupId)
-
-                    // Android 7 hack
-                    changeContactIDs += missingMember.id!!
-                }
-
-                addressBook.dirtyVerifier.getOrNull()?.let { verifier ->
-                    // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                    changeContactIDs
-                        .map { id -> addressBook.findContactById(id) }
-                        .forEach { contact ->
-                            verifier.updateHashCode(contact, batch)
-                        }
-                }
-
-                batch.commit()
-            }
-        }
-
-    }
-
+class LocalGroup : AndroidGroup, LocalAddress {
 
     override var scheduleTag: String?
         get() = null
         set(_) = throw NotImplementedError()
 
-    override var flags: Int = 0
 
-    var pendingMemberships = setOf<String>()
-
-
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues) : super(addressBook, values) {
-        flags = values.getAsInteger(GroupColumns.FLAGS) ?: 0
-        values.getAsString(GroupColumns.PENDING_MEMBERS)?.let { members ->
-            pendingMemberships = PendingMemberships.fromString(members).uids
-        }
-    }
+    constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues) : super(addressBook, values)
 
     constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, contact: Contact, fileName: String?, eTag: String?, flags: Int)
-        : super(addressBook, contact, fileName, eTag) {
-        this.flags = flags
-    }
-
-
-    override fun contentValues(): ContentValues  {
-        val values = super.contentValues()
-        values.put(GroupColumns.FLAGS, flags)
-        values.put(GroupColumns.PENDING_MEMBERS, PendingMemberships(getContact().members).toString())
-        return values
-    }
+            : super(addressBook, contact, fileName, eTag, flags)
 
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
@@ -224,7 +131,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
             .add("fileName", fileName)
             .add("eTag", eTag)
             .add("flags", flags)
-            .add("contact",
+            .add(
+                "contact",
                 try {
                     getContact().toString()
                 } catch (e: Exception) {
@@ -252,10 +160,10 @@ class LocalGroup: AndroidGroup, LocalAddress {
         val members = LinkedList<Long>()
         addressBook.provider!!.query(
             ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
-                arrayOf(Data.RAW_CONTACT_ID),
-                "${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?",
-                arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()),
-                null
+            arrayOf(Data.RAW_CONTACT_ID),
+            "${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?",
+            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()),
+            null
         )?.use { cursor ->
             while (cursor.moveToNext())
                 members += cursor.getLong(0)
@@ -266,9 +174,9 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
     // factory
 
-    object Factory: AndroidGroupFactory<LocalGroup> {
+    object Factory : AndroidGroupFactory<LocalGroup> {
         override fun fromProvider(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues) =
-                LocalGroup(addressBook, values)
+            LocalGroup(addressBook, values)
     }
 
 }

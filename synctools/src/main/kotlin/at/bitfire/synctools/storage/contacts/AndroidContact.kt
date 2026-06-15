@@ -64,7 +64,12 @@ open class AndroidContact(
     /**
      * Creates a new instance, initialized with some metadata. Usually used to insert a contact to an address book.
      */
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, _contact: Contact, _fileName: String?, _eTag: String?): this(addressBook) {
+    constructor(
+        addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>,
+        _contact: Contact,
+        _fileName: String?,
+        _eTag: String?
+    ) : this(addressBook) {
         fileName = _fileName
         eTag = _eTag
         setContact(_contact)
@@ -73,7 +78,7 @@ open class AndroidContact(
     /**
      * Creates a new instance, initialized with metadata from the content provider. Usually used when reading a contact from an address book.
      */
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, values: ContentValues): this(addressBook) {
+    constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, values: ContentValues) : this(addressBook) {
         id = values.getAsLong(RawContacts._ID)
         fileName = values.getAsString(AddressContract.RawContactColumns.FILENAME)
         eTag = values.getAsString(AddressContract.RawContactColumns.ETAG)
@@ -100,9 +105,12 @@ open class AndroidContact(
         val id = requireNotNull(id)
         var iter: EntityIterator? = null
         try {
-            iter = RawContacts.newEntityIterator(addressBook.provider!!.query(
-                ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(),
-                    null, RawContacts._ID + "=?", arrayOf(id.toString()), null))
+            iter = RawContacts.newEntityIterator(
+                addressBook.provider!!.query(
+                    ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(),
+                    null, RawContacts._ID + "=?", arrayOf(id.toString()), null
+                )
+            )
 
             if (iter.hasNext()) {
                 val contact = Contact()
@@ -119,7 +127,7 @@ open class AndroidContact(
                 return contact
 
             } else
-                // no raw contact with this ID
+            // no raw contact with this ID
                 throw FileNotFoundException()
 
         } finally {
@@ -173,8 +181,8 @@ open class AndroidContact(
             DatabaseUtils.sqlEscapeString(mimeType)
         }
         batch += BatchOperation.CpoBuilder
-                .newDelete(dataSyncURI())
-                .withSelection(Data.RAW_CONTACT_ID + "=? AND ${Data.MIMETYPE} IN ($sqlTypesToRemove)", arrayOf(id!!.toString()))
+            .newDelete(dataSyncURI())
+            .withSelection(Data.RAW_CONTACT_ID + "=? AND ${Data.MIMETYPE} IN ($sqlTypesToRemove)", arrayOf(id!!.toString()))
 
         insertDataRows(batch)
         batch.commit()
@@ -199,11 +207,11 @@ open class AndroidContact(
     @CallSuper
     protected open fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
         if (!update)
-            builder	.withValue(RawContacts.ACCOUNT_NAME, addressBook.addressBookAccount.name)
-                    .withValue(RawContacts.ACCOUNT_TYPE, addressBook.addressBookAccount.type)
+            builder.withValue(RawContacts.ACCOUNT_NAME, addressBook.addressBookAccount.name)
+                .withValue(RawContacts.ACCOUNT_TYPE, addressBook.addressBookAccount.type)
 
-        builder .withValue(RawContacts.DIRTY, 0)
-                .withValue(RawContacts.DELETED, 0)
+        builder.withValue(RawContacts.DIRTY, 0)
+            .withValue(RawContacts.DELETED, 0)
             .withValue(AddressContract.RawContactColumns.FILENAME, fileName)
             .withValue(AddressContract.RawContactColumns.ETAG, eTag)
             .withValue(AddressContract.RawContactColumns.UID, getContact().uid)

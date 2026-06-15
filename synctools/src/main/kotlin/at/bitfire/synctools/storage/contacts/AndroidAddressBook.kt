@@ -104,12 +104,6 @@ open class AndroidAddressBook<T1: AndroidContact, T2: AndroidGroup>(
     }
 
 
-    fun allGroups(callback: (T2) -> Unit) {
-        queryGroups("${Groups.ACCOUNT_TYPE}=? AND ${Groups.ACCOUNT_NAME}=?", arrayOf(addressBookAccount.type, addressBookAccount.name)) { group ->
-            callback(group)
-        }
-    }
-
     @Throws(FileNotFoundException::class)
     fun findContactById(id: Long) =
             queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
