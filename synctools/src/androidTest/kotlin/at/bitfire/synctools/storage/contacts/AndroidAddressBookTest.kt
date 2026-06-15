@@ -98,11 +98,11 @@ class AndroidAddressBookTest {
 
         try {
             // Test counting with filter
-            val filteredCount = addressBook.countContacts("${AndroidContact.COLUMN_UID}=?", arrayOf("test-uid-1"))
+            val filteredCount = addressBook.countContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf("test-uid-1"))
             assertEquals(1, filteredCount)
 
             // Test counting with non-matching filter
-            val noMatchCount = addressBook.countContacts("${AndroidContact.COLUMN_UID}=?", arrayOf("non-existent"))
+            val noMatchCount = addressBook.countContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf("non-existent"))
             assertEquals(0, noMatchCount)
         } finally {
             contact1.delete()

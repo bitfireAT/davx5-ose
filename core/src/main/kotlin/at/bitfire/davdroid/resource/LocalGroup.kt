@@ -15,14 +15,16 @@ import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
 import androidx.core.content.contentValuesOf
-import at.bitfire.davdroid.resource.LocalGroup.Companion.COLUMN_PENDING_MEMBERS
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.PendingMemberships
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
+import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.AndroidGroup
 import at.bitfire.synctools.storage.contacts.AndroidGroupFactory
-import at.bitfire.synctools.storage.contacts.CachedGroupMembershipContract
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import com.google.common.base.MoreObjects
 import java.util.LinkedList
@@ -37,15 +39,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
         private val logger: Logger
             get() = Logger.getGlobal()
 
-        const val COLUMN_FLAGS = Groups.SYNC4
-
-        /** List of member UIDs, as sent by server. This list will be used to establish
-         *  the group memberships when all groups and contacts have been synchronized.
-         *  Use [PendingMemberships] to create/read the list. */
-        const val COLUMN_PENDING_MEMBERS = Groups.SYNC3
-
         /**
-         * Processes all groups with non-null [COLUMN_PENDING_MEMBERS]: the pending memberships
+         * Processes all groups with non-null [GroupColumns.PENDING_MEMBERS]: the pending memberships
          * are applied (if possible) to keep cached memberships in sync.
          *
          * @param addressBook    address book to take groups from
@@ -120,8 +115,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
 
     constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues) : super(addressBook, values) {
-        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
-        values.getAsString(COLUMN_PENDING_MEMBERS)?.let { members ->
+        flags = values.getAsInteger(GroupColumns.FLAGS) ?: 0
+        values.getAsString(GroupColumns.PENDING_MEMBERS)?.let { members ->
             pendingMemberships = PendingMemberships.fromString(members).uids
         }
     }
@@ -134,8 +129,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
     override fun contentValues(): ContentValues  {
         val values = super.contentValues()
-        values.put(COLUMN_FLAGS, flags)
-        values.put(COLUMN_PENDING_MEMBERS, PendingMemberships(getContact().members).toString())
+        values.put(GroupColumns.FLAGS, flags)
+        values.put(GroupColumns.PENDING_MEMBERS, PendingMemberships(getContact().members).toString())
         return values
     }
 
@@ -147,8 +142,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
         val values = ContentValues(3)
         if (fileName.isPresent)
-            values.put(COLUMN_FILENAME, fileName.get())
-        values.putNull(COLUMN_ETAG)     // don't save changed ETag but null, so that the group is downloaded again, so that pendingMembers is updated
+            values.put(GroupColumns.FILENAME, fileName.get())
+        values.putNull(GroupColumns.ETAG)     // don't save changed ETag but null, so that the group is downloaded again, so that pendingMembers is updated
         values.put(Groups.DIRTY, 0)
         update(values)
 
@@ -161,19 +156,19 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
         // delete old cached group memberships
         batch += BatchOperation.CpoBuilder
-            .newDelete(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
+            .newDelete(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
             .withSelection(
-                CachedGroupMembershipContract.MIMETYPE + "=? AND " + CachedGroupMembershipContract.GROUP_ID + "=?",
-                arrayOf(CachedGroupMembershipContract.CONTENT_ITEM_TYPE, id.toString())
+                CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?",
+                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, id.toString())
             )
 
         // insert updated cached group memberships
         for (member in getMembers())
             batch += BatchOperation.CpoBuilder
-                .newInsert(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
-                .withValue(CachedGroupMembershipContract.MIMETYPE, CachedGroupMembershipContract.CONTENT_ITEM_TYPE)
-                .withValue(CachedGroupMembershipContract.RAW_CONTACT_ID, member)
-                .withValue(CachedGroupMembershipContract.GROUP_ID, id)
+                .newInsert(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
+                .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+                .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
+                .withValue(CachedGroupMembership.GROUP_ID, id)
 
         batch.commit()
     }
@@ -186,7 +181,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
         for (member in getMembers())
             batch += BatchOperation.CpoBuilder
-                .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member)))
+                .newUpdate(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member).asSyncAdapter())
                 .withValue(RawContacts.DIRTY, 1)
 
         batch.commit()
@@ -201,7 +196,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
     }
 
     override fun updateFlags(flags: Int) {
-        val values = contentValuesOf(COLUMN_FLAGS to flags)
+        val values = contentValuesOf(GroupColumns.FLAGS to flags)
         addressBook.provider!!.update(groupSyncUri(), values, null, null)
 
         this.flags = flags
@@ -210,7 +205,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
     override fun updateSequence(sequence: Int) = throw NotImplementedError()
 
     override fun updateUid(uid: String) {
-        val values = contentValuesOf(AndroidContact.COLUMN_UID to uid)
+        val values = contentValuesOf(GroupColumns.UID to uid)
         addressBook.provider!!.update(groupSyncUri(), values, null, null)
     }
 
@@ -256,7 +251,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
         val id = requireNotNull(id)
         val members = LinkedList<Long>()
         addressBook.provider!!.query(
-                addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI),
+            ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 arrayOf(Data.RAW_CONTACT_ID),
                 "${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?",
                 arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()),
@@ -266,25 +261,6 @@ class LocalGroup: AndroidGroup, LocalAddress {
                 members += cursor.getLong(0)
         }
         return members
-    }
-
-
-    // helper class for COLUMN_PENDING_MEMBERSHIPS blob
-
-    class PendingMemberships(
-        /** list of member UIDs that shall be assigned **/
-        val uids: Set<String>
-    ) {
-
-        companion object {
-            const val SEPARATOR = '\n'
-
-            fun fromString(value: String) =
-                PendingMemberships(value.split(SEPARATOR).toSet())
-        }
-
-        override fun toString() = uids.joinToString(SEPARATOR.toString())
-
     }
 
 

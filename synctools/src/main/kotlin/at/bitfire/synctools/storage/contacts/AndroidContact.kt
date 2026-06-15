@@ -21,19 +21,13 @@ import at.bitfire.synctools.mapping.contacts.RawContactHandler
 import at.bitfire.synctools.mapping.contacts.builder.PhotoBuilder
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import java.io.FileNotFoundException
 
 open class AndroidContact(
     open val addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>
 ) {
-
-    companion object {
-
-        const val COLUMN_FILENAME = RawContacts.SOURCE_ID
-        const val COLUMN_UID = RawContacts.SYNC1
-        const val COLUMN_ETAG = RawContacts.SYNC2
-
-    }
 
     var id: Long? = null
         protected set
@@ -48,7 +42,7 @@ open class AndroidContact(
      * Only filled after [getContact] has been called.
      *
      * Used to detect which groups have become dirty when a contact's memberships change.
-     * See [CachedGroupMembershipContract] for details.
+     * See [AddressContract.CachedGroupMembership] for details.
      */
     val cachedGroupMemberships = HashSet<Long>()
 
@@ -81,8 +75,8 @@ open class AndroidContact(
      */
     constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, values: ContentValues): this(addressBook) {
         id = values.getAsLong(RawContacts._ID)
-        fileName = values.getAsString(COLUMN_FILENAME)
-        eTag = values.getAsString(COLUMN_ETAG)
+        fileName = values.getAsString(AddressContract.RawContactColumns.FILENAME)
+        eTag = values.getAsString(AddressContract.RawContactColumns.ETAG)
     }
 
 
@@ -107,7 +101,7 @@ open class AndroidContact(
         var iter: EntityIterator? = null
         try {
             iter = RawContacts.newEntityIterator(addressBook.provider!!.query(
-                    addressBook.syncAdapterURI(ContactsContract.RawContactsEntity.CONTENT_URI),
+                ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(),
                     null, RawContacts._ID + "=?", arrayOf(id.toString()), null))
 
             if (iter.hasNext()) {
@@ -142,7 +136,7 @@ open class AndroidContact(
         val provider = addressBook.provider!!
         val batch = ContactsBatchOperation(provider)
 
-        val builder = BatchOperation.CpoBuilder.newInsert(addressBook.syncAdapterURI(RawContacts.CONTENT_URI))
+        val builder = BatchOperation.CpoBuilder.newInsert(RawContacts.CONTENT_URI.asSyncAdapter())
         buildContact(builder, false)
         batch += builder
 
@@ -154,7 +148,7 @@ open class AndroidContact(
         id = ContentUris.parseId(resultUri)
 
         getContact().photo?.let { photo ->
-            PhotoBuilder.insertPhoto(provider, addressBook.addressBookAccount, id!!, photo)
+            PhotoBuilder.insertPhoto(provider, id!!, photo)
         }
 
         return resultUri
@@ -186,7 +180,7 @@ open class AndroidContact(
         batch.commit()
 
         getContact().photo?.let { photo ->
-            PhotoBuilder.insertPhoto(provider, addressBook.addressBookAccount, id!!, photo)
+            PhotoBuilder.insertPhoto(provider, id!!, photo)
         }
 
         return uri
@@ -210,9 +204,9 @@ open class AndroidContact(
 
         builder .withValue(RawContacts.DIRTY, 0)
                 .withValue(RawContacts.DELETED, 0)
-                .withValue(COLUMN_FILENAME, fileName)
-                .withValue(COLUMN_ETAG, eTag)
-                .withValue(COLUMN_UID, getContact().uid)
+            .withValue(AddressContract.RawContactColumns.FILENAME, fileName)
+            .withValue(AddressContract.RawContactColumns.ETAG, eTag)
+            .withValue(AddressContract.RawContactColumns.UID, getContact().uid)
 
         if (addressBook.readOnly)
             builder.withValue(RawContacts.RAW_CONTACT_IS_READ_ONLY, 1)
@@ -244,9 +238,9 @@ open class AndroidContact(
 
         batch += BatchOperation.CpoBuilder
             .newInsert(dataSyncURI())
-            .withValue(CachedGroupMembershipContract.MIMETYPE, CachedGroupMembershipContract.CONTENT_ITEM_TYPE)
-            .withValue(CachedGroupMembershipContract.RAW_CONTACT_ID, id)
-            .withValue(CachedGroupMembershipContract.GROUP_ID, groupID)
+            .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+            .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
+            .withValue(CachedGroupMembership.GROUP_ID, groupID)
         cachedGroupMemberships += groupID
     }
 
@@ -255,7 +249,7 @@ open class AndroidContact(
             .newDelete(dataSyncURI())
             .withSelection(
                 "${Data.RAW_CONTACT_ID}=? AND ${Data.MIMETYPE} IN (?,?)",
-                arrayOf(id!!.toString(), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembershipContract.CONTENT_ITEM_TYPE)
+                arrayOf(id!!.toString(), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
             )
         groupMemberships.clear()
         cachedGroupMemberships.clear()
@@ -290,10 +284,10 @@ open class AndroidContact(
 
     fun rawContactSyncURI(): Uri {
         val id = requireNotNull(id)
-        return addressBook.syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, id))
+        return ContentUris.withAppendedId(RawContacts.CONTENT_URI, id).asSyncAdapter()
     }
 
-    fun dataSyncURI() = addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI)
+    fun dataSyncURI() = ContactsContract.Data.CONTENT_URI.asSyncAdapter()
 
     override fun toString() =
         "AndroidContact(id=$id, fileName=$fileName, eTag=$eTag, cachedContact=$cachedContact)"

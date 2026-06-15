@@ -23,6 +23,7 @@ import at.bitfire.synctools.mapping.contacts.handler.StructuredNameHandler
 import at.bitfire.synctools.mapping.contacts.handler.StructuredPostalHandler
 import at.bitfire.synctools.mapping.contacts.handler.UnknownPropertiesHandler
 import at.bitfire.synctools.mapping.contacts.handler.WebsiteHandler
+import at.bitfire.synctools.storage.contacts.AddressContract
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -68,7 +69,7 @@ class RawContactHandler(
     }
 
     fun handleRawContact(values: ContentValues, contact: Contact) {
-        contact.uid = values.getAsString(AndroidContact.COLUMN_UID)
+        contact.uid = values.getAsString(AddressContract.RawContactColumns.UID)
     }
 
     fun handleDataRow(values: ContentValues, contact: Contact) {

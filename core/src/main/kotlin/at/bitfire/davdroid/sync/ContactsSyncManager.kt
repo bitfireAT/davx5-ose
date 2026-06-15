@@ -92,7 +92,7 @@ import kotlin.jvm.optionals.getOrNull
  *   When downloading remote contacts, groups (+ member information) may be received
  *   by the actual members. Thus, the member lists have to be cached until all VCards
  *   are received. This is done by caching the member UIDs of each group in
- *   [LocalGroup.COLUMN_PENDING_MEMBERS]. In [postProcess],
+ *   [AddressContract.GroupColumns.PENDING_MEMBERS]. In [postProcess],
  *   these "pending memberships" are assigned to the actual contacts and then cleaned up.
  *
  * @param syncFrameworkUpload   set when this sync is caused by the sync framework and [android.content.ContentResolver.SYNC_EXTRAS_UPLOAD] was set

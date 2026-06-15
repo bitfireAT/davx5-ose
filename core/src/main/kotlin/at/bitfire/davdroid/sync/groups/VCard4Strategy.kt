@@ -11,6 +11,7 @@ import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.sync.ContactsSyncManager.Companion.disjunct
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import java.io.FileNotFoundException
 import java.util.logging.Logger
@@ -36,7 +37,7 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
                 for (groupID in cachedGroups disjunct currentGroups) {
                     logger.fine("Marking group as dirty: $groupID")
                     batch += BatchOperation.CpoBuilder
-                        .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(ContactsContract.Groups.CONTENT_URI, groupID)))
+                        .newUpdate(ContentUris.withAppendedId(ContactsContract.Groups.CONTENT_URI, groupID).asSyncAdapter())
                         .withValue(ContactsContract.Groups.DIRTY, 1)
                 }
             } catch(_: FileNotFoundException) {
