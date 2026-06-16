@@ -16,7 +16,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.JtxCollection
+import at.bitfire.synctools.storage.jtx.JtxCollectionProvider
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -62,7 +62,7 @@ class LocalJtxCollectionStore @Inject constructor(
             withColor = true
         )
 
-        return LocalJtxCollection(JtxCollection.createAndGet(account, client, context, values))
+        return LocalJtxCollection(JtxCollectionProvider(account, client).createAndGetCollection(values))
     }
 
     private fun valuesFromCollection(info: Collection, account: Account, withColor: Boolean): ContentValues {
@@ -93,13 +93,12 @@ class LocalJtxCollectionStore @Inject constructor(
     }
 
     override fun getAll(account: Account, client: ContentProviderClient): List<LocalJtxCollection> =
-        JtxCollection.find(account, client, context, null, null).map { LocalJtxCollection(it) }
+        JtxCollectionProvider(account, client).findCollections().map { LocalJtxCollection(it) }
 
     override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalJtxCollection? =
-        JtxCollection.find(
-            account, client, context,
+        JtxCollectionProvider(account, client).findFirstCollection(
             "${JtxContract.JtxCollection.SYNC_ID}=?", arrayOf(dbCollectionId.toString())
-        ).firstOrNull()?.let { LocalJtxCollection(it) }
+        )?.let { LocalJtxCollection(it) }
 
     override fun update(client: ContentProviderClient, localCollection: LocalJtxCollection, fromCollection: Collection) {
         val accountSettings = accountSettingsFactory.create(localCollection.jtxCollection.account)

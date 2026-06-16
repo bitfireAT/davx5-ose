@@ -6,7 +6,7 @@ package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.UnknownProperty
+import at.bitfire.synctools.mapping.UnknownProperty
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.UNKNOWN_PROPERTY_DATA
 import net.fortuna.ical4j.model.Property

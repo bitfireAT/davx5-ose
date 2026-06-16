@@ -4,28 +4,21 @@
 
 package at.bitfire.synctools.storage.contacts
 
-import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.ContentValues
+import androidx.test.platform.app.InstrumentationRegistry
+import at.bitfire.synctools.test.account.TestAccount
+import java.util.concurrent.atomic.AtomicInteger
 
-class TestAddressBook(
-    account: Account,
-    provider: ContentProviderClient
-): AndroidAddressBook<AndroidContact, AndroidGroup>(account, provider, ContactFactory, GroupFactory) {
+object TestAddressBook {
 
-    object ContactFactory: AndroidContactFactory<AndroidContact> {
+    private val context by lazy { InstrumentationRegistry.getInstrumentation().targetContext }
+    private val counter = AtomicInteger()
 
-        override fun fromProvider(addressBook: AndroidAddressBook<AndroidContact, *>, values: ContentValues) =
-                AndroidContact(addressBook, values)
-
+    fun create(provider: ContentProviderClient): AndroidAddressBook {
+        val account = TestAccount.create("Test Address Book ${counter.incrementAndGet()}")
+        return AndroidAddressBook(context, account, provider)
     }
 
-
-    object GroupFactory: AndroidGroupFactory<AndroidGroup> {
-
-        override fun fromProvider(addressBook: AndroidAddressBook<*, AndroidGroup>, values: ContentValues) =
-                AndroidGroup(addressBook, values)
-
-    }
+    fun remove(addressBook: AndroidAddressBook) = TestAccount.remove(addressBook.addressBookAccount)
 
 }

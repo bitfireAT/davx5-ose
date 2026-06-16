@@ -10,7 +10,7 @@ import android.content.ContentValues
 import android.content.Entity
 import android.database.DatabaseUtils
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Property
 import org.dmfs.tasks.contract.TaskContract.TaskLists
@@ -33,7 +33,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
         info.put(TaskLists.SYNC_ENABLED, 1)
         info.put(TaskLists.VISIBLE, 1)
 
-        val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider.client, providerName)
+        val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider, providerName)
         return dmfsTaskListProvider.createAndGetTaskList(info)
     }
 
@@ -270,37 +270,6 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             // Find non-existent
             val notFound = taskList.findTask("${Tasks._SYNC_ID}=?", arrayOf("non-existent"))
             assertNull(notFound)
-        } finally {
-            taskList.delete()
-        }
-    }
-
-    @Test
-    fun testFindTasks() {
-        val taskList = createTaskList()
-        try {
-            taskList.addTask(
-                Entity(
-                    contentValuesOf(
-                        Tasks.LIST_ID to taskList.id,
-                        Tasks.TITLE to "Task 1"
-                    )
-                )
-            )
-            taskList.addTask(
-                Entity(
-                    contentValuesOf(
-                        Tasks.LIST_ID to taskList.id,
-                        Tasks.TITLE to "Task 2"
-                    )
-                )
-            )
-
-            val tasks = taskList.findTasks()
-            assertEquals(2, tasks.size)
-
-            val titles = tasks.map { it.entityValues.getAsString(Tasks.TITLE) }.toSet()
-            assertEquals(setOf("Task 1", "Task 2"), titles)
         } finally {
             taskList.delete()
         }
@@ -645,7 +614,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             assertEquals(2, updatedCount)
 
             // Verify updates
-            val tasks = taskList.findTasks()
+            val tasks = buildList { taskList.iterateTasks(null, null) { add(it) } }
             assertEquals(2, tasks.size)
             for (task in tasks) {
                 assertEquals("Updated Title", task.entityValues.getAsString(Tasks.TITLE))

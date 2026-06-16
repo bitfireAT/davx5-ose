@@ -17,7 +17,6 @@ import at.bitfire.synctools.storage.calendar.EventsContract
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import java.util.LinkedList
 
 /**
  * Application-specific subclass of [AndroidCalendar] for local calendars.
@@ -73,20 +72,16 @@ class LocalCalendar @AssistedInject constructor(
     override fun countModified(): Int =
         androidCalendar.countEvents("${Events.DIRTY} AND NOT ${Events.DELETED}", null)
 
-    override fun findDeleted(): List<LocalEvent> {
-        val result = LinkedList<LocalEvent>()
+    override fun findDeleted(): List<LocalEvent> = buildList {
         recurringCalendar.iterateEventAndExceptions(Events.DELETED, null) { eventAndExceptions ->
-            result += LocalEvent(recurringCalendar, eventAndExceptions)
+            add(LocalEvent(recurringCalendar, eventAndExceptions))
         }
-        return result
     }
 
-    override fun findDirty(): List<LocalEvent> {
-        val dirty = LinkedList<LocalEvent>()
+    override fun findDirty(): List<LocalEvent> = buildList {
         recurringCalendar.iterateEventAndExceptions(Events.DIRTY, null) { eventAndExceptions ->
-            dirty += LocalEvent(recurringCalendar, eventAndExceptions)
+            add(LocalEvent(recurringCalendar, eventAndExceptions))
         }
-        return dirty
     }
 
     override fun findByName(name: String) =

@@ -9,7 +9,7 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.account.TestAccount
 import at.bitfire.synctools.test.assertEntitiesEqual
 import at.bitfire.synctools.test.assertExceptionsEqual
@@ -57,7 +57,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         // - lists in fake non-local accounts are removed by the tasks provider as stale lists
         // The account is created once per class to avoid repeated AccountManager churn while
         // still creating a fresh list for every test method.
-        taskList = TestTaskList.create(testAccount, provider)
+        taskList = TestTaskList.create(testAccount, providerName, provider)
         recurringTaskList = spyk(DmfsRecurringTaskList(taskList))
     }
 
@@ -404,8 +404,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         val mainTaskId = taskAndExceptions.main.entityValues.getAsLong(Tasks._ID)!!
 
         // Get the actual exception ID from the database
-        val exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
-        val exceptionId = exceptions.first().entityValues.getAsLong(Tasks._ID)!!
+        val exceptionId = taskList.findTask("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))!!.entityValues.getAsLong(Tasks._ID)!!
 
         // Mark the exception as deleted (delete, but not "as sync adapter"!)
         val exceptionUri = ContentUris.withAppendedId(Tasks.getContentUri(providerName.authority), exceptionId)
@@ -435,8 +434,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
         val mainTaskId = taskAndExceptions.main.entityValues.getAsLong(Tasks._ID)!!
 
         // Get the actual exception ID from the database
-        val exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
-        val exceptionId = exceptions.first().entityValues.getAsLong(Tasks._ID)!!
+        val exceptionId = taskList.findTask("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))!!.entityValues.getAsLong(Tasks._ID)!!
 
         // Mark the exception as dirty (but not deleted)
         taskList.updateTaskRow(exceptionId, contentValuesOf(Tasks._DIRTY to 1, Tasks.SYNC_VERSION to 5))

@@ -5,50 +5,36 @@
 package at.bitfire.davdroid.resource
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.Context
-import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
+import at.bitfire.davdroid.R
 import at.bitfire.synctools.vcard.GroupMethod
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.Optional
-import java.util.logging.Logger
+import java.util.UUID
+import javax.inject.Inject
 
-/**
- * A local address book that provides an easy way to set the group method in tests.
- */
-class LocalTestAddressBook @AssistedInject constructor(
-    @Assisted account: Account,
-    @Assisted("addressBook") addressBookAccount: Account,
-    @Assisted provider: ContentProviderClient,
-    @Assisted override val groupMethod: GroupMethod,
-    accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext context: Context,
-    logger: Logger,
-    syncFramework: SyncFrameworkIntegration
-): LocalAddressBook(
-    account = account,
-    _addressBookAccount = addressBookAccount,
-    provider = provider,
-    groupMethod = groupMethod,
-    accountSettingsFactory = accountSettingsFactory,
-    context = context,
-    dirtyVerifier = Optional.empty(),
-    logger = logger,
-    syncFramework = syncFramework
+class LocalTestAddressBook @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val factory: LocalAddressBook.Factory
 ) {
 
-    @AssistedFactory
-    interface Factory {
-        fun create(
-            account: Account,
-            @Assisted("addressBook") addressBookAccount: Account,
-            provider: ContentProviderClient,
-            groupMethod: GroupMethod
-        ): LocalTestAddressBook
+    fun provide(
+        account: Account,
+        provider: ContentProviderClient,
+        groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS,
+        block: (LocalAddressBook) -> Unit
+    ) {
+        val accountType = context.getString(R.string.account_type_address_book)
+        val abAccount = Account("Test Address Book ${UUID.randomUUID()}", accountType)
+        AccountManager.get(context).addAccountExplicitly(abAccount, null, null)
+        val ab = factory.create(account, abAccount, provider, groupMethod)
+        try {
+            block(ab)
+        } finally {
+            // use ab.addressBookAccount (not abAccount) to handle renames correctly
+            AccountManager.get(context).removeAccountExplicitly(ab.addressBookAccount)
+        }
     }
 
 }

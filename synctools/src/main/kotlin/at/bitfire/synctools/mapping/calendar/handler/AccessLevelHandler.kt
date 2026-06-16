@@ -7,8 +7,8 @@ package at.bitfire.synctools.mapping.calendar.handler
 import android.content.Entity
 import android.provider.CalendarContract.Events
 import android.provider.CalendarContract.ExtendedProperties
-import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.mapping.UnknownProperty
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Clazz
 import net.fortuna.ical4j.model.property.immutable.ImmutableClazz

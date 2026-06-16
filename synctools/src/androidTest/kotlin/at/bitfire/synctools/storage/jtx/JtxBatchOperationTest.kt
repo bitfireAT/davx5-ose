@@ -6,16 +6,14 @@ package at.bitfire.synctools.storage.jtx
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.ContentUris
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.ical4android.JtxCollection
-import at.bitfire.ical4android.TaskProvider
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.BuildConfig
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.techbee.jtx.JtxContract
+import at.techbee.jtx.JtxContract.asSyncAdapter
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -24,7 +22,7 @@ import org.junit.Test
 class JtxBatchOperationTest {
 
     @get:Rule
-    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.PERMISSIONS_JTX.toSet())
+    val permissionRule = GrantPermissionOrSkipRule(TaskProvider.ProviderName.JtxBoard.permissions.toSet())
 
     private val testAccount = Account(javaClass.name, BuildConfig.APPLICATION_ID)
 
@@ -45,12 +43,11 @@ class JtxBatchOperationTest {
     @Test
     fun testJtxBoard_OperationsPerYieldPoint_501() {
         val batch = JtxBatchOperation(provider)
-        val uri = JtxCollection.create(testAccount, provider, contentValuesOf(
-            JtxContract.JtxCollection.ACCOUNT_NAME to testAccount.name,
-            JtxContract.JtxCollection.ACCOUNT_TYPE to testAccount.type,
+        val jtxProvider = JtxCollectionProvider(testAccount, provider)
+        val collectionId = jtxProvider.createCollection(
+            contentValuesOf(
             JtxContract.JtxCollection.DISPLAYNAME to javaClass.name
         ))
-        val collectionId = ContentUris.parseId(uri)
 
         try {
             // 501 operations should succeed with JtxBatchOperation
@@ -61,7 +58,7 @@ class JtxBatchOperationTest {
             }
             batch.commit()
         } finally {
-            JtxCollection(testAccount, provider, collectionId).delete()
+            jtxProvider.deleteCollection(collectionId)
         }
     }
 

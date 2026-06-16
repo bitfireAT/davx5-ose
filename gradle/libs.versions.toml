@@ -45,7 +45,7 @@ openid-appauth = "0.11.1"
 robolectric = "4.16.1"
 room = "2.8.4"
 slf4j = "2.0.18"
-spotbugs = "4.10.1"
+spotbugs = "4.10.2"
 unifiedpush = "3.3.3"
 unifiedpush-fcm = "3.0.0"
 

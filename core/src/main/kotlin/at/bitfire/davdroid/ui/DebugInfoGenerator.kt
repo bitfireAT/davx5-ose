@@ -43,7 +43,8 @@ import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.util.TextTable
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
+import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.dmfs.tasks.contract.TaskContract
@@ -58,8 +59,8 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.use
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
-import at.bitfire.synctools.util.Utils.asSyncAdapter as asContactsSyncAdapter
+import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter as asCalendarSyncAdapter
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter as asContactsSyncAdapter
 import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 
 @WorkerThread
@@ -387,7 +388,7 @@ class DebugInfoGenerator @Inject constructor(
         val table = dumpAndroidAccount(account, AccountDumpInfo.addressBookAccount(account))
         writer.append(TextTable.indent(table, 4))
             .append("Collection ID: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_COLLECTION_ID)}\n")
-            .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
+            .append("    Read-only: ${accountManager.getUserData(account, AndroidAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
     }
 
     /**

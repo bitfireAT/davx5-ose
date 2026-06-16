@@ -6,13 +6,13 @@ package at.bitfire.synctools.mapping.tasks.handler
 
 import android.content.ContentValues
 import android.content.Entity
-import at.bitfire.ical4android.util.DateUtils
-import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.util.AndroidTimeUtils
 import at.bitfire.synctools.util.AndroidTimeUtils.isUtcTzId
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.bitfire.synctools.util.AndroidTimeUtils.toZonedDateTime
+import at.bitfire.synctools.util.TimeApiExtensions.isDateTime
+import at.bitfire.synctools.util.TimeApiExtensions.toLocalDate
 import net.fortuna.ical4j.model.Recur
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.ExDate
@@ -158,9 +158,9 @@ class RecurrenceFieldsHandler : DmfsTaskEntityHandler {
     fun alignUntil(recur: Recur<Temporal>, startTemporal: Temporal): Recur<Temporal> {
         val until: Temporal = recur.until ?: return recur
 
-        if (DateUtils.isDateTime(until)) {
+        if (until.isDateTime()) {
             // UNTIL is DATE-TIME
-            if (DateUtils.isDateTime(startTemporal)) {
+            if (startTemporal.isDateTime()) {
                 // DTSTART is DATE-TIME → ensure UNTIL is in UTC
                 val untilZoned = until.toZonedDateTime()
                 return if (untilZoned.zone == ZoneOffset.UTC) {
@@ -179,7 +179,7 @@ class RecurrenceFieldsHandler : DmfsTaskEntityHandler {
             }
         } else {
             // UNTIL is DATE
-            if (DateUtils.isDateTime(startTemporal)) {
+            if (startTemporal.isDateTime()) {
                 // DTSTART is DATE-TIME → amend UNTIL to UTC DATE-TIME
                 val untilDate = until.toLocalDate()
                 val startTime = startTemporal.toZonedDateTime()

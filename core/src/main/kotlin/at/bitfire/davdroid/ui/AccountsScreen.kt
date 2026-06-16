@@ -329,7 +329,7 @@ fun AccountsScreen(
 @Preview
 fun AccountsScreen_Preview_Empty() {
     AccountsScreen(
-        accountsDrawerHandler = object: AccountsDrawerHandler() {
+        accountsDrawerHandler = object : AccountsDrawerHandler() {
             @Composable
             override fun MenuEntries(snackbarHostState: SnackbarHostState) {
                 Text("Menu entries")
@@ -345,7 +345,7 @@ fun AccountsScreen_Preview_Empty() {
 @Preview
 fun AccountsScreen_Preview_OneAccount() {
     AccountsScreen(
-        accountsDrawerHandler = object: AccountsDrawerHandler() {
+        accountsDrawerHandler = object : AccountsDrawerHandler() {
             @Composable
             override fun MenuEntries(snackbarHostState: SnackbarHostState) {
                 Text("Menu entries")

@@ -33,6 +33,9 @@ proguard/
 
 ## Directory-based project format:
 .idea/
+!.idea/codeStyles
+!.idea/copyright
+
 # if you remove the above rule, at least ignore the following:
 
 # User-specific stuff:

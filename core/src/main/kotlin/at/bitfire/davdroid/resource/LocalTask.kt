@@ -8,7 +8,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions

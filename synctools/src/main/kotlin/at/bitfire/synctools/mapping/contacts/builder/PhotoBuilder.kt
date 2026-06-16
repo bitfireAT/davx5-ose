@@ -4,7 +4,6 @@
 
 package at.bitfire.synctools.mapping.contacts.builder
 
-import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
@@ -14,7 +13,7 @@ import android.provider.ContactsContract.CommonDataKinds.Photo
 import android.provider.ContactsContract.RawContacts
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.synctools.util.Utils.asSyncAdapter
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -35,14 +34,13 @@ class PhotoBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact, readO
          * [RawContacts.DIRTY] flag may be set asynchronously by the contacts provider
          * as soon as it finishes the operation.
          *
-         * @param provider           client to access contacts provider
-         * @param addressBookAccount account of the contact, used to create sync adapter URIs
-         * @param rawContactId       ID of the raw contact ([RawContacts._ID]])
-         * @param data               contact photo (binary data in a supported format like JPEG or PNG)
+         * @param provider       client to access contacts provider
+         * @param rawContactId   ID of the raw contact ([RawContacts._ID]])
+         * @param data           contact photo (binary data in a supported format like JPEG or PNG)
          *
          * @return URI of the raw contact display photo ([Photo.PHOTO_URI]); null if image can't be decoded
          */
-        fun insertPhoto(provider: ContentProviderClient, addressBookAccount: Account, rawContactId: Long, data: ByteArray): Uri? {
+        fun insertPhoto(provider: ContentProviderClient, rawContactId: Long, data: ByteArray): Uri? {
             // verify that data can be decoded by BitmapFactory, so that the contacts provider can process it
             val opts = BitmapFactory.Options()
             opts.inJustDecodeBounds = true
@@ -90,7 +88,7 @@ class PhotoBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact, readO
             // reset dirty flag in any case (however if we didn't wait long enough, the dirty flag will then be set again)
             val notDirty = ContentValues(1)
             notDirty.put(RawContacts.DIRTY, 0)
-            val rawContactUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI, rawContactId).asSyncAdapter(addressBookAccount)
+            val rawContactUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI, rawContactId).asSyncAdapter()
             provider.update(rawContactUri, notDirty, null, null)
 
             if (photoUri != null)

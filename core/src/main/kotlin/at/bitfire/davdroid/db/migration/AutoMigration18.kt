@@ -11,7 +11,7 @@ import androidx.room.RenameColumn
 import androidx.room.migration.AutoMigrationSpec
 import androidx.sqlite.db.SupportSQLiteDatabase
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

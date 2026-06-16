@@ -411,4 +411,8 @@
   <string name="widget_sync_all">Synchronizovat vše</string>
     <string name="widget_sync_all_accounts">Synchronizovat všechny účty</string>
     <!--cert4android-->
+<string name="account_prefs_use_app">Zde neměňte účet! Pro správu účtů použijte přímo aplikaci.</string>
+    <string name="dismiss_forever">Navždy zavřít</string>
+    <string name="notification_channel_user_interaction">Uživatelská interakce</string>
+    <string name="notification_channel_user_interaction_desc">Je vyžadována uživatelská interakce. Problém musí být vyřešen ručně.</string>
 </resources>
