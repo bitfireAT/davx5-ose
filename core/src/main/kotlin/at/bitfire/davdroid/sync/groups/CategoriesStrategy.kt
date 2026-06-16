@@ -40,7 +40,7 @@ class CategoriesStrategy(val addressBook: LocalAddressBook): ContactGroupStrateg
 
     override fun postProcess() {
         logger.info("Removing empty groups")
-        addressBook.removeEmptyGroups()
+        addressBook.ab.deleteGroupsWithoutMembers()
     }
 
 }
