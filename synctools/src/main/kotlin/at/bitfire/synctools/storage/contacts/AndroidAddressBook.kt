@@ -272,6 +272,64 @@ class AndroidAddressBook(
         return ContentUris.parseId(uri)
     }
 
+    /**
+     * Iterates group rows in this address book.
+     *
+     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     *
+     * @param projection optional column projection
+     * @param where      optional selection
+     * @param whereArgs  optional arguments for [where]
+     * @param block      callback invoked for each group row
+     * @throws LocalStorageException on content provider errors
+     */
+    fun iterateGroups(projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null, block: (ContentValues) -> Unit) {
+        try {
+            provider.query(groupsSyncUri(), projection, where, whereArgs, null)?.use { cursor ->
+                while (cursor.moveToNext())
+                    block(cursor.toContentValues())
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't iterate groups", e)
+        }
+    }
+
+    /**
+     * Enqueues an update of group rows in this address book to the given batch.
+     *
+     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     *
+     * @param values    values to update
+     * @param where     optional selection
+     * @param whereArgs optional arguments for [where]
+     * @param batch     batch operation to enqueue the update into
+     */
+    fun updateGroups(values: ContentValues, where: String? = null, whereArgs: Array<String>? = null, batch: ContactsBatchOperation) {
+        val builder = BatchOperation.CpoBuilder
+            .newUpdate(groupsSyncUri())
+            .withValues(values)
+        if (where != null)
+            builder.withSelection(where, whereArgs ?: emptyArray())
+        batch += builder
+    }
+
+    /**
+     * Enqueues a deletion of group rows in this address book to the given batch.
+     *
+     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     *
+     * @param where     optional selection
+     * @param whereArgs optional arguments for [where]
+     * @param batch     batch operation to enqueue the deletion into
+     */
+    fun deleteGroups(where: String? = null, whereArgs: Array<String>? = null, batch: ContactsBatchOperation) {
+        val builder = BatchOperation.CpoBuilder
+            .newDelete(groupsSyncUri())
+        if (where != null)
+            builder.withSelection(where, whereArgs ?: emptyArray())
+        batch += builder
+    }
+
     fun deleteGroupsWithoutMembers() {
         queryGroups(null, null).filter { it.getMembers().isEmpty() }.forEach { group ->
             logger.log(Level.FINE, "Deleting empty group", group)
@@ -391,13 +449,10 @@ class AndroidAddressBook(
     }
 
     @VisibleForTesting
-    internal fun queryGroups(where: String?, whereArgs: Array<String>?): List<AndroidGroup> {
-        val groups = LinkedList<AndroidGroup>()
-        provider.query(groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
-            while (cursor.moveToNext())
-                groups += AndroidGroup(this, cursor.toContentValues())
+    internal fun queryGroups(where: String?, whereArgs: Array<String>?): List<AndroidGroup> = buildList {
+        iterateGroups(null, where, whereArgs) { values ->
+            add(AndroidGroup(this@AndroidAddressBook, values))
         }
-        return groups
     }
 
     @TestOnly

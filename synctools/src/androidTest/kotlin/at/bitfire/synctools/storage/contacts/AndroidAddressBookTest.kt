@@ -307,6 +307,175 @@ class AndroidAddressBookTest {
     }
 
 
+    // iterateGroups
+
+    @Test
+    fun testIterateGroups_empty() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            var count = 0
+            addressBook.iterateGroups { count++ }
+            assertEquals(0, count)
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testIterateGroups_all() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.findOrCreateGroup("Iterate Group 1")
+            val id2 = addressBook.findOrCreateGroup("Iterate Group 2")
+            try {
+                val ids = mutableListOf<Long>()
+                addressBook.iterateGroups { values ->
+                    ids += values.getAsLong(Groups._ID)
+                }
+                assertEquals(setOf(id1, id2), ids.toSet())
+            } finally {
+                provider.delete(addressBook.groupsSyncUri(), "${Groups._ID}=?", arrayOf(id1.toString()))
+                provider.delete(addressBook.groupsSyncUri(), "${Groups._ID}=?", arrayOf(id2.toString()))
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testIterateGroups_filter() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.findOrCreateGroup("Iterate Filter Group 1")
+            val id2 = addressBook.findOrCreateGroup("Iterate Filter Group 2")
+            try {
+                val ids = mutableListOf<Long>()
+                addressBook.iterateGroups(null, "${Groups._ID}=?", arrayOf(id1.toString())) { values ->
+                    ids += values.getAsLong(Groups._ID)
+                }
+                assertEquals(listOf(id1), ids)
+            } finally {
+                provider.delete(addressBook.groupsSyncUri(), "${Groups._ID}=?", arrayOf(id1.toString()))
+                provider.delete(addressBook.groupsSyncUri(), "${Groups._ID}=?", arrayOf(id2.toString()))
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+
+    // updateGroups
+
+    @Test
+    fun testUpdateGroups_all() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.findOrCreateGroup("Update Group 1")
+            val id2 = addressBook.findOrCreateGroup("Update Group 2")
+            try {
+                val batch = ContactsBatchOperation(provider)
+                addressBook.updateGroups(contentValuesOf(AddressContract.GroupColumns.ETAG to "updated-etag"), null, null, batch)
+                batch.commit()
+
+                var count = 0
+                provider.query(addressBook.groupsSyncUri(), arrayOf(AddressContract.GroupColumns.ETAG), null, null, null)!!.use { cursor ->
+                    while (cursor.moveToNext())
+                        if (cursor.getString(0) == "updated-etag") count++
+                }
+                assertEquals(2, count)
+            } finally {
+                provider.delete(addressBook.groupsSyncUri(), "${Groups._ID}=?", arrayOf(id1.toString()))
+                provider.delete(addressBook.groupsSyncUri(), "${Groups._ID}=?", arrayOf(id2.toString()))
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testUpdateGroups_filter() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.findOrCreateGroup("Filter Group 1")
+            val id2 = addressBook.findOrCreateGroup("Filter Group 2")
+            try {
+                val batch = ContactsBatchOperation(provider)
+                addressBook.updateGroups(
+                    contentValuesOf(AddressContract.GroupColumns.ETAG to "only-group1"),
+                    "${Groups._ID}=?", arrayOf(id1.toString()),
+                    batch
+                )
+                batch.commit()
+
+                var etag1: String? = null
+                var etag2: String? = "not-set"
+                provider.query(addressBook.groupsSyncUri(), arrayOf(Groups._ID, AddressContract.GroupColumns.ETAG), null, null, null)!!.use { cursor ->
+                    while (cursor.moveToNext()) {
+                        when (cursor.getLong(0)) {
+                            id1 -> etag1 = cursor.getString(1)
+                            id2 -> etag2 = cursor.getString(1)
+                        }
+                    }
+                }
+                assertEquals("only-group1", etag1)
+                assertNull(etag2)
+            } finally {
+                provider.delete(addressBook.groupsSyncUri(), "${Groups._ID}=?", arrayOf(id1.toString()))
+                provider.delete(addressBook.groupsSyncUri(), "${Groups._ID}=?", arrayOf(id2.toString()))
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+
+    // deleteGroups
+
+    @Test
+    fun testDeleteGroups_all() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            addressBook.findOrCreateGroup("Delete Group 1")
+            addressBook.findOrCreateGroup("Delete Group 2")
+
+            val batch = ContactsBatchOperation(provider)
+            addressBook.deleteGroups(null, null, batch)
+            batch.commit()
+
+            provider.query(addressBook.groupsSyncUri(), arrayOf(Groups._ID), null, null, null)!!.use { cursor ->
+                assertEquals(0, cursor.count)
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testDeleteGroups_filter() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.findOrCreateGroup("Delete Filter Group 1")
+            val id2 = addressBook.findOrCreateGroup("Delete Filter Group 2")
+            try {
+                val batch = ContactsBatchOperation(provider)
+                addressBook.deleteGroups("${Groups._ID}=?", arrayOf(id1.toString()), batch)
+                batch.commit()
+
+                provider.query(addressBook.groupsSyncUri(), arrayOf(Groups._ID), null, null, null)!!.use { cursor ->
+                    assertEquals(1, cursor.count)
+                    assertTrue(cursor.moveToNext())
+                    assertEquals(id2, cursor.getLong(0))
+                }
+            } finally {
+                provider.delete(addressBook.groupsSyncUri(), "${Groups._ID}=?", arrayOf(id1.toString()))
+                provider.delete(addressBook.groupsSyncUri(), "${Groups._ID}=?", arrayOf(id2.toString()))
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+
     // deleteRawContacts
 
     @Test
