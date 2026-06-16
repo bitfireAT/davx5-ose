@@ -8,13 +8,14 @@ import android.Manifest
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Entity
 import android.graphics.BitmapFactory
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
+import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.TestUtils
 import org.junit.AfterClass
 import org.junit.Assert.assertArrayEquals
@@ -68,23 +69,14 @@ class AndroidAddressBookTest {
     fun testCountContacts_withRawContacts() {
         val addressBook = TestAddressBook.create(provider)
         try {
-            // Create some test contacts
-            val contact1 = AndroidContact(addressBook, Contact().apply {
-                displayName = "Test Contact 1"
-            }, null, null)
-            contact1.add()
-
-            val contact2 = AndroidContact(addressBook, Contact().apply {
-                displayName = "Test Contact 2"
-            }, null, null)
-            contact2.add()
-
+            val id1 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Test Contact 1")))
+            val id2 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Test Contact 2")))
             try {
                 val count = addressBook.countRawContacts(null, null)
                 assertEquals(2, count)
             } finally {
-                contact1.delete()
-                contact2.delete()
+                provider.delete(addressBook.rawContactSyncUri(id1), null, null)
+                provider.delete(addressBook.rawContactSyncUri(id2), null, null)
             }
         } finally {
             TestAddressBook.remove(addressBook)
@@ -95,30 +87,31 @@ class AndroidAddressBookTest {
     fun testCountRawContacts_withFilter() {
         val addressBook = TestAddressBook.create(provider)
         try {
-            // Create test contacts with different UIDs
-            val contact1 = AndroidContact(addressBook, Contact().apply {
-                displayName = "Filter Test 1"
-                uid = "test-uid-1"
-            }, null, null)
-            contact1.add()
-
-            val contact2 = AndroidContact(addressBook, Contact().apply {
-                displayName = "Filter Test 2"
-                uid = "test-uid-2"
-            }, null, null)
-            contact2.add()
-
+            val id1 = addressBook.addRawContact(
+                Entity(
+                    contentValuesOf(
+                        RawContacts.DISPLAY_NAME_PRIMARY to "Filter Test 1",
+                        AddressContract.RawContactColumns.UID to "test-uid-1"
+                    )
+                )
+            )
+            val id2 = addressBook.addRawContact(
+                Entity(
+                    contentValuesOf(
+                        RawContacts.DISPLAY_NAME_PRIMARY to "Filter Test 2",
+                        AddressContract.RawContactColumns.UID to "test-uid-2"
+                    )
+                )
+            )
             try {
-                // Test counting with filter
                 val filteredCount = addressBook.countRawContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf("test-uid-1"))
                 assertEquals(1, filteredCount)
 
-                // Test counting with non-matching filter
                 val noMatchCount = addressBook.countRawContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf("non-existent"))
                 assertEquals(0, noMatchCount)
             } finally {
-                contact1.delete()
-                contact2.delete()
+                provider.delete(addressBook.rawContactSyncUri(id1), null, null)
+                provider.delete(addressBook.rawContactSyncUri(id2), null, null)
             }
         } finally {
             TestAddressBook.remove(addressBook)
@@ -172,21 +165,16 @@ class AndroidAddressBookTest {
     fun testSetPhoto() {
         val addressBook = TestAddressBook.create(provider)
         try {
-            val contact = AndroidContact(addressBook, Contact().apply { displayName = "Contact with photo" }, null, null)
-            val contactUri = contact.add()
-            val rawContactId = ContentUris.parseId(contactUri)
-
+            val rawContactId = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Contact with photo")))
             try {
                 val photo = TestUtils.resourceToByteArray("/large.jpg")
                 addressBook.setPhoto(rawContactId, photo)
 
                 // the photo is processed and often resized by the contacts provider
-                val contact2 = addressBook.findContactById(rawContactId)
-                val photo2 = contact2.getContact().photo!!
+                val photo2 = addressBook.findContactById(rawContactId).getContact().photo!!
 
                 // verify that the image is in JPEG format (some Samsung devices seem to save as PNG)
-                val options = BitmapFactory.Options()
-                options.inJustDecodeBounds = true
+                val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
                 BitmapFactory.decodeByteArray(photo2, 0, photo2.size, options)
                 assertEquals("image/jpeg", options.outMimeType)
 
@@ -200,7 +188,7 @@ class AndroidAddressBookTest {
                     assertEquals(0, cursor.getInt(0))
                 }
             } finally {
-                contact.delete()
+                provider.delete(addressBook.rawContactSyncUri(rawContactId), null, null)
             }
         } finally {
             TestAddressBook.remove(addressBook)
@@ -211,14 +199,13 @@ class AndroidAddressBookTest {
     fun testSetPhoto_Invalid() {
         val addressBook = TestAddressBook.create(provider)
         try {
-            val contact = AndroidContact(addressBook, Contact().apply { displayName = "Contact with invalid photo" }, null, null)
-            contact.add()
+            val rawContactId = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Contact with invalid photo")))
             try {
-                addressBook.setPhoto(contact.id!!, ByteArray(100) /* invalid photo */)
+                addressBook.setPhoto(rawContactId, ByteArray(100) /* invalid photo */)
                 // no exception; photo remains absent
-                assertNull(contact.getContact().photo)
+                assertNull(addressBook.findContactById(rawContactId).getContact().photo)
             } finally {
-                contact.delete()
+                provider.delete(addressBook.rawContactSyncUri(rawContactId), null, null)
             }
         } finally {
             TestAddressBook.remove(addressBook)
@@ -229,10 +216,7 @@ class AndroidAddressBookTest {
     fun testSetPhoto_Null_DeletesPhoto() {
         val addressBook = TestAddressBook.create(provider)
         try {
-            val contact = AndroidContact(addressBook, Contact().apply { displayName = "Contact photo delete" }, null, null)
-            val contactUri = contact.add()
-            val rawContactId = ContentUris.parseId(contactUri)
-
+            val rawContactId = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Contact photo delete")))
             try {
                 // set a valid photo first
                 addressBook.setPhoto(rawContactId, TestUtils.resourceToByteArray("/large.jpg"))
@@ -252,7 +236,7 @@ class AndroidAddressBookTest {
                     assertEquals(0, cursor.getInt(0))
                 }
             } finally {
-                contact.delete()
+                provider.delete(addressBook.rawContactSyncUri(rawContactId), null, null)
             }
         } finally {
             TestAddressBook.remove(addressBook)
@@ -283,11 +267,10 @@ class AndroidAddressBookTest {
         val addressBook = TestAddressBook.create(provider)
         try {
             val groupId = addressBook.findOrCreateGroup("Group with member")
-            val contact = AndroidContact(addressBook, Contact().apply { displayName = "Member" }, null, null)
-            contact.add()
+            val rawContactId = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Member")))
             try {
                 val batch = ContactsBatchOperation(provider)
-                contact.addToGroup(batch, groupId)
+                addressBook.findContactById(rawContactId).addToGroup(batch, groupId)
                 batch.commit()
 
                 addressBook.deleteGroupsWithoutMembers()
@@ -296,7 +279,7 @@ class AndroidAddressBookTest {
                     assertEquals(1, cursor.count)
                 }
             } finally {
-                contact.delete()
+                provider.delete(addressBook.rawContactSyncUri(rawContactId), null, null)
             }
         } finally {
             TestAddressBook.remove(addressBook)

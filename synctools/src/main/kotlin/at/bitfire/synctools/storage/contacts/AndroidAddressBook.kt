@@ -20,12 +20,15 @@ import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import androidx.core.content.contentValuesOf
 import androidx.core.net.toUri
+import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook.Companion.USER_DATA_READ_ONLY
 import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
 import org.jetbrains.annotations.TestOnly
+import org.jetbrains.annotations.VisibleForTesting
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.LinkedList
@@ -109,9 +112,34 @@ class AndroidAddressBook(
     // ContactsContract.RawContacts CRUD
 
     fun addRawContact(rawContact: Entity): Long {
-        TODO("Insert contact row + sub rows and return ID of the main row")
-        // Make sure that new raw contact is assigned to addressBookAccount
-        // (if necessary, create copy of Entity that sets the respective fields)
+        try {
+            val batch = ContactsBatchOperation(provider)
+
+            val rawContactValues = ContentValues(rawContact.entityValues).apply {
+                remove(RawContacts._ID)
+                put(RawContacts.ACCOUNT_NAME, addressBookAccount.name)
+                put(RawContacts.ACCOUNT_TYPE, addressBookAccount.type)
+            }
+            batch += BatchOperation.CpoBuilder
+                .newInsert(rawContactsSyncUri())
+                .withValues(rawContactValues)
+
+            for (subValue in rawContact.subValues) {
+                val dataValues = ContentValues(subValue.values).apply {
+                    remove(ContactsContract.Data._ID)
+                }
+                batch += BatchOperation.CpoBuilder
+                    .newInsert(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
+                    .withValues(dataValues)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+            }
+
+            batch.commit()
+            val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
+            return ContentUris.parseId(uri)
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't insert raw contact", e)
+        }
     }
 
     /**
@@ -260,7 +288,8 @@ class AndroidAddressBook(
         return contacts
     }
 
-    private fun queryGroups(where: String?, whereArgs: Array<String>?): List<AndroidGroup> {
+    @VisibleForTesting
+    internal fun queryGroups(where: String?, whereArgs: Array<String>?): List<AndroidGroup> {
         val groups = LinkedList<AndroidGroup>()
         provider.query(groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
             while (cursor.moveToNext())
