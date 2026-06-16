@@ -16,7 +16,7 @@ class PercentCompleteHandler : JtxObjectEntityHandler {
         if (to !is VToDo) return
 
         val percentage = from.entityValues.getAsInteger(JtxContract.JtxICalObject.PERCENT) ?: return
-        if (percentage !in 0..100) return
+        if (percentage !in 1..100) return
 
         to += PercentComplete(percentage)
     }
