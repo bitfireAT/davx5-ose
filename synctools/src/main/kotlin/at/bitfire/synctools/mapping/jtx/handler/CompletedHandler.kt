@@ -11,7 +11,6 @@ import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VToDo
-import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.property.Completed
 import net.fortuna.ical4j.model.property.XProperty
 import java.time.DateTimeException
@@ -32,7 +31,7 @@ class CompletedHandler : JtxObjectEntityHandler {
         if (timezone == JtxContract.JtxICalObject.TZ_ALLDAY) {
             // All-day completion: no time of day, COMPLETED is stored as midnight UTC
             val date = LocalDate.ofInstant(instant, ZoneOffset.UTC)
-            to += Completed(ParameterList(listOf(Value.DATE)), DateTimeFormatter.BASIC_ISO_DATE.format(date))
+            to += Completed(ParameterList(emptyList()), DateTimeFormatter.BASIC_ISO_DATE.format(date))
             to += XProperty(JtxICalObject.X_PROP_COMPLETEDTIMEZONE, timezone)
             return
         }

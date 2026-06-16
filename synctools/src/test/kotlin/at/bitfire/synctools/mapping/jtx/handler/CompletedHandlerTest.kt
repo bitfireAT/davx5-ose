@@ -9,11 +9,9 @@ import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.JtxICalObject
 import at.techbee.jtx.JtxContract
-import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
-import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.property.Completed
 import net.fortuna.ical4j.model.property.XProperty
 import org.junit.Assert.assertEquals
@@ -174,7 +172,7 @@ class CompletedHandlerTest {
         handler.process(from = input, main = input, to = output)
 
         assertEquals(
-            Completed(ParameterList(listOf(Value.DATE)), "20250815"),
+            Completed(Instant.parse("2025-08-15T00:00:00Z")),
             output.getProperty<Completed>(Property.COMPLETED).getOrNull()
         )
         assertEquals(
