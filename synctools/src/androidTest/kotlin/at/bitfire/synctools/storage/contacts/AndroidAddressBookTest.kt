@@ -48,10 +48,10 @@ class AndroidAddressBookTest {
 
 
     @Test
-    fun testCountContacts_empty() {
+    fun testCountRawContacts_empty() {
         val addressBook = TestAddressBook.create(provider)
         try {
-            val count = addressBook.countContacts(null, null)
+            val count = addressBook.countRawContacts(null, null)
             assertEquals(0, count)
         } finally {
             TestAddressBook.remove(addressBook)
@@ -59,7 +59,7 @@ class AndroidAddressBookTest {
     }
 
     @Test
-    fun testCountContacts_withContacts() {
+    fun testCountContacts_withRawContacts() {
         val addressBook = TestAddressBook.create(provider)
         try {
             // Create some test contacts
@@ -74,7 +74,7 @@ class AndroidAddressBookTest {
             contact2.add()
 
             try {
-                val count = addressBook.countContacts(null, null)
+                val count = addressBook.countRawContacts(null, null)
                 assertEquals(2, count)
             } finally {
                 contact1.delete()
@@ -86,7 +86,7 @@ class AndroidAddressBookTest {
     }
 
     @Test
-    fun testCountContacts_withFilter() {
+    fun testCountRawContacts_withFilter() {
         val addressBook = TestAddressBook.create(provider)
         try {
             // Create test contacts with different UIDs
@@ -104,11 +104,11 @@ class AndroidAddressBookTest {
 
             try {
                 // Test counting with filter
-                val filteredCount = addressBook.countContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf("test-uid-1"))
+                val filteredCount = addressBook.countRawContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf("test-uid-1"))
                 assertEquals(1, filteredCount)
 
                 // Test counting with non-matching filter
-                val noMatchCount = addressBook.countContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf("non-existent"))
+                val noMatchCount = addressBook.countRawContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf("non-existent"))
                 assertEquals(0, noMatchCount)
             } finally {
                 contact1.delete()

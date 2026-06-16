@@ -205,13 +205,13 @@ open class LocalAddressBook @AssistedInject constructor(
     /* operations on members (contacts/groups) */
 
     override fun countAll(): Int =
-        ab.countContacts(null, null)
+        ab.countRawContacts(null, null)
 
     override fun countDeleted(): Int =
-        ab.countContacts(RawContacts.DELETED, null)
+        ab.countRawContacts(RawContacts.DELETED, null)
 
     override fun countModified(): Int =
-        ab.countContacts("${RawContacts.DIRTY} AND NOT ${RawContacts.DELETED}", null)
+        ab.countRawContacts("${RawContacts.DIRTY} AND NOT ${RawContacts.DELETED}", null)
 
     override fun findByName(name: String): LocalAddress? {
         val result = queryContacts("${RawContactColumns.FILENAME}=?", arrayOf(name)).firstOrNull()
@@ -371,6 +371,7 @@ open class LocalAddressBook @AssistedInject constructor(
         }
     }
 
+    @Deprecated("Use AndroidAddressBook.deleteGroupsWithoutMembers instead")
     fun removeEmptyGroups() {
         // find groups without members
         /** should be done using {@link Groups.SUMMARY_COUNT}, but it's not implemented in Android yet */

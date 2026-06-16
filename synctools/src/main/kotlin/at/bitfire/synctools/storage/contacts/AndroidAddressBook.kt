@@ -10,6 +10,7 @@ import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import android.content.Entity
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Groups
@@ -95,6 +96,8 @@ class AndroidAddressBook(
         get() = ContactsContract.SyncState.get(provider, addressBookAccount)
         set(data) = ContactsContract.SyncState.set(provider, addressBookAccount, data)
 
+    // ContactsContract.RawContacts CRUD
+
     /**
      * Counts the number of contacts in the address book that match the given selection criteria.
      *
@@ -102,7 +105,7 @@ class AndroidAddressBook(
      * @param whereArgs Optional arguments for [where].
      * @return The number of contacts matching the selection criteria.
      */
-    fun countContacts(where: String?, whereArgs: Array<String>?): Int {
+    fun countRawContacts(where: String?, whereArgs: Array<String>?): Int {
         provider.query(
             rawContactsSyncUri(), arrayOf(RawContacts._ID),
             where, whereArgs, null)?.use { cursor ->
@@ -112,31 +115,11 @@ class AndroidAddressBook(
         return 0
     }
 
-    fun queryContacts(where: String?, whereArgs: Array<String>?): List<AndroidContact> {
-        val contacts = LinkedList<AndroidContact>()
-        provider.query(
-            rawContactsSyncUri(), null,
-                where, whereArgs, null)?.use { cursor ->
-            while (cursor.moveToNext())
-                contacts += AndroidContact(this, cursor.toContentValues())
-        }
-        return contacts
+    fun iterateRawContacts(where: String?, whereArgs: Array<String>?, block: (Entity) -> Unit) {
+        TODO()
     }
 
-    fun queryGroups(where: String?, whereArgs: Array<String>?): List<AndroidGroup> {
-        val groups = LinkedList<AndroidGroup>()
-        provider.query(groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
-            while (cursor.moveToNext())
-                groups += AndroidGroup(this, cursor.toContentValues())
-        }
-        return groups
-    }
-
-
-    @TestOnly
-    @Throws(FileNotFoundException::class)
-    fun findContactById(id: Long) =
-            queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
+    // ContactsContract.Groups CRUD
 
     @Throws(FileNotFoundException::class)
     fun findGroupById(id: Long) =
@@ -156,6 +139,44 @@ class AndroidAddressBook(
             ?: throw RemoteException("Couldn't create contact group")
         return ContentUris.parseId(uri)
     }
+
+    fun deleteGroupsWithoutMembers() {
+        TODO("Replaces LocalAddressBook.removeEmptyGroups")
+    }
+
+    // high-res photo access
+
+    fun setPhoto(rawContactId: Long, photo: ByteArray?) {
+        TODO("Replaces PhotoBuilder.insertPhoto")
+    }
+
+    // legacy AndroidContact/AndroidGroup CRUD
+
+    @Deprecated("Use iterateRawContacts instead")
+    fun queryContacts(where: String?, whereArgs: Array<String>?): List<AndroidContact> {
+        val contacts = LinkedList<AndroidContact>()
+        provider.query(
+            rawContactsSyncUri(), null,
+                where, whereArgs, null)?.use { cursor ->
+            while (cursor.moveToNext())
+                contacts += AndroidContact(this, cursor.toContentValues())
+        }
+        return contacts
+    }
+
+    private fun queryGroups(where: String?, whereArgs: Array<String>?): List<AndroidGroup> {
+        val groups = LinkedList<AndroidGroup>()
+        provider.query(groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
+            while (cursor.moveToNext())
+                groups += AndroidGroup(this, cursor.toContentValues())
+        }
+        return groups
+    }
+
+    @TestOnly
+    @Throws(FileNotFoundException::class)
+    fun findContactById(id: Long) =
+            queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
 
 
     // helpers
