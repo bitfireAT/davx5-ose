@@ -35,6 +35,16 @@ class PercentCompleteHandlerTest {
     }
 
     @Test
+    fun `Zero PERCENT-COMPLETE`() {
+        val input = Entity(contentValuesOf(JtxContract.JtxICalObject.PERCENT to 0))
+        val output = VToDo()
+
+        handler.process(from = input, main = input, to = output)
+
+        assertNull(output.getProperty<PercentComplete>(Property.PERCENT_COMPLETE).getOrNull())
+    }
+
+    @Test
     fun `PERCENT-COMPLETE with value`() {
         val input = Entity(contentValuesOf(JtxContract.JtxICalObject.PERCENT to 42))
         val output = VToDo()
