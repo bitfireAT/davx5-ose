@@ -92,7 +92,6 @@ class AndroidAddressBook(
             }
             throw FileNotFoundException()
         }
-
         /**
          * Updates [ContactsContract.Settings] by inserting the given values into
          * the current address book.
@@ -152,15 +151,12 @@ class AndroidAddressBook(
     fun countRawContacts(where: String?, whereArgs: Array<String>?): Int {
         provider.query(
             rawContactsSyncUri(), arrayOf(RawContacts._ID),
-            where, whereArgs, null)?.use { cursor ->
+            where, whereArgs, null
+        )?.use { cursor ->
             return cursor.count
         }
         // If the query was invalid, an exception should have been thrown. So this should never be reached:
         return 0
-    }
-
-    fun iterateRawContacts(where: String?, whereArgs: Array<String>?, block: (Entity) -> Unit) {
-        TODO()
     }
 
     // ContactsContract.Groups CRUD
@@ -281,7 +277,8 @@ class AndroidAddressBook(
         val contacts = LinkedList<AndroidContact>()
         provider.query(
             rawContactsSyncUri(), null,
-                where, whereArgs, null)?.use { cursor ->
+            where, whereArgs, null
+        )?.use { cursor ->
             while (cursor.moveToNext())
                 contacts += AndroidContact(this, cursor.toContentValues())
         }
@@ -301,7 +298,7 @@ class AndroidAddressBook(
     @TestOnly
     @Throws(FileNotFoundException::class)
     fun findContactById(id: Long) =
-            queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
+        queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
 
 
     // helpers
