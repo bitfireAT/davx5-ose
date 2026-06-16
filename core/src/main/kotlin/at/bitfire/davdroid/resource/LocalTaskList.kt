@@ -14,6 +14,8 @@ import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.LinkedList
+import java.util.UUID
+import java.util.logging.Logger
 
 /**
  * App-specific implementation of a task list.
@@ -94,10 +96,36 @@ class LocalTaskList (
     }
 
     override fun findByName(name: String): LocalTask? {
-        val result = recurringTaskList.findTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf(name))
-        return result?.let {
-            LocalTask(recurringTaskList, it)
+        val matches = recurringTaskList.findAllTasksWithSyncId(name)
+        if (matches.isEmpty()) return null
+
+        if (matches.size == 1)
+            return LocalTask(recurringTaskList, matches.first())
+
+        // There are multiple tasks with the same _SYNC_ID. This happens when a task was created
+        // locally with a UID that already exists on the server: one entry is already synced (has
+        // an eTag) and another was never successfully uploaded (dirty, no eTag). Reassign the
+        // dirty/no-eTag duplicate a fresh UUID so it can be uploaded as a genuinely new resource.
+        val logger = Logger.getLogger(javaClass.name)
+        for (task in matches) {
+            val values = task.main.entityValues
+            val isDirty = (values.getAsInteger(Tasks._DIRTY) ?: 0) != 0
+            val hasNoETag = values.getAsString(DmfsTasksContract.COLUMN_ETAG) == null
+            if (isDirty && hasNoETag) {
+                val taskId = values.getAsLong(Tasks._ID) ?: continue
+                val newSyncId = "${UUID.randomUUID()}.ics"
+                logger.warning("Task $taskId has duplicate _SYNC_ID '$name' but no eTag; reassigning to $newSyncId to resolve collision")
+                dmfsTaskList.updateTaskRow(taskId, contentValuesOf(Tasks._SYNC_ID to newSyncId))
+            }
         }
+
+        // Return the first match that still has the original name (i.e. the synced one with an eTag).
+        val synced = matches.firstOrNull { task ->
+            val values = task.main.entityValues
+            val hasETag = values.getAsString(DmfsTasksContract.COLUMN_ETAG) != null
+            hasETag
+        } ?: matches.first()
+        return LocalTask(recurringTaskList, synced)
     }
 
     override fun markNotDirty(flags: Int): Int =
