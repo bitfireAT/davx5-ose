@@ -12,7 +12,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 
@@ -66,7 +65,7 @@ class JtxTimeFieldTest {
 
         val result = jtxTimeField.toTemporal()
 
-        assertEquals(LocalDateTime.of(2025, 10, 14, 23, 46, 59), result)
+        assertEquals(dateTimeValue("20251014T234659"), result)
     }
 
     @Test
