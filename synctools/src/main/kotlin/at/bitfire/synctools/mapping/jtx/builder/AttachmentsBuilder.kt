@@ -5,7 +5,7 @@
 package at.bitfire.synctools.mapping.jtx.builder
 
 import androidx.core.content.contentValuesOf
-import at.bitfire.synctools.storage.jtx.DataSubValue
+import at.bitfire.synctools.storage.jtx.BinaryDataRow
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.Property
@@ -23,7 +23,7 @@ private const val X_PARAM_ATTACH_LABEL = "X-LABEL"
 private const val X_PARAM_FILENAME = "FILENAME"
 
 class AttachmentsBuilder : JtxObjectDataSubValueBuilder {
-    override fun build(from: CalendarComponent): List<DataSubValue> {
+    override fun build(from: CalendarComponent): List<BinaryDataRow> {
         return buildList {
             for (attach in from.getProperties<Attach>(Property.ATTACH)) {
                 val subValue = buildAttachment(attach)
@@ -34,10 +34,10 @@ class AttachmentsBuilder : JtxObjectDataSubValueBuilder {
         }
     }
 
-    private fun buildAttachment(attach: Attach): DataSubValue? {
+    private fun buildAttachment(attach: Attach): BinaryDataRow? {
         val uri = attach.uri?.toString()
-        val data = attach.binaryData?.let { ByteBuffer.wrap(it) }
-        if (uri.isNullOrEmpty() && data == null) {
+        val binaryData = attach.binaryData?.let { ByteBuffer.wrap(it) }
+        if (uri.isNullOrEmpty() && binaryData == null) {
             return null
         }
 
@@ -59,6 +59,6 @@ class AttachmentsBuilder : JtxObjectDataSubValueBuilder {
             JtxContract.JtxAttachment.OTHER to others,
         )
 
-        return DataSubValue(JtxContract.JtxAttachment.CONTENT_URI, values, data)
+        return BinaryDataRow(JtxContract.JtxAttachment.CONTENT_URI, values, binaryData)
     }
 }

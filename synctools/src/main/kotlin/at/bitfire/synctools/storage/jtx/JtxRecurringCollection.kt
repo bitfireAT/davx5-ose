@@ -269,7 +269,7 @@ class JtxRecurringCollection(
 
         return JtxEntity(
             entity = result,
-            dataSubValues = original.dataSubValues
+            binaryDataRows = original.binaryDataRows
         )
     }
 
@@ -305,7 +305,7 @@ class JtxRecurringCollection(
 
         return JtxEntity(
             entity = result,
-            dataSubValues = original.dataSubValues
+            binaryDataRows = original.binaryDataRows
         )
     }
 

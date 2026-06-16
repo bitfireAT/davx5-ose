@@ -12,8 +12,8 @@ import java.nio.ByteBuffer
  * This is a data class modeled after [android.content.Entity.NamedContentValues]. In addition to a [android.net.Uri] and
  * [android.content.ContentValues] it can hold binary data in form of a [java.nio.ByteBuffer].
  */
-data class DataSubValue(
+data class BinaryDataRow(
     val uri: Uri,
     val values: ContentValues,
-    val data: ByteBuffer?
+    val binaryData: ByteBuffer?
 )

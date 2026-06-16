@@ -105,7 +105,7 @@ class JtxCollection(
             val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
             val mainRowId = ContentUris.parseId(uri)
 
-            addDataSubValues(jtxEntity.dataSubValues, mainRowId)
+            addBinaryDataRows(jtxEntity.binaryDataRows, mainRowId)
 
             return mainRowId
         } catch (e: RemoteException) {
@@ -138,7 +138,7 @@ class JtxCollection(
                 val mainRowIndex = mainRowIndices[jtxEntitiesIndex]
                 val mainRowId = ContentUris.parseId(batch.getResult(mainRowIndex)?.uri ?: continue)
                 val jtxEntity = jtxEntities[jtxEntitiesIndex]
-                addDataSubValues(jtxEntity.dataSubValues, mainRowId)
+                addBinaryDataRows(jtxEntity.binaryDataRows, mainRowId)
             }
 
             val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
@@ -160,18 +160,18 @@ class JtxCollection(
                 .withValueBackReference(ICALOBJECT_ID, objectRowIdx)
     }
 
-    private fun addDataSubValues(dataSubValues: List<DataSubValue>, mainRowId: Long) {
-        for (dataSubValue in dataSubValues) {
-            val values = ContentValues(dataSubValue.values).apply {
+    private fun addBinaryDataRows(binaryDataRows: List<BinaryDataRow>, mainRowId: Long) {
+        for (binaryDataRow in binaryDataRows) {
+            val values = ContentValues(binaryDataRow.values).apply {
                 put(ICALOBJECT_ID, mainRowId)
             }
 
-            val newSubRow = client.insert(dataSubValue.uri.asSyncAdapter(account), values)
+            val newSubRow = client.insert(binaryDataRow.uri.asSyncAdapter(account), values)
 
-            if (newSubRow != null && dataSubValue.data != null) {
+            if (newSubRow != null && binaryDataRow.binaryData != null) {
                 val fileDescriptor = client.openFile(newSubRow, "w")
                 Channels.newChannel(ParcelFileDescriptor.AutoCloseOutputStream(fileDescriptor)).use { channel ->
-                    channel.write(dataSubValue.data)
+                    channel.write(binaryDataRow.binaryData)
                 }
             }
         }
@@ -422,7 +422,7 @@ class JtxCollection(
             updateJtxObject(id, jtxEntity.entity, batch)
             batch.commit()
 
-            addDataSubValues(jtxEntity.dataSubValues, id)
+            addBinaryDataRows(jtxEntity.binaryDataRows, id)
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't update jtx object $id", e)
         }

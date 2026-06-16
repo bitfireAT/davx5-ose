@@ -67,7 +67,7 @@ class AttachmentsBuilderTest {
             ),
             subValue.values
         )
-        assertNull(subValue.data)
+        assertNull(subValue.binaryData)
     }
 
     @Test
@@ -99,7 +99,7 @@ class AttachmentsBuilderTest {
             ),
             subValue.values
         )
-        assertContentEquals(binary, subValue.data!!.array())
+        assertContentEquals(binary, subValue.binaryData!!.array())
     }
 
     @Test
@@ -134,7 +134,7 @@ class AttachmentsBuilderTest {
             ),
             subValueOne.values
         )
-        assertNull(subValueOne.data)
+        assertNull(subValueOne.binaryData)
         val subValueTwo = result.first { "file2" in it.values.getAsString(JtxContract.JtxAttachment.URI) }
         assertEquals(JtxContract.JtxAttachment.CONTENT_URI, subValueTwo.uri)
         assertContentValuesEqual(
@@ -146,6 +146,6 @@ class AttachmentsBuilderTest {
             ),
             subValueTwo.values
         )
-        assertNull(subValueTwo.data)
+        assertNull(subValueTwo.binaryData)
     }
 }

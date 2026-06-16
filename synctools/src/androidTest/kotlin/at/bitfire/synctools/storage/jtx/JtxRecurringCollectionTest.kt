@@ -640,8 +640,8 @@ class JtxRecurringCollectionTest {
 }
 
 private fun JtxEntityAndExceptions.toJtxObjectAndExceptions(): JtxObjectAndExceptions {
-    check(main.dataSubValues.isEmpty())
-    check(exceptions.all { it.dataSubValues.isEmpty() })
+    check(main.binaryDataRows.isEmpty())
+    check(exceptions.all { it.binaryDataRows.isEmpty() })
 
     return JtxObjectAndExceptions(
         main = main.entity,

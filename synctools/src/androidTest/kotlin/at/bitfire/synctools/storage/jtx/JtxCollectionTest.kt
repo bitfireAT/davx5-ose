@@ -104,8 +104,8 @@ class JtxCollectionTest {
     fun testAddJtxObject_withBinaryData() {
         val jtxEntity = JtxEntity(
             entity = sampleJtxEntity().entity,
-            dataSubValues = listOf(
-                DataSubValue(
+            binaryDataRows = listOf(
+                BinaryDataRow(
                     uri = JtxContract.JtxAttachment.CONTENT_URI,
                     values = contentValuesOf(
                         JtxContract.JtxAttachment.URI to null,
@@ -114,7 +114,7 @@ class JtxCollectionTest {
                         JtxContract.JtxAttachment.FILENAME to "hello.txt",
                         JtxContract.JtxAttachment.OTHER to null
                     ),
-                    data = ByteBuffer.wrap("Hello, world!".toByteArray())
+                    binaryData = ByteBuffer.wrap("Hello, world!".toByteArray())
                 )
             )
         )
@@ -149,8 +149,8 @@ class JtxCollectionTest {
     fun testAddJtxObjects_withBinaryData() {
         val jtxEntityOne = JtxEntity(
             entity = sampleJtxEntity("One").entity,
-            dataSubValues = listOf(
-                DataSubValue(
+            binaryDataRows = listOf(
+                BinaryDataRow(
                     uri = JtxContract.JtxAttachment.CONTENT_URI,
                     values = contentValuesOf(
                         JtxContract.JtxAttachment.URI to null,
@@ -159,14 +159,14 @@ class JtxCollectionTest {
                         JtxContract.JtxAttachment.FILENAME to "one.txt",
                         JtxContract.JtxAttachment.OTHER to null
                     ),
-                    data = ByteBuffer.wrap("ONE".toByteArray())
+                    binaryData = ByteBuffer.wrap("ONE".toByteArray())
                 )
             )
         )
         val jtxEntityTwo = JtxEntity(
             entity = sampleJtxEntity("Two").entity,
-            dataSubValues = listOf(
-                DataSubValue(
+            binaryDataRows = listOf(
+                BinaryDataRow(
                     uri = JtxContract.JtxAttachment.CONTENT_URI,
                     values = contentValuesOf(
                         JtxContract.JtxAttachment.URI to null,
@@ -175,7 +175,7 @@ class JtxCollectionTest {
                         JtxContract.JtxAttachment.FILENAME to "two.txt",
                         JtxContract.JtxAttachment.OTHER to null
                     ),
-                    data = ByteBuffer.wrap("TWO".toByteArray())
+                    binaryData = ByteBuffer.wrap("TWO".toByteArray())
                 )
             )
         )
