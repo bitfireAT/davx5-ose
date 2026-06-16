@@ -8,7 +8,6 @@ import at.bitfire.davdroid.di.TestCoroutineDispatchersModule.standardTestDispatc
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.MainDispatcher
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -45,10 +44,6 @@ object TestCoroutineDispatchersModule {
     @Provides
     @MainDispatcher
     fun mainDispatcher(): CoroutineDispatcher = standardTestDispatcher
-
-    @Provides
-    @SyncDispatcher
-    fun syncDispatcher(): CoroutineDispatcher = standardTestDispatcher
 
    /**
      * Sets the [standardTestDispatcher] as [Dispatchers.Main] so that test dispatchers

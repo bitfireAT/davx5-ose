@@ -18,7 +18,6 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
@@ -36,7 +35,6 @@ import at.bitfire.synctools.mapping.tasks.SequenceUpdater
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VToDo
@@ -60,7 +58,6 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     private val productIds: ProductIds,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalTask, LocalTaskList, DavCalendar>(
     account,
     httpClient,
@@ -68,8 +65,7 @@ class TasksSyncManager @AssistedInject constructor(
     syncResult,
     localCollection,
     collection,
-    resync,
-    syncDispatcher
+    resync
 ) {
 
     @AssistedFactory

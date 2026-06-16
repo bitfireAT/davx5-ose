@@ -22,8 +22,6 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
@@ -46,7 +44,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
@@ -108,10 +105,8 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     accountSettingsFactory: AccountSettings.Factory,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
     httpClient,
@@ -119,8 +114,7 @@ class ContactsSyncManager @AssistedInject constructor(
     syncResult,
     localAddressBook,
     collection,
-    resync,
-    syncDispatcher
+    resync
 ) {
 
     @AssistedFactory

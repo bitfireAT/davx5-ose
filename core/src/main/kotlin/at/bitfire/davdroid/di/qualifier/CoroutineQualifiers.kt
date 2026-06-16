@@ -27,7 +27,3 @@ annotation class IoDispatcher
 @Retention(AnnotationRetention.RUNTIME)
 @Qualifier
 annotation class MainDispatcher
-
-@Retention(AnnotationRetention.RUNTIME)
-@Qualifier
-annotation class SyncDispatcher

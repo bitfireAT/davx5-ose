@@ -11,14 +11,12 @@ import at.bitfire.dav4jvm.okhttp.Response
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -30,7 +28,6 @@ class TestSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTestCollection,
     @Assisted collection: Collection,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
     account,
     httpClient,
@@ -38,8 +35,7 @@ class TestSyncManager @AssistedInject constructor(
     syncResult,
     localCollection,
     collection,
-    resync = null,
-    syncDispatcher
+    resync = null
 ) {
 
     @AssistedFactory

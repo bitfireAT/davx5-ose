@@ -33,6 +33,8 @@ import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.qualifier.DownloadSemaphore
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -44,19 +46,20 @@ import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
-import java.util.LinkedList
 import java.util.Optional
 import java.util.concurrent.CancellationException
-import java.util.concurrent.LinkedBlockingQueue
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -84,8 +87,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     val syncResult: SyncResult,
     val localCollection: CollectionType,
     val collection: Collection,
-    val resync: ResyncType?,
-    val syncDispatcher: CoroutineDispatcher
+    val resync: ResyncType?
 ) {
 
     enum class SyncAlgorithm {
@@ -105,16 +107,24 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     lateinit var context: Context
 
     @Inject
-    lateinit var logger: Logger
+    @DownloadSemaphore
+    lateinit var downloadSemaphore: Semaphore
 
     @Inject
-    lateinit var syncStatsRepository: DavSyncStatsRepository
+    @IoDispatcher
+    lateinit var ioDispatcher: CoroutineDispatcher
+
+    @Inject
+    lateinit var logger: Logger
 
     @Inject
     lateinit var serviceRepository: DavServiceRepository
 
     @Inject
     lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
+
+    @Inject
+    lateinit var syncStatsRepository: DavSyncStatsRepository
 
 
     protected lateinit var davCollection: RemoteType
@@ -134,7 +144,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         } ?: emptyMap()
     }
 
-    suspend fun performSync() = withContext(syncDispatcher) {
+    suspend fun performSync() = withContext(ioDispatcher) {
         // dismiss previous error notifications
         syncNotificationManager.dismissCollectionError(localCollectionTag = localCollection.tag)
 
@@ -370,15 +380,12 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     protected open suspend fun uploadDirty(): Boolean {
         var numUploaded = 0
 
-        coroutineScope {    // structured concurrency
-            for (local in localCollection.findDirty())
-                launch {
-                    SyncException.wrapWithLocalResourceSuspending(local) {
-                        uploadDirty(local)
-                        numUploaded++
-                    }
-                }
-        }
+        for (local in localCollection.findDirty())
+            SyncException.wrapWithLocalResourceSuspending(local) {
+                uploadDirty(local)
+                numUploaded++
+            }
+
         logger.info("Sent $numUploaded record(s) to server")
         return numUploaded > 0
     }
@@ -592,25 +599,28 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      *
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
-    protected open suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) = coroutineScope {    // structured concurrency
-        // download queue
-        val toDownload = LinkedBlockingQueue<HttpUrl>()
-        fun download(url: HttpUrl?) {
-            if (url != null)
-                toDownload += url
+    protected open suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) = coroutineScope {
+        // URLs of resources that need downloading. The listing phase (producer) feeds this channel
+        // and a single consumer downloads concurrently, so downloads already start while listing
+        // is still running.
+        val toDownload = Channel<HttpUrl>(Channel.UNLIMITED)
 
-            if (toDownload.size >= MAX_MULTIGET_RESOURCES || url == null) {
-                while (toDownload.isNotEmpty()) {
-                    val bunch = LinkedList<HttpUrl>()
-                    toDownload.drainTo(bunch, MAX_MULTIGET_RESOURCES)
-                    launch {
-                        downloadRemote(bunch)
-                    }
-                }
+        // Consumer: group queued URLs into multiget batches and download them with bounded parallelism.
+        launch {
+            while (true) {
+                // suspend until at least one URL is available (or the channel is closed and drained)
+                val first = toDownload.receiveCatching().getOrNull() ?: break
+                val batch = mutableListOf(first)
+                // greedily take whatever else is already queued, up to the multiget batch size
+                while (batch.size < MAX_MULTIGET_RESOURCES)
+                    batch += toDownload.tryReceive().getOrNull() ?: break
+                launch { downloadSemaphore.withPermit { downloadRemote(batch) } }
             }
         }
 
-        coroutineScope {    // structured concurrency
+        // Producer: list remote resources and queue the ones that need downloading. The inner scope
+        // guarantees all per-resource checks finish before we close the channel.
+        coroutineScope {
             listRemote { response, relation ->
                 // ignore non-members
                 if (relation != Response.HrefRelation.MEMBER)
@@ -630,16 +640,16 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                         SyncException.wrapWithLocalResource(local) {
                             if (local == null) {
                                 logger.info("$name has been added remotely, queueing download")
-                                download(response.href)
+                                toDownload.trySend(response.href)
                             } else {
                                 val localETag = local.eTag
                                 val remoteETag = response[GetETag::class.java]?.eTag
                                     ?: throw DavException("Server didn't provide ETag")
-                                if (localETag == remoteETag) {
+                                if (localETag == remoteETag)
                                     logger.info("$name has not been changed on server (ETag still $remoteETag)")
-                                } else {
+                                else {
                                     logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
-                                    download(response.href)
+                                    toDownload.trySend(response.href)
                                 }
 
                                 // mark as remotely present, so that this resource won't be deleted at the end
@@ -661,9 +671,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                 }
             }
         }
-
-        // download remaining resources
-        download(null)
+        // listing finished → no more URLs will be queued; consumer drains remaining items,
+        // then the outer coroutineScope joins consumer + all download children before returning.
+        toDownload.close()
     }
 
     protected abstract suspend fun listAllRemote(callback: MultiResponseCallback)

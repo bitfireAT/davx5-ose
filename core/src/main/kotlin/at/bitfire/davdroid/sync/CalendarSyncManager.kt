@@ -20,7 +20,6 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
@@ -39,7 +38,6 @@ import at.bitfire.synctools.mapping.calendar.SequenceUpdater
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VEvent
@@ -65,7 +63,6 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted resync: ResyncType?,
     accountSettingsFactory: AccountSettings.Factory,
     private val productIds: ProductIds,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ) : SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
     httpClient,
@@ -73,8 +70,7 @@ class CalendarSyncManager @AssistedInject constructor(
     syncResult,
     localCalendar,
     collection,
-    resync,
-    syncDispatcher
+    resync
 ) {
 
     @AssistedFactory

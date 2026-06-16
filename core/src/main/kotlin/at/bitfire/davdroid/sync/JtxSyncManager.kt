@@ -19,7 +19,6 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.resource.LocalResource
@@ -31,7 +30,6 @@ import at.bitfire.synctools.exception.InvalidResourceException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.property.ProdId
 import okhttp3.HttpUrl
@@ -50,7 +48,6 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     private val productIds: ProductIds,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
 ): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(
     account,
     httpClient,
@@ -58,8 +55,7 @@ class JtxSyncManager @AssistedInject constructor(
     syncResult,
     localCollection,
     collection,
-    resync,
-    syncDispatcher
+    resync
 ) {
 
     @AssistedFactory
