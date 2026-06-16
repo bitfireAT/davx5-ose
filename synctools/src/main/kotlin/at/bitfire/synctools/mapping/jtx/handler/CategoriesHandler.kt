@@ -11,7 +11,7 @@ import net.fortuna.ical4j.model.TextList
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.property.Categories
 
-class CategoriesHandler : JtxFieldHandler {
+class CategoriesHandler : JtxObjectEntityHandler {
     override fun process(from: Entity, main: Entity, to: CalendarComponent) {
         val categoryTexts = from.subValues
             .filter { it.uri == JtxContract.JtxCategory.CONTENT_URI }

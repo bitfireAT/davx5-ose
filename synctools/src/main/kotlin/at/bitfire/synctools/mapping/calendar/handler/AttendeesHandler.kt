@@ -20,7 +20,7 @@ import java.net.URISyntaxException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class AttendeesHandler: AndroidEventFieldHandler {
+class AttendeesHandler : AndroidEventEntityHandler {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)

@@ -19,7 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 class OrganizerBuilder(
     private val ownerAccount: String
-): AndroidEntityBuilder {
+) : AndroidEventEntityBuilder {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)

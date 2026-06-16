@@ -8,7 +8,6 @@ import android.content.ContentValues
 import android.content.Entity
 import android.net.Uri
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.mapping.tasks.VToDoUtil
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.test.assertContentValuesEqual
@@ -31,30 +30,6 @@ class CommentsBuilderTest {
     }
     private val builder = CommentsBuilder(taskList)
 
-    @Test
-    fun `old No comment`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertTrue(result.subValues.isEmpty())
-    }
-
-    @Test
-    fun `old Comment is set`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(comment = "This is a comment"),
-            to = result
-        )
-        assertEquals(1, result.subValues.size)
-        assertContentValuesEqual(contentValuesOf(
-            DmfsComment.MIMETYPE to DmfsComment.CONTENT_ITEM_TYPE,
-            DmfsComment.COMMENT to "This is a comment"
-        ), result.subValues.first().values)
-        assertEquals(propertiesUri, result.subValues.first().uri)
-    }
 
     @Test
     fun `No comment`() {

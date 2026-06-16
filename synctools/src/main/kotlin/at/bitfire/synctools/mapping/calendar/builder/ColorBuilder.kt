@@ -8,15 +8,15 @@ import android.content.Entity
 import android.provider.CalendarContract.Colors
 import android.provider.CalendarContract.Events
 import androidx.annotation.VisibleForTesting
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
+import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Color
 import kotlin.jvm.optionals.getOrNull
 
 class ColorBuilder(
     private val calendar: AndroidCalendar
-): AndroidEntityBuilder {
+) : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         val values = to.entityValues

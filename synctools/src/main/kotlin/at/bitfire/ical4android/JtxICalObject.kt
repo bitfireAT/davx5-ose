@@ -11,18 +11,21 @@ import android.os.ParcelFileDescriptor
 import android.util.Base64
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.ICalendar.Companion.withUserAgents
-import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
 import at.bitfire.synctools.exception.InvalidICalendarException
 import at.bitfire.synctools.icalendar.Css3Color
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDates
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.icalendar.withUserAgents
+import at.bitfire.synctools.mapping.UnknownProperty
 import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.synctools.storage.JtxBatchOperation
+import at.bitfire.synctools.storage.TaskProvider
+import at.bitfire.synctools.storage.jtx.JtxBatchOperation
+import at.bitfire.synctools.storage.jtx.JtxCollection
 import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
+import at.bitfire.synctools.util.TimeApiExtensions.toLocalDate
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject.TZ_ALLDAY
 import at.techbee.jtx.JtxContract.asSyncAdapter
@@ -113,8 +116,9 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
 
-open class JtxICalObject(
-    val collection: JtxCollection<JtxICalObject>
+@Deprecated("Use at.bitfire.synctools.storage.jtx + at.bitfire.synctools.mapping.jtx API instead")
+class JtxICalObject(
+    val collection: JtxCollection
 ) {
 
     var id: Long = 0L
@@ -302,7 +306,7 @@ open class JtxICalObject(
          */
         fun fromReader(
             reader: Reader,
-            collection: JtxCollection<JtxICalObject>
+            collection: JtxCollection
         ): List<JtxICalObject> {
             val ical = ICalendarParser().parse(reader)
 
@@ -753,7 +757,6 @@ open class JtxICalObject(
             recurCalComponent.propertyList = recurInstance.addProperties(recurCalComponent.propertyList)
         }
 
-        ICalendar.softValidate(ical)
         return ical
     }
 

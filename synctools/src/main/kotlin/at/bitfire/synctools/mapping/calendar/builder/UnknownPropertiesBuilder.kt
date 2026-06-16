@@ -9,13 +9,13 @@ import android.content.Entity
 import android.provider.CalendarContract.ExtendedProperties
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.UnknownProperty
+import at.bitfire.synctools.mapping.UnknownProperty
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Color
 import java.util.logging.Logger
 
-class UnknownPropertiesBuilder: AndroidEntityBuilder {
+class UnknownPropertiesBuilder : AndroidEventEntityBuilder {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)

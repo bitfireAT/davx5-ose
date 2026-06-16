@@ -4,17 +4,13 @@
 
 plugins {
     alias(libs.plugins.android.library)
-    `maven-publish`
+    id("davx5.common-buildconfig")
 }
 
 android {
-    compileSdk = 36
-
     namespace = "at.bitfire.synctools"
 
     defaultConfig {
-        minSdk = 24        // Android 7
-
         testInstrumentationRunner = "at.bitfire.synctools.LoggingTestRunner"
 
         buildConfigField("String", "version_ical4j", "\"${libs.versions.ical4j.get()}\"")
@@ -24,12 +20,12 @@ android {
         }
     }
 
-    compileOptions {
-        // ical4j >= 3.x uses the Java 8 Time API
-        isCoreLibraryDesugaringEnabled = true
+    buildFeatures {
+        buildConfig = true
     }
-
-    buildFeatures.buildConfig = true
+    testFixtures {
+        enable = true
+    }
 
     sourceSets {
         getByName("main") {
@@ -87,21 +83,6 @@ android {
     }
 }
 
-publishing {
-    // Configure publishing data
-    publications {
-        register("release", MavenPublication::class.java) {
-            groupId = "com.github.bitfireat"
-            artifactId = "synctools"
-            version = System.getenv("GIT_COMMIT")
-
-            afterEvaluate {
-                from(components["release"])
-            }
-        }
-    }
-}
-
 dependencies {
     implementation(libs.kotlin.stdlib)
     coreLibraryDesugaring(libs.android.desugaring)
@@ -121,19 +102,17 @@ dependencies {
     implementation(libs.commons.codec)
     implementation(libs.commons.lang)
 
-    // synctools.test package also provide test rules
-    implementation(libs.androidx.test.rules)
-
-    // Useful annotations
+    // useful annotations
     api(libs.spotbugs.annotations)
+
+    // test fixtures
+    testFixturesImplementation(libs.androidx.test.rules)
 
     // instrumented tests
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(libs.androidx.test.rules)
-    androidTestImplementation(libs.androidx.test.runner)
 
     // install third-party APKs for instrumented tests (if available)
     val apkDir = file("apk")

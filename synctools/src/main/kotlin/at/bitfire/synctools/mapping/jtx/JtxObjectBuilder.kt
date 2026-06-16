@@ -10,13 +10,17 @@ import at.bitfire.synctools.icalendar.AssociatedComponents
 import at.bitfire.synctools.mapping.jtx.builder.CategoriesBuilder
 import at.bitfire.synctools.mapping.jtx.builder.CollectionIdBuilder
 import at.bitfire.synctools.mapping.jtx.builder.CommentsBuilder
+import at.bitfire.synctools.mapping.jtx.builder.ComponentBuilder
 import at.bitfire.synctools.mapping.jtx.builder.DescriptionBuilder
-import at.bitfire.synctools.mapping.jtx.builder.JtxEntityBuilder
+import at.bitfire.synctools.mapping.jtx.builder.ExtendedStatusBuilder
+import at.bitfire.synctools.mapping.jtx.builder.JtxObjectEntityBuilder
+import at.bitfire.synctools.mapping.jtx.builder.PriorityBuilder
 import at.bitfire.synctools.mapping.jtx.builder.RecurrenceFieldsBuilder
 import at.bitfire.synctools.mapping.jtx.builder.RemindersBuilder
 import at.bitfire.synctools.mapping.jtx.builder.ResourcesBuilder
 import at.bitfire.synctools.mapping.jtx.builder.SyncPropertiesBuilder
 import at.bitfire.synctools.mapping.jtx.builder.TimeFieldsBuilder
+import at.bitfire.synctools.mapping.jtx.builder.UidBuilder
 import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VJournal
@@ -33,17 +37,25 @@ class JtxObjectBuilder(
     flags: Int
 ) {
 
-    private val fieldBuilders: Array<JtxEntityBuilder> = arrayOf(
+    /* Note: the storage layer (JtxCollection) doesn't read/write all sub-rows,
+    but only those defined in JtxCollection.SUB_VALUE_URIS – so all sub-rows
+    that are supported by builders/handlers should also be present there. */
+
+    private val entityBuilders: Array<JtxObjectEntityBuilder> = arrayOf(
         CollectionIdBuilder(collectionId),
+        ComponentBuilder(),
         SyncPropertiesBuilder(fileName, eTag, scheduleTag, flags),
 
         DescriptionBuilder(),
+        PriorityBuilder(),
+        ExtendedStatusBuilder(),
         RecurrenceFieldsBuilder(),
         TimeFieldsBuilder(),
         RemindersBuilder(),
         CategoriesBuilder(),
         CommentsBuilder(),
-        ResourcesBuilder()
+        ResourcesBuilder(),
+        UidBuilder(),
     )
 
     fun build(component: AssociatedComponents<CalendarComponent>): JtxObjectAndExceptions {
@@ -61,7 +73,7 @@ class JtxObjectBuilder(
     private fun buildComponent(from: CalendarComponent, main: CalendarComponent): Entity {
         val entity = Entity(ContentValues())
 
-        for (builder in fieldBuilders) {
+        for (builder in entityBuilders) {
             builder.build(from = from, main = main, to = entity)
         }
 

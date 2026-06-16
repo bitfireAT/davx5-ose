@@ -5,18 +5,13 @@
 package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.util.trimToNull
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Summary
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import kotlin.jvm.optionals.getOrNull
 
-class TitleBuilder : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
-
-    override fun build(from: Task, to: Entity) {
-        to.entityValues.put(Tasks.TITLE, from.summary.trimToNull())
-    }
+class TitleBuilder : DmfsTaskEntityBuilder {
 
     override fun build(from: VToDo, to: Entity) {
         val summary = from.getProperty<Summary>(Summary.SUMMARY).getOrNull()

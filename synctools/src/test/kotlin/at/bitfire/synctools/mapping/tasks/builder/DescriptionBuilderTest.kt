@@ -6,7 +6,6 @@ package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.ContentValues
 import android.content.Entity
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.mapping.tasks.VToDoUtil.build
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Description
@@ -23,37 +22,6 @@ class DescriptionBuilderTest {
 
     private val builder = DescriptionBuilder()
 
-    @Test
-    fun `old No DESCRIPTION`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertTrue(result.entityValues.containsKey(Tasks.DESCRIPTION))
-        assertNull(result.entityValues.get(Tasks.DESCRIPTION))
-    }
-
-    @Test
-    fun `old DESCRIPTION is blank`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(description = ""),
-            to = result
-        )
-        assertTrue(result.entityValues.containsKey(Tasks.DESCRIPTION))
-        assertNull(result.entityValues.get(Tasks.DESCRIPTION))
-    }
-
-    @Test
-    fun `old DESCRIPTION is text`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(description = "Task Details"),
-            to = result
-        )
-        assertEquals("Task Details", result.entityValues.getAsString(Tasks.DESCRIPTION))
-    }
 
     @Test
     fun `No DESCRIPTION`() {

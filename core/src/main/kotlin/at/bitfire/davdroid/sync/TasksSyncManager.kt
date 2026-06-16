@@ -25,16 +25,21 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.Task
-import at.bitfire.ical4android.TaskReader
-import at.bitfire.ical4android.TaskWriter
-import at.bitfire.synctools.exception.InvalidICalendarException
-import at.bitfire.synctools.storage.tasks.DmfsTask
+import at.bitfire.synctools.exception.InvalidResourceException
+import at.bitfire.synctools.icalendar.AssociatedTasks
+import at.bitfire.synctools.icalendar.CalendarUidSplitter
+import at.bitfire.synctools.icalendar.ICalendarGenerator
+import at.bitfire.synctools.icalendar.ICalendarParser
+import at.bitfire.synctools.mapping.tasks.DmfsTaskBuilder
+import at.bitfire.synctools.mapping.tasks.DmfsTaskHandler
+import at.bitfire.synctools.mapping.tasks.SequenceUpdater
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runInterruptible
+import net.fortuna.ical4j.model.Component
+import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.ProdId
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -107,25 +112,32 @@ class TasksSyncManager @AssistedInject constructor(
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
     override fun generateUpload(resource: LocalTask): GeneratedResource {
-        val task = requireNotNull(resource.dmfsTask.task)
-        logger.log(Level.FINE, "Preparing upload of task ${resource.id}", task)
+        val localTask = resource.taskAndExceptions
+        logger.log(Level.FINE, "Preparing upload of task #${resource.id}", localTask)
 
-        // get/create UID
-        val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(task.uid)
-        if (uidIsGenerated) {
-            // modify in Task and persist to tasks provider
-            task.uid = uid
-            resource.updateUid(uid)
-        }
+        /* Increase SEQUENCE of main task in memory and remember new value.
+        Will be written to provider later over onSuccessContext. */
+        val updatedSequence = SequenceUpdater().increaseSequence(localTask.main)
+
+        // map Android event to iCalendar (also generates UID, if necessary)
+        val handler = DmfsTaskHandler(ProdId(productIds.iCalProdId))
+        val mappedVToDos = handler.mapToVToDos(localTask)
+
+        // persist UID if it was generated
+        if (mappedVToDos.generatedUid)
+            resource.updateUid(mappedVToDos.uid)
 
         // generate iCalendar and convert to request body
-        val icalWriter = StringWriter()
-        val taskWriter = TaskWriter(ProdId(productIds.iCalProdId))
-        taskWriter.write(task, icalWriter)
+        val iCalWriter = StringWriter()
+        ICalendarGenerator().write(mappedVToDos.associatedTasks, iCalWriter)
+        val requestBody = iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
 
         return GeneratedResource(
-            suggestedFileName = DavUtils.fileNameFromUid(uid, "ics"),
-            requestBody = icalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+            suggestedFileName = DavUtils.fileNameFromUid(mappedVToDos.uid, "ics"),
+            requestBody = requestBody,
+            onSuccessContext = GeneratedResource.OnSuccessContext(
+                sequence = updatedSequence
+            )
         )
     }
 
@@ -160,7 +172,14 @@ class TasksSyncManager @AssistedInject constructor(
                         val eTag = response[GetETag::class.java]?.eTag
                             ?: throw DavException("Received multi-get response without ETag")
 
-                        processVTodo(response.href.lastSegment, eTag, StringReader(iCal))
+                        val fileName = response.href.lastSegment
+
+                        try {
+                            processVTodo(fileName, eTag, StringReader(iCal))
+                        } catch (e: InvalidResourceException) {
+                            logger.log(Level.WARNING, "Error while processing VTODO", e)
+                            notifyInvalidResource(e, fileName)
+                        }
                     }
                 }
             }
@@ -176,35 +195,35 @@ class TasksSyncManager @AssistedInject constructor(
     // helpers
 
     private fun processVTodo(fileName: String, eTag: String, reader: Reader) {
-        val tasks: List<Task>
-        try {
-            tasks = TaskReader().readTasks(reader)
-        } catch (e: InvalidICalendarException) {
-            logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
-            notifyInvalidResource(e, fileName)
+        val calendar = ICalendarParser().parse(reader)
+
+        val uidsAndTasks = CalendarUidSplitter<VToDo>().associateByUid(calendar, Component.VTODO)
+        if (uidsAndTasks.size != 1) {
+            logger.warning("Received iCalendar with not exactly one UID; ignoring $fileName")
             return
         }
+        // Task: main VTODO and potentially attached exceptions (further VTODOs with RECURRENCE-ID)
+        val task: AssociatedTasks = uidsAndTasks.values.first()
 
-        if (tasks.size == 1) {
-            val newData = tasks.first()
+        // map AssociatedTasks (VTODOs) to TaskAndExceptions (task provider tasks)
+        val dmfsTask = DmfsTaskBuilder(
+            taskList = localCollection.dmfsTaskList,
+            syncId = fileName,
+            eTag = eTag,
+            flags = LocalResource.FLAG_REMOTELY_PRESENT
+        ).build(task)
 
-            // update local task, if it exists
-            val local = localCollection.findByName(fileName)
+        // update local task, if it exists
+        val local = localCollection.findByName(fileName)
+        if (local != null) {
             SyncException.wrapWithLocalResource(local) {
-                if (local != null) {
-                    logger.log(Level.INFO, "Updating $fileName in local task list", newData)
-                    local.eTag = eTag
-                    local.update(newData)
-                } else {
-                    logger.log(Level.INFO, "Adding $fileName to local task list", newData)
-                    val newLocal = LocalTask(DmfsTask(localCollection.dmfsTaskList, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT))
-                    SyncException.wrapWithLocalResource(newLocal) {
-                        newLocal.add()
-                    }
-                }
+                logger.log(Level.INFO, "Updating $fileName in local task list", task)
+                local.update(dmfsTask)
             }
-        } else
-            logger.info("Received VCALENDAR with not exactly one VTODO; ignoring $fileName")
+        } else {
+            logger.log(Level.INFO, "Adding $fileName to local task list", task)
+            localCollection.add(dmfsTask)
+        }
     }
 
     override fun notifyInvalidResourceTitle(): String =

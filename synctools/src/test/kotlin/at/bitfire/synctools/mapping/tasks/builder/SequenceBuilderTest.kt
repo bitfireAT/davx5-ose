@@ -7,7 +7,6 @@ package at.bitfire.synctools.mapping.tasks.builder
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.mapping.tasks.VToDoUtil
 import at.bitfire.synctools.test.assertContentValuesEqual
 import net.fortuna.ical4j.model.component.VToDo
@@ -22,41 +21,6 @@ class SequenceBuilderTest {
 
     private val builder = SequenceBuilder()
 
-    @Test
-    fun `old No SEQUENCE defaults to 0`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task(),
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.SYNC_VERSION to 0
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old SEQUENCE is 0`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task().also { it.sequence = 0 },
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.SYNC_VERSION to 0
-        ), result.entityValues)
-    }
-
-    @Test
-    fun `old SEQUENCE is 1`() {
-        val result = Entity(ContentValues())
-        builder.build(
-            from = Task().also { it.sequence = 1 },
-            to = result
-        )
-        assertContentValuesEqual(contentValuesOf(
-            Tasks.SYNC_VERSION to 1
-        ), result.entityValues)
-    }
 
     @Test
     fun `No SEQUENCE defaults to 0`() {

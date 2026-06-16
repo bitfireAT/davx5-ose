@@ -21,7 +21,7 @@ import java.time.Instant
  * - If [Events.DURATION] is present / not null, [DurationHandler] is responsible for generating the VEvent's [DtEnd].
  * - If [Events.DURATION] is null / not present, this class is responsible for generating the VEvent's [DtEnd].
  */
-class EndTimeHandler: AndroidEventFieldHandler {
+class EndTimeHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         val values = from.entityValues

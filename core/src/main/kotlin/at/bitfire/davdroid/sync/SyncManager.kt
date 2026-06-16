@@ -77,7 +77,7 @@ import javax.net.ssl.SSLHandshakeException
  * @param collection        collection info in the database
  * @param resync            whether re-synchronization is requested
  */
-abstract class SyncManager<LocalType: LocalResource, out CollectionType: LocalCollection<LocalType>, RemoteType: DavCollection>(
+abstract class SyncManager<LocalType : LocalResource, out CollectionType : LocalCollection<LocalType>, RemoteType : DavCollection>(
     val account: Account,
     val httpClient: OkHttpClient,
     val dataType: SyncDataType,
@@ -512,12 +512,14 @@ abstract class SyncManager<LocalType: LocalResource, out CollectionType: LocalCo
         scheduleTag: String?,
         context: GeneratedResource.OnSuccessContext?
     ) {
-        logger.log(Level.FINE, "Upload successful", arrayOf(
-            "File name = $newFileName",
-            "ETag = $eTag",
-            "Schedule-Tag = $scheduleTag",
-            "context = $context"
-        ))
+        logger.log(
+            Level.FINE, "Upload successful", arrayOf(
+                "File name = $newFileName",
+                "ETag = $eTag",
+                "Schedule-Tag = $scheduleTag",
+                "context = $context"
+            )
+        )
 
         // update SEQUENCE, if necessary
         if (context?.sequence != null)
@@ -740,12 +742,11 @@ abstract class SyncManager<LocalType: LocalResource, out CollectionType: LocalCo
     // sync helpers
 
     protected fun syncState(dav: Response) =
-            dav[SyncToken::class.java]?.token?.let {
-                SyncState(SyncState.Type.SYNC_TOKEN, it)
-            } ?:
-            dav[GetCTag::class.java]?.cTag?.let {
-                SyncState(SyncState.Type.CTAG, it)
-            }
+        dav[SyncToken::class.java]?.token?.let {
+            SyncState(SyncState.Type.SYNC_TOKEN, it)
+        } ?: dav[GetCTag::class.java]?.cTag?.let {
+            SyncState(SyncState.Type.CTAG, it)
+        }
 
     private suspend fun querySyncState(): SyncState? {
         var state: SyncState? = null

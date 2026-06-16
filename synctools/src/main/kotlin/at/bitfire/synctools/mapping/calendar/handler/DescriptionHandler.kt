@@ -11,7 +11,7 @@ import at.bitfire.synctools.util.trimToNull
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Description
 
-class DescriptionHandler: AndroidEventFieldHandler {
+class DescriptionHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         val description = from.entityValues.getAsString(Events.DESCRIPTION).trimToNull()

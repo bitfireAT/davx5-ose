@@ -18,10 +18,10 @@ import android.provider.CalendarContract.Instances
 import android.provider.CalendarContract.Reminders
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.UnknownProperty
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
+import at.bitfire.synctools.mapping.UnknownProperty
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import org.jetbrains.annotations.TestOnly
 import java.util.LinkedList

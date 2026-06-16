@@ -11,7 +11,6 @@ import android.net.Uri
 import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
-import at.bitfire.synctools.storage.JtxBatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract
@@ -550,26 +549,28 @@ class JtxCollection(
         /**
          * Column name used in all jtx Board sub-tables to reference the parent [JtxContract.JtxICalObject] row.
          *
-         * All sub-table contract objects define `ICALOBJECT_ID` with this same value.
+         * All sub-table contract objects define `ICALOBJECT_ID` with this same value,
+         * so we can use the value of [JtxContract.JtxAttendee].
          */
-        internal const val ICALOBJECT_ID = "icalObjectId"
+        private const val ICALOBJECT_ID = JtxContract.JtxAttendee.ICALOBJECT_ID
 
         /**
-         * Content URIs of all known jtx Board sub-tables.
+         * Content URIs of all supported jtx Board sub-tables.
          *
          * Used to read sub-rows into [Entity] objects and to delete sub-rows on jtx object update.
          */
-        internal val SUB_VALUE_URIS: List<Uri> = listOf(
-            JtxContract.JtxAttendee.CONTENT_URI,
-            JtxContract.JtxCategory.CONTENT_URI,
-            JtxContract.JtxComment.CONTENT_URI,
-            JtxContract.JtxOrganizer.CONTENT_URI,
-            JtxContract.JtxRelatedto.CONTENT_URI,
-            JtxContract.JtxResource.CONTENT_URI,
-            JtxContract.JtxAttachment.CONTENT_URI,
-            JtxContract.JtxAlarm.CONTENT_URI,
-            JtxContract.JtxUnknown.CONTENT_URI
-        )
+        private val SUB_VALUE_URIS: List<Uri>
+            get() = listOf(
+                JtxContract.JtxAttendee.CONTENT_URI,
+                JtxContract.JtxCategory.CONTENT_URI,
+                JtxContract.JtxComment.CONTENT_URI,
+                JtxContract.JtxOrganizer.CONTENT_URI,
+                JtxContract.JtxRelatedto.CONTENT_URI,
+                JtxContract.JtxResource.CONTENT_URI,
+                JtxContract.JtxAttachment.CONTENT_URI,
+                JtxContract.JtxAlarm.CONTENT_URI,
+                JtxContract.JtxUnknown.CONTENT_URI
+            )
 
     }
 

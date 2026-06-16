@@ -11,7 +11,7 @@ import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.property.Categories
 
-class CategoriesBuilder : JtxEntityBuilder {
+class CategoriesBuilder : JtxObjectEntityBuilder {
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
         for (categories in from.getProperties<Categories>(Property.CATEGORIES)) {
             for (category in categories.categories.texts) {

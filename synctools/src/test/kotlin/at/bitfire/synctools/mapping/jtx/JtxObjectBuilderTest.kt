@@ -4,12 +4,16 @@
 
 package at.bitfire.synctools.mapping.jtx
 
+import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.icalendar.AssociatedComponents
 import at.bitfire.synctools.icalendar.plusAssign
+import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.Priority
 import net.fortuna.ical4j.model.property.RecurrenceId
+import net.fortuna.ical4j.model.property.XProperty
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -42,6 +46,7 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertTrue(result.exceptions.isEmpty())
+        assertEquals("VTODO", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
     }
 
     @Test
@@ -58,6 +63,41 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertFalse(result.exceptions.isEmpty())
+        assertEquals("VTODO", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+        assertEquals("VTODO", result.exceptions.single().entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+    }
+
+    @Test
+    fun `build() maps PRIORITY to PRIORITY`() {
+        val main = VToDo().apply {
+            this += Priority(5)
+        }
+        val component = AssociatedComponents<CalendarComponent>(
+            main = main,
+            exceptions = emptyList()
+        )
+
+        val result = builder.build(component)
+
+        assertEquals(5, result.main.entityValues.get(JtxContract.JtxICalObject.PRIORITY))
+    }
+
+    @Test
+    fun `build() maps X-STATUS to EXTENDED_STATUS`() {
+        val main = VToDo().apply {
+            this += XProperty(JtxICalObject.X_PROP_XSTATUS, "Bla")
+        }
+        val component = AssociatedComponents<CalendarComponent>(
+            main = main,
+            exceptions = emptyList()
+        )
+
+        val result = builder.build(component)
+
+        assertEquals(
+            "Bla",
+            result.main.entityValues.getAsString(JtxContract.JtxICalObject.EXTENDED_STATUS)
+        )
     }
 
     @Test
@@ -71,6 +111,7 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertTrue(result.exceptions.isEmpty())
+        assertEquals("VJOURNAL", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
     }
 
     @Test
@@ -87,6 +128,8 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertFalse(result.exceptions.isEmpty())
+        assertEquals("VJOURNAL", result.main.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+        assertEquals("VJOURNAL", result.exceptions.single().entityValues.get(JtxContract.JtxICalObject.COMPONENT))
     }
 
     @Test

@@ -15,10 +15,10 @@ import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Colors
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.icalendar.Css3Color
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider.Companion.COLUMN_CALENDAR_SYNC_STATE
+import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import java.util.LinkedList
 import java.util.logging.Level

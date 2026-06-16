@@ -7,8 +7,7 @@ package at.bitfire.synctools.storage.tasks
 import android.accounts.Account
 import android.content.ContentValues
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.DmfsStyleProvidersTaskTest
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.plusAssign
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskLists
@@ -25,7 +24,7 @@ class DmfsTaskListProviderTest(providerName: TaskProvider.ProviderName) :
 
     private val testAccount = Account(javaClass.name, TaskContract.LOCAL_ACCOUNT_TYPE)
     private val dmfsTaskListProvider by lazy {
-        DmfsTaskListProvider(testAccount, provider.client, providerName)
+        DmfsTaskListProvider(testAccount, provider, providerName)
     }
 
     @Test

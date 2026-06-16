@@ -28,7 +28,6 @@ import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.synctools.exception.InvalidICalendarException
 import at.bitfire.synctools.exception.InvalidResourceException
 import at.bitfire.synctools.icalendar.CalendarUidSplitter
 import at.bitfire.synctools.icalendar.ICalendarGenerator
@@ -67,7 +66,7 @@ class CalendarSyncManager @AssistedInject constructor(
     accountSettingsFactory: AccountSettings.Factory,
     private val productIds: ProductIds,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
-): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
+) : SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
     httpClient,
     SyncDataType.EVENTS,
@@ -193,7 +192,8 @@ class CalendarSyncManager @AssistedInject constructor(
         val localEvent = resource.androidEvent
         logger.log(Level.FINE, "Preparing upload of event #${resource.id}", localEvent)
 
-        // increase SEQUENCE of main event and remember value
+        /* Increase SEQUENCE of main event in memory and remember new value.
+        Will be written to provider later over onSuccessContext. */
         val updatedSequence = SequenceUpdater().increaseSequence(localEvent.main)
 
         // map Android event to iCalendar (also generates UID, if necessary)
@@ -293,14 +293,7 @@ class CalendarSyncManager @AssistedInject constructor(
     // helpers
 
     private fun processICalendar(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
-        val calendar =
-            try {
-                ICalendarParser().parse(reader)
-            } catch (e: InvalidICalendarException) {
-                logger.log(Level.WARNING, "Received invalid iCalendar, ignoring", e)
-                notifyInvalidResource(e, fileName)
-                return
-            }
+        val calendar = ICalendarParser().parse(reader)
 
         val uidsAndEvents = CalendarUidSplitter<VEvent>().associateByUid(calendar, Component.VEVENT)
         if (uidsAndEvents.size != 1) {

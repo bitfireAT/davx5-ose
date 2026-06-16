@@ -42,7 +42,7 @@ import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -162,11 +162,11 @@ fun PermissionsScreen(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 allPermissions += Manifest.permission.POST_NOTIFICATIONS
             if (openTasksAvailable == true)
-                allPermissions.addAll(TaskProvider.PERMISSIONS_OPENTASKS)
+                allPermissions.addAll(TaskProvider.ProviderName.OpenTasks.permissions)
             if (tasksOrgAvailable == true)
-                allPermissions.addAll(TaskProvider.PERMISSIONS_TASKS_ORG)
+                allPermissions.addAll(TaskProvider.ProviderName.TasksOrg.permissions)
             if (jtxAvailable == true)
-                allPermissions.addAll(TaskProvider.PERMISSIONS_JTX)
+                allPermissions.addAll(TaskProvider.ProviderName.JtxBoard.permissions)
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_all_title),
                 permissions = allPermissions,
@@ -205,7 +205,7 @@ fun PermissionsScreen(
                     text = stringResource(R.string.permissions_jtx_title),
                     summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
                     summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
-                    permissions = TaskProvider.PERMISSIONS_JTX.toList(),
+                    permissions = TaskProvider.ProviderName.JtxBoard.permissions.toList(),
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             if (openTasksAvailable == true)
@@ -213,7 +213,7 @@ fun PermissionsScreen(
                     text = stringResource(R.string.permissions_opentasks_title),
                     summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
                     summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
-                    permissions = TaskProvider.PERMISSIONS_OPENTASKS.toList(),
+                    permissions = TaskProvider.ProviderName.OpenTasks.permissions.toList(),
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             if (tasksOrgAvailable == true)
@@ -221,7 +221,7 @@ fun PermissionsScreen(
                     text = stringResource(R.string.permissions_tasksorg_title),
                     summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
                     summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
-                    permissions = TaskProvider.PERMISSIONS_TASKS_ORG.toList(),
+                    permissions = TaskProvider.ProviderName.TasksOrg.permissions.toList(),
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
 

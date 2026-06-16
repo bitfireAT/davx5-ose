@@ -13,7 +13,7 @@ import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import net.fortuna.ical4j.model.component.VEvent
 import java.time.temporal.Temporal
 
-class StartTimeBuilder: AndroidEntityBuilder {
+class StartTimeBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         val values = to.entityValues

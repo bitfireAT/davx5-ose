@@ -6,12 +6,13 @@ package at.bitfire.davdroid.resource
 
 import android.content.ContentValues
 import android.content.Context
-import at.bitfire.ical4android.JtxCollection
+import android.net.Uri
 import at.bitfire.ical4android.JtxICalObject
-import at.bitfire.ical4android.JtxICalObjectFactory
-import at.techbee.jtx.JtxContract
+import at.bitfire.synctools.storage.jtx.JtxCollection
 import at.techbee.jtx.JtxContract.JtxICalObject.getViewIntentUriFor
 import com.google.common.base.MoreObjects
+import net.fortuna.ical4j.model.property.ProdId
+import java.io.OutputStream
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
@@ -19,75 +20,90 @@ import kotlin.jvm.optionals.getOrNull
  * Represents a Journal, Note or Task entry
  */
 class LocalJtxICalObject(
-    collection: JtxCollection<*>,
-    fileName: String?,
-    eTag: String?,
-    scheduleTag: String?,
-    flags: Int
-) : JtxICalObject(collection), LocalResource {
+    internal val jtxICalObject: JtxICalObject
+) : LocalResource {
 
-    init {
-        this.fileName = fileName
-        this.eTag = eTag
-        this.flags = flags
-        this.scheduleTag = scheduleTag
+    constructor(
+        collection: JtxCollection,
+        fileName: String?,
+        eTag: String?,
+        scheduleTag: String?,
+        flags: Int
+    ) : this(JtxICalObject(collection)) {
+        jtxICalObject.fileName = fileName
+        jtxICalObject.eTag = eTag
+        jtxICalObject.scheduleTag = scheduleTag
+        jtxICalObject.flags = flags
+    }
+
+    constructor(collection: JtxCollection, values: ContentValues) : this(JtxICalObject(collection)) {
+        jtxICalObject.populateFromContentValues(values)
     }
 
 
-    object Factory : JtxICalObjectFactory<LocalJtxICalObject> {
+    override val id: Long
+        get() = jtxICalObject.id
 
-        override fun fromProvider(
-            collection: JtxCollection<JtxICalObject>,
-            values: ContentValues
-        ): LocalJtxICalObject {
-            val fileName = values.getAsString(JtxContract.JtxICalObject.FILENAME)
-            val eTag = values.getAsString(JtxContract.JtxICalObject.ETAG)
-            val scheduleTag = values.getAsString(JtxContract.JtxICalObject.SCHEDULETAG)
-            val flags = values.getAsInteger(JtxContract.JtxICalObject.FLAGS)?: 0
+    override val fileName: String?
+        get() = jtxICalObject.fileName
 
-            val localJtxICalObject = LocalJtxICalObject(collection, fileName, eTag, scheduleTag, flags)
-            localJtxICalObject.populateFromContentValues(values)
-
-            return localJtxICalObject
+    override var eTag: String?
+        get() = jtxICalObject.eTag
+        set(value) {
+            jtxICalObject.eTag = value
         }
 
+    override val scheduleTag: String?
+        get() = jtxICalObject.scheduleTag
+
+    override val flags: Int
+        get() = jtxICalObject.flags
+
+    val uid: String get() = jtxICalObject.uid
+    val recurid: String? get() = jtxICalObject.recurid
+    val summary: String? get() = jtxICalObject.summary
+    val rrule: String? get() = jtxICalObject.rrule
+    val recuridTimezone: String? get() = jtxICalObject.recuridTimezone
+
+    fun write(os: OutputStream, prodId: ProdId) = jtxICalObject.write(os, prodId)
+    fun applyNewData(data: JtxICalObject) = jtxICalObject.applyNewData(data)
+    fun add(): Uri = jtxICalObject.add()
+    fun update(data: JtxICalObject): Uri = jtxICalObject.update(data)
+
+    fun update(data: JtxICalObject, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int): Uri {
+        jtxICalObject.fileName = fileName
+        jtxICalObject.eTag = eTag
+        jtxICalObject.scheduleTag = scheduleTag
+        jtxICalObject.flags = flags
+        return jtxICalObject.update(data)
     }
 
-    fun update(data: JtxICalObject, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
-        this.fileName = fileName
-        this.eTag = eTag
-        this.scheduleTag = scheduleTag
-        this.flags = flags
 
-        // processes this.{fileName, eTag, scheduleTag, flags} and resets DIRTY flag
-        update(data)
+    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
+        jtxICalObject.clearDirty(fileName.getOrNull(), eTag, scheduleTag)
     }
+
+    override fun updateFlags(flags: Int) = jtxICalObject.updateFlags(flags)
 
     override fun updateSequence(sequence: Int) = throw NotImplementedError()
 
-    override fun updateUid(uid: String)  = throw NotImplementedError()
-
-    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
-        clearDirty(fileName.getOrNull(), eTag, scheduleTag)
-    }
+    override fun updateUid(uid: String) = throw NotImplementedError()
 
     override fun deleteLocal() {
-        delete()
+        jtxICalObject.delete()
     }
 
-    override fun resetDeleted() {
-        throw NotImplementedError()
-    }
+    override fun resetDeleted() = throw NotImplementedError()
 
     override fun getDebugSummary() =
         MoreObjects.toStringHelper(this)
-            .add("id", id)
-            .add("fileName", fileName)
-            .add("eTag", eTag)
-            .add("scheduleTag", scheduleTag)
-            .add("flags", flags)
+            .add("id", jtxICalObject.id)
+            .add("fileName", jtxICalObject.fileName)
+            .add("eTag", jtxICalObject.eTag)
+            .add("scheduleTag", jtxICalObject.scheduleTag)
+            .add("flags", jtxICalObject.flags)
             .toString()
 
-    override fun getViewUri(context: Context) = getViewIntentUriFor(id)
+    override fun getViewUri(context: Context) = getViewIntentUriFor(jtxICalObject.id)
 
 }

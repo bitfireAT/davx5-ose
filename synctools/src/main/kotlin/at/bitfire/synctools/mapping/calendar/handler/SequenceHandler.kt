@@ -10,7 +10,7 @@ import at.bitfire.synctools.storage.calendar.EventsContract
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Sequence
 
-class SequenceHandler: AndroidEventFieldHandler {
+class SequenceHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         val seqNo = from.entityValues.getAsInteger(EventsContract.COLUMN_SEQUENCE)

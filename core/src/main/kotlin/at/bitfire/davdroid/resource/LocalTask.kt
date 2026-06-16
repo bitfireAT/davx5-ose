@@ -5,14 +5,15 @@
 package at.bitfire.davdroid.resource
 
 import android.content.ContentUris
-import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
-import at.bitfire.ical4android.TaskProvider
-import at.bitfire.synctools.storage.tasks.DmfsTask
+import at.bitfire.synctools.storage.TaskProvider
+import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract
+import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import com.google.common.base.MoreObjects
+import org.apache.commons.lang3.StringUtils
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
 import java.util.logging.Logger
@@ -21,73 +22,79 @@ import java.util.logging.Logger
  * Represents a Dmfs Task (OpenTasks and Tasks.org) entry
  */
 class LocalTask(
-    val dmfsTask: DmfsTask
+    val recurringTaskList: DmfsRecurringTaskList,
+    val taskAndExceptions: TaskAndExceptions
 ): LocalResource {
 
-    val logger: Logger = Logger.getLogger(javaClass.name)
+    private val logger
+        get() = Logger.getLogger(javaClass.name)
+
+    private val taskList = recurringTaskList.taskList
+
+    private val mainValues = taskAndExceptions.main.entityValues
+
+    override val id: Long
+        get() = mainValues.getAsLong(Tasks._ID)
+
+    override val fileName: String?
+        get() = mainValues.getAsString(Tasks._SYNC_ID)
+
+    override val eTag: String?
+        get() = mainValues.getAsString(DmfsTasksContract.COLUMN_ETAG)
+
+    /**
+     * Note: Schedule-Tag is not supported for tasks
+     */
+    override val scheduleTag: String? = null
+
+    override val flags: Int
+        get() = mainValues.getAsInteger(DmfsTasksContract.COLUMN_FLAGS) ?: 0
+
+
+    // sync methods
+
+    fun update(data: TaskAndExceptions) {
+        recurringTaskList.updateTaskAndExceptions(id, data)
+    }
 
 
     // LocalResource implementation
-
-    override val id: Long?
-        get() = dmfsTask.id
-
-    override var fileName: String?
-        get() = dmfsTask.syncId
-        set(value) { dmfsTask.syncId = value }
-
-    override var eTag: String?
-        get() = dmfsTask.eTag
-        set(value) { dmfsTask.eTag = value }
-
-    /**
-     * Note: Schedule-Tag for tasks is not supported
-     */
-    override var scheduleTag: String? = null
-
-    override val flags: Int
-        get() = dmfsTask.flags
-
-    fun add() = dmfsTask.add()
-
-    fun update(data: Task) = dmfsTask.update(data)
-
-    fun delete() = dmfsTask.delete()
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             logger.fine("Schedule-Tag for tasks not supported, won't save")
 
-        val values = ContentValues(4)
+        val values = contentValuesOf(
+            DmfsTasksContract.COLUMN_ETAG to eTag,
+            Tasks._DIRTY to 0
+        )
         if (fileName.isPresent)
             values.put(Tasks._SYNC_ID, fileName.get())
-        values.put(DmfsTask.COLUMN_ETAG, eTag)
-        values.put(Tasks.SYNC_VERSION, dmfsTask.task!!.sequence)
-        values.put(Tasks._DIRTY, 0)
-        dmfsTask.update(values)
-
-        if (fileName.isPresent)
-            this.fileName = fileName.get()
-        this.eTag = eTag
+        taskList.updateTaskRow(id, values)
     }
 
     override fun updateFlags(flags: Int) {
-        if (id != null) {
-            val values = contentValuesOf(DmfsTask.COLUMN_FLAGS to flags)
-            dmfsTask.update(values)
-        }
-        dmfsTask.flags = flags
+        taskList.updateTaskRow(
+            id, contentValuesOf(
+                DmfsTasksContract.COLUMN_FLAGS to flags
+            )
+        )
     }
 
-    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+    override fun updateSequence(sequence: Int) {
+        taskList.updateTaskRow(id, contentValuesOf(
+            Tasks.SYNC_VERSION to sequence
+        ))
+    }
 
     override fun updateUid(uid: String) {
-        val values = contentValuesOf(Tasks._UID to uid)
-        dmfsTask.update(values)
+        taskList.updateTaskRow(id, contentValuesOf(
+            Tasks._UID to uid
+        ))
     }
 
     override fun deleteLocal() {
-        dmfsTask.delete()
+        recurringTaskList.deleteTaskAndExceptions(id)
     }
 
     override fun resetDeleted() {
@@ -100,26 +107,34 @@ class LocalTask(
             .add("fileName", fileName)
             .add("eTag", eTag)
             .add("flags", flags)
-            /*.add("task",
-                try {
-                    // too dangerous, may contain unknown properties and cause another OOM
-                    Ascii.truncate(task.toString(), 1000, "…")
+            .add(
+                "task", try {
+                    // only include truncated main task row (won't contain attachments, unknown properties etc.)
+                    StringUtils.abbreviate(mainValues.toString(), 1000)
                 } catch (e: Exception) {
                     e
                 }
-            )*/
+            )
+            .add(
+                "exceptions [max 10]", try {
+                taskAndExceptions.exceptions.take(10).joinToString { exception ->
+                    // truncated exception row
+                    exception.entityValues.toString().take(1000)
+                }
+            } catch (e: Exception) {
+                e
+            })
             .toString()
 
-    override fun getViewUri(context: Context): Uri? = id?.let { id ->
-        when (dmfsTask.taskList.providerName) {
+    override fun getViewUri(context: Context): Uri? =
+        when (taskList.providerName) {
             TaskProvider.ProviderName.OpenTasks -> {
-                val contentUri = Tasks.getContentUri(dmfsTask.taskList.providerName.authority)
+                val contentUri = Tasks.getContentUri(taskList.providerName.authority)
                 ContentUris.withAppendedId(contentUri, id)
             }
             // Tasks.org can't handle view content URIs (missing intent-filter)
             // Jtx Board tasks are [LocalJtxICalObject]s
             else -> null
         }
-    }
 
 }

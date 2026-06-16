@@ -8,48 +8,14 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.mikepenz.aboutLibraries.android)
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-kotlin {
-    compilerOptions {
-        // use new defaulting rule for qualifiers to avoid `@param:` prefix for DI annotations
-        freeCompilerArgs.add("-Xannotation-default-target=param-property")
-    }
+    id("davx5.common-buildconfig")
 }
 
 android {
-    compileSdk = 37
-
     defaultConfig {
-        minSdk = 24        // Android 7.0
-        targetSdk = 36     // Android 16
-
         applicationId = "at.bitfire.davdroid"
 
-        /*
-         * Version names use Semantic Versioning. Pre-release identifiers are "alpha" (closed alpha in
-         * internal track), "beta" (public beta track) and "rc" (public beta track).
-         *
-         * Version codes are derived from the version name like this:
-         *
-         * MmmppIIII   (example `405120000`)   where
-         *
-         * - M is the major version (`4` in the example)
-         * - mm the minor version (two decimal digits, `05` in the example),
-         * - pp the patch level (two decimal digits, `12` in the example), and
-         * - IIII an increasing number (four decimal digits) that starts with `0000` and is increased for
-         *   every release with the same major/minor/patch version (alpha-1, alpha-2, beta-1, ..., final).
-         *   So usually the first pre-release has `0000` and the final version has the greatest number.
-         */
-        versionCode = 405140001
-        versionName = "4.5.14"
-
+        // versionCode and versionName are defined in the build-logic submodule (AppVersion)
         base.archivesName = "davx5-$versionCode-$versionName"
 
         /* Android prevents having two apps installed with the same provider authority name. In that case,
@@ -66,10 +32,6 @@ android {
         resValue("string", "authority_debug_provider", debugInfoAuthority)
 
         // Currently no instrumentation tests for app-ose, so no testInstrumentationRunner
-    }
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {

@@ -28,7 +28,7 @@ import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.ICalendar
+import at.bitfire.synctools.icalendar.timezoneDefToTzId
 import at.bitfire.synctools.util.trimToNull
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -205,7 +205,7 @@ data class Collection(
                     dav[CalendarTimezoneId::class.java]?.let { timezoneId = it.identifier }
                     if (timezoneId == null)
                         dav[CalendarTimezone::class.java]?.vTimeZone?.let {
-                            timezoneId = ICalendar.timezoneDefToTzId(it)
+                            timezoneId = timezoneDefToTzId(it)
                         }
 
                     if (type == TYPE_CALENDAR) {

@@ -4,14 +4,16 @@
 
 package at.bitfire.synctools.mapping.tasks.handler
 
+import android.content.ContentValues
 import android.content.Entity
+import android.net.Uri
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
 import at.bitfire.synctools.icalendar.plusAssign
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Action
+import net.fortuna.ical4j.model.property.Description
 import net.fortuna.ical4j.model.property.Summary
 import net.fortuna.ical4j.model.property.Trigger
 import net.fortuna.ical4j.model.property.immutable.ImmutableAction
@@ -29,99 +31,18 @@ class AlarmsHandlerTest {
 
     private val handler = AlarmsHandler()
 
-    @Test
-    fun `legacy Display alarm relative to start`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 15L,
-            Alarm.REFERENCE to Alarm.ALARM_REFERENCE_START_DATE,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE,
-        ), task)
-
-        assertEquals(1, task.alarms.size)
-        val alarm = task.alarms.first()
-        assertEquals(ImmutableAction.DISPLAY, alarm.actionProperty)
-        assertEquals(Duration.ofMinutes(-15), alarm.triggerProperty.duration)
-    }
-
-    @Test
-    fun `legacy Audio alarm relative to due`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 10L,
-            Alarm.REFERENCE to Alarm.ALARM_REFERENCE_DUE_DATE,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_SOUND,
-        ), task)
-
-        assertEquals(1, task.alarms.size)
-        val alarm = task.alarms.first()
-        assertEquals(ImmutableAction.AUDIO, alarm.actionProperty)
-        assertEquals(Duration.ofMinutes(-10), alarm.triggerProperty.duration)
-        // Related.END parameter should be set for due-relative alarms
-        assertTrue(alarm.triggerProperty.getParameter<net.fortuna.ical4j.model.parameter.Related>(
-            net.fortuna.ical4j.model.Parameter.RELATED
-        ).isPresent)
-    }
-
-    @Test
-    fun `legacy Email alarm`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 5L,
-            Alarm.REFERENCE to Alarm.ALARM_REFERENCE_START_DATE,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_EMAIL,
-        ), task)
-
-        assertEquals(1, task.alarms.size)
-        assertEquals(ImmutableAction.EMAIL, task.alarms.first().actionProperty)
-    }
-
-    @Test
-    fun `legacy Alarm message is used as description`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 0L,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE,
-            Alarm.MESSAGE to "Don't forget!",
-        ), task)
-
-        assertEquals("Don't forget!", task.alarms.first().description?.value)
-    }
-
-    @Test
-    fun `legacy Task summary used as description when no alarm message`() {
-        val task = Task(summary = "Task Title")
-        handler.process(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 0L,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE,
-        ), task)
-
-        assertEquals("Task Title", task.alarms.first().description?.value)
-    }
-
-    @Test
-    fun `legacy Multiple alarms accumulate`() {
-        val task = Task()
-        handler.process(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 10L,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE,
-        ), task)
-        handler.process(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 20L,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_SOUND,
-        ), task)
-
-        assertEquals(2, task.alarms.size)
-    }
 
     @Test
     fun `Display alarm relative to start`() {
         val vToDo = VToDo()
-        val input = Entity(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 15L,
-            Alarm.REFERENCE to Alarm.ALARM_REFERENCE_START_DATE,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE,
-        ))
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Alarm.MIMETYPE to Alarm.CONTENT_ITEM_TYPE,
+                Alarm.MINUTES_BEFORE to 15L,
+                Alarm.REFERENCE to Alarm.ALARM_REFERENCE_START_DATE,
+                Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE,
+            ))
+        }
         handler.process(from = input, main = input, to = vToDo)
 
         assertEquals(1, vToDo.alarms.size)
@@ -133,11 +54,14 @@ class AlarmsHandlerTest {
     @Test
     fun `Audio alarm relative to due`() {
         val vToDo = VToDo()
-        val input = Entity(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 10L,
-            Alarm.REFERENCE to Alarm.ALARM_REFERENCE_DUE_DATE,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_SOUND,
-        ))
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Alarm.MIMETYPE to Alarm.CONTENT_ITEM_TYPE,
+                Alarm.MINUTES_BEFORE to 10L,
+                Alarm.REFERENCE to Alarm.ALARM_REFERENCE_DUE_DATE,
+                Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_SOUND,
+            ))
+        }
         handler.process(from = input, main = input, to = vToDo)
 
         assertEquals(1, vToDo.alarms.size)
@@ -153,11 +77,14 @@ class AlarmsHandlerTest {
     @Test
     fun `Email alarm`() {
         val vToDo = VToDo()
-        val input = Entity(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 5L,
-            Alarm.REFERENCE to Alarm.ALARM_REFERENCE_START_DATE,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_EMAIL,
-        ))
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Alarm.MIMETYPE to Alarm.CONTENT_ITEM_TYPE,
+                Alarm.MINUTES_BEFORE to 5L,
+                Alarm.REFERENCE to Alarm.ALARM_REFERENCE_START_DATE,
+                Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_EMAIL,
+            ))
+        }
         handler.process(from = input, main = input, to = vToDo)
 
         assertEquals(1, vToDo.alarms.size)
@@ -167,42 +94,51 @@ class AlarmsHandlerTest {
     @Test
     fun `Alarm message is used as description`() {
         val vToDo = VToDo()
-        val input = Entity(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 0L,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE,
-            Alarm.MESSAGE to "Don't forget!",
-        ))
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Alarm.MIMETYPE to Alarm.CONTENT_ITEM_TYPE,
+                Alarm.MINUTES_BEFORE to 0L,
+                Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE,
+                Alarm.MESSAGE to "Don't forget!",
+            ))
+        }
         handler.process(from = input, main = input, to = vToDo)
 
-        assertEquals("Don't forget!", vToDo.alarms.first().description?.value)
+        assertEquals(Description("Don't forget!"), vToDo.alarms.first().description)
     }
 
     @Test
     fun `Task summary used as description when no alarm message`() {
         val vToDo = VToDo()
         vToDo += Summary("Task Title")
-        val input = Entity(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 0L,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE,
-        ))
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Alarm.MIMETYPE to Alarm.CONTENT_ITEM_TYPE,
+                Alarm.MINUTES_BEFORE to 0L,
+                Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE,
+            ))
+        }
         handler.process(from = input, main = input, to = vToDo)
 
-        assertEquals("Task Title", vToDo.alarms.first().description?.value)
+        assertEquals(Description("Task Title"), vToDo.alarms.first().description)
     }
 
     @Test
     fun `Multiple alarms accumulate`() {
         val vToDo = VToDo()
-        val input1 = Entity(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 10L,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE,
-        ))
-        val input2 = Entity(contentValuesOf(
-            Alarm.MINUTES_BEFORE to 20L,
-            Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_SOUND,
-        ))
-        handler.process(from = input1, main = input1, to = vToDo)
-        handler.process(from = input2, main = input2, to = vToDo)
+        val input = Entity(ContentValues()).apply {
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Alarm.MIMETYPE to Alarm.CONTENT_ITEM_TYPE,
+                Alarm.MINUTES_BEFORE to 10L,
+                Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_MESSAGE,
+            ))
+            addSubValue(Uri.parse("irrelevant:"), contentValuesOf(
+                Alarm.MIMETYPE to Alarm.CONTENT_ITEM_TYPE,
+                Alarm.MINUTES_BEFORE to 20L,
+                Alarm.ALARM_TYPE to Alarm.ALARM_TYPE_SOUND,
+            ))
+        }
+        handler.process(from = input, main = input, to = vToDo)
 
         assertEquals(2, vToDo.alarms.size)
     }

@@ -6,9 +6,9 @@ package at.bitfire.synctools.mapping.calendar.handler
 
 import android.content.Entity
 import android.provider.CalendarContract.Events
-import at.bitfire.ical4android.util.TimeApiExtensions.abs
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.util.AndroidTimeUtils
+import at.bitfire.synctools.util.TimeApiExtensions.abs
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.DtEnd
 import java.time.Instant
@@ -23,7 +23,7 @@ import java.time.ZonedDateTime
  * - [Events.DTEND] is present / not null (because DTEND then takes precedence over DURATION), and/or
  * - [Events.DURATION] is null / not present.
  */
-class DurationHandler: AndroidEventFieldHandler {
+class DurationHandler : AndroidEventEntityHandler {
 
     override fun process(from: Entity, main: Entity, to: VEvent) {
         val values = from.entityValues

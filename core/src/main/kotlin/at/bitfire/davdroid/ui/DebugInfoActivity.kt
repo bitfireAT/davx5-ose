@@ -22,7 +22,7 @@ import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import at.techbee.jtx.JtxContract
 import com.google.common.base.Ascii
 import dagger.Lazy

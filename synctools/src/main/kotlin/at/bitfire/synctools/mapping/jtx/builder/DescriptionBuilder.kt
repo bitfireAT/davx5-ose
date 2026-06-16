@@ -11,9 +11,9 @@ import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.property.Description
 import kotlin.jvm.optionals.getOrNull
 
-class DescriptionBuilder : JtxEntityBuilder {
+class DescriptionBuilder : JtxObjectEntityBuilder {
     override fun build(from: CalendarComponent, main: CalendarComponent, to: Entity) {
-        val description = main.getProperty<Description>(Property.DESCRIPTION).getOrNull()?.value
+        val description = from.getProperty<Description>(Property.DESCRIPTION).getOrNull()?.value
         to.entityValues.put(JtxContract.JtxICalObject.DESCRIPTION, description)
     }
 }

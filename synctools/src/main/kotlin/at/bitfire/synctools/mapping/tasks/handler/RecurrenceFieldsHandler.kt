@@ -6,14 +6,13 @@ package at.bitfire.synctools.mapping.tasks.handler
 
 import android.content.ContentValues
 import android.content.Entity
-import at.bitfire.ical4android.Task
-import at.bitfire.ical4android.util.DateUtils
-import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.util.AndroidTimeUtils
 import at.bitfire.synctools.util.AndroidTimeUtils.isUtcTzId
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.bitfire.synctools.util.AndroidTimeUtils.toZonedDateTime
+import at.bitfire.synctools.util.TimeApiExtensions.isDateTime
+import at.bitfire.synctools.util.TimeApiExtensions.toLocalDate
 import net.fortuna.ical4j.model.Recur
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.ExDate
@@ -44,7 +43,7 @@ import java.util.logging.Logger
  * Parse errors in any individual field are caught and logged as warnings so that a single
  * malformed value never prevents the rest of the task from being read.
  */
-class RecurrenceFieldsHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
+class RecurrenceFieldsHandler : DmfsTaskEntityHandler {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
@@ -55,65 +54,6 @@ class RecurrenceFieldsHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
      * @param from  provider row for a single task
      * @param to    task object to populate
      */
-    override fun process(from: ContentValues, to: Task) {
-        val allDay = (from.getAsInteger(Tasks.IS_ALLDAY) ?: 0) != 0
-        val tzId = from.getAsString(Tasks.TZ)
-
-        val tsStart = from.getAsLong(Tasks.DTSTART)
-
-        // provide start temporal lazily (only computed when UNTIL alignment is needed)
-        val startTemporal: Temporal? by lazy {
-            tsStart?.let { TaskTimeField(
-                timestamp = it,
-                tzId = tzId,
-                allDay = allDay
-            ).toTemporal() }
-        }
-
-        // process RRULE field
-        from.getAsString(Tasks.RRULE)?.let { rRuleStr ->
-            try {
-                var rule = RRule<Temporal>(rRuleStr)
-
-                // align RRULE UNTIL to DTSTART, if needed
-                if (startTemporal != null) {
-                    rule = RRule(alignUntil(rule.recur, startTemporal!!))
-
-                    // skip if UNTIL is before task's DTSTART
-                    val tsUntil = rule.recur.until?.toTimestamp()
-                    if (tsUntil != null && tsUntil <= tsStart!!) {
-                        logger.warning("Ignoring $rule because UNTIL ($tsUntil) is not after DTSTART ($tsStart)")
-                        return@let
-                    }
-                }
-
-                to.rRule = rule
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't parse RRULE field, ignoring", e)
-            }
-        }
-
-        // process RDATE field
-        from.getAsString(Tasks.RDATE)?.let { rDateStr ->
-            try {
-                AndroidTimeUtils.androidStringToRecurrenceSet(withTzPrefix(rDateStr, tzId), allDay) { RDate(it) }
-                    ?.let { to.rDates += it }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't parse RDATE field, ignoring", e)
-            }
-        }
-
-        // process EXDATE field
-        from.getAsString(Tasks.EXDATE)?.let { exDateStr ->
-            try {
-                AndroidTimeUtils.androidStringToRecurrenceSet(withTzPrefix(exDateStr, tzId), allDay) { ExDate(it) }
-                    ?.let { to.exDates += it }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't parse EXDATE field, ignoring", e)
-            }
-        }
-    }
-
     override fun process(from: Entity, main: Entity, to: VToDo) {
         if (from !== main) {
             return
@@ -218,9 +158,9 @@ class RecurrenceFieldsHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
     fun alignUntil(recur: Recur<Temporal>, startTemporal: Temporal): Recur<Temporal> {
         val until: Temporal = recur.until ?: return recur
 
-        if (DateUtils.isDateTime(until)) {
+        if (until.isDateTime()) {
             // UNTIL is DATE-TIME
-            if (DateUtils.isDateTime(startTemporal)) {
+            if (startTemporal.isDateTime()) {
                 // DTSTART is DATE-TIME → ensure UNTIL is in UTC
                 val untilZoned = until.toZonedDateTime()
                 return if (untilZoned.zone == ZoneOffset.UTC) {
@@ -239,7 +179,7 @@ class RecurrenceFieldsHandler : DmfsTaskFieldHandler, DmfsTaskFieldHandler2 {
             }
         } else {
             // UNTIL is DATE
-            if (DateUtils.isDateTime(startTemporal)) {
+            if (startTemporal.isDateTime()) {
                 // DTSTART is DATE-TIME → amend UNTIL to UTC DATE-TIME
                 val untilDate = until.toLocalDate()
                 val startTime = startTemporal.toZonedDateTime()

@@ -6,10 +6,9 @@ package at.bitfire.synctools.mapping.tasks.builder
 
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.Task
-import at.bitfire.ical4android.UnknownProperty
-import at.bitfire.synctools.storage.tasks.DmfsTask.Companion.UNKNOWN_PROPERTY_DATA
+import at.bitfire.synctools.mapping.UnknownProperty
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract.UNKNOWN_PROPERTY_DATA
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Color
@@ -18,32 +17,10 @@ import java.util.logging.Logger
 
 class UnknownPropertiesBuilder(
     private val taskList: DmfsTaskList
-) : DmfsTaskFieldBuilder, DmfsTaskFieldBuilderVToDo {
+) : DmfsTaskEntityBuilder {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
-
-    override fun build(from: Task, to: Entity) {
-        for (property in from.unknownProperties) {
-            val value = property.value
-            if (value == null) {
-                logger.warning("Ignoring unknown property with null value")
-                continue
-            }
-            if (value.length > UnknownProperty.MAX_UNKNOWN_PROPERTY_SIZE) {
-                logger.warning("Ignoring unknown property with ${value.length} octets (too long)")
-                continue
-            }
-
-            to.addSubValue(
-                taskList.tasksPropertiesUri(),
-                contentValuesOf(
-                    Properties.MIMETYPE to UnknownProperty.CONTENT_ITEM_TYPE,
-                    UNKNOWN_PROPERTY_DATA to UnknownProperty.toJsonString(property)
-                )
-            )
-        }
-    }
 
     override fun build(from: VToDo, to: Entity) {
         for (property in unknownProperties(from)) {

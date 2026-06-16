@@ -13,6 +13,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -93,8 +94,8 @@ class AddressBookSyncer @AssistedInject constructor(
                     logger.info("Group method changed, deleting all local contacts/groups")
 
                     // delete all local contacts and groups so that they will be downloaded again
-                    provider.delete(addressBook.syncAdapterURI(ContactsContract.RawContacts.CONTENT_URI), null, null)
-                    provider.delete(addressBook.syncAdapterURI(ContactsContract.Groups.CONTENT_URI), null, null)
+                    provider.delete(ContactsContract.RawContacts.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount), null, null)
+                    provider.delete(ContactsContract.Groups.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount), null, null)
 
                     // reset sync state
                     addressBook.syncState = null

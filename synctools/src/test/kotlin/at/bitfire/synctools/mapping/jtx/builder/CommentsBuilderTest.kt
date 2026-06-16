@@ -52,8 +52,9 @@ class CommentsBuilderTest {
                 "comment"
             )
         }
+        val main = VToDo()
 
-        builder.build(from = task, main = task, output)
+        builder.build(from = task, main = main, output)
 
         assertEquals(1, output.subValues.size)
         val subValue = output.subValues.first()

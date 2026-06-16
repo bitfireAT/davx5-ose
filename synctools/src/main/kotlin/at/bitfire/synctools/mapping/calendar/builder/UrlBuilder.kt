@@ -10,7 +10,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.calendar.EventsContract
 import net.fortuna.ical4j.model.component.VEvent
 
-class UrlBuilder: AndroidEntityBuilder {
+class UrlBuilder : AndroidEventEntityBuilder {
 
     override fun build(from: VEvent, main: VEvent, to: Entity) {
         val uri = from.url?.value

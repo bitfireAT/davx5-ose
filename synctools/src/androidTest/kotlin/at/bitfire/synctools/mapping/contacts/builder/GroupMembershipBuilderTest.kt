@@ -5,7 +5,6 @@
 package at.bitfire.synctools.mapping.contacts.builder
 
 import android.Manifest
-import android.accounts.Account
 import android.content.ContentProviderClient
 import android.net.Uri
 import android.provider.ContactsContract
@@ -25,26 +24,34 @@ class GroupMembershipBuilderTest {
 
     @Test
     fun testCategories_GroupsAsCategories() {
-        val addressBook = TestAddressBook(account, provider)
-        val contact = Contact().apply {
-            categories += "TEST GROUP"
-        }
-        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBook, GroupMethod.CATEGORIES, false).build().also { result ->
-            assertEquals(1, result.size)
-            assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
-            assertEquals(addressBook.findOrCreateGroup("TEST GROUP"), result[0].values[GroupMembership.GROUP_ROW_ID])
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val contact = Contact().apply {
+                categories += "TEST GROUP"
+            }
+            GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBook, GroupMethod.CATEGORIES, false).build().also { result ->
+                assertEquals(1, result.size)
+                assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
+                assertEquals(addressBook.findOrCreateGroup("TEST GROUP"), result[0].values[GroupMembership.GROUP_ROW_ID])
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
         }
     }
 
     @Test
     fun testCategories_GroupsAsVCards() {
-        val addressBook = TestAddressBook(account, provider)
-        val contact = Contact().apply {
-            categories += "TEST GROUP"
-        }
-        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBook, GroupMethod.GROUP_VCARDS, false).build().also { result ->
-            // group membership is constructed during post-processing
-            assertEquals(0, result.size)
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val contact = Contact().apply {
+                categories += "TEST GROUP"
+            }
+            GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBook, GroupMethod.GROUP_VCARDS, false).build().also { result ->
+                // group membership is constructed during post-processing
+                assertEquals(0, result.size)
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
         }
     }
 
@@ -54,8 +61,6 @@ class GroupMembershipBuilderTest {
         @JvmField
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
-
-        val account = Account("GroupMembershipBuilderTest", "at.bitfire.vcard4android")
 
         private lateinit var provider: ContentProviderClient
 

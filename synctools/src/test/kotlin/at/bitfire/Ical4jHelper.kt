@@ -5,6 +5,8 @@
 package at.bitfire
 
 import net.fortuna.ical4j.model.CalendarDateFormat
+import net.fortuna.ical4j.model.Parameter
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.TemporalAdapter
 import net.fortuna.ical4j.model.TimeZone
 import java.time.LocalDate
@@ -36,4 +38,8 @@ fun dateTimeValue(value: String, zone: ZoneId): ZonedDateTime {
 
 fun dateValue(value: String): LocalDate {
     return TemporalAdapter.parse<LocalDate>(value, CalendarDateFormat.DATE_FORMAT).temporal
+}
+
+fun parameterListOf(vararg parameters: Parameter): ParameterList {
+    return ParameterList(parameters.toList())
 }
