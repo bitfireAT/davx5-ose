@@ -144,9 +144,9 @@ class LocalGroupTest {
             contact1.androidContact.addToGroup(batch, group.id!!)
             batch.commit()
 
-            assertEquals(0, localAddressBook.findDirty().size)
+            assertEquals(0, localAddressBook.findDirtyContacts().size)
             group.markMembersDirty()
-            assertEquals(contact1.id, localAddressBook.findDirty().first().id)
+            assertEquals(contact1.id, localAddressBook.findDirtyContacts().first().id)
         }
     }
 
