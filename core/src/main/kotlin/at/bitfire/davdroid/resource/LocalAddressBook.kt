@@ -36,6 +36,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.io.FileNotFoundException
 import java.util.Optional
 import java.util.logging.Logger
@@ -225,11 +227,13 @@ open class LocalAddressBook @AssistedInject constructor(
      * Returns an array of local contacts/groups which have been deleted locally. (DELETED != 0).
      * @throws RemoteException on content provider errors
      */
-    override fun findDeleted() =
+    override fun iterateDeleted(): Flow<LocalAddress> = flow {
+        for (contact in findDeletedContacts())
+            emit(contact)
         if (includeGroups)
-            findDeletedContacts() + findDeletedGroups()
-        else
-            findDeletedContacts()
+            for (group in findDeletedGroups())
+                emit(group)
+    }
 
     fun findDeletedContacts() = queryContacts(RawContacts.DELETED, null)
     fun findDeletedGroups() = queryGroups(Groups.DELETED, null)
@@ -238,11 +242,13 @@ open class LocalAddressBook @AssistedInject constructor(
      * Returns an array of local contacts/groups which have been changed locally (DIRTY != 0).
      * @throws RemoteException on content provider errors
      */
-    override fun findDirty() =
+    override fun iterateDirty(): Flow<LocalAddress> = flow {
         if (includeGroups)
-            findDirtyContacts() + findDirtyGroups()
-        else
-            findDirtyContacts()
+            for (group in findDirtyGroups())
+                emit(group)
+        for (contact in findDirtyContacts())
+            emit(contact)
+    }
 
     fun findDirtyContacts() = queryContacts(RawContacts.DIRTY, null)
     fun findDirtyGroups() = queryGroups(Groups.DIRTY, null)

@@ -10,6 +10,9 @@ import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -76,16 +79,18 @@ class LocalTaskList (
     override fun countModified(): Int =
         dmfsTaskList.countTasks("${Tasks._DIRTY} AND NOT ${Tasks._DELETED}", null)
 
-    override fun findDeleted(): List<LocalTask> = buildList {
+    override fun iterateDeleted(): Flow<LocalTask> = callbackFlow {
         recurringTaskList.iterateTaskAndExceptions(Tasks._DELETED, null) {
-            add(LocalTask(recurringTaskList, it))
+            trySendBlocking(LocalTask(recurringTaskList, it))
         }
+        close()
     }
 
-    override fun findDirty(): List<LocalTask> = buildList {
+    override fun iterateDirty(): Flow<LocalTask> = callbackFlow {
         recurringTaskList.iterateTaskAndExceptions(Tasks._DIRTY, null) {
-            add(LocalTask(recurringTaskList, it))
+            trySendBlocking(LocalTask(recurringTaskList, it))
         }
+        close()
     }
 
     override fun findByName(name: String): LocalTask? {

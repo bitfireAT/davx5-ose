@@ -325,8 +325,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
-        val localList = localCollection.findDeleted()
-        for (local in localList) {
+        localCollection.iterateDeleted().collect { local ->
             SyncException.wrapWithLocalResourceSuspending(local) {
                 val fileName = local.fileName
                 if (fileName != null) {
@@ -370,14 +369,11 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     protected open suspend fun uploadDirty(): Boolean {
         var numUploaded = 0
 
-        coroutineScope {    // structured concurrency
-            for (local in localCollection.findDirty())
-                launch {
-                    SyncException.wrapWithLocalResourceSuspending(local) {
-                        uploadDirty(local)
-                        numUploaded++
-                    }
-                }
+        localCollection.iterateDirty().collect { local ->
+            SyncException.wrapWithLocalResourceSuspending(local) {
+                uploadDirty(local)
+                numUploaded++
+            }
         }
         logger.info("Sent $numUploaded record(s) to server")
         return numUploaded > 0

@@ -10,6 +10,9 @@ import at.bitfire.synctools.storage.jtx.JtxCollection
 import at.bitfire.synctools.storage.jtx.JtxRecurringCollection
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
 /**
  * Application-specific implementation for jtx collections.
@@ -56,16 +59,18 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     override fun countModified(): Int =
         jtxCollection.countJtxObjects("${JtxICalObject.DIRTY} AND NOT ${JtxICalObject.DELETED}", null)
 
-    override fun findDeleted(): List<LocalJtxICalObject> = buildList {
+    override fun iterateDeleted(): Flow<LocalJtxICalObject> = callbackFlow {
         JtxRecurringCollection(jtxCollection).iterateJtxObjectAndExceptions(JtxICalObject.DELETED, null) {
-            add(LocalJtxICalObject(jtxCollection, it.main.entityValues))
+            trySendBlocking(LocalJtxICalObject(jtxCollection, it.main.entityValues))
         }
+        close()
     }
 
-    override fun findDirty(): List<LocalJtxICalObject> = buildList {
+    override fun iterateDirty(): Flow<LocalJtxICalObject> = callbackFlow {
         JtxRecurringCollection(jtxCollection).iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) {
-            add(LocalJtxICalObject(jtxCollection, it.main.entityValues))
+            trySendBlocking(LocalJtxICalObject(jtxCollection, it.main.entityValues))
         }
+        close()
     }
 
     override fun findByName(name: String): LocalJtxICalObject? =

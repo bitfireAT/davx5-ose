@@ -51,7 +51,7 @@ class Android7DirtyVerifier @Inject constructor(
     override fun prepareAddressBook(addressBook: LocalAddressBook, isUpload: Boolean): Boolean {
         val reallyDirty = verifyDirtyContacts(addressBook)
 
-        val deleted = addressBook.findDeleted().size
+        val deleted = addressBook.countDeleted()
         if (isUpload && reallyDirty == 0 && deleted == 0) {
             logger.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
             return false
