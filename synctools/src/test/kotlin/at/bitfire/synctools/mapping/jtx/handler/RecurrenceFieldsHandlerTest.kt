@@ -161,7 +161,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.rDates.size)
         assertEquals(
-            RDate<Temporal>(ParameterList(), "20260522T120000"),
+            RDate<Temporal>(ParameterList(), "20260522T120000Z"),
             output.rDates.first()
         )
     }
@@ -235,7 +235,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.rDates.size)
         assertEquals(
-            RDate<Temporal>(ParameterList(), "20260522T120000"),
+            RDate<Temporal>(ParameterList(), "20260522T120000Z"),
             output.rDates.first()
         )
     }
@@ -289,7 +289,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.rDates.size)
         assertEquals(
-            RDate<Temporal>(ParameterList(), "20260522T120000"),
+            RDate<Temporal>(ParameterList(), "20260522T120000Z"),
             output.rDates.first()
         )
     }
@@ -329,7 +329,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.exDates.size)
         assertEquals(
-            ExDate<Temporal>(ParameterList(), "20260522T120000"),
+            ExDate<Temporal>(ParameterList(), "20260522T120000Z"),
             output.exDates.first()
         )
     }

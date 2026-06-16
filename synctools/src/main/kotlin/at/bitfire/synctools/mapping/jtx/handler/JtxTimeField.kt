@@ -4,6 +4,7 @@
 
 package at.bitfire.synctools.mapping.jtx.handler
 
+import at.bitfire.synctools.util.AndroidTimeUtils.isUtcTzId
 import at.techbee.jtx.JtxContract
 import java.time.DateTimeException
 import java.time.Instant
@@ -36,26 +37,28 @@ internal class JtxTimeField(
     fun toTemporal(): Temporal {
         val instant = Instant.ofEpochMilli(timestamp)
 
-        return when (timeZone) {
-            JtxContract.JtxICalObject.TZ_ALLDAY ->
+        return when {
+            timeZone == JtxContract.JtxICalObject.TZ_ALLDAY ->
                 LocalDate.ofInstant(instant, ZoneOffset.UTC)
 
-            ZoneOffset.UTC.id ->
-                ZonedDateTime.ofInstant(instant, ZoneOffset.UTC)
+            timeZone == ZoneOffset.UTC.id || isUtcTzId(timeZone) ->
+                instant
 
-            null, "" ->
+            timeZone.isNullOrEmpty() ->
                 LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
 
             else ->
-                ZonedDateTime.ofInstant(instant, zoneIdOrUtc(timeZone))
+                zoneIdOrNull(timeZone)
+                    ?.let { zoneId -> ZonedDateTime.ofInstant(instant, zoneId) }
+                    ?: instant
         }
     }
 
-    private fun zoneIdOrUtc(tzId: String): ZoneId =
+    private fun zoneIdOrNull(tzId: String): ZoneId? =
         try {
             ZoneId.of(tzId)
         } catch (_: DateTimeException) {
-            ZoneOffset.UTC
+            null
         }
 
 }

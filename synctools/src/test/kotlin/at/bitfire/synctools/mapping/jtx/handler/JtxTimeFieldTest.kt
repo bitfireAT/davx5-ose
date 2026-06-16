@@ -11,6 +11,7 @@ import at.techbee.jtx.JtxContract
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -33,7 +34,7 @@ class JtxTimeFieldTest {
     }
 
     @Test
-    fun `toTemporal with UTC timezone returns ZonedDateTime`() {
+    fun `toTemporal with UTC offset ID returns Instant`() {
         val jtxTimeField = JtxTimeField(
             timestamp = TIMESTAMP,
             timeZone = ZoneOffset.UTC.id
@@ -41,7 +42,19 @@ class JtxTimeFieldTest {
 
         val result = jtxTimeField.toTemporal()
 
-        assertEquals(dateTimeValue("20251015T094659", ZoneOffset.UTC), result)
+        assertEquals(Instant.ofEpochMilli(TIMESTAMP), result)
+    }
+
+    @Test
+    fun `toTemporal with UTC timezone ID returns Instant`() {
+        val jtxTimeField = JtxTimeField(
+            timestamp = TIMESTAMP,
+            timeZone = "UTC"
+        )
+
+        val result = jtxTimeField.toTemporal()
+
+        assertEquals(Instant.ofEpochMilli(TIMESTAMP), result)
     }
 
     @Test
@@ -69,7 +82,7 @@ class JtxTimeFieldTest {
     }
 
     @Test
-    fun `toTemporal with invalid timezone returns UTC ZonedDateTime`() {
+    fun `toTemporal with invalid timezone returns Instant`() {
         val jtxTimeField = JtxTimeField(
             timestamp = TIMESTAMP,
             timeZone = "Invalid/Timezone"
@@ -77,7 +90,7 @@ class JtxTimeFieldTest {
 
         val result = jtxTimeField.toTemporal()
 
-        assertEquals(dateTimeValue("20251015T094659", ZoneOffset.UTC), result)
+        assertEquals(Instant.ofEpochMilli(TIMESTAMP), result)
     }
 
     companion object {
