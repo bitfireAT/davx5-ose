@@ -58,6 +58,16 @@ class PriorityHandlerTest {
     }
 
     @Test
+    fun `PRIORITY with VALUE_UNDEFINED`() {
+        val input = Entity(contentValuesOf(JtxContract.JtxICalObject.PRIORITY to Priority.VALUE_UNDEFINED))
+        val output = VToDo()
+
+        handler.process(from = input, main = input, to = output)
+
+        assertNull(output.getProperty<Priority>(Property.PRIORITY).getOrNull())
+    }
+
+    @Test
     fun `PRIORITY is never added to VJOURNAL`() {
         val input = Entity(contentValuesOf(JtxContract.JtxICalObject.PRIORITY to 1))
         val output = VJournal()
