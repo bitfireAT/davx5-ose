@@ -8,6 +8,7 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
@@ -15,6 +16,7 @@ import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import org.jetbrains.annotations.TestOnly
+import java.nio.channels.Channels
 
 /**
  * Represents a locally stored jtx collection (journals, notes, tasks). Communicates with
@@ -87,26 +89,65 @@ class JtxCollection(
     /**
      * Inserts a new jtx object into this collection.
      *
-     * @param entity    object to insert
+     * @param jtxEntity    object to insert
      *
      * @return ID of the newly inserted object
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun addJtxObject(entity: Entity): Long {
+    fun addJtxObject(jtxEntity: JtxEntity): Long {
         try {
             val batch = JtxBatchOperation(client)
-            addJtxObject(entity, batch)
+            addJtxObject(jtxEntity.entity, batch)
             batch.commit()
 
             val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
-            return ContentUris.parseId(uri)
+            val mainRowId = ContentUris.parseId(uri)
+
+            addBinaryDataRows(jtxEntity.binaryDataRows, mainRowId)
+
+            return mainRowId
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't insert jtx object", e)
         }
     }
 
-    fun addJtxObject(entity: Entity, batch: JtxBatchOperation) {
+    /**
+     * Inserts a list of jtx objects into this collection.
+     *
+     * @param jtxEntities objects to insert
+     *
+     * @return ID of the first inserted object
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun addJtxObjects(jtxEntities: List<JtxEntity>): Long {
+        try {
+            val batch = JtxBatchOperation(client)
+
+            val mainRowIndices = mutableListOf<Int>()
+            for (jtxEntity in jtxEntities) {
+                mainRowIndices.add(batch.nextBackrefIdx())
+                addJtxObject(jtxEntity.entity, batch)
+            }
+
+            batch.commit()
+
+            for (jtxEntitiesIndex in jtxEntities.indices) {
+                val mainRowIndex = mainRowIndices[jtxEntitiesIndex]
+                val mainRowId = ContentUris.parseId(batch.getResult(mainRowIndex)?.uri ?: continue)
+                val jtxEntity = jtxEntities[jtxEntitiesIndex]
+                addBinaryDataRows(jtxEntity.binaryDataRows, mainRowId)
+            }
+
+            val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
+            return ContentUris.parseId(uri)
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't insert jtx objects", e)
+        }
+    }
+
+    private fun addJtxObject(entity: Entity, batch: JtxBatchOperation) {
         // insert jtx object row
         val objectRowIdx = batch.nextBackrefIdx()
         batch += CpoBuilder.newInsert(jtxObjectsUri).withValues(entity.entityValues)
@@ -116,6 +157,23 @@ class JtxCollection(
             batch += CpoBuilder.newInsert(subValue.uri.asSyncAdapter(account))
                 .withValues(subValue.values)
                 .withValueBackReference(ICALOBJECT_ID, objectRowIdx)
+    }
+
+    private fun addBinaryDataRows(binaryDataRows: List<BinaryDataRow>, mainRowId: Long) {
+        for (binaryDataRow in binaryDataRows) {
+            val values = ContentValues(binaryDataRow.values).apply {
+                put(ICALOBJECT_ID, mainRowId)
+            }
+
+            val newSubRow = client.insert(binaryDataRow.uri.asSyncAdapter(account), values)
+
+            if (newSubRow != null && binaryDataRow.binaryData != null) {
+                val fileDescriptor = client.openFile(newSubRow, "w")
+                Channels.newChannel(ParcelFileDescriptor.AutoCloseOutputStream(fileDescriptor)).use { channel ->
+                    channel.write(binaryDataRow.binaryData)
+                }
+            }
+        }
     }
 
     /**
@@ -324,18 +382,20 @@ class JtxCollection(
     /**
      * Updates a jtx object's main row and refreshes all sub-rows.
      *
-     * Sub-rows are always deleted and re-created from [entity].
+     * Sub-rows are always deleted and re-created from [jtxEntity].
      *
      * @param id        ID of the jtx object to update
-     * @param entity    new values of the jtx object
+     * @param jtxEntity new values of the jtx object
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun updateJtxObject(id: Long, entity: Entity) {
+    fun updateJtxObject(id: Long, jtxEntity: JtxEntity) {
         try {
             val batch = JtxBatchOperation(client)
-            updateJtxObject(id, entity, batch)
+            updateJtxObject(id, jtxEntity.entity, batch)
             batch.commit()
+
+            addBinaryDataRows(jtxEntity.binaryDataRows, id)
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't update jtx object $id", e)
         }
@@ -350,7 +410,7 @@ class JtxCollection(
      * @param entity    new values of the jtx object
      * @param batch     batch operation in which the update is enqueued
      */
-    fun updateJtxObject(id: Long, entity: Entity, batch: JtxBatchOperation) {
+    private fun updateJtxObject(id: Long, entity: Entity, batch: JtxBatchOperation) {
         // delete existing sub-rows
         deleteDataRows(id, batch)
 
