@@ -214,7 +214,9 @@ class AndroidAddressBook(
      * **Side effect: always resets [RawContacts.DIRTY] to 0** on the raw contact, regardless of
      * outcome, to counteract the async dirty mark set by the provider during photo processing.
      *
-     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     * Works regardless of the [readOnly] flag: any existing photo data row is deleted before
+     * writing, so the provider's internal async processing always inserts a fresh row rather
+     * than updating the blocked one.
      *
      * @param rawContactId  ID of the raw contact ([RawContacts._ID])
      * @param photo         contact photo in a supported format like JPEG or PNG, or null to delete
@@ -227,6 +229,15 @@ class AndroidAddressBook(
                 /* selectionArgs = */ arrayOf(rawContactId.toString(), Photo.CONTENT_ITEM_TYPE)
             )
         else if (isValidPhoto(photo)) {
+            // Delete any existing photo data row first so that PipeMonitor uses the
+            // insert path (mDataId=0) rather than the update path. PipeMonitor's
+            // internal update call uses a bare Data URI (no asSyncAdapter), which
+            // is silently blocked when IS_READ_ONLY=1. Inserts are not blocked.
+            provider.delete(
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(addressBookAccount),
+                "${ContactsContract.Data.RAW_CONTACT_ID}=? AND ${ContactsContract.Data.MIMETYPE}=?",
+                arrayOf(rawContactId.toString(), Photo.CONTENT_ITEM_TYPE)
+            )
             writePhotoBytes(rawContactId, photo)
             val photoUri = awaitPhotoUri(rawContactId)
             if (photoUri != null)
