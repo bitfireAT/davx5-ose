@@ -8,11 +8,15 @@ import android.content.Entity
 import at.bitfire.synctools.icalendar.plusAssign
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.CalendarComponent
+import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Priority
 
 class PriorityHandler : JtxObjectEntityHandler {
     override fun process(from: Entity, main: Entity, to: CalendarComponent) {
-        from.entityValues.getAsInteger(JtxContract.JtxICalObject.PRIORITY)?.let { priority ->
+        if (to !is VToDo) return
+
+        val priority = from.entityValues.getAsInteger(JtxContract.JtxICalObject.PRIORITY)
+        if (priority != null && priority != Priority.VALUE_UNDEFINED) {
             to += Priority(priority)
         }
     }
