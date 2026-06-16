@@ -168,6 +168,21 @@ class AndroidAddressBook(
         return 0
     }
 
+    fun iterateRawContacts(where: String? = null, whereArgs: Array<String>? = null, block: (Entity) -> Unit) {
+        // protected where/whereArgs with addressBookAccount
+        TODO("Similar to AndroidCalendar.iterateEvents")
+    }
+
+    fun updateRawContactRows(values: ContentValues, where: String? = null, whereArgs: Array<String>? = null, batch: ContactsBatchOperation) {
+        // protected where/whereArgs with addressBookAccount
+        TODO("Similar to AndroidCalendar.updateEventRows")
+    }
+
+    fun deleteRawContacts(where: String? = null, whereArgs: Array<String>? = null, batch: ContactsBatchOperation) {
+        // protected where/whereArgs with addressBookAccount
+        TODO()
+    }
+
     // ContactsContract.Groups CRUD
 
     @Throws(FileNotFoundException::class)
