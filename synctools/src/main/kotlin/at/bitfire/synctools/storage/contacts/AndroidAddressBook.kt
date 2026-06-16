@@ -206,10 +206,10 @@ class AndroidAddressBook(
      * @param block      callback invoked for each raw contact row
      * @throws LocalStorageException on content provider errors
      */
-    fun iterateRawContactRows(projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null, block: (ContentValues) -> Unit) {
+    fun iterateRawContactRows(where: String? = null, whereArgs: Array<String>? = null, block: (ContentValues) -> Unit) {
         // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
         try {
-            provider.query(rawContactsSyncUri(), projection, where, whereArgs, null)?.use { cursor ->
+            provider.query(rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
                 while (cursor.moveToNext())
                     block(cursor.toContentValues())
             }

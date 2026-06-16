@@ -231,7 +231,7 @@ class AndroidAddressBookTest {
             )))
             try {
                 val ids = mutableListOf<Long>()
-                addressBook.iterateRawContactRows(null, "${AddressContract.RawContactColumns.UID}=?", arrayOf("row-uid-1")) { values ->
+                addressBook.iterateRawContactRows("${AddressContract.RawContactColumns.UID}=?", arrayOf("row-uid-1")) { values ->
                     ids += values.getAsLong(RawContacts._ID)
                 }
                 assertEquals(listOf(id1), ids)
@@ -259,7 +259,7 @@ class AndroidAddressBookTest {
                 batch.commit()
 
                 val uids = mutableListOf<String>()
-                addressBook.iterateRawContactRows(arrayOf(AddressContract.RawContactColumns.UID)) { values ->
+                addressBook.iterateRawContactRows { values ->
                     uids += values.getAsString(AddressContract.RawContactColumns.UID)
                 }
                 assertEquals(2, uids.count { it == "updated-uid" })
@@ -289,7 +289,7 @@ class AndroidAddressBookTest {
 
                 var uid1: String? = "not-set"
                 var uid2: String? = "not-set"
-                addressBook.iterateRawContactRows(arrayOf(RawContacts._ID, AddressContract.RawContactColumns.UID)) { values ->
+                addressBook.iterateRawContactRows { values ->
                     when (values.getAsLong(RawContacts._ID)) {
                         id1 -> uid1 = values.getAsString(AddressContract.RawContactColumns.UID)
                         id2 -> uid2 = values.getAsString(AddressContract.RawContactColumns.UID)

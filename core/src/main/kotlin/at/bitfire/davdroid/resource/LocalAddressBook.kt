@@ -253,7 +253,7 @@ open class LocalAddressBook @AssistedInject constructor(
     }
 
     fun queryContacts(where: String?, whereArgs: Array<String>?): List<LocalContact> = buildList {
-        ab.iterateRawContactRows(null, where, whereArgs) { values ->
+        ab.iterateRawContactRows(where, whereArgs) { values ->
             add(LocalContact(this@LocalAddressBook, AndroidContact(ab, values)))
         }
     }
