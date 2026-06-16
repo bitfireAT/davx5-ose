@@ -158,6 +158,7 @@ class AndroidAddressBook(
      * @return The number of contacts matching the selection criteria.
      */
     fun countRawContacts(where: String?, whereArgs: Array<String>?): Int {
+        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
         provider.query(
             rawContactsSyncUri(), arrayOf(RawContacts._ID),
             where, whereArgs, null
@@ -179,6 +180,7 @@ class AndroidAddressBook(
      * @throws LocalStorageException on content provider errors
      */
     fun iterateRawContacts(where: String? = null, whereArgs: Array<String>? = null, block: (Entity) -> Unit) {
+        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
         try {
             provider.query(
                 ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(addressBookAccount),
@@ -205,6 +207,7 @@ class AndroidAddressBook(
      * @throws LocalStorageException on content provider errors
      */
     fun iterateRawContactRows(projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null, block: (ContentValues) -> Unit) {
+        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
         try {
             provider.query(rawContactsSyncUri(), projection, where, whereArgs, null)?.use { cursor ->
                 while (cursor.moveToNext())
@@ -226,6 +229,7 @@ class AndroidAddressBook(
      * @param batch     batch operation to enqueue the update into
      */
     fun updateRawContactRows(values: ContentValues, where: String? = null, whereArgs: Array<String>? = null, batch: ContactsBatchOperation) {
+        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
         val builder = BatchOperation.CpoBuilder
             .newUpdate(rawContactsSyncUri())
             .withValues(values)
@@ -244,6 +248,7 @@ class AndroidAddressBook(
      * @param batch     batch operation to enqueue the deletion into
      */
     fun deleteRawContacts(where: String? = null, whereArgs: Array<String>? = null, batch: ContactsBatchOperation) {
+        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
         val builder = BatchOperation.CpoBuilder
             .newDelete(rawContactsSyncUri())
         if (where != null)
@@ -284,6 +289,7 @@ class AndroidAddressBook(
      * @throws LocalStorageException on content provider errors
      */
     fun iterateGroups(projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null, block: (ContentValues) -> Unit) {
+        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
         try {
             provider.query(groupsSyncUri(), projection, where, whereArgs, null)?.use { cursor ->
                 while (cursor.moveToNext())
@@ -305,6 +311,7 @@ class AndroidAddressBook(
      * @param batch     batch operation to enqueue the update into
      */
     fun updateGroups(values: ContentValues, where: String? = null, whereArgs: Array<String>? = null, batch: ContactsBatchOperation) {
+        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
         val builder = BatchOperation.CpoBuilder
             .newUpdate(groupsSyncUri())
             .withValues(values)
@@ -323,6 +330,7 @@ class AndroidAddressBook(
      * @param batch     batch operation to enqueue the deletion into
      */
     fun deleteGroups(where: String? = null, whereArgs: Array<String>? = null, batch: ContactsBatchOperation) {
+        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
         val builder = BatchOperation.CpoBuilder
             .newDelete(groupsSyncUri())
         if (where != null)
