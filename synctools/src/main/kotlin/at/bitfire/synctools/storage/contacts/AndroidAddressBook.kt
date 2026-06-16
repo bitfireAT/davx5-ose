@@ -110,6 +110,15 @@ class AndroidAddressBook(
 
     // ContactsContract.RawContacts CRUD
 
+    /**
+     * Adds a raw contact and its associated data to the address book.
+     *
+     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     *
+     * @param rawContact The raw contact entity to add, containing main values and sub-values.
+     * @return The ID of the newly created raw contact.
+     * @throws LocalStorageException If the contact cannot be inserted.
+     */
     fun addRawContact(rawContact: Entity): Long {
         try {
             val batch = ContactsBatchOperation(provider)
