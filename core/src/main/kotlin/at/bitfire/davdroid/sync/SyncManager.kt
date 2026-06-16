@@ -668,20 +668,31 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     /**
      * Launches a consumer coroutine in [scope] that reads URLs from [channel] and downloads them.
      *
-     * Greedily batches up to [MAX_MULTIGET_RESOURCES] already-queued URLs per multiget request.
-     * Each batch runs in a child coroutine gated by [downloadSemaphore]. Stops when [channel] is
-     * closed and drained; structured concurrency ensures all downloads finish before [scope] returns.
+     * Accumulates exactly [MAX_MULTIGET_RESOURCES] URLs per multiget request by suspending until
+     * each slot is filled. When [channel] closes, a remaining partial batch is downloaded immediately.
+     *
+     * Each batch runs in a child coroutine gated by [downloadSemaphore] to restrict the concurrent
+     * number of downloads. Structured concurrency ensures all downloads finish before [scope] returns.
      *
      * @param scope   scope in which the consumer and its download children run
      * @param channel source of URLs to download; caller must close it when listing is done
      */
     private fun consumeDownloadChannel(scope: CoroutineScope, channel: Channel<HttpUrl>) = scope.launch {
+        val batch = mutableListOf<HttpUrl>()
         while (true) {
-            val first = channel.receiveCatching().getOrNull() ?: break
-            val batch = mutableListOf(first)
-            while (batch.size < MAX_MULTIGET_RESOURCES)
-                batch += channel.tryReceive().getOrNull() ?: break
-            launch { downloadSemaphore.withPermit { downloadRemote(batch) } }
+            val next = channel.receiveCatching().getOrNull()
+            if (next != null) {    // channel open, more resources may follow
+                batch += next
+                if (batch.size >= MAX_MULTIGET_RESOURCES) {
+                    val toDownload = batch.toList()
+                    batch.clear()
+                    launch { downloadSemaphore.withPermit { downloadRemote(toDownload) } }
+                }
+            } else {               // channel closed, flush remaining partial batch
+                if (batch.isNotEmpty())
+                    launch { downloadSemaphore.withPermit { downloadRemote(batch) } }
+                break
+            }
         }
     }
 
