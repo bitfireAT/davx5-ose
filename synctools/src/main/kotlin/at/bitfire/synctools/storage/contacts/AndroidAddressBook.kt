@@ -11,8 +11,11 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.content.Entity
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.RemoteException
 import android.provider.ContactsContract
+import android.provider.ContactsContract.CommonDataKinds.Photo
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import androidx.core.content.contentValuesOf
@@ -23,13 +26,19 @@ import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
 import org.jetbrains.annotations.TestOnly
 import java.io.FileNotFoundException
+import java.io.IOException
 import java.util.LinkedList
+import java.util.logging.Level
+import java.util.logging.Logger
 
 class AndroidAddressBook(
     private val context: Context,
     var addressBookAccount: Account,
     val provider: ContentProviderClient
 ) {
+
+    private val logger
+        get() = Logger.getLogger(AndroidAddressBook::class.java.name)
 
     val accountManager
         get() = AccountManager.get(context)
@@ -141,13 +150,87 @@ class AndroidAddressBook(
     }
 
     fun deleteGroupsWithoutMembers() {
-        TODO("Replaces LocalAddressBook.removeEmptyGroups")
+        queryGroups(null, null).filter { it.getMembers().isEmpty() }.forEach { group ->
+            logger.log(Level.FINE, "Deleting empty group", group)
+            group.delete()
+        }
     }
 
     // high-res photo access
 
+    /**
+     * Sets or clears the photo for a raw contact and resets [RawContacts.DIRTY] to 0.
+     *
+     * When [photo] is non-null, the image data is validated, written to the contacts provider,
+     * and the method waits up to 7 seconds for the provider to process it. When [photo] is null,
+     * the existing photo data row is deleted (which removes both thumbnail and high-res file).
+     *
+     * @param rawContactId  ID of the raw contact ([RawContacts._ID])
+     * @param photo         contact photo (binary data in a supported format like JPEG or PNG), or null to delete
+     */
     fun setPhoto(rawContactId: Long, photo: ByteArray?) {
-        TODO("Replaces PhotoBuilder.insertPhoto")
+        val dataUri = ContactsContract.Data.CONTENT_URI.asSyncAdapter(addressBookAccount)
+        val photoSelection = "${ContactsContract.Data.RAW_CONTACT_ID}=? AND ${ContactsContract.Data.MIMETYPE}=?"
+        val photoSelectionArgs = arrayOf(rawContactId.toString(), Photo.CONTENT_ITEM_TYPE)
+
+        if (photo == null) {
+            provider.delete(dataUri, photoSelection, photoSelectionArgs)
+        } else {
+            // verify that data can be decoded by BitmapFactory, so that the contacts provider can process it
+            val opts = BitmapFactory.Options()
+            opts.inJustDecodeBounds = true
+            BitmapFactory.decodeByteArray(photo, 0, photo.size, opts)
+            val valid = opts.outHeight != -1 && opts.outWidth != -1
+            if (!valid) {
+                logger.log(Level.WARNING, "Ignoring invalid contact photo")
+                return
+            }
+
+            // write file to contacts provider
+            val uri = RawContacts.CONTENT_URI.buildUpon()
+                .appendPath(rawContactId.toString())
+                .appendPath(RawContacts.DisplayPhoto.CONTENT_DIRECTORY)
+                .build()
+            logger.log(Level.FINE, "Writing photo to $uri (${photo.size} bytes)")
+            provider.openAssetFile(uri, "w")?.use { fd ->
+                try {
+                    fd.createOutputStream()?.use { os ->
+                        os.write(photo)
+                    }
+                } catch (e: IOException) {
+                    logger.log(Level.WARNING, "Couldn't store contact photo", e)
+                }
+            }
+
+            // photo is now processed in the background; wait until it is available
+            var photoUri: Uri? = null
+            for (i in 1..70) {      // wait max. 70x100 ms = 7 seconds
+                val dataRowUri = RawContacts.CONTENT_URI.buildUpon()
+                    .appendPath(rawContactId.toString())
+                    .appendPath(RawContacts.Data.CONTENT_DIRECTORY)
+                    .build()
+                provider.query(dataRowUri, arrayOf(Photo.PHOTO_URI), "${RawContacts.Data.MIMETYPE}=?", arrayOf(Photo.CONTENT_ITEM_TYPE), null)?.use { cursor ->
+                    if (cursor.moveToNext())
+                        cursor.getString(0)?.let { uriStr ->
+                            photoUri = Uri.parse(uriStr)
+                        }
+                }
+                if (photoUri != null)
+                    break
+                Thread.sleep(100)
+            }
+
+            if (photoUri != null)
+                logger.log(Level.FINE, "Photo has been inserted: $photoUri")
+            else
+                logger.log(Level.WARNING, "Timeout when storing photo")
+        }
+
+        // reset dirty flag in any case
+        val notDirty = ContentValues(1)
+        notDirty.put(RawContacts.DIRTY, 0)
+        val rawContactUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI, rawContactId).asSyncAdapter(addressBookAccount)
+        provider.update(rawContactUri, notDirty, null, null)
     }
 
     // legacy AndroidContact/AndroidGroup CRUD

@@ -38,7 +38,6 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.FileNotFoundException
 import java.util.Optional
-import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
 
@@ -370,17 +369,6 @@ open class LocalAddressBook @AssistedInject constructor(
             batch.commit()
         }
     }
-
-    @Deprecated("Use AndroidAddressBook.deleteGroupsWithoutMembers instead")
-    fun removeEmptyGroups() {
-        // find groups without members
-        /** should be done using {@link Groups.SUMMARY_COUNT}, but it's not implemented in Android yet */
-        queryGroups(null, null).filter { it.androidGroup.getMembers().isEmpty() }.forEach { group ->
-            logger.log(Level.FINE, "Deleting group", group)
-            group.androidGroup.delete()
-        }
-    }
-
 
     companion object {
 

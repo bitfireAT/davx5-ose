@@ -6,16 +6,22 @@ package at.bitfire.synctools.storage.contacts
 
 import android.Manifest
 import android.content.ContentProviderClient
+import android.content.ContentUris
 import android.content.ContentValues
+import android.graphics.BitmapFactory
 import android.provider.ContactsContract
+import android.provider.ContactsContract.Groups
+import android.provider.ContactsContract.RawContacts
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.TestUtils
 import org.junit.AfterClass
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.BeforeClass
 import org.junit.ClassRule
@@ -154,6 +160,144 @@ class AndroidAddressBookTest {
             val random = byteArrayOf(1, 2, 3, 4, 5)
             addressBook.syncState = random
             assertArrayEquals(random, addressBook.syncState)
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+
+    // setPhoto
+
+    @Test
+    fun testSetPhoto() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val contact = AndroidContact(addressBook, Contact().apply { displayName = "Contact with photo" }, null, null)
+            val contactUri = contact.add()
+            val rawContactId = ContentUris.parseId(contactUri)
+
+            try {
+                val photo = TestUtils.resourceToByteArray("/large.jpg")
+                addressBook.setPhoto(rawContactId, photo)
+
+                // the photo is processed and often resized by the contacts provider
+                val contact2 = addressBook.findContactById(rawContactId)
+                val photo2 = contact2.getContact().photo!!
+
+                // verify that the image is in JPEG format (some Samsung devices seem to save as PNG)
+                val options = BitmapFactory.Options()
+                options.inJustDecodeBounds = true
+                BitmapFactory.decodeByteArray(photo2, 0, photo2.size, options)
+                assertEquals("image/jpeg", options.outMimeType)
+
+                // verify that contact is not dirty
+                provider.query(
+                    ContentUris.withAppendedId(RawContacts.CONTENT_URI, rawContactId),
+                    arrayOf(RawContacts.DIRTY),
+                    null, null, null
+                )!!.use { cursor ->
+                    assertTrue(cursor.moveToNext())
+                    assertEquals(0, cursor.getInt(0))
+                }
+            } finally {
+                contact.delete()
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testSetPhoto_Invalid() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val contact = AndroidContact(addressBook, Contact().apply { displayName = "Contact with invalid photo" }, null, null)
+            contact.add()
+            try {
+                addressBook.setPhoto(contact.id!!, ByteArray(100) /* invalid photo */)
+                // no exception; photo remains absent
+                assertNull(contact.getContact().photo)
+            } finally {
+                contact.delete()
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testSetPhoto_Null_DeletesPhoto() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val contact = AndroidContact(addressBook, Contact().apply { displayName = "Contact photo delete" }, null, null)
+            val contactUri = contact.add()
+            val rawContactId = ContentUris.parseId(contactUri)
+
+            try {
+                // set a valid photo first
+                addressBook.setPhoto(rawContactId, TestUtils.resourceToByteArray("/large.jpg"))
+                assertNotNull(addressBook.findContactById(rawContactId).getContact().photo)
+
+                // now clear it
+                addressBook.setPhoto(rawContactId, null)
+                assertNull(addressBook.findContactById(rawContactId).getContact().photo)
+
+                // contact must not be dirty
+                provider.query(
+                    ContentUris.withAppendedId(RawContacts.CONTENT_URI, rawContactId),
+                    arrayOf(RawContacts.DIRTY),
+                    null, null, null
+                )!!.use { cursor ->
+                    assertTrue(cursor.moveToNext())
+                    assertEquals(0, cursor.getInt(0))
+                }
+            } finally {
+                contact.delete()
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+
+    // deleteGroupsWithoutMembers
+
+    @Test
+    fun testDeleteGroupsWithoutMembers_deletesEmpty() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            addressBook.findOrCreateGroup("Empty Group")
+
+            addressBook.deleteGroupsWithoutMembers()
+
+            provider.query(addressBook.groupsSyncUri(), arrayOf(Groups._ID), null, null, null)!!.use { cursor ->
+                assertEquals(0, cursor.count)
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testDeleteGroupsWithoutMembers_keepsNonEmpty() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val groupId = addressBook.findOrCreateGroup("Group with member")
+            val contact = AndroidContact(addressBook, Contact().apply { displayName = "Member" }, null, null)
+            contact.add()
+            try {
+                val batch = ContactsBatchOperation(provider)
+                contact.addToGroup(batch, groupId)
+                batch.commit()
+
+                addressBook.deleteGroupsWithoutMembers()
+
+                provider.query(addressBook.groupsSyncUri(), arrayOf(Groups._ID), null, null, null)!!.use { cursor ->
+                    assertEquals(1, cursor.count)
+                }
+            } finally {
+                contact.delete()
+            }
         } finally {
             TestAddressBook.remove(addressBook)
         }
