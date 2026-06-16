@@ -112,23 +112,20 @@ open class LocalAddressBook @AssistedInject constructor(
     /* operations on the collection (address book) itself */
 
     override fun markNotDirty(flags: Int): Int {
-        val values = contentValuesOf(RawContactColumns.FLAGS to flags)
-        var number = ab.provider.update(ab.rawContactsSyncUri(), values, "${RawContacts.DIRTY}=0", null)
+        val batch = ContactsBatchOperation(ab.provider)
+        ab.updateRawContactRows(contentValuesOf(RawContactColumns.FLAGS to flags), "${RawContacts.DIRTY}=0", null, batch)
+        var number = batch.commit()
 
-        if (includeGroups) {
-            values.clear()
-            values.put(GroupColumns.FLAGS, flags)
-            number += ab.provider.update(ab.groupsSyncUri(), values, "NOT ${Groups.DIRTY}", null)
-        }
+        if (includeGroups)
+            number += ab.provider.update(ab.groupsSyncUri(), contentValuesOf(GroupColumns.FLAGS to flags), "NOT ${Groups.DIRTY}", null)
 
         return number
     }
 
     override fun removeNotDirtyMarked(flags: Int): Int {
-        var number = ab.provider.delete(
-            ab.rawContactsSyncUri(),
-            "NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?", arrayOf(flags.toString())
-        )
+        val batch = ContactsBatchOperation(ab.provider)
+        ab.deleteRawContacts("NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?", arrayOf(flags.toString()), batch)
+        var number = batch.commit()
 
         if (includeGroups)
             number += ab.provider.delete(
@@ -168,11 +165,10 @@ open class LocalAddressBook @AssistedInject constructor(
             .withSelection(Groups.ACCOUNT_NAME + "=? AND " + Groups.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
             .withValue(Groups.ACCOUNT_NAME, newAccount.name)
             .withValue(Groups.ACCOUNT_TYPE, newAccount.type)
-        batch += BatchOperation.CpoBuilder
-            .newUpdate(ab.rawContactsSyncUri())
-            .withSelection(RawContacts.ACCOUNT_NAME + "=? AND " + RawContacts.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
-            .withValue(RawContacts.ACCOUNT_NAME, newAccount.name)
-            .withValue(RawContacts.ACCOUNT_TYPE, newAccount.type)
+        ab.updateRawContactRows(
+            contentValuesOf(RawContacts.ACCOUNT_NAME to newAccount.name, RawContacts.ACCOUNT_TYPE to newAccount.type),
+            null, null, batch
+        )
         batch.commit()
 
         // update addressBookAccount
@@ -270,9 +266,8 @@ open class LocalAddressBook @AssistedInject constructor(
     }
 
     fun queryContacts(where: String?, whereArgs: Array<String>?): List<LocalContact> = buildList {
-        ab.provider.query(ab.rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
-            while (cursor.moveToNext())
-                add(LocalContact(this@LocalAddressBook, AndroidContact(ab, cursor.toContentValues())))
+        ab.iterateRawContactRows(null, where, whereArgs) { values ->
+            add(LocalContact(this@LocalAddressBook, AndroidContact(ab, values)))
         }
     }
 

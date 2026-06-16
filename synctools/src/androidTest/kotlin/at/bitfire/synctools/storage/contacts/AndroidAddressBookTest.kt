@@ -119,6 +119,239 @@ class AndroidAddressBookTest {
     }
 
 
+    // iterateRawContacts
+
+    @Test
+    fun testIterateRawContacts_empty() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            var count = 0
+            addressBook.iterateRawContacts { count++ }
+            assertEquals(0, count)
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testIterateRawContacts_all() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Iterate Contact 1")))
+            val id2 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Iterate Contact 2")))
+            try {
+                val ids = mutableListOf<Long>()
+                addressBook.iterateRawContacts { entity ->
+                    ids += entity.entityValues.getAsLong(RawContacts._ID)
+                }
+                assertEquals(setOf(id1, id2), ids.toSet())
+            } finally {
+                provider.delete(addressBook.rawContactSyncUri(id1), null, null)
+                provider.delete(addressBook.rawContactSyncUri(id2), null, null)
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testIterateRawContacts_filter() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.addRawContact(Entity(contentValuesOf(
+                RawContacts.DISPLAY_NAME_PRIMARY to "Iterate Filter 1",
+                AddressContract.RawContactColumns.UID to "iter-uid-1"
+            )))
+            val id2 = addressBook.addRawContact(Entity(contentValuesOf(
+                RawContacts.DISPLAY_NAME_PRIMARY to "Iterate Filter 2",
+                AddressContract.RawContactColumns.UID to "iter-uid-2"
+            )))
+            try {
+                val ids = mutableListOf<Long>()
+                addressBook.iterateRawContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf("iter-uid-1")) { entity ->
+                    ids += entity.entityValues.getAsLong(RawContacts._ID)
+                }
+                assertEquals(listOf(id1), ids)
+            } finally {
+                provider.delete(addressBook.rawContactSyncUri(id1), null, null)
+                provider.delete(addressBook.rawContactSyncUri(id2), null, null)
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+
+    // iterateRawContactRows
+
+    @Test
+    fun testIterateRawContactRows_empty() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            var count = 0
+            addressBook.iterateRawContactRows { count++ }
+            assertEquals(0, count)
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testIterateRawContactRows_all() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Row Contact 1")))
+            val id2 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Row Contact 2")))
+            try {
+                val ids = mutableListOf<Long>()
+                addressBook.iterateRawContactRows { values ->
+                    ids += values.getAsLong(RawContacts._ID)
+                }
+                assertEquals(setOf(id1, id2), ids.toSet())
+            } finally {
+                provider.delete(addressBook.rawContactSyncUri(id1), null, null)
+                provider.delete(addressBook.rawContactSyncUri(id2), null, null)
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testIterateRawContactRows_filter() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.addRawContact(Entity(contentValuesOf(
+                RawContacts.DISPLAY_NAME_PRIMARY to "Row Filter 1",
+                AddressContract.RawContactColumns.UID to "row-uid-1"
+            )))
+            val id2 = addressBook.addRawContact(Entity(contentValuesOf(
+                RawContacts.DISPLAY_NAME_PRIMARY to "Row Filter 2",
+                AddressContract.RawContactColumns.UID to "row-uid-2"
+            )))
+            try {
+                val ids = mutableListOf<Long>()
+                addressBook.iterateRawContactRows(null, "${AddressContract.RawContactColumns.UID}=?", arrayOf("row-uid-1")) { values ->
+                    ids += values.getAsLong(RawContacts._ID)
+                }
+                assertEquals(listOf(id1), ids)
+            } finally {
+                provider.delete(addressBook.rawContactSyncUri(id1), null, null)
+                provider.delete(addressBook.rawContactSyncUri(id2), null, null)
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+
+    // updateRawContactRows
+
+    @Test
+    fun testUpdateRawContactRows_all() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Update Contact 1")))
+            val id2 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Update Contact 2")))
+            try {
+                val batch = ContactsBatchOperation(provider)
+                addressBook.updateRawContactRows(contentValuesOf(AddressContract.RawContactColumns.UID to "updated-uid"), null, null, batch)
+                batch.commit()
+
+                val uids = mutableListOf<String>()
+                addressBook.iterateRawContactRows(arrayOf(AddressContract.RawContactColumns.UID)) { values ->
+                    uids += values.getAsString(AddressContract.RawContactColumns.UID)
+                }
+                assertEquals(2, uids.count { it == "updated-uid" })
+            } finally {
+                provider.delete(addressBook.rawContactSyncUri(id1), null, null)
+                provider.delete(addressBook.rawContactSyncUri(id2), null, null)
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testUpdateRawContactRows_filter() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Update Filter 1")))
+            val id2 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Update Filter 2")))
+            try {
+                val batch = ContactsBatchOperation(provider)
+                addressBook.updateRawContactRows(
+                    contentValuesOf(AddressContract.RawContactColumns.UID to "only-id1"),
+                    "${RawContacts._ID}=?", arrayOf(id1.toString()),
+                    batch
+                )
+                batch.commit()
+
+                var uid1: String? = "not-set"
+                var uid2: String? = "not-set"
+                addressBook.iterateRawContactRows(arrayOf(RawContacts._ID, AddressContract.RawContactColumns.UID)) { values ->
+                    when (values.getAsLong(RawContacts._ID)) {
+                        id1 -> uid1 = values.getAsString(AddressContract.RawContactColumns.UID)
+                        id2 -> uid2 = values.getAsString(AddressContract.RawContactColumns.UID)
+                    }
+                }
+                assertEquals("only-id1", uid1)
+                assertNull(uid2)
+            } finally {
+                provider.delete(addressBook.rawContactSyncUri(id1), null, null)
+                provider.delete(addressBook.rawContactSyncUri(id2), null, null)
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+
+    // deleteRawContacts
+
+    @Test
+    fun testDeleteRawContacts_all() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Delete Contact 1")))
+            val id2 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Delete Contact 2")))
+            try {
+                val batch = ContactsBatchOperation(provider)
+                addressBook.deleteRawContacts(null, null, batch)
+                batch.commit()
+
+                assertEquals(0, addressBook.countRawContacts(null, null))
+            } finally {
+                provider.delete(addressBook.rawContactSyncUri(id1), null, null)
+                provider.delete(addressBook.rawContactSyncUri(id2), null, null)
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testDeleteRawContacts_filter() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val id1 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Delete Filter 1")))
+            val id2 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Delete Filter 2")))
+            try {
+                val batch = ContactsBatchOperation(provider)
+                addressBook.deleteRawContacts("${RawContacts._ID}=?", arrayOf(id1.toString()), batch)
+                batch.commit()
+
+                assertEquals(1, addressBook.countRawContacts(null, null))
+            } finally {
+                provider.delete(addressBook.rawContactSyncUri(id1), null, null)
+                provider.delete(addressBook.rawContactSyncUri(id2), null, null)
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+
     @Test
     fun testSettings() {
         val addressBook = TestAddressBook.create(provider)

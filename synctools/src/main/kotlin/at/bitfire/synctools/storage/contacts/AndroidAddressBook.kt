@@ -168,19 +168,87 @@ class AndroidAddressBook(
         return 0
     }
 
+    /**
+     * Iterates raw contacts with their associated data rows (as [Entity]) from this address book.
+     *
+     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     *
+     * @param where     optional selection (only applied to raw contact rows, not data rows)
+     * @param whereArgs optional arguments for [where]
+     * @param block     callback invoked for each raw contact entity
+     * @throws LocalStorageException on content provider errors
+     */
     fun iterateRawContacts(where: String? = null, whereArgs: Array<String>? = null, block: (Entity) -> Unit) {
-        // protected where/whereArgs with addressBookAccount
-        TODO("Similar to AndroidCalendar.iterateEvents")
+        try {
+            provider.query(
+                ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(addressBookAccount),
+                null, where, whereArgs, null
+            )?.use { cursor ->
+                val iterator = RawContacts.newEntityIterator(cursor)
+                for (entity in iterator)
+                    block(entity)
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't iterate raw contacts", e)
+        }
     }
 
+    /**
+     * Iterates raw contact rows (without associated data rows) from this address book.
+     *
+     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     *
+     * @param projection optional column projection
+     * @param where      optional selection
+     * @param whereArgs  optional arguments for [where]
+     * @param block      callback invoked for each raw contact row
+     * @throws LocalStorageException on content provider errors
+     */
+    fun iterateRawContactRows(projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null, block: (ContentValues) -> Unit) {
+        try {
+            provider.query(rawContactsSyncUri(), projection, where, whereArgs, null)?.use { cursor ->
+                while (cursor.moveToNext())
+                    block(cursor.toContentValues())
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't iterate raw contact rows", e)
+        }
+    }
+
+    /**
+     * Enqueues an update of raw contact rows in this address book to the given batch.
+     *
+     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     *
+     * @param values    values to update
+     * @param where     optional selection
+     * @param whereArgs optional arguments for [where]
+     * @param batch     batch operation to enqueue the update into
+     */
     fun updateRawContactRows(values: ContentValues, where: String? = null, whereArgs: Array<String>? = null, batch: ContactsBatchOperation) {
-        // protected where/whereArgs with addressBookAccount
-        TODO("Similar to AndroidCalendar.updateEventRows")
+        val builder = BatchOperation.CpoBuilder
+            .newUpdate(rawContactsSyncUri())
+            .withValues(values)
+        if (where != null)
+            builder.withSelection(where, whereArgs ?: emptyArray())
+        batch += builder
     }
 
+    /**
+     * Enqueues a deletion of raw contacts in this address book to the given batch.
+     *
+     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     *
+     * @param where     optional selection
+     * @param whereArgs optional arguments for [where]
+     * @param batch     batch operation to enqueue the deletion into
+     */
     fun deleteRawContacts(where: String? = null, whereArgs: Array<String>? = null, batch: ContactsBatchOperation) {
-        // protected where/whereArgs with addressBookAccount
-        TODO()
+        val builder = BatchOperation.CpoBuilder
+            .newDelete(rawContactsSyncUri())
+        if (where != null)
+            builder.withSelection(where, whereArgs ?: emptyArray())
+        batch += builder
     }
 
     // ContactsContract.Groups CRUD
