@@ -17,7 +17,6 @@ import android.provider.ContactsContract.RawContacts.Data
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.RawContactBuilder
 import at.bitfire.synctools.mapping.contacts.RawContactHandler
-import at.bitfire.synctools.mapping.contacts.builder.PhotoBuilder
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
@@ -154,9 +153,7 @@ class AndroidContact(
             ?: throw LocalStorageException("Empty result from content provider when adding contact")
         id = ContentUris.parseId(resultUri)
 
-        getContact().photo?.let { photo ->
-            PhotoBuilder.insertPhoto(provider, id!!, photo)
-        }
+        addressBook.setPhoto(id!!, getContact().photo)
 
         return resultUri
     }
@@ -186,9 +183,7 @@ class AndroidContact(
         insertDataRows(batch)
         batch.commit()
 
-        getContact().photo?.let { photo ->
-            PhotoBuilder.insertPhoto(provider, id!!, photo)
-        }
+        addressBook.setPhoto(id!!, getContact().photo)
 
         return uri
     }
