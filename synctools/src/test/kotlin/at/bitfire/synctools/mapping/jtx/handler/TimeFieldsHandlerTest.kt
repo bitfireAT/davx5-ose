@@ -23,6 +23,7 @@ import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Due
 import net.fortuna.ical4j.model.property.Duration
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -176,5 +177,18 @@ class TimeFieldsHandlerTest {
         assertFailsWith<InvalidLocalResourceException> {
             handler.process(from = input, main = input, to = VToDo())
         }
+    }
+
+    @Test
+    fun `DURATION is ignored when DUE is set`() {
+        val original = VToDo().apply {
+            this += DtStart(dateTimeValue("20260518T120000", tzVienna))
+            this += Duration("P1D")
+            this += Due(dateTimeValue("20260519T120000", tzVienna))
+        }
+        val result = buildAndProcess(original)
+
+        assertNotNull(result.due<Temporal>())
+        assertNull(result.duration)
     }
 }
