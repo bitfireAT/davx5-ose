@@ -9,9 +9,11 @@ import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.JtxICalObject
 import at.techbee.jtx.JtxContract
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.property.Completed
 import net.fortuna.ical4j.model.property.XProperty
 import org.junit.Assert.assertEquals
@@ -114,6 +116,69 @@ class CompletedHandlerTest {
 
         assertEquals(
             "Z",
+            output.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull()?.value
+        )
+    }
+
+    @Test
+    fun `COMPLETED with blank COMPLETED_TIMEZONE has no X-COMPLETEDTIMEZONE`() {
+        val completed = 1_700_000_000_000L
+        val input = Entity(
+            contentValuesOf(
+                JtxContract.JtxICalObject.COMPLETED to completed,
+                JtxContract.JtxICalObject.COMPLETED_TIMEZONE to "  "
+            )
+        )
+        val output = VToDo()
+
+        handler.process(from = input, main = input, to = output)
+
+        assertEquals(
+            Completed(Instant.ofEpochMilli(completed)),
+            output.getProperty<Completed>(Property.COMPLETED).getOrNull()
+        )
+        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull())
+    }
+
+    @Test
+    fun `COMPLETED with invalid COMPLETED_TIMEZONE has no X-COMPLETEDTIMEZONE`() {
+        val completed = 1_700_000_000_000L
+        val input = Entity(
+            contentValuesOf(
+                JtxContract.JtxICalObject.COMPLETED to completed,
+                JtxContract.JtxICalObject.COMPLETED_TIMEZONE to "Not/AZone"
+            )
+        )
+        val output = VToDo()
+
+        handler.process(from = input, main = input, to = output)
+
+        assertEquals(
+            Completed(Instant.ofEpochMilli(completed)),
+            output.getProperty<Completed>(Property.COMPLETED).getOrNull()
+        )
+        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull())
+    }
+
+    @Test
+    fun `COMPLETED with TZ_ALLDAY is emitted as DATE`() {
+        val completed = Instant.parse("2025-08-15T00:00:00Z").toEpochMilli()
+        val input = Entity(
+            contentValuesOf(
+                JtxContract.JtxICalObject.COMPLETED to completed,
+                JtxContract.JtxICalObject.COMPLETED_TIMEZONE to JtxContract.JtxICalObject.TZ_ALLDAY
+            )
+        )
+        val output = VToDo()
+
+        handler.process(from = input, main = input, to = output)
+
+        assertEquals(
+            Completed(ParameterList(listOf(Value.DATE)), "20250815"),
+            output.getProperty<Completed>(Property.COMPLETED).getOrNull()
+        )
+        assertEquals(
+            JtxContract.JtxICalObject.TZ_ALLDAY,
             output.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull()?.value
         )
     }
