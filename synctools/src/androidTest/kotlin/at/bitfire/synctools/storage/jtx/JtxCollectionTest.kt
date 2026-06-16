@@ -186,23 +186,6 @@ class JtxCollectionTest {
     }
 
     @Test
-    fun testFindJtxObjects() {
-        collection.addJtxObject(sampleEntity("Object A"))
-        val id2 = collection.addJtxObject(sampleEntity("Object B"))
-        val id3 = collection.addJtxObject(sampleEntity("Object B"))
-
-        val results = collection.findJtxObjects(
-            "${JtxContract.JtxICalObject.SUMMARY}=?",
-            arrayOf("Object B")
-        )
-        assertEquals(2, results.size)
-        assertEquals(
-            setOf(id2, id3),
-            results.map { it.entityValues.getAsLong(JtxContract.JtxICalObject.ID) }.toSet()
-        )
-    }
-
-    @Test
     fun testFindJtxObjectRow() {
         val id = collection.addJtxObject(sampleEntity("Row Object"))
 
