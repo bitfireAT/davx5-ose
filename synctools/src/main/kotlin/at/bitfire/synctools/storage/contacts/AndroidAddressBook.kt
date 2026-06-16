@@ -43,7 +43,7 @@ import java.util.logging.Logger
  * so changes bypass the dirty-flag and read-only restrictions.
  *
  * @param context            application context (used to obtain the [AccountManager])
- * @param addressBookAccount account whose contacts and groups are managed by this instance
+ * @param addressBookAccount account whose contacts and groups are managed
  * @param provider           content provider client for [ContactsContract]
  */
 class AndroidAddressBook(
