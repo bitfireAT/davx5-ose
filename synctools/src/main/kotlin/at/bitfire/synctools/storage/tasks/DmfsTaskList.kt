@@ -9,14 +9,14 @@ import android.content.ContentValues
 import android.content.Entity
 import android.net.Uri
 import android.os.RemoteException
-import at.bitfire.ical4android.TaskProvider
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.TaskProvider
+import at.bitfire.synctools.storage.tasks.DmfsTasksContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.LinkedList
+import org.jetbrains.annotations.TestOnly
 import java.util.logging.Logger
 
 
@@ -149,6 +149,7 @@ class DmfsTaskList(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
+    @TestOnly
     fun findTaskRow(projection: Array<String>?, where: String?, whereArgs: Array<String>?): ContentValues? {
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
@@ -185,54 +186,6 @@ class DmfsTaskList(
             throw LocalStorageException("Couldn't query tasks", e)
         }
         return null
-    }
-
-    /**
-     * Queries all tasks from this task list.
-     *
-     * Should be used rarely because it has a potentially large memory footprint.
-     * Prefer [iterateTaskRows].
-     *
-     * @return list of task entities
-     *
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun findTasks(): List<Entity> {
-        val entities = LinkedList<Entity>()
-        try {
-            iterateTaskRows(null, null, null) { row ->
-                val id = row.getAsLong(Tasks._ID) ?: return@iterateTaskRows
-                val entity = getTask(id) ?: return@iterateTaskRows
-                entities += entity
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query tasks", e)
-        }
-        return entities
-    }
-
-    /**
-     * Queries tasks from this task list.
-     *
-     * @param where     selection
-     * @param whereArgs arguments for selection
-     *
-     * @return tasks from this task list which match the selection
-     *
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun findTasks(where: String?, whereArgs: Array<String>?): List<Entity> {
-        val entities = LinkedList<Entity>()
-        try {
-            iterateTaskRows(null, where, whereArgs) { row ->
-                val id = row.getAsLong(Tasks._ID) ?: return@iterateTaskRows
-                val entity = getTask(id) ?: return@iterateTaskRows
-                entities += entity
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query tasks", e)
-        }
-        return entities
     }
 
     /**

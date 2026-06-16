@@ -8,8 +8,8 @@ import android.content.ContentValues
 import android.os.Build
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.davdroid.resource.LocalContact.Companion.COLUMN_HASHCODE
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import dagger.Module
 import dagger.Provides
@@ -91,7 +91,8 @@ class Android7DirtyVerifier @Inject constructor(
     }
 
     private fun getLastHashCode(addressBook: LocalAddressBook, contact: LocalContact): Int {
-        addressBook.provider!!.query(contact.rawContactSyncURI(), arrayOf(COLUMN_HASHCODE), null, null, null)?.use { c ->
+        val provider = addressBook.ab.provider
+        provider.query(contact.androidContact.rawContactSyncURI(), arrayOf(RawContactColumns.HASHCODE), null, null, null)?.use { c ->
             if (c.moveToNext() && !c.isNull(0))
                 return c.getInt(0)
         }
@@ -111,8 +112,9 @@ class Android7DirtyVerifier @Inject constructor(
         contact.clearCachedContact()
 
         // groupMemberships is filled by getContact()
-        val dataHash = contact.getContact().hashCode()
-        val groupHash = contact.groupMemberships.hashCode()
+        val ac = contact.androidContact
+        val dataHash = ac.getContact().hashCode()
+        val groupHash = ac.groupMemberships.hashCode()
         val combinedHash = dataHash xor groupHash
         logger.log(Level.FINE, "Calculated data hash = $dataHash, group memberships hash = $groupHash → combined hash = $combinedHash", contact)
         return combinedHash
@@ -120,22 +122,23 @@ class Android7DirtyVerifier @Inject constructor(
 
     override fun setHashCodeColumn(contact: LocalContact, toValues: ContentValues) {
         val hashCode = contactDataHashCode(contact)
-        toValues.put(COLUMN_HASHCODE, hashCode)
+        toValues.put(RawContactColumns.HASHCODE, hashCode)
     }
 
     override fun updateHashCode(addressBook: LocalAddressBook, contact: LocalContact) {
+        val provider = addressBook.ab.provider
         val values = ContentValues(1)
         setHashCodeColumn(contact, values)
 
-        addressBook.provider!!.update(contact.rawContactSyncURI(), values, null, null)
+        provider.update(contact.androidContact.rawContactSyncURI(), values, null, null)
     }
 
     override fun updateHashCode(contact: LocalContact, batch: ContactsBatchOperation) {
         val hashCode = contactDataHashCode(contact)
 
         batch += BatchOperation.CpoBuilder
-            .newUpdate(contact.rawContactSyncURI())
-            .withValue(COLUMN_HASHCODE, hashCode)
+            .newUpdate(contact.androidContact.rawContactSyncURI())
+            .withValue(RawContactColumns.HASHCODE, hashCode)
     }
 
 

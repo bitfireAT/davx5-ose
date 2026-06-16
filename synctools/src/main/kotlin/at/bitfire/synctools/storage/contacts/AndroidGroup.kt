@@ -13,27 +13,22 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
-import androidx.annotation.CallSuper
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.mapping.contacts.PendingMemberships
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.plusAssign
 import java.io.FileNotFoundException
+import java.util.LinkedList
 import java.util.logging.Logger
 
-open class AndroidGroup(
-    val addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>
+@Deprecated("Replaced by AndroidAddressBook Entity CRUD")
+class AndroidGroup(
+    val addressBook: AndroidAddressBook
 ) {
 
-    companion object {
-        
-        const val COLUMN_FILENAME = Groups.SOURCE_ID
-        const val COLUMN_UID = Groups.SYNC1
-        const val COLUMN_ETAG = Groups.SYNC2
-        
-    }
-    
-    protected val logger
+    private val logger
         get() = Logger.getLogger(javaClass.name)
 
     var id: Long? = null
@@ -41,17 +36,26 @@ open class AndroidGroup(
     var fileName: String? = null
     var eTag: String? = null
 
-	constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, values: ContentValues): this(addressBook) {
-        id = values.getAsLong(Groups._ID)
-        fileName = values.getAsString(COLUMN_FILENAME)
-        eTag = values.getAsString(COLUMN_ETAG)
-	}
+    var flags: Int = 0
+    var pendingMemberships = setOf<String>()
 
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, out AndroidGroup>, contact: Contact, fileName: String?  = null, eTag: String? = null): this(addressBook) {
-		cachedContact = contact
+    constructor(addressBook: AndroidAddressBook, values: ContentValues) : this(addressBook) {
+        id = values.getAsLong(Groups._ID)
+        fileName = values.getAsString(AddressContract.GroupColumns.FILENAME)
+        eTag = values.getAsString(AddressContract.GroupColumns.ETAG)
+        flags = values.getAsInteger(AddressContract.GroupColumns.FLAGS) ?: 0
+        values.getAsString(AddressContract.GroupColumns.PENDING_MEMBERS)?.let { members ->
+            pendingMemberships = PendingMemberships.fromString(members).uids
+        }
+    }
+
+    constructor(addressBook: AndroidAddressBook, contact: Contact, fileName: String? = null, eTag: String? = null, flags: Int = 0)
+            : this(addressBook) {
+        cachedContact = contact
         this.fileName = fileName
         this.eTag = eTag
-	}
+        this.flags = flags
+    }
 
 
     /**
@@ -67,13 +71,15 @@ open class AndroidGroup(
      * @throws FileNotFoundException when the group is not available (anymore)
      * @throws RemoteException on contact provider errors
      */
-     fun getContact(): Contact {
+    fun getContact(): Contact {
         cachedContact?.let { return it }
 
         val id = requireNotNull(id)
         val contact = Contact()
-        addressBook.provider!!.query(addressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, id)),
-                arrayOf(COLUMN_UID, Groups.TITLE, Groups.NOTES), null, null, null)?.use { cursor ->
+        addressBook.provider.query(
+            ContentUris.withAppendedId(Groups.CONTENT_URI, id).asSyncAdapter(),
+            arrayOf(AddressContract.GroupColumns.UID, Groups.TITLE, Groups.NOTES), null, null, null
+        )?.use { cursor ->
             if (!cursor.moveToNext())
                 throw FileNotFoundException("Contact group not found")
 
@@ -84,17 +90,21 @@ open class AndroidGroup(
         }
 
         // get all contacts which are member of the group
-        addressBook.provider.query(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI),
-                arrayOf(Data.RAW_CONTACT_ID),
-                GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?",
-                arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()), null)?.use { membershipCursor ->
+        addressBook.provider.query(
+            ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
+            arrayOf(Data.RAW_CONTACT_ID),
+            GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?",
+            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()), null
+        )?.use { membershipCursor ->
             while (membershipCursor.moveToNext()) {
                 val contactId = membershipCursor.getLong(0)
                 logger.fine("Member ID: $contactId")
 
                 // get UID from the member
-                addressBook.provider.query(addressBook.syncAdapterURI(ContentUris.withAppendedId(RawContacts.CONTENT_URI, contactId)),
-                        arrayOf(at.bitfire.synctools.storage.contacts.AndroidContact.COLUMN_UID), null, null, null)?.use { rawContactCursor ->
+                addressBook.provider.query(
+                    ContentUris.withAppendedId(RawContacts.CONTENT_URI, contactId).asSyncAdapter(),
+                    arrayOf(AddressContract.RawContactColumns.UID), null, null, null
+                )?.use { rawContactCursor ->
                     if (rawContactCursor.moveToNext()) {
                         val uid = rawContactCursor.getString(0)
                         if (!uid.isNullOrBlank()) {
@@ -113,17 +123,17 @@ open class AndroidGroup(
     }
 
 
-    @CallSuper
-    protected open fun contentValues(): ContentValues {
+    private fun contentValues(): ContentValues {
         val contact = getContact()
-        val values = contentValuesOf(
-            COLUMN_FILENAME to fileName,
-            COLUMN_ETAG to eTag,
-            COLUMN_UID to contact.uid,
+        return contentValuesOf(
+            AddressContract.GroupColumns.FLAGS to flags,
+            AddressContract.GroupColumns.PENDING_MEMBERS to PendingMemberships(contact.members).toString(),
+            AddressContract.GroupColumns.FILENAME to fileName,
+            AddressContract.GroupColumns.ETAG to eTag,
+            AddressContract.GroupColumns.UID to contact.uid,
             Groups.TITLE to contact.displayName,
             Groups.NOTES to contact.note
         )
-        return values
     }
 
     /**
@@ -141,11 +151,11 @@ open class AndroidGroup(
         )
         if (addressBook.readOnly)
             values.put(Groups.GROUP_IS_READ_ONLY, 1)
-        val uri = addressBook.provider!!.insert(addressBook.groupsSyncUri(), values)
-                ?: throw LocalStorageException("Empty result from content provider when adding group")
+        val uri = addressBook.provider.insert(addressBook.groupsSyncUri(), values)
+            ?: throw LocalStorageException("Empty result from content provider when adding group")
         id = ContentUris.parseId(uri)
         return uri
-	}
+    }
 
     /**
      * Updates a group from a [Contact], which represents a vCard received from the
@@ -161,11 +171,31 @@ open class AndroidGroup(
 
     fun update(values: ContentValues): Uri {
         val uri = groupSyncURI()
-        addressBook.provider!!.update(uri, values, null, null)
+        addressBook.provider.update(uri, values, null, null)
         return uri
     }
 
-    fun delete() = addressBook.provider!!.delete(groupSyncURI(), null, null)
+    fun delete() = addressBook.provider.delete(groupSyncURI(), null, null)
+
+    /**
+     * Lists all members of this group.
+     * @return list of all members' raw contact IDs
+     */
+    fun getMembers(): List<Long> {
+        val id = requireNotNull(id)
+        val members = LinkedList<Long>()
+        addressBook.provider.query(
+            ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
+            arrayOf(Data.RAW_CONTACT_ID),
+            "${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?",
+            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, id.toString()),
+            null
+        )?.use { cursor ->
+            while (cursor.moveToNext())
+                members += cursor.getLong(0)
+        }
+        return members
+    }
 
 
     // helpers

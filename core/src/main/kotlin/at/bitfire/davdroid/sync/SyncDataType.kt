@@ -7,7 +7,7 @@ package at.bitfire.davdroid.sync
 import android.content.Context
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import at.bitfire.ical4android.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors

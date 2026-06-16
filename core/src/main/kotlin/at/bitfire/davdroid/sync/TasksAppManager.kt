@@ -22,8 +22,8 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.PermissionUtils
-import at.bitfire.ical4android.TaskProvider
-import at.bitfire.ical4android.TaskProvider.ProviderName
+import at.bitfire.synctools.storage.TaskProvider
+import at.bitfire.synctools.storage.TaskProvider.ProviderName
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow

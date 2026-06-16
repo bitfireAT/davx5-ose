@@ -364,8 +364,9 @@ class DmfsRecurringTaskList(
      * @param mainTaskId   The [Tasks._ID] of the main task
      * @return List of exception entities linked to the main task
      */
-    private fun findExceptions(mainTaskId: Long): List<Entity> =
-        taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
+    private fun findExceptions(mainTaskId: Long): List<Entity> = buildList {
+        taskList.iterateTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString())) { add(it) }
+    }
 
     private fun whereWithMainTasksOnly(where: String?, whereArgs: Array<String>?): Pair<String, Array<String>> {
         val protectedWhere = "(${where ?: "1"}) AND ${Tasks.ORIGINAL_INSTANCE_ID} IS NULL"

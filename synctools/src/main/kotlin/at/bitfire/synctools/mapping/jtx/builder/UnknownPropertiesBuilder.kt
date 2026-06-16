@@ -8,7 +8,7 @@ import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.ical4android.JtxICalObject
-import at.bitfire.ical4android.UnknownProperty
+import at.bitfire.synctools.mapping.UnknownProperty
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.CalendarComponent
