@@ -22,7 +22,7 @@ private const val X_PARAM_ATTACH_LABEL = "X-LABEL"
 // used for filename in GNOME Evolution
 private const val X_PARAM_FILENAME = "FILENAME"
 
-class AttachmentsBuilder : JtxObjectDataSubValueBuilder {
+class AttachmentsBuilder : JtxObjectBinaryDataRowBuilder {
     override fun build(from: CalendarComponent): List<BinaryDataRow> {
         return buildList {
             for (attach in from.getProperties<Attach>(Property.ATTACH)) {

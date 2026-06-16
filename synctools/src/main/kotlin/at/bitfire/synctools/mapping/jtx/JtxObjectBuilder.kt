@@ -14,7 +14,7 @@ import at.bitfire.synctools.mapping.jtx.builder.CommentsBuilder
 import at.bitfire.synctools.mapping.jtx.builder.ComponentBuilder
 import at.bitfire.synctools.mapping.jtx.builder.DescriptionBuilder
 import at.bitfire.synctools.mapping.jtx.builder.ExtendedStatusBuilder
-import at.bitfire.synctools.mapping.jtx.builder.JtxObjectDataSubValueBuilder
+import at.bitfire.synctools.mapping.jtx.builder.JtxObjectBinaryDataRowBuilder
 import at.bitfire.synctools.mapping.jtx.builder.JtxObjectEntityBuilder
 import at.bitfire.synctools.mapping.jtx.builder.PriorityBuilder
 import at.bitfire.synctools.mapping.jtx.builder.RecurrenceFieldsBuilder
@@ -61,7 +61,7 @@ class JtxObjectBuilder(
         UidBuilder(),
     )
 
-    private val dataSubValueBuilders = arrayOf<JtxObjectDataSubValueBuilder>(
+    private val binaryDataRowBuilders = arrayOf<JtxObjectBinaryDataRowBuilder>(
         AttachmentsBuilder(),
     )
 
@@ -85,7 +85,7 @@ class JtxObjectBuilder(
         }
 
         val dataSubValues = buildList {
-            for (builder in dataSubValueBuilders) {
+            for (builder in binaryDataRowBuilders) {
                 val dataSubValues = builder.build(from)
                 addAll(dataSubValues)
             }

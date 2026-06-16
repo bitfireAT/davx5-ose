@@ -10,7 +10,7 @@ import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
 
-interface JtxObjectDataSubValueBuilder {
+interface JtxObjectBinaryDataRowBuilder {
 
     /**
      * Maps a specific part of the given component ([VToDo] or [VJournal]) into a list of [BinaryDataRow]s.
