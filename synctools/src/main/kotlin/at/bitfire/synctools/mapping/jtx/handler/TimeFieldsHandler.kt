@@ -35,13 +35,16 @@ class TimeFieldsHandler : JtxObjectEntityHandler {
         appendDateField(from, to, JtxContract.JtxICalObject.DTEND, JtxContract.JtxICalObject.DTEND_TIMEZONE) { DtEnd(it) }
         appendDateField(from, to, JtxContract.JtxICalObject.DUE, JtxContract.JtxICalObject.DUE_TIMEZONE) { Due(it) }
 
-        from.entityValues.getAsString(JtxContract.JtxICalObject.DURATION)?.let { duration ->
-            val missingDtStart = to.getProperty<DtStart<Temporal>>(DtStart.DTSTART).isEmpty
-            if (missingDtStart) {
-                throw InvalidLocalResourceException("DURATION is set but DTSTART is missing")
-            }
+        if (!from.entityValues.containsKey(JtxContract.JtxICalObject.DUE)) {
+            // Ignore DURATION if DUE is set
+            from.entityValues.getAsString(JtxContract.JtxICalObject.DURATION)?.let { duration ->
+                val missingDtStart = to.getProperty<DtStart<Temporal>>(DtStart.DTSTART).isEmpty
+                if (missingDtStart) {
+                    throw InvalidLocalResourceException("DURATION is set but DTSTART is missing")
+                }
 
-            to += Duration(duration)
+                to += Duration(duration)
+            }
         }
     }
 
