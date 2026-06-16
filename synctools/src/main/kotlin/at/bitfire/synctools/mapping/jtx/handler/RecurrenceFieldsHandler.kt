@@ -23,6 +23,7 @@ import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.RDate
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RecurrenceId
+import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
@@ -153,8 +154,9 @@ class RecurrenceFieldsHandler : JtxObjectEntityHandler {
                         timeZone = timeZone
                     ).toTemporal()
                 }
+                val dateList = DateList(dates)
 
-                RDate(DateList(dates))
+                RDate(dateListPropertyParameters(dates.first()), dateList)
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't parse RDATE field, ignoring", e)
                 null
@@ -178,15 +180,23 @@ class RecurrenceFieldsHandler : JtxObjectEntityHandler {
                 }
                 val dateList = DateList(dates)
 
-                if (timeZone == JtxContract.JtxICalObject.TZ_ALLDAY) {
-                    ExDate(ParameterList(listOf(Value.DATE)), dateList)
-                } else {
-                    ExDate(dateList)
-                }
+                ExDate(dateListPropertyParameters(dates.first()), dateList)
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't parse EXDATE field, ignoring", e)
                 null
             }
+        }
+
+    private fun dateListPropertyParameters(firstDate: Temporal): ParameterList =
+        when (firstDate) {
+            is LocalDate ->
+                ParameterList(listOf(Value.DATE))
+
+            is ZonedDateTime ->
+                ParameterList(listOf(Value.DATE_TIME, TzId(firstDate.zone.id)))
+
+            else ->
+                ParameterList(listOf(Value.DATE_TIME))
         }
 
     /**

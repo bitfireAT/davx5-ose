@@ -161,7 +161,26 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.rDates.size)
         assertEquals(
-            RDate<Temporal>(ParameterList(), "20260522T120000Z"),
+            RDate<Temporal>(ParameterList(listOf(Value.DATE_TIME)), "20260522T120000Z"),
+            output.rDates.first()
+        )
+    }
+
+    @Test
+    fun `RDATE all-day has VALUE=DATE`() {
+        val input = Entity(
+            contentValuesOf(
+                JtxContract.JtxICalObject.DTSTART_TIMEZONE to JtxContract.JtxICalObject.TZ_ALLDAY,
+                JtxContract.JtxICalObject.RDATE to timestamp("20260522T120000Z")
+            )
+        )
+        val output = VToDo()
+
+        handler.process(from = input, main = input, to = output)
+
+        assertEquals(1, output.rDates.size)
+        assertEquals(
+            RDate<Temporal>(ParameterList(listOf(Value.DATE)), "20260522"),
             output.rDates.first()
         )
     }
@@ -235,7 +254,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.rDates.size)
         assertEquals(
-            RDate<Temporal>(ParameterList(), "20260522T120000Z"),
+            RDate<Temporal>(ParameterList(listOf(Value.DATE_TIME)), "20260522T120000Z"),
             output.rDates.first()
         )
     }
@@ -270,7 +289,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.rDates.size)
         assertEquals(
-            RDate<Temporal>(ParameterList(), "20260522T140000"),
+            RDate<Temporal>(ParameterList(listOf(Value.DATE_TIME, TzId("Europe/Vienna"))), "20260522T140000"),
             output.rDates.first()
         )
     }
@@ -289,7 +308,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.rDates.size)
         assertEquals(
-            RDate<Temporal>(ParameterList(), "20260522T120000Z"),
+            RDate<Temporal>(ParameterList(listOf(Value.DATE_TIME)), "20260522T120000Z"),
             output.rDates.first()
         )
     }
@@ -309,7 +328,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.exDates.size)
         assertEquals(
-            ExDate<Temporal>(ParameterList(), "20260522T140000"),
+            ExDate<Temporal>(ParameterList(listOf(Value.DATE_TIME, TzId("Europe/Vienna"))), "20260522T140000"),
             output.exDates.first()
         )
     }
@@ -329,7 +348,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.exDates.size)
         assertEquals(
-            ExDate<Temporal>(ParameterList(), "20260522T120000Z"),
+            ExDate<Temporal>(ParameterList(listOf(Value.DATE_TIME)), "20260522T120000Z"),
             output.exDates.first()
         )
     }
