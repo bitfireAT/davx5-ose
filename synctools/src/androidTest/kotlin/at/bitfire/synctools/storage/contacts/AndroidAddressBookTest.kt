@@ -244,6 +244,34 @@ class AndroidAddressBookTest {
     }
 
 
+    @Test
+    fun testSetPhoto_ReadOnly_Update() {
+        val addressBook = TestAddressBook.create(provider)
+        try {
+            val rawContactId = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Read-only photo contact")))
+            try {
+                // Set initial photo so that a photo data row exists.
+                addressBook.setPhoto(rawContactId, TestUtils.resourceToByteArray("/large.jpg"))
+                val photo1 = addressBook.findContactById(rawContactId).getContact().photo
+                assertNotNull("Initial photo should be set", photo1)
+
+                // Mark address book as read-only: stamps IS_READ_ONLY=1 on the photo data row.
+                addressBook.readOnly = true
+
+                // Updating the photo on a read-only contact must still succeed.
+                addressBook.setPhoto(rawContactId, TestUtils.resourceToByteArray("/small.jpg"))
+                val photo2 = addressBook.findContactById(rawContactId).getContact().photo
+                assertNotNull("Photo should still be present after update", photo2)
+                assertFalse("Photo should have been updated despite read-only flag", photo1!!.contentEquals(photo2!!))
+            } finally {
+                provider.delete(addressBook.rawContactSyncUri(rawContactId), null, null)
+            }
+        } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+
     // deleteGroupsWithoutMembers
 
     @Test

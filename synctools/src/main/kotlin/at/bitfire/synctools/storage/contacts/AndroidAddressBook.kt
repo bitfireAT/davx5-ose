@@ -44,7 +44,7 @@ class AndroidAddressBook(
     private val logger
         get() = Logger.getLogger(AndroidAddressBook::class.java.name)
 
-    val accountManager
+    private val accountManager: AccountManager
         get() = AccountManager.get(context)
 
     val groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS
@@ -213,6 +213,8 @@ class AndroidAddressBook(
      *
      * **Side effect: always resets [RawContacts.DIRTY] to 0** on the raw contact, regardless of
      * outcome, to counteract the async dirty mark set by the provider during photo processing.
+     *
+     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
      *
      * @param rawContactId  ID of the raw contact ([RawContacts._ID])
      * @param photo         contact photo in a supported format like JPEG or PNG, or null to delete
