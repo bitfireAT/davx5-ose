@@ -131,10 +131,10 @@ class JtxRecurringCollectionTest {
         val (mainId, _) = insertRecurring(uid = uid)
 
         // find the exception row and call getById with its ID
-        val exceptionId = collection.findJtxObjects(
+        val exceptionId = collection.findJtxObject(
             "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NOT NULL AND ${JtxContract.JtxICalObject.SEQUENCE} > 0",
             arrayOf(uid)
-        ).first().entityValues.getAsLong(JtxContract.JtxICalObject.ID)
+        )!!.entityValues.getAsLong(JtxContract.JtxICalObject.ID)
 
         assertNull("getById must return null when called with an exception ID", recurringCollection.getById(exceptionId))
 
@@ -148,10 +148,10 @@ class JtxRecurringCollectionTest {
         val uid = "testUpdateJtxObjectAndExceptions_withExceptionId"
         insertRecurring(uid = uid)
 
-        val exceptionId = collection.findJtxObjects(
+        val exceptionId = collection.findJtxObject(
             "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NOT NULL AND ${JtxContract.JtxICalObject.SEQUENCE} > 0",
             arrayOf(uid)
-        ).first().entityValues.getAsLong(JtxContract.JtxICalObject.ID)
+        )!!.entityValues.getAsLong(JtxContract.JtxICalObject.ID)
 
         try {
             recurringCollection.updateJtxObjectAndExceptions(exceptionId, JtxEntityAndExceptions(

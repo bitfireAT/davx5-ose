@@ -13,7 +13,6 @@ import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.LinkedList
 
 /**
  * App-specific implementation of a task list.
@@ -77,20 +76,16 @@ class LocalTaskList (
     override fun countModified(): Int =
         dmfsTaskList.countTasks("${Tasks._DIRTY} AND NOT ${Tasks._DELETED}", null)
 
-    override fun findDeleted(): List<LocalTask> {
-        val deleted = LinkedList<LocalTask>()
+    override fun findDeleted(): List<LocalTask> = buildList {
         recurringTaskList.iterateTaskAndExceptions(Tasks._DELETED, null) {
-            deleted += LocalTask(recurringTaskList, it)
+            add(LocalTask(recurringTaskList, it))
         }
-        return deleted
     }
 
-    override fun findDirty(): List<LocalTask> {
-        val dirty = LinkedList<LocalTask>()
+    override fun findDirty(): List<LocalTask> = buildList {
         recurringTaskList.iterateTaskAndExceptions(Tasks._DIRTY, null) {
-            dirty += LocalTask(recurringTaskList, it)
+            add(LocalTask(recurringTaskList, it))
         }
-        return dirty
     }
 
     override fun findByName(name: String): LocalTask? {

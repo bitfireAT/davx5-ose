@@ -204,41 +204,9 @@ class AndroidCalendarTest {
         calendar.addEvent(entity)
 
         // not it finds a result
-        val result = calendar.findEvents("${Events.DTSTART}=?", arrayOf(testStartMillis.toString()))
+        val result = buildList { calendar.iterateEvents("${Events.DTSTART}=?", arrayOf(testStartMillis.toString())) { add(it) } }
         assertEquals(1, result.size)
         assertEntitiesEqual(entity, result.first(), onlyFieldsInExpected = true)
-    }
-
-    @Test
-    fun testFindEvents() {
-        calendar.addEvent(Entity(contentValuesOf(
-            Events.CALENDAR_ID to calendar.id,
-            Events.DTSTART to testStartMillis,
-            Events.DTEND to (testStartTime + Duration.ofHours(1)).toEpochMilli(),
-            Events.TITLE to "Some Event"
-        )))
-        val id2 = calendar.addEvent(Entity(contentValuesOf(
-            Events.CALENDAR_ID to calendar.id,
-            Events.DTSTART to (testStartTime + Duration.ofHours(1)).toEpochMilli(),
-            Events.DTEND to (testStartTime + Duration.ofHours(2)).toEpochMilli(),
-            Events.TITLE to "Some Other Event 1"
-        )))
-        val id3 = calendar.addEvent(Entity(contentValuesOf(
-            Events.CALENDAR_ID to calendar.id,
-            Events.DTSTART to (testStartTime + Duration.ofHours(1)).toEpochMilli(),
-            Events.DTEND to (testStartTime + Duration.ofHours(2)).toEpochMilli(),
-            Events.TITLE to "Some Other Event 2"
-        )))
-        val result = calendar.findEvents("${Events.DTSTART}=?", arrayOf((testStartTime + Duration.ofHours(1)).toEpochMilli().toString()))
-        assertEquals(2, result.size)
-        assertEquals(
-            setOf(id2, id3),
-            result.map { it.entityValues.getAsLong(Events._ID) }.toSet()
-        )
-        assertEquals(
-            setOf("Some Other Event 1", "Some Other Event 2"),
-            result.map { it.entityValues.getAsString(Events.TITLE) }.toSet()
-        )
     }
 
     @Test
