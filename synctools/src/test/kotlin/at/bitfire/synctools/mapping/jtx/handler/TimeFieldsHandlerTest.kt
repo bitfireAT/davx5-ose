@@ -18,7 +18,10 @@ import at.bitfire.synctools.mapping.jtx.builder.TimeFieldsBuilder
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
+import net.fortuna.ical4j.model.component.CalendarComponent
+import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
+import net.fortuna.ical4j.model.property.DtEnd
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Due
 import net.fortuna.ical4j.model.property.Duration
@@ -42,13 +45,14 @@ class TimeFieldsHandlerTest {
     private val builder = TimeFieldsBuilder()
     private val handler = TimeFieldsHandler()
 
-    private fun buildAndProcess(original: VToDo): VToDo {
+    private fun <T: CalendarComponent> buildAndProcess(original: T, result: T): T {
         val entity = Entity(ContentValues())
         builder.build(from = original, main = original, to = entity)
-        val result = VToDo()
         handler.process(from = entity, main = entity, to = result)
         return result
     }
+
+    private fun buildAndProcess(original: VToDo): VToDo = buildAndProcess(original, VToDo())
 
     @Test
     fun `No time fields`() {
@@ -189,6 +193,32 @@ class TimeFieldsHandlerTest {
         val result = buildAndProcess(original)
 
         assertNotNull(result.due<Temporal>())
+        assertNull(result.duration)
+    }
+
+    @Test
+    fun `DTEND and DUE are ignored for VJOURNAL`() {
+        val original = VJournal().apply {
+            this += DtStart(dateTimeValue("20260518T120000", tzVienna))
+            this += DtEnd(dateTimeValue("20260519T120000", tzVienna))
+            this += Due(dateTimeValue("20260519T120000", tzVienna))
+        }
+        val result = buildAndProcess(original, result = VJournal())
+
+        assertNotNull(result.dtStart<Temporal>())
+        assertNull(result.dtEnd<Temporal>())
+        assertNull(result.due<Temporal>())
+    }
+
+    @Test
+    fun `DURATION ignored for VJOURNAL`() {
+        val original = VJournal().apply {
+            this += DtStart(dateTimeValue("20260518T120000", tzVienna))
+            this += Duration("P1D")
+        }
+        val result = buildAndProcess(original, result = VJournal())
+
+        assertNotNull(result.dtStart<Temporal>())
         assertNull(result.duration)
     }
 }
