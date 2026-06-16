@@ -44,7 +44,7 @@ class TimeFieldsHandler : JtxObjectEntityHandler {
         if (to.due<Temporal>() == null) {
             // Add DURATION if DUE is not set
             from.entityValues.getAsString(JtxContract.JtxICalObject.DURATION)?.let { duration ->
-                val missingDtStart = to.getProperty<DtStart<Temporal>>(DtStart.DTSTART).isEmpty
+                val missingDtStart = !to.getProperty<DtStart<Temporal>>(DtStart.DTSTART).isPresent
                 if (missingDtStart) {
                     throw InvalidLocalResourceException("DURATION is set but DTSTART is missing")
                 }
