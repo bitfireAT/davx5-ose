@@ -37,7 +37,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.FileNotFoundException
-import java.util.LinkedList
 import java.util.Optional
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -271,22 +270,18 @@ open class LocalAddressBook @AssistedInject constructor(
         return LocalGroup(androidGroup)
     }
 
-    fun queryContacts(where: String?, whereArgs: Array<String>?): List<LocalContact> {
-        val contacts = LinkedList<LocalContact>()
+    fun queryContacts(where: String?, whereArgs: Array<String>?): List<LocalContact> = buildList {
         ab.provider.query(ab.rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
             while (cursor.moveToNext())
-                contacts += LocalContact(this, AndroidContact(ab, cursor.toContentValues()))
+                add(LocalContact(this@LocalAddressBook, AndroidContact(ab, cursor.toContentValues())))
         }
-        return contacts
     }
 
-    fun queryGroups(where: String?, whereArgs: Array<String>?): List<LocalGroup> {
-        val groups = LinkedList<LocalGroup>()
+    fun queryGroups(where: String?, whereArgs: Array<String>?): List<LocalGroup> = buildList {
         ab.provider.query(ab.groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
             while (cursor.moveToNext())
-                groups += LocalGroup(AndroidGroup(ab, cursor.toContentValues()))
+                add(LocalGroup(AndroidGroup(ab, cursor.toContentValues())))
         }
-        return groups
     }
 
     @Throws(FileNotFoundException::class)
@@ -301,17 +296,15 @@ open class LocalAddressBook @AssistedInject constructor(
         queryGroups("${Groups._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
 
 
-    fun getContactIdsByGroupMembership(groupId: Long): List<Long> {
-        val ids = LinkedList<Long>()
+    fun getContactIdsByGroupMembership(groupId: Long): List<Long> = buildList {
         ab.provider.query(
             ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(GroupMembership.RAW_CONTACT_ID),
             "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?)",
             arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupId.toString()), null
         )?.use { cursor ->
             while (cursor.moveToNext())
-                ids += cursor.getLong(0)
+                add(cursor.getLong(0))
         }
-        return ids
     }
 
     fun getContactUidFromId(contactId: Long): String? {

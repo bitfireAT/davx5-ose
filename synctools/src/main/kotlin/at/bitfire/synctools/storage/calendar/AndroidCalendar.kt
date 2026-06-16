@@ -24,7 +24,6 @@ import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import org.jetbrains.annotations.TestOnly
-import java.util.LinkedList
 import java.util.logging.Logger
 
 /**
@@ -162,38 +161,13 @@ class AndroidCalendar(
     }
 
     /**
-     * Queries events from this calendar.
-     *
-     * Adds a WHERE clause that restricts the query to [CalendarContract.EventsColumns.CALENDAR_ID] = [id].
-     *
-     * @param where     selection
-     * @param whereArgs arguments for selection
-     *
-     * @return events from this calendar which match the selection
-     *
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun findEvents(where: String?, whereArgs: Array<String>?): List<Entity> {
-        val entities = LinkedList<Entity>()
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
-            client.query(eventEntitiesUri, null, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                for (entity in EventsEntity.newEntityIterator(cursor, client))
-                    entities += entity
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query events", e)
-        }
-        return entities
-    }
-
-    /**
      * Gets the first event row that matches the given query.
      *
      * @return first event row that matches [where]/[whereArgs] (or `null` if not found)
      *
      * @throws LocalStorageException when the content provider returns an error
      */
+    @TestOnly
     fun findEventRow(projection: Array<String>?, where: String?, whereArgs: Array<String>?): ContentValues? {
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
@@ -214,9 +188,10 @@ class AndroidCalendar(
      *
      * @return event (or `null` if not found)
      */
-    fun getEvent(id: Long, where: String? = null, whereArgs: Array<String>? = null): Entity? {
+    @TestOnly
+    fun getEvent(id: Long): Entity? {
         try {
-            client.query(eventEntityUri(id), null, where, whereArgs, null)?.use { cursor ->
+            client.query(eventEntityUri(id), null, null, null, null)?.use { cursor ->
                 val iterator = EventsEntity.newEntityIterator(cursor, client)
                 if (iterator.hasNext())
                     return iterator.next()

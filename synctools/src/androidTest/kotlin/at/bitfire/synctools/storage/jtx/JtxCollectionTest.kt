@@ -191,10 +191,10 @@ class JtxCollectionTest {
             inputStream.readBytes().decodeToString()
         }
         assertEquals("ONE", attachmentDataOne)
-        val jtxObjectTwo = collection.findJtxObjects(
+        val jtxObjectTwo = collection.findJtxObject(
             where = "${JtxContract.JtxICalObject.SUMMARY} = ?",
             whereArgs = arrayOf("Two")
-        ).first()
+        )!!
         val attachmentTwo = jtxObjectTwo.subValues.first { it.uri.equals(JtxContract.JtxAttachment.CONTENT_URI) }
         val uriTwo = attachmentTwo.values.getAsString(JtxContract.JtxAttachment.URI).toUri()
         assertEquals("content", uriTwo.scheme)
@@ -262,23 +262,6 @@ class JtxCollectionTest {
         )
         assertNotNull(result)
         assertEntitiesEqual(jtxEntity.entity, result!!, onlyFieldsInExpected = true)
-    }
-
-    @Test
-    fun testFindJtxObjects() {
-        collection.addJtxObject(sampleJtxEntity("Object A"))
-        val id2 = collection.addJtxObject(sampleJtxEntity("Object B"))
-        val id3 = collection.addJtxObject(sampleJtxEntity("Object B"))
-
-        val results = collection.findJtxObjects(
-            "${JtxContract.JtxICalObject.SUMMARY}=?",
-            arrayOf("Object B")
-        )
-        assertEquals(2, results.size)
-        assertEquals(
-            setOf(id2, id3),
-            results.map { it.entityValues.getAsLong(JtxContract.JtxICalObject.ID) }.toSet()
-        )
     }
 
     @Test
