@@ -26,6 +26,7 @@ class SyncManagerTest {
 
     // consumeDownloadChannel
 
+    // re-initialized per test because JUnit creates a new class instance for each test method
     private val downloadedBatches = mutableListOf<List<HttpUrl>>()
 
     private val syncManager = object : SyncManager<LocalResource, LocalCollection<LocalResource>, DavCollection>(
