@@ -677,7 +677,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @param scope   scope in which the consumer and its download children run
      * @param channel source of URLs to download; caller must close it when listing is done
      */
-    private fun consumeDownloadChannel(scope: CoroutineScope, channel: Channel<HttpUrl>) = scope.launch {
+    @VisibleForTesting
+    internal fun consumeDownloadChannel(scope: CoroutineScope, channel: Channel<HttpUrl>) = scope.launch {
         val batch = mutableListOf<HttpUrl>()
         while (true) {
             val next = channel.receiveCatching().getOrNull()
