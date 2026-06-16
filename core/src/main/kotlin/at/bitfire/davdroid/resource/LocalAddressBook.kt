@@ -148,6 +148,7 @@ open class LocalAddressBook @AssistedInject constructor(
             return false
 
         // move contacts and groups to new account
+        // no explicit account WHERE needed: updateGroups/updateRawContactRows scope via asSyncAdapter(addressBookAccount)
         val batch = ContactsBatchOperation(ab.provider)
         ab.updateGroups(
             contentValuesOf(Groups.ACCOUNT_NAME to newAccount.name, Groups.ACCOUNT_TYPE to newAccount.type),

@@ -35,6 +35,17 @@ import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
 
+/**
+ * Represents an Android address book backed by the contacts content provider for a given
+ * [addressBookAccount] (operations are restricted to that account).
+ *
+ * Provides CRUD operations for raw contacts and groups, always operating "as sync adapter"
+ * so changes bypass the dirty-flag and read-only restrictions.
+ *
+ * @param context            application context (used to obtain the [AccountManager])
+ * @param addressBookAccount account whose contacts and groups are managed by this instance
+ * @param provider           content provider client for [ContactsContract]
+ */
 class AndroidAddressBook(
     private val context: Context,
     var addressBookAccount: Account,
@@ -108,12 +119,12 @@ class AndroidAddressBook(
         get() = ContactsContract.SyncState.get(provider, addressBookAccount)
         set(data) = ContactsContract.SyncState.set(provider, addressBookAccount, data)
 
-    // ContactsContract.RawContacts CRUD
+    // region ContactsContract.RawContacts CRUD
 
     /**
      * Adds a raw contact and its associated data to the address book.
      *
-     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
      * @param rawContact The raw contact entity to add, containing main values and sub-values.
      * @return The ID of the newly created raw contact.
@@ -153,6 +164,8 @@ class AndroidAddressBook(
     /**
      * Counts the number of contacts in the address book that match the given selection criteria.
      *
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
+     *
      * @param where An optional filter declaring which rows to return.
      * @param whereArgs Optional arguments for [where].
      * @return The number of contacts matching the selection criteria.
@@ -172,7 +185,7 @@ class AndroidAddressBook(
     /**
      * Iterates raw contacts with their associated data rows (as [Entity]) from this address book.
      *
-     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
      * @param where     optional selection (only applied to raw contact rows, not data rows)
      * @param whereArgs optional arguments for [where]
@@ -198,7 +211,7 @@ class AndroidAddressBook(
     /**
      * Iterates raw contact rows (without associated data rows) from this address book.
      *
-     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
      * @param where      optional selection
      * @param whereArgs  optional arguments for [where]
@@ -220,7 +233,7 @@ class AndroidAddressBook(
     /**
      * Enqueues an update of raw contact rows in this address book to the given batch.
      *
-     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
      * @param values    values to update
      * @param where     optional selection
@@ -240,7 +253,7 @@ class AndroidAddressBook(
     /**
      * Enqueues a deletion of raw contacts in this address book to the given batch.
      *
-     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
      * @param where     optional selection
      * @param whereArgs optional arguments for [where]
@@ -255,7 +268,9 @@ class AndroidAddressBook(
         batch += builder
     }
 
-    // ContactsContract.Groups CRUD
+    // endregion
+
+    // region ContactsContract.Groups CRUD
 
     @Throws(FileNotFoundException::class)
     fun findGroupById(id: Long) =
@@ -279,7 +294,7 @@ class AndroidAddressBook(
     /**
      * Iterates group rows in this address book.
      *
-     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
      * @param projection optional column projection
      * @param where      optional selection
@@ -302,7 +317,7 @@ class AndroidAddressBook(
     /**
      * Enqueues an update of group rows in this address book to the given batch.
      *
-     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
      * @param values    values to update
      * @param where     optional selection
@@ -322,7 +337,7 @@ class AndroidAddressBook(
     /**
      * Enqueues a deletion of group rows in this address book to the given batch.
      *
-     * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
      * @param where     optional selection
      * @param whereArgs optional arguments for [where]
@@ -344,7 +359,9 @@ class AndroidAddressBook(
         }
     }
 
-    // high-res photo access
+    // endregion
+
+    // region high-res photo access
 
     /**
      * Sets or clears the photo for a raw contact.
@@ -440,7 +457,9 @@ class AndroidAddressBook(
         return null
     }
 
-    // legacy AndroidContact/AndroidGroup CRUD
+    // endregion
+
+    // region legacy AndroidContact/AndroidGroup CRUD
 
     @Deprecated("Use iterateRawContacts instead")
     fun queryContacts(where: String?, whereArgs: Array<String>?): List<AndroidContact> {
@@ -467,12 +486,15 @@ class AndroidAddressBook(
     fun findContactById(id: Long) =
         queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
 
+    // endregion
 
-    // helpers
+    // region helpers
 
     fun rawContactSyncUri(id: Long) = ContentUris.withAppendedId(RawContacts.CONTENT_URI, id).asSyncAdapter(addressBookAccount)
     fun rawContactsSyncUri() = RawContacts.CONTENT_URI.asSyncAdapter(addressBookAccount)
     fun groupsSyncUri() = Groups.CONTENT_URI.asSyncAdapter(addressBookAccount)
+
+    // endregion
 
 
     companion object {
