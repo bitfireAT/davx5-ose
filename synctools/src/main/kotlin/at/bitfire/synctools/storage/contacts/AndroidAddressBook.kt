@@ -200,7 +200,6 @@ class AndroidAddressBook(
      *
      * This method operates "as sync adapter" and doesn't take the [readOnly] flag into account.
      *
-     * @param projection optional column projection
      * @param where      optional selection
      * @param whereArgs  optional arguments for [where]
      * @param block      callback invoked for each raw contact row
