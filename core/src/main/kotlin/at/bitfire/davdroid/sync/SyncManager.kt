@@ -42,10 +42,12 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.sync.SyncManager.Companion.MAX_MULTIGET_RESOURCES
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -604,19 +606,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         // and a single consumer downloads concurrently, so downloads already start while listing
         // is still running.
         val toDownload = Channel<HttpUrl>(Channel.UNLIMITED)
-
-        // Consumer: group queued URLs into multiget batches and download them with bounded parallelism.
-        launch {
-            while (true) {
-                // suspend until at least one URL is available (or the channel is closed and drained)
-                val first = toDownload.receiveCatching().getOrNull() ?: break
-                val batch = mutableListOf(first)
-                // greedily take whatever else is already queued, up to the multiget batch size
-                while (batch.size < MAX_MULTIGET_RESOURCES)
-                    batch += toDownload.tryReceive().getOrNull() ?: break
-                launch { downloadSemaphore.withPermit { downloadRemote(batch) } }
-            }
-        }
+        consumeDownloadChannel(scope = this, channel = toDownload)
 
         // Producer: list remote resources and queue the ones that need downloading. The inner scope
         // guarantees all per-resource checks finish before we close the channel.
@@ -632,48 +622,67 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                 val name = response.hrefName()
 
-                if (response.isSuccess()) {
-                    logger.fine("Found remote resource: $name")
-
-                    launch {
-                        val local = localCollection.findByName(name)
-                        SyncException.wrapWithLocalResource(local) {
-                            if (local == null) {
-                                logger.info("$name has been added remotely, queueing download")
-                                toDownload.trySend(response.href)
-                            } else {
-                                val localETag = local.eTag
-                                val remoteETag = response[GetETag::class.java]?.eTag
-                                    ?: throw DavException("Server didn't provide ETag")
-                                if (localETag == remoteETag)
-                                    logger.info("$name has not been changed on server (ETag still $remoteETag)")
-                                else {
-                                    logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
-                                    toDownload.trySend(response.href)
-                                }
-
-                                // mark as remotely present, so that this resource won't be deleted at the end
-                                local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
-                            }
-                        }
-                    }
-
-                } else if (response.status?.code == HttpURLConnection.HTTP_NOT_FOUND) {
-                    // collection sync: resource has been deleted on remote server
-                    launch {
-                        localCollection.findByName(name)?.let { local ->
+                when {
+                    response.isSuccess() -> {
+                        logger.fine("Found remote resource: $name")
+                        launch {
+                            val local = localCollection.findByName(name)
                             SyncException.wrapWithLocalResource(local) {
-                                logger.info("$name has been deleted on server, deleting locally")
-                                local.deleteLocal()
+                                if (local == null) {
+                                    logger.info("$name has been added remotely, queueing download")
+                                    toDownload.trySend(response.href)
+                                } else {
+                                    val localETag = local.eTag
+                                    val remoteETag = response[GetETag::class.java]?.eTag
+                                        ?: throw DavException("Server didn't provide ETag")
+                                    if (localETag == remoteETag)
+                                        logger.info("$name has not been changed on server (ETag still $remoteETag)")
+                                    else {
+                                        logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+                                        toDownload.trySend(response.href)
+                                    }
+
+                                    // mark as remotely present, so that this resource won't be deleted at the end
+                                    local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                                }
                             }
                         }
                     }
+                    response.status?.code == HttpURLConnection.HTTP_NOT_FOUND ->
+                        // collection sync: resource has been deleted on remote server
+                        launch {
+                            localCollection.findByName(name)?.let { local ->
+                                SyncException.wrapWithLocalResource(local) {
+                                    logger.info("$name has been deleted on server, deleting locally")
+                                    local.deleteLocal()
+                                }
+                            }
+                        }
                 }
             }
         }
-        // listing finished → no more URLs will be queued; consumer drains remaining items,
-        // then the outer coroutineScope joins consumer + all download children before returning.
+        // closing signals the consumer to drain and stop; outer coroutineScope waits for it and all download children
         toDownload.close()
+    }
+
+    /**
+     * Launches a consumer coroutine in [scope] that reads URLs from [channel] and downloads them.
+     *
+     * Greedily batches up to [MAX_MULTIGET_RESOURCES] already-queued URLs per multiget request.
+     * Each batch runs in a child coroutine gated by [downloadSemaphore]. Stops when [channel] is
+     * closed and drained; structured concurrency ensures all downloads finish before [scope] returns.
+     *
+     * @param scope   scope in which the consumer and its download children run
+     * @param channel source of URLs to download; caller must close it when listing is done
+     */
+    private fun consumeDownloadChannel(scope: CoroutineScope, channel: Channel<HttpUrl>) = scope.launch {
+        while (true) {
+            val first = channel.receiveCatching().getOrNull() ?: break
+            val batch = mutableListOf(first)
+            while (batch.size < MAX_MULTIGET_RESOURCES)
+                batch += channel.tryReceive().getOrNull() ?: break
+            launch { downloadSemaphore.withPermit { downloadRemote(batch) } }
+        }
     }
 
     protected abstract suspend fun listAllRemote(callback: MultiResponseCallback)
