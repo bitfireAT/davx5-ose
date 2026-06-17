@@ -161,7 +161,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.rDates.size)
         assertEquals(
-            RDate<Temporal>(ParameterList(listOf(Value.DATE_TIME)), "20260522T120000Z"),
+            RDate<Temporal>(ParameterList(), "20260522T120000Z"),
             output.rDates.first()
         )
     }
@@ -254,7 +254,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.rDates.size)
         assertEquals(
-            RDate<Temporal>(ParameterList(listOf(Value.DATE_TIME)), "20260522T120000Z"),
+            RDate<Temporal>(ParameterList(), "20260522T120000Z"),
             output.rDates.first()
         )
     }
@@ -289,7 +289,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.rDates.size)
         assertEquals(
-            RDate<Temporal>(ParameterList(listOf(Value.DATE_TIME, TzId("Europe/Vienna"))), "20260522T140000"),
+            RDate<Temporal>(ParameterList(listOf(TzId("Europe/Vienna"))), "20260522T140000"),
             output.rDates.first()
         )
     }
@@ -308,7 +308,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.rDates.size)
         assertEquals(
-            RDate<Temporal>(ParameterList(listOf(Value.DATE_TIME)), "20260522T120000Z"),
+            RDate<Temporal>(ParameterList(), "20260522T120000Z"),
             output.rDates.first()
         )
     }
@@ -328,7 +328,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.exDates.size)
         assertEquals(
-            ExDate<Temporal>(ParameterList(listOf(Value.DATE_TIME, TzId("Europe/Vienna"))), "20260522T140000"),
+            ExDate<Temporal>(ParameterList(listOf(TzId("Europe/Vienna"))), "20260522T140000"),
             output.exDates.first()
         )
     }
@@ -348,7 +348,7 @@ class RecurrenceFieldsHandlerTest {
 
         assertEquals(1, output.exDates.size)
         assertEquals(
-            ExDate<Temporal>(ParameterList(listOf(Value.DATE_TIME)), "20260522T120000Z"),
+            ExDate<Temporal>(ParameterList(), "20260522T120000Z"),
             output.exDates.first()
         )
     }

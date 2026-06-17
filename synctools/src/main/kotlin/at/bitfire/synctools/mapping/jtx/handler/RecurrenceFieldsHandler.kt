@@ -188,10 +188,10 @@ class RecurrenceFieldsHandler : JtxObjectEntityHandler {
                 ParameterList(listOf(Value.DATE))
 
             is ZonedDateTime ->
-                ParameterList(listOf(Value.DATE_TIME, TzId(firstDate.zone.id)))
+                ParameterList(listOf(TzId(firstDate.zone.id))) // implicit VALUE=DATE-TIME
 
             else ->
-                ParameterList(listOf(Value.DATE_TIME))
+                ParameterList() // implicit VALUE=DATE-TIME
         }
 
     /**
