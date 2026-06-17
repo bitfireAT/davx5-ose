@@ -14,6 +14,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
+import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -30,7 +31,8 @@ internal class JtxTimeField(
     private val timeZone: String?
 ) {
 
-    private val logger = Logger.getLogger(javaClass.name)
+    private val logger
+        get() = Logger.getLogger(javaClass.name)
 
     /**
      * Converts the stored value according to jtx timezone semantics.
@@ -61,7 +63,7 @@ internal class JtxTimeField(
         try {
             ZoneId.of(tzId)
         } catch (e: DateTimeException) {
-            logger.warning("Invalid timezone '$tzId', interpreting as UTC. Error: $e")
+            logger.log(Level.WARNING, "Invalid timezone '$tzId', interpreting as UTC.", e)
             null
         }
 
