@@ -6,8 +6,10 @@ package at.bitfire.synctools.storage.jtx
 
 import android.accounts.Account
 import android.content.ContentProviderClient
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
+import android.os.ParcelFileDescriptor
 import androidx.core.content.contentValuesOf
 import androidx.core.net.toUri
 import androidx.test.platform.app.InstrumentationRegistry
@@ -125,10 +127,7 @@ class JtxCollectionTest {
         val attachmentSubValue = jtxObject.subValues.first { it.uri.equals(JtxContract.JtxAttachment.CONTENT_URI) }
         val uri = attachmentSubValue.values.getAsString(JtxContract.JtxAttachment.URI).toUri()
         assertEquals("content", uri.scheme)
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val attachmentData = context.contentResolver.openInputStream(uri)!!.use { inputStream ->
-            inputStream.readBytes().decodeToString()
-        }
+        val attachmentData = fetchAttachmentData(attachmentSubValue)
         assertEquals("Hello, world!", attachmentData)
     }
 
@@ -182,14 +181,11 @@ class JtxCollectionTest {
 
         val id = collection.addJtxObjects(listOf(jtxEntityOne, jtxEntityTwo))
 
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val jtxObjectOne = collection.getJtxObject(id)!!
         val attachmentOne = jtxObjectOne.subValues.first { it.uri.equals(JtxContract.JtxAttachment.CONTENT_URI) }
         val uriOne = attachmentOne.values.getAsString(JtxContract.JtxAttachment.URI).toUri()
         assertEquals("content", uriOne.scheme)
-        val attachmentDataOne = context.contentResolver.openInputStream(uriOne)!!.use { inputStream ->
-            inputStream.readBytes().decodeToString()
-        }
+        val attachmentDataOne = fetchAttachmentData(attachmentOne)
         assertEquals("ONE", attachmentDataOne)
         val jtxObjectTwo = collection.findJtxObject(
             where = "${JtxContract.JtxICalObject.SUMMARY} = ?",
@@ -198,9 +194,7 @@ class JtxCollectionTest {
         val attachmentTwo = jtxObjectTwo.subValues.first { it.uri.equals(JtxContract.JtxAttachment.CONTENT_URI) }
         val uriTwo = attachmentTwo.values.getAsString(JtxContract.JtxAttachment.URI).toUri()
         assertEquals("content", uriTwo.scheme)
-        val attachmentDataTwo = context.contentResolver.openInputStream(uriTwo)!!.use { inputStream ->
-            inputStream.readBytes().decodeToString()
-        }
+        val attachmentDataTwo = fetchAttachmentData(attachmentTwo)
         assertEquals("TWO", attachmentDataTwo)
     }
 
@@ -468,4 +462,17 @@ class JtxCollectionTest {
         }
     }
 
+
+    private fun fetchAttachmentData(attachmentSubValue: Entity.NamedContentValues): String {
+        val attachmentUri = ContentUris.withAppendedId(
+            JtxContract.JtxAttachment.CONTENT_URI.asSyncAdapter(collection.account),
+            attachmentSubValue.values.getAsLong(JtxContract.JtxAttachment.ID)
+        )
+
+        return collection.client.openFile(attachmentUri, "r")!!.let { parcelFileDescriptor ->
+            ParcelFileDescriptor.AutoCloseInputStream(parcelFileDescriptor).use { inputStream ->
+                inputStream.readBytes().decodeToString()
+            }
+        }
+    }
 }
