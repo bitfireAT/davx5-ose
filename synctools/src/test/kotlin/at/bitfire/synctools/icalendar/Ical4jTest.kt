@@ -16,8 +16,11 @@ import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.TemporalAmountAdapter
 import net.fortuna.ical4j.model.TemporalComparator
+import net.fortuna.ical4j.model.TimeZone
+import net.fortuna.ical4j.model.TimeZoneRegistry
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.TimeZoneRegistryImpl
+import net.fortuna.ical4j.model.ZoneRulesProviderImpl
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.parameter.Email
@@ -43,7 +46,6 @@ import java.time.Period
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
-import java.time.temporal.UnsupportedTemporalTypeException
 
 class Ical4jTest {
 
@@ -371,6 +373,64 @@ class Ical4jTest {
             fail("TimeZoneRegistryFactoryWorkaround can be removed")
         } catch (e: ParserException) {
             assertTrue(e.cause is NullPointerException)
+        }
+    }
+
+    /**
+     * https://github.com/bitfireAT/davx5-ose/issues/914
+     *
+     * ZoneRulesProviderImpl's pool is a static, JVM-wide, fixed-size set of zone IDs (default 1500).
+     * ZoneIdPool#allocate() returns null once exhausted, and TimeZoneRegistryImpl#register() feeds
+     * that null straight into a ConcurrentHashMap#put(), throwing NullPointerException.
+     *
+     * This test intentionally expects that NPE: AS SOON AS THIS TEST FAILS (because no exception is
+    thrown any more), ical4j has fixed the bug upstream. */
+    @Test
+    fun `ical4j TimeZoneRegistryImpl register() throws when the global zone ID pool is exhausted`() {
+        // actual VTIMEZONE data are not relevant for this issue
+        val vtzMinimal = "BEGIN:VCALENDAR\n" +
+                "VERSION:2.0\n" +
+                "BEGIN:VTIMEZONE\n" +
+                "TZID:UTC\n" +
+                "BEGIN:STANDARD\n" +
+                "DTSTART:19700101T000000\n" +
+                "TZOFFSETFROM:+0000\n" +
+                "TZOFFSETTO:+0000\n" +
+                "END:STANDARD\n" +
+                "END:VTIMEZONE\n" +
+                "END:VCALENDAR"
+
+        // parse the VTIMEZONE into a real TimeZone object before draining the pool, so building it
+        // doesn't itself depend on pool capacity
+        val vTimeZone = CalendarBuilder().build(StringReader(vtzMinimal))
+            .getComponent<VTimeZone>(Component.VTIMEZONE).get()
+        val timeZone = TimeZone(vTimeZone)
+
+        // the static, JVM-wide pool of synthetic zone IDs (default size 1500) ical4j allocates one
+        // from for every registered VTIMEZONE, to back it with a java.time ZoneId/ZoneRules pair
+        val pool = ZoneRulesProviderImpl.INSTANCE.zoneIdPool
+
+        // drain the pool: each allocation is kept as (id, holder) because the pool only stores a
+        // WeakReference to the holder - without keeping it strongly reachable here, the GC could
+        // collect it, and the pool's own cleanup() (run at the start of the next allocate()) would
+        // recycle its slot, undoing the exhaustion mid-test
+        val allocations = mutableListOf<Pair<String, TimeZoneRegistry>>()
+        try {
+            while (true) {
+                val holder = TimeZoneRegistryImpl()
+                val id = pool.allocate(holder) ?: break  // null once the pool is drained, e.g. "ical4j-local-37" otherwise
+                allocations += id to holder
+            }
+            assertEquals("Pool should be fully drained", 0, pool.availableZoneIds())
+
+            // ical4j calls register() once for basically every VTIMEZONE it receives -
+            // so in a real sync, every resource that redundantly re-declares the same
+            // well-known VTIMEZONE consumes another pool slot like this one.
+
+            // Next line throws NPE!
+            TimeZoneRegistryImpl().register(timeZone)
+        } finally {
+            allocations.forEach { (id, _) -> pool.release(id) }
         }
     }
 
