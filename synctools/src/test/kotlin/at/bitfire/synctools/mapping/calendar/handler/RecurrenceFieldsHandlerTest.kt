@@ -36,7 +36,7 @@ import java.time.temporal.Temporal
 import kotlin.jvm.optionals.getOrNull
 
 @RunWith(RobolectricTestRunner::class)
-class RecurrenceFieldHandlerTest {
+class RecurrenceFieldsHandlerTest {
 
     private val tzVienna = ZoneId.of("Europe/Vienna")
 
