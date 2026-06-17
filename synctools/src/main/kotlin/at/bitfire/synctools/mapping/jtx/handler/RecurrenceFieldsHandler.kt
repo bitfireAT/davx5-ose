@@ -70,7 +70,6 @@ class RecurrenceFieldsHandler : JtxObjectEntityHandler {
         }
     }
 
-    // Process exception
     private fun processException(values: ContentValues, to: CalendarComponent) {
         val recurId = values.getAsString(JtxContract.JtxICalObject.RECURID) ?: return
 
@@ -86,7 +85,6 @@ class RecurrenceFieldsHandler : JtxObjectEntityHandler {
         to += RecurrenceId<Temporal>(parameters, recurId)
     }
 
-    // Process main
     private fun processMain(values: ContentValues, to: CalendarComponent) {
         // process RRULE field
         val rRule = rRule(values)
@@ -106,7 +104,6 @@ class RecurrenceFieldsHandler : JtxObjectEntityHandler {
         exDate(values)?.let { to += it }
     }
 
-    // process RRULE field
     private fun rRule(values: ContentValues): RRule<Temporal>? =
         values.getAsString(JtxContract.JtxICalObject.RRULE)?.let { rRule ->
             try {
@@ -139,7 +136,6 @@ class RecurrenceFieldsHandler : JtxObjectEntityHandler {
             }
         }
 
-    // process RDATE field
     private fun rDate(values: ContentValues): RDate<*>? =
         values.getAsString(JtxContract.JtxICalObject.RDATE)?.let { rDate ->
             try {
@@ -163,7 +159,6 @@ class RecurrenceFieldsHandler : JtxObjectEntityHandler {
             }
         }
 
-    // process EXDATE field
     private fun exDate(values: ContentValues): ExDate<*>? =
         values.getAsString(JtxContract.JtxICalObject.EXDATE)?.let { exDate ->
             try {
