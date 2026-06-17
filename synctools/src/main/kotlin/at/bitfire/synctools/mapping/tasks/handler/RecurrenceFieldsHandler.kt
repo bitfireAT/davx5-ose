@@ -10,17 +10,12 @@ import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.util.AndroidTimeUtils
 import at.bitfire.synctools.util.AndroidTimeUtils.isUtcTzId
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
-import at.bitfire.synctools.util.AndroidTimeUtils.toZonedDateTime
-import at.bitfire.synctools.util.TimeApiExtensions.isDateTime
-import at.bitfire.synctools.util.TimeApiExtensions.toLocalDate
-import net.fortuna.ical4j.model.Recur
+import at.bitfire.synctools.util.RecurrenceUtils
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.RDate
 import net.fortuna.ical4j.model.property.RRule
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.time.temporal.Temporal
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -37,7 +32,7 @@ import java.util.logging.Logger
  * required `{tzId};` prefix so they can be parsed correctly.
  *
  * **UNTIL alignment:** RFC 5545 §3.3.10 requires the RRULE `UNTIL` value to be in UTC when
- * DTSTART is a DATE-TIME, and to be a bare DATE when DTSTART is a DATE. [alignUntil] enforces
+ * DTSTART is a DATE-TIME, and to be a bare DATE when DTSTART is a DATE. [RecurrenceUtils.alignUntil] enforces
  * this, and rules whose UNTIL falls on or before DTSTART are silently dropped.
  *
  * Parse errors in any individual field are caught and logged as warnings so that a single
@@ -66,11 +61,13 @@ class RecurrenceFieldsHandler : DmfsTaskEntityHandler {
 
         // provide start temporal lazily (only computed when UNTIL alignment is needed)
         val startTemporal: Temporal? by lazy {
-            tsStart?.let { TaskTimeField(
-                timestamp = it,
-                tzId = tzId,
-                allDay = allDay
-            ).toTemporal() }
+            tsStart?.let {
+                TaskTimeField(
+                    timestamp = it,
+                    tzId = tzId,
+                    allDay = allDay
+                ).toTemporal()
+            }
         }
 
         // process RRULE field
@@ -80,7 +77,7 @@ class RecurrenceFieldsHandler : DmfsTaskEntityHandler {
 
                 // align RRULE UNTIL to DTSTART, if needed
                 if (startTemporal != null) {
-                    rule = RRule(alignUntil(rule.recur, startTemporal!!))
+                    rule = RRule(RecurrenceUtils.alignUntil(rule.recur, startTemporal!!))
 
                     // skip if UNTIL is before task's DTSTART
                     val tsUntil = rule.recur.until?.toTimestamp()
@@ -135,63 +132,6 @@ class RecurrenceFieldsHandler : DmfsTaskEntityHandler {
         if (recurrenceStr.contains(';') || tzId == null || isUtcTzId(tzId))
             return recurrenceStr
         return "$tzId;$recurrenceStr"
-    }
-
-    /**
-     * Aligns the `UNTIL` of the given recurrence info to the VALUE-type (DATE-TIME/DATE) of [startTemporal].
-     *
-     * If the aligned `UNTIL` is a DATE-TIME, this method also makes sure that it's specified in UTC format
-     * as required by RFC 5545 3.3.10.
-     *
-     * @param recur             recurrence info whose `UNTIL` shall be aligned
-     * @param startTemporal     `DTSTART` date to compare with
-     *
-     * @return
-     *
-     * - UNTIL not set → original recur
-     * - UNTIL and DTSTART are both either DATE or DATE-TIME → original recur
-     * - UNTIL is DATE, DTSTART is DATE-TIME → UNTIL is amended to DATE-TIME with time and timezone from DTSTART
-     * - UNTIL is DATE-TIME, DTSTART is DATE → UNTIL is reduced to its date component
-     *
-     * @see at.bitfire.synctools.mapping.calendar.handler.RecurrenceFieldsHandler.alignUntil
-     */
-    fun alignUntil(recur: Recur<Temporal>, startTemporal: Temporal): Recur<Temporal> {
-        val until: Temporal = recur.until ?: return recur
-
-        if (until.isDateTime()) {
-            // UNTIL is DATE-TIME
-            if (startTemporal.isDateTime()) {
-                // DTSTART is DATE-TIME → ensure UNTIL is in UTC
-                val untilZoned = until.toZonedDateTime()
-                return if (untilZoned.zone == ZoneOffset.UTC) {
-                    recur
-                } else {
-                    Recur.Builder(recur)
-                        .until(untilZoned.withZoneSameInstant(ZoneOffset.UTC).toInstant())
-                        .build()
-                }
-            } else {
-                // DTSTART is DATE → only take date part for UNTIL
-                val untilDate = until.toLocalDate()
-                return Recur.Builder(recur)
-                    .until(untilDate)
-                    .build()
-            }
-        } else {
-            // UNTIL is DATE
-            if (startTemporal.isDateTime()) {
-                // DTSTART is DATE-TIME → amend UNTIL to UTC DATE-TIME
-                val untilDate = until.toLocalDate()
-                val startTime = startTemporal.toZonedDateTime()
-                val untilDateWithTime = ZonedDateTime.of(untilDate, startTime.toLocalTime(), startTime.zone)
-                return Recur.Builder(recur)
-                    .until(untilDateWithTime.toInstant()) // convert to Instant for UTC with "Z" suffix
-                    .build()
-            } else {
-                // DTSTART is DATE
-                return recur
-            }
-        }
     }
 
 }

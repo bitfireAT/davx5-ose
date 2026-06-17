@@ -14,6 +14,8 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Converts a jtx timestamp and timezone column pair into the matching iCalendar [Temporal] type.
@@ -28,6 +30,9 @@ internal class JtxTimeField(
     private val timestamp: Long,
     private val timeZone: String?
 ) {
+
+    private val logger
+        get() = Logger.getLogger(javaClass.name)
 
     /**
      * Converts the stored value according to jtx timezone semantics.
@@ -57,7 +62,8 @@ internal class JtxTimeField(
     private fun zoneIdOrNull(tzId: String): ZoneId? =
         try {
             ZoneId.of(tzId)
-        } catch (_: DateTimeException) {
+        } catch (e: DateTimeException) {
+            logger.log(Level.WARNING, "Invalid timezone '$tzId', interpreting as UTC.", e)
             null
         }
 
