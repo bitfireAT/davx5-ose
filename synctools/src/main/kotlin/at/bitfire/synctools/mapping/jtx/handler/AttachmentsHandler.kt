@@ -37,11 +37,8 @@ class AttachmentsHandler(
         val uriString = attachmentValues.values.getAsString(JtxContract.JtxAttachment.URI) ?: return
 
         val attach = if (uriString.startsWith("content://")) {
-            val binaryData = attachmentFetcher.getAttachmentData(uriString)?.let { ByteBuffer.wrap(it) }
-            if (binaryData == null) {
-                logger.warning("Failed to read attachment data from URI: $uriString")
-                return
-            }
+            val attachmentId = attachmentValues.values.getAsLong(JtxContract.JtxAttachment.ID)
+            val binaryData = attachmentFetcher.getAttachmentData(attachmentId)?.let { ByteBuffer.wrap(it) } ?: return
 
             Attach(binaryData)
         } else {

@@ -5,5 +5,5 @@
 package at.bitfire.synctools.mapping.jtx.handler
 
 interface AttachmentFetcher {
-    fun getAttachmentData(uri: String): ByteArray?
+    fun getAttachmentData(attachmentId: Long): ByteArray?
 }

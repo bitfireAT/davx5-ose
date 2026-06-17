@@ -72,6 +72,7 @@ class AttachmentsHandlerTest {
         val input = Entity(ContentValues()).apply {
             addSubValue(
                 JtxContract.JtxAttachment.CONTENT_URI, contentValuesOf(
+                    JtxContract.JtxAttachment.ID to 2L,
                     JtxContract.JtxAttachment.URI to "content://fakedata",
                     JtxContract.JtxAttachment.FMTTYPE to "text/plain",
                     JtxContract.JtxAttachment.FILENAME to "file.txt"
@@ -87,7 +88,7 @@ class AttachmentsHandlerTest {
                     "QmluYXJ5IGF0dGFjaG1lbnQgZGF0YQ==\r\n",
             output.getRequiredProperty<Attach>(Property.ATTACH).toString()
         )
-        assertEquals("content://fakedata", attachmentFetcher.lastUri)
+        assertEquals(2L, attachmentFetcher.lastAttachmentId)
     }
 
     @Test
@@ -97,6 +98,7 @@ class AttachmentsHandlerTest {
             addSubValue(
                 JtxContract.JtxAttachment.CONTENT_URI,
                 contentValuesOf(
+                    JtxContract.JtxAttachment.ID to 42L,
                     JtxContract.JtxAttachment.URI to "content://fakedata/failing"
                 )
             )
@@ -106,7 +108,7 @@ class AttachmentsHandlerTest {
         handler.process(from = input, main = input, to = output)
 
         assertEquals(0, output.getProperties<Attach>(Property.ATTACH).size)
-        assertEquals("content://fakedata/failing", attachmentFetcher.lastUri)
+        assertEquals(42L, attachmentFetcher.lastAttachmentId)
     }
 
     @Test
@@ -128,13 +130,13 @@ class AttachmentsHandlerTest {
 }
 
 private class FakeAttachmentFetcher : AttachmentFetcher {
-    var lastUri: String? = null
+    var lastAttachmentId: Long? = null
         private set
 
     var attachmentData: ByteArray? = null
 
-    override fun getAttachmentData(uri: String): ByteArray? {
-        lastUri = uri
+    override fun getAttachmentData(attachmentId: Long): ByteArray? {
+        lastAttachmentId = attachmentId
         return attachmentData
     }
 }
