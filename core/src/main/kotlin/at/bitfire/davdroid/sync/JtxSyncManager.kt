@@ -33,7 +33,6 @@ import at.bitfire.synctools.icalendar.ICalendarGenerator
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.mapping.jtx.JtxObjectBuilder
 import at.bitfire.synctools.mapping.jtx.JtxObjectHandler
-import at.bitfire.synctools.mapping.jtx.SequenceUpdater
 import at.bitfire.synctools.mapping.jtx.handler.AndroidAttachmentFetcher
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -111,10 +110,6 @@ class JtxSyncManager @AssistedInject constructor(
         val localJtxObject = resource.jtxObjectAndExceptions
         logger.log(Level.FINE, "Preparing upload of icalobject #${resource.id}", localJtxObject)
 
-        // Increase SEQUENCE of main jtx object in memory and remember new value.
-        // Will be written to provider later over onSuccessContext.
-        val updatedSequence = SequenceUpdater().increaseSequence(localJtxObject.main)
-
         // Map jtx object to iCalendar (also generates UID, if necessary)
         val handler = JtxObjectHandler(
             prodId = ProdId(productIds.iCalProdId),
@@ -137,10 +132,7 @@ class JtxSyncManager @AssistedInject constructor(
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(mappedJtxObjects.uid, "ics"),
-            requestBody = requestBody,
-            onSuccessContext = GeneratedResource.OnSuccessContext(
-                sequence = updatedSequence
-            )
+            requestBody = requestBody
         )
     }
 
