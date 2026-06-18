@@ -50,6 +50,7 @@ import java.util.UUID
  * Mapper from jtx Board object main + data rows to [VJournal] or [VToDo].
  *
  * @param prodId the `PRODID` to use
+ * @param attachmentFetcher An implementation of [AttachmentFetcher] to fetch attachments from the JTX database
  */
 class JtxObjectHandler(
     private val prodId: ProdId,
