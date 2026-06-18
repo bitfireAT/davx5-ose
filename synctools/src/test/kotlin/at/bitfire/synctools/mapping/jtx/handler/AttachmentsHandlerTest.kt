@@ -8,6 +8,7 @@ import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.parameterListOf
+import at.bitfire.synctools.mapping.jtx.FakeAttachmentFetcher
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VToDo
@@ -126,17 +127,5 @@ class AttachmentsHandlerTest {
         handler.process(from = input, main = input, to = output)
 
         assertEquals(0, output.getProperties<Attach>(Property.ATTACH).size)
-    }
-}
-
-private class FakeAttachmentFetcher : AttachmentFetcher {
-    var lastAttachmentId: Long? = null
-        private set
-
-    var attachmentData: ByteArray? = null
-
-    override fun getAttachmentData(attachmentId: Long): ByteArray? {
-        lastAttachmentId = attachmentId
-        return attachmentData
     }
 }
