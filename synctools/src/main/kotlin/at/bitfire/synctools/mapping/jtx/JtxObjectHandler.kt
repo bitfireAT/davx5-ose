@@ -27,7 +27,6 @@ import at.bitfire.synctools.mapping.jtx.handler.PercentCompleteHandler
 import at.bitfire.synctools.mapping.jtx.handler.PriorityHandler
 import at.bitfire.synctools.mapping.jtx.handler.RecurrenceFieldsHandler
 import at.bitfire.synctools.mapping.jtx.handler.RelatedToHandler
-import at.bitfire.synctools.mapping.jtx.handler.RemindersHandler
 import at.bitfire.synctools.mapping.jtx.handler.ResourcesHandler
 import at.bitfire.synctools.mapping.jtx.handler.SequenceHandler
 import at.bitfire.synctools.mapping.jtx.handler.StatusHandler
@@ -73,8 +72,8 @@ class JtxObjectHandler(
         ContactHandler(),
         CreatedHandler(),
         DescriptionHandler(),
-        GeoFenceRadiusHandler(),
         GeoHandler(),
+        GeoFenceRadiusHandler(),
         LastModifiedHandler(),
         LocationHandler(),
         OrganizerHandler(),
@@ -105,8 +104,10 @@ class JtxObjectHandler(
         var generatedUid = false
         val mainValues = jtxObjectAndExceptions.main.entityValues
         val uid = mainValues.getAsString(JtxContract.JtxICalObject.UID) ?: run {
+            val newUid = UUID.randomUUID().toString()
+            mainValues.put(JtxContract.JtxICalObject.UID, newUid)
             generatedUid = true
-            UUID.randomUUID().toString()
+            newUid
         }
 
         // map main jtx object
