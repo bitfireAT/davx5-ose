@@ -353,7 +353,7 @@ class DebugInfoGenerator @Inject constructor(
                 .append(formatFileSize(memoryInfo.totalMem))
                 .append(" total (")
                 .append(formatPercent(memoryInfo.availMem, memoryInfo.totalMem))
-                .append(")\n")
+                .append(" available)\n")
                 .append("System RAM threshold: ")
                 .append(formatFileSize(memoryInfo.threshold))
                 .append("; low memory: ")
