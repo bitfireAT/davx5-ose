@@ -93,7 +93,6 @@ class LocalJtxObject(
         )
 
         collection.updateJtxObjectRow(id, values)
-
     }
 
     override fun getDebugSummary(): String {
