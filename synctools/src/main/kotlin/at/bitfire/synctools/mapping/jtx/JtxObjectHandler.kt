@@ -27,6 +27,7 @@ import at.bitfire.synctools.mapping.jtx.handler.PercentCompleteHandler
 import at.bitfire.synctools.mapping.jtx.handler.PriorityHandler
 import at.bitfire.synctools.mapping.jtx.handler.RecurrenceFieldsHandler
 import at.bitfire.synctools.mapping.jtx.handler.RelatedToHandler
+import at.bitfire.synctools.mapping.jtx.handler.RemindersHandler
 import at.bitfire.synctools.mapping.jtx.handler.ResourcesHandler
 import at.bitfire.synctools.mapping.jtx.handler.SequenceHandler
 import at.bitfire.synctools.mapping.jtx.handler.StatusHandler
