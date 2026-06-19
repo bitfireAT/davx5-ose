@@ -7,7 +7,7 @@ package at.bitfire.synctools.mapping.jtx.handler
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.JtxICalObject
+import at.bitfire.synctools.mapping.jtx.JtxProperty
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.XProperty
@@ -30,7 +30,7 @@ class GeoFenceRadiusHandlerTest {
 
         handler.process(from = input, main = input, to = output)
 
-        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull())
+        assertNull(output.getProperty<XProperty>(JtxProperty.X_GEOFENCE_RADIUS).getOrNull())
     }
 
     @Test
@@ -40,7 +40,7 @@ class GeoFenceRadiusHandlerTest {
 
         handler.process(from = input, main = input, to = output)
 
-        assertEquals("500", output.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull()?.value)
+        assertEquals("500", output.getProperty<XProperty>(JtxProperty.X_GEOFENCE_RADIUS).getOrNull()?.value)
     }
 
     @Test
@@ -50,6 +50,6 @@ class GeoFenceRadiusHandlerTest {
 
         handler.process(from = input, main = input, to = output)
 
-        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull())
+        assertNull(output.getProperty<XProperty>(JtxProperty.X_GEOFENCE_RADIUS).getOrNull())
     }
 }

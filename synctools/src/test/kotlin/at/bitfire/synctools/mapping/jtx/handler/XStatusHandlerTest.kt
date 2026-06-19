@@ -7,7 +7,7 @@ package at.bitfire.synctools.mapping.jtx.handler
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.JtxICalObject
+import at.bitfire.synctools.mapping.jtx.JtxProperty
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.XProperty
@@ -30,7 +30,7 @@ class XStatusHandlerTest {
 
         handler.process(from = input, main = input, to = output)
 
-        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_XSTATUS).getOrNull())
+        assertNull(output.getProperty<XProperty>(JtxProperty.X_XSTATUS).getOrNull())
     }
 
     @Test
@@ -42,7 +42,7 @@ class XStatusHandlerTest {
 
         assertEquals(
             "IN-PROCESS",
-            output.getProperty<XProperty>(JtxICalObject.X_PROP_XSTATUS).getOrNull()?.value
+            output.getProperty<XProperty>(JtxProperty.X_XSTATUS).getOrNull()?.value
         )
     }
 }

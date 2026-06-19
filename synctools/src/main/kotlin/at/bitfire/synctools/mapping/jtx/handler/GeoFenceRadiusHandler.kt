@@ -5,8 +5,8 @@
 package at.bitfire.synctools.mapping.jtx.handler
 
 import android.content.Entity
-import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.mapping.jtx.JtxProperty
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.property.XProperty
@@ -14,7 +14,7 @@ import net.fortuna.ical4j.model.property.XProperty
 class GeoFenceRadiusHandler : JtxObjectEntityHandler {
     override fun process(from: Entity, main: Entity, to: CalendarComponent) {
         from.entityValues.getAsInteger(JtxContract.JtxICalObject.GEOFENCE_RADIUS)?.let { radius ->
-            to += XProperty(JtxICalObject.X_PROP_GEOFENCE_RADIUS, radius.toString())
+            to += XProperty(JtxProperty.X_GEOFENCE_RADIUS, radius.toString())
         }
     }
 }

@@ -7,8 +7,8 @@ package at.bitfire.synctools.mapping.jtx.builder
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.mapping.UnknownProperty
+import at.bitfire.synctools.mapping.jtx.JtxProperty
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.CalendarComponent
@@ -85,9 +85,9 @@ class UnknownPropertiesBuilder : JtxObjectEntityBuilder {
             Property.SUMMARY,
             Property.UID,
             Property.URL,
-            JtxICalObject.X_PROP_COMPLETEDTIMEZONE,
-            JtxICalObject.X_PROP_GEOFENCE_RADIUS,
-            JtxICalObject.X_PROP_XSTATUS,
+            JtxProperty.X_COMPLETEDTIMEZONE,
+            JtxProperty.X_GEOFENCE_RADIUS,
+            JtxProperty.X_XSTATUS,
 
             // These properties can be ignored and shall not be saved as unknown properties.
             Property.DTSTAMP,

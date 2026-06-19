@@ -8,8 +8,8 @@ import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.DefaultTimezoneRule
-import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.mapping.jtx.JtxProperty
 import at.bitfire.synctools.test.assertContentValuesEqual
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.techbee.jtx.JtxContract
@@ -54,7 +54,7 @@ class CompletedBuilderTest {
         val output = Entity(ContentValues())
         val task = VToDo().apply {
             this += Completed(Instant.ofEpochMilli(1_000_000L))
-            this += XProperty(JtxICalObject.X_PROP_COMPLETEDTIMEZONE, "Z")
+            this += XProperty(JtxProperty.X_COMPLETEDTIMEZONE, "Z")
         }
 
         builder.build(from = task, main = task, to = output)
@@ -74,7 +74,7 @@ class CompletedBuilderTest {
         val output = Entity(ContentValues())
         val task = VToDo().apply {
             this += Completed(completed) // Always in UTC
-            this += XProperty(JtxICalObject.X_PROP_COMPLETEDTIMEZONE, "Europe/Vienna")
+            this += XProperty(JtxProperty.X_COMPLETEDTIMEZONE, "Europe/Vienna")
         }
 
         builder.build(from = task, main = task, to = output)
@@ -112,7 +112,7 @@ class CompletedBuilderTest {
         val output = Entity(ContentValues())
         val task = VToDo().apply {
             this += Completed(ParameterList(listOf(Value.DATE)), "20250815")
-            this += XProperty(JtxICalObject.X_PROP_COMPLETEDTIMEZONE, JtxContract.JtxICalObject.TZ_ALLDAY)
+            this += XProperty(JtxProperty.X_COMPLETEDTIMEZONE, JtxContract.JtxICalObject.TZ_ALLDAY)
         }
 
         builder.build(from = task, main = task, to = output)
