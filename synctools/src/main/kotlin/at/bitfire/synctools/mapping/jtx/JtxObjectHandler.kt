@@ -35,7 +35,7 @@ import at.bitfire.synctools.mapping.jtx.handler.TimeFieldsHandler
 import at.bitfire.synctools.mapping.jtx.handler.UidHandler
 import at.bitfire.synctools.mapping.jtx.handler.UnknownPropertiesHandler
 import at.bitfire.synctools.mapping.jtx.handler.UrlHandler
-import at.bitfire.synctools.mapping.jtx.handler.XStatusHandler
+import at.bitfire.synctools.mapping.jtx.handler.ExtendedStatusHandler
 import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
@@ -89,7 +89,7 @@ class JtxObjectHandler(
         UidHandler(),
         UnknownPropertiesHandler(),
         UrlHandler(),
-        XStatusHandler(),
+        ExtendedStatusHandler(),
     )
 
     /**

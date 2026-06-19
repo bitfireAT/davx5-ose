@@ -11,7 +11,7 @@ import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.property.XProperty
 
-class XStatusHandler : JtxObjectEntityHandler {
+class ExtendedStatusHandler : JtxObjectEntityHandler {
     override fun process(from: Entity, main: Entity, to: CalendarComponent) {
         from.entityValues.getAsString(JtxContract.JtxICalObject.EXTENDED_STATUS)?.let { xStatus ->
             to += XProperty(JtxProperty.X_XSTATUS, xStatus)

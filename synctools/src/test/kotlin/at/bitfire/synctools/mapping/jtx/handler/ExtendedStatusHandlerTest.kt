@@ -19,9 +19,9 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.jvm.optionals.getOrNull
 
 @RunWith(RobolectricTestRunner::class)
-class XStatusHandlerTest {
+class ExtendedStatusHandlerTest {
 
-    private val handler = XStatusHandler()
+    private val handler = ExtendedStatusHandler()
 
     @Test
     fun `No EXTENDED_STATUS`() {
