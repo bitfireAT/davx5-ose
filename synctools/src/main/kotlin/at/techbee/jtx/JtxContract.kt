@@ -1,15 +1,5 @@
 /*
- * This file is part of bitfireAT/synctools which is released under GPLv3.
- * Copyright © All Contributors. See the LICENSE and AUTHOR files in the root directory for details.
- * SPDX-License-Identifier: GPL-3.0-or-later
- */
-
-/*
- * Copyright (c) Techbee e.U.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
 package at.techbee.jtx
@@ -33,6 +23,7 @@ import at.techbee.jtx.JtxContract.JtxICalObject.GEO_LAT
 import at.techbee.jtx.JtxContract.JtxICalObject.GEO_LONG
 import at.techbee.jtx.JtxContract.JtxICalObject.TZ_ALLDAY
 import net.fortuna.ical4j.model.ParameterList
+import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.parameter.XParameter
 import net.fortuna.ical4j.model.property.XProperty
@@ -106,26 +97,26 @@ object JtxContract {
      * @return The list of XProperty parsed from the string
      */
     fun getXPropertyListFromJson(string: String): PropertyList {
-        val propertyList = PropertyList()
+        val propertyList = mutableListOf<Property>()
 
         if (string.isBlank())
-            return propertyList
+            return PropertyList(propertyList)
 
         try {
             val jsonObject = JSONObject(string)
+            val names = jsonObject.names() ?: return PropertyList(propertyList)
             for (i in 0 until jsonObject.length()) {
-                val names = jsonObject.names() ?: break
                 val propertyName = names[i]?.toString() ?: break
                 val propertyValue = jsonObject.getString(propertyName).toString()
                 if (propertyName.isNotBlank() && propertyValue.isNotBlank()) {
                     val prop = XProperty(propertyName, propertyValue)
-                    propertyList.add(prop)
+                    propertyList += prop
                 }
             }
         } catch (e: NullPointerException) {
             logger.log(Level.WARNING, "Error parsing x-property-list $string", e)
         }
-        return propertyList
+        return PropertyList(propertyList)
     }
 
 
