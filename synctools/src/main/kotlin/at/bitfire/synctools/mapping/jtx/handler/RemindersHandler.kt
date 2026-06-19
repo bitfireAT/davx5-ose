@@ -39,7 +39,11 @@ class RemindersHandler : JtxObjectEntityHandler {
         val alarmProps = mutableListOf<Property>()
 
         values.getAsString(JtxContract.JtxAlarm.ACTION)?.let { action ->
-            alarmProps += Action(action)
+            when (action.uppercase()) {
+                JtxContract.JtxAlarm.AlarmAction.DISPLAY.name -> alarmProps += Action(Action.VALUE_DISPLAY)
+                JtxContract.JtxAlarm.AlarmAction.AUDIO.name -> alarmProps += Action(Action.VALUE_AUDIO)
+                JtxContract.JtxAlarm.AlarmAction.EMAIL.name -> alarmProps += Action(Action.VALUE_EMAIL)
+            }
         }
         values.getAsString(JtxContract.JtxAlarm.ATTACH)?.let { attach ->
             val url = try {
