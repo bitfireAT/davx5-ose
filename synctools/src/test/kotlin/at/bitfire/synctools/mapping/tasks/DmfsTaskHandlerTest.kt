@@ -19,10 +19,12 @@ import org.dmfs.tasks.contract.TaskContract.Properties
 import org.dmfs.tasks.contract.TaskContract.Property.Relation
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.jvm.optionals.getOrNull
 
 @RunWith(RobolectricTestRunner::class)
 class DmfsTaskHandlerTest {
@@ -43,6 +45,8 @@ class DmfsTaskHandlerTest {
         val result = handler.mapToVToDos(taskAndExceptions)
 
         assertTrue(result.generatedUid)
+        assertNotNull(result.uid)
+        assertEquals(result.uid, result.associatedTasks.main?.uid?.getOrNull()?.value)
     }
 
     @Test
