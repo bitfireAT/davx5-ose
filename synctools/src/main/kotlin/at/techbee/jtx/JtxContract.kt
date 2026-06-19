@@ -95,6 +95,7 @@ object JtxContract {
      * This is the counterpart of getJsonStringFromXProperties(...)
      * @param [string] that should be parsed
      * @return The list of XProperty parsed from the string
+     * @throws org.json.JSONException if the string is not a valid JSON object
      */
     fun getXPropertyListFromJson(string: String): PropertyList {
         val propertyList = mutableListOf<Property>()

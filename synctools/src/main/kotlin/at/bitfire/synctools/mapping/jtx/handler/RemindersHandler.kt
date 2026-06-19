@@ -23,6 +23,7 @@ import net.fortuna.ical4j.model.property.Duration
 import net.fortuna.ical4j.model.property.Repeat
 import net.fortuna.ical4j.model.property.Summary
 import net.fortuna.ical4j.model.property.Trigger
+import org.json.JSONException
 import java.net.URI
 import java.time.Instant
 import java.time.format.DateTimeParseException
@@ -64,7 +65,13 @@ class RemindersHandler : JtxObjectEntityHandler {
 
         // Add all the unknown properties
         values.getAsString(JtxContract.JtxAlarm.OTHER)
-            ?.let(JtxContract::getXPropertyListFromJson)
+            ?.let { json ->
+                try {
+                    JtxContract.getXPropertyListFromJson(json)
+                } catch (_: JSONException) {
+                    null
+                }
+            }
             ?.let { alarmProps += it.all }
 
         handleTrigger(values)?.let { trigger ->
