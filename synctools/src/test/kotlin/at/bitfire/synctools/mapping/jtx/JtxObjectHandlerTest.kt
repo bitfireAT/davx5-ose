@@ -18,6 +18,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.jvm.optionals.getOrNull
 
 @RunWith(RobolectricTestRunner::class)
 class JtxObjectHandlerTest {
@@ -95,5 +96,6 @@ class JtxObjectHandlerTest {
 
         assertTrue(result.generatedUid)
         assertNotNull(result.uid)
+        assertEquals(result.uid, result.associatedComponents.main?.uid?.getOrNull()?.value)
     }
 }
