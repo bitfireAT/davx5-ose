@@ -23,5 +23,9 @@ class GeoHandler : JtxObjectEntityHandler {
         from.entityValues.getAsInteger(JtxContract.JtxICalObject.GEOFENCE_RADIUS)?.let { geofenceRadius ->
             to += XProperty(JtxProperty.X_GEOFENCE_RADIUS, geofenceRadius.toString())
         }
+
+        from.entityValues.getAsInteger(JtxContract.JtxICalObject.GEOFENCE_RADIUS)?.let { radius ->
+            to += XProperty(JtxProperty.X_GEOFENCE_RADIUS, radius.toString())
+        }
     }
 }
