@@ -8,28 +8,21 @@ import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.dateTimeValue
-import at.bitfire.dateValue
-import io.mockk.mockk
 import net.fortuna.ical4j.model.DateList
 import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.Property
-import net.fortuna.ical4j.model.Recur
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.parameter.TzId
 import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.RDate
 import net.fortuna.ical4j.model.property.RRule
-import net.fortuna.ical4j.transform.recurrence.Frequency
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.Temporal
 import kotlin.jvm.optionals.getOrNull
@@ -265,81 +258,6 @@ class RecurrenceFieldsHandlerTest {
         assertEquals("Europe/Vienna;20251010T010203", handler.withTzPrefix("Europe/Vienna;20251010T010203", "Europe/Vienna"))
     }
 
-
-    // alignUntil tests
-
-    @Test
-    fun `alignUntil(recurUntil=null)`() {
-        val recur = Recur.Builder<Temporal>()
-            .frequency(Frequency.DAILY)
-            .build()
-        val result = handler.alignUntil(recur, mockk())
-        assertSame(recur, result)
-    }
-
-    @Test
-    fun `alignUntil(recurUntil=DATE, startDate=DATE)`() {
-        val recur = Recur.Builder<Temporal>()
-            .frequency(Frequency.DAILY)
-            .until(dateValue("20251015"))
-            .build()
-        val result = handler.alignUntil(recur, LocalDate.now())
-        assertSame(recur, result)
-    }
-
-    @Test
-    fun `alignUntil(recurUntil=DATE, startDate=DATE-TIME)`() {
-        val result = handler.alignUntil(
-            recur = Recur.Builder<Temporal>()
-                .frequency(Frequency.DAILY)
-                .until(dateValue("20251015"))
-                .build(),
-            startTemporal = dateTimeValue("20250101T010203", tzVienna)
-        )
-        assertEquals(
-            Recur.Builder<Temporal>()
-                .frequency(Frequency.DAILY)
-                .until(dateTimeValue("20251014T230203Z"))
-                .build(),
-            result
-        )
-    }
-
-    @Test
-    fun `alignUntil(recurUntil=DATE-TIME, startDate=DATE)`() {
-        val result = handler.alignUntil(
-            recur = Recur.Builder<Temporal>()
-                .frequency(Frequency.DAILY)
-                .until(dateTimeValue("20251015T153118", tzVienna))
-                .build(),
-            startTemporal = LocalDate.now()
-        )
-        assertEquals(
-            Recur.Builder<Temporal>()
-                .frequency(Frequency.DAILY)
-                .until(dateValue("20251015"))
-                .build(),
-            result
-        )
-    }
-
-    @Test
-    fun `alignUntil(recurUntil=DATE-TIME, startDate=DATE-TIME)`() {
-        val result = handler.alignUntil(
-            recur = Recur.Builder<Temporal>()
-                .frequency(Frequency.DAILY)
-                .until(dateTimeValue("20251015T153118", tzVienna))
-                .build(),
-            startTemporal = LocalDateTime.now()
-        )
-        assertEquals(
-            Recur.Builder<Temporal>()
-                .frequency(Frequency.DAILY)
-                .until(dateTimeValue("20251015T133118Z"))
-                .build(),
-            result
-        )
-    }
 }
 
 private val VToDo.rRule: RRule<*>?

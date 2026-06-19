@@ -23,7 +23,8 @@ import org.robolectric.RobolectricTestRunner
 class JtxObjectHandlerTest {
 
     private val handler = JtxObjectHandler(
-        prodId = ProdId(javaClass.simpleName)
+        prodId = ProdId(javaClass.simpleName),
+        attachmentFetcher = FakeAttachmentFetcher()
     )
 
     @Test
