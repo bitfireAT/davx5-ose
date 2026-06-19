@@ -6,7 +6,6 @@ package at.bitfire.synctools.mapping.jtx
 
 import android.content.Entity
 import at.bitfire.synctools.icalendar.AssociatedComponents
-import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.mapping.jtx.handler.AttachmentFetcher
 import at.bitfire.synctools.mapping.jtx.handler.AttachmentsHandler
 import at.bitfire.synctools.mapping.jtx.handler.AttendeesHandler
@@ -45,7 +44,6 @@ import net.fortuna.ical4j.model.component.VJournal
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.RRule
-import net.fortuna.ical4j.model.property.Uid
 import java.util.UUID
 
 /**
@@ -101,19 +99,21 @@ class JtxObjectHandler(
      * If an `UID` was generated, it is noted in the result.
      */
     fun mapToCalendarComponents(jtxObjectAndExceptions: JtxObjectAndExceptions): MappingResult {
+        // make sure that main jtx object has a UID
         var generatedUid = false
+        val mainValues = jtxObjectAndExceptions.main.entityValues
+        val uid = mainValues.getAsString(JtxContract.JtxICalObject.UID) ?: run {
+            val newUid = UUID.randomUUID().toString()
+            mainValues.put(JtxContract.JtxICalObject.UID, newUid)
+            generatedUid = true
+            newUid
+        }
 
         // map main jtx object
         val main = mapJtxObject(
             entity = jtxObjectAndExceptions.main,
             main = jtxObjectAndExceptions.main
         )
-
-        // make sure that main jtx object has a UID
-        if (main.uid.isEmpty) {
-            generatedUid = true
-            main += Uid(UUID.randomUUID().toString())
-        }
 
         val rRules = main.getProperties<RRule<*>>(Property.RRULE)
         val exceptions: List<CalendarComponent> = if (rRules.isNotEmpty()) {
@@ -134,7 +134,7 @@ class JtxObjectHandler(
                 exceptions = exceptions,
                 prodId = prodId
             ),
-            uid = main.uid.get().value,
+            uid = uid,
             generatedUid = generatedUid
         )
     }
