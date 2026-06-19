@@ -18,6 +18,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.jvm.optionals.getOrNull
 
 @RunWith(RobolectricTestRunner::class)
 class JtxObjectHandlerTest {
@@ -84,16 +85,27 @@ class JtxObjectHandlerTest {
         val jtxObjectAndExceptions = JtxObjectAndExceptions(
             main = Entity(
                 contentValuesOf(
-                    JtxContract.JtxICalObject.COMPONENT to "VTODO"
+                    JtxContract.JtxICalObject.COMPONENT to "VTODO",
+                    JtxContract.JtxICalObject.RRULE to "FREQ=DAILY"
                     // No UID
                 )
             ),
-            exceptions = emptyList()
+            exceptions = listOf(
+                Entity(
+                    contentValuesOf(
+                        JtxContract.JtxICalObject.COMPONENT to "VTODO",
+                        JtxContract.JtxICalObject.RECURID to "20260619",
+                        // No UID
+                    )
+                )
+            ),
         )
 
         val result = handler.mapToCalendarComponents(jtxObjectAndExceptions)
 
         assertTrue(result.generatedUid)
         assertNotNull(result.uid)
+        assertEquals(result.uid, result.associatedComponents.main?.uid?.getOrNull()?.value)
+        assertEquals(result.uid, result.associatedComponents.exceptions.first().uid?.getOrNull()?.value)
     }
 }
