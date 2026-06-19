@@ -79,28 +79,31 @@ class RemindersHandler : JtxObjectEntityHandler {
     }
 
     private fun handleTrigger(values: ContentValues): Trigger? {
+        val triggerTime: Long? = values.getAsLong(JtxContract.JtxAlarm.TRIGGER_TIME)
         val triggerRelativeDuration: String? = values.getAsString(JtxContract.JtxAlarm.TRIGGER_RELATIVE_DURATION)
         val triggerRelativeTo: String? = values.getAsString(JtxContract.JtxAlarm.TRIGGER_RELATIVE_TO)
-        val triggerTime: Long? = values.getAsLong(JtxContract.JtxAlarm.TRIGGER_TIME)
-        val trigger = Trigger()
+
         if (triggerRelativeDuration != null) {
-            try {
+            val duration = try {
                 java.time.Duration.parse(triggerRelativeDuration)
             } catch (_: DateTimeParseException) {
                 null
-            }?.let { duration ->
-                trigger.duration = duration
-                if (triggerRelativeTo != null) {
-                    trigger += Related(triggerRelativeTo)
+            } ?: return triggerTime?.let { Trigger(Instant.ofEpochMilli(it)) }
+
+            return Trigger().apply {
+                this.duration = duration
+                when (triggerRelativeTo?.uppercase()) {
+                    JtxContract.JtxAlarm.AlarmRelativeTo.END.name -> this += Related.END
+                    // START is the default if RELATED is absent/invalid
                 }
             }
-        } else if (triggerTime != null) {
-            // TRIGGER with absolute date-time is always UTC per RFC 5545; timezone is ignored
-            trigger.date = Instant.ofEpochMilli(triggerTime)
-        } else {
-            return null
         }
 
-        return trigger
+        if (triggerTime != null) {
+            // TRIGGER with absolute date-time is always UTC per RFC 5545; timezone is ignored
+            return Trigger(Instant.ofEpochMilli(triggerTime))
+        }
+
+        return null
     }
 }
