@@ -103,8 +103,10 @@ class JtxObjectHandler(
         var generatedUid = false
         val mainValues = jtxObjectAndExceptions.main.entityValues
         val uid = mainValues.getAsString(JtxContract.JtxICalObject.UID) ?: run {
+            val newUid = UUID.randomUUID().toString()
+            mainValues.put(JtxContract.JtxICalObject.UID, newUid)
             generatedUid = true
-            UUID.randomUUID().toString()
+            newUid
         }
 
         // map main jtx object
