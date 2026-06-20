@@ -31,6 +31,8 @@ import javax.annotation.WillClose
 
 /**
  * @param client    HTTP client to use (responsible for closing it)
+ *
+ * Either [download] or [upload] must be called to ensure that [client] is actually closed.
  */
 class StreamingFileDescriptor @AssistedInject constructor(
     @Assisted @WillClose private val client: HttpClient,
