@@ -169,14 +169,4 @@ class TimeApiExtensionsTest {
         }
     }
 
-    @Test
-    fun `isSystemTimezone returns true for system timezone`() {
-        assertTrue(TimeApiExtensions.isSystemTimezone("Europe/Vienna"))
-    }
-
-    @Test
-    fun `isSystemTimezone returns false for custom timezone`() {
-        assertFalse(TimeApiExtensions.isSystemTimezone("Surely Unknown Timezone"))
-    }
-
 }

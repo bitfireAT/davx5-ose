@@ -4,7 +4,6 @@
 
 package at.bitfire.synctools.icalendar
 
-import at.bitfire.synctools.util.TimeApiExtensions
 import net.fortuna.ical4j.model.DefaultTimeZoneRegistryFactory
 import net.fortuna.ical4j.model.TimeZone
 import net.fortuna.ical4j.model.TimeZoneRegistry
@@ -15,7 +14,6 @@ import java.time.DateTimeException
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.zone.ZoneRules
-import java.util.Collections
 import java.util.logging.Logger
 
 /**
@@ -49,7 +47,7 @@ class SystemAwareTimeZoneRegistry(
      * - If the VTIMEZONE has no STANDARD or DAYLIGHT observances, it is invalid and ignored.
      */
     override fun register(timeZone: TimeZone, update: Boolean) {
-        if (TimeApiExtensions.isSystemTimezone(timeZone.id)) {
+        if (ZoneId.getAvailableZoneIds().contains(timeZone.id)) {
             logger.fine("Skipping VTIMEZONE registration for system-known TZID: ${timeZone.id}")
             return
         }
@@ -95,7 +93,7 @@ class SystemAwareTimeZoneRegistry(
 
     private companion object {
         val NON_EMPTY_ZONE_RULES: Map<String, ZoneRules> =
-            Collections.singletonMap("_ical4j_zone_", ZoneOffset.UTC.rules)
+            mapOf("_ical4j_zone_" to ZoneOffset.UTC.rules)
     }
 
     /* referenced in ical4j.properties */

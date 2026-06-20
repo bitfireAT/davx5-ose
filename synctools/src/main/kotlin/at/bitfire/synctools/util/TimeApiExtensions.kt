@@ -5,14 +5,12 @@
 package at.bitfire.synctools.util
 
 import net.fortuna.ical4j.model.TemporalAdapter
-import java.time.DateTimeException
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.Period
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
@@ -159,17 +157,5 @@ object TimeApiExtensions {
             throw NotImplementedError("Only Duration and Period is supported")
         return builder.toString()
     }
-
-    // timezone utilities
-
-    /**
-     * Returns whether [tzId] is a timezone ID known to the system (i.e. can be resolved via [ZoneId.of]).
-     */
-    fun isSystemTimezone(tzId: String): Boolean =
-        try {
-            ZoneId.of(tzId); true
-        } catch (_: DateTimeException) {
-            false
-        }
 
 }
