@@ -19,8 +19,9 @@ import io.ktor.http.Url
 import io.ktor.http.content.OutgoingContent
 import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteWriteChannel
+import io.ktor.utils.io.copyTo
+import io.ktor.utils.io.jvm.javaio.toByteReadChannel
 import io.ktor.utils.io.jvm.javaio.toInputStream
-import io.ktor.utils.io.writeFully
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
@@ -122,12 +123,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
             override val contentType: ContentType? = mimeType?.let { ContentType.parse(it.toString()) }
             override suspend fun writeTo(channel: ByteWriteChannel) {
                 ParcelFileDescriptor.AutoCloseInputStream(readFd).use { input ->
-                    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-                    var bytesRead: Int
-                    while (input.read(buffer).also { bytesRead = it } != -1) {
-                        channel.writeFully(buffer, startIndex = 0, endIndex = bytesRead)
-                        transferred += bytesRead
-                    }
+                    transferred = input.toByteReadChannel().copyTo(channel)
                 }
                 logger.fine("Uploaded $transferred byte(s) to $url")
             }
