@@ -53,7 +53,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
         ): StreamingFileDescriptor
     }
 
-    val dav = DavResource(client, url)
+    private val dav = DavResource(client, url)
     var transferred: Long = 0
 
     fun download() = doStreaming(false)

@@ -7,7 +7,9 @@ package at.bitfire.davdroid.webdav.operation
 import android.security.NetworkSecurityPolicy
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
+import at.bitfire.davdroid.db.WebDavDocumentDao
 import at.bitfire.davdroid.db.WebDavMount
+import at.bitfire.davdroid.db.WebDavMountDao
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
@@ -38,13 +40,15 @@ class MoveDocumentOperationTest {
 
     private lateinit var server: MockWebServer
 
-    private val documentDao = db.webDavDocumentDao()
-    private val mountDao = db.webDavMountDao()
+    private lateinit var documentDao: WebDavDocumentDao
+    private lateinit var mountDao: WebDavMountDao
     private lateinit var mount: WebDavMount
 
     @Before
     fun setUp() {
         hiltRule.inject()
+        documentDao = db.webDavDocumentDao()
+        mountDao = db.webDavMountDao()
 
         server = MockWebServer().apply {
             dispatcher = object : Dispatcher() {

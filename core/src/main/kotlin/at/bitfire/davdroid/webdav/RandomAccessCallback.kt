@@ -207,6 +207,8 @@ class RandomAccessCallback @AssistedInject constructor(
             dav.getRange(offset, size, headers) { response ->
                 if (response.status == HttpStatusCode.OK)       // server doesn't support ranged requests
                     throw PartialContentNotSupportedException()
+                if (response.status != HttpStatusCode.PartialContent)
+                    throw HttpException.fromResponse(response)
 
                 result = response.bodyAsBytes()
             }

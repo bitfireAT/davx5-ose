@@ -8,6 +8,7 @@ import android.content.Context
 import android.os.Build
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
+import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
@@ -16,7 +17,6 @@ import at.bitfire.davdroid.webdav.RandomAccessCallbackWrapper
 import at.bitfire.davdroid.webdav.StreamingFileDescriptor
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
-import io.ktor.http.ContentType
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -63,7 +63,7 @@ class OpenDocumentOperation @Inject constructor(
         }.await()
         logger.fine("Received file info: $fileInfo")
 
-        val contentType = doc.mimeType?.let { ContentType.parse(it.toString()) }
+        val contentType = doc.mimeType?.toString().toContentTypeOrNull()
 
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
         return@runBlocking if (
