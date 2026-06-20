@@ -8,7 +8,7 @@ import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.DtStart
-import org.junit.Assert.assertFalse
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -77,20 +77,12 @@ class SystemAwareTimeZoneRegistryTest {
         val dtStart = event.getProperty<DtStart<*>>(DtStart.DTSTART).get()
         val date = dtStart.date
 
-        assertTrue("Expected ZonedDateTime, got ${date::class.simpleName}", date is ZonedDateTime)
-        val zoneId = (date as ZonedDateTime).zone.id
-        assertFalse(
-            "DTSTART zone should not be ical4j-local-*, but was: $zoneId",
-            zoneId.startsWith("ical4j-local-")
-        )
-        assertTrue(
-            "DTSTART zone should be Europe/Berlin, but was: $zoneId",
-            zoneId == "Europe/Berlin"
-        )
+        assertTrue(date is ZonedDateTime)
+        assertEquals("Europe/Berlin", (date as ZonedDateTime).zone.id)
     }
 
     @Test
-    fun `VTIMEZONE with unknown TZID is still registered and used`() {
+    fun `VTIMEZONE with unknown TZID should produce ical4j-local zone`() {
         val reader = StringReader(
             """
             BEGIN:VCALENDAR
@@ -116,7 +108,11 @@ class SystemAwareTimeZoneRegistryTest {
         val calendar = CalendarBuilder().build(reader)
         val event = calendar.getComponents<VEvent>(VEvent.VEVENT).first()
         val dtStart = event.getProperty<DtStart<*>>(DtStart.DTSTART).get()
+        val date = (dtStart.date as ZonedDateTime)
 
-        assertNotNull("DTSTART should be parseable when VTIMEZONE is registered", dtStart.date)
+        assertTrue(
+            "ZonedDateTime should have a ical4j-parsed custom ZoneId",
+            date.zone.id.startsWith("ical4j-local-")
+        )
     }
 }
