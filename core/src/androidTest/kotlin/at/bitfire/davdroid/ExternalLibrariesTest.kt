@@ -20,7 +20,6 @@ class ExternalLibrariesTest {
      */
     @Test
     fun test_Dav4jvm_HttpUtils_parseDate_IMF_FixDate_GMT() {
-        // DateTimeFormatter with ZZZZ pattern fails on Android (requires "GMT+00:00", rejects bare "GMT");
         assertNotNull(HttpUtils.parseDate("Mon, 04 May 2026 22:51:02 GMT"))
     }
 
