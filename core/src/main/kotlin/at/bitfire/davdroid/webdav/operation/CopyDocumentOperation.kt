@@ -9,14 +9,12 @@ import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.util.logging.Logger
@@ -26,13 +24,12 @@ class CopyDocumentOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val httpClientBuilder: DavHttpClientBuilder,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(sourceDocumentId: String, targetParentDocumentId: String): String = runBlocking(ioDispatcher) {
+    operator fun invoke(sourceDocumentId: String, targetParentDocumentId: String): String = runBlocking {
         logger.fine("WebDAV copyDocument $sourceDocumentId $targetParentDocumentId")
         val srcDoc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
         val dstFolder = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()

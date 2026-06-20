@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.di
 
-import at.bitfire.davdroid.di.TestCoroutineDispatchersModule.standardTestDispatcher
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.MainDispatcher
@@ -17,6 +16,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 
 /**
@@ -32,32 +33,27 @@ import kotlinx.coroutines.test.setMain
 )
 object TestCoroutineDispatchersModule {
 
-    private val standardTestDispatcher = StandardTestDispatcher()
+    private val testScheduler = TestCoroutineScheduler()
 
     @Provides
     @DefaultDispatcher
-    fun defaultDispatcher(): CoroutineDispatcher = standardTestDispatcher
+    fun defaultDispatcher(): CoroutineDispatcher = StandardTestDispatcher(testScheduler)
 
     @Provides
     @IoDispatcher
-    fun ioDispatcher(): CoroutineDispatcher = standardTestDispatcher
+    fun ioDispatcher(): CoroutineDispatcher = StandardTestDispatcher(testScheduler)
 
     @Provides
     @MainDispatcher
-    fun mainDispatcher(): CoroutineDispatcher = standardTestDispatcher
+    fun mainDispatcher(): CoroutineDispatcher = StandardTestDispatcher(testScheduler)
 
     @Provides
     @SyncDispatcher
-    fun syncDispatcher(): CoroutineDispatcher = standardTestDispatcher
+    fun syncDispatcher(): CoroutineDispatcher = StandardTestDispatcher(testScheduler)
 
-   /**
-     * Sets the [standardTestDispatcher] as [Dispatchers.Main] so that test dispatchers
-     * created in the future use the same scheduler. See [StandardTestDispatcher] docs
-     * for more information.
-     */
     @OptIn(ExperimentalCoroutinesApi::class)
     fun initMainDispatcher() {
-        Dispatchers.setMain(standardTestDispatcher)
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
     }
 
 }
