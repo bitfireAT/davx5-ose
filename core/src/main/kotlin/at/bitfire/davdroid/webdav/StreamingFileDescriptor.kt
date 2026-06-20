@@ -24,7 +24,6 @@ import io.ktor.utils.io.jvm.javaio.toByteReadChannel
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -39,7 +38,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
     @Assisted @WillClose private val client: HttpClient,
     @Assisted private val externalScope: CoroutineScope,
     @Assisted private val finishedCallback: OnSuccessCallback,
-    @Assisted private val mimeType: MediaType?,
+    @Assisted private val mimeType: ContentType?,
     @Assisted private val url: Url,
     private val logger: Logger
 ) {
@@ -49,7 +48,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
         fun create(
             client: HttpClient,
             url: Url,
-            mimeType: MediaType?,
+            mimeType: ContentType?,
             externalScope: CoroutineScope,
             finishedCallback: OnSuccessCallback
         ): StreamingFileDescriptor
@@ -120,7 +119,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
      */
     private suspend fun uploadNow(readFd: ParcelFileDescriptor) {
         val body = object : OutgoingContent.WriteChannelContent() {
-            override val contentType: ContentType? = mimeType?.let { ContentType.parse(it.toString()) }
+            override val contentType: ContentType? = mimeType
             override suspend fun writeTo(channel: ByteWriteChannel) {
                 ParcelFileDescriptor.AutoCloseInputStream(readFd).use { input ->
                     transferred = input.toByteReadChannel().copyTo(channel)

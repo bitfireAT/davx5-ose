@@ -12,9 +12,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
+import io.ktor.http.ContentType
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
-import okhttp3.MediaType
 import javax.annotation.WillClose
 
 /**
@@ -35,7 +35,7 @@ import javax.annotation.WillClose
 class RandomAccessCallbackWrapper @AssistedInject constructor(
     @Assisted @WillClose private val httpClient: HttpClient,
     @Assisted url: Url,
-    @Assisted mimeType: MediaType?,
+    @Assisted mimeType: ContentType?,
     @Assisted headResponse: HeadResponse,
     @Assisted externalScope: CoroutineScope,
     callbackFactory: RandomAccessCallback.Factory
@@ -43,7 +43,13 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(httpClient: HttpClient, url: Url, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallbackWrapper
+        fun create(
+            httpClient: HttpClient,
+            url: Url,
+            mimeType: ContentType?,
+            headResponse: HeadResponse,
+            externalScope: CoroutineScope
+        ): RandomAccessCallbackWrapper
     }
 
 

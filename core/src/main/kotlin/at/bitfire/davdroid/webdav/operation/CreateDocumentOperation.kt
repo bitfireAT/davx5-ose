@@ -6,21 +6,22 @@ package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
 import android.provider.DocumentsContract.Document
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
+import io.ktor.http.HttpHeaders
+import io.ktor.http.URLBuilder
+import io.ktor.http.appendPathSegments
+import io.ktor.http.content.OutgoingContent
+import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.runInterruptible
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -29,7 +30,6 @@ class CreateDocumentOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val httpClientBuilder: DavHttpClientBuilder,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
 
@@ -41,44 +41,44 @@ class CreateDocumentOperation @Inject constructor(
         val createDirectory = mimeType == Document.MIME_TYPE_DIR
 
         var docId: Long?
-        val client = httpClientBuilder.build(parent.mountId)
-        for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
-            val newName = displayNameToMemberName(displayName, attempt)
-            val parentUrl = parent.toHttpUrl(db)
-            val newLocation = parentUrl.newBuilder()
-                .addPathSegment(newName)
-                .build()
-            val doc = DavResource(client, newLocation)
-            try {
-                runInterruptible(ioDispatcher) {
+        val parentUrl = parent.toKtorUrl(db)
+        httpClientBuilder.buildKtor(parent.mountId).use { client ->
+            for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
+                val newName = displayNameToMemberName(displayName, attempt)
+                val newLocation = URLBuilder(parentUrl).appendPathSegments(newName).build()
+                val doc = DavResource(client, newLocation)
+                try {
                     if (createDirectory)
                         doc.mkCol(null) {
                             // directory successfully created
                         }
                     else
-                        doc.put(RequestBody.EMPTY, ifNoneMatch = true) {
+                        doc.put(
+                            body = object : OutgoingContent.NoContent() {},
+                            additionalHeaders = headersOf(HttpHeaders.IfNoneMatch, "*")
+                        ) {
                             // document successfully created
                         }
-                }
 
-                docId = documentDao.insertOrReplace(
-                    WebDavDocument(
-                        mountId = parent.mountId,
-                        parentId = parent.id,
-                        name = newName,
-                        isDirectory = createDirectory,
-                        mimeType = mimeType.toMediaTypeOrNull(),
-                        eTag = null,
-                        lastModified = null,
-                        size = if (createDirectory) null else 0
+                    docId = documentDao.insertOrReplace(
+                        WebDavDocument(
+                            mountId = parent.mountId,
+                            parentId = parent.id,
+                            name = newName,
+                            isDirectory = createDirectory,
+                            mimeType = mimeType.toMediaTypeOrNull(),
+                            eTag = null,
+                            lastModified = null,
+                            size = if (createDirectory) null else 0
+                        )
                     )
-                )
 
-                DocumentProviderUtils.notifyFolderChanged(context, parentDocumentId)
+                    DocumentProviderUtils.notifyFolderChanged(context, parentDocumentId)
 
-                return@runBlocking docId.toString()
-            } catch (e: HttpException) {
-                e.throwForDocumentProvider(context, ignorePreconditionFailed = true)
+                    return@runBlocking docId.toString()
+                } catch (e: HttpException) {
+                    e.throwForDocumentProvider(context, ignorePreconditionFailed = true)
+                }
             }
         }
 

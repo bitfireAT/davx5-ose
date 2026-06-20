@@ -7,8 +7,8 @@ package at.bitfire.davdroid.webdav.operation
 import android.content.Context
 import android.provider.DocumentsContract.Document
 import android.provider.DocumentsContract.buildChildDocumentsUri
-import at.bitfire.dav4jvm.okhttp.DavCollection
-import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.ktor.DavCollection
+import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.GetContentLength
@@ -23,17 +23,14 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavDocumentDao
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentSortByMapper
 import at.bitfire.davdroid.webdav.DocumentsCursor
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runInterruptible
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.FileNotFoundException
 import java.util.concurrent.ConcurrentHashMap
@@ -46,7 +43,6 @@ class QueryChildDocumentsOperation @Inject constructor(
     private val db: AppDatabase,
     private val documentSortByMapper: Lazy<DocumentSortByMapper>,
     private val httpClientBuilder: DavHttpClientBuilder,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
 
@@ -129,12 +125,10 @@ class QueryChildDocumentsOperation @Inject constructor(
         val oldChildren = documentDao.getChildren(parent.id).associateBy { it.name }.toMutableMap() // "name" of file/folder must be unique
         val newChildrenList = hashMapOf<String, WebDavDocument>()
 
-        val parentUrl = parent.toHttpUrl(db)
-        val client = httpClientBuilder.build(parent.mountId)
-        val folder = DavCollection(client, parentUrl)
-
+        val parentUrl = parent.toKtorUrl(db)
         try {
-            runInterruptible(ioDispatcher) {
+            httpClientBuilder.buildKtor(parent.mountId).use { client ->
+                val folder = DavCollection(client, parentUrl)
                 folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
                     logger.fine("$relation $response")
 

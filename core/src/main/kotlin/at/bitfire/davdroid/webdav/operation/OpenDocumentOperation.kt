@@ -16,8 +16,8 @@ import at.bitfire.davdroid.webdav.RandomAccessCallbackWrapper
 import at.bitfire.davdroid.webdav.StreamingFileDescriptor
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
+import io.ktor.http.ContentType
 import io.ktor.http.Url
-import javax.annotation.WillNotClose
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
@@ -25,6 +25,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 import javax.inject.Inject
 
 class OpenDocumentOperation @Inject constructor(
@@ -62,6 +63,8 @@ class OpenDocumentOperation @Inject constructor(
         }.await()
         logger.fine("Received file info: $fileInfo")
 
+        val contentType = doc.mimeType?.let { ContentType.parse(it.toString()) }
+
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
         return@runBlocking if (
             androidSupportsRandomAccess &&
@@ -71,12 +74,12 @@ class OpenDocumentOperation @Inject constructor(
             fileInfo.supportsPartial == true    // WebDAV server must advertise random access
         ) {
             logger.fine("Creating RandomAccessCallback for $url")
-            val accessor = randomAccessCallbackWrapperFactory.create(client, url, doc.mimeType, fileInfo, accessScope)
+            val accessor = randomAccessCallbackWrapperFactory.create(client, url, contentType, fileInfo, accessScope)
             accessor.fileDescriptor()
 
         } else {
             logger.fine("Creating StreamingFileDescriptor for $url")
-            val fd = streamingFileDescriptorFactory.create(client, url, doc.mimeType, accessScope) { transferred, success ->
+            val fd = streamingFileDescriptorFactory.create(client, url, contentType, accessScope) { transferred, success ->
                 // called when transfer is finished
                 if (!success)
                     return@create
