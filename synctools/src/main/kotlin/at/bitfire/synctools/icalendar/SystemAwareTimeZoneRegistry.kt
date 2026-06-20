@@ -47,6 +47,7 @@ class SystemAwareTimeZoneRegistry(
      * - If the VTIMEZONE has no STANDARD or DAYLIGHT observances, it is invalid and ignored.
      */
     override fun register(timeZone: TimeZone, update: Boolean) {
+        // Note: ZoneId.of() is case-sensitive, so we can query available zone IDs directly
         if (ZoneId.getAvailableZoneIds().contains(timeZone.id)) {
             logger.fine("Skipping VTIMEZONE registration for system-known TZID: ${timeZone.id}")
             return

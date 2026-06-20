@@ -11,9 +11,12 @@ import net.fortuna.ical4j.model.property.DtStart
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 import java.io.StringReader
+import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.zone.ZoneRulesException
 
 class SystemAwareTimeZoneRegistryTest {
 
@@ -115,4 +118,20 @@ class SystemAwareTimeZoneRegistryTest {
             date.zone.id.startsWith("ical4j-local-")
         )
     }
+
+    // informal JVM behavior test
+
+    @Test
+    fun `ZoneId_of is case-sensitive()`() {
+        assertNotNull(ZoneId.of("Europe/Vienna"))
+
+        try {
+            ZoneId.of("Europe/VIENNA")
+            fail()
+        } catch (_: ZoneRulesException) {
+            // unknown time-zone ID
+        }
+
+    }
+
 }
