@@ -15,10 +15,10 @@ import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.client.utils.EmptyContent
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
-import io.ktor.http.content.OutgoingContent
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -54,7 +54,7 @@ class CreateDocumentOperation @Inject constructor(
                         }
                     else
                         doc.put(
-                            body = object : OutgoingContent.NoContent() {},
+                            body = EmptyContent,
                             additionalHeaders = headersOf(HttpHeaders.IfNoneMatch, "*")
                         ) {
                             // document successfully created
