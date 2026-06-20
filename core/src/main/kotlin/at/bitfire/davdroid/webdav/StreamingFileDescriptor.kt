@@ -16,9 +16,8 @@ import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
-import io.ktor.http.content.OutgoingContent
+import io.ktor.http.content.ChannelWriterContent
 import io.ktor.http.headersOf
-import io.ktor.utils.io.ByteWriteChannel
 import io.ktor.utils.io.copyTo
 import io.ktor.utils.io.jvm.javaio.toByteReadChannel
 import io.ktor.utils.io.jvm.javaio.toInputStream
@@ -118,15 +117,15 @@ class StreamingFileDescriptor @AssistedInject constructor(
      * @param readFd    source file descriptor (could for instance represent a local file)
      */
     private suspend fun uploadNow(readFd: ParcelFileDescriptor) {
-        val body = object : OutgoingContent.WriteChannelContent() {
-            override val contentType: ContentType? = mimeType
-            override suspend fun writeTo(channel: ByteWriteChannel) {
+        val body = ChannelWriterContent(
+            body = {
                 ParcelFileDescriptor.AutoCloseInputStream(readFd).use { input ->
-                    transferred = input.toByteReadChannel().copyTo(channel)
+                    transferred = input.toByteReadChannel().copyTo(this)
                 }
                 logger.fine("Uploaded $transferred byte(s) to $url")
-            }
-        }
+            },
+            contentType = mimeType
+        )
         dav.put(body) { }
     }
 
