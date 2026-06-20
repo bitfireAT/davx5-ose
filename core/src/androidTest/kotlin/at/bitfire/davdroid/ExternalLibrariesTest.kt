@@ -5,13 +5,24 @@
 package at.bitfire.davdroid
 
 import android.util.Xml
+import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.XmlUtils
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ExternalLibrariesTest {
+
+    /**
+     * Regression test for https://github.com/bitfireAT/dav4jvm/issues/22
+     */
+    @Test
+    fun test_Dav4jvm_HttpUtils_parseDate_IMF_FixDate_GMT() {
+        // DateTimeFormatter with ZZZZ pattern fails on Android (requires "GMT+00:00", rejects bare "GMT");
+        assertNotNull(HttpUtils.parseDate("Mon, 04 May 2026 22:51:02 GMT"))
+    }
 
     @Test
     fun test_Dav4jvm_XmlUtils_NewPullParser_RelaxedParsing() {
