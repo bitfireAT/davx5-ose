@@ -367,7 +367,7 @@ class Ical4jTest {
 
         try {
             CalendarBuilder(defaultTimeZoneRegistry).build(reader)
-            fail("SystemAwareTimeZoneRegistry can be removed")
+            fail("Skipping empty timezones workaround can be removed from SystemAwareTimeZoneRegistry")
         } catch (e: ParserException) {
             assertTrue(e.cause is NullPointerException)
         }
