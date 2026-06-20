@@ -36,10 +36,10 @@ import javax.annotation.WillClose
  */
 class StreamingFileDescriptor @AssistedInject constructor(
     @Assisted @WillClose private val client: HttpClient,
+    @Assisted private val url: Url,
+    @Assisted private val mimeType: ContentType?,
     @Assisted private val externalScope: CoroutineScope,
     @Assisted private val finishedCallback: OnSuccessCallback,
-    @Assisted private val mimeType: ContentType?,
-    @Assisted private val url: Url,
     private val logger: Logger
 ) {
 
