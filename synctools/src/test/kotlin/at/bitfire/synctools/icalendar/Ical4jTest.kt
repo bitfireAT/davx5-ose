@@ -43,7 +43,6 @@ import java.time.Period
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
-import java.time.temporal.UnsupportedTemporalTypeException
 
 class Ical4jTest {
 
@@ -368,7 +367,7 @@ class Ical4jTest {
 
         try {
             CalendarBuilder(defaultTimeZoneRegistry).build(reader)
-            fail("TimeZoneRegistryFactoryWorkaround can be removed")
+            fail("SystemAwareTimeZoneRegistry can be removed")
         } catch (e: ParserException) {
             assertTrue(e.cause is NullPointerException)
         }
