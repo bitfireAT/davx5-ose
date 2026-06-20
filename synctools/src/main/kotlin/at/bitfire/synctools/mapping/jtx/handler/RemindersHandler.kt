@@ -31,8 +31,9 @@ import java.time.format.DateTimeParseException
 class RemindersHandler : JtxObjectEntityHandler {
     @Suppress("UNCHECKED_CAST")
     override fun process(from: Entity, main: Entity, to: CalendarComponent) {
+        val container = to as? ComponentContainer<Component> ?: return
         from.subValues.filter { it.uri == JtxContract.JtxAlarm.CONTENT_URI }.forEach { reminder ->
-            (to as ComponentContainer<Component>) += decodeVAlarm(reminder.values)
+            container += decodeVAlarm(reminder.values)
         }
     }
 
