@@ -20,18 +20,6 @@ import java.time.temporal.TemporalAmount
 
 object TimeApiExtensions {
 
-    // timezone utilities
-
-    /**
-     * Returns whether [tzId] is a timezone ID known to the system (i.e. can be resolved via [ZoneId.of]).
-     */
-    fun isSystemTimezone(tzId: String): Boolean =
-        try {
-            ZoneId.of(tzId); true
-        } catch (_: DateTimeException) {
-            false
-        }
-
     // some constants
 
     const val DAYS_PER_WEEK = 7
@@ -171,5 +159,17 @@ object TimeApiExtensions {
             throw NotImplementedError("Only Duration and Period is supported")
         return builder.toString()
     }
+
+    // timezone utilities
+
+    /**
+     * Returns whether [tzId] is a timezone ID known to the system (i.e. can be resolved via [ZoneId.of]).
+     */
+    fun isSystemTimezone(tzId: String): Boolean =
+        try {
+            ZoneId.of(tzId); true
+        } catch (_: DateTimeException) {
+            false
+        }
 
 }
