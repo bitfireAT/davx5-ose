@@ -173,13 +173,13 @@ class QueryChildDocumentsOperation @Inject constructor(
                     oldChildren.remove(resource.name)
                 }
             }
+
+            // Delete child nodes which were not rediscovered (deleted serverside)
+            for ((_, oldChild) in oldChildren)
+                documentDao.delete(oldChild)
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't query children", e)
         }
-
-        // Delete child nodes which were not rediscovered (deleted serverside)
-        for ((_, oldChild) in oldChildren)
-            documentDao.delete(oldChild)
     }
 
 
