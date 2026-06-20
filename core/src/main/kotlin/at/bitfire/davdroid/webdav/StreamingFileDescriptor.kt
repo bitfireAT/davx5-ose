@@ -5,42 +5,51 @@
 package at.bitfire.davdroid.webdav
 
 import android.os.ParcelFileDescriptor
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.util.DavUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineDispatcher
+import io.ktor.client.HttpClient
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.Url
+import io.ktor.http.content.OutgoingContent
+import io.ktor.http.headersOf
+import io.ktor.utils.io.ByteWriteChannel
+import io.ktor.utils.io.jvm.javaio.toInputStream
+import io.ktor.utils.io.writeFully
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runInterruptible
-import okhttp3.HttpUrl
 import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody
-import okio.BufferedSink
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillClose
 
 /**
- * @param client    HTTP client to use
+ * @param client    HTTP client to use (responsible for closing it)
  */
 class StreamingFileDescriptor @AssistedInject constructor(
-    @Assisted private val client: OkHttpClient,
-    @Assisted private val url: HttpUrl,
-    @Assisted private val mimeType: MediaType?,
+    @Assisted @WillClose private val client: HttpClient,
     @Assisted private val externalScope: CoroutineScope,
     @Assisted private val finishedCallback: OnSuccessCallback,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @Assisted private val mimeType: MediaType?,
+    @Assisted private val url: Url,
     private val logger: Logger
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(client: OkHttpClient, url: HttpUrl, mimeType: MediaType?, externalScope: CoroutineScope, finishedCallback: OnSuccessCallback): StreamingFileDescriptor
+        fun create(
+            client: HttpClient,
+            url: Url,
+            mimeType: MediaType?,
+            externalScope: CoroutineScope,
+            finishedCallback: OnSuccessCallback
+        ): StreamingFileDescriptor
     }
 
     val dav = DavResource(client, url)
@@ -74,6 +83,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
                     writeFd.close()
                 } catch (_: IOException) {}
 
+                client.close()
                 finishedCallback.onFinished(transferred, success)
             }
         }
@@ -89,19 +99,13 @@ class StreamingFileDescriptor @AssistedInject constructor(
      *
      * @param writeFd   destination file descriptor (could for instance represent a local file)
      */
-    private suspend fun downloadNow(writeFd: ParcelFileDescriptor) = runInterruptible(ioDispatcher) {
-        dav.get(DavUtils.acceptAnything(preferred = mimeType), null) { response ->
-            response.body.use { body ->
-                if (response.isSuccessful) {
-                    ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { destination ->
-                        body.byteStream().use { source ->
-                            transferred += source.copyTo(destination)
-                        }
-                        logger.fine("Downloaded $transferred byte(s) from $url")
-                    }
-
-                } else
-                    writeFd.closeWithError("${response.code} ${response.message}")
+    private suspend fun downloadNow(writeFd: ParcelFileDescriptor) {
+        dav.get(additionalHeaders = acceptHeaders()) { response ->
+            ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { destination ->
+                response.bodyAsChannel().toInputStream().use { source ->
+                    transferred += source.copyTo(destination)
+                }
+                logger.fine("Downloaded $transferred byte(s) from $url")
             }
         }
     }
@@ -111,21 +115,25 @@ class StreamingFileDescriptor @AssistedInject constructor(
      *
      * @param readFd    source file descriptor (could for instance represent a local file)
      */
-    private suspend fun uploadNow(readFd: ParcelFileDescriptor) = runInterruptible(ioDispatcher) {
-        val body = object: RequestBody() {
-            override fun contentType(): MediaType? = mimeType
-            override fun isOneShot() = true
-            override fun writeTo(sink: BufferedSink) {
+    private suspend fun uploadNow(readFd: ParcelFileDescriptor) {
+        val body = object : OutgoingContent.WriteChannelContent() {
+            override val contentType: ContentType? = mimeType?.let { ContentType.parse(it.toString()) }
+            override suspend fun writeTo(channel: ByteWriteChannel) {
                 ParcelFileDescriptor.AutoCloseInputStream(readFd).use { input ->
-                    transferred += input.copyTo(sink.outputStream())
-                    logger.fine("Uploaded $transferred byte(s) to $url")
+                    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                    var bytesRead: Int
+                    while (input.read(buffer).also { bytesRead = it } != -1) {
+                        channel.writeFully(buffer, startIndex = 0, endIndex = bytesRead)
+                        transferred += bytesRead
+                    }
                 }
+                logger.fine("Uploaded $transferred byte(s) to $url")
             }
         }
-        DavResource(client, url).put(body) {
-            // upload successful
-        }
+        dav.put(body) { }
     }
+
+    private fun acceptHeaders() = headersOf(HttpHeaders.Accept, DavUtils.acceptAnything(preferred = mimeType))
 
 
     fun interface OnSuccessCallback {

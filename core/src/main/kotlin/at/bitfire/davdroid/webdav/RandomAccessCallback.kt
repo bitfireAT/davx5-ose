@@ -15,9 +15,9 @@ import android.system.OsConstants
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.HttpUtils
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.exception.DavException
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.util.DavUtils
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
@@ -26,24 +26,25 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.client.HttpClient
+import io.ktor.client.statement.bodyAsBytes
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.runInterruptible
-import okhttp3.Headers
-import okhttp3.HttpUrl
 import okhttp3.MediaType
-import okhttp3.OkHttpClient
 import java.io.InterruptedIOException
+import javax.annotation.WillNotClose
 import java.util.logging.Logger
 
 @RequiresApi(26)
 class RandomAccessCallback @AssistedInject constructor(
-    @Assisted private val httpClient: OkHttpClient,
-    @Assisted private val url: HttpUrl,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
+    @Assisted private val url: Url,
     @Assisted private val mimeType: MediaType?,
     @Assisted headResponse: HeadResponse,
     @Assisted private val externalScope: CoroutineScope,
@@ -62,7 +63,7 @@ class RandomAccessCallback @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(httpClient: OkHttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallback
+        fun create(httpClient: HttpClient, url: Url, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallback
     }
 
     data class PageIdentifier(
@@ -175,15 +176,14 @@ class RandomAccessCallback @AssistedInject constructor(
     /**
      * Responsible for loading (= downloading) a single page from the WebDAV resource.
      *
-     * @param scope     cancellable scope the loader runs in (loader cancels I/O) when this scope is cancelled
+     * @param scope     cancellable scope the loader runs in (loader cancels I/O when this scope is cancelled)
      */
     inner class PageLoader(
-        private val scope: CoroutineScope,
-        private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+        private val scope: CoroutineScope
     ): CacheLoader<PageIdentifier, ByteArray>() {
 
         override fun load(key: PageIdentifier) = runBlocking {
-            scope.async(ioDispatcher) {
+            scope.async {
                 loadAsync(key)
             }.await()
         }
@@ -193,30 +193,23 @@ class RandomAccessCallback @AssistedInject constructor(
             val size = key.size
             logger.fine("Loading page $url $offset/$size")
 
-            val ifMatch: Headers =
+            val headers = Headers.build {
+                append(HttpHeaders.Accept, DavUtils.acceptAnything(preferred = mimeType))
                 documentState.eTag?.let { eTag ->
-                    Headers.headersOf("If-Match", "\"$eTag\"")
+                    append(HttpHeaders.IfMatch, "\"$eTag\"")
                 } ?: documentState.lastModified?.let { lastModified ->
-                    Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
+                    append(HttpHeaders.IfUnmodifiedSince, HttpUtils.formatDate(lastModified))
                 } ?: throw DavException("ETag/Last-Modified required for random access")
-
-            return runInterruptible {   // network I/O that should be cancelled by Thread interruption
-                var result: ByteArray? = null
-                dav.getRange(
-                    DavUtils.acceptAnything(preferred = mimeType),
-                    offset,
-                    size,
-                    ifMatch
-                ) { response ->
-                    if (response.code == 200)       // server doesn't support ranged requests
-                        throw PartialContentNotSupportedException()
-                    else if (response.code != 206)
-                        throw HttpException(response)
-
-                    result = response.body.bytes()
-                }
-                result ?: throw DavException("No response body")
             }
+
+            var result: ByteArray? = null
+            dav.getRange(offset, size, headers) { response ->
+                if (response.status == HttpStatusCode.OK)       // server doesn't support ranged requests
+                    throw PartialContentNotSupportedException()
+
+                result = response.bodyAsBytes()
+            }
+            return result ?: throw DavException("No response body")
         }
 
     }

@@ -11,10 +11,11 @@ import androidx.annotation.RequiresApi
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
+import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
-import okhttp3.HttpUrl
 import okhttp3.MediaType
-import okhttp3.OkHttpClient
+import javax.annotation.WillClose
 
 /**
  * Use this wrapper to ensure that all memory is released as soon as [onRelease] is called.
@@ -32,8 +33,8 @@ import okhttp3.OkHttpClient
  */
 @RequiresApi(26)
 class RandomAccessCallbackWrapper @AssistedInject constructor(
-    @Assisted httpClient: OkHttpClient,
-    @Assisted url: HttpUrl,
+    @Assisted @WillClose private val httpClient: HttpClient,
+    @Assisted url: Url,
     @Assisted mimeType: MediaType?,
     @Assisted headResponse: HeadResponse,
     @Assisted externalScope: CoroutineScope,
@@ -42,7 +43,7 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(httpClient: OkHttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallbackWrapper
+        fun create(httpClient: HttpClient, url: Url, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallbackWrapper
     }
 
 
@@ -83,6 +84,8 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
 
         // remove reference to allow garbage collection
         callbackRef = null
+
+        httpClient.close()
     }
 
 }
