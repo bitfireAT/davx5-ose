@@ -15,7 +15,6 @@ import io.ktor.client.HttpClient
 import io.ktor.http.ContentType
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
-import javax.annotation.WillClose
 
 /**
  * Use this wrapper to ensure that all memory is released as soon as [onRelease] is called.
@@ -29,11 +28,11 @@ import javax.annotation.WillClose
  * **All fields of objects of this class must be set to `null` when [onRelease] is called!**
  * Otherwise they will leak memory.
  *
- * @param httpClient    HTTP client ([RandomAccessCallbackWrapper] is responsible to close it)
+ * @param httpClient    HTTP client (closed by [RandomAccessCallback] in its [RandomAccessCallback.onRelease])
  */
 @RequiresApi(26)
 class RandomAccessCallbackWrapper @AssistedInject constructor(
-    @Assisted @WillClose private val httpClient: HttpClient,
+    @Assisted httpClient: HttpClient,
     @Assisted url: Url,
     @Assisted mimeType: ContentType?,
     @Assisted headResponse: HeadResponse,
@@ -90,8 +89,6 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
 
         // remove reference to allow garbage collection
         callbackRef = null
-
-        httpClient.close()
     }
 
 }

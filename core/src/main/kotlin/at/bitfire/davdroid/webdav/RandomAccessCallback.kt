@@ -39,11 +39,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import java.io.InterruptedIOException
 import java.util.logging.Logger
-import javax.annotation.WillNotClose
+import javax.annotation.WillClose
 
 @RequiresApi(26)
 class RandomAccessCallback @AssistedInject constructor(
-    @Assisted @WillNotClose private val httpClient: HttpClient,
+    @Assisted @WillClose private val httpClient: HttpClient,
     @Assisted private val url: Url,
     @Assisted private val mimeType: ContentType?,
     @Assisted headResponse: HeadResponse,
@@ -127,6 +127,7 @@ class RandomAccessCallback @AssistedInject constructor(
 
         // free resources
         ioThread.quitSafely()
+        httpClient.close()
     }
 
 
