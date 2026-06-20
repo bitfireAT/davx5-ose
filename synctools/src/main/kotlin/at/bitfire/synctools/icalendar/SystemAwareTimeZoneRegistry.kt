@@ -23,51 +23,41 @@ import java.util.logging.Logger
  * ignoring any VTIMEZONE component provided alongside such a TZID.
  *
  * Workarounds:
- * - https://github.com/bitfireAT/davx5-ose/issues/2248
- * - https://github.com/bitfireAT/davx5-ose/issues/2525
- * - https://github.com/bitfireAT/davx5/issues/914
+ * - https://github.com/bitfireAT/davx5-ose/issues/2248 – NPE when receiving calendar event with invalid VTIMEZONE
+ * - https://github.com/bitfireAT/davx5-ose/issues/2525 – Don't use custom timezone when TZID is available in system
+ * - https://github.com/bitfireAT/davx5/issues/914 – Rare NPE in ical4j when ZoneIdPool runs out of available ZoneIds
  */
 class SystemAwareTimeZoneRegistry(
+    /** Underlying registry that handles storage and custom-VTIMEZONE resolution. */
     private val timeZoneRegistry: TimeZoneRegistry = DefaultTimeZoneRegistryFactory().createRegistry()
 ) : TimeZoneRegistry by timeZoneRegistry {
-
-    /**
-     * Configured via `ical4j.properties`:
-     * `net.fortuna.ical4j.timezone.registry=at.bitfire.synctools.icalendar.SystemAwareTimeZoneRegistry$Factory`
-     */
-    class Factory : TimeZoneRegistryFactory() {
-        override fun createRegistry() = SystemAwareTimeZoneRegistry()
-    }
-
-    private companion object {
-        // A non-empty map to ensure getZoneRules() is never empty. TzId.toZoneId() only calls
-        // registry.getZoneId() (which we override below) when getZoneRules() is non-empty;
-        // otherwise it falls through to getGlobalZoneId() which returns ical4j~UUID zones from
-        // the classpath database (DefaultZoneRulesProvider pre-populates ZONE_IDS for all TZIDs).
-        val NON_EMPTY_ZONE_RULES: Map<String, ZoneRules> =
-            Collections.singletonMap("_ical4j_zone_", ZoneOffset.UTC.rules)
-    }
 
     private val logger: Logger
         get() = Logger.getLogger(javaClass.name)
 
+    /** Delegates to our [register] (not the one of [timeZoneRegistry]). */
     override fun register(timeZone: TimeZone) {
         register(timeZone, update = false)
     }
 
+    /**
+     * Registers [timeZone] in the underlying registry, with the following exceptions:
+     *
+     * - If the TZID is known to the system (like `Europe/Berlin`), registration is skipped
+     *   so that [getZoneId] returns the system [ZoneId] directly without allocating an
+     *   `ical4j-local-*` pool slot.
+     * - If the VTIMEZONE has no STANDARD or DAYLIGHT observances, it is invalid and ignored.
+     */
     override fun register(timeZone: TimeZone, update: Boolean) {
-        // Don't register VTIMEZONEs for system-known TZIDs: the system ZoneId should be
-        // used directly via getZoneId(), so no ical4j-local-* pool slot should be allocated.
         if (TimeApiExtensions.isSystemTimezone(timeZone.id)) {
-            logger.info("Skipping VTIMEZONE registration for system-known TZID: ${timeZone.id}")
+            logger.fine("Skipping VTIMEZONE registration for system-known TZID: ${timeZone.id}")
             return
         }
 
+        // Don't register empty (and thus invalid) VTIMEZONEs
         val vTimeZone = timeZone.vTimeZone
-
         val standardObservances = vTimeZone.getComponents<Observance>(Observance.STANDARD)
         val daylightObservances = vTimeZone.getComponents<Observance>(Observance.DAYLIGHT)
-
         if (standardObservances.isEmpty() && daylightObservances.isEmpty()) {
             logger.info("Ignoring invalid VTIMEZONE with TZID: ${timeZone.id}")
             return
@@ -82,15 +72,35 @@ class SystemAwareTimeZoneRegistry(
         timeZoneRegistry.register(timeZone, update)
     }
 
+    /**
+     * Required hack: returns a non-empty zone-rules map so that
+     * [net.fortuna.ical4j.model.parameter.TzId.toZoneId] always calls [getZoneId]
+     * (overridden below) rather than falling through to
+     * [TimeZoneRegistry.getGlobalZoneId], which would return `ical4j~UUID` zones.
+     */
     override fun getZoneRules(): Map<String, ZoneRules> =
         timeZoneRegistry.zoneRules.takeIf { it.isNotEmpty() } ?: NON_EMPTY_ZONE_RULES
 
+    /**
+     * Returns the system [ZoneId] directly for TZIDs recognised by [ZoneId.of], instead
+     * of `ical4j-local-*` or `ical4j~UUID` zones. Falls back to the underlying
+     * registry for custom TZIDs.
+     */
     override fun getZoneId(tzId: String): ZoneId =
-    // Return system ZoneId directly for known TZIDs; this prevents ical4j-local-* or ical4j~*
-        // zones from being returned when a VTIMEZONE component is present alongside a system TZID.
         try {
             ZoneId.of(tzId)
         } catch (_: DateTimeException) {
             timeZoneRegistry.getZoneId(tzId)
         }
+
+    private companion object {
+        val NON_EMPTY_ZONE_RULES: Map<String, ZoneRules> =
+            Collections.singletonMap("_ical4j_zone_", ZoneOffset.UTC.rules)
+    }
+
+    /* referenced in ical4j.properties */
+    class Factory : TimeZoneRegistryFactory() {
+        override fun createRegistry() = SystemAwareTimeZoneRegistry()
+    }
+
 }
