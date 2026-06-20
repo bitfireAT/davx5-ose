@@ -23,6 +23,7 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -147,6 +148,28 @@ class QueryChildDocumentsOperationTest {
 
         // Assert folder got deleted
         assertEquals(null, db.webDavDocumentDao().get(folderId))
+    }
+
+    @Test
+    fun testDoQueryChildren_propfindFails_doesNotDeleteChildren() = runTest {
+        // Create a child document in DB
+        val childId = db.webDavDocumentDao().insert(
+            WebDavDocument(0, mount.id, rootDocument.id, "some_file.txt", false, "Some File")
+        )
+        assertNotNull(db.webDavDocumentDao().get(childId))
+
+        // Override server to return 500 for all requests
+        server.dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse =
+                MockResponse().setResponseCode(500)
+        }
+
+        // Query - PROPFIND fails
+        operation.queryChildren(rootDocument)
+
+        // Child must NOT have been deleted despite the PROPFIND failure
+        assertNotNull(db.webDavDocumentDao().get(childId))
+        assertEquals("some_file.txt", db.webDavDocumentDao().get(childId)!!.name)
     }
 
     @Test

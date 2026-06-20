@@ -7,7 +7,9 @@ package at.bitfire.davdroid.webdav
 import android.content.Context
 import android.provider.DocumentsContract
 import androidx.annotation.VisibleForTesting
-import at.bitfire.dav4jvm.okhttp.DavResource
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
+import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavMount
@@ -17,7 +19,6 @@ import at.bitfire.davdroid.settings.Credentials
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import javax.inject.Inject
@@ -123,7 +124,7 @@ class WebDavMountRepository @Inject constructor(
     internal suspend fun hasWebDav(
         url: HttpUrl,
         credentials: Credentials?
-    ): HttpUrl? = withContext(ioDispatcher) {
+    ): HttpUrl? {
         val validVersions = arrayOf("1", "2", "3")
 
         val builder = httpClientBuilder.get()
@@ -132,18 +133,17 @@ class WebDavMountRepository @Inject constructor(
                 domain = null,
                 getCredentials = { credentials }
             )
-        val httpClient = builder.build()
 
         var webdavUrl: HttpUrl? = null
-        val dav = DavResource(httpClient, url)
-        runInterruptible {
-            dav.options(followRedirects = true) { davCapabilities, response ->
+        builder.buildKtor().use { httpClient ->
+            val dav = DavResource(httpClient, url.toKtorUrl())
+            dav.options(followRedirects = true) { davCapabilities, _ ->
                 if (davCapabilities.any { it in validVersions })
-                    webdavUrl = dav.location
+                    webdavUrl = dav.location.toHttpUrl()
             }
         }
 
-        webdavUrl
+        return webdavUrl
     }
 
 }
