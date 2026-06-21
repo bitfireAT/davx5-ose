@@ -83,11 +83,11 @@ fun DebugInfoScreen(
         }
     )
 
+    val logFile = model.logFile
     val uiState = model.uiState
     val debugInfo = uiState.debugInfo
     val zipInProgress = uiState.zipInProgress
     val zipFile = uiState.zipFile
-    val logFile = uiState.logFile
     val error = uiState.error
 
     // Share zip file card, once successfully generated

@@ -53,22 +53,21 @@ class DebugInfoViewModel @AssistedInject constructor(
         fun createWithDetails(details: DebugInfoDetails): DebugInfoViewModel
     }
 
+    val cause: Throwable? = details.cause
+    val localResource: String? = details.localResource
+    val remoteResource: String? = details.remoteResource
+
+    // use app-wide "verbose log" from LogFileHandler if no specific log file was provided
+    val logFile: File? = (details.logFile ?: LogFileHandler.getDebugLogFile(context))?.takeIf { it.canRead() }
+
     data class UiState(
-        val cause: Throwable? = null,
-        val localResource: String? = null,
-        val remoteResource: String? = null,
-        val logFile: File? = null,
         val debugInfo: File? = null,
         val zipFile: File? = null,
         val zipInProgress: Boolean = false,
         val error: String? = null
     )
 
-    var uiState by mutableStateOf(
-        UiState(
-        // use app-wide "verbose log" from LogFileHandler if no specific log file was provided
-        logFile = (details.logFile ?: LogFileHandler.getDebugLogFile(context))?.takeIf { it.canRead() }
-    ))
+    var uiState by mutableStateOf(UiState())
         private set
 
     fun resetError() {
@@ -81,11 +80,6 @@ class DebugInfoViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch(ioDispatcher) {
-            uiState = uiState.copy(
-                cause = details.cause,
-                localResource = details.localResource,
-                remoteResource = details.remoteResource
-            )
             generateDebugInfo(
                 syncAccount = details.account,
                 syncDataType = details.syncDataType,
@@ -100,7 +94,7 @@ class DebugInfoViewModel @AssistedInject constructor(
     /**
      * Creates debug info and saves it to [FILE_DEBUG_INFO] in [LogFileHandler.debugDir]
      *
-     * Note: Part of this method and all of it's helpers (listed below) should probably be extracted in the future
+     * Note: Part of this method and all of its helpers (listed below) should probably be extracted in the future
      */
     private fun generateDebugInfo(
         syncAccount: Account?,
@@ -126,7 +120,8 @@ class DebugInfoViewModel @AssistedInject constructor(
     }
 
     /**
-     * Creates the ZIP file containing both [FILE_DEBUG_INFO] and [FILE_LOGS].
+     * Creates a ZIP file containing [FILE_DEBUG_INFO] and, if available, the [logFile];
+     * falls back to logcat output otherwise.
      *
      * Note: Part of this method should probably be extracted to a more suitable location
      */
@@ -144,7 +139,7 @@ class DebugInfoViewModel @AssistedInject constructor(
                     zip.closeEntry()
                 }
 
-                val logs = uiState.logFile
+                val logs = logFile
                 if (logs != null) {
                     // verbose logs available
                     zip.putNextEntry(ZipEntry(logs.name))
