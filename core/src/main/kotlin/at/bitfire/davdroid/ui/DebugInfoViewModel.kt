@@ -81,7 +81,7 @@ class DebugInfoViewModel @AssistedInject constructor(
         val debugDir = LogFileHandler.debugDir(context) ?: throw IOException("Couldn't create debug info directory")
 
         viewModelScope.launch(ioDispatcher) {
-            // fall back to persistent verbose log file if none was provided
+            // use app-wide "verbose log" from LogFileHandler if no specific log file was provided
             if (uiState.logFile == null)
                 LogFileHandler.getDebugLogFile(context)?.let { debugLogFile ->
                     if (debugLogFile.isFile && debugLogFile.canRead())

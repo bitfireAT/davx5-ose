@@ -11,14 +11,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.log.FileLoggerFactory
 import at.bitfire.davdroid.log.LogFileHandler
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.synctools.log.PlainTextFormatter
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -38,9 +37,8 @@ import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.io.File
+import java.net.URI
 import java.util.Optional
-import java.util.logging.FileHandler
-import java.util.logging.Level
 import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = LoginScreenViewModel.Factory::class)
@@ -50,7 +48,6 @@ class LoginScreenViewModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     private val accountRepository: AccountRepository,
     @ApplicationContext val context: Context,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
@@ -201,47 +198,14 @@ class LoginScreenViewModel @AssistedInject constructor(
     private var detectResourcesJob: Job? = null
 
     private fun detectResources() {
+        val baseUri = loginInfo.baseUri ?: return
         detectResourcesUiState = detectResourcesUiState.copy(loading = true)
         detectResourcesJob = viewModelScope.launch {
-            // First, if we have a validator, validate the server
-            val httpUrl = loginInfo.baseUri!!.toHttpUrlOrNull()
-            if (loginValidator.isPresent && httpUrl != null) {
-                val isValid = withContext(ioDispatcher) {
-                    runInterruptible {
-                        loginValidator.get().beforeLogin(httpUrl)
-                    }
-                }
-                if (!isValid) {
-                    detectResourcesUiState = detectResourcesUiState.copy(
-                        loading = false,
-                        loginValidationFailed = true
-                    )
-                    return@launch
-                }
-            }
-
-            // Then, find initial configuration
-            val logFile = File(LogFileHandler.debugDir(context), "service-detection.log")
-            val fileHandler = FileHandler(logFile.absolutePath, 1_000_000, 1, false).apply {
-                formatter = PlainTextFormatter.DEFAULT
-            }
-            val detectionLogger = Logger.getAnonymousLogger().apply {
-                level = Level.ALL
-                useParentHandlers = true
-                addHandler(fileHandler)
-            }
-            val result = withContext(ioDispatcher) {
-                runInterruptible {
-                    resourceFinderFactory.create(loginInfo.baseUri!!, loginInfo.credentials, detectionLogger)
-                        .findInitialConfiguration()
-                }
-            }
-            fileHandler.close()
-
+            if (!validateLogin(baseUri)) return@launch
+            val (result, logFile) = findConfiguration(baseUri)
             if (result.calDAV != null || result.cardDAV != null) {
                 foundConfig = result
                 navToNextPage()
-
             } else {
                 foundConfig = null
                 detectResourcesUiState = detectResourcesUiState.copy(
@@ -253,6 +217,40 @@ class LoginScreenViewModel @AssistedInject constructor(
             }
         }
     }
+
+    /**
+     * Validates the login using [loginValidator] if one is configured.
+     *
+     * @return `true` if valid or no validator is configured; `false` if the server rejected the
+     *   login (also updates [detectResourcesUiState] with [DetectResourcesUiState.loginValidationFailed])
+     */
+    private suspend fun validateLogin(baseUri: URI): Boolean {
+        val httpUrl = baseUri.toHttpUrlOrNull() ?: return true
+        if (!loginValidator.isPresent) return true
+        val isValid = withContext(ioDispatcher) {
+            runInterruptible { loginValidator.get().beforeLogin(httpUrl) }
+        }
+        if (!isValid)
+            detectResourcesUiState = detectResourcesUiState.copy(loading = false, loginValidationFailed = true)
+        return isValid
+    }
+
+    /**
+     * Runs service detection for [baseUri] and writes a log to a file in the debug directory.
+     *
+     * @return the detection result and the log [File] written during detection
+     */
+    private suspend fun findConfiguration(baseUri: URI): Pair<DavResourceFinder.Configuration, File> =
+        withContext(ioDispatcher) {
+            val logFile = File(LogFileHandler.debugDir(context), "service-detection.log")
+            val result = FileLoggerFactory.forFile(logFile).use { (logger) ->
+                runInterruptible {
+                    resourceFinderFactory.create(baseUri, loginInfo.credentials, logger)
+                        .findInitialConfiguration()
+                }
+            }
+            result to logFile
+        }
 
     private fun cancelResourceDetection() {
         detectResourcesJob?.cancel()
@@ -339,7 +337,7 @@ class LoginScreenViewModel @AssistedInject constructor(
         }
 
         viewModelScope.launch {
-            val account = withContext(defaultDispatcher) {
+            val account = withContext(ioDispatcher) {
                 accountRepository.createBlocking(
                     accountDetailsUiState.value.accountName,
                     loginInfo.credentials,
