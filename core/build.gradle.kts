@@ -175,12 +175,8 @@ dependencies {
     androidTestImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(testFixtures(project(":synctools")))
 
-    testImplementation(libs.androidx.room.testing)
-    testImplementation(libs.androidx.test.core)
     testImplementation(libs.bitfire.dav4jvm)
     testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.ktor.client.mock)
     testImplementation(libs.mockk)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.robolectric)

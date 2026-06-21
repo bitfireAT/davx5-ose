@@ -8,24 +8,28 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.test.createTestDatabase
+import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.testing.BindValue
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import java.util.logging.Logger
+import javax.inject.Inject
 
-@RunWith(RobolectricTestRunner::class)
+@HiltAndroidTest
 class PrincipalsRefresherTest {
 
     companion object {
@@ -46,7 +50,22 @@ class PrincipalsRefresherTest {
                     "</multistatus>"
     }
 
-    private lateinit var db: AppDatabase
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val mockKRule = MockKRule(this)
+
+    @Inject
+    lateinit var db: AppDatabase
+
+    @Inject
+    lateinit var principalsRefresher: PrincipalsRefresher.Factory
+
+    @BindValue
+    @MockK(relaxed = true)
+    lateinit var settings: SettingsManager
+
     private lateinit var client: HttpClient
     private lateinit var service: Service
 
@@ -70,7 +89,7 @@ class PrincipalsRefresherTest {
 
     @Before
     fun setUp() {
-        db = createTestDatabase()
+        hiltRule.inject()
         client = HttpClient(buildMockEngine())
 
         val serviceId = db.serviceDao().insertOrReplace(
@@ -82,7 +101,6 @@ class PrincipalsRefresherTest {
     @After
     fun tearDown() {
         client.close()
-        db.close()
     }
 
 
@@ -103,7 +121,7 @@ class PrincipalsRefresherTest {
             )
         )
 
-        PrincipalsRefresher(service, client, db, Logger.getLogger("test")).refreshPrincipals()
+        principalsRefresher.create(service, client).refreshPrincipals()
 
         val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)
@@ -128,7 +146,7 @@ class PrincipalsRefresherTest {
             )
         )
 
-        PrincipalsRefresher(service, client, db, Logger.getLogger("test")).refreshPrincipals()
+        principalsRefresher.create(service, client).refreshPrincipals()
 
         val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)
@@ -145,7 +163,7 @@ class PrincipalsRefresherTest {
             )
         )
 
-        PrincipalsRefresher(service, client, db, Logger.getLogger("test")).refreshPrincipals()
+        principalsRefresher.create(service, client).refreshPrincipals()
 
         assertEquals(0, db.principalDao().getByService(service.id).size)
     }

@@ -7,10 +7,11 @@ package at.bitfire.davdroid.servicedetection
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.network.DnsRecordResolver
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -19,7 +20,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
-import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
@@ -28,9 +28,12 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.net.URI
+import javax.inject.Inject
 
+@HiltAndroidTest
 class DavResourceFinderTest {
 
     companion object {
@@ -52,6 +55,12 @@ class DavResourceFinderTest {
                     "<response><href>$href</href><propstat><prop>$props</prop><status>HTTP/1.1 200 OK</status></propstat></response>" +
                     "</multistatus>"
     }
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var resourceFinderFactory: DavResourceFinder.Factory
 
     private lateinit var client: HttpClient
     private lateinit var finder: DavResourceFinder
@@ -93,8 +102,9 @@ class DavResourceFinderTest {
 
     @Before
     fun setUp() {
+        hiltRule.inject()
         client = HttpClient(buildMockEngine())
-        finder = DavResourceFinder(URI(BASE_URL), null, client, logMaxSize = 65536, mockk(relaxed = true))
+        finder = resourceFinderFactory.create(URI(BASE_URL), null, client, logMaxSize = 65536)
     }
 
     @After
@@ -105,12 +115,11 @@ class DavResourceFinderTest {
 
     @Test
     fun testFindInitialConfiguration_logsOutput() = runTest {
-        val serverFinder = DavResourceFinder(
+        val serverFinder = resourceFinderFactory.create(
             URI("$BASE_URL$PATH_CALDAV"),
             Credentials(username = "mock", password = "12345".toSensitiveString()),
             client,
-            logMaxSize = 65536,
-            mockk<DnsRecordResolver>(relaxed = true)
+            logMaxSize = 65536
         )
         val result = serverFinder.findInitialConfiguration()
         assertTrue(result.logs.contains("Checking user-given URL"))

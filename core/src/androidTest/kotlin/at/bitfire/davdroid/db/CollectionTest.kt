@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.db
 
+import androidx.test.filters.SmallTest
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import io.ktor.client.HttpClient
@@ -33,6 +34,7 @@ class CollectionTest {
 
 
     @Test
+    @SmallTest
     fun testFromDavResponseAddressBook() = runTest {
         val (davResource, client) = davResource(
             "<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav'>" +
@@ -63,6 +65,7 @@ class CollectionTest {
     }
 
     @Test
+    @SmallTest
     fun testFromDavResponseCalendar_FullTimezone() = runTest {
         val (davResource, client) = davResource(
             "<multistatus xmlns='DAV:' xmlns:CAL='urn:ietf:params:xml:ns:caldav' xmlns:ICAL='http://apple.com/ns/ical/'>" +
@@ -83,14 +86,14 @@ class CollectionTest {
                     "RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10\n" +
                     "TZOFFSETFROM:-0400\n" +
                     "TZOFFSETTO:-0500\n" +
-                    "TZNAME:Eastern Standard Time (US &amp; Canada)\n" +
+                    "TZNAME:Eastern Standard Time (US & Canada)\n" +
                     "END:STANDARD\n" +
                     "BEGIN:DAYLIGHT\n" +
                     "DTSTART:19870405T020000\n" +
                     "RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4\n" +
                     "TZOFFSETFROM:-0500\n" +
                     "TZOFFSETTO:-0400\n" +
-                    "TZNAME:Eastern Daylight Time (US &amp; Canada)\n" +
+                    "TZNAME:Eastern Daylight Time (US & Canada)\n" +
                     "END:DAYLIGHT\n" +
                     "END:VTIMEZONE\n" +
                     "END:VCALENDAR\n" +
@@ -119,6 +122,7 @@ class CollectionTest {
     }
 
     @Test
+    @SmallTest
     fun testFromDavResponseCalendar_OnlyTzId() = runTest {
         val (davResource, client) = davResource(
             "<multistatus xmlns='DAV:' xmlns:CAL='urn:ietf:params:xml:ns:caldav' xmlns:ICAL='http://apple.com/ns/ical/'>" +
@@ -153,6 +157,7 @@ class CollectionTest {
     }
 
     @Test
+    @SmallTest
     fun testFromDavResponseWebcal() = runTest {
         val (davResource, client) = davResource(
             "<multistatus xmlns='DAV:' xmlns:CS='http://calendarserver.org/ns/'>" +

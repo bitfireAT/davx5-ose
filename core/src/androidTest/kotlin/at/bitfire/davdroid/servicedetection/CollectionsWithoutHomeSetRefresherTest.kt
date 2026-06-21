@@ -4,31 +4,31 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import androidx.test.core.app.ApplicationProvider
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.test.createTestDatabase
+import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.testing.BindValue
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.test.runTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import java.util.logging.Logger
+import javax.inject.Inject
 
-@RunWith(RobolectricTestRunner::class)
+@HiltAndroidTest
 class CollectionsWithoutHomeSetRefresherTest {
 
     companion object {
@@ -47,7 +47,22 @@ class CollectionsWithoutHomeSetRefresherTest {
                     "</multistatus>"
     }
 
-    private lateinit var db: AppDatabase
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val mockKRule = MockKRule(this)
+
+    @Inject
+    lateinit var db: AppDatabase
+
+    @Inject
+    lateinit var refresherFactory: CollectionsWithoutHomeSetRefresher.Factory
+
+    @BindValue
+    @MockK(relaxed = true)
+    lateinit var settings: SettingsManager
+
     private lateinit var client: HttpClient
     private lateinit var service: Service
 
@@ -73,7 +88,7 @@ class CollectionsWithoutHomeSetRefresherTest {
 
     @Before
     fun setUp() {
-        db = createTestDatabase()
+        hiltRule.inject()
         client = HttpClient(buildMockEngine())
 
         val serviceId = db.serviceDao().insertOrReplace(
@@ -85,17 +100,7 @@ class CollectionsWithoutHomeSetRefresherTest {
     @After
     fun tearDown() {
         client.close()
-        db.close()
     }
-
-    private fun makeCollectionRepository() = DavCollectionRepository(
-        ApplicationProvider.getApplicationContext(),
-        db,
-        Logger.getLogger("test"),
-        { mockk(relaxed = true) },
-        { mockk(relaxed = true) },
-        mockk<DavServiceRepository>(relaxed = true)
-    )
 
 
     // refreshCollectionsWithoutHomeSet
@@ -110,8 +115,7 @@ class CollectionsWithoutHomeSetRefresherTest {
             )
         )
 
-        CollectionsWithoutHomeSetRefresher(service, client, db, makeCollectionRepository())
-            .refreshCollectionsWithoutHomeSet()
+        refresherFactory.create(service, client).refreshCollectionsWithoutHomeSet()
 
         assertEquals(
             Collection(
@@ -136,8 +140,7 @@ class CollectionsWithoutHomeSetRefresherTest {
             )
         )
 
-        CollectionsWithoutHomeSetRefresher(service, client, db, makeCollectionRepository())
-            .refreshCollectionsWithoutHomeSet()
+        refresherFactory.create(service, client).refreshCollectionsWithoutHomeSet()
 
         assertEquals(null, db.collectionDao().get(collectionId))
     }
@@ -153,8 +156,7 @@ class CollectionsWithoutHomeSetRefresherTest {
         )
 
         assertEquals(0, db.principalDao().getByService(service.id).size)
-        CollectionsWithoutHomeSetRefresher(service, client, db, makeCollectionRepository())
-            .refreshCollectionsWithoutHomeSet()
+        refresherFactory.create(service, client).refreshCollectionsWithoutHomeSet()
 
         val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)

@@ -6,8 +6,8 @@ package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.repository.DavHomeSetRepository
-import at.bitfire.davdroid.test.createTestDatabase
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -20,12 +20,11 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import java.util.logging.Logger
+import javax.inject.Inject
 
-@RunWith(RobolectricTestRunner::class)
+@HiltAndroidTest
 class ServiceRefresherTest {
 
     companion object {
@@ -46,7 +45,15 @@ class ServiceRefresherTest {
                     "</multistatus>"
     }
 
-    private lateinit var db: AppDatabase
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var db: AppDatabase
+
+    @Inject
+    lateinit var serviceRefresherFactory: ServiceRefresher.Factory
+
     private lateinit var client: HttpClient
     private lateinit var service: Service
 
@@ -81,7 +88,7 @@ class ServiceRefresherTest {
 
     @Before
     fun setUp() {
-        db = createTestDatabase()
+        hiltRule.inject()
         client = HttpClient(buildMockEngine())
 
         val serviceId = db.serviceDao().insertOrReplace(
@@ -93,7 +100,6 @@ class ServiceRefresherTest {
     @After
     fun tearDown() {
         client.close()
-        db.close()
     }
 
 
@@ -101,7 +107,7 @@ class ServiceRefresherTest {
     fun testDiscoverHomesets() = runTest {
         val baseUrl = Url("$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL")
 
-        ServiceRefresher(service, client, Logger.getLogger("test"), DavHomeSetRepository(db))
+        serviceRefresherFactory.create(service, client)
             .discoverHomesets(baseUrl)
 
         val savedHomesets = db.homeSetDao().getByService(service.id)
