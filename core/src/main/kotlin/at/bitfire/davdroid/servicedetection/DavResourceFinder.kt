@@ -105,7 +105,7 @@ class DavResourceFinder @AssistedInject constructor(
                 log.log(Level.INFO, "CalDAV service detection failed", e)
                 processException(e)
             }
-        } catch(_: Exception) {
+        } catch (_: Exception) {
             // we have been interrupted; reset results so that an error message will be shown
             cardDavConfig = null
             calDavConfig = null
@@ -129,32 +129,30 @@ class DavResourceFinder @AssistedInject constructor(
         // Start discovering
         log.info("Finding initial ${service.wellKnownName} service configuration")
         when (baseURI.scheme.lowercase()) {
-            "http", "https" ->
-                try {
-                    val baseURL = Url(baseURI.toString())
+            "http", "https" -> {
+                val baseURL = Url(baseURI)
 
-                    // remember domain for service discovery
-                    if (baseURL.protocol == URLProtocol.HTTPS)
-                        // service discovery will only be tried for https URLs, because only secure service discovery is implemented
-                        discoveryFQDN = baseURL.host
-
-                    // Actual discovery process
-                    checkBaseURL(baseURL, service, config)
-
-                    // If principal was not found already, try well known URI
-                    if (config.principal == null)
-                        try {
-                            config.principal = getCurrentUserPrincipal(
-                                URLBuilder(baseURL).takeFrom("/.well-known/${service.wellKnownName}").build(),
-                                service
-                            )
-                        } catch(e: Exception) {
-                            log.log(Level.FINE, "Well-known URL detection failed", e)
-                            processException(e)
-                        }
-                } catch (e: Exception) {
-                    log.log(Level.WARNING, "Couldn't parse base URI", e)
+                // remember domain for service discovery
+                if (baseURL.protocol == URLProtocol.HTTPS) {
+                    // service discovery will only be tried for https URLs, because only secure service discovery is implemented
+                    discoveryFQDN = baseURL.host
                 }
+
+                // Actual discovery process
+                checkBaseURL(baseURL, service, config)
+
+                // If principal was not found already, try well known URI
+                if (config.principal == null)
+                    try {
+                        config.principal = getCurrentUserPrincipal(
+                            URLBuilder(baseURL).takeFrom("/.well-known/${service.wellKnownName}").build(),
+                            service
+                        )
+                    } catch (e: Exception) {
+                        log.log(Level.FINE, "Well-known URL detection failed", e)
+                        processException(e)
+                    }
+            }
             "mailto" -> {
                 val mailbox = baseURI.schemeSpecificPart
                 val posAt = mailbox.lastIndexOf("@")
@@ -169,7 +167,7 @@ class DavResourceFinder @AssistedInject constructor(
                 log.info("No principal found at user-given URL, trying to discover for domain $fqdn")
                 try {
                     config.principal = discoverPrincipalUrl(fqdn, service)
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                     log.log(Level.FINE, "$service service discovery failed", e)
                     processException(e)
                 }
@@ -228,7 +226,7 @@ class DavResourceFinder @AssistedInject constructor(
                     }
                 }
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             log.log(Level.FINE, "PROPFIND/OPTIONS on user-given URL failed", e)
             processException(e)
         }
@@ -249,12 +247,12 @@ class DavResourceFinder @AssistedInject constructor(
                             val uri = URI(href)
                             if (uri.scheme.equals("mailto", true))
                                 mailboxes.add(uri.schemeSpecificPart)
-                        } catch(e: URISyntaxException) {
+                        } catch (e: URISyntaxException) {
                             log.log(Level.WARNING, "Couldn't parse user address", e)
                         }
                 }
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             log.log(Level.WARNING, "Couldn't query user email address", e)
             processException(e)
         }
@@ -344,7 +342,7 @@ class DavResourceFinder @AssistedInject constructor(
                     (service == Service.CALDAV && capabilities.contains("calendar-access")))
                     provided = true
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             log.log(Level.SEVERE, "Couldn't detect services on $url", e)
             if (e !is HttpException && e !is DavException)
                 throw e
@@ -401,7 +399,7 @@ class DavResourceFinder @AssistedInject constructor(
                 val principal = getCurrentUserPrincipal(initialContextPath, service)
 
                 principal?.let { return it }
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 log.log(Level.WARNING, "No resource found", e)
                 processException(e)
             }
