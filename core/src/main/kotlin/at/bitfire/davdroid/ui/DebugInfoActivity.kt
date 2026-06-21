@@ -20,6 +20,7 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.LogFileHandler
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.synctools.storage.TaskProvider
@@ -69,7 +70,9 @@ class DebugInfoActivity: AppCompatActivity() {
                 canViewResource = viewResourceIntent != null,
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE_SUMMARY),
                 remoteResource = remoteResource,
-                logFile = extras?.getString(EXTRA_LOG_FILE)?.let { File(it) },
+                logFile = extras?.getString(EXTRA_LOG_FILE)?.let { name ->
+                    LogFileHandler.debugDir(this)?.let { File(it, name) }
+                },
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,
@@ -228,7 +231,7 @@ class DebugInfoActivity: AppCompatActivity() {
 
         fun withLogFile(file: File?): IntentBuilder {
             if (file != null)
-                intent.putExtra(EXTRA_LOG_FILE, file.absolutePath)
+                intent.putExtra(EXTRA_LOG_FILE, file.name)
             return this
         }
 
@@ -263,7 +266,7 @@ class DebugInfoActivity: AppCompatActivity() {
         /** [Uri] of local resource related to the problem (as [android.os.Parcelable]) */
         internal const val EXTRA_LOCAL_RESOURCE_URI = "localResourceUri"
 
-        /** log file related to the problem (absolute path [String]) */
+        /** file name (not path) of a log file inside [at.bitfire.davdroid.log.LogFileHandler.debugDir] ([String]) */
         private const val EXTRA_LOG_FILE = "logFile"
 
         /** URL of remote resource related to the problem (plain-text [String]) */

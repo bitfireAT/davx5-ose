@@ -54,8 +54,6 @@ class DebugInfoViewModel @AssistedInject constructor(
     }
 
     val cause: Throwable? = details.cause
-    val localResource: String? = details.localResource
-    val remoteResource: String? = details.remoteResource
 
     // use app-wide "verbose log" from LogFileHandler if no specific log file was provided
     val logFile: File? = (details.logFile ?: LogFileHandler.getDebugLogFile(context))?.takeIf { it.canRead() }
