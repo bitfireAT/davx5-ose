@@ -40,7 +40,6 @@ import java.net.URI
 import java.net.URISyntaxException
 import java.util.LinkedList
 import java.util.logging.Level
-import java.util.logging.Logger
 
 /**
  * Does initial resource detection when an account is added. It uses the (user given) base URL to find
@@ -73,13 +72,10 @@ class DavResourceFinder @AssistedInject constructor(
         override fun toString() = wellKnownName
     }
 
-    private val logCapture: LogCapture = run {
-        // 1/8 of the app heap limit as a truncation cap (StringBuilder allocates lazily)
-        val activityManager = context.getSystemService<ActivityManager>()!!
-        val maxLogSize = activityManager.memoryClass * (1024 * 1024 / 8)
-        LogCapture(maxLogSize)
-    }
-    val log: Logger get() = logCapture.logger
+    private val logCapture = LogCapture(
+        maxSize = context.getSystemService<ActivityManager>()!!.memoryClass * (1024 * 1024 / 8)  // 1/8 of app heap as truncation cap
+    )
+    private val log = logCapture.logger
 
     private var encountered401 = false
 
