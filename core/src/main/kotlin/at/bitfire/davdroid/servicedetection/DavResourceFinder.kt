@@ -23,7 +23,7 @@ import at.bitfire.dav4jvm.property.webdav.CurrentUserPrincipal
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.log.StringHandler
+import at.bitfire.davdroid.log.LogCapture
 import at.bitfire.davdroid.network.DnsRecordResolver
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Credentials
@@ -40,7 +40,6 @@ import java.net.URI
 import java.net.URISyntaxException
 import java.util.LinkedList
 import java.util.logging.Level
-import java.util.logging.Logger
 
 /**
  * Does initial resource detection when an account is added. It uses the (user given) base URL to find
@@ -73,8 +72,10 @@ class DavResourceFinder @AssistedInject constructor(
         override fun toString() = wellKnownName
     }
 
-    val log: Logger = Logger.getLogger(javaClass.name)
-    private val logBuffer: StringHandler = initLogging()
+    private val logCapture = LogCapture(
+        maxSize = context.getSystemService<ActivityManager>()!!.memoryClass * (1024 * 1024 / 8)  // 1/8 of app heap as truncation cap
+    )
+    private val log = logCapture.logger
 
     private var encountered401 = false
 
@@ -88,19 +89,6 @@ class DavResourceFinder @AssistedInject constructor(
                 )
             }
         .build()
-
-    private fun initLogging(): StringHandler {
-        // don't use more than 1/4 of the available memory for a log string
-        val activityManager = context.getSystemService<ActivityManager>()!!
-        val maxLogSize = activityManager.memoryClass * (1024 * 1024 / 8)
-        val handler = StringHandler(maxLogSize)
-
-        // add StringHandler to logger
-        log.level = Level.ALL
-        log.addHandler(handler)
-
-        return handler
-    }
 
 
     /**
@@ -140,7 +128,7 @@ class DavResourceFinder @AssistedInject constructor(
             cardDAV = cardDavConfig,
             calDAV = calDavConfig,
             encountered401 = encountered401,
-            logs = logBuffer.toString()
+            logs = logCapture.logs
         )
     }
 
