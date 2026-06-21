@@ -12,8 +12,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.log.FileLoggerFactory
-import at.bitfire.davdroid.log.LogFileHandler
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
@@ -36,7 +36,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import java.io.File
 import java.net.URI
 import java.util.Optional
 import java.util.logging.Logger
@@ -48,6 +47,7 @@ class LoginScreenViewModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     private val accountRepository: AccountRepository,
     @ApplicationContext val context: Context,
+    private val debugDirectory: DebugDirectory,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
@@ -188,7 +188,7 @@ class LoginScreenViewModel @AssistedInject constructor(
         val foundNothing: Boolean = false,
         val encountered401: Boolean = false,
         val loginValidationFailed: Boolean = false,
-        val logFile: File? = null
+        val debugLogFileName: DebugDirectory.FileName? = null
     )
 
     var detectResourcesUiState by mutableStateOf(DetectResourcesUiState())
@@ -216,7 +216,7 @@ class LoginScreenViewModel @AssistedInject constructor(
                     loading = false,
                     foundNothing = true,
                     encountered401 = result.encountered401,
-                    logFile = logFile
+                    debugLogFileName = logFile
                 )
             }
         }
@@ -241,18 +241,19 @@ class LoginScreenViewModel @AssistedInject constructor(
     /**
      * Runs service detection for [baseUri] and writes a log to a file in the debug directory.
      *
-     * @return the detection result and the log [File] written during detection
+     * @return the detection result and the [DebugDirectory.FileName] of the log file written during detection
      */
-    private suspend fun findConfiguration(baseUri: URI): Pair<DavResourceFinder.Configuration, File> =
+    private suspend fun findConfiguration(baseUri: URI): Pair<DavResourceFinder.Configuration, DebugDirectory.FileName> =
         withContext(ioDispatcher) {
-            val logFile = File(LogFileHandler.debugDir(context), LOG_FILE_NAME)
-            val result = FileLoggerFactory.forFile(logFile).use { (logger) ->
+            val logFileName = DebugDirectory.FileName(LOG_FILE_NAME)
+            val logFile = debugDirectory.resolve(logFileName)
+            val result = FileLoggerFactory.forFile(logFile!!).use { (logger) ->
                 runInterruptible {
                     resourceFinderFactory.create(baseUri, loginInfo.credentials, logger)
                         .findInitialConfiguration()
                 }
             }
-            result to logFile
+            result to logFileName
         }
 
     private fun cancelResourceDetection() {

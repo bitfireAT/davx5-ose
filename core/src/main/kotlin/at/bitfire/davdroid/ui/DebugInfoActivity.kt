@@ -20,7 +20,7 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.LogFileHandler
+import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.synctools.storage.TaskProvider
@@ -47,6 +47,9 @@ import javax.inject.Inject
 class DebugInfoActivity: AppCompatActivity() {
 
     @Inject
+    lateinit var debugDirectory: DebugDirectory
+
+    @Inject
     lateinit var tasksAppManager: Lazy<TasksAppManager>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,8 +73,8 @@ class DebugInfoActivity: AppCompatActivity() {
                 canViewResource = viewResourceIntent != null,
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE_SUMMARY),
                 remoteResource = remoteResource,
-                logFile = extras?.getString(EXTRA_LOG_FILE)?.let { name ->
-                    LogFileHandler.debugDir(this)?.let { File(it, name) }
+                logFile = extras?.getString(EXTRA_DEBUG_LOG_FILE)?.let { name ->
+                    debugDirectory.resolve(DebugDirectory.FileName(name))
                 },
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
@@ -229,9 +232,9 @@ class DebugInfoActivity: AppCompatActivity() {
             return this
         }
 
-        fun withLogFile(fileName: String?): IntentBuilder {
+        fun withDebugLogFile(fileName: DebugDirectory.FileName?): IntentBuilder {
             if (fileName != null)
-                intent.putExtra(EXTRA_LOG_FILE, fileName)
+                intent.putExtra(EXTRA_DEBUG_LOG_FILE, fileName.name)
             return this
         }
 
@@ -266,8 +269,8 @@ class DebugInfoActivity: AppCompatActivity() {
         /** [Uri] of local resource related to the problem (as [android.os.Parcelable]) */
         internal const val EXTRA_LOCAL_RESOURCE_URI = "localResourceUri"
 
-        /** file name (not path) of a log file inside [at.bitfire.davdroid.log.LogFileHandler.debugDir] ([String]) */
-        private const val EXTRA_LOG_FILE = "logFile"
+        /** file name (not path) of a log file inside [at.bitfire.davdroid.log.DebugDirectory] ([String]) */
+        private const val EXTRA_DEBUG_LOG_FILE = "debugLogFile"
 
         /** URL of remote resource related to the problem (plain-text [String]) */
         private const val EXTRA_REMOTE_RESOURCE = "remoteResource"

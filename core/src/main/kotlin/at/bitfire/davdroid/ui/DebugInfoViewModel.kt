@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.log.LogFileHandler
 import at.bitfire.davdroid.ui.DebugInfoViewModel.Companion.FILE_DEBUG_INFO
 import com.google.common.io.ByteStreams
@@ -33,6 +34,7 @@ import java.util.zip.ZipOutputStream
 class DebugInfoViewModel @AssistedInject constructor(
     @Assisted private val details: DebugInfoDetails,
     @ApplicationContext val context: Context,
+    private val debugDirectory: DebugDirectory,
     private val debugInfoGenerator: DebugInfoGenerator,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
@@ -56,7 +58,7 @@ class DebugInfoViewModel @AssistedInject constructor(
     val cause: Throwable? = details.cause
 
     // use app-wide "verbose log" from LogFileHandler if no specific log file was provided
-    val logFile: File? = (details.logFile ?: LogFileHandler.getDebugLogFile(context))?.takeIf { it.canRead() }
+    val logFile: File? = (details.logFile ?: debugDirectory.resolve(LogFileHandler.LOG_FILE_NAME))?.takeIf { it.canRead() }
 
     data class UiState(
         val debugInfo: File? = null,
@@ -90,7 +92,7 @@ class DebugInfoViewModel @AssistedInject constructor(
     }
 
     /**
-     * Creates debug info and saves it to [FILE_DEBUG_INFO] in [LogFileHandler.debugDir]
+     * Creates debug info and saves it to [FILE_DEBUG_INFO] in [DebugDirectory]
      *
      * Note: Part of this method and all of its helpers (listed below) should probably be extracted in the future
      */
@@ -102,7 +104,7 @@ class DebugInfoViewModel @AssistedInject constructor(
         remoteResource: String?,
         timestamp: Long?
     ) {
-        val debugInfoFile = File(LogFileHandler.debugDir(context), FILE_DEBUG_INFO)
+        val debugInfoFile = File(debugDirectory.get(), FILE_DEBUG_INFO)
         debugInfoFile.printWriter().use { writer ->
             debugInfoGenerator(
                 syncAccount = syncAccount,
@@ -127,7 +129,7 @@ class DebugInfoViewModel @AssistedInject constructor(
         try {
             uiState = uiState.copy(zipInProgress = true)
 
-            val file = File(LogFileHandler.debugDir(context), "davx5-debug.zip")
+            val file = File(debugDirectory.get(), "davx5-debug.zip")
             logger.fine("Writing debug info to ${file.absolutePath}")
             ZipOutputStream(file.outputStream().buffered()).use { zip ->
                 zip.setLevel(9)
