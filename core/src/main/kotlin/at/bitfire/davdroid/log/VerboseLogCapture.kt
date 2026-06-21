@@ -11,9 +11,11 @@ import java.util.logging.Logger
  * Captures JUL log records of a bounded operation into a retrievable string.
  * Use [logger] for logging and read [logs] when done.
  *
+ * Logs at [Level.ALL] and propagates to the parent logger (logcat etc.) as usual.
+ *
  * @param maxSize truncation cap in bytes
  */
-class LogCapture(maxSize: Int) {
+class VerboseLogCapture(maxSize: Int) {
 
     private val handler = StringHandler(maxSize)
 

@@ -7,7 +7,7 @@ package at.bitfire.davdroid.servicedetection
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.log.LogCapture
+import at.bitfire.davdroid.log.VerboseLogCapture
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.Credentials
@@ -111,7 +111,7 @@ class DavResourceFinderTest {
     fun setUp() {
         hiltRule.inject()
         client = HttpClient(buildMockEngine())
-        finder = resourceFinderFactory.create(URI(BASE_URL), null, client, LogCapture(65536))
+        finder = resourceFinderFactory.create(URI(BASE_URL), null, client, VerboseLogCapture(65536))
     }
 
     @After
@@ -126,21 +126,21 @@ class DavResourceFinderTest {
         try {
             mockServer.start()
 
-            val logCapture = LogCapture(65536)
+            val logCapture = VerboseLogCapture(65536)
             val result = httpClientBuilderProvider.get()
-                .setLogger(logCapture.logger)
+                .setLogger(logCapture.logger)   // route wire logs to logCapture
                 .buildKtor()
                 .use { httpClient ->
                     resourceFinderFactory.create(
                         URI(mockServer.url("/").toString()),
                         Credentials(username = "mock", password = "12345".toSensitiveString()),
                         httpClient,
-                        logCapture
+                        logCapture              // route service detection logs to logCapture
                     ).findInitialConfiguration()
                 }
 
-            assertTrue(result.logs.contains("Checking user-given URL"))
-            assertTrue(result.logs.contains("PROPFIND ${mockServer.url("/")} HTTP/1.1"))   // HTTP wire log
+            assertTrue("Logs should contain service detection logs", result.logs.contains("Checking user-given URL"))
+            assertTrue("Logs should contain HTTP wire logs", result.logs.contains("PROPFIND ${mockServer.url("/")} HTTP/1.1"))
         } finally {
             mockServer.shutdown()
         }

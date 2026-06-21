@@ -21,7 +21,7 @@ import at.bitfire.dav4jvm.property.webdav.CurrentUserPrincipal
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.log.LogCapture
+import at.bitfire.davdroid.log.VerboseLogCapture
 import at.bitfire.davdroid.network.DnsRecordResolver
 import at.bitfire.davdroid.settings.Credentials
 import dagger.assisted.Assisted
@@ -51,19 +51,19 @@ import javax.annotation.WillNotClose
  * @param baseURI        user-given base URI (either mailto: URI or http(s):// URL)
  * @param credentials    optional login credentials (username/password, client certificate, OAuth state)
  * @param httpClient     Ktor HttpClient configured with authentication; caller owns and closes it
- * @param logCapture     shared log capture; caller must also pass its logger to the HTTP client builder
+ * @param logCapture     shared capture for service detection logging; caller should pass its logger to the HTTP client builder
  */
 class DavResourceFinder @AssistedInject constructor(
     @Assisted private val baseURI: URI,
     @Assisted private val credentials: Credentials? = null,
     @Assisted @WillNotClose private val httpClient: HttpClient,
-    @Assisted private val logCapture: LogCapture,
+    @Assisted private val logCapture: VerboseLogCapture,
     private val dnsRecordResolver: DnsRecordResolver,
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(baseURI: URI, credentials: Credentials?, httpClient: HttpClient, logCapture: LogCapture): DavResourceFinder
+        fun create(baseURI: URI, credentials: Credentials?, httpClient: HttpClient, logCapture: VerboseLogCapture): DavResourceFinder
     }
 
     enum class Service(val wellKnownName: String) {
@@ -200,7 +200,7 @@ class DavResourceFinder @AssistedInject constructor(
     private suspend fun checkBaseURL(baseURL: Url, service: Service, config: Configuration.ServiceInfo) {
         log.info("Checking user-given URL: $baseURL")
 
-        val davBaseURL = DavResource(httpClient, baseURL)
+        val davBaseURL = DavResource(httpClient, baseURL, log)
         try {
             when (service) {
                 Service.CARDDAV -> {
@@ -240,7 +240,7 @@ class DavResourceFinder @AssistedInject constructor(
     suspend fun queryEmailAddress(principal: Url): List<String> {
         val mailboxes = LinkedList<String>()
         try {
-            DavResource(httpClient, principal).propfind(0, CalDAV.CalendarUserAddressSet) { response, _ ->
+            DavResource(httpClient, principal, log).propfind(0, CalDAV.CalendarUserAddressSet) { response, _ ->
                 response[CalendarUserAddressSet::class.java]?.let { addressSet ->
                     for (href in addressSet.hrefs)
                         try {
@@ -337,7 +337,7 @@ class DavResourceFinder @AssistedInject constructor(
     suspend fun providesService(url: Url, service: Service): Boolean {
         var provided = false
         try {
-            DavResource(httpClient, url).options { capabilities, _ ->
+            DavResource(httpClient, url, log).options { capabilities, _ ->
                 if ((service == Service.CARDDAV && capabilities.contains("addressbook")) ||
                     (service == Service.CALDAV && capabilities.contains("calendar-access")))
                     provided = true
@@ -415,7 +415,7 @@ class DavResourceFinder @AssistedInject constructor(
      */
     suspend fun getCurrentUserPrincipal(url: Url, service: Service?): Url? {
         var principal: Url? = null
-        DavResource(httpClient, url).propfind(0, WebDAV.CurrentUserPrincipal) { response, _ ->
+        DavResource(httpClient, url, log).propfind(0, WebDAV.CurrentUserPrincipal) { response, _ ->
             response[CurrentUserPrincipal::class.java]?.href?.let { href ->
                 val resolved = URLBuilder(response.requestedUrl).takeFrom(href).build()
                 log.info("Found current-user-principal: $resolved")

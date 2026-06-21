@@ -14,7 +14,7 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
-import at.bitfire.davdroid.log.LogCapture
+import at.bitfire.davdroid.log.VerboseLogCapture
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
@@ -40,6 +40,7 @@ import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.Optional
+import java.util.logging.Logger
 import javax.inject.Provider
 
 @HiltViewModel(assistedFactory = LoginScreenViewModel.Factory::class)
@@ -222,7 +223,7 @@ class LoginScreenViewModel @AssistedInject constructor(
             val credentials = loginInfo.credentials
             val logMaxSize = context.getSystemService<ActivityManager>()!!.memoryClass * (1024 * 1024 / 8)
             // shared log capture for HTTP wire logs and DavResourceFinder logs
-            val logCapture = LogCapture(logMaxSize)
+            val logCapture = VerboseLogCapture(logMaxSize)
             val result = httpClientBuilderProvider.get()
                 .setLogger(logCapture.logger)
                 .apply {
@@ -279,7 +280,7 @@ class LoginScreenViewModel @AssistedInject constructor(
                 try {
                     GroupMethod.valueOf(groupMethodName)
                 } catch (e: IllegalArgumentException) {
-                    logger.warning("Invalid forced group method: $groupMethodName")
+                    Logger.getGlobal().warning("Invalid forced group method: $groupMethodName")
                     null
                 }
             else
