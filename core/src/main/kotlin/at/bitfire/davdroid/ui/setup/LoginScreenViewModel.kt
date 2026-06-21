@@ -12,12 +12,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.log.LogFileHandler
-import at.bitfire.davdroid.log.VerboseLogCapture
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.synctools.log.PlainTextFormatter
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -25,7 +26,6 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,6 +39,8 @@ import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.io.File
 import java.util.Optional
+import java.util.logging.FileHandler
+import java.util.logging.Level
 import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = LoginScreenViewModel.Factory::class)
@@ -49,6 +51,7 @@ class LoginScreenViewModel @AssistedInject constructor(
     private val accountRepository: AccountRepository,
     @ApplicationContext val context: Context,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
     private val resourceFinderFactory: DavResourceFinder.Factory,
@@ -203,7 +206,7 @@ class LoginScreenViewModel @AssistedInject constructor(
             // First, if we have a validator, validate the server
             val httpUrl = loginInfo.baseUri!!.toHttpUrlOrNull()
             if (loginValidator.isPresent && httpUrl != null) {
-                val isValid = withContext(Dispatchers.IO) {
+                val isValid = withContext(ioDispatcher) {
                     runInterruptible {
                         loginValidator.get().beforeLogin(httpUrl)
                     }
@@ -219,14 +222,21 @@ class LoginScreenViewModel @AssistedInject constructor(
 
             // Then, find initial configuration
             val logFile = File(LogFileHandler.debugDir(context), "service-detection.log")
-            val logCapture = VerboseLogCapture(logFile)
-            val result = withContext(Dispatchers.IO) {
-                 runInterruptible {
-                     resourceFinderFactory.create(loginInfo.baseUri!!, loginInfo.credentials, logCapture)
-                         .findInitialConfiguration()
-                 }
+            val fileHandler = FileHandler(logFile.absolutePath, 1_000_000, 1, false).apply {
+                formatter = PlainTextFormatter.DEFAULT
             }
-            logCapture.close()
+            val detectionLogger = Logger.getAnonymousLogger().apply {
+                level = Level.ALL
+                useParentHandlers = true
+                addHandler(fileHandler)
+            }
+            val result = withContext(ioDispatcher) {
+                runInterruptible {
+                    resourceFinderFactory.create(loginInfo.baseUri!!, loginInfo.credentials, detectionLogger)
+                        .findInitialConfiguration()
+                }
+            }
+            fileHandler.close()
 
             if (result.calDAV != null || result.cardDAV != null) {
                 foundConfig = result

@@ -7,10 +7,10 @@ package at.bitfire.davdroid.servicedetection
 import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.log.VerboseLogCapture
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.Credentials
+import at.bitfire.synctools.log.PlainTextFormatter
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -30,6 +30,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.net.URI
+import java.util.logging.FileHandler
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -65,7 +67,7 @@ class DavResourceFinderTest {
     private lateinit var server: MockWebServer
     private lateinit var client: OkHttpClient
     private lateinit var finder: DavResourceFinder
-    private lateinit var logCapture: VerboseLogCapture
+    private lateinit var finderFileHandler: FileHandler
 
     @Before
     fun setUp() {
@@ -81,14 +83,21 @@ class DavResourceFinderTest {
                 .authenticate(domain = null, getCredentials = { credentials })
                 .build()
 
-        logCapture = VerboseLogCapture(tempFolder.newFile())
+        finderFileHandler = FileHandler(tempFolder.newFile().absolutePath, 1_000_000, 1, false).apply {
+            formatter = PlainTextFormatter.DEFAULT
+        }
+        val finderLogger = Logger.getAnonymousLogger().apply {
+            level = Level.ALL
+            useParentHandlers = true
+            addHandler(finderFileHandler)
+        }
         val baseURI = URI.create("/")
-        finder = resourceFinderFactory.create(baseURI, credentials, logCapture)
+        finder = resourceFinderFactory.create(baseURI, credentials, finderLogger)
     }
 
     @After
     fun tearDown() {
-        logCapture.close()
+        finderFileHandler.close()
         server.shutdown()
     }
 
@@ -96,13 +105,20 @@ class DavResourceFinderTest {
     @Test
     fun testFindInitialConfiguration_logsOutput() {
         val logFile = tempFolder.newFile()
-        VerboseLogCapture(logFile).use { testLogCapture ->
-            resourceFinderFactory.create(
-                server.url(PATH_CALDAV).toUri(),
-                Credentials(username = "mock", password = "12345".toSensitiveString()),
-                testLogCapture
-            ).findInitialConfiguration()
+        val testFileHandler = FileHandler(logFile.absolutePath, 1_000_000, 1, false).apply {
+            formatter = PlainTextFormatter.DEFAULT
         }
+        val testLogger = Logger.getAnonymousLogger().apply {
+            level = Level.ALL
+            useParentHandlers = true
+            addHandler(testFileHandler)
+        }
+        resourceFinderFactory.create(
+            server.url(PATH_CALDAV).toUri(),
+            Credentials(username = "mock", password = "12345".toSensitiveString()),
+            testLogger
+        ).findInitialConfiguration()
+        testFileHandler.close()
         val logs = logFile.readText()
         assertTrue(logs.contains("Checking user-given URL"))   // service detection log
         assertTrue(logs.contains("PROPFIND"))                  // HTTP traffic

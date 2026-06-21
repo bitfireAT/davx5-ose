@@ -20,7 +20,6 @@ import at.bitfire.dav4jvm.property.webdav.CurrentUserPrincipal
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.log.VerboseLogCapture
 import at.bitfire.davdroid.network.DnsRecordResolver
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Credentials
@@ -36,6 +35,7 @@ import java.net.URI
 import java.net.URISyntaxException
 import java.util.LinkedList
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Does initial resource detection when an account is added. It uses the (user given) base URL to find
@@ -46,19 +46,19 @@ import java.util.logging.Level
  *
  * @param baseURI        user-given base URI (either mailto: URI or http(s):// URL)
  * @param credentials    optional login credentials (username/password, client certificate, OAuth state)
- * @param logCapture     shared capture for service detection logging; caller should pass its logger to the HTTP client builder
+ * @param log            logger for service detection; caller is responsible for its lifecycle
  */
 class DavResourceFinder @AssistedInject constructor(
     @Assisted private val baseURI: URI,
     @Assisted private val credentials: Credentials? = null,
-    @Assisted private val logCapture: VerboseLogCapture,
+    @Assisted private val log: Logger,
     private val dnsRecordResolver: DnsRecordResolver,
     httpClientBuilder: HttpClientBuilder
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(baseURI: URI, credentials: Credentials?, logCapture: VerboseLogCapture): DavResourceFinder
+        fun create(baseURI: URI, credentials: Credentials?, log: Logger): DavResourceFinder
     }
 
     enum class Service(val wellKnownName: String) {
@@ -67,8 +67,6 @@ class DavResourceFinder @AssistedInject constructor(
 
         override fun toString() = wellKnownName
     }
-
-    private val log = logCapture.logger
 
     private var encountered401 = false
 
