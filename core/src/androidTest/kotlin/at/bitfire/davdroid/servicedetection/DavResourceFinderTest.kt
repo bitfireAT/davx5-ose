@@ -86,6 +86,17 @@ class DavResourceFinderTest {
 
 
     @Test
+    fun testFindInitialConfiguration_logsOutput() {
+        val serverFinder = resourceFinderFactory.create(
+            server.url(PATH_CALDAV).toUri(),
+            Credentials(username = "mock", password = "12345".toSensitiveString())
+        )
+        val result = serverFinder.findInitialConfiguration()
+        assertTrue(result.logs.contains("Checking user-given URL"))   // service detection log
+        assertTrue(result.logs.contains("PROPFIND"))                  // HTTP traffic
+    }
+
+    @Test
     fun testRememberIfAddressBookOrHomeset() {
         // recognize home set
         var info = ServiceInfo()
