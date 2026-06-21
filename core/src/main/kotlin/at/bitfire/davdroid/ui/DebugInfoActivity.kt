@@ -229,9 +229,9 @@ class DebugInfoActivity: AppCompatActivity() {
             return this
         }
 
-        fun withLogFile(file: File?): IntentBuilder {
-            if (file != null)
-                intent.putExtra(EXTRA_LOG_FILE, file.name)
+        fun withLogFile(fileName: String?): IntentBuilder {
+            if (fileName != null)
+                intent.putExtra(EXTRA_LOG_FILE, fileName)
             return this
         }
 

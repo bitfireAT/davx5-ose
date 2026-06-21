@@ -160,7 +160,7 @@ fun DetectResourcesPageContent_NothingFound(
                     Button(
                         onClick = {
                             val intent = DebugInfoActivity.IntentBuilder(context)
-                                .withLogFile(logFile)
+                                .withLogFile(logFile.name)
                                 .build()
                             context.startActivity(intent)
                         }
