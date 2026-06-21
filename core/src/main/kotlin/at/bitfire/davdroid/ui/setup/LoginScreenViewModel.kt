@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
@@ -22,6 +23,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Provider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -46,6 +48,7 @@ class LoginScreenViewModel @AssistedInject constructor(
     private val accountRepository: AccountRepository,
     @ApplicationContext val context: Context,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    private val httpClientBuilderProvider: Provider<HttpClientBuilder>,
     private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
     private val resourceFinderFactory: DavResourceFinder.Factory,
@@ -215,12 +218,18 @@ class LoginScreenViewModel @AssistedInject constructor(
             }
 
             // Then, find initial configuration
-            val result = withContext(Dispatchers.IO) {
-                 runInterruptible {
-                     val finder = resourceFinderFactory.create(loginInfo.baseUri!!, loginInfo.credentials)
-                     finder.findInitialConfiguration()
-                 }
-            }
+            val credentials = loginInfo.credentials
+            val result = httpClientBuilderProvider.get()
+                .setLogger(logger)
+                .apply {
+                    if (credentials != null)
+                        authenticate(domain = null, getCredentials = { credentials })
+                }
+                .buildKtor()
+                .use { httpClient ->
+                    resourceFinderFactory.create(loginInfo.baseUri!!, credentials, httpClient)
+                        .findInitialConfiguration()
+                }
 
             if (result.calDAV != null || result.cardDAV != null) {
                 foundConfig = result

@@ -170,6 +170,7 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.ktor.client.mock)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(testFixtures(project(":synctools")))

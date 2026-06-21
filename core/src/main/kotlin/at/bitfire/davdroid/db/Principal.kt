@@ -8,8 +8,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.UrlUtils
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -56,14 +58,14 @@ data class Principal(
             // Create and return principal - even without it's display name
             return Principal(
                 serviceId = serviceId,
-                url = UrlUtils.omitTrailingSlash(dav.href),
+                url = UrlUtils.omitTrailingSlash(dav.href).toHttpUrl(),
                 displayName = displayName
             )
         }
 
         fun fromServiceAndUrl(service: Service, url: HttpUrl) = Principal(
             serviceId = service.id,
-            url = UrlUtils.omitTrailingSlash(url)
+            url = UrlUtils.omitTrailingSlash(url.toKtorUrl()).toHttpUrl()
         )
 
     }

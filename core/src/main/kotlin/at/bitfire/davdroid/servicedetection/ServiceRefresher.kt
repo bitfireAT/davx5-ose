@@ -4,10 +4,12 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.Property
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.UrlUtils
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.UrlUtils
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
 import at.bitfire.dav4jvm.property.caldav.CalendarProxyReadFor
@@ -25,8 +27,11 @@ import at.bitfire.davdroid.util.DavUtils.parent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
+import io.ktor.http.URLBuilder
+import io.ktor.http.takeFrom
+import javax.annotation.WillNotClose
 import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -35,14 +40,14 @@ import java.util.logging.Logger
  */
 class ServiceRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
-    @Assisted private val httpClient: OkHttpClient,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     private val logger: Logger,
     private val homeSetRepository: DavHomeSetRepository
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(service: Service, httpClient: OkHttpClient): ServiceRefresher
+        fun create(service: Service, httpClient: HttpClient): ServiceRefresher
     }
 
     /**
@@ -93,7 +98,7 @@ class ServiceRefresher @AssistedInject constructor(
      * @throws HttpException                                on HTTP errors
      * @throws at.bitfire.dav4jvm.exception.DavException    on application-level or logical errors
      */
-    internal fun discoverHomesets(
+    internal suspend fun discoverHomesets(
         principalUrl: HttpUrl,
         level: Int = 0,
         alreadyQueriedPrincipals: MutableSet<HttpUrl> = mutableSetOf(),
@@ -103,17 +108,17 @@ class ServiceRefresher @AssistedInject constructor(
         val relatedResources = mutableSetOf<HttpUrl>()
 
         // Query the URL
-        val principal = DavResource(httpClient, principalUrl)
+        val principal = DavResource(httpClient, principalUrl.toKtorUrl())
         val personal = level == 0
         try {
             principal.propfind(0, *homeSetProperties) { davResponse, _ ->
-                alreadyQueriedPrincipals += davResponse.href
+                alreadyQueriedPrincipals += davResponse.href.toHttpUrl()
 
                 // If response holds home sets, save them
                 davResponse[homeSetClass]?.let { homeSets ->
                     for (homeSetHref in homeSets.hrefs)
-                        principal.location.resolve(homeSetHref)?.let { homesetUrl ->
-                            val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
+                        URLBuilder(principal.location).takeFrom(homeSetHref).build().let { homesetUrl ->
+                            val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl).toHttpUrl()
                             if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
                                 homeSetRepository.insertOrUpdateByUrlBlocking(
                                     // HomeSet is considered personal if this is the outer recursion call,
@@ -140,9 +145,8 @@ class ServiceRefresher @AssistedInject constructor(
                     for (type in relatedResourcesTypes)
                         davResponse[type]?.let {
                             for (href in it.hrefs)
-                                principal.location.resolve(href)?.let { url ->
-                                    relatedResources += url
-                                }
+                                URLBuilder(principal.location).takeFrom(href).build()
+                                    .let { url -> relatedResources += url.toHttpUrl() }
                         }
                 }
 
@@ -153,7 +157,7 @@ class ServiceRefresher @AssistedInject constructor(
                         CalDAV.CalendarProxyWrite
                     )
                     if (proxyProperties.any { resourceType.types.contains(it) })
-                        relatedResources += davResponse.href.parent()
+                        relatedResources += davResponse.href.parent().toHttpUrl()
                 }
             }
         } catch (e: HttpException) {

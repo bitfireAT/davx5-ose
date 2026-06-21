@@ -4,8 +4,10 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.property.webdav.Owner
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
@@ -15,7 +17,10 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.OkHttpClient
+import io.ktor.client.HttpClient
+import io.ktor.http.URLBuilder
+import io.ktor.http.takeFrom
+import javax.annotation.WillNotClose
 
 /**
  * Logic for refreshing the list of collections (and their related information)
@@ -23,14 +28,14 @@ import okhttp3.OkHttpClient
  */
 class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
-    @Assisted private val httpClient: OkHttpClient,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     private val db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(service: Service, httpClient: OkHttpClient): CollectionsWithoutHomeSetRefresher
+        fun create(service: Service, httpClient: HttpClient): CollectionsWithoutHomeSetRefresher
     }
 
     /**
@@ -38,11 +43,11 @@ class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
      *
      * It queries each stored collection with a homeSetId of "null" and either updates or deletes (if inaccessible or unusable) them.
      */
-    internal fun refreshCollectionsWithoutHomeSet() {
+    internal suspend fun refreshCollectionsWithoutHomeSet() {
         val withoutHomeSet = db.collectionDao().getByServiceAndHomeset(service.id, null).associateBy { it.url }.toMutableMap()
         for ((url, localCollection) in withoutHomeSet) try {
             val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
-            DavResource(httpClient, url).propfind(0, *collectionProperties) { response, _ ->
+            DavResource(httpClient, url.toKtorUrl()).propfind(0, *collectionProperties) { response, _ ->
                 if (!response.isSuccess()) {
                     collectionRepository.delete(localCollection)
                     return@propfind
@@ -55,7 +60,7 @@ class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
                     collectionRepository.insertOrUpdateByUrlRememberSync(collection.copy(
                         serviceId = localCollection.serviceId,          // use same service ID as previous entry
                         ownerId = response[Owner::class.java]?.href     // save the principal id (collection owner)
-                            ?.let { response.href.resolve(it) }
+                            ?.let { URLBuilder(response.href).takeFrom(it).build().toHttpUrl() }
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
                             ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
                     ))

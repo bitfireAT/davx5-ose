@@ -6,13 +6,15 @@ package at.bitfire.davdroid.servicedetection
 import android.app.ActivityManager
 import android.content.Context
 import androidx.core.content.getSystemService
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.Property
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.UrlUtils
-import at.bitfire.dav4jvm.okhttp.exception.DavException
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
-import at.bitfire.dav4jvm.okhttp.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.UrlUtils
+import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
 import at.bitfire.dav4jvm.property.caldav.CalendarUserAddressSet
@@ -31,8 +33,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.client.HttpClient
+import javax.annotation.WillNotClose
+import io.ktor.http.URLBuilder
+import io.ktor.http.URLProtocol
+import io.ktor.http.Url
+import io.ktor.http.takeFrom
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.xbill.DNS.Type
 import java.io.InterruptedIOException
 import java.net.SocketTimeoutException
@@ -52,18 +59,19 @@ import java.util.logging.Logger
  * @param context        to build the HTTP client
  * @param baseURI        user-given base URI (either mailto: URI or http(s):// URL)
  * @param credentials    optional login credentials (username/password, client certificate, OAuth state)
+ * @param httpClient     Ktor HttpClient configured with authentication; caller owns and closes it
  */
 class DavResourceFinder @AssistedInject constructor(
     @Assisted private val baseURI: URI,
     @Assisted private val credentials: Credentials? = null,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     @ApplicationContext val context: Context,
     private val dnsRecordResolver: DnsRecordResolver,
-    httpClientBuilder: HttpClientBuilder
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(baseURI: URI, credentials: Credentials?): DavResourceFinder
+        fun create(baseURI: URI, credentials: Credentials?, httpClient: HttpClient): DavResourceFinder
     }
 
     enum class Service(val wellKnownName: String) {
@@ -77,17 +85,6 @@ class DavResourceFinder @AssistedInject constructor(
     private val logBuffer: StringHandler = initLogging()
 
     private var encountered401 = false
-
-    private val httpClient = httpClientBuilder
-        .setLogger(log)
-        .apply {
-            if (credentials != null)
-                authenticate(
-                    domain = null,
-                    getCredentials = { credentials }
-                )
-            }
-        .build()
 
     private fun initLogging(): StringHandler {
         // don't use more than 1/4 of the available memory for a log string
@@ -112,7 +109,7 @@ class DavResourceFinder @AssistedInject constructor(
      * @return service information – if there's neither a CalDAV service nor a CardDAV service,
      * service detection was not successful
      */
-    fun findInitialConfiguration(): Configuration {
+    suspend fun findInitialConfiguration(): Configuration {
         var cardDavConfig: Configuration.ServiceInfo? = null
         var calDavConfig: Configuration.ServiceInfo? = null
 
@@ -144,7 +141,7 @@ class DavResourceFinder @AssistedInject constructor(
         )
     }
 
-    private fun findInitialConfiguration(service: Service): Configuration.ServiceInfo? {
+    private suspend fun findInitialConfiguration(service: Service): Configuration.ServiceInfo? {
         // domain for service discovery
         var discoveryFQDN: String? = null
 
@@ -155,9 +152,11 @@ class DavResourceFinder @AssistedInject constructor(
         log.info("Finding initial ${service.wellKnownName} service configuration")
         when (baseURI.scheme.lowercase()) {
             "http", "https" ->
-                baseURI.toHttpUrlOrNull()?.let { baseURL ->
+                try {
+                    val baseURL = Url(baseURI.toString())
+
                     // remember domain for service discovery
-                    if (baseURL.scheme.equals("https", true))
+                    if (baseURL.protocol == URLProtocol.HTTPS)
                         // service discovery will only be tried for https URLs, because only secure service discovery is implemented
                         discoveryFQDN = baseURL.host
 
@@ -167,11 +166,16 @@ class DavResourceFinder @AssistedInject constructor(
                     // If principal was not found already, try well known URI
                     if (config.principal == null)
                         try {
-                            config.principal = getCurrentUserPrincipal(baseURL.resolve("/.well-known/" + service.wellKnownName)!!, service)
+                            config.principal = getCurrentUserPrincipal(
+                                URLBuilder(baseURL).takeFrom("/.well-known/${service.wellKnownName}").build(),
+                                service
+                            )
                         } catch(e: Exception) {
                             log.log(Level.FINE, "Well-known URL detection failed", e)
                             processException(e)
                         }
+                } catch (e: Exception) {
+                    log.log(Level.WARNING, "Couldn't parse base URI", e)
                 }
             "mailto" -> {
                 val mailbox = baseURI.schemeSpecificPart
@@ -196,7 +200,7 @@ class DavResourceFinder @AssistedInject constructor(
         // detect email address
         if (service == Service.CALDAV)
             config.principal?.let { principal ->
-                config.emails.addAll(queryEmailAddress(principal))
+                config.emails.addAll(queryEmailAddress(principal.toKtorUrl()))
             }
 
         // return config or null if config doesn't contain useful information
@@ -217,10 +221,10 @@ class DavResourceFinder @AssistedInject constructor(
      * @param service   service to detect configuration for
      * @param config    found configuration will be written to this object
      */
-    private fun checkBaseURL(baseURL: HttpUrl, service: Service, config: Configuration.ServiceInfo) {
+    private suspend fun checkBaseURL(baseURL: Url, service: Service, config: Configuration.ServiceInfo) {
         log.info("Checking user-given URL: $baseURL")
 
-        val davBaseURL = DavResource(httpClient, baseURL, log)
+        val davBaseURL = DavResource(httpClient, baseURL)
         try {
             when (service) {
                 Service.CARDDAV -> {
@@ -257,10 +261,10 @@ class DavResourceFinder @AssistedInject constructor(
      * @param principal principal URL of the user
      * @return list of found email addresses (empty if none)
      */
-    fun queryEmailAddress(principal: HttpUrl): List<String> {
+    suspend fun queryEmailAddress(principal: Url): List<String> {
         val mailboxes = LinkedList<String>()
         try {
-            DavResource(httpClient, principal, log).propfind(0, CalDAV.CalendarUserAddressSet) { response, _ ->
+            DavResource(httpClient, principal).propfind(0, CalDAV.CalendarUserAddressSet) { response, _ ->
                 response[CalendarUserAddressSet::class.java]?.let { addressSet ->
                     for (href in addressSet.hrefs)
                         try {
@@ -292,7 +296,7 @@ class DavResourceFinder @AssistedInject constructor(
      * @param davResponse   response whose properties are evaluated
      * @param config        structure storing the references
      */
-    fun scanResponse(resourceType: Property.Name, davResponse: Response, config: Configuration.ServiceInfo) {
+    suspend fun scanResponse(resourceType: Property.Name, davResponse: Response, config: Configuration.ServiceInfo) {
         var principal: HttpUrl? = null
 
         // Type mapping
@@ -312,7 +316,7 @@ class DavResourceFinder @AssistedInject constructor(
 
         // check for current-user-principal
         davResponse[CurrentUserPrincipal::class.java]?.href?.let { currentUserPrincipal ->
-            principal = davResponse.requestedUrl.resolve(currentUserPrincipal)
+            principal = URLBuilder(davResponse.requestedUrl).takeFrom(currentUserPrincipal).build().toHttpUrl()
         }
 
         davResponse[ResourceType::class.java]?.let {
@@ -325,23 +329,21 @@ class DavResourceFinder @AssistedInject constructor(
 
             // ... and/or a principal?
             if (it.types.contains(WebDAV.Principal))
-                principal = davResponse.href
+                principal = davResponse.href.toHttpUrl()
         }
 
         // Is it an addressbook-home-set or calendar-home-set?
         davResponse[homeSetClass]?.let { homeSet ->
             for (href in homeSet.hrefs) {
-                davResponse.requestedUrl.resolve(href)?.let {
-                    val location = UrlUtils.withTrailingSlash(it)
-                    log.info("Found home-set of type $resourceType at $location")
-                    config.homeSets += location
-                }
+                val location = UrlUtils.withTrailingSlash(URLBuilder(davResponse.requestedUrl).takeFrom(href).build())
+                log.info("Found home-set of type $resourceType at $location")
+                config.homeSets += location.toHttpUrl()
             }
         }
 
         // Is there a principal too?
         principal?.let {
-            if (providesService(it, serviceType))
+            if (providesService(it.toKtorUrl(), serviceType))
                 config.principal = principal
             else
                 log.warning("Principal $principal doesn't provide $serviceType service")
@@ -356,10 +358,10 @@ class DavResourceFinder @AssistedInject constructor(
      *
      * @return whether the URL provides the given service
      */
-    fun providesService(url: HttpUrl, service: Service): Boolean {
+    suspend fun providesService(url: Url, service: Service): Boolean {
         var provided = false
         try {
-            DavResource(httpClient, url, log).options { capabilities, _ ->
+            DavResource(httpClient, url).options { capabilities, _ ->
                 if ((service == Service.CARDDAV && capabilities.contains("addressbook")) ||
                     (service == Service.CALDAV && capabilities.contains("calendar-access")))
                     provided = true
@@ -381,9 +383,8 @@ class DavResourceFinder @AssistedInject constructor(
      * @param service        service to discover (CALDAV or CARDDAV)
      * @return principal URL, or null if none found
      */
-    fun discoverPrincipalUrl(domain: String, service: Service): HttpUrl? {
-        val scheme: String
-        val fqdn: String
+    suspend fun discoverPrincipalUrl(domain: String, service: Service): HttpUrl? {
+        val scheme = "https"
         var port = 443
         val paths = LinkedList<String>()     // there may be multiple paths to try
 
@@ -393,17 +394,15 @@ class DavResourceFinder @AssistedInject constructor(
         val srvRecords = dnsRecordResolver.resolve(query, Type.SRV)
         val srv = dnsRecordResolver.bestSRVRecord(srvRecords)
 
+        val fqdn: String
         if (srv != null) {
             // choose SRV record to use (query may return multiple SRV records)
-            scheme = "https"
             fqdn = srv.target.toString(true)
             port = srv.port
             log.info("Found $service service at https://$fqdn:$port")
         } else {
             // no SRV records, try domain name as FQDN
             log.info("Didn't find $service service, trying at https://$domain:$port")
-
-            scheme = "https"
             fqdn = domain
         }
 
@@ -418,11 +417,7 @@ class DavResourceFinder @AssistedInject constructor(
 
         for (path in paths)
             try {
-                val initialContextPath = HttpUrl.Builder()
-                        .scheme(scheme)
-                        .host(fqdn).port(port)
-                        .encodedPath(path)
-                        .build()
+                val initialContextPath = URLBuilder("$scheme://$fqdn:$port$path").build()
 
                 log.info("Trying to determine principal from initial context path=$initialContextPath")
                 val principal = getCurrentUserPrincipal(initialContextPath, service)
@@ -442,19 +437,18 @@ class DavResourceFinder @AssistedInject constructor(
      * @param service   required service (may be null, in which case no service check is done)
      * @return          current-user-principal URL that provides required service, or null if none
      */
-    fun getCurrentUserPrincipal(url: HttpUrl, service: Service?): HttpUrl? {
+    suspend fun getCurrentUserPrincipal(url: Url, service: Service?): HttpUrl? {
         var principal: HttpUrl? = null
-        DavResource(httpClient, url, log).propfind(0, WebDAV.CurrentUserPrincipal) { response, _ ->
+        DavResource(httpClient, url).propfind(0, WebDAV.CurrentUserPrincipal) { response, _ ->
             response[CurrentUserPrincipal::class.java]?.href?.let { href ->
-                response.requestedUrl.resolve(href)?.let {
-                    log.info("Found current-user-principal: $it")
+                val resolved = URLBuilder(response.requestedUrl).takeFrom(href).build()
+                log.info("Found current-user-principal: $resolved")
 
-                    // service check
-                    if (service != null && !providesService(it, service))
-                        log.warning("Principal $it doesn't provide $service service")
-                    else
-                        principal = it
-                }
+                // service check
+                if (service != null && !providesService(resolved, service))
+                    log.warning("Principal $resolved doesn't provide $service service")
+                else
+                    principal = resolved.toHttpUrl()
             }
         }
         return principal

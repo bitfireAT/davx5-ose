@@ -4,9 +4,12 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.UrlUtils
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.Owner
@@ -22,7 +25,10 @@ import at.bitfire.davdroid.settings.SettingsManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.OkHttpClient
+import io.ktor.client.HttpClient
+import io.ktor.http.URLBuilder
+import io.ktor.http.takeFrom
+import javax.annotation.WillNotClose
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -31,7 +37,7 @@ import java.util.logging.Logger
  */
 class HomeSetRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
-    @Assisted private val httpClient: OkHttpClient,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     private val db: AppDatabase,
     private val logger: Logger,
     private val collectionRepository: DavCollectionRepository,
@@ -41,7 +47,7 @@ class HomeSetRefresher @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(service: Service, httpClient: OkHttpClient): HomeSetRefresher
+        fun create(service: Service, httpClient: HttpClient): HomeSetRefresher
     }
 
     /**
@@ -53,7 +59,7 @@ class HomeSetRefresher @AssistedInject constructor(
      * If a home-set URL in fact points to a collection directly, the collection will be saved with this URL,
      * and a null value for it's home-set. Refreshing of collections without home-sets is then handled by [CollectionsWithoutHomeSetRefresher.refreshCollectionsWithoutHomeSet].
      */
-    internal fun refreshHomesetsAndTheirCollections() {
+    internal suspend fun refreshHomesetsAndTheirCollections() {
         val homesets = homeSetRepository.getByServiceBlocking(service.id).associateBy { it.url }.toMutableMap()
         for ((homeSetUrl, localHomeset) in homesets) {
             logger.fine("Listing home set $homeSetUrl")
@@ -67,7 +73,7 @@ class HomeSetRefresher @AssistedInject constructor(
 
             try {
                 val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
-                DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties) { response, relation ->
+                DavResource(httpClient, homeSetUrl.toKtorUrl()).propfind(1, *collectionProperties) { response, relation ->
                     // Note: This callback may be called multiple times ([MultiResponseCallback])
                     if (!response.isSuccess())
                         return@propfind
@@ -88,7 +94,7 @@ class HomeSetRefresher @AssistedInject constructor(
                         homeSetId = localHomeset.id,
                         sync = shouldPreselect(collection, homesets.values),
                         ownerId = response[Owner::class.java]?.href  // save the principal id (collection owner)
-                            ?.let { response.href.resolve(it) }
+                            ?.let { URLBuilder(response.href).takeFrom(it).build().toHttpUrl() }
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
                             ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
                     )

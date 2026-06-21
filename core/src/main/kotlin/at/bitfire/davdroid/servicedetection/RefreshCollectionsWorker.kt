@@ -22,7 +22,7 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import at.bitfire.dav4jvm.okhttp.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager
@@ -35,7 +35,6 @@ import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runInterruptible
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -152,31 +151,31 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             NotificationManagerCompat.from(applicationContext)
                 .cancel(serviceId.toString(), NotificationRegistry.NOTIFY_REFRESH_COLLECTIONS)
 
-            // create authenticating OkHttpClient (credentials taken from account settings)
-            val httpClient = httpClientBuilder
+            // create authenticating HttpClient (credentials taken from account settings)
+            httpClientBuilder
                 .fromAccount(account)
-                .build()
-            runInterruptible {
-                val refresher = collectionsWithoutHomeSetRefresherFactory.create(service, httpClient)
+                .buildKtor()
+                .use { httpClient ->
+                    val refresher = collectionsWithoutHomeSetRefresherFactory.create(service, httpClient)
 
-                // refresh home set list (from principal url)
-                service.principal?.let { principalUrl ->
-                    logger.fine("Querying principal $principalUrl for home sets")
-                    val serviceRefresher = serviceRefresherFactory.create(service, httpClient)
-                    serviceRefresher.discoverHomesets(principalUrl)
+                    // refresh home set list (from principal url)
+                    service.principal?.let { principalUrl ->
+                        logger.fine("Querying principal $principalUrl for home sets")
+                        val serviceRefresher = serviceRefresherFactory.create(service, httpClient)
+                        serviceRefresher.discoverHomesets(principalUrl)
+                    }
+
+                    // refresh home sets and their member collections
+                    homeSetRefresherFactory.create(service, httpClient)
+                        .refreshHomesetsAndTheirCollections()
+
+                    // also refresh collections without a home set
+                    refresher.refreshCollectionsWithoutHomeSet()
+
+                    // Lastly, refresh the principals (collection owners)
+                    val principalsRefresher = principalsRefresherFactory.create(service, httpClient)
+                    principalsRefresher.refreshPrincipals()
                 }
-
-                // refresh home sets and their member collections
-                homeSetRefresherFactory.create(service, httpClient)
-                    .refreshHomesetsAndTheirCollections()
-
-                // also refresh collections without a home set
-                refresher.refreshCollectionsWithoutHomeSet()
-
-                // Lastly, refresh the principals (collection owners)
-                val principalsRefresher = principalsRefresherFactory.create(service, httpClient)
-                principalsRefresher.refreshPrincipals()
-            }
 
         } catch(e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Invalid account", e)
