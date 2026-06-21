@@ -11,9 +11,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.log.LogFileHandler
 import at.bitfire.davdroid.ui.DebugInfoViewModel.Companion.FILE_DEBUG_INFO
-import at.bitfire.davdroid.ui.DebugInfoViewModel.Companion.FILE_LOGS
 import com.google.common.io.ByteStreams
 import com.google.common.io.Files
 import dagger.assisted.Assisted
@@ -21,7 +21,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
@@ -35,6 +35,7 @@ class DebugInfoViewModel @AssistedInject constructor(
     @Assisted private val details: DebugInfoDetails,
     @ApplicationContext val context: Context,
     private val debugInfoGenerator: DebugInfoGenerator,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) : ViewModel() {
 
@@ -44,7 +45,7 @@ class DebugInfoViewModel @AssistedInject constructor(
         val cause: Throwable?,
         val localResource: String?,
         val remoteResource: String?,
-        val logs: String?,
+        val logFile: File? = null,
         val timestamp: Long?
     )
 
@@ -64,7 +65,7 @@ class DebugInfoViewModel @AssistedInject constructor(
         val error: String? = null
     )
 
-    var uiState by mutableStateOf(UiState())
+    var uiState by mutableStateOf(UiState(logFile = details.logFile))
         private set
 
     fun resetError() {
@@ -79,21 +80,13 @@ class DebugInfoViewModel @AssistedInject constructor(
         // create debug info directory
         val debugDir = LogFileHandler.debugDir(context) ?: throw IOException("Couldn't create debug info directory")
 
-        viewModelScope.launch(Dispatchers.Default) {
-            // create log file from EXTRA_LOGS or log file
-            if (details.logs != null) {
-                val file = File(debugDir, FILE_LOGS)
-                if (!file.exists() || file.canWrite()) {
-                    file.printWriter().use { writer ->
-                        writer.write(details.logs)
-                    }
-                    uiState = uiState.copy(logFile = file)
-                } else
-                    logger.warning("Can't write logs to $file")
-            } else LogFileHandler.getDebugLogFile(context)?.let { debugLogFile ->
-                if (debugLogFile.isFile && debugLogFile.canRead())
-                    uiState = uiState.copy(logFile = debugLogFile)
-            }
+        viewModelScope.launch(ioDispatcher) {
+            // fall back to persistent verbose log file if none was provided
+            if (uiState.logFile == null)
+                LogFileHandler.getDebugLogFile(context)?.let { debugLogFile ->
+                    if (debugLogFile.isFile && debugLogFile.canRead())
+                        uiState = uiState.copy(logFile = debugLogFile)
+                }
 
             uiState = uiState.copy(
                 cause = details.cause,
@@ -190,7 +183,6 @@ class DebugInfoViewModel @AssistedInject constructor(
 
     companion object {
         private const val FILE_DEBUG_INFO = "debug-info.txt"
-        private const val FILE_LOGS = "logs.txt"
     }
 
 }

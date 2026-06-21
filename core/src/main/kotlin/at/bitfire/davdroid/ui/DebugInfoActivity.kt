@@ -61,7 +61,7 @@ class DebugInfoActivity: AppCompatActivity() {
         }
 
         val remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE)
-        setContent { 
+        setContent {
             DebugInfoScreen(
                 account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
                 syncDataType = extras?.getString(EXTRA_SYNC_DATA_TYPE),
@@ -69,7 +69,7 @@ class DebugInfoActivity: AppCompatActivity() {
                 canViewResource = viewResourceIntent != null,
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE_SUMMARY),
                 remoteResource = remoteResource,
-                logs = extras?.getString(EXTRA_LOGS),
+                logFile = extras?.getString(EXTRA_LOG_FILE)?.let { File(it) },
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,
@@ -226,12 +226,9 @@ class DebugInfoActivity: AppCompatActivity() {
             return this
         }
 
-        fun withLogs(logs: String?): IntentBuilder {
-            if (logs != null)
-                intent.putExtra(
-                    EXTRA_LOGS,
-                    Ascii.truncate(logs, MAX_ELEMENT_SIZE, "...")
-                )
+        fun withLogFile(file: File?): IntentBuilder {
+            if (file != null)
+                intent.putExtra(EXTRA_LOG_FILE, file.absolutePath)
             return this
         }
 
@@ -266,8 +263,8 @@ class DebugInfoActivity: AppCompatActivity() {
         /** [Uri] of local resource related to the problem (as [android.os.Parcelable]) */
         internal const val EXTRA_LOCAL_RESOURCE_URI = "localResourceUri"
 
-        /** logs related to the problem (plain-text [String]) */
-        private const val EXTRA_LOGS = "logs"
+        /** log file related to the problem (absolute path [String]) */
+        private const val EXTRA_LOG_FILE = "logFile"
 
         /** URL of remote resource related to the problem (plain-text [String]) */
         private const val EXTRA_REMOTE_RESOURCE = "remoteResource"

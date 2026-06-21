@@ -12,6 +12,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.log.LogFileHandler
+import at.bitfire.davdroid.log.VerboseLogCapture
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
@@ -35,6 +37,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import java.io.File
 import java.util.Optional
 import java.util.logging.Logger
 
@@ -185,7 +188,7 @@ class LoginScreenViewModel @AssistedInject constructor(
         val foundNothing: Boolean = false,
         val encountered401: Boolean = false,
         val loginValidationFailed: Boolean = false,
-        val logs: String? = null
+        val logFile: File? = null
     )
 
     var detectResourcesUiState by mutableStateOf(DetectResourcesUiState())
@@ -215,12 +218,15 @@ class LoginScreenViewModel @AssistedInject constructor(
             }
 
             // Then, find initial configuration
+            val logFile = File(LogFileHandler.debugDir(context), "service-detection.log")
+            val logCapture = VerboseLogCapture(logFile)
             val result = withContext(Dispatchers.IO) {
                  runInterruptible {
-                     val finder = resourceFinderFactory.create(loginInfo.baseUri!!, loginInfo.credentials)
-                     finder.findInitialConfiguration()
+                     resourceFinderFactory.create(loginInfo.baseUri!!, loginInfo.credentials, logCapture)
+                         .findInitialConfiguration()
                  }
             }
+            logCapture.close()
 
             if (result.calDAV != null || result.cardDAV != null) {
                 foundConfig = result
@@ -232,7 +238,7 @@ class LoginScreenViewModel @AssistedInject constructor(
                     loading = false,
                     foundNothing = true,
                     encountered401 = result.encountered401,
-                    logs = result.logs
+                    logFile = logFile
                 )
             }
         }

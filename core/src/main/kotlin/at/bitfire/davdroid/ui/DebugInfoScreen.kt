@@ -61,7 +61,7 @@ fun DebugInfoScreen(
     localResource: String?,
     canViewResource: Boolean,
     remoteResource: String?,
-    logs: String?,
+    logFile: File? = null,
     timestamp: Long?,
     onShareZipFile: (File) -> Unit,
     onViewFile: (File) -> Unit,
@@ -77,7 +77,7 @@ fun DebugInfoScreen(
                 cause = cause,
                 localResource = localResource,
                 remoteResource = remoteResource,
-                logs = logs,
+                logFile = logFile,
                 timestamp = timestamp
             ))
         }

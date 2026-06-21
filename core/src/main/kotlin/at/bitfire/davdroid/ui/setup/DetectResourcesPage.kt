@@ -35,6 +35,7 @@ import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.ProgressBar
+import java.io.File
 
 @Composable
 fun DetectResourcesPage(
@@ -46,7 +47,7 @@ fun DetectResourcesPage(
         foundNothing = uiState.foundNothing,
         encountered401 = uiState.encountered401,
         loginValidationFailed = uiState.loginValidationFailed,
-        logs = uiState.logs
+        logFile = uiState.logFile
     )
 }
 
@@ -56,7 +57,7 @@ fun DetectResourcesPageContent(
     foundNothing: Boolean,
     encountered401: Boolean,
     loginValidationFailed: Boolean,
-    logs: String?
+    logFile: File?
 ) {
     Column(Modifier
         .fillMaxWidth()
@@ -69,7 +70,7 @@ fun DetectResourcesPageContent(
         else if (foundNothing)
             DetectResourcesPageContent_NothingFound(
                 encountered401 = encountered401,
-                logs = logs
+                logFile = logFile
             )
     }
 }
@@ -101,7 +102,7 @@ fun DetectResourcesPageContent_InProgress() {
 @Composable
 fun DetectResourcesPageContent_NothingFound(
     encountered401: Boolean,
-    logs: String?
+    logFile: File?
 ) {
     Column(Modifier.padding(8.dp)) {
         Text(
@@ -149,7 +150,7 @@ fun DetectResourcesPageContent_NothingFound(
                         style = MaterialTheme.typography.bodyLarge
                     )
 
-                if (logs != null && logs.isNotEmpty()) {
+                if (logFile != null) {
                     Text(
                         stringResource(R.string.login_logs_available),
                         style = MaterialTheme.typography.bodyLarge,
@@ -159,7 +160,7 @@ fun DetectResourcesPageContent_NothingFound(
                     Button(
                         onClick = {
                             val intent = DebugInfoActivity.IntentBuilder(context)
-                                .withLogs(logs)
+                                .withLogFile(logFile)
                                 .build()
                             context.startActivity(intent)
                         }
@@ -227,7 +228,7 @@ fun DetectResourcesPageContent_LoginValidationFailed() {
 fun DetectResourcesPageContent_NothingFound() {
     DetectResourcesPageContent_NothingFound(
         encountered401 = false,
-        logs = "SOME LOGS"
+        logFile = File("/dev/null")
     )
 }
 
@@ -236,7 +237,7 @@ fun DetectResourcesPageContent_NothingFound() {
 fun DetectResourcesPage_NothingFound_401() {
     DetectResourcesPageContent_NothingFound(
         encountered401 = true,
-        logs = ""
+        logFile = null
     )
 }
 
