@@ -4,14 +4,10 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.db.migration.AutoMigration12
-import at.bitfire.davdroid.db.migration.AutoMigration16
-import at.bitfire.davdroid.db.migration.AutoMigration18
 import at.bitfire.davdroid.repository.DavHomeSetRepository
+import at.bitfire.davdroid.test.createTestDatabase
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -27,11 +23,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.ConscryptMode
 import java.util.logging.Logger
 
 @RunWith(RobolectricTestRunner::class)
-@ConscryptMode(ConscryptMode.Mode.OFF)      // required because main project uses Conscrypt, but unit tests do not
 class ServiceRefresherTest {
 
     companion object {
@@ -87,15 +81,7 @@ class ServiceRefresherTest {
 
     @Before
     fun setUp() {
-        db = Room.inMemoryDatabaseBuilder(
-            ApplicationProvider.getApplicationContext(),
-            AppDatabase::class.java
-        ).allowMainThreadQueries()
-            .addAutoMigrationSpec(AutoMigration18())
-            .addAutoMigrationSpec(AutoMigration16())
-            .addAutoMigrationSpec(AutoMigration12(ApplicationProvider.getApplicationContext(), Logger.getLogger("test")))
-            .fallbackToDestructiveMigration()
-            .build()
+        db = createTestDatabase()
         client = HttpClient(buildMockEngine())
 
         val serviceId = db.serviceDao().insertOrReplace(
