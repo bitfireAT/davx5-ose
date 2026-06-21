@@ -21,8 +21,13 @@ class VerboseLogCapture(maxSize: Int) {
 
     /** Use this logger during the operation. Its capture is then in [logs]. */
     val logger: Logger = Logger.getAnonymousLogger().apply {
+        // verbose logging
         level = Level.ALL
+
+        // pass through to default handlers (adb logs)
         useParentHandlers = true
+
+        // log into string
         addHandler(handler)
     }
 

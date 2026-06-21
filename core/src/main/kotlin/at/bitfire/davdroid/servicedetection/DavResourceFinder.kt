@@ -58,7 +58,7 @@ class DavResourceFinder @AssistedInject constructor(
     @Assisted private val credentials: Credentials? = null,
     @Assisted @WillNotClose private val httpClient: HttpClient,
     @Assisted private val logCapture: VerboseLogCapture,
-    private val dnsRecordResolver: DnsRecordResolver,
+    private val dnsRecordResolver: DnsRecordResolver
 ) {
 
     @AssistedFactory
