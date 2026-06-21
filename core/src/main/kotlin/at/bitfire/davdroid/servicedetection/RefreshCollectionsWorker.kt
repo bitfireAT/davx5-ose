@@ -22,6 +22,7 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -162,7 +163,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                     service.principal?.let { principalUrl ->
                         logger.fine("Querying principal $principalUrl for home sets")
                         val serviceRefresher = serviceRefresherFactory.create(service, httpClient)
-                        serviceRefresher.discoverHomesets(principalUrl)
+                        serviceRefresher.discoverHomesets(principalUrl.toKtorUrl())
                     }
 
                     // refresh home sets and their member collections

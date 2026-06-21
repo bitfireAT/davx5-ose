@@ -4,15 +4,17 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavHomeSetRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import dagger.hilt.android.testing.BindValue
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -22,6 +24,7 @@ import io.ktor.http.headersOf
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
+import io.mockk.mockk
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
@@ -31,9 +34,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import java.util.logging.Logger
 
-@HiltAndroidTest
+@RunWith(RobolectricTestRunner::class)
 class HomeSetRefresherTest {
 
     companion object {
@@ -55,21 +60,12 @@ class HomeSetRefresherTest {
     }
 
     @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule
     val mockKRule = MockKRule(this)
 
-    @Inject
-    lateinit var db: AppDatabase
-
-    @Inject
-    lateinit var homeSetRefresherFactory: HomeSetRefresher.Factory
-
-    @BindValue
     @MockK(relaxed = true)
     lateinit var settings: SettingsManager
 
+    private lateinit var db: AppDatabase
     private lateinit var client: HttpClient
     private lateinit var service: Service
 
@@ -95,7 +91,10 @@ class HomeSetRefresherTest {
 
     @Before
     fun setUp() {
-        hiltRule.inject()
+        db = Room.inMemoryDatabaseBuilder(
+            ApplicationProvider.getApplicationContext(),
+            AppDatabase::class.java
+        ).allowMainThreadQueries().build()
         client = HttpClient(buildMockEngine())
 
         val serviceId = db.serviceDao().insertOrReplace(
@@ -107,7 +106,22 @@ class HomeSetRefresherTest {
     @After
     fun tearDown() {
         client.close()
+        db.close()
     }
+
+    private fun makeRefresher() = HomeSetRefresher(
+        service, client, db, Logger.getLogger("test"),
+        DavCollectionRepository(
+            ApplicationProvider.getApplicationContext(),
+            db,
+            Logger.getLogger("test"),
+            { mockk(relaxed = true) },
+            { mockk(relaxed = true) },
+            mockk<DavServiceRepository>(relaxed = true)
+        ),
+        DavHomeSetRepository(db),
+        settings
+    )
 
 
     // refreshHomesetsAndTheirCollections
@@ -118,8 +132,7 @@ class HomeSetRefresherTest {
             HomeSet(id = 0, service.id, true, "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL".toHttpUrl())
         )
 
-        homeSetRefresherFactory.create(service, client)
-            .refreshHomesetsAndTheirCollections()
+        makeRefresher().refreshHomesetsAndTheirCollections()
 
         assertEquals(
             Collection(
@@ -151,7 +164,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
+        makeRefresher().refreshHomesetsAndTheirCollections()
 
         assertEquals(
             Collection(
@@ -185,7 +198,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
+        makeRefresher().refreshHomesetsAndTheirCollections()
 
         assertEquals(
             Collection(
@@ -221,7 +234,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
+        makeRefresher().refreshHomesetsAndTheirCollections()
 
         assertEquals(null, db.collectionDao().get(collectionId)!!.homeSetId)
     }
@@ -244,7 +257,7 @@ class HomeSetRefresherTest {
         )
 
         assertEquals(0, db.principalDao().getByService(service.id).size)
-        homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
+        makeRefresher().refreshHomesetsAndTheirCollections()
 
         val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)
@@ -275,7 +288,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        assertFalse(homeSetRefresherFactory.create(service, client).shouldPreselect(collection, homesets))
+        assertFalse(makeRefresher().shouldPreselect(collection, homesets))
     }
 
     @Test
@@ -294,7 +307,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        assertTrue(homeSetRefresherFactory.create(service, client).shouldPreselect(collection, homesets))
+        assertTrue(makeRefresher().shouldPreselect(collection, homesets))
     }
 
     @Test
@@ -315,7 +328,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        assertFalse(homeSetRefresherFactory.create(service, client).shouldPreselect(collection, homesets))
+        assertFalse(makeRefresher().shouldPreselect(collection, homesets))
     }
 
     @Test
@@ -335,7 +348,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        assertFalse(homeSetRefresherFactory.create(service, client).shouldPreselect(collection, homesets))
+        assertFalse(makeRefresher().shouldPreselect(collection, homesets))
     }
 
     @Test
@@ -354,7 +367,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        assertTrue(homeSetRefresherFactory.create(service, client).shouldPreselect(collection, homesets))
+        assertTrue(makeRefresher().shouldPreselect(collection, homesets))
     }
 
     @Test
@@ -375,7 +388,7 @@ class HomeSetRefresherTest {
             )
         )
 
-        assertFalse(homeSetRefresherFactory.create(service, client).shouldPreselect(collection, homesets))
+        assertFalse(makeRefresher().shouldPreselect(collection, homesets))
     }
 
 }

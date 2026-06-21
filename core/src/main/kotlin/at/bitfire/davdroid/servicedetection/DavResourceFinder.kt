@@ -3,10 +3,6 @@
  */
 package at.bitfire.davdroid.servicedetection
 
-import android.app.ActivityManager
-import android.content.Context
-import androidx.core.content.getSystemService
-import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
@@ -31,14 +27,11 @@ import at.bitfire.davdroid.settings.Credentials
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
-import javax.annotation.WillNotClose
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
 import io.ktor.http.takeFrom
-import okhttp3.HttpUrl
 import org.xbill.DNS.Type
 import java.io.InterruptedIOException
 import java.net.SocketTimeoutException
@@ -46,6 +39,7 @@ import java.net.URI
 import java.net.URISyntaxException
 import java.util.LinkedList
 import java.util.logging.Level
+import javax.annotation.WillNotClose
 
 /**
  * Does initial resource detection when an account is added. It uses the (user given) base URL to find
@@ -54,22 +48,22 @@ import java.util.logging.Level
  * - principal,
  * - homeset/collections (multistatus responses are handled through dav4jvm).
  *
- * @param context        to build the HTTP client
  * @param baseURI        user-given base URI (either mailto: URI or http(s):// URL)
  * @param credentials    optional login credentials (username/password, client certificate, OAuth state)
  * @param httpClient     Ktor HttpClient configured with authentication; caller owns and closes it
+ * @param logMaxSize     maximum size of the captured log in bytes
  */
 class DavResourceFinder @AssistedInject constructor(
     @Assisted private val baseURI: URI,
     @Assisted private val credentials: Credentials? = null,
     @Assisted @WillNotClose private val httpClient: HttpClient,
-    @ApplicationContext val context: Context,
+    @Assisted private val logMaxSize: Int,
     private val dnsRecordResolver: DnsRecordResolver,
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(baseURI: URI, credentials: Credentials?, httpClient: HttpClient): DavResourceFinder
+        fun create(baseURI: URI, credentials: Credentials?, httpClient: HttpClient, logMaxSize: Int): DavResourceFinder
     }
 
     enum class Service(val wellKnownName: String) {
@@ -79,9 +73,7 @@ class DavResourceFinder @AssistedInject constructor(
         override fun toString() = wellKnownName
     }
 
-    private val logCapture = LogCapture(
-        maxSize = context.getSystemService<ActivityManager>()!!.memoryClass * (1024 * 1024 / 8)  // 1/8 of app heap as truncation cap
-    )
+    private val logCapture = LogCapture(maxSize = logMaxSize)
     private val log = logCapture.logger
 
     private var encountered401 = false
@@ -187,7 +179,7 @@ class DavResourceFinder @AssistedInject constructor(
         // detect email address
         if (service == Service.CALDAV)
             config.principal?.let { principal ->
-                config.emails.addAll(queryEmailAddress(principal.toKtorUrl()))
+                config.emails.addAll(queryEmailAddress(principal))
             }
 
         // return config or null if config doesn't contain useful information
@@ -284,7 +276,7 @@ class DavResourceFinder @AssistedInject constructor(
      * @param config        structure storing the references
      */
     suspend fun scanResponse(resourceType: Property.Name, davResponse: Response, config: Configuration.ServiceInfo) {
-        var principal: HttpUrl? = null
+        var principal: Url? = null
 
         // Type mapping
         val homeSetClass: Class<out HrefListProperty>
@@ -303,7 +295,7 @@ class DavResourceFinder @AssistedInject constructor(
 
         // check for current-user-principal
         davResponse[CurrentUserPrincipal::class.java]?.href?.let { currentUserPrincipal ->
-            principal = URLBuilder(davResponse.requestedUrl).takeFrom(currentUserPrincipal).build().toHttpUrl()
+            principal = URLBuilder(davResponse.requestedUrl).takeFrom(currentUserPrincipal).build()
         }
 
         davResponse[ResourceType::class.java]?.let {
@@ -311,12 +303,12 @@ class DavResourceFinder @AssistedInject constructor(
             if (it.types.contains(resourceType))
                 Collection.fromDavResponse(davResponse)?.let { info ->
                     log.info("Found resource of type $resourceType at ${info.url}")
-                    config.collections[info.url] = info
+                    config.collections[info.url.toKtorUrl()] = info
                 }
 
             // ... and/or a principal?
             if (it.types.contains(WebDAV.Principal))
-                principal = davResponse.href.toHttpUrl()
+                principal = davResponse.href
         }
 
         // Is it an addressbook-home-set or calendar-home-set?
@@ -324,13 +316,13 @@ class DavResourceFinder @AssistedInject constructor(
             for (href in homeSet.hrefs) {
                 val location = UrlUtils.withTrailingSlash(URLBuilder(davResponse.requestedUrl).takeFrom(href).build())
                 log.info("Found home-set of type $resourceType at $location")
-                config.homeSets += location.toHttpUrl()
+                config.homeSets += location
             }
         }
 
         // Is there a principal too?
         principal?.let {
-            if (providesService(it.toKtorUrl(), serviceType))
+            if (providesService(it, serviceType))
                 config.principal = principal
             else
                 log.warning("Principal $principal doesn't provide $serviceType service")
@@ -370,7 +362,7 @@ class DavResourceFinder @AssistedInject constructor(
      * @param service        service to discover (CALDAV or CARDDAV)
      * @return principal URL, or null if none found
      */
-    suspend fun discoverPrincipalUrl(domain: String, service: Service): HttpUrl? {
+    suspend fun discoverPrincipalUrl(domain: String, service: Service): Url? {
         val scheme = "https"
         var port = 443
         val paths = LinkedList<String>()     // there may be multiple paths to try
@@ -424,8 +416,8 @@ class DavResourceFinder @AssistedInject constructor(
      * @param service   required service (may be null, in which case no service check is done)
      * @return          current-user-principal URL that provides required service, or null if none
      */
-    suspend fun getCurrentUserPrincipal(url: Url, service: Service?): HttpUrl? {
-        var principal: HttpUrl? = null
+    suspend fun getCurrentUserPrincipal(url: Url, service: Service?): Url? {
+        var principal: Url? = null
         DavResource(httpClient, url).propfind(0, WebDAV.CurrentUserPrincipal) { response, _ ->
             response[CurrentUserPrincipal::class.java]?.href?.let { href ->
                 val resolved = URLBuilder(response.requestedUrl).takeFrom(href).build()
@@ -435,7 +427,7 @@ class DavResourceFinder @AssistedInject constructor(
                 if (service != null && !providesService(resolved, service))
                     log.warning("Principal $resolved doesn't provide $service service")
                 else
-                    principal = resolved.toHttpUrl()
+                    principal = resolved
             }
         }
         return principal
@@ -466,9 +458,9 @@ class DavResourceFinder @AssistedInject constructor(
     ) {
 
         data class ServiceInfo(
-            var principal: HttpUrl? = null,
-            val homeSets: MutableSet<HttpUrl> = HashSet(),
-            val collections: MutableMap<HttpUrl, Collection> = HashMap(),
+            var principal: Url? = null,
+            val homeSets: MutableSet<Url> = HashSet(),
+            val collections: MutableMap<Url, Collection> = HashMap(),
 
             val emails: MutableList<String> = LinkedList()
         )

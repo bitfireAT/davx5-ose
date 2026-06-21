@@ -4,26 +4,29 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
+import at.bitfire.davdroid.repository.DavHomeSetRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import java.util.logging.Logger
 
-@HiltAndroidTest
+@RunWith(RobolectricTestRunner::class)
 class ServiceRefresherTest {
 
     companion object {
@@ -44,15 +47,7 @@ class ServiceRefresherTest {
                     "</multistatus>"
     }
 
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    lateinit var db: AppDatabase
-
-    @Inject
-    lateinit var serviceRefresherFactory: ServiceRefresher.Factory
-
+    private lateinit var db: AppDatabase
     private lateinit var client: HttpClient
     private lateinit var service: Service
 
@@ -87,7 +82,10 @@ class ServiceRefresherTest {
 
     @Before
     fun setUp() {
-        hiltRule.inject()
+        db = Room.inMemoryDatabaseBuilder(
+            ApplicationProvider.getApplicationContext(),
+            AppDatabase::class.java
+        ).allowMainThreadQueries().build()
         client = HttpClient(buildMockEngine())
 
         val serviceId = db.serviceDao().insertOrReplace(
@@ -99,14 +97,15 @@ class ServiceRefresherTest {
     @After
     fun tearDown() {
         client.close()
+        db.close()
     }
 
 
     @Test
     fun testDiscoverHomesets() = runTest {
-        val baseUrl = "$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL".toHttpUrl()
+        val baseUrl = Url("$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL")
 
-        serviceRefresherFactory.create(service, client)
+        ServiceRefresher(service, client, Logger.getLogger("test"), DavHomeSetRepository(db))
             .discoverHomesets(baseUrl)
 
         val savedHomesets = db.homeSetDao().getByService(service.id)

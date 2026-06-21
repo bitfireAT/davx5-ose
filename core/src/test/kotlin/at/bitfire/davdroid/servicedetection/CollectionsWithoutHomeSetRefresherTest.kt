@@ -4,31 +4,31 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.settings.SettingsManager
-import dagger.hilt.android.testing.BindValue
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
-import io.mockk.impl.annotations.MockK
-import io.mockk.junit4.MockKRule
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import java.util.logging.Logger
 
-@HiltAndroidTest
+@RunWith(RobolectricTestRunner::class)
 class CollectionsWithoutHomeSetRefresherTest {
 
     companion object {
@@ -47,22 +47,7 @@ class CollectionsWithoutHomeSetRefresherTest {
                     "</multistatus>"
     }
 
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule
-    val mockKRule = MockKRule(this)
-
-    @Inject
-    lateinit var db: AppDatabase
-
-    @Inject
-    lateinit var refresherFactory: CollectionsWithoutHomeSetRefresher.Factory
-
-    @BindValue
-    @MockK(relaxed = true)
-    lateinit var settings: SettingsManager
-
+    private lateinit var db: AppDatabase
     private lateinit var client: HttpClient
     private lateinit var service: Service
 
@@ -88,7 +73,10 @@ class CollectionsWithoutHomeSetRefresherTest {
 
     @Before
     fun setUp() {
-        hiltRule.inject()
+        db = Room.inMemoryDatabaseBuilder(
+            ApplicationProvider.getApplicationContext(),
+            AppDatabase::class.java
+        ).allowMainThreadQueries().build()
         client = HttpClient(buildMockEngine())
 
         val serviceId = db.serviceDao().insertOrReplace(
@@ -100,7 +88,17 @@ class CollectionsWithoutHomeSetRefresherTest {
     @After
     fun tearDown() {
         client.close()
+        db.close()
     }
+
+    private fun makeCollectionRepository() = DavCollectionRepository(
+        ApplicationProvider.getApplicationContext(),
+        db,
+        Logger.getLogger("test"),
+        { mockk(relaxed = true) },
+        { mockk(relaxed = true) },
+        mockk<DavServiceRepository>(relaxed = true)
+    )
 
 
     // refreshCollectionsWithoutHomeSet
@@ -115,7 +113,8 @@ class CollectionsWithoutHomeSetRefresherTest {
             )
         )
 
-        refresherFactory.create(service, client).refreshCollectionsWithoutHomeSet()
+        CollectionsWithoutHomeSetRefresher(service, client, db, makeCollectionRepository())
+            .refreshCollectionsWithoutHomeSet()
 
         assertEquals(
             Collection(
@@ -140,7 +139,8 @@ class CollectionsWithoutHomeSetRefresherTest {
             )
         )
 
-        refresherFactory.create(service, client).refreshCollectionsWithoutHomeSet()
+        CollectionsWithoutHomeSetRefresher(service, client, db, makeCollectionRepository())
+            .refreshCollectionsWithoutHomeSet()
 
         assertEquals(null, db.collectionDao().get(collectionId))
     }
@@ -156,7 +156,8 @@ class CollectionsWithoutHomeSetRefresherTest {
         )
 
         assertEquals(0, db.principalDao().getByService(service.id).size)
-        refresherFactory.create(service, client).refreshCollectionsWithoutHomeSet()
+        CollectionsWithoutHomeSetRefresher(service, client, db, makeCollectionRepository())
+            .refreshCollectionsWithoutHomeSet()
 
         val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)

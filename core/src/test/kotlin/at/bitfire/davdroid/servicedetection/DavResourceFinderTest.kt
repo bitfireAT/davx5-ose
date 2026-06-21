@@ -7,11 +7,10 @@ package at.bitfire.davdroid.servicedetection
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
+import at.bitfire.davdroid.network.DnsRecordResolver
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -20,8 +19,8 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -29,12 +28,9 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import java.net.URI
-import javax.inject.Inject
 
-@HiltAndroidTest
 class DavResourceFinderTest {
 
     companion object {
@@ -56,12 +52,6 @@ class DavResourceFinderTest {
                     "<response><href>$href</href><propstat><prop>$props</prop><status>HTTP/1.1 200 OK</status></propstat></response>" +
                     "</multistatus>"
     }
-
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    lateinit var resourceFinderFactory: DavResourceFinder.Factory
 
     private lateinit var client: HttpClient
     private lateinit var finder: DavResourceFinder
@@ -103,9 +93,8 @@ class DavResourceFinderTest {
 
     @Before
     fun setUp() {
-        hiltRule.inject()
         client = HttpClient(buildMockEngine())
-        finder = resourceFinderFactory.create(URI(BASE_URL), null, client)
+        finder = DavResourceFinder(URI(BASE_URL), null, client, logMaxSize = 65536, mockk(relaxed = true))
     }
 
     @After
@@ -116,10 +105,12 @@ class DavResourceFinderTest {
 
     @Test
     fun testFindInitialConfiguration_logsOutput() = runTest {
-        val serverFinder = resourceFinderFactory.create(
+        val serverFinder = DavResourceFinder(
             URI("$BASE_URL$PATH_CALDAV"),
             Credentials(username = "mock", password = "12345".toSensitiveString()),
-            client
+            client,
+            logMaxSize = 65536,
+            mockk<DnsRecordResolver>(relaxed = true)
         )
         val result = serverFinder.findInitialConfiguration()
         assertTrue(result.logs.contains("Checking user-given URL"))
@@ -135,7 +126,7 @@ class DavResourceFinderTest {
             }
         assertEquals(0, info.collections.size)
         assertEquals(1, info.homeSets.size)
-        assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET/".toHttpUrl(), info.homeSets.first())
+        assertEquals(Url("$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET/"), info.homeSets.first())
 
         // recognize address book
         info = ServiceInfo()
@@ -144,7 +135,7 @@ class DavResourceFinderTest {
                 finder.scanResponse(CardDAV.Addressbook, response, info)
             }
         assertEquals(1, info.collections.size)
-        assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toHttpUrl(), info.collections.keys.first())
+        assertEquals(Url("$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"), info.collections.keys.first())
         assertEquals(0, info.homeSets.size)
     }
 
@@ -169,13 +160,13 @@ class DavResourceFinderTest {
         assertNull(finder.getCurrentUserPrincipal(Url("$BASE_URL$PATH_NO_DAV"), DavResourceFinder.Service.CARDDAV))
 
         assertEquals(
-            "$BASE_URL$PATH_CALDAV$SUBPATH_PRINCIPAL".toHttpUrl(),
+            Url("$BASE_URL$PATH_CALDAV$SUBPATH_PRINCIPAL"),
             finder.getCurrentUserPrincipal(Url("$BASE_URL$PATH_CALDAV"), DavResourceFinder.Service.CALDAV)
         )
         assertNull(finder.getCurrentUserPrincipal(Url("$BASE_URL$PATH_CALDAV"), DavResourceFinder.Service.CARDDAV))
 
         assertEquals(
-            "$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL".toHttpUrl(),
+            Url("$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL"),
             finder.getCurrentUserPrincipal(Url("$BASE_URL$PATH_CARDDAV"), DavResourceFinder.Service.CARDDAV)
         )
         assertNull(finder.getCurrentUserPrincipal(Url("$BASE_URL$PATH_CARDDAV"), DavResourceFinder.Service.CALDAV))

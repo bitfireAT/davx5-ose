@@ -5,10 +5,12 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
+import android.app.ActivityManager
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
@@ -23,7 +25,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Provider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -39,6 +40,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.Optional
 import java.util.logging.Logger
+import javax.inject.Provider
 
 @HiltViewModel(assistedFactory = LoginScreenViewModel.Factory::class)
 class LoginScreenViewModel @AssistedInject constructor(
@@ -227,7 +229,8 @@ class LoginScreenViewModel @AssistedInject constructor(
                 }
                 .buildKtor()
                 .use { httpClient ->
-                    resourceFinderFactory.create(loginInfo.baseUri!!, credentials, httpClient)
+                    val logMaxSize = context.getSystemService<ActivityManager>()!!.memoryClass * (1024 * 1024 / 8)
+                    resourceFinderFactory.create(loginInfo.baseUri!!, credentials, httpClient, logMaxSize)
                         .findInitialConfiguration()
                 }
 

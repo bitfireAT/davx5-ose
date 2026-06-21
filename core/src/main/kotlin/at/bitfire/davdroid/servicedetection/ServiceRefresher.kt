@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.UrlUtils
@@ -29,11 +28,11 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
 import io.ktor.http.URLBuilder
+import io.ktor.http.Url
 import io.ktor.http.takeFrom
-import javax.annotation.WillNotClose
-import okhttp3.HttpUrl
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 /**
  * ServiceRefresher is used to discover and save home sets of a given service.
@@ -99,26 +98,26 @@ class ServiceRefresher @AssistedInject constructor(
      * @throws at.bitfire.dav4jvm.exception.DavException    on application-level or logical errors
      */
     internal suspend fun discoverHomesets(
-        principalUrl: HttpUrl,
+        principalUrl: Url,
         level: Int = 0,
-        alreadyQueriedPrincipals: MutableSet<HttpUrl> = mutableSetOf(),
-        alreadySavedHomeSets: MutableSet<HttpUrl> = mutableSetOf()
+        alreadyQueriedPrincipals: MutableSet<Url> = mutableSetOf(),
+        alreadySavedHomeSets: MutableSet<Url> = mutableSetOf()
     ) {
         logger.fine("Discovering homesets of $principalUrl")
-        val relatedResources = mutableSetOf<HttpUrl>()
+        val relatedResources = mutableSetOf<Url>()
 
         // Query the URL
-        val principal = DavResource(httpClient, principalUrl.toKtorUrl())
+        val principal = DavResource(httpClient, principalUrl)
         val personal = level == 0
         try {
             principal.propfind(0, *homeSetProperties) { davResponse, _ ->
-                alreadyQueriedPrincipals += davResponse.href.toHttpUrl()
+                alreadyQueriedPrincipals += davResponse.href
 
                 // If response holds home sets, save them
                 davResponse[homeSetClass]?.let { homeSets ->
                     for (homeSetHref in homeSets.hrefs)
                         URLBuilder(principal.location).takeFrom(homeSetHref).build().let { homesetUrl ->
-                            val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl).toHttpUrl()
+                            val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
                             if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
                                 homeSetRepository.insertOrUpdateByUrlBlocking(
                                     // HomeSet is considered personal if this is the outer recursion call,
@@ -126,7 +125,7 @@ class ServiceRefresher @AssistedInject constructor(
                                     // Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by
                                     // other principals while still being considered "personal" (belonging to the current-user-principal)
                                     // and an owned home set need not always be personal either.
-                                    HomeSet(0, service.id, personal, resolvedHomeSetUrl)
+                                    HomeSet(0, service.id, personal, resolvedHomeSetUrl.toHttpUrl())
                                 )
                                 alreadySavedHomeSets += resolvedHomeSetUrl
                             }
@@ -146,7 +145,7 @@ class ServiceRefresher @AssistedInject constructor(
                         davResponse[type]?.let {
                             for (href in it.hrefs)
                                 URLBuilder(principal.location).takeFrom(href).build()
-                                    .let { url -> relatedResources += url.toHttpUrl() }
+                                    .let { url -> relatedResources += url }
                         }
                 }
 
@@ -157,7 +156,7 @@ class ServiceRefresher @AssistedInject constructor(
                         CalDAV.CalendarProxyWrite
                     )
                     if (proxyProperties.any { resourceType.types.contains(it) })
-                        relatedResources += davResponse.href.parent().toHttpUrl()
+                        relatedResources += davResponse.href.parent()
                 }
             }
         } catch (e: HttpException) {
