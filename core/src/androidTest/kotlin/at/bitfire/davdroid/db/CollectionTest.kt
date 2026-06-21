@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.db
 
-import androidx.test.filters.SmallTest
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import io.ktor.client.HttpClient
@@ -34,7 +33,6 @@ class CollectionTest {
 
 
     @Test
-    @SmallTest
     fun testFromDavResponseAddressBook() = runTest {
         val (davResource, client) = davResource(
             "<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav'>" +
@@ -65,7 +63,6 @@ class CollectionTest {
     }
 
     @Test
-    @SmallTest
     fun testFromDavResponseCalendar_FullTimezone() = runTest {
         val (davResource, client) = davResource(
             "<multistatus xmlns='DAV:' xmlns:CAL='urn:ietf:params:xml:ns:caldav' xmlns:ICAL='http://apple.com/ns/ical/'>" +
@@ -122,7 +119,6 @@ class CollectionTest {
     }
 
     @Test
-    @SmallTest
     fun testFromDavResponseCalendar_OnlyTzId() = runTest {
         val (davResource, client) = davResource(
             "<multistatus xmlns='DAV:' xmlns:CAL='urn:ietf:params:xml:ns:caldav' xmlns:ICAL='http://apple.com/ns/ical/'>" +
@@ -157,7 +153,6 @@ class CollectionTest {
     }
 
     @Test
-    @SmallTest
     fun testFromDavResponseWebcal() = runTest {
         val (davResource, client) = davResource(
             "<multistatus xmlns='DAV:' xmlns:CS='http://calendarserver.org/ns/'>" +

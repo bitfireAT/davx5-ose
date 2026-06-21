@@ -7,6 +7,8 @@ package at.bitfire.davdroid.servicedetection
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
+import at.bitfire.davdroid.log.LogCapture
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
@@ -21,6 +23,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
+import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -32,6 +35,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.net.URI
 import javax.inject.Inject
+import javax.inject.Provider
 
 @HiltAndroidTest
 class DavResourceFinderTest {
@@ -58,6 +62,9 @@ class DavResourceFinderTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var httpClientBuilderProvider: Provider<HttpClientBuilder>
 
     @Inject
     lateinit var resourceFinderFactory: DavResourceFinder.Factory
@@ -104,7 +111,7 @@ class DavResourceFinderTest {
     fun setUp() {
         hiltRule.inject()
         client = HttpClient(buildMockEngine())
-        finder = resourceFinderFactory.create(URI(BASE_URL), null, client, logMaxSize = 65536)
+        finder = resourceFinderFactory.create(URI(BASE_URL), null, client, LogCapture(65536))
     }
 
     @After
@@ -115,14 +122,28 @@ class DavResourceFinderTest {
 
     @Test
     fun testFindInitialConfiguration_logsOutput() = runTest {
-        val serverFinder = resourceFinderFactory.create(
-            URI("$BASE_URL$PATH_CALDAV"),
-            Credentials(username = "mock", password = "12345".toSensitiveString()),
-            client,
-            logMaxSize = 65536
-        )
-        val result = serverFinder.findInitialConfiguration()
-        assertTrue(result.logs.contains("Checking user-given URL"))
+        val mockServer = MockWebServer()
+        try {
+            mockServer.start()
+
+            val logCapture = LogCapture(65536)
+            val result = httpClientBuilderProvider.get()
+                .setLogger(logCapture.logger)
+                .buildKtor()
+                .use { httpClient ->
+                    resourceFinderFactory.create(
+                        URI(mockServer.url("/").toString()),
+                        Credentials(username = "mock", password = "12345".toSensitiveString()),
+                        httpClient,
+                        logCapture
+                    ).findInitialConfiguration()
+                }
+
+            assertTrue(result.logs.contains("Checking user-given URL"))
+            assertTrue(result.logs.contains("PROPFIND ${mockServer.url("/")} HTTP/1.1"))   // HTTP wire log
+        } finally {
+            mockServer.shutdown()
+        }
     }
 
     @Test

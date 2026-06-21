@@ -14,6 +14,7 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.log.LogCapture
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
@@ -39,7 +40,6 @@ import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.Optional
-import java.util.logging.Logger
 import javax.inject.Provider
 
 @HiltViewModel(assistedFactory = LoginScreenViewModel.Factory::class)
@@ -51,7 +51,6 @@ class LoginScreenViewModel @AssistedInject constructor(
     @ApplicationContext val context: Context,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val httpClientBuilderProvider: Provider<HttpClientBuilder>,
-    private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
     private val resourceFinderFactory: DavResourceFinder.Factory,
     settingsManager: SettingsManager,
@@ -221,16 +220,18 @@ class LoginScreenViewModel @AssistedInject constructor(
 
             // Then, find initial configuration
             val credentials = loginInfo.credentials
+            val logMaxSize = context.getSystemService<ActivityManager>()!!.memoryClass * (1024 * 1024 / 8)
+            // shared log capture for HTTP wire logs and DavResourceFinder logs
+            val logCapture = LogCapture(logMaxSize)
             val result = httpClientBuilderProvider.get()
-                .setLogger(logger)
+                .setLogger(logCapture.logger)
                 .apply {
                     if (credentials != null)
                         authenticate(domain = null, getCredentials = { credentials })
                 }
                 .buildKtor()
                 .use { httpClient ->
-                    val logMaxSize = context.getSystemService<ActivityManager>()!!.memoryClass * (1024 * 1024 / 8)
-                    resourceFinderFactory.create(loginInfo.baseUri!!, credentials, httpClient, logMaxSize)
+                    resourceFinderFactory.create(loginInfo.baseUri!!, credentials, httpClient, logCapture)
                         .findInitialConfiguration()
                 }
 

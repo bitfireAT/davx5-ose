@@ -51,19 +51,19 @@ import javax.annotation.WillNotClose
  * @param baseURI        user-given base URI (either mailto: URI or http(s):// URL)
  * @param credentials    optional login credentials (username/password, client certificate, OAuth state)
  * @param httpClient     Ktor HttpClient configured with authentication; caller owns and closes it
- * @param logMaxSize     maximum size of the captured log in bytes
+ * @param logCapture     shared log capture; caller must also pass its logger to the HTTP client builder
  */
 class DavResourceFinder @AssistedInject constructor(
     @Assisted private val baseURI: URI,
     @Assisted private val credentials: Credentials? = null,
     @Assisted @WillNotClose private val httpClient: HttpClient,
-    @Assisted private val logMaxSize: Int,
+    @Assisted private val logCapture: LogCapture,
     private val dnsRecordResolver: DnsRecordResolver,
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(baseURI: URI, credentials: Credentials?, httpClient: HttpClient, logMaxSize: Int): DavResourceFinder
+        fun create(baseURI: URI, credentials: Credentials?, httpClient: HttpClient, logCapture: LogCapture): DavResourceFinder
     }
 
     enum class Service(val wellKnownName: String) {
@@ -73,7 +73,6 @@ class DavResourceFinder @AssistedInject constructor(
         override fun toString() = wellKnownName
     }
 
-    private val logCapture = LogCapture(maxSize = logMaxSize)
     private val log = logCapture.logger
 
     private var encountered401 = false
