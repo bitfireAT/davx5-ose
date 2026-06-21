@@ -10,6 +10,9 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.db.migration.AutoMigration12
+import at.bitfire.davdroid.db.migration.AutoMigration16
+import at.bitfire.davdroid.db.migration.AutoMigration18
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavHomeSetRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -36,9 +39,11 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.ConscryptMode
 import java.util.logging.Logger
 
 @RunWith(RobolectricTestRunner::class)
+@ConscryptMode(ConscryptMode.Mode.OFF)      // required because main project uses Conscrypt, but unit tests do not
 class HomeSetRefresherTest {
 
     companion object {
@@ -94,7 +99,12 @@ class HomeSetRefresherTest {
         db = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
             AppDatabase::class.java
-        ).allowMainThreadQueries().build()
+        ).allowMainThreadQueries()
+            .addAutoMigrationSpec(AutoMigration18())
+            .addAutoMigrationSpec(AutoMigration16())
+            .addAutoMigrationSpec(AutoMigration12(ApplicationProvider.getApplicationContext(), Logger.getLogger("test")))
+            .fallbackToDestructiveMigration()
+            .build()
         client = HttpClient(buildMockEngine())
 
         val serviceId = db.serviceDao().insertOrReplace(

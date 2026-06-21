@@ -83,14 +83,14 @@ class CollectionTest {
                     "RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10\n" +
                     "TZOFFSETFROM:-0400\n" +
                     "TZOFFSETTO:-0500\n" +
-                    "TZNAME:Eastern Standard Time (US & Canada)\n" +
+                    "TZNAME:Eastern Standard Time (US &amp; Canada)\n" +
                     "END:STANDARD\n" +
                     "BEGIN:DAYLIGHT\n" +
                     "DTSTART:19870405T020000\n" +
                     "RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4\n" +
                     "TZOFFSETFROM:-0500\n" +
                     "TZOFFSETTO:-0400\n" +
-                    "TZNAME:Eastern Daylight Time (US & Canada)\n" +
+                    "TZNAME:Eastern Daylight Time (US &amp; Canada)\n" +
                     "END:DAYLIGHT\n" +
                     "END:VTIMEZONE\n" +
                     "END:VCALENDAR\n" +
