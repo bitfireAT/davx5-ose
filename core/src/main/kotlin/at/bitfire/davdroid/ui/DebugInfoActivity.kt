@@ -47,9 +47,6 @@ import javax.inject.Inject
 class DebugInfoActivity: AppCompatActivity() {
 
     @Inject
-    lateinit var debugDirectory: DebugDirectory
-
-    @Inject
     lateinit var tasksAppManager: Lazy<TasksAppManager>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,9 +70,7 @@ class DebugInfoActivity: AppCompatActivity() {
                 canViewResource = viewResourceIntent != null,
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE_SUMMARY),
                 remoteResource = remoteResource,
-                logFile = extras?.getString(EXTRA_DEBUG_LOG_FILE)?.let { name ->
-                    debugDirectory.resolve(DebugDirectory.FileName(name))
-                },
+                debugLogFileName = extras?.getString(EXTRA_DEBUG_LOG_FILE)?.let { DebugDirectory.FileName(it) },
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,

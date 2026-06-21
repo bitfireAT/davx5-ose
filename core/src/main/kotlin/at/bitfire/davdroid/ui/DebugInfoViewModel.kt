@@ -46,7 +46,7 @@ class DebugInfoViewModel @AssistedInject constructor(
         val cause: Throwable?,
         val localResource: String?,
         val remoteResource: String?,
-        val logFile: File? = null,
+        val debugLogFileName: DebugDirectory.FileName? = null,
         val timestamp: Long?
     )
 
@@ -58,7 +58,8 @@ class DebugInfoViewModel @AssistedInject constructor(
     val cause: Throwable? = details.cause
 
     // use app-wide "verbose log" from LogFileHandler if no specific log file was provided
-    val logFile: File? = (details.logFile ?: debugDirectory.resolve(LogFileHandler.LOG_FILE_NAME))?.takeIf { it.canRead() }
+    val logFile: File? = debugDirectory.resolve(details.debugLogFileName ?: LogFileHandler.LOG_FILE_NAME)
+        ?.takeIf { it.canRead() }
 
     data class UiState(
         val debugInfo: File? = null,

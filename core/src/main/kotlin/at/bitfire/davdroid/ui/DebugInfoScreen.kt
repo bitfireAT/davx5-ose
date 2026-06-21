@@ -46,6 +46,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.dav4jvm.okhttp.exception.DavException
 import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.ProgressBar
@@ -61,7 +62,7 @@ fun DebugInfoScreen(
     localResource: String?,
     canViewResource: Boolean,
     remoteResource: String?,
-    logFile: File? = null,
+    debugLogFileName: DebugDirectory.FileName? = null,
     timestamp: Long?,
     onShareZipFile: (File) -> Unit,
     onViewFile: (File) -> Unit,
@@ -77,7 +78,7 @@ fun DebugInfoScreen(
                 cause = cause,
                 localResource = localResource,
                 remoteResource = remoteResource,
-                logFile = logFile,
+                debugLogFileName = debugLogFileName,
                 timestamp = timestamp
             ))
         }
