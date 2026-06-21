@@ -201,7 +201,11 @@ class LoginScreenViewModel @AssistedInject constructor(
         val baseUri = loginInfo.baseUri ?: return
         detectResourcesUiState = detectResourcesUiState.copy(loading = true)
         detectResourcesJob = viewModelScope.launch {
-            if (!validateLogin(baseUri)) return@launch
+            if (!validateLogin(baseUri)) {
+                detectResourcesUiState = detectResourcesUiState.copy(loading = false, loginValidationFailed = true)
+                return@launch
+            }
+
             val (result, logFile) = findConfiguration(baseUri)
             if (result.calDAV != null || result.cardDAV != null) {
                 foundConfig = result
@@ -221,18 +225,17 @@ class LoginScreenViewModel @AssistedInject constructor(
     /**
      * Validates the login using [loginValidator] if one is configured.
      *
-     * @return `true` if valid or no validator is configured; `false` if the server rejected the
-     *   login (also updates [detectResourcesUiState] with [DetectResourcesUiState.loginValidationFailed])
+     * @return `true` if valid or no validator is configured; `false` if the server rejected the login
      */
     private suspend fun validateLogin(baseUri: URI): Boolean {
         val httpUrl = baseUri.toHttpUrlOrNull() ?: return true
-        if (!loginValidator.isPresent) return true
-        val isValid = withContext(ioDispatcher) {
-            runInterruptible { loginValidator.get().beforeLogin(httpUrl) }
+        if (!loginValidator.isPresent)
+            return true
+        return withContext(ioDispatcher) {
+            runInterruptible {
+                loginValidator.get().beforeLogin(httpUrl)
+            }
         }
-        if (!isValid)
-            detectResourcesUiState = detectResourcesUiState.copy(loading = false, loginValidationFailed = true)
-        return isValid
     }
 
     /**
@@ -242,7 +245,7 @@ class LoginScreenViewModel @AssistedInject constructor(
      */
     private suspend fun findConfiguration(baseUri: URI): Pair<DavResourceFinder.Configuration, File> =
         withContext(ioDispatcher) {
-            val logFile = File(LogFileHandler.debugDir(context), "service-detection.log")
+            val logFile = File(LogFileHandler.debugDir(context), LOG_FILE_NAME)
             val result = FileLoggerFactory.forFile(logFile).use { (logger) ->
                 runInterruptible {
                     resourceFinderFactory.create(baseUri, loginInfo.credentials, logger)
@@ -357,6 +360,11 @@ class LoginScreenViewModel @AssistedInject constructor(
                     )
             }
         }
+    }
+
+
+    companion object {
+        private const val LOG_FILE_NAME = "service-detection.log"
     }
 
 }

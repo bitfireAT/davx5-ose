@@ -24,7 +24,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import java.io.File
-import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.zip.ZipEntry
@@ -65,7 +64,11 @@ class DebugInfoViewModel @AssistedInject constructor(
         val error: String? = null
     )
 
-    var uiState by mutableStateOf(UiState(logFile = details.logFile))
+    var uiState by mutableStateOf(
+        UiState(
+        // use app-wide "verbose log" from LogFileHandler if no specific log file was provided
+        logFile = (details.logFile ?: LogFileHandler.getDebugLogFile(context))?.takeIf { it.canRead() }
+    ))
         private set
 
     fun resetError() {
@@ -77,17 +80,7 @@ class DebugInfoViewModel @AssistedInject constructor(
     }
 
     init {
-        // create debug info directory
-        val debugDir = LogFileHandler.debugDir(context) ?: throw IOException("Couldn't create debug info directory")
-
         viewModelScope.launch(ioDispatcher) {
-            // use app-wide "verbose log" from LogFileHandler if no specific log file was provided
-            if (uiState.logFile == null)
-                LogFileHandler.getDebugLogFile(context)?.let { debugLogFile ->
-                    if (debugLogFile.isFile && debugLogFile.canRead())
-                        uiState = uiState.copy(logFile = debugLogFile)
-                }
-
             uiState = uiState.copy(
                 cause = details.cause,
                 localResource = details.localResource,

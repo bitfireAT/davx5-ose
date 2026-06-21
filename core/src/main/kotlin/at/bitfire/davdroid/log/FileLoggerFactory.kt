@@ -11,6 +11,7 @@ import java.io.File
 import java.util.logging.FileHandler
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillCloseWhenClosed
 
 /** Factory for bounded file-based logging captures. */
 object FileLoggerFactory {
@@ -22,7 +23,7 @@ object FileLoggerFactory {
      */
     data class FileHandlerAndLogger(
         val logger: Logger,
-        @get:MustBeClosed val fileHandler: FileHandler
+        @WillCloseWhenClosed val fileHandler: FileHandler
     ) : Closeable {
         override fun close() = fileHandler.close()
     }
@@ -30,6 +31,8 @@ object FileLoggerFactory {
     /**
      * Creates a [FileHandlerAndLogger] that writes log records to [file] (up to 1 MB,
      * overwriting) and propagates them to the parent logger (logcat etc.).
+     *
+     * The returned logger logs all messages ([Level.ALL]).
      *
      * Must be closed after use — prefer `.use {}`.
      */

@@ -105,7 +105,7 @@ class DavResourceFinderTest {
         }
         val logs = logFile.readText()
         assertTrue(logs.contains("Checking user-given URL"))   // service detection log
-        assertTrue(logs.contains("PROPFIND"))                  // HTTP traffic
+        assertTrue(logs.contains("PROPFIND http://"))            // HTTP traffic (request line, not a log message)
     }
 
     @Test
