@@ -6,7 +6,6 @@ package at.bitfire.synctools.mapping.jtx
 
 import android.content.Entity
 import android.net.Uri
-import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.icalendar.AssociatedComponents
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.icalendar.plusAssign
@@ -90,7 +89,7 @@ class JtxObjectBuilderTest {
     @Test
     fun `build() maps X-STATUS to EXTENDED_STATUS`() {
         val main = VToDo().apply {
-            this += XProperty(JtxICalObject.X_PROP_XSTATUS, "Bla")
+            this += XProperty(JtxProperty.X_XSTATUS, "Bla")
         }
         val component = AssociatedComponents<CalendarComponent>(
             main = main,
