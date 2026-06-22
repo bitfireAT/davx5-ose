@@ -8,13 +8,13 @@ import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.dav4jvm.property.webdav.Owner
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.dav4jvm.ktor.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -59,7 +59,7 @@ class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
                     collectionRepository.insertOrUpdateByUrlRememberSync(collection.copy(
                         serviceId = localCollection.serviceId,          // use same service ID as previous entry
                         ownerId = response[Owner::class.java]?.href     // save the principal id (collection owner)
-                            ?.let { response.href.resolve(it).toHttpUrl() }
+                            ?.let { response.href.resolve(it)?.toHttpUrl() }
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
                             ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
                     ))

@@ -115,7 +115,7 @@ class ServiceRefresher @AssistedInject constructor(
                 // If response holds home sets, save them
                 davResponse[homeSetClass]?.let { homeSets ->
                     for (homeSetHref in homeSets.hrefs)
-                        principal.location.resolve(homeSetHref).let { homesetUrl ->
+                        principal.location.resolve(homeSetHref)?.let { homesetUrl ->
                             val resolvedHomeSetUrl = homesetUrl.withTrailingSlash()
                             if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
                                 homeSetRepository.insertOrUpdateByUrlBlocking(
@@ -131,7 +131,7 @@ class ServiceRefresher @AssistedInject constructor(
                         }
                 }
 
-                // Add related principals to be queried afterwards
+                // Add related principals to be queried afterward
                 if (personal) {
                     val relatedResourcesTypes = listOf(
                         // current resource is a read/write-proxy for other principals
@@ -143,8 +143,9 @@ class ServiceRefresher @AssistedInject constructor(
                     for (type in relatedResourcesTypes)
                         davResponse[type]?.let {
                             for (href in it.hrefs)
-                                principal.location.resolve(href)
-                                    .let { url -> relatedResources += url }
+                                principal.location.resolve(href)?.let { url ->
+                                    relatedResources += url
+                                }
                         }
                 }
 

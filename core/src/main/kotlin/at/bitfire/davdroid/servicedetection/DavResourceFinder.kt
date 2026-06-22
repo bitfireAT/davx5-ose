@@ -142,7 +142,7 @@ class DavResourceFinder @AssistedInject constructor(
                 if (config.principal == null)
                     try {
                         config.principal = getCurrentUserPrincipal(
-                            baseURL.resolve("/.well-known/${service.wellKnownName}"),
+                            baseURL.resolve("/.well-known/${service.wellKnownName}")!!,
                             service
                         )
                     } catch (e: Exception) {
@@ -308,7 +308,7 @@ class DavResourceFinder @AssistedInject constructor(
         // Is it an addressbook-home-set or calendar-home-set?
         davResponse[homeSetClass]?.let { homeSet ->
             for (href in homeSet.hrefs) {
-                val location = davResponse.requestedUrl.resolve(href).withTrailingSlash()
+                val location = davResponse.requestedUrl.resolve(href)?.withTrailingSlash() ?: continue
                 log.info("Found home-set of type $resourceType at $location")
                 config.homeSets += location
             }
@@ -416,7 +416,7 @@ class DavResourceFinder @AssistedInject constructor(
         var principal: Url? = null
         DavResource(httpClient, url, log).propfind(0, WebDAV.CurrentUserPrincipal) { response, _ ->
             response[CurrentUserPrincipal::class.java]?.href?.let { href ->
-                val resolved = response.requestedUrl.resolve(href)
+                val resolved = response.requestedUrl.resolve(href) ?: return@let
                 log.info("Found current-user-principal: $resolved")
 
                 // service check
