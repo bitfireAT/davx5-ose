@@ -17,7 +17,6 @@ import at.bitfire.synctools.mapping.jtx.handler.CompletedHandler
 import at.bitfire.synctools.mapping.jtx.handler.ContactHandler
 import at.bitfire.synctools.mapping.jtx.handler.CreatedHandler
 import at.bitfire.synctools.mapping.jtx.handler.DescriptionHandler
-import at.bitfire.synctools.mapping.jtx.handler.GeoFenceRadiusHandler
 import at.bitfire.synctools.mapping.jtx.handler.GeoHandler
 import at.bitfire.synctools.mapping.jtx.handler.JtxObjectEntityHandler
 import at.bitfire.synctools.mapping.jtx.handler.LastModifiedHandler
@@ -73,7 +72,6 @@ class JtxObjectHandler(
         CreatedHandler(),
         DescriptionHandler(),
         GeoHandler(),
-        GeoFenceRadiusHandler(),
         LastModifiedHandler(),
         LocationHandler(),
         OrganizerHandler(),
