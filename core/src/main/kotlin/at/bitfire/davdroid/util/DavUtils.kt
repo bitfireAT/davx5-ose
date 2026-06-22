@@ -8,7 +8,6 @@ import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
 import io.ktor.http.ContentType
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
-import io.ktor.http.takeFrom
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import java.net.URI
@@ -155,17 +154,6 @@ object DavUtils {
 
         return builder.build()
     }
-
-    /**
-     * Resolves `this` URL against a relative path.
-     *
-     * See [URLBuilder.takeFrom] for details of resolving.
-     *
-     * @param relative The relative path to resolve.
-     * @return A new [Url] representing the resolved URL.
-     */
-    fun Url.resolve(relative: String): Url =
-        URLBuilder(this).takeFrom(relative).build()
 
     fun String.toURIorNull(): URI? = try {
         URI(this)

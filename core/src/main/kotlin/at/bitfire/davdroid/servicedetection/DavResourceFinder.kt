@@ -23,7 +23,7 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.network.DnsRecordResolver
 import at.bitfire.davdroid.settings.Credentials
-import at.bitfire.davdroid.util.DavUtils.resolve
+import at.bitfire.dav4jvm.ktor.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

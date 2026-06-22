@@ -23,7 +23,7 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavHomeSetRepository
 import at.bitfire.davdroid.util.DavUtils.parent
-import at.bitfire.davdroid.util.DavUtils.resolve
+import at.bitfire.dav4jvm.ktor.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

@@ -14,7 +14,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.util.DavUtils.resolve
+import at.bitfire.dav4jvm.ktor.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
