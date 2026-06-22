@@ -102,34 +102,4 @@ class GeoHandlerTest {
             output.getProperty<XProperty>(JtxProperty.X_GEOFENCE_RADIUS).getOrNull()?.value
         )
     }
-
-    @Test
-    fun `No GEOFENCE_RADIUS`() {
-        val input = Entity(ContentValues())
-        val output = VToDo()
-
-        handler.process(from = input, main = input, to = output)
-
-        assertNull(output.getProperty<XProperty>(JtxProperty.X_GEOFENCE_RADIUS).getOrNull())
-    }
-
-    @Test
-    fun `GEOFENCE_RADIUS is added as XProperty`() {
-        val input = Entity(contentValuesOf(JtxContract.JtxICalObject.GEOFENCE_RADIUS to 500))
-        val output = VToDo()
-
-        handler.process(from = input, main = input, to = output)
-
-        assertEquals("500", output.getProperty<XProperty>(JtxProperty.X_GEOFENCE_RADIUS).getOrNull()?.value)
-    }
-
-    @Test
-    fun `Non-numeric radius is ignored`() {
-        val input = Entity(contentValuesOf(JtxContract.JtxICalObject.GEOFENCE_RADIUS to "abc"))
-        val output = VToDo()
-
-        handler.process(from = input, main = input, to = output)
-
-        assertNull(output.getProperty<XProperty>(JtxProperty.X_GEOFENCE_RADIUS).getOrNull())
-    }
 }
