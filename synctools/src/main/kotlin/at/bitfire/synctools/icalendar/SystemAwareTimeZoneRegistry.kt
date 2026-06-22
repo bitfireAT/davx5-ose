@@ -20,10 +20,12 @@ import java.util.logging.Logger
  * A [TimeZoneRegistry] that uses system timezone IDs for all TZIDs recognised by [ZoneId.of],
  * ignoring any VTIMEZONE component provided alongside such a TZID.
  *
- * Workarounds:
+ * Also contains workarounds for:
  * - https://github.com/bitfireAT/davx5-ose/issues/2248 – NPE when receiving calendar event with invalid VTIMEZONE
- * - https://github.com/bitfireAT/davx5-ose/issues/2525 – Don't use custom timezone when TZID is available in system
  * - https://github.com/bitfireAT/davx5/issues/914 – Rare NPE in ical4j when ZoneIdPool runs out of available ZoneIds
+ *
+ * If more workarounds are to be added, the class should probably be split into one for the core
+ * functionality and one for the workarounds.
  */
 class SystemAwareTimeZoneRegistry(
     /** Underlying registry that handles storage and custom-VTIMEZONE resolution. */
@@ -54,20 +56,12 @@ class SystemAwareTimeZoneRegistry(
         }
 
         // Don't register empty (and thus invalid) VTIMEZONEs
-        val vTimeZone = timeZone.vTimeZone
-        val standardObservances = vTimeZone.getComponents<Observance>(Observance.STANDARD)
-        val daylightObservances = vTimeZone.getComponents<Observance>(Observance.DAYLIGHT)
-        if (standardObservances.isEmpty() && daylightObservances.isEmpty()) {
-            logger.info("Ignoring invalid VTIMEZONE with TZID: ${timeZone.id}")
+        if (isEmptyTimeZone(timeZone)) {
+            logger.warning("Ignoring invalid VTIMEZONE with TZID: ${timeZone.id}")
             return
         }
 
-        if (ZoneRulesProviderImpl.INSTANCE.zoneIdPool.availableZoneIds() == 0) {
-            // Trigger garbage collection in the hope that old TimeZoneRegistry instances will be freed and in turn
-            // ZoneIdPool.cleanup() will be able to reclaim zone IDs that are no longer used.
-            Runtime.getRuntime().gc()
-        }
-
+        triggerGcBeforeZoneIdAllocation()
         timeZoneRegistry.register(timeZone, update)
     }
 
@@ -91,6 +85,36 @@ class SystemAwareTimeZoneRegistry(
         } catch (_: DateTimeException) {
             timeZoneRegistry.getZoneId(tzId)
         }
+
+
+    /**
+     * Checks if the given time zone has no STANDARD or DAYLIGHT observances.
+     *
+     * @param timeZone The time zone to check.
+     * @return true if the time zone has no observances, false otherwise.
+     */
+    private fun isEmptyTimeZone(timeZone: TimeZone): Boolean {
+        val vTimeZone = timeZone.vTimeZone
+        val standardObservances = vTimeZone.getComponents<Observance>(Observance.STANDARD)
+        val daylightObservances = vTimeZone.getComponents<Observance>(Observance.DAYLIGHT)
+        return standardObservances.isEmpty() && daylightObservances.isEmpty()
+    }
+
+    /**
+     * Workaround for https://github.com/bitfireAT/davx5/issues/914 that reduces
+     * the chance of an NPE during time zone registration.
+     *
+     * Attempts to free up unused Zone IDs by triggering garbage collection
+     * when the Zone ID pool is exhausted.
+     */
+    private fun triggerGcBeforeZoneIdAllocation() {
+        if (ZoneRulesProviderImpl.INSTANCE.zoneIdPool.availableZoneIds() == 0) {
+            // Trigger garbage collection in the hope that old TimeZoneRegistry instances will be freed and in turn
+            // ZoneIdPool.cleanup() will be able to reclaim zone IDs that are no longer used.
+            Runtime.getRuntime().gc()
+        }
+    }
+
 
     private companion object {
         val NON_EMPTY_ZONE_RULES: Map<String, ZoneRules> =
